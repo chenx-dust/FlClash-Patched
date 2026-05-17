@@ -26,6 +26,9 @@ char *jni_get_string(JNIEnv *env, jstring str) {
     const auto array = reinterpret_cast<jbyteArray>(env->CallObjectMethod(str, m_get_bytes));
     const int length = env->GetArrayLength(array);
     const auto content = static_cast<char *>(malloc(length + 1));
+    if (content == nullptr) {
+        return nullptr;
+    }
     env->GetByteArrayRegion(array, 0, length, reinterpret_cast<jbyte *>(content));
     content[length] = 0;
     return content;
