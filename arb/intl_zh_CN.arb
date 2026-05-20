@@ -580,6 +580,7 @@
   "prerequisites": "前置条件",
   "ignoreBatteryOptimization": "忽略电池优化",
   "batteryOptimizationDesc": "为保证后台运行，请关闭本应用的电池优化。点击前往设置。",
+  "batteryOptimizationStatusTip": "受系统影响，不代表一定准确",
   "locationPermission": "位置权限",
   "locationPermissionDesc": "根据系统要求，获取Wi-Fi名称需要您授予位置权限。",
   "excludeSsids": "排除SSIDs",

@@ -4704,6 +4704,16 @@ class AppLocalizations {
     );
   }
 
+  /// `Affected by the system, this status may not always be accurate.`
+  String get batteryOptimizationStatusTip {
+    return Intl.message(
+      'Affected by the system, this status may not always be accurate.',
+      name: 'batteryOptimizationStatusTip',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Location Permission`
   String get locationPermission {
     return Intl.message(

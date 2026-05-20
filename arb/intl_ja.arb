@@ -580,6 +580,7 @@
   "prerequisites": "Prerequisites",
   "ignoreBatteryOptimization": "Ignore Battery Optimization",
   "batteryOptimizationDesc": "To ensure background operation, please disable battery optimization for this app. Tap to go to settings.",
+  "batteryOptimizationStatusTip": "システムの影響により、この状態は必ずしも正確とは限りません。",
   "locationPermission": "Location Permission",
   "locationPermissionDesc": "According to system requirements, obtaining the Wi-Fi name requires you to grant location permission.",
   "excludeSsids": "Exclude SSIDs",

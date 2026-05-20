@@ -4,6 +4,7 @@ import 'package:fl_clash/plugins/app.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/state.dart';
+import 'package:fl_clash/views/profiles/overwrite/custom/widgets.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -203,7 +204,7 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
                       subtitle: Text(appLocalizations.batteryOptimizationDesc),
                       trailing: isLoading
                           ? const SizedBox(
-                              width: 80,
+                              width: 100,
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 mainAxisAlignment: MainAxisAlignment.end,
@@ -215,25 +216,36 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
                                 ],
                               ),
                             )
-                          : CommonMinFilledButtonTheme(
-                              child: FilledButton(
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: batteryOptimizationDisable
-                                      ? null
-                                      : context.colorScheme.error,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
+                          : Row(
+                              mainAxisSize: MainAxisSize.min,
+                              spacing: 8,
+                              children: [
+                                InfoMessageButton(
+                                  message: appLocalizations
+                                      .batteryOptimizationStatusTip,
+                                ),
+                                CommonMinFilledButtonTheme(
+                                  child: FilledButton(
+                                    style: FilledButton.styleFrom(
+                                      backgroundColor:
+                                          batteryOptimizationDisable
+                                          ? null
+                                          : context.colorScheme.error,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                      ),
+                                      minimumSize: const Size(80, 40),
+                                    ),
+                                    onPressed:
+                                        _handleOpenBatteryOptimizationSettings,
+                                    child: Text(
+                                      batteryOptimizationDisable
+                                          ? appLocalizations.authorized
+                                          : appLocalizations.tapToAuthorize,
+                                    ),
                                   ),
-                                  minimumSize: const Size(80, 40),
                                 ),
-                                onPressed:
-                                    _handleOpenBatteryOptimizationSettings,
-                                child: Text(
-                                  batteryOptimizationDisable
-                                      ? appLocalizations.authorized
-                                      : appLocalizations.tapToAuthorize,
-                                ),
-                              ),
+                              ],
                             ),
                     ),
                   if (system.isAndroid || system.isMacOS)
