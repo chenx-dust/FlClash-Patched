@@ -46,25 +46,31 @@ class Window {
     if (!system.isMacOS) {
       final left = props.left ?? 0;
       final top = props.top ?? 0;
-      final right = left + props.width;
-      final bottom = top + props.height;
       if (left == 0 && top == 0) {
         await windowManager.setAlignment(Alignment.center);
+        return;
+      }
+      final displays = await screenRetriever.getAllDisplays();
+      final isPositionValid = displays.any((display) {
+        final scaleFactor = display.scaleFactor ?? 1.0;
+        // visibleSize is already in logical pixels; fall back to
+        // physical size / scaleFactor when visibleSize is unavailable.
+        final logicalWidth =
+            display.visibleSize?.width ?? display.size.width / scaleFactor;
+        final logicalHeight =
+            display.visibleSize?.height ?? display.size.height / scaleFactor;
+        final displayBounds = Rect.fromLTWH(
+          display.visiblePosition!.dx,
+          display.visiblePosition!.dy,
+          logicalWidth,
+          logicalHeight,
+        );
+        return displayBounds.contains(Offset(left, top));
+      });
+      if (isPositionValid) {
+        await windowManager.setPosition(Offset(left, top));
       } else {
-        final displays = await screenRetriever.getAllDisplays();
-        final isPositionValid = displays.any((display) {
-          final displayBounds = Rect.fromLTWH(
-            display.visiblePosition!.dx,
-            display.visiblePosition!.dy,
-            display.size.width,
-            display.size.height,
-          );
-          return displayBounds.contains(Offset(left, top)) ||
-              displayBounds.contains(Offset(right, bottom));
-        });
-        if (isPositionValid) {
-          await windowManager.setPosition(Offset(left, top));
-        }
+        await windowManager.setAlignment(Alignment.center);
       }
     }
   }
