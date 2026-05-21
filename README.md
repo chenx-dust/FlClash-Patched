@@ -4,6 +4,15 @@
 
 </div>
 
+## Applied Patch
+
+- [chen08209/FlClash#1886](https://github.com/chen08209/FlClash/pull/1886) => [Commit](https://github.com/chen08209/FlClash/commit/d66f7aa7a6188230b7e11c4bcec5764f7ee0f300)
+- [chen08209/FlClash#1912](https://github.com/chen08209/FlClash/pull/1912)
+- [chen08209/FlClash#1938](https://github.com/chen08209/FlClash/pull/1938)
+- [chen08209/FlClash#1996](https://github.com/chen08209/FlClash/pull/1996)
+- [chen08209/FlClash#2018](https://github.com/chen08209/FlClash/pull/2018)
+- [chen08209/FlClash#2026](https://github.com/chen08209/FlClash/pull/2026) => [Commit](https://github.com/chen08209/FlClash/commit/f8ac21748b534d5502068bdbb170b5dd12b67cab)
+
 ## FlClash
 
 [![Downloads](https://img.shields.io/github/downloads/chen08209/FlClash/total?style=flat-square&logo=github)](https://github.com/chen08209/FlClash/releases/)[![Last Version](https://img.shields.io/github/release/chen08209/FlClash/all.svg?style=flat-square)](https://github.com/chen08209/FlClash/releases/)[![License](https://img.shields.io/github/license/chen08209/FlClash?style=flat-square)](LICENSE)

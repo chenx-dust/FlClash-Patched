@@ -1,0 +1,85 @@
+From f8ac21748b534d5502068bdbb170b5dd12b67cab Mon Sep 17 00:00:00 2001
+From: thunder <62392971+Thunder-077@users.noreply.github.com>
+Date: Wed, 20 May 2026 09:48:42 +0800
+Subject: [PATCH] =?UTF-8?q?fix(windows,=20flutter):=20=E4=BF=AE=E5=A4=8D?=
+ =?UTF-8?q?=E7=AA=97=E5=8F=A3=E5=88=9D=E5=A7=8B=E4=BD=8D=E7=BD=AE=E7=BC=A9?=
+ =?UTF-8?q?=E6=94=BE=E9=80=82=E9=85=8D=E9=97=AE=E9=A2=98?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+1.  移除Windows窗口创建时对origin坐标的缩放处理，匹配Flutter逻辑像素坐标
+2.  重构Dart层窗口位置校验逻辑：
+    -  使用visibleSize计算逻辑显示区域，不再直接使用物理尺寸
+    -  仅校验窗口左上角坐标而非同时校验两角
+    -  无指定位置时默认居中显示
+---
+ lib/common/window.dart          | 38 +++++++++++++++++++--------------
+ windows/runner/win32_window.cpp |  2 +-
+ 2 files changed, 23 insertions(+), 17 deletions(-)
+
+diff --git a/lib/common/window.dart b/lib/common/window.dart
+index 7fb48302e..7099081ca 100755
+--- a/lib/common/window.dart
++++ b/lib/common/window.dart
+@@ -46,25 +46,31 @@ class Window {
+     if (!system.isMacOS) {
+       final left = props.left ?? 0;
+       final top = props.top ?? 0;
+-      final right = left + props.width;
+-      final bottom = top + props.height;
+       if (left == 0 && top == 0) {
+         await windowManager.setAlignment(Alignment.center);
++        return;
++      }
++      final displays = await screenRetriever.getAllDisplays();
++      final isPositionValid = displays.any((display) {
++        final scaleFactor = display.scaleFactor ?? 1.0;
++        // visibleSize is already in logical pixels; fall back to
++        // physical size / scaleFactor when visibleSize is unavailable.
++        final logicalWidth =
++            display.visibleSize?.width ?? display.size.width / scaleFactor;
++        final logicalHeight =
++            display.visibleSize?.height ?? display.size.height / scaleFactor;
++        final displayBounds = Rect.fromLTWH(
++          display.visiblePosition!.dx,
++          display.visiblePosition!.dy,
++          logicalWidth,
++          logicalHeight,
++        );
++        return displayBounds.contains(Offset(left, top));
++      });
++      if (isPositionValid) {
++        await windowManager.setPosition(Offset(left, top));
+       } else {
+-        final displays = await screenRetriever.getAllDisplays();
+-        final isPositionValid = displays.any((display) {
+-          final displayBounds = Rect.fromLTWH(
+-            display.visiblePosition!.dx,
+-            display.visiblePosition!.dy,
+-            display.size.width,
+-            display.size.height,
+-          );
+-          return displayBounds.contains(Offset(left, top)) ||
+-              displayBounds.contains(Offset(right, bottom));
+-        });
+-        if (isPositionValid) {
+-          await windowManager.setPosition(Offset(left, top));
+-        }
++        await windowManager.setAlignment(Alignment.center);
+       }
+     }
+   }
+diff --git a/windows/runner/win32_window.cpp b/windows/runner/win32_window.cpp
+index 60608d0fe..664112787 100644
+--- a/windows/runner/win32_window.cpp
++++ b/windows/runner/win32_window.cpp
+@@ -136,7 +136,7 @@ bool Win32Window::Create(const std::wstring& title,
+ 
+   HWND window = CreateWindow(
+       window_class, title.c_str(), WS_OVERLAPPEDWINDOW,
+-      Scale(origin.x, scale_factor), Scale(origin.y, scale_factor),
++      origin.x, origin.y,
+       Scale(size.width, scale_factor), Scale(size.height, scale_factor),
+       nullptr, nullptr, GetModuleHandle(nullptr), this);
+ 

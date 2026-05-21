@@ -1,0 +1,51 @@
+From b7c87e80711a3656bcb388d9fd68145fd1bae386 Mon Sep 17 00:00:00 2001
+From: tutoupower <49771486+TuTouPower@users.noreply.github.com>
+Date: Sun, 3 May 2026 22:45:23 +0800
+Subject: [PATCH] =?UTF-8?q?fix:=20resolve=5Fprocess=20JNI=20=E7=A9=BA?=
+ =?UTF-8?q?=E6=8C=87=E9=92=88=E5=AF=BC=E8=87=B4=20:remote=20=E8=BF=9B?=
+ =?UTF-8?q?=E7=A8=8B=20SIGABRT?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+在后台管理激进的设备（如魅族）上，:remote 进程被系统杀掉重启后，
+resolveProcess 回调的 jobject 可能为 null，导致 CallObjectMethod
+触发 SIGABRT，进程进入崩溃-重启死循环。
+
+修复：
+- lib.go: handleResolveProcess 增加 callback nil 检查
+- core.cpp: call_tun_interface_resolve_process_impl 增加 nullptr 检查
+
+Closes #1995
+---
+ android/core/src/main/cpp/core.cpp | 3 +++
+ core/lib.go                        | 2 +-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/android/core/src/main/cpp/core.cpp b/android/core/src/main/cpp/core.cpp
+index 878d20ccd..2e8463574 100644
+--- a/android/core/src/main/cpp/core.cpp
++++ b/android/core/src/main/cpp/core.cpp
+@@ -105,6 +105,9 @@ call_tun_interface_resolve_process_impl(void *tun_interface, const int protocol,
+                                         const char *source,
+                                         const char *target,
+                                         const int uid) {
++    if (tun_interface == nullptr) {
++        return strdup("");
++    }
+     ATTACH_JNI();
+     const auto packageName = reinterpret_cast<jstring>(env->CallObjectMethod(
+             static_cast<jobject>(tun_interface),
+diff --git a/core/lib.go b/core/lib.go
+index 61d0089e5..8715c74d5 100644
+--- a/core/lib.go
++++ b/core/lib.go
+@@ -84,7 +84,7 @@ func (th *TunHandler) handleResolveProcess(source, target net.Addr) string {
+ 	_ = th.limit.Acquire(context.Background(), 1)
+ 	defer th.limit.Release(1)
+ 
+-	if th.listener == nil {
++	if th.listener == nil || th.callback == nil {
+ 		return ""
+ 	}
+ 	var protocol int
