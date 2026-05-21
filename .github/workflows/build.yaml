@@ -39,8 +39,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - platform: android
-            os: ubuntu-latest
+          # - platform: android
+          #   os: ubuntu-latest
           - platform: windows
             os: Windows-2022
             arch: amd64
@@ -191,14 +191,14 @@ jobs:
     permissions: write-all
     needs: [ build ]
     runs-on: ubuntu-latest
-    services:
-      telegram-bot-api:
-        image: aiogram/telegram-bot-api:latest
-        env:
-          TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
-          TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
-        ports:
-          - 8081:8081
+    # services:
+    #   telegram-bot-api:
+    #     image: aiogram/telegram-bot-api:latest
+    #     env:
+    #       TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
+    #       TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+    #     ports:
+    #       - 8081:8081
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -232,15 +232,15 @@ jobs:
             git log --no-merges --pretty=format:"%B" "$range" | \
             awk '!/Update changelog/ && NF {print "- " $0 "\n"}' >> "$out"
           done
-      - name: Push to telegram
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TAG: ${{ github.ref_name }}
-          RUN_ID: ${{ github.run_id }}
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests
-          python release_telegram.py
+      # - name: Push to telegram
+      #   env:
+      #     TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      #     TAG: ${{ github.ref_name }}
+      #     RUN_ID: ${{ github.run_id }}
+      #   run: |
+      #     python -m pip install --upgrade pip
+      #     pip install requests
+      #     python release_telegram.py
 
       - name: Patch release.md
         run: |
@@ -260,24 +260,24 @@ jobs:
           files: ./dist/*
           body_path: './release.md'
 
-      - name: Create Fdroid Source Dir
-        if: ${{ env.IS_STABLE == 'true' }}
-        run: |
-          mkdir -p ./tmp
-          cp ./dist/*android-arm64-v8a* ./tmp/ || true
-          echo "Files copied successfully"
+      # - name: Create Fdroid Source Dir
+      #   if: ${{ env.IS_STABLE == 'true' }}
+      #   run: |
+      #     mkdir -p ./tmp
+      #     cp ./dist/*android-arm64-v8a* ./tmp/ || true
+      #     echo "Files copied successfully"
 
-      - name: Push to fdroid repo
-        if: ${{ env.IS_STABLE == 'true' }}
-        uses: cpina/github-action-push-to-another-repository@v1.7.2
-        env:
-          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
-        with:
-          source-directory: ./tmp/
-          destination-github-username: chen08209
-          destination-repository-name: FlClash-fdroid-repo
-          user-name: 'github-actions[bot]'
-          user-email: 'github-actions[bot]@users.noreply.github.com'
-          target-branch: main
-          commit-message: Update from ${{ github.ref_name }}
-          target-directory: /tmp/
+      # - name: Push to fdroid repo
+      #   if: ${{ env.IS_STABLE == 'true' }}
+      #   uses: cpina/github-action-push-to-another-repository@v1.7.2
+      #   env:
+      #     SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+      #   with:
+      #     source-directory: ./tmp/
+      #     destination-github-username: chen08209
+      #     destination-repository-name: FlClash-fdroid-repo
+      #     user-name: 'github-actions[bot]'
+      #     user-email: 'github-actions[bot]@users.noreply.github.com'
+      #     target-branch: main
+      #     commit-message: Update from ${{ github.ref_name }}
+      #     target-directory: /tmp/
