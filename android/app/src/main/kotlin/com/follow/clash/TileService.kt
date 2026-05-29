@@ -1,12 +1,8 @@
 package com.follow.clash
 
-import android.annotation.SuppressLint
-import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import com.follow.clash.common.QuickAction
-import com.follow.clash.common.quickIntent
-import com.follow.clash.common.toPendingIntent
+import com.follow.clash.common.GlobalState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -38,14 +34,9 @@ class TileService : TileService() {
         }
     }
 
-    @SuppressLint("StartActivityAndCollapseDeprecated")
     private fun handleToggle() {
-        val intent = QuickAction.TOGGLE.quickIntent
-        val pendingIntent = intent.toPendingIntent
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            startActivityAndCollapse(pendingIntent)
-        } else {
-            @Suppress("DEPRECATION") startActivityAndCollapse(intent)
+        GlobalState.launch {
+            State.handleToggleAction()
         }
     }
 
