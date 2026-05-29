@@ -1379,6 +1379,16 @@ class AppLocalizations {
     );
   }
 
+  /// `Predictive back`
+  String get predictiveBack {
+    return Intl.message(
+      'Predictive back',
+      name: 'predictiveBack',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Tcp keep alive interval`
   String get keepAliveIntervalDesc {
     return Intl.message(

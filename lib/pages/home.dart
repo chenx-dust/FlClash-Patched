@@ -276,7 +276,12 @@ class HomeBackScopeContainer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
+    final pageLabel = ref.watch(currentPageLabelProvider);
+    final isMobile = ref.watch(isMobileViewProvider);
+    final realContext = GlobalObjectKey(pageLabel).currentContext ?? context;
+    final canPop = isMobile && !Navigator.canPop(realContext);
     return CommonPopScope(
+      canPop: canPop,
       onPop: (context) async {
         final pageLabel = ref.read(currentPageLabelProvider);
         final realContext =
