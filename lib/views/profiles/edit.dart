@@ -166,8 +166,10 @@ class _EditProfileViewState extends State<EditProfileView> {
     if (data == null) {
       return;
     }
-    _rawText = data;
-    _fileData = Uint8List.fromList(utf8.encode(data));
+    setState(() {
+      _rawText = data;
+      _fileData = Uint8List.fromList(utf8.encode(data));
+    });
     _fileInfoNotifier.value = _fileInfoNotifier.value?.copyWith(
       size: _fileData?.length ?? 0,
       lastModified: DateTime.now(),
@@ -177,7 +179,9 @@ class _EditProfileViewState extends State<EditProfileView> {
   Future<void> _uploadProfileFile() async {
     final platformFile = await globalState.safeRun(picker.pickerFile);
     if (platformFile?.bytes == null) return;
-    _fileData = platformFile?.bytes;
+    setState(() {
+      _fileData = platformFile?.bytes;
+    });
     if (!mounted) {
       return;
     }
@@ -326,6 +330,7 @@ class _EditProfileViewState extends State<EditProfileView> {
       ),
     ];
     return CommonPopScope(
+      canPop: _fileData == null,
       onPop: (context) {
         if (_fileData == null) {
           return true;
