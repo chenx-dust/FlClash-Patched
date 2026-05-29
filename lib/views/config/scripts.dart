@@ -188,6 +188,7 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
     final scripts = ref.watch(scriptsProvider).value ?? [];
     final selectedScriptId = ref.watch(itemProvider(_key));
     return CommonPopScope(
+      canPop: selectedScriptId == null,
       onPop: (_) {
         if (selectedScriptId != null) {
           ref.read(itemProvider(_key).notifier).value = null;
