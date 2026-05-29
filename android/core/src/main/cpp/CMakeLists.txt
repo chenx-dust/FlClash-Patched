@@ -13,6 +13,8 @@ if (NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     add_link_options(-flto -Wl,--gc-sections,--strip-all)
 endif ()
 
+add_link_options(-Wl,-z,max-page-size=16384)
+
 set(LIB_CLASH_PATH "${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libclash.so")
 set(LIB_CLASH_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/../cpp/includes/${ANDROID_ABI}")
 set(LIB_CLASH_HEADER_PATH "${LIB_CLASH_INCLUDE_DIR}/libclash.h")
