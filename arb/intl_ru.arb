@@ -179,6 +179,7 @@
   "onlyStatisticsProxy": "Только статистика прокси",
   "onlyStatisticsProxyDesc": "При включении будет учитываться только трафик прокси",
   "pureBlackMode": "Чисто черный режим",
+  "predictiveBack": "Предиктивный возврат",
   "keepAliveIntervalDesc": "Интервал поддержания TCP-соединения",
   "entries": " записей",
   "local": "Локальный",

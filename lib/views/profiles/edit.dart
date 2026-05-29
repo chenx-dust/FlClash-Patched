@@ -180,8 +180,10 @@ class EditProfileViewState extends State<EditProfileView> {
     if (data == null) {
       return;
     }
-    _rawText = data;
-    _fileData = Uint8List.fromList(utf8.encode(data));
+    setState(() {
+      _rawText = data;
+      _fileData = Uint8List.fromList(utf8.encode(data));
+    });
     _fileInfoNotifier.value = _fileInfoNotifier.value?.copyWith(
       size: _fileData?.length ?? 0,
       lastModified: DateTime.now(),
@@ -385,6 +387,7 @@ class EditProfileViewState extends State<EditProfileView> {
       ),
     ];
     return CommonPopScope(
+      canPop: _fileData == null,
       onPop: (context) {
         if (_fileData == null) {
           return true;

@@ -179,6 +179,7 @@
   "onlyStatisticsProxy": "仅统计代理",
   "onlyStatisticsProxyDesc": "开启后，将只统计代理流量",
   "pureBlackMode": "纯黑模式",
+  "predictiveBack": "预见性返回",
   "keepAliveIntervalDesc": "TCP保持活动间隔",
   "entries": "个条目",
   "local": "本地",
