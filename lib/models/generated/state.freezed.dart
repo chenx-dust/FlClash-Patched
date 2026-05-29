@@ -7352,7 +7352,7 @@ as bool,
 /// @nodoc
 mixin _$ProxyState {
 
- bool get isStart; bool get systemProxy; List<String> get bassDomain; int get port;
+ bool get isStart; bool get systemProxy; List<String> get bypassDomain; int get port;
 /// Create a copy of ProxyState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -7363,16 +7363,16 @@ $ProxyStateCopyWith<ProxyState> get copyWith => _$ProxyStateCopyWithImpl<ProxySt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProxyState&&(identical(other.isStart, isStart) || other.isStart == isStart)&&(identical(other.systemProxy, systemProxy) || other.systemProxy == systemProxy)&&const DeepCollectionEquality().equals(other.bassDomain, bassDomain)&&(identical(other.port, port) || other.port == port));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProxyState&&(identical(other.isStart, isStart) || other.isStart == isStart)&&(identical(other.systemProxy, systemProxy) || other.systemProxy == systemProxy)&&const DeepCollectionEquality().equals(other.bypassDomain, bypassDomain)&&(identical(other.port, port) || other.port == port));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isStart,systemProxy,const DeepCollectionEquality().hash(bassDomain),port);
+int get hashCode => Object.hash(runtimeType,isStart,systemProxy,const DeepCollectionEquality().hash(bypassDomain),port);
 
 @override
 String toString() {
-  return 'ProxyState(isStart: $isStart, systemProxy: $systemProxy, bassDomain: $bassDomain, port: $port)';
+  return 'ProxyState(isStart: $isStart, systemProxy: $systemProxy, bypassDomain: $bypassDomain, port: $port)';
 }
 
 
@@ -7383,7 +7383,7 @@ abstract mixin class $ProxyStateCopyWith<$Res>  {
   factory $ProxyStateCopyWith(ProxyState value, $Res Function(ProxyState) _then) = _$ProxyStateCopyWithImpl;
 @useResult
 $Res call({
- bool isStart, bool systemProxy, List<String> bassDomain, int port
+ bool isStart, bool systemProxy, List<String> bypassDomain, int port
 });
 
 
@@ -7400,11 +7400,11 @@ class _$ProxyStateCopyWithImpl<$Res>
 
 /// Create a copy of ProxyState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isStart = null,Object? systemProxy = null,Object? bassDomain = null,Object? port = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isStart = null,Object? systemProxy = null,Object? bypassDomain = null,Object? port = null,}) {
   return _then(_self.copyWith(
 isStart: null == isStart ? _self.isStart : isStart // ignore: cast_nullable_to_non_nullable
 as bool,systemProxy: null == systemProxy ? _self.systemProxy : systemProxy // ignore: cast_nullable_to_non_nullable
-as bool,bassDomain: null == bassDomain ? _self.bassDomain : bassDomain // ignore: cast_nullable_to_non_nullable
+as bool,bypassDomain: null == bypassDomain ? _self.bypassDomain : bypassDomain // ignore: cast_nullable_to_non_nullable
 as List<String>,port: null == port ? _self.port : port // ignore: cast_nullable_to_non_nullable
 as int,
   ));
@@ -7491,10 +7491,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isStart,  bool systemProxy,  List<String> bassDomain,  int port)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isStart,  bool systemProxy,  List<String> bypassDomain,  int port)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProxyState() when $default != null:
-return $default(_that.isStart,_that.systemProxy,_that.bassDomain,_that.port);case _:
+return $default(_that.isStart,_that.systemProxy,_that.bypassDomain,_that.port);case _:
   return orElse();
 
 }
@@ -7512,10 +7512,10 @@ return $default(_that.isStart,_that.systemProxy,_that.bassDomain,_that.port);cas
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isStart,  bool systemProxy,  List<String> bassDomain,  int port)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isStart,  bool systemProxy,  List<String> bypassDomain,  int port)  $default,) {final _that = this;
 switch (_that) {
 case _ProxyState():
-return $default(_that.isStart,_that.systemProxy,_that.bassDomain,_that.port);case _:
+return $default(_that.isStart,_that.systemProxy,_that.bypassDomain,_that.port);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -7532,10 +7532,10 @@ return $default(_that.isStart,_that.systemProxy,_that.bassDomain,_that.port);cas
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isStart,  bool systemProxy,  List<String> bassDomain,  int port)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isStart,  bool systemProxy,  List<String> bypassDomain,  int port)?  $default,) {final _that = this;
 switch (_that) {
 case _ProxyState() when $default != null:
-return $default(_that.isStart,_that.systemProxy,_that.bassDomain,_that.port);case _:
+return $default(_that.isStart,_that.systemProxy,_that.bypassDomain,_that.port);case _:
   return null;
 
 }
@@ -7547,16 +7547,16 @@ return $default(_that.isStart,_that.systemProxy,_that.bassDomain,_that.port);cas
 
 
 class _ProxyState implements ProxyState {
-  const _ProxyState({required this.isStart, required this.systemProxy, required final  List<String> bassDomain, required this.port}): _bassDomain = bassDomain;
+  const _ProxyState({required this.isStart, required this.systemProxy, required final  List<String> bypassDomain, required this.port}): _bypassDomain = bypassDomain;
   
 
 @override final  bool isStart;
 @override final  bool systemProxy;
- final  List<String> _bassDomain;
-@override List<String> get bassDomain {
-  if (_bassDomain is EqualUnmodifiableListView) return _bassDomain;
+ final  List<String> _bypassDomain;
+@override List<String> get bypassDomain {
+  if (_bypassDomain is EqualUnmodifiableListView) return _bypassDomain;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_bassDomain);
+  return EqualUnmodifiableListView(_bypassDomain);
 }
 
 @override final  int port;
@@ -7571,16 +7571,16 @@ _$ProxyStateCopyWith<_ProxyState> get copyWith => __$ProxyStateCopyWithImpl<_Pro
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProxyState&&(identical(other.isStart, isStart) || other.isStart == isStart)&&(identical(other.systemProxy, systemProxy) || other.systemProxy == systemProxy)&&const DeepCollectionEquality().equals(other._bassDomain, _bassDomain)&&(identical(other.port, port) || other.port == port));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProxyState&&(identical(other.isStart, isStart) || other.isStart == isStart)&&(identical(other.systemProxy, systemProxy) || other.systemProxy == systemProxy)&&const DeepCollectionEquality().equals(other._bypassDomain, _bypassDomain)&&(identical(other.port, port) || other.port == port));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isStart,systemProxy,const DeepCollectionEquality().hash(_bassDomain),port);
+int get hashCode => Object.hash(runtimeType,isStart,systemProxy,const DeepCollectionEquality().hash(_bypassDomain),port);
 
 @override
 String toString() {
-  return 'ProxyState(isStart: $isStart, systemProxy: $systemProxy, bassDomain: $bassDomain, port: $port)';
+  return 'ProxyState(isStart: $isStart, systemProxy: $systemProxy, bypassDomain: $bypassDomain, port: $port)';
 }
 
 
@@ -7591,7 +7591,7 @@ abstract mixin class _$ProxyStateCopyWith<$Res> implements $ProxyStateCopyWith<$
   factory _$ProxyStateCopyWith(_ProxyState value, $Res Function(_ProxyState) _then) = __$ProxyStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isStart, bool systemProxy, List<String> bassDomain, int port
+ bool isStart, bool systemProxy, List<String> bypassDomain, int port
 });
 
 
@@ -7608,11 +7608,11 @@ class __$ProxyStateCopyWithImpl<$Res>
 
 /// Create a copy of ProxyState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isStart = null,Object? systemProxy = null,Object? bassDomain = null,Object? port = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isStart = null,Object? systemProxy = null,Object? bypassDomain = null,Object? port = null,}) {
   return _then(_ProxyState(
 isStart: null == isStart ? _self.isStart : isStart // ignore: cast_nullable_to_non_nullable
 as bool,systemProxy: null == systemProxy ? _self.systemProxy : systemProxy // ignore: cast_nullable_to_non_nullable
-as bool,bassDomain: null == bassDomain ? _self._bassDomain : bassDomain // ignore: cast_nullable_to_non_nullable
+as bool,bypassDomain: null == bypassDomain ? _self._bypassDomain : bypassDomain // ignore: cast_nullable_to_non_nullable
 as List<String>,port: null == port ? _self.port : port // ignore: cast_nullable_to_non_nullable
 as int,
   ));
