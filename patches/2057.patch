@@ -1,0 +1,698 @@
+From ea230f992487e4ddccd065da57cdcea573105520 Mon Sep 17 00:00:00 2001
+From: Chenx Dust <chenx_dust@outlook.com>
+Date: Sat, 30 May 2026 03:19:17 +0800
+Subject: [PATCH] Support Predictive Back
+
+---
+ android/app/src/main/AndroidManifest.xml   |  1 +
+ arb/intl_en.arb                            |  1 +
+ arb/intl_ja.arb                            |  1 +
+ arb/intl_ru.arb                            |  1 +
+ arb/intl_zh_CN.arb                         |  1 +
+ lib/application.dart                       | 32 +++++++++++------
+ lib/common/navigator.dart                  | 18 ++++++++--
+ lib/common/system.dart                     |  2 ++
+ lib/l10n/intl/messages_en.dart             |  1 +
+ lib/l10n/intl/messages_ja.dart             |  1 +
+ lib/l10n/intl/messages_ru.dart             |  3 ++
+ lib/l10n/intl/messages_zh_CN.dart          |  1 +
+ lib/l10n/l10n.dart                         | 10 ++++++
+ lib/models/config.dart                     |  1 +
+ lib/models/generated/config.freezed.dart   | 39 ++++++++++----------
+ lib/models/generated/config.g.dart         |  2 ++
+ lib/pages/editor.dart                      |  1 +
+ lib/pages/home.dart                        |  5 +++
+ lib/views/config/rules.dart                |  1 +
+ lib/views/config/scripts.dart              |  1 +
+ lib/views/profiles/edit.dart               | 11 ++++--
+ lib/views/profiles/overwrite/standard.dart |  1 +
+ lib/views/theme.dart                       | 41 ++++++++++++++++++++++
+ lib/widgets/pop_scope.dart                 |  4 ++-
+ test/models/config_test.dart               |  3 ++
+ 25 files changed, 148 insertions(+), 35 deletions(-)
+
+diff --git a/android/app/src/main/AndroidManifest.xml b/android/app/src/main/AndroidManifest.xml
+index a53c6ed01..c1fdcb8fd 100644
+--- a/android/app/src/main/AndroidManifest.xml
++++ b/android/app/src/main/AndroidManifest.xml
+@@ -30,6 +30,7 @@
+         android:name=".Application"
+         android:banner="@mipmap/ic_banner"
+         android:hardwareAccelerated="true"
++        android:enableOnBackInvokedCallback="true"
+         android:icon="@mipmap/ic_launcher"
+         android:label="FlClash">
+         <activity
+diff --git a/arb/intl_en.arb b/arb/intl_en.arb
+index 82ef0f955..e3cda965e 100644
+--- a/arb/intl_en.arb
++++ b/arb/intl_en.arb
+@@ -174,6 +174,7 @@
+   "onlyStatisticsProxy": "Only statistics proxy",
+   "onlyStatisticsProxyDesc": "When turned on, only statistics proxy traffic",
+   "pureBlackMode": "Pure black mode",
++  "predictiveBack": "Predictive back",
+   "keepAliveIntervalDesc": "Tcp keep alive interval",
+   "entries": " entries",
+   "local": "Local",
+diff --git a/arb/intl_ja.arb b/arb/intl_ja.arb
+index 4f8aa0cb4..31f32e251 100644
+--- a/arb/intl_ja.arb
++++ b/arb/intl_ja.arb
+@@ -174,6 +174,7 @@
+   "onlyStatisticsProxy": "プロキシのみ統計",
+   "onlyStatisticsProxyDesc": "有効化するとプロキシトラフィックのみ統計",
+   "pureBlackMode": "純黒モード",
++  "predictiveBack": "予測型戻る",
+   "keepAliveIntervalDesc": "TCPキープアライブ間隔",
+   "entries": " エントリ",
+   "local": "ローカル",
+diff --git a/arb/intl_ru.arb b/arb/intl_ru.arb
+index e43f90780..4be9194ac 100644
+--- a/arb/intl_ru.arb
++++ b/arb/intl_ru.arb
+@@ -174,6 +174,7 @@
+   "onlyStatisticsProxy": "Только статистика прокси",
+   "onlyStatisticsProxyDesc": "При включении будет учитываться только трафик прокси",
+   "pureBlackMode": "Чисто черный режим",
++  "predictiveBack": "Предиктивный возврат",
+   "keepAliveIntervalDesc": "Интервал поддержания TCP-соединения",
+   "entries": " записей",
+   "local": "Локальный",
+diff --git a/arb/intl_zh_CN.arb b/arb/intl_zh_CN.arb
+index e6df9df82..479ec8fa5 100644
+--- a/arb/intl_zh_CN.arb
++++ b/arb/intl_zh_CN.arb
+@@ -174,6 +174,7 @@
+   "onlyStatisticsProxy": "仅统计代理",
+   "onlyStatisticsProxyDesc": "开启后，将只统计代理流量",
+   "pureBlackMode": "纯黑模式",
++  "predictiveBack": "预见性返回",
+   "keepAliveIntervalDesc": "TCP保持活动间隔",
+   "entries": "个条目",
+   "local": "本地",
+diff --git a/lib/application.dart b/lib/application.dart
+index e1416c306..f3e33b248 100644
+--- a/lib/application.dart
++++ b/lib/application.dart
+@@ -27,14 +27,20 @@ class ApplicationState extends ConsumerState<Application> {
+   Timer? _autoUpdateProfilesTaskTimer;
+   bool _preHasVpn = false;
+ 
+-  final _pageTransitionsTheme = const PageTransitionsTheme(
+-    builders: <TargetPlatform, PageTransitionsBuilder>{
+-      TargetPlatform.android: commonSharedXPageTransitions,
+-      TargetPlatform.windows: commonSharedXPageTransitions,
+-      TargetPlatform.linux: commonSharedXPageTransitions,
+-      TargetPlatform.macOS: commonSharedXPageTransitions,
+-    },
+-  );
++  PageTransitionsTheme _getPageTransitionsTheme({
++    required bool predictiveBack,
++  }) {
++    return PageTransitionsTheme(
++      builders: <TargetPlatform, PageTransitionsBuilder>{
++        TargetPlatform.android: predictiveBack
++            ? const PredictiveBackPageTransitionsBuilder()
++            : commonSharedXPageTransitions,
++        TargetPlatform.windows: commonSharedXPageTransitions,
++        TargetPlatform.linux: commonSharedXPageTransitions,
++        TargetPlatform.macOS: commonSharedXPageTransitions,
++      },
++    );
++  }
+ 
+   ColorScheme _getAppColorScheme({
+     required Brightness brightness,
+@@ -138,6 +144,12 @@ class ApplicationState extends ConsumerState<Application> {
+           appSettingProvider.select((state) => state.locale),
+         );
+         final themeProps = ref.watch(themeSettingProvider);
++        final supportsPredictiveBack = system.supportsPredictiveBack(
++          ref.watch(versionProvider),
++        );
++        final pageTransitionsTheme = _getPageTransitionsTheme(
++          predictiveBack: supportsPredictiveBack && themeProps.predictiveBack,
++        );
+         return MaterialApp(
+           debugShowCheckedModeBanner: false,
+           navigatorKey: globalState.navigatorKey,
+@@ -163,7 +175,7 @@ class ApplicationState extends ConsumerState<Application> {
+           themeMode: themeProps.themeMode,
+           theme: ThemeData(
+             useMaterial3: true,
+-            pageTransitionsTheme: _pageTransitionsTheme,
++            pageTransitionsTheme: pageTransitionsTheme,
+             colorScheme: _getAppColorScheme(
+               brightness: Brightness.light,
+               primaryColor: themeProps.primaryColor,
+@@ -171,7 +183,7 @@ class ApplicationState extends ConsumerState<Application> {
+           ),
+           darkTheme: ThemeData(
+             useMaterial3: true,
+-            pageTransitionsTheme: _pageTransitionsTheme,
++            pageTransitionsTheme: pageTransitionsTheme,
+             colorScheme: _getAppColorScheme(
+               brightness: Brightness.dark,
+               primaryColor: themeProps.primaryColor,
+diff --git a/lib/common/navigator.dart b/lib/common/navigator.dart
+index 11733638a..0d427fa38 100644
+--- a/lib/common/navigator.dart
++++ b/lib/common/navigator.dart
+@@ -1,6 +1,7 @@
+ import 'package:animations/animations.dart';
+ import 'package:fl_clash/common/common.dart';
+ import 'package:fl_clash/providers/app.dart';
++import 'package:fl_clash/providers/config.dart';
+ import 'package:fl_clash/state.dart';
+ import 'package:flutter/material.dart';
+ 
+@@ -10,10 +11,21 @@ class BaseNavigator {
+       return Navigator.of(
+         context,
+       ).push<T>(CommonDesktopRoute(builder: (context) => child));
++    } else {
++      final themeProps = globalState.container.read(themeSettingProvider);
++      final supportsPredictiveBack = system.supportsPredictiveBack(
++        globalState.container.read(versionProvider),
++      );
++      if (themeProps.predictiveBack && supportsPredictiveBack) {
++        return Navigator.of(
++          context,
++        ).push<T>(MaterialPageRoute(builder: (context) => child));
++      } else {
++        return Navigator.of(
++          context,
++        ).push<T>(CommonRoute(builder: (context) => child));
++      }
+     }
+-    return Navigator.of(
+-      context,
+-    ).push<T>(CommonRoute(builder: (context) => child));
+   }
+ 
+   // static Future<T?> modal<T>(BuildContext context, Widget child) async {
+diff --git a/lib/common/system.dart b/lib/common/system.dart
+index 0844fc5fb..259ecf82c 100644
+--- a/lib/common/system.dart
++++ b/lib/common/system.dart
+@@ -41,6 +41,8 @@ class System {
+     };
+   }
+ 
++  bool supportsPredictiveBack(int version) => isAndroid && version >= 33;
++
+   Future<bool> checkIsAdmin() async {
+     final corePath = appPath.corePath.replaceAll(' ', '\\\\ ');
+     if (system.isWindows) {
+diff --git a/lib/l10n/intl/messages_en.dart b/lib/l10n/intl/messages_en.dart
+index 3782f1419..32ab3c5cb 100644
+--- a/lib/l10n/intl/messages_en.dart
++++ b/lib/l10n/intl/messages_en.dart
+@@ -703,6 +703,7 @@ class MessageLookup extends MessageLookupByLibrary {
+     ),
+     "proxyType": MessageLookupByLibrary.simpleMessage("Proxy type"),
+     "pruneCache": MessageLookupByLibrary.simpleMessage("Prune cache"),
++    "predictiveBack": MessageLookupByLibrary.simpleMessage("Predictive back"),
+     "pureBlackMode": MessageLookupByLibrary.simpleMessage("Pure black mode"),
+     "qrcode": MessageLookupByLibrary.simpleMessage("QR code"),
+     "qrcodeDesc": MessageLookupByLibrary.simpleMessage(
+diff --git a/lib/l10n/intl/messages_ja.dart b/lib/l10n/intl/messages_ja.dart
+index 7a6df21d7..47d4b115b 100644
+--- a/lib/l10n/intl/messages_ja.dart
++++ b/lib/l10n/intl/messages_ja.dart
+@@ -559,6 +559,7 @@ class MessageLookup extends MessageLookupByLibrary {
+     ),
+     "proxyType": MessageLookupByLibrary.simpleMessage("プロキシタイプ"),
+     "pruneCache": MessageLookupByLibrary.simpleMessage("キャッシュの削除"),
++    "predictiveBack": MessageLookupByLibrary.simpleMessage("予測型戻る"),
+     "pureBlackMode": MessageLookupByLibrary.simpleMessage("純黒モード"),
+     "qrcode": MessageLookupByLibrary.simpleMessage("QRコード"),
+     "qrcodeDesc": MessageLookupByLibrary.simpleMessage("QRコードをスキャンしてプロファイルを取得"),
+diff --git a/lib/l10n/intl/messages_ru.dart b/lib/l10n/intl/messages_ru.dart
+index 0295bcf53..da3086236 100644
+--- a/lib/l10n/intl/messages_ru.dart
++++ b/lib/l10n/intl/messages_ru.dart
+@@ -740,6 +740,9 @@ class MessageLookup extends MessageLookupByLibrary {
+     ),
+     "proxyType": MessageLookupByLibrary.simpleMessage("Тип прокси"),
+     "pruneCache": MessageLookupByLibrary.simpleMessage("Очистить кэш"),
++    "predictiveBack": MessageLookupByLibrary.simpleMessage(
++      "Предиктивный возврат",
++    ),
+     "pureBlackMode": MessageLookupByLibrary.simpleMessage("Чисто черный режим"),
+     "qrcode": MessageLookupByLibrary.simpleMessage("QR-код"),
+     "qrcodeDesc": MessageLookupByLibrary.simpleMessage(
+diff --git a/lib/l10n/intl/messages_zh_CN.dart b/lib/l10n/intl/messages_zh_CN.dart
+index 3797ff58b..846cea995 100644
+--- a/lib/l10n/intl/messages_zh_CN.dart
++++ b/lib/l10n/intl/messages_zh_CN.dart
+@@ -483,6 +483,7 @@ class MessageLookup extends MessageLookupByLibrary {
+     "proxyProvidersNotEmpty": MessageLookupByLibrary.simpleMessage("代理集不能为空"),
+     "proxyType": MessageLookupByLibrary.simpleMessage("代理类型"),
+     "pruneCache": MessageLookupByLibrary.simpleMessage("修剪缓存"),
++    "predictiveBack": MessageLookupByLibrary.simpleMessage("预见性返回"),
+     "pureBlackMode": MessageLookupByLibrary.simpleMessage("纯黑模式"),
+     "qrcode": MessageLookupByLibrary.simpleMessage("二维码"),
+     "qrcodeDesc": MessageLookupByLibrary.simpleMessage("扫描二维码获取配置文件"),
+diff --git a/lib/l10n/l10n.dart b/lib/l10n/l10n.dart
+index 52825a807..ccae8a775 100644
+--- a/lib/l10n/l10n.dart
++++ b/lib/l10n/l10n.dart
+@@ -1339,6 +1339,16 @@ class AppLocalizations {
+     );
+   }
+ 
++  /// `Predictive back`
++  String get predictiveBack {
++    return Intl.message(
++      'Predictive back',
++      name: 'predictiveBack',
++      desc: '',
++      args: [],
++    );
++  }
++
+   /// `Tcp keep alive interval`
+   String get keepAliveIntervalDesc {
+     return Intl.message(
+diff --git a/lib/models/config.dart b/lib/models/config.dart
+index d9fc39183..55c1f5560 100644
+--- a/lib/models/config.dart
++++ b/lib/models/config.dart
+@@ -210,6 +210,7 @@ abstract class ThemeProps with _$ThemeProps {
+     @Default(ThemeMode.dark) ThemeMode themeMode,
+     @Default(DynamicSchemeVariant.content) DynamicSchemeVariant schemeVariant,
+     @Default(false) bool pureBlack,
++    @Default(true) bool predictiveBack,
+     @Default(TextScale()) TextScale textScale,
+   }) = _ThemeProps;
+ 
+diff --git a/lib/models/generated/config.freezed.dart b/lib/models/generated/config.freezed.dart
+index 273c294ec..7c025c518 100644
+--- a/lib/models/generated/config.freezed.dart
++++ b/lib/models/generated/config.freezed.dart
+@@ -2024,7 +2024,7 @@ as double,
+ /// @nodoc
+ mixin _$ThemeProps {
+ 
+- int? get primaryColor; List<int> get primaryColors; ThemeMode get themeMode; DynamicSchemeVariant get schemeVariant; bool get pureBlack; TextScale get textScale;
++ int? get primaryColor; List<int> get primaryColors; ThemeMode get themeMode; DynamicSchemeVariant get schemeVariant; bool get pureBlack; bool get predictiveBack; TextScale get textScale;
+ /// Create a copy of ThemeProps
+ /// with the given fields replaced by the non-null parameter values.
+ @JsonKey(includeFromJson: false, includeToJson: false)
+@@ -2037,16 +2037,16 @@ $ThemePropsCopyWith<ThemeProps> get copyWith => _$ThemePropsCopyWithImpl<ThemePr
+ 
+ @override
+ bool operator ==(Object other) {
+-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ThemeProps&&(identical(other.primaryColor, primaryColor) || other.primaryColor == primaryColor)&&const DeepCollectionEquality().equals(other.primaryColors, primaryColors)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.schemeVariant, schemeVariant) || other.schemeVariant == schemeVariant)&&(identical(other.pureBlack, pureBlack) || other.pureBlack == pureBlack)&&(identical(other.textScale, textScale) || other.textScale == textScale));
++  return identical(this, other) || (other.runtimeType == runtimeType&&other is ThemeProps&&(identical(other.primaryColor, primaryColor) || other.primaryColor == primaryColor)&&const DeepCollectionEquality().equals(other.primaryColors, primaryColors)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.schemeVariant, schemeVariant) || other.schemeVariant == schemeVariant)&&(identical(other.pureBlack, pureBlack) || other.pureBlack == pureBlack)&&(identical(other.predictiveBack, predictiveBack) || other.predictiveBack == predictiveBack)&&(identical(other.textScale, textScale) || other.textScale == textScale));
+ }
+ 
+ @JsonKey(includeFromJson: false, includeToJson: false)
+ @override
+-int get hashCode => Object.hash(runtimeType,primaryColor,const DeepCollectionEquality().hash(primaryColors),themeMode,schemeVariant,pureBlack,textScale);
++int get hashCode => Object.hash(runtimeType,primaryColor,const DeepCollectionEquality().hash(primaryColors),themeMode,schemeVariant,pureBlack,predictiveBack,textScale);
+ 
+ @override
+ String toString() {
+-  return 'ThemeProps(primaryColor: $primaryColor, primaryColors: $primaryColors, themeMode: $themeMode, schemeVariant: $schemeVariant, pureBlack: $pureBlack, textScale: $textScale)';
++  return 'ThemeProps(primaryColor: $primaryColor, primaryColors: $primaryColors, themeMode: $themeMode, schemeVariant: $schemeVariant, pureBlack: $pureBlack, predictiveBack: $predictiveBack, textScale: $textScale)';
+ }
+ 
+ 
+@@ -2057,7 +2057,7 @@ abstract mixin class $ThemePropsCopyWith<$Res>  {
+   factory $ThemePropsCopyWith(ThemeProps value, $Res Function(ThemeProps) _then) = _$ThemePropsCopyWithImpl;
+ @useResult
+ $Res call({
+- int? primaryColor, List<int> primaryColors, ThemeMode themeMode, DynamicSchemeVariant schemeVariant, bool pureBlack, TextScale textScale
++ int? primaryColor, List<int> primaryColors, ThemeMode themeMode, DynamicSchemeVariant schemeVariant, bool pureBlack, bool predictiveBack, TextScale textScale
+ });
+ 
+ 
+@@ -2074,13 +2074,14 @@ class _$ThemePropsCopyWithImpl<$Res>
+ 
+ /// Create a copy of ThemeProps
+ /// with the given fields replaced by the non-null parameter values.
+-@pragma('vm:prefer-inline') @override $Res call({Object? primaryColor = freezed,Object? primaryColors = null,Object? themeMode = null,Object? schemeVariant = null,Object? pureBlack = null,Object? textScale = null,}) {
++@pragma('vm:prefer-inline') @override $Res call({Object? primaryColor = freezed,Object? primaryColors = null,Object? themeMode = null,Object? schemeVariant = null,Object? pureBlack = null,Object? predictiveBack = null,Object? textScale = null,}) {
+   return _then(_self.copyWith(
+ primaryColor: freezed == primaryColor ? _self.primaryColor : primaryColor // ignore: cast_nullable_to_non_nullable
+ as int?,primaryColors: null == primaryColors ? _self.primaryColors : primaryColors // ignore: cast_nullable_to_non_nullable
+ as List<int>,themeMode: null == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
+ as ThemeMode,schemeVariant: null == schemeVariant ? _self.schemeVariant : schemeVariant // ignore: cast_nullable_to_non_nullable
+ as DynamicSchemeVariant,pureBlack: null == pureBlack ? _self.pureBlack : pureBlack // ignore: cast_nullable_to_non_nullable
++as bool,predictiveBack: null == predictiveBack ? _self.predictiveBack : predictiveBack // ignore: cast_nullable_to_non_nullable
+ as bool,textScale: null == textScale ? _self.textScale : textScale // ignore: cast_nullable_to_non_nullable
+ as TextScale,
+   ));
+@@ -2176,10 +2177,10 @@ return $default(_that);case _:
+ /// }
+ /// ```
+ 
+-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? primaryColor,  List<int> primaryColors,  ThemeMode themeMode,  DynamicSchemeVariant schemeVariant,  bool pureBlack,  TextScale textScale)?  $default,{required TResult orElse(),}) {final _that = this;
++@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? primaryColor,  List<int> primaryColors,  ThemeMode themeMode,  DynamicSchemeVariant schemeVariant,  bool pureBlack,  bool predictiveBack,  TextScale textScale)?  $default,{required TResult orElse(),}) {final _that = this;
+ switch (_that) {
+ case _ThemeProps() when $default != null:
+-return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.schemeVariant,_that.pureBlack,_that.textScale);case _:
++return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.schemeVariant,_that.pureBlack,_that.predictiveBack,_that.textScale);case _:
+   return orElse();
+ 
+ }
+@@ -2197,10 +2198,10 @@ return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.sch
+ /// }
+ /// ```
+ 
+-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? primaryColor,  List<int> primaryColors,  ThemeMode themeMode,  DynamicSchemeVariant schemeVariant,  bool pureBlack,  TextScale textScale)  $default,) {final _that = this;
++@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? primaryColor,  List<int> primaryColors,  ThemeMode themeMode,  DynamicSchemeVariant schemeVariant,  bool pureBlack,  bool predictiveBack,  TextScale textScale)  $default,) {final _that = this;
+ switch (_that) {
+ case _ThemeProps():
+-return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.schemeVariant,_that.pureBlack,_that.textScale);case _:
++return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.schemeVariant,_that.pureBlack,_that.predictiveBack,_that.textScale);case _:
+   throw StateError('Unexpected subclass');
+ 
+ }
+@@ -2217,10 +2218,10 @@ return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.sch
+ /// }
+ /// ```
+ 
+-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? primaryColor,  List<int> primaryColors,  ThemeMode themeMode,  DynamicSchemeVariant schemeVariant,  bool pureBlack,  TextScale textScale)?  $default,) {final _that = this;
++@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? primaryColor,  List<int> primaryColors,  ThemeMode themeMode,  DynamicSchemeVariant schemeVariant,  bool pureBlack,  bool predictiveBack,  TextScale textScale)?  $default,) {final _that = this;
+ switch (_that) {
+ case _ThemeProps() when $default != null:
+-return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.schemeVariant,_that.pureBlack,_that.textScale);case _:
++return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.schemeVariant,_that.pureBlack,_that.predictiveBack,_that.textScale);case _:
+   return null;
+ 
+ }
+@@ -2232,7 +2233,7 @@ return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.sch
+ @JsonSerializable()
+ 
+ class _ThemeProps implements ThemeProps {
+-  const _ThemeProps({this.primaryColor, final  List<int> primaryColors = defaultPrimaryColors, this.themeMode = ThemeMode.dark, this.schemeVariant = DynamicSchemeVariant.content, this.pureBlack = false, this.textScale = const TextScale()}): _primaryColors = primaryColors;
++  const _ThemeProps({this.primaryColor, final  List<int> primaryColors = defaultPrimaryColors, this.themeMode = ThemeMode.dark, this.schemeVariant = DynamicSchemeVariant.content, this.pureBlack = false, this.predictiveBack = true, this.textScale = const TextScale()}): _primaryColors = primaryColors;
+   factory _ThemeProps.fromJson(Map<String, dynamic> json) => _$ThemePropsFromJson(json);
+ 
+ @override final  int? primaryColor;
+@@ -2246,6 +2247,7 @@ class _ThemeProps implements ThemeProps {
+ @override@JsonKey() final  ThemeMode themeMode;
+ @override@JsonKey() final  DynamicSchemeVariant schemeVariant;
+ @override@JsonKey() final  bool pureBlack;
++@override@JsonKey() final  bool predictiveBack;
+ @override@JsonKey() final  TextScale textScale;
+ 
+ /// Create a copy of ThemeProps
+@@ -2261,16 +2263,16 @@ Map<String, dynamic> toJson() {
+ 
+ @override
+ bool operator ==(Object other) {
+-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ThemeProps&&(identical(other.primaryColor, primaryColor) || other.primaryColor == primaryColor)&&const DeepCollectionEquality().equals(other._primaryColors, _primaryColors)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.schemeVariant, schemeVariant) || other.schemeVariant == schemeVariant)&&(identical(other.pureBlack, pureBlack) || other.pureBlack == pureBlack)&&(identical(other.textScale, textScale) || other.textScale == textScale));
++  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ThemeProps&&(identical(other.primaryColor, primaryColor) || other.primaryColor == primaryColor)&&const DeepCollectionEquality().equals(other._primaryColors, _primaryColors)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.schemeVariant, schemeVariant) || other.schemeVariant == schemeVariant)&&(identical(other.pureBlack, pureBlack) || other.pureBlack == pureBlack)&&(identical(other.predictiveBack, predictiveBack) || other.predictiveBack == predictiveBack)&&(identical(other.textScale, textScale) || other.textScale == textScale));
+ }
+ 
+ @JsonKey(includeFromJson: false, includeToJson: false)
+ @override
+-int get hashCode => Object.hash(runtimeType,primaryColor,const DeepCollectionEquality().hash(_primaryColors),themeMode,schemeVariant,pureBlack,textScale);
++int get hashCode => Object.hash(runtimeType,primaryColor,const DeepCollectionEquality().hash(_primaryColors),themeMode,schemeVariant,pureBlack,predictiveBack,textScale);
+ 
+ @override
+ String toString() {
+-  return 'ThemeProps(primaryColor: $primaryColor, primaryColors: $primaryColors, themeMode: $themeMode, schemeVariant: $schemeVariant, pureBlack: $pureBlack, textScale: $textScale)';
++  return 'ThemeProps(primaryColor: $primaryColor, primaryColors: $primaryColors, themeMode: $themeMode, schemeVariant: $schemeVariant, pureBlack: $pureBlack, predictiveBack: $predictiveBack, textScale: $textScale)';
+ }
+ 
+ 
+@@ -2281,7 +2283,7 @@ abstract mixin class _$ThemePropsCopyWith<$Res> implements $ThemePropsCopyWith<$
+   factory _$ThemePropsCopyWith(_ThemeProps value, $Res Function(_ThemeProps) _then) = __$ThemePropsCopyWithImpl;
+ @override @useResult
+ $Res call({
+- int? primaryColor, List<int> primaryColors, ThemeMode themeMode, DynamicSchemeVariant schemeVariant, bool pureBlack, TextScale textScale
++ int? primaryColor, List<int> primaryColors, ThemeMode themeMode, DynamicSchemeVariant schemeVariant, bool pureBlack, bool predictiveBack, TextScale textScale
+ });
+ 
+ 
+@@ -2298,13 +2300,14 @@ class __$ThemePropsCopyWithImpl<$Res>
+ 
+ /// Create a copy of ThemeProps
+ /// with the given fields replaced by the non-null parameter values.
+-@override @pragma('vm:prefer-inline') $Res call({Object? primaryColor = freezed,Object? primaryColors = null,Object? themeMode = null,Object? schemeVariant = null,Object? pureBlack = null,Object? textScale = null,}) {
++@override @pragma('vm:prefer-inline') $Res call({Object? primaryColor = freezed,Object? primaryColors = null,Object? themeMode = null,Object? schemeVariant = null,Object? pureBlack = null,Object? predictiveBack = null,Object? textScale = null,}) {
+   return _then(_ThemeProps(
+ primaryColor: freezed == primaryColor ? _self.primaryColor : primaryColor // ignore: cast_nullable_to_non_nullable
+ as int?,primaryColors: null == primaryColors ? _self._primaryColors : primaryColors // ignore: cast_nullable_to_non_nullable
+ as List<int>,themeMode: null == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
+ as ThemeMode,schemeVariant: null == schemeVariant ? _self.schemeVariant : schemeVariant // ignore: cast_nullable_to_non_nullable
+ as DynamicSchemeVariant,pureBlack: null == pureBlack ? _self.pureBlack : pureBlack // ignore: cast_nullable_to_non_nullable
++as bool,predictiveBack: null == predictiveBack ? _self.predictiveBack : predictiveBack // ignore: cast_nullable_to_non_nullable
+ as bool,textScale: null == textScale ? _self.textScale : textScale // ignore: cast_nullable_to_non_nullable
+ as TextScale,
+   ));
+diff --git a/lib/models/generated/config.g.dart b/lib/models/generated/config.g.dart
+index 3f54d5ae7..270cb0c12 100644
+--- a/lib/models/generated/config.g.dart
++++ b/lib/models/generated/config.g.dart
+@@ -271,6 +271,7 @@ _ThemeProps _$ThemePropsFromJson(Map<String, dynamic> json) => _ThemeProps(
+       ) ??
+       DynamicSchemeVariant.content,
+   pureBlack: json['pureBlack'] as bool? ?? false,
++  predictiveBack: json['predictiveBack'] as bool? ?? true,
+   textScale: json['textScale'] == null
+       ? const TextScale()
+       : TextScale.fromJson(json['textScale'] as Map<String, dynamic>),
+@@ -283,6 +284,7 @@ Map<String, dynamic> _$ThemePropsToJson(_ThemeProps instance) =>
+       'themeMode': _$ThemeModeEnumMap[instance.themeMode]!,
+       'schemeVariant': _$DynamicSchemeVariantEnumMap[instance.schemeVariant]!,
+       'pureBlack': instance.pureBlack,
++      'predictiveBack': instance.predictiveBack,
+       'textScale': instance.textScale,
+     };
+ 
+diff --git a/lib/pages/editor.dart b/lib/pages/editor.dart
+index 0ac93970e..99628cfab 100644
+--- a/lib/pages/editor.dart
++++ b/lib/pages/editor.dart
+@@ -173,6 +173,7 @@ class _EditorPageState extends ConsumerState<EditorPage> {
+     final appLocalizations = context.appLocalizations;
+     final isMobileView = ref.watch(isMobileViewProvider);
+     return CommonPopScope(
++      canPop: widget.onPop == null,
+       onPop: (context) async {
+         if (widget.onPop == null) {
+           return true;
+diff --git a/lib/pages/home.dart b/lib/pages/home.dart
+index a891477ec..5aedfd630 100644
+--- a/lib/pages/home.dart
++++ b/lib/pages/home.dart
+@@ -276,7 +276,12 @@ class HomeBackScopeContainer extends ConsumerWidget {
+ 
+   @override
+   Widget build(BuildContext context, ref) {
++    final pageLabel = ref.watch(currentPageLabelProvider);
++    final isMobile = ref.watch(isMobileViewProvider);
++    final realContext = GlobalObjectKey(pageLabel).currentContext ?? context;
++    final canPop = isMobile && !Navigator.canPop(realContext);
+     return CommonPopScope(
++      canPop: canPop,
+       onPop: (context) async {
+         final pageLabel = ref.read(currentPageLabelProvider);
+         final realContext =
+diff --git a/lib/views/config/rules.dart b/lib/views/config/rules.dart
+index 046428d6d..7fe0b111c 100644
+--- a/lib/views/config/rules.dart
++++ b/lib/views/config/rules.dart
+@@ -67,6 +67,7 @@ class _AddedRulesViewState extends ConsumerState<AddedRulesView> {
+     final rules = ref.watch(globalRulesProvider).value ?? [];
+     final selectedRules = ref.watch(itemsProvider(_key));
+     return CommonPopScope(
++      canPop: selectedRules.isEmpty,
+       onPop: (_) {
+         if (selectedRules.isNotEmpty) {
+           ref.read(itemsProvider(_key).notifier).value = {};
+diff --git a/lib/views/config/scripts.dart b/lib/views/config/scripts.dart
+index cb8ed2fc5..2c75062f7 100644
+--- a/lib/views/config/scripts.dart
++++ b/lib/views/config/scripts.dart
+@@ -188,6 +188,7 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
+     final scripts = ref.watch(scriptsProvider).value ?? [];
+     final selectedScriptId = ref.watch(itemProvider(_key));
+     return CommonPopScope(
++      canPop: selectedScriptId == null,
+       onPop: (_) {
+         if (selectedScriptId != null) {
+           ref.read(itemProvider(_key).notifier).value = null;
+diff --git a/lib/views/profiles/edit.dart b/lib/views/profiles/edit.dart
+index b07ad2141..d70c758cb 100644
+--- a/lib/views/profiles/edit.dart
++++ b/lib/views/profiles/edit.dart
+@@ -166,8 +166,10 @@ class _EditProfileViewState extends State<EditProfileView> {
+     if (data == null) {
+       return;
+     }
+-    _rawText = data;
+-    _fileData = Uint8List.fromList(utf8.encode(data));
++    setState(() {
++      _rawText = data;
++      _fileData = Uint8List.fromList(utf8.encode(data));
++    });
+     _fileInfoNotifier.value = _fileInfoNotifier.value?.copyWith(
+       size: _fileData?.length ?? 0,
+       lastModified: DateTime.now(),
+@@ -177,7 +179,9 @@ class _EditProfileViewState extends State<EditProfileView> {
+   Future<void> _uploadProfileFile() async {
+     final platformFile = await globalState.safeRun(picker.pickerFile);
+     if (platformFile?.bytes == null) return;
+-    _fileData = platformFile?.bytes;
++    setState(() {
++      _fileData = platformFile?.bytes;
++    });
+     if (!mounted) {
+       return;
+     }
+@@ -326,6 +330,7 @@ class _EditProfileViewState extends State<EditProfileView> {
+       ),
+     ];
+     return CommonPopScope(
++      canPop: _fileData == null,
+       onPop: (context) {
+         if (_fileData == null) {
+           return true;
+diff --git a/lib/views/profiles/overwrite/standard.dart b/lib/views/profiles/overwrite/standard.dart
+index f90ff3b32..6afc3ed0a 100644
+--- a/lib/views/profiles/overwrite/standard.dart
++++ b/lib/views/profiles/overwrite/standard.dart
+@@ -86,6 +86,7 @@ class _StandardContentState extends ConsumerState<StandardContent> {
+         ref.watch(profileAddedRulesProvider(_profileId)).value ?? [];
+     final selectedRules = ref.watch(itemsProvider(_key));
+     return CommonPopScope(
++      canPop: selectedRules.isEmpty,
+       onPop: (_) {
+         if (selectedRules.isNotEmpty) {
+           ref.read(itemsProvider(_key).notifier).value = {};
+diff --git a/lib/views/theme.dart b/lib/views/theme.dart
+index e07ca1cf2..da2060f8d 100644
+--- a/lib/views/theme.dart
++++ b/lib/views/theme.dart
+@@ -6,6 +6,7 @@ import 'dart:ui' as ui;
+ import 'package:fl_clash/common/common.dart';
+ import 'package:fl_clash/enum/enum.dart';
+ import 'package:fl_clash/models/models.dart';
++import 'package:fl_clash/providers/app.dart';
+ import 'package:fl_clash/providers/config.dart';
+ import 'package:fl_clash/state.dart';
+ import 'package:fl_clash/widgets/widgets.dart';
+@@ -47,6 +48,7 @@ class ThemeView extends StatelessWidget {
+           _PrimaryColorItem(),
+           SliverToBoxAdapter(child: SizedBox(height: 16)),
+           _PrueBlackItem(),
++          _PredictiveBackItem(),
+           SliverToBoxAdapter(child: SizedBox(height: 16)),
+           _TextScaleFactorItem(),
+           SliverToBoxAdapter(child: SizedBox(height: 32)),
+@@ -287,6 +289,7 @@ class _PrimaryColorItemState extends ConsumerState<_PrimaryColorItem> {
+ 
+     return SliverToBoxAdapter(
+       child: CommonPopScope(
++        canPop: _removablePrimaryColor == null,
+         onPop: (context) {
+           if (_removablePrimaryColor != null) {
+             setState(() {
+@@ -450,6 +453,44 @@ class _PrueBlackItem extends ConsumerWidget {
+   }
+ }
+ 
++class _PredictiveBackItem extends ConsumerWidget {
++  const _PredictiveBackItem();
++
++  @override
++  Widget build(BuildContext context, WidgetRef ref) {
++    final supportsPredictiveBack = system.supportsPredictiveBack(
++      ref.watch(versionProvider),
++    );
++    if (!supportsPredictiveBack) {
++      return const SliverToBoxAdapter();
++    }
++    final appLocalizations = context.appLocalizations;
++    final predictiveBack = ref.watch(
++      themeSettingProvider.select((state) => state.predictiveBack),
++    );
++    return SliverToBoxAdapter(
++      child: ListItem.switchItem(
++        leading: const Icon(Icons.swipe_right_alt),
++        horizontalTitleGap: 12,
++        title: Text(
++          appLocalizations.predictiveBack,
++          style: Theme.of(context).textTheme.titleSmall?.copyWith(
++            color: context.colorScheme.onSurfaceVariant,
++          ),
++        ),
++        delegate: SwitchDelegate(
++          value: predictiveBack,
++          onChanged: (value) {
++            ref
++                .read(themeSettingProvider.notifier)
++                .update((state) => state.copyWith(predictiveBack: value));
++          },
++        ),
++      ),
++    );
++  }
++}
++
+ class _TextScaleFactorItem extends ConsumerWidget {
+   const _TextScaleFactorItem();
+ 
+diff --git a/lib/widgets/pop_scope.dart b/lib/widgets/pop_scope.dart
+index d7310d4c7..cfcb2a651 100644
+--- a/lib/widgets/pop_scope.dart
++++ b/lib/widgets/pop_scope.dart
+@@ -7,12 +7,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
+ 
+ class CommonPopScope extends StatelessWidget {
+   final Widget child;
++  final bool? canPop;
+   final FutureOr<bool> Function(BuildContext context)? onPop;
+   final FutureOr<void> Function()? onPopSuccess;
+ 
+   const CommonPopScope({
+     super.key,
+     required this.child,
++    this.canPop,
+     this.onPop,
+     this.onPopSuccess,
+   });
+@@ -20,7 +22,7 @@ class CommonPopScope extends StatelessWidget {
+   @override
+   Widget build(BuildContext context) {
+     return PopScope(
+-      canPop: onPop == null ? true : false,
++      canPop: canPop ?? onPop == null,
+       onPopInvokedWithResult: onPop == null
+           ? null
+           : (didPop, _) async {
+diff --git a/test/models/config_test.dart b/test/models/config_test.dart
+index 563078b4d..16957e2a9 100644
+--- a/test/models/config_test.dart
++++ b/test/models/config_test.dart
+@@ -191,6 +191,7 @@ void main() {
+       expect(props.primaryColors, defaultPrimaryColors);
+       expect(props.themeMode, ThemeMode.dark);
+       expect(props.pureBlack, false);
++      expect(props.predictiveBack, false);
+       expect(props.textScale.scale, 1.0);
+     });
+ 
+@@ -204,12 +205,14 @@ void main() {
+         primaryColor: 0xFF123456,
+         themeMode: ThemeMode.light,
+         pureBlack: true,
++        predictiveBack: true,
+         textScale: TextScale(enable: true, scale: 1.5),
+       );
+       final restored = roundTrip(() => props.toJson(), ThemeProps.fromJson);
+       expect(restored.primaryColor, 0xFF123456);
+       expect(restored.themeMode, ThemeMode.light);
+       expect(restored.pureBlack, true);
++      expect(restored.predictiveBack, true);
+       expect(restored.textScale.scale, 1.5);
+     });
+   });

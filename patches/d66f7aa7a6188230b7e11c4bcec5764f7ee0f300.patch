@@ -1,0 +1,56 @@
+From d66f7aa7a6188230b7e11c4bcec5764f7ee0f300 Mon Sep 17 00:00:00 2001
+From: "copilot-swe-agent[bot]" <198982749+Copilot@users.noreply.github.com>
+Date: Fri, 13 Mar 2026 06:16:12 +0000
+Subject: [PATCH] Implement portable mode: use ./config directory next to
+ executable as data directory
+
+Co-authored-by: SteveZMTstudios <98326195+SteveZMTstudios@users.noreply.github.com>
+---
+ lib/common/path.dart | 24 +++++++++++++++++++++---
+ 1 file changed, 21 insertions(+), 3 deletions(-)
+
+diff --git a/lib/common/path.dart b/lib/common/path.dart
+index ed20647cb..e08cb98bd 100644
+--- a/lib/common/path.dart
++++ b/lib/common/path.dart
+@@ -12,12 +12,11 @@ class AppPath {
+   Completer<Directory> tempDir = Completer();
+   Completer<Directory> cacheDir = Completer();
+   late String appDirPath;
++  bool isPortable = false;
+ 
+   AppPath._internal() {
+     appDirPath = join(dirname(Platform.resolvedExecutable));
+-    getApplicationSupportDirectory().then((value) {
+-      dataDir.complete(value);
+-    });
++    _initDataDir();
+     getTemporaryDirectory().then((value) {
+       tempDir.complete(value);
+     });
+@@ -29,6 +28,25 @@ class AppPath {
+     });
+   }
+ 
++  bool get _isDesktop =>
++      Platform.isWindows || Platform.isMacOS || Platform.isLinux;
++
++  Future<void> _initDataDir() async {
++    // Portable mode: if a 'config' directory exists next to the executable on
++    // desktop platforms, use it as the data directory instead of the
++    // platform-specific application support directory.
++    if (_isDesktop) {
++      final portableConfigDir = Directory(join(appDirPath, 'config'));
++      if (await portableConfigDir.exists()) {
++        isPortable = true;
++        dataDir.complete(portableConfigDir);
++        return;
++      }
++    }
++    final dir = await getApplicationSupportDirectory();
++    dataDir.complete(dir);
++  }
++
+   factory AppPath() {
+     _instance ??= AppPath._internal();
+     return _instance!;
