@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/providers/app.dart';
+import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/state.dart';
 import 'package:flutter/material.dart';
 
@@ -10,10 +11,21 @@ class BaseNavigator {
       return Navigator.of(
         context,
       ).push<T>(CommonDesktopRoute(builder: (context) => child));
+    } else {
+      final themeProps = globalState.container.read(themeSettingProvider);
+      final supportsPredictiveBack = system.supportsPredictiveBack(
+        globalState.container.read(versionProvider),
+      );
+      if (themeProps.predictiveBack && supportsPredictiveBack) {
+        return Navigator.of(
+          context,
+        ).push<T>(MaterialPageRoute(builder: (context) => child));
+      } else {
+        return Navigator.of(
+          context,
+        ).push<T>(CommonRoute(builder: (context) => child));
+      }
     }
-    return Navigator.of(
-      context,
-    ).push<T>(CommonRoute(builder: (context) => child));
   }
 
   // static Future<T?> modal<T>(BuildContext context, Widget child) async {

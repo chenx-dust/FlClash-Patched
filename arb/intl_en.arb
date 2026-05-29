@@ -178,6 +178,7 @@
   "onlyStatisticsProxy": "Only statistics proxy",
   "onlyStatisticsProxyDesc": "When turned on, only statistics proxy traffic",
   "pureBlackMode": "Pure black mode",
+  "predictiveBack": "Predictive back",
   "keepAliveIntervalDesc": "Tcp keep alive interval",
   "entries": " entries",
   "local": "Local",

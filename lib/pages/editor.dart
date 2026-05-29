@@ -174,6 +174,7 @@ class _EditorPageState extends ConsumerState<EditorPage> {
     final appLocalizations = context.appLocalizations;
     final isMobileView = ref.watch(isMobileViewProvider);
     return CommonPopScope(
+      canPop: widget.onPop == null,
       onPop: (context) async {
         if (widget.onPop == null) {
           return true;
