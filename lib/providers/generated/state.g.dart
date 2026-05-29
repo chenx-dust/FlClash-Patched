@@ -228,7 +228,7 @@ final class ProxyStateProvider
   }
 }
 
-String _$proxyStateHash() => r'b4a316e7f67927d6903af702d2b4e542c11c11c8';
+String _$proxyStateHash() => r'ff57f0e84743f19545d9604e71ba7b554c58e24c';
 
 @ProviderFor(trayState)
 final trayStateProvider = TrayStateProvider._();
