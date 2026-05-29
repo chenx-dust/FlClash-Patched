@@ -7,12 +7,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CommonPopScope extends StatelessWidget {
   final Widget child;
+  final bool? canPop;
   final FutureOr<bool> Function(BuildContext context)? onPop;
   final FutureOr<void> Function()? onPopSuccess;
 
   const CommonPopScope({
     super.key,
     required this.child,
+    this.canPop,
     this.onPop,
     this.onPopSuccess,
   });
@@ -20,7 +22,7 @@ class CommonPopScope extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: onPop == null ? true : false,
+      canPop: canPop ?? onPop == null,
       onPopInvokedWithResult: onPop == null
           ? null
           : (didPop, _) async {
