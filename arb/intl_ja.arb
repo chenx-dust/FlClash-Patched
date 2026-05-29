@@ -179,6 +179,7 @@
   "onlyStatisticsProxy": "プロキシのみ統計",
   "onlyStatisticsProxyDesc": "有効化するとプロキシトラフィックのみ統計",
   "pureBlackMode": "純黒モード",
+  "predictiveBack": "予測型戻る",
   "keepAliveIntervalDesc": "TCPキープアライブ間隔",
   "entries": " エントリ",
   "local": "ローカル",

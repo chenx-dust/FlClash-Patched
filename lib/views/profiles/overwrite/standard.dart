@@ -86,6 +86,7 @@ class _StandardContentState extends ConsumerState<StandardContent> {
         ref.watch(profileAddedRulesProvider(_profileId)).value ?? [];
     final selectedRules = ref.watch(itemsProvider(_key));
     return CommonPopScope(
+      canPop: selectedRules.isEmpty,
       onPop: (_) {
         if (selectedRules.isNotEmpty) {
           ref.read(itemsProvider(_key).notifier).value = {};
