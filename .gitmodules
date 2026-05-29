@@ -4,8 +4,8 @@
 	branch = FlClash
 [submodule "plugins/flutter_distributor"]
 	path = plugins/flutter_distributor
-	url = git@github.com:chen08209/flutter_distributor.git
-	branch = FlClash
+	url = git@github.com:fastforgedev/fastforge.git
+	branch = main
 [submodule "plugins/tray_manager"]
 	path = plugins/tray_manager
 	url = git@github.com:chen08209/tray_manager.git
