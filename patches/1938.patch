@@ -1,0 +1,35 @@
+From 41c854dd8496799d5dcce487942e754eb0e170d2 Mon Sep 17 00:00:00 2001
+From: Xeonacid <h.dwwwwww@gmail.com>
+Date: Thu, 9 Apr 2026 13:40:10 +0000
+Subject: [PATCH] fix: prevent Zip Slip path traversal in backup restore
+
+Use canonicalize() to resolve the full path of each zip entry and
+verify it stays within the restore directory before writing. This
+prevents malicious zip files with '../' entries from writing files
+outside the intended directory.
+---
+ lib/common/task.dart | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/lib/common/task.dart b/lib/common/task.dart
+index a8e0c298b..c00982050 100644
+--- a/lib/common/task.dart
++++ b/lib/common/task.dart
+@@ -533,7 +533,16 @@ Future<MigrationData> _restoreTask(RootIsolateToken token) async {
+   final dir = Directory(restoreDirPath);
+   await dir.create(recursive: true);
+   for (final file in archive.files) {
+-    final outPath = join(restoreDirPath, posix.normalize(file.name));
++    final outPath = canonicalize(join(restoreDirPath, file.name));
++    final canonicalRestoreDir = canonicalize(restoreDirPath);
++    if (!outPath.startsWith('$canonicalRestoreDir${Platform.pathSeparator}') &&
++        outPath != canonicalRestoreDir) {
++      throw 'Invalid zip entry: path traversal detected in "${file.name}"';
++    }
++    final parent = Directory(dirname(outPath));
++    if (!await parent.exists()) {
++      await parent.create(recursive: true);
++    }
+     final outputStream = OutputFileStream(outPath);
+     file.writeContent(outputStream);
+     await outputStream.close();

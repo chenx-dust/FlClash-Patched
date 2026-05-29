@@ -1,0 +1,22 @@
+From 730de0d5f4c28927120fb2b8c6bb9461fa6031f7 Mon Sep 17 00:00:00 2001
+From: Chenx Dust <chenx_dust@outlook.com>
+Date: Sat, 30 May 2026 03:22:47 +0800
+Subject: [PATCH] Fix RPM link in release template
+
+---
+ .github/release_template.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/.github/release_template.md b/.github/release_template.md
+index d13008481..c52b363dd 100644
+--- a/.github/release_template.md
++++ b/.github/release_template.md
+@@ -42,7 +42,7 @@
+             <td>
+                 <a href="https://github.com/chen08209/FlClash/releases/download/vVERSION/FlClash-VERSION-linux-amd64.AppImage"><img src="https://img.shields.io/badge/AppImage-x64-f84e29.svg?logo=linux"> </a><br>
+                 <a href="https://github.com/chen08209/FlClash/releases/download/vVERSION/FlClash-VERSION-linux-amd64.deb"><img src="https://img.shields.io/badge/DebPackage-x64-FF9966.svg?logo=debian"> </a><br>
+-                <a href="https://github.com/chen08209/FlClash/releases/download/vVERSION/FlClash-VERSION-linux-amd64.deb"><img src="https://img.shields.io/badge/RpmPackage-x64-F1B42F.svg?logo=redhat"> </a>
++                <a href="https://github.com/chen08209/FlClash/releases/download/vVERSION/FlClash-VERSION-linux-amd64.rpm"><img src="https://img.shields.io/badge/RpmPackage-x64-F1B42F.svg?logo=redhat"> </a>
+             </td>
+         </tr>
+     </tbody>
