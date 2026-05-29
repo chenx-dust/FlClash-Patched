@@ -42,6 +42,8 @@ class System {
     };
   }
 
+  bool supportsPredictiveBack(int version) => isAndroid && version >= 33;
+
   Future<bool> checkIsAdmin() async {
     final corePath = appPath.corePath.replaceAll(' ', '\\\\ ');
     if (system.isWindows) {
