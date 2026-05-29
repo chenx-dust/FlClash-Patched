@@ -6,7 +6,7 @@ import 'package:path/path.dart' as p;
 
 const _allTargets = <String, String>{
   'android': 'apk',
-  'linux': 'deb', // appimage + rpm added for amd64 only
+  'linux': 'deb,appimage,rpm',
   'macos': 'dmg',
   'windows': 'exe,zip',
 };
@@ -113,7 +113,6 @@ List<String> createFlutterBuildArgs({
 
 String _getTargets(String platform, String arch, String? customTargets) {
   if (customTargets != null) return customTargets;
-  if (platform == 'linux' && arch == 'amd64') return 'deb,appimage,rpm';
   return _allTargets[platform]!;
 }
 
@@ -281,13 +280,9 @@ Future<int> _ensureLinuxDependencies(String arch) async {
     ['libayatana-appindicator3-dev'],
     ['libkeybinder-3.0-dev'],
     ['locate'],
+    ['rpm', 'patchelf'],
+    ['libfuse2'],
   ];
-  if (arch == 'amd64') {
-    pkgGroups.addAll([
-      ['rpm', 'patchelf'],
-      ['libfuse2'],
-    ]);
-  }
 
   final missingGroups = <List<String>>[];
   for (final group in pkgGroups) {
@@ -327,25 +322,23 @@ Future<int> _ensureLinuxDependencies(String arch) async {
     }
   }
 
-  if (arch == 'amd64') {
-    const appimagetool = '/usr/local/bin/appimagetool';
-    if (File(appimagetool).existsSync()) {
-      stdout.writeln('appimagetool already installed, skipping.');
-      return 0;
-    }
-    stdout.writeln('Downloading appimagetool...');
-    final downloadName = arch == 'amd64' ? 'x86_64' : 'aarch64';
-    final dlResult = await Process.run('wget', [
-      '-O',
-      appimagetool,
-      'https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-$downloadName.AppImage',
-    ]);
-    if (dlResult.exitCode != 0) {
-      stderr.write(dlResult.stderr);
-      return dlResult.exitCode;
-    }
-    await Process.run('chmod', ['+x', appimagetool]);
+  const appimagetool = '/usr/local/bin/appimagetool';
+  if (File(appimagetool).existsSync()) {
+    stdout.writeln('appimagetool already installed, skipping.');
+    return 0;
   }
+  stdout.writeln('Downloading appimagetool...');
+  final downloadName = arch == 'amd64' ? 'x86_64' : 'aarch64';
+  final dlResult = await Process.run('wget', [
+    '-O',
+    appimagetool,
+    'https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-$downloadName.AppImage',
+  ]);
+  if (dlResult.exitCode != 0) {
+    stderr.write(dlResult.stderr);
+    return dlResult.exitCode;
+  }
+  await Process.run('chmod', ['+x', appimagetool]);
 
   return 0;
 }
