@@ -15,6 +15,13 @@ import 'util.dart';
 
 final _log = Logger('go_builder');
 
+String _resolveGoLdflags(Target target, BuildConfig config) {
+  if (target.goos != 'android' || !target.isLib) {
+    return config.goLdflags;
+  }
+  return '${config.goLdflags} -extldflags -Wl,-z,max-page-size=16384';
+}
+
 String _resolveCc(Target target) {
   final ndk = Environment.androidNdk;
   final prebuiltDir = Directory(
@@ -130,7 +137,7 @@ class GoBuilder {
 
   List<String> _buildArguments(Target target, {String? outFile}) => [
         'build',
-        '-ldflags=${config.goLdflags}',
+        '-ldflags=${_resolveGoLdflags(target, config)}',
         '-tags=${config.tags}',
         if (target.isLib) '-buildmode=c-shared',
         if (outFile != null) ...['-o', outFile],
