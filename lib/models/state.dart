@@ -266,7 +266,7 @@ abstract class ProxyState with _$ProxyState {
   const factory ProxyState({
     required bool isStart,
     required bool systemProxy,
-    required List<String> bassDomain,
+    required List<String> bypassDomain,
     required int port,
   }) = _ProxyState;
 }
