@@ -1,0 +1,164 @@
+From 359c8b6e22f914e766ebac5ee5c8298c3992438d Mon Sep 17 00:00:00 2001
+From: Chenx Dust <chenx_dust@outlook.com>
+Date: Sat, 30 May 2026 12:32:48 +0800
+Subject: [PATCH] Remove Firebase
+
+---
+ .github/workflows/build.yaml                   |  2 +-
+ android/app/build.gradle.kts                   | 10 +++++-----
+ android/common/build.gradle.kts                |  6 +++---
+ .../com/follow/clash/common/GlobalState.kt     | 18 +++++++++---------
+ android/gradle/libs.versions.toml              | 16 ++++++++--------
+ android/settings.gradle.kts                    |  4 ++--
+ 6 files changed, 28 insertions(+), 28 deletions(-)
+
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 6f9703d..1551375 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -78,7 +78,7 @@ jobs:
+         if: startsWith(matrix.platform,'android')
+         run: |
+           echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/keystore.jks
+-          echo "${{ secrets.SERVICE_JSON }}" | base64 --decode > android/app/google-services.json
++          # echo "${{ secrets.SERVICE_JSON }}" | base64 --decode > android/app/google-services.json
+           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/local.properties
+           echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/local.properties
+           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/local.properties
+diff --git a/android/app/build.gradle.kts b/android/app/build.gradle.kts
+index 4cef3e8..b293a88 100644
+--- a/android/app/build.gradle.kts
++++ b/android/app/build.gradle.kts
+@@ -5,8 +5,8 @@ plugins {
+     id("com.android.application")
+     id("kotlin-android")
+     id("dev.flutter.flutter-gradle-plugin")
+-    id("com.google.gms.google-services")
+-    id("com.google.firebase.crashlytics")
++    // id("com.google.gms.google-services")
++    // id("com.google.firebase.crashlytics")
+ }
+ 
+ val localPropertiesFile = rootProject.file("local.properties")
+@@ -103,7 +103,7 @@ dependencies {
+     implementation(libs.smali.dexlib2) {
+         exclude(group = "com.google.guava", module = "guava")
+     }
+-    implementation(platform(libs.firebase.bom))
+-    implementation(libs.firebase.crashlytics.ndk)
+-    implementation(libs.firebase.analytics)
++    // implementation(platform(libs.firebase.bom))
++    // implementation(libs.firebase.crashlytics.ndk)
++    // implementation(libs.firebase.analytics)
+ }
+\ No newline at end of file
+diff --git a/android/common/build.gradle.kts b/android/common/build.gradle.kts
+index b46b3a6..8dd8396 100644
+--- a/android/common/build.gradle.kts
++++ b/android/common/build.gradle.kts
+@@ -39,7 +39,7 @@ kotlin {
+ dependencies {
+     implementation(libs.androidx.core)
+     implementation(libs.gson)
+-    implementation(platform(libs.firebase.bom))
+-    implementation(libs.firebase.crashlytics.ndk)
+-    implementation(libs.firebase.analytics)
++    // implementation(platform(libs.firebase.bom))
++    // implementation(libs.firebase.crashlytics.ndk)
++    // implementation(libs.firebase.analytics)
+ }
+\ No newline at end of file
+diff --git a/android/common/src/main/java/com/follow/clash/common/GlobalState.kt b/android/common/src/main/java/com/follow/clash/common/GlobalState.kt
+index 0b7a233..93a5532 100644
+--- a/android/common/src/main/java/com/follow/clash/common/GlobalState.kt
++++ b/android/common/src/main/java/com/follow/clash/common/GlobalState.kt
+@@ -3,8 +3,8 @@ package com.follow.clash.common
+ 
+ import android.app.Application
+ import android.util.Log
+-import com.google.firebase.FirebaseApp
+-import com.google.firebase.crashlytics.FirebaseCrashlytics
++// import com.google.firebase.FirebaseApp
++// import com.google.firebase.crashlytics.FirebaseCrashlytics
+ import kotlinx.coroutines.CoroutineScope
+ import kotlinx.coroutines.Dispatchers
+ 
+@@ -36,12 +36,12 @@ object GlobalState : CoroutineScope by CoroutineScope(Dispatchers.Default) {
+     }
+ 
+     fun setCrashlytics(enable: Boolean) {
+-        _application?.let {
+-            FirebaseApp.initializeApp(it)
+-            FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = enable
+-            if (enable) {
+-                log("init crashlytics ${it.processName}")
+-            }
+-        }
++        // _application?.let {
++        //     FirebaseApp.initializeApp(it)
++        //     FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = enable
++        //     if (enable) {
++        //         log("init crashlytics ${it.processName}")
++        //     }
++        // }
+     }
+ }
+\ No newline at end of file
+diff --git a/android/gradle/libs.versions.toml b/android/gradle/libs.versions.toml
+index f425f9a..a9a5e04 100644
+--- a/android/gradle/libs.versions.toml
++++ b/android/gradle/libs.versions.toml
+@@ -1,6 +1,6 @@
+ [versions]
+ #agp = "8.10.1"
+-firebaseBom = "34.2.0"
++# firebaseBom = "34.2.0"
+ minSdk = "23"
+ targetSdk = "36"
+ compileSdk = "36"
+@@ -11,18 +11,18 @@ coreSplashscreen = "1.0.1"
+ gson = "2.13.1"
+ kotlin = "2.2.10"
+ smaliDexlib2 = "3.0.9"
+-firebaseCrashlyticsKtx = "20.0.1"
+-firebaseCommonKtx = "22.0.0"
++# firebaseCrashlyticsKtx = "20.0.1"
++# firebaseCommonKtx = "22.0.0"
+ 
+ [libraries]
+ build-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+ androidx-core = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+ annotation-jvm = { module = "androidx.annotation:annotation-jvm", version.ref = "annotationJvm" }
+ core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
+-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+-firebase-crashlytics-ndk = { module = "com.google.firebase:firebase-crashlytics-ndk" }
++# firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
++# firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
++# firebase-crashlytics-ndk = { module = "com.google.firebase:firebase-crashlytics-ndk" }
+ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+ smali-dexlib2 = { module = "com.android.tools.smali:smali-dexlib2", version.ref = "smaliDexlib2" }
+-firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebaseCrashlyticsKtx" }
+-firebase-common-ktx = { group = "com.google.firebase", name = "firebase-common-ktx", version.ref = "firebaseCommonKtx" }
+\ No newline at end of file
++# firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebaseCrashlyticsKtx" }
++# firebase-common-ktx = { group = "com.google.firebase", name = "firebase-common-ktx", version.ref = "firebaseCommonKtx" }
+\ No newline at end of file
+diff --git a/android/settings.gradle.kts b/android/settings.gradle.kts
+index dd51c86..b2f0888 100644
+--- a/android/settings.gradle.kts
++++ b/android/settings.gradle.kts
+@@ -21,8 +21,8 @@ plugins {
+     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
+     id("com.android.application") version "8.12.2" apply false
+     id("org.jetbrains.kotlin.android") version "2.2.10" apply false
+-    id("com.google.gms.google-services") version ("4.3.15") apply false
+-    id("com.google.firebase.crashlytics") version ("2.8.1") apply false
++    // id("com.google.gms.google-services") version ("4.3.15") apply false
++    // id("com.google.firebase.crashlytics") version ("2.8.1") apply false
+ }
+ 
+ 
+-- 
+2.53.0.windows.2
+

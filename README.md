@@ -17,6 +17,7 @@
 - [chen08209/FlClash#2057](https://github.com/chen08209/FlClash/pull/2057)
 - [chen08209/FlClash#2058](https://github.com/chen08209/FlClash/pull/2058)
 - Patch action for better release workflow
+- Remove Firebase analytics
 
 ## FlClash
 
