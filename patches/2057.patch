@@ -1,7 +1,7 @@
 From 433e6c1d7db52366f8cb99d67d82eed16bb41066 Mon Sep 17 00:00:00 2001
 From: Chenx Dust <chenx_dust@outlook.com>
 Date: Sat, 30 May 2026 03:39:38 +0800
-Subject: [PATCH] Support Predictive Back
+Subject: [PATCH 1/2] Support Predictive Back
 
 ---
  android/app/src/main/AndroidManifest.xml   |  1 +
@@ -696,3 +696,38 @@ index 563078b4d..ccf024de7 100644
        expect(restored.textScale.scale, 1.5);
      });
    });
+
+From d28b802c2ff37f3cce36ad3eb965907c1b5451a2 Mon Sep 17 00:00:00 2001
+From: Chenx Dust <chenx_dust@outlook.com>
+Date: Sat, 30 May 2026 16:38:02 +0800
+Subject: [PATCH 2/2] Fix predictive back in list
+
+---
+ lib/widgets/list.dart | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/lib/widgets/list.dart b/lib/widgets/list.dart
+index 7580d6ebf..bb665dfba 100644
+--- a/lib/widgets/list.dart
++++ b/lib/widgets/list.dart
+@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
+ import 'package:fl_clash/common/common.dart';
+ import 'package:fl_clash/enum/enum.dart';
+ import 'package:fl_clash/providers/app.dart';
++import 'package:fl_clash/providers/config.dart';
+ import 'package:fl_clash/state.dart';
+ import 'package:fl_clash/widgets/inherited.dart';
+ import 'package:flutter/foundation.dart';
+@@ -306,7 +307,11 @@ class ListItem<T> extends StatelessWidget {
+         closedBuilder: (context, action) {
+           Future<void> openAction() async {
+             final isMobile = globalState.container.read(isMobileViewProvider);
+-            if (!isMobile || kDebugMode) {
++            final themeProps = globalState.container.read(themeSettingProvider);
++            final supportsPredictiveBack = system.supportsPredictiveBack(
++              globalState.container.read(versionProvider),
++            );
++            if (!isMobile || themeProps.predictiveBack && supportsPredictiveBack || kDebugMode) {
+               final res = await showExtend(
+                 context,
+                 props: ExtendProps(
