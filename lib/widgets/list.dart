@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/providers/app.dart';
+import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/inherited.dart';
 import 'package:flutter/foundation.dart';
@@ -306,7 +307,11 @@ class ListItem<T> extends StatelessWidget {
         closedBuilder: (context, action) {
           Future<void> openAction() async {
             final isMobile = globalState.container.read(isMobileViewProvider);
-            if (!isMobile || kDebugMode) {
+            final themeProps = globalState.container.read(themeSettingProvider);
+            final supportsPredictiveBack = system.supportsPredictiveBack(
+              globalState.container.read(versionProvider),
+            );
+            if (!isMobile || themeProps.predictiveBack && supportsPredictiveBack || kDebugMode) {
               final res = await showExtend(
                 context,
                 props: ExtendProps(
