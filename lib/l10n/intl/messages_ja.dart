@@ -249,10 +249,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "crashDetected": MessageLookupByLibrary.simpleMessage("クラッシュを検出しました"),
     "crashDetectedTip": m1,
     "crashTest": MessageLookupByLibrary.simpleMessage("クラッシュテスト"),
-    "crashlytics": MessageLookupByLibrary.simpleMessage("クラッシュ分析"),
-    "crashlyticsTip": MessageLookupByLibrary.simpleMessage(
-      "有効にすると、アプリがクラッシュした際に機密情報を含まないクラッシュログを自動的にアップロードします",
-    ),
     "create": MessageLookupByLibrary.simpleMessage("作成"),
     "createProfile": MessageLookupByLibrary.simpleMessage("プロファイルを作成"),
     "creationTime": MessageLookupByLibrary.simpleMessage("作成時間"),
@@ -263,10 +259,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "dataChangedSave": MessageLookupByLibrary.simpleMessage(
       "データの変更が検出されました。保存しますか？",
     ),
-    "dataCollectionContent": MessageLookupByLibrary.simpleMessage(
-      "本アプリはFirebase Crashlyticsを使用してクラッシュ情報を収集し、アプリの安定性を向上させます。\n収集されるデータにはデバイス情報とクラッシュ詳細が含まれますが、個人の機密データは含まれません。\n設定でこの機能を無効にすることができます。",
-    ),
-    "dataCollectionTip": MessageLookupByLibrary.simpleMessage("データ収集説明"),
     "databaseWriteFailedTip": MessageLookupByLibrary.simpleMessage(
       "変更の保存に失敗したため、元に戻しました",
     ),

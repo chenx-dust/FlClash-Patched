@@ -118,7 +118,6 @@ void main() {
             currentProfileName: 'profile',
             stopText: 'stop',
             onlyStatisticsProxy: false,
-            crashlytics: false,
           ),
         ),
         isEmpty,
@@ -133,7 +132,6 @@ void main() {
         currentProfileName: 'profile',
         stopText: 'stop',
         onlyStatisticsProxy: true,
-        crashlytics: false,
       );
 
       expect(await Service().syncState(state), 'ok');

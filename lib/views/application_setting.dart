@@ -84,13 +84,6 @@ class ApplicationSettingView extends StatelessWidget {
         select: (state) => state.onlyStatisticsProxy,
         update: (state, value) => state.copyWith(onlyStatisticsProxy: value),
       ),
-      if (system.isAndroid)
-        _appSettingToggle(
-          title: (l) => l.crashlytics,
-          subtitle: (l) => l.crashlyticsTip,
-          select: (state) => state.crashlytics,
-          update: (state, value) => state.copyWith(crashlytics: value),
-        ),
       _appSettingToggle(
         title: (l) => l.autoCheckUpdate,
         subtitle: (l) => l.autoCheckUpdateDesc,

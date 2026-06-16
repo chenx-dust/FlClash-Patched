@@ -61,11 +61,6 @@ class System {
     };
   }
 
-  Future<bool> didCrashOnPreviousExecution() async {
-    if (!isAndroid) return false;
-    return await app?.didCrashOnPreviousExecution() ?? false;
-  }
-
   Future<AppExitInfo?> lastExitInfo() async {
     if (!isAndroid) return null;
     return app?.getLastExitInfo();

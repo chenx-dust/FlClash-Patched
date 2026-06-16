@@ -317,10 +317,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "crashDetected": MessageLookupByLibrary.simpleMessage("Crash detected"),
     "crashDetectedTip": m1,
     "crashTest": MessageLookupByLibrary.simpleMessage("Crash test"),
-    "crashlytics": MessageLookupByLibrary.simpleMessage("Crash Analysis"),
-    "crashlyticsTip": MessageLookupByLibrary.simpleMessage(
-      "When enabled, automatically uploads crash logs without sensitive information when the app crashes",
-    ),
     "create": MessageLookupByLibrary.simpleMessage("Create"),
     "createProfile": MessageLookupByLibrary.simpleMessage("Create Profile"),
     "creationTime": MessageLookupByLibrary.simpleMessage("Creation time"),
@@ -330,12 +326,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "dashboard": MessageLookupByLibrary.simpleMessage("Dashboard"),
     "dataChangedSave": MessageLookupByLibrary.simpleMessage(
       "Data changes detected, do you want to save?",
-    ),
-    "dataCollectionContent": MessageLookupByLibrary.simpleMessage(
-      "This app uses Firebase Crashlytics to collect crash information to improve app stability.\nThe collected data includes device information and crash details, but does not contain personal sensitive data.\nYou can disable this feature in settings.",
-    ),
-    "dataCollectionTip": MessageLookupByLibrary.simpleMessage(
-      "Data Collection Notice",
     ),
     "databaseWriteFailedTip": MessageLookupByLibrary.simpleMessage(
       "Failed to save the change, it has been rolled back",
