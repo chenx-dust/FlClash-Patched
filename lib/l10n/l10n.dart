@@ -2849,46 +2849,6 @@ class AppLocalizations {
     return Intl.message('Core status', name: 'coreStatus', desc: '', args: []);
   }
 
-  /// `Data Collection Notice`
-  String get dataCollectionTip {
-    return Intl.message(
-      'Data Collection Notice',
-      name: 'dataCollectionTip',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `This app uses Firebase Crashlytics to collect crash information to improve app stability.\nThe collected data includes device information and crash details, but does not contain personal sensitive data.\nYou can disable this feature in settings.`
-  String get dataCollectionContent {
-    return Intl.message(
-      'This app uses Firebase Crashlytics to collect crash information to improve app stability.\nThe collected data includes device information and crash details, but does not contain personal sensitive data.\nYou can disable this feature in settings.',
-      name: 'dataCollectionContent',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Crash Analysis`
-  String get crashlytics {
-    return Intl.message(
-      'Crash Analysis',
-      name: 'crashlytics',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `When enabled, automatically uploads crash logs without sensitive information when the app crashes`
-  String get crashlyticsTip {
-    return Intl.message(
-      'When enabled, automatically uploads crash logs without sensitive information when the app crashes',
-      name: 'crashlyticsTip',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Append System DNS`
   String get appendSystemDns {
     return Intl.message(
