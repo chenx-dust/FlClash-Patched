@@ -156,7 +156,6 @@ object ServiceState {
     }
 
     private fun applySharedState() {
-        GlobalState.setCrashlytics(sharedState.crashlytics)
         ServiceConfig.updateNotificationParams(
             NotificationParams(
                 title = sharedState.currentProfileName,
