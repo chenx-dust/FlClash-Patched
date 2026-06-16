@@ -35,7 +35,6 @@ class GlobalState {
   Color accentColor = const Color(defaultPrimaryColor);
   late ProviderContainer container;
   bool needInitStatus = true;
-  bool _didCrashOnPreviousExecution = false;
 
   bool get isPre => appEnv != 'stable';
 
@@ -86,13 +85,8 @@ class GlobalState {
 
   Future<ProviderContainer> _initData(int version) async {
     packageInfo = await PackageInfo.fromPlatform();
-    var config = await migration.run();
+    final config = await migration.run();
     final davPassword = await davSecretStorage.read();
-    _didCrashOnPreviousExecution = await system.didCrashOnPreviousExecution();
-    if (_didCrashOnPreviousExecution) {
-      config = config.copyWith(currentProfileId: null);
-      await preferences.saveConfig(config);
-    }
     final appState = AppState(
       brightness: WidgetsBinding.instance.platformDispatcher.platformBrightness,
       version: version,
@@ -327,25 +321,11 @@ class GlobalState {
     }
     await _handleFailedPreference();
     await _handlerDisclaimer();
-    await _showCrashRecoveryTip();
-    await _showCrashlyticsTip();
     await container.read(coreActionProvider.notifier).connectCore();
     await container.read(coreActionProvider.notifier).initCore();
-    if (!_didCrashOnPreviousExecution) {
-      await container.read(setupActionProvider.notifier).initStatus();
-    }
+    await container.read(setupActionProvider.notifier).initStatus();
     container.read(initProvider.notifier).value = true;
     permissions.check();
-  }
-
-  Future<void> _showCrashRecoveryTip() async {
-    if (!_didCrashOnPreviousExecution) return;
-    await showMessage(
-      title: currentAppLocalizations.crashDetected,
-      cancelable: false,
-      dismissible: false,
-      message: TextSpan(text: currentAppLocalizations.crashDetectedTip),
-    );
   }
 
   Future<void> _handleFailedPreference() async {
@@ -384,23 +364,6 @@ class GlobalState {
           ),
         ) ??
         false;
-  }
-
-  Future<void> _showCrashlyticsTip() async {
-    if (!system.isAndroid) return;
-    if (container.read(
-      appSettingProvider.select((state) => state.crashlyticsTip),
-    )) {
-      return;
-    }
-    await showMessage(
-      title: currentAppLocalizations.dataCollectionTip,
-      cancelable: false,
-      message: TextSpan(text: currentAppLocalizations.dataCollectionContent),
-    );
-    container
-        .read(appSettingProvider.notifier)
-        .update((state) => state.copyWith(crashlyticsTip: true));
   }
 
   Future<void> _handlerDisclaimer() async {
