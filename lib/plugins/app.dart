@@ -102,17 +102,6 @@ class App {
     if (!Platform.isAndroid) return false;
     return methodChannel.invokeMethod<bool>('openAppSettings');
   }
-
-  Future<bool> didCrashOnPreviousExecution() async {
-    try {
-      return await methodChannel.invokeMethod<bool>(
-            'didCrashOnPreviousExecution',
-          ) ??
-          false;
-    } catch (_) {
-      return false;
-    }
-  }
 }
 
 final app = system.isAndroid ? App() : null;
