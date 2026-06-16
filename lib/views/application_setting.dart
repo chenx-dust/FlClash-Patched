@@ -220,30 +220,6 @@ class OpenLogsItem extends ConsumerWidget {
   }
 }
 
-class CrashlyticsItem extends ConsumerWidget {
-  const CrashlyticsItem({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final appLocalizations = context.appLocalizations;
-    final crashlytics = ref.watch(
-      appSettingProvider.select((state) => state.crashlytics),
-    );
-    return ListItem.switchItem(
-      title: Text(appLocalizations.crashlytics),
-      subtitle: Text(appLocalizations.crashlyticsTip),
-      delegate: SwitchDelegate(
-        value: crashlytics,
-        onChanged: (bool value) {
-          ref
-              .read(appSettingProvider.notifier)
-              .update((state) => state.copyWith(crashlytics: value));
-        },
-      ),
-    );
-  }
-}
-
 class AutoCheckUpdateItem extends ConsumerWidget {
   const AutoCheckUpdateItem({super.key});
 
@@ -285,7 +261,6 @@ class ApplicationSettingView extends StatelessWidget {
       const OpenLogsItem(),
       const CloseConnectionsItem(),
       const UsageItem(),
-      if (system.isAndroid) const CrashlyticsItem(),
       const AutoCheckUpdateItem(),
     ];
     return BaseScaffold(
