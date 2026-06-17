@@ -549,6 +549,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Network exception, please check your connection and try again",
     ),
     "networkSpeed": MessageLookupByLibrary.simpleMessage("Network speed"),
+    "networkSpeedNotification": MessageLookupByLibrary.simpleMessage(
+      "Speed in notification",
+    ),
+    "networkSpeedNotificationDesc": MessageLookupByLibrary.simpleMessage(
+      "Show current speed in the notification bar; may slightly increase battery usage",
+    ),
     "networkType": MessageLookupByLibrary.simpleMessage("Network type"),
     "neutralScheme": MessageLookupByLibrary.simpleMessage("Neutral"),
     "noData": MessageLookupByLibrary.simpleMessage("No data"),

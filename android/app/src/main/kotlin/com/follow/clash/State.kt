@@ -120,7 +120,9 @@ object State {
             NotificationParams(
                 title = sharedState.currentProfileName,
                 stopText = sharedState.stopText,
-                onlyStatisticsProxy = sharedState.onlyStatisticsProxy
+                connectedText = sharedState.connectedText,
+                onlyStatisticsProxy = sharedState.onlyStatisticsProxy,
+                networkSpeedNotification = sharedState.networkSpeedNotification
             )
         )
     }
@@ -198,6 +200,3 @@ object State {
         }
     }
 }
-
-
-
