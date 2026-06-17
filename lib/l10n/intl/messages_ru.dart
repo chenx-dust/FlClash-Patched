@@ -603,6 +603,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Ошибка сети, проверьте соединение и попробуйте еще раз",
     ),
     "networkSpeed": MessageLookupByLibrary.simpleMessage("Скорость сети"),
+    "networkSpeedNotification": MessageLookupByLibrary.simpleMessage(
+      "Скорость в уведомлении",
+    ),
+    "networkSpeedNotificationDesc": MessageLookupByLibrary.simpleMessage(
+      "Показывать текущую скорость в панели уведомлений; может немного увеличить расход батареи",
+    ),
     "networkType": MessageLookupByLibrary.simpleMessage("Тип сети"),
     "neutralScheme": MessageLookupByLibrary.simpleMessage("Нейтральные"),
     "noData": MessageLookupByLibrary.simpleMessage("Нет данных"),
