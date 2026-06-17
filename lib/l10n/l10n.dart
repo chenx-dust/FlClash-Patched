@@ -1419,6 +1419,11 @@ class AppLocalizations {
     return Intl.message('Source', name: 'source', desc: '', args: []);
   }
 
+  /// `Level`
+  String get level {
+    return Intl.message('Level', name: 'level', desc: '', args: []);
+  }
+
   /// `Action`
   String get action {
     return Intl.message('Action', name: 'action', desc: '', args: []);
