@@ -146,6 +146,7 @@ abstract class Log with _$Log {
   const factory Log({
     // @JsonKey(fromJson: _logId) required String id,
     @JsonKey(name: 'LogLevel') @Default(LogLevel.info) LogLevel logLevel,
+    @Default(LogSource.app) LogSource source,
     @JsonKey(name: 'Payload') @Default('') String payload,
     @JsonKey(fromJson: _logDateTime) required String dateTime,
   }) = _Log;
@@ -176,9 +177,11 @@ extension LogsStateExt on LogsState {
     final lowQuery = query.toLowerCase();
     return logs.where((log) {
       final logLevelName = log.logLevel.name;
-      return {logLevelName}.containsAll(keywords) &&
+      final logSourceName = log.source.name;
+      return {logLevelName, logSourceName}.containsAll(keywords) &&
           ((log.payload.toLowerCase().contains(lowQuery)) ||
-              logLevelName.contains(lowQuery));
+              logLevelName.contains(lowQuery) ||
+              logSourceName.contains(lowQuery));
     }).toList();
   }
 }
