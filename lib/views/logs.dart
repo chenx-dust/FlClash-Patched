@@ -217,10 +217,15 @@ class LogItem extends StatelessWidget {
       TextSpan(
         style: style,
         children: [
-          TextSpan(text: '$title '),
+          TextSpan(
+            text: '$title ',
+            style: style?.copyWith(
+              color: context.colorScheme.onSurfaceVariant.opacity80,
+            ),
+          ),
           TextSpan(
             text: value,
-            style: style?.copyWith(fontWeight: FontWeight.bold),
+            style: style?.copyWith(fontWeight: FontWeight.w600),
           ),
         ],
       ),
