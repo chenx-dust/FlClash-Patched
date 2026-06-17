@@ -144,6 +144,26 @@ class AppLocalizations {
     );
   }
 
+  /// `Speed in notification`
+  String get networkSpeedNotification {
+    return Intl.message(
+      'Speed in notification',
+      name: 'networkSpeedNotification',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Show current speed in the notification bar; may slightly increase battery usage`
+  String get networkSpeedNotificationDesc {
+    return Intl.message(
+      'Show current speed in the notification bar; may slightly increase battery usage',
+      name: 'networkSpeedNotificationDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Outbound mode`
   String get outboundMode {
     return Intl.message(
