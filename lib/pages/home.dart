@@ -284,7 +284,7 @@ class HomeBackScopeContainer extends ConsumerWidget {
         final canPop = Navigator.canPop(realContext);
         if (canPop) {
           Navigator.of(realContext).pop();
-        } else {
+        } else if (!ref.read(backBlockProvider)) {
           await globalState.container
               .read(systemActionProvider.notifier)
               .handleBackOrExit();
