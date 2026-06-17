@@ -7,10 +7,12 @@ class CommonChip extends StatelessWidget {
   final ChipType type;
   final Widget? avatar;
   final TextStyle? labelStyle;
+  final Widget? labelWidget;
 
   const CommonChip({
     super.key,
     required this.label,
+    this.labelWidget,
     this.labelStyle,
     this.onPressed,
     this.avatar,
@@ -30,7 +32,7 @@ class CommonChip extends StatelessWidget {
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         onDeleted: onPressed ?? () {},
         labelStyle: labelStyle,
-        label: Text(label),
+        label: labelWidget ?? Text(label),
       );
     }
     return ActionChip(
@@ -43,7 +45,7 @@ class CommonChip extends StatelessWidget {
       ),
       onPressed: onPressed ?? () {},
       labelStyle: labelStyle,
-      label: Text(label),
+      label: labelWidget ?? Text(label),
     );
   }
 }

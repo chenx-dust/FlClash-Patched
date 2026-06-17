@@ -185,6 +185,7 @@
   "mode": "Mode",
   "time": "Time",
   "source": "Source",
+  "level": "Level",
   "action": "Action",
   "intelligentSelected": "Intelligent selection",
   "clipboardImport": "Clipboard import",
