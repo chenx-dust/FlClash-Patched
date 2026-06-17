@@ -8,7 +8,9 @@ data class SharedState(
     val stopTip: String = "Stopping VPN...",
     val currentProfileName: String = "FlClash",
     val stopText: String = "Stop",
+    val connectedText: String = "Connected",
     val onlyStatisticsProxy: Boolean = false,
+    val networkSpeedNotification: Boolean = false,
     val vpnOptions: VpnOptions? = null,
     val setupParams: SetupParams? = null,
 )

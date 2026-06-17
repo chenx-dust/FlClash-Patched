@@ -427,6 +427,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "ネットワーク例外、接続を確認してもう一度お試しください",
     ),
     "networkSpeed": MessageLookupByLibrary.simpleMessage("ネットワーク速度"),
+    "networkSpeedNotification": MessageLookupByLibrary.simpleMessage(
+      "通知に速度を表示",
+    ),
+    "networkSpeedNotificationDesc": MessageLookupByLibrary.simpleMessage(
+      "通知バーに現在の速度を表示します。バッテリー消費が少し増える場合があります",
+    ),
     "networkType": MessageLookupByLibrary.simpleMessage("ネットワーク種別"),
     "neutralScheme": MessageLookupByLibrary.simpleMessage("ニュートラル"),
     "noData": MessageLookupByLibrary.simpleMessage("データなし"),
