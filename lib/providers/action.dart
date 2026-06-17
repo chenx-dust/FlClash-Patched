@@ -594,7 +594,6 @@ class SystemAction extends _$SystemAction {
   }
 
   Future<void> handleBackOrExit() async {
-    if (ref.read(backBlockProvider)) return;
     if (ref.read(appSettingProvider).minimizeOnExit) {
       if (system.isDesktop) {
         await preferences.saveConfig(ref.read(configProvider));
