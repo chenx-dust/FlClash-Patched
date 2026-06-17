@@ -71,7 +71,8 @@ class _CoreContainerState extends ConsumerState<CoreManager>
 
   @override
   void onLog(Log log) {
-    ref.read(logsProvider.notifier).add(log);
+    final coreLog = log.copyWith(source: LogSource.core);
+    ref.read(logsProvider.notifier).add(coreLog);
     if (log.logLevel == LogLevel.error) {
       globalState.showNotifier(log.payload);
     }
