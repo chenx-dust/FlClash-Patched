@@ -13,6 +13,8 @@
   "resourcesDesc": "外部リソース関連情報",
   "trafficUsage": "トラフィック使用量",
   "networkSpeed": "ネットワーク速度",
+  "networkSpeedNotification": "通知に速度を表示",
+  "networkSpeedNotificationDesc": "通知バーに現在の速度を表示します。バッテリー消費が少し増える場合があります",
   "outboundMode": "アウトバウンドモード",
   "networkDetection": "ネットワーク検出",
   "upload": "アップロード",

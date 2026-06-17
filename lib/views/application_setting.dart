@@ -48,6 +48,28 @@ class UsageItem extends ConsumerWidget {
   }
 }
 
+class NetworkSpeedNotificationItem extends ConsumerWidget {
+  const NetworkSpeedNotificationItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
+    final networkSpeedNotification = ref.watch(
+      vpnSettingProvider.select((state) => state.networkSpeedNotification),
+    );
+    return ListItem.toggle(
+      title: Text(appLocalizations.networkSpeedNotification),
+      subtitle: Text(appLocalizations.networkSpeedNotificationDesc),
+      value: networkSpeedNotification,
+      onChanged: (bool value) async {
+        ref
+            .read(vpnSettingProvider.notifier)
+            .update((state) => state.copyWith(networkSpeedNotification: value));
+      },
+    );
+  }
+}
+
 class MinimizeItem extends ConsumerWidget {
   const MinimizeItem({super.key});
 
@@ -241,6 +263,7 @@ class ApplicationSettingView extends StatelessWidget {
       const OpenLogsItem(),
       const CloseConnectionsItem(),
       const UsageItem(),
+      if (system.isAndroid) const NetworkSpeedNotificationItem(),
       const AutoCheckUpdateItem(),
     ];
     return BaseScaffold(
