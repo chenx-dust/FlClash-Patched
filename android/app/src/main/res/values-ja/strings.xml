@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="start_vpn">VPN を開始中...</string>
+    <string name="stop_vpn">VPN を停止中...</string>
+</resources>
