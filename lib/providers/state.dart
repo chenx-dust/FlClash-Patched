@@ -599,8 +599,7 @@ SharedState sharedState(Ref ref) {
   );
   final appSettingVM3 = ref.watch(
     appSettingProvider.select(
-      (state) =>
-          VM2(state.onlyStatisticsProxy, state.testUrl),
+      (state) => VM2(state.onlyStatisticsProxy, state.testUrl),
     ),
   );
   final bypassDomain = ref.watch(
@@ -621,7 +620,9 @@ SharedState sharedState(Ref ref) {
   return SharedState(
     currentProfileName: currentProfileName,
     onlyStatisticsProxy: onlyStatisticsProxy,
+    networkSpeedNotification: vpnSetting.networkSpeedNotification,
     stopText: currentAppLocalizations.stop,
+    connectedText: currentAppLocalizations.connected,
     stopTip: currentAppLocalizations.stopVpn,
     startTip: currentAppLocalizations.startVpn,
     setupParams: SetupParams(selectedMap: selectedMap, testUrl: testUrl),

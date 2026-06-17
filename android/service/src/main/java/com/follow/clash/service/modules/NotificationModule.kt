@@ -26,7 +26,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -40,7 +42,10 @@ data class ExtendedNotificationParams(
 
 val NotificationParams.extended: ExtendedNotificationParams
     get() = ExtendedNotificationParams(
-        title, stopText, onlyStatisticsProxy, Core.getSpeedTrafficText(onlyStatisticsProxy)
+        title,
+        stopText,
+        onlyStatisticsProxy,
+        if (networkSpeedNotification) Core.getSpeedTrafficText(onlyStatisticsProxy) else connectedText
     )
 
 class NotificationModule(private val service: Service) : Module() {
@@ -57,21 +62,20 @@ class NotificationModule(private val service: Service) : Module() {
                 emit(isScreenOn())
             }
 
-            combine(
-                tickerFlow(1000, 0), State.notificationParamsFlow, screenFlow
-            ) { _, params, screenOn ->
-                params?.extended to screenOn
-            }.filter { (params, screenOn) -> params != null && screenOn }
-                .distinctUntilChanged { old, new -> old.first == new.first && old.second == new.second }
-                .collect { (params, _) ->
-                    update(params!!)
+            combine(State.notificationParamsFlow, screenFlow) { params, screenOn ->
+                params to screenOn
+            }.flatMapLatest { (params, screenOn) ->
+                when {
+                    params == null || !screenOn -> emptyFlow()
+                    params.networkSpeedNotification -> tickerFlow(1000, 0).map {
+                        params.extended
+                    }
+                    else -> flowOf(params.extended)
                 }
-
-            State.notificationParamsFlow.value?.let {
-                update(it.extended)
-            } ?: run {
-                update(NotificationParams().extended)
-            }
+            }.distinctUntilChanged()
+                .collect { params ->
+                    update(params)
+                }
         }
     }
 
