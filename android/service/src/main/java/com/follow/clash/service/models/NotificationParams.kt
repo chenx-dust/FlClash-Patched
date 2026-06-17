@@ -6,7 +6,9 @@ import android.os.Parcelable
 data class NotificationParams(
     val title: String = "FlClash",
     val stopText: String = "STOP",
+    val connectedText: String = "Connected",
     val onlyStatisticsProxy: Boolean = false,
+    val networkSpeedNotification: Boolean = false,
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         title = parcel.readString() ?: "FlClash",
