@@ -97,6 +97,8 @@ enum ViewMode { mobile, laptop, desktop }
 
 enum LogLevel { debug, info, warning, error, silent }
 
+enum LogSource { app, core }
+
 extension LogLevelExt on LogLevel {
   Color? color(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
