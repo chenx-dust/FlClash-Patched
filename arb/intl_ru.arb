@@ -185,6 +185,7 @@
   "mode": "Режим",
   "time": "Время",
   "source": "Источник",
+  "level": "Уровень",
   "action": "Действие",
   "intelligentSelected": "Интеллектуальный выбор",
   "clipboardImport": "Импорт из буфера обмена",

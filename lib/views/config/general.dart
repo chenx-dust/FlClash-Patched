@@ -19,7 +19,7 @@ class LogLevelItem extends ConsumerWidget {
     return ListItem<LogLevel>.options(
       leading: const Icon(Icons.info_outline),
       title: Text(appLocalizations.logLevel),
-      subtitle: Text(logLevel.name),
+      subtitle: Text(logLevel.name.toUpperCase()),
       delegate: OptionsDelegate<LogLevel>(
         title: appLocalizations.logLevel,
         options: LogLevel.values,
@@ -31,7 +31,7 @@ class LogLevelItem extends ConsumerWidget {
               .read(patchClashConfigProvider.notifier)
               .update((state) => state.copyWith(logLevel: value));
         },
-        textBuilder: (logLevel) => logLevel.name,
+        textBuilder: (logLevel) => logLevel.name.toUpperCase(),
         value: logLevel,
       ),
     );
