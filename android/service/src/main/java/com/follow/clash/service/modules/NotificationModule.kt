@@ -22,10 +22,8 @@ import com.follow.clash.service.models.NotificationParams
 import com.follow.clash.service.models.getSpeedTrafficText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -36,11 +34,15 @@ private data class ExtendedNotificationParams(
     val contentText: String,
 )
 
-private val NotificationParams.extended: ExtendedNotificationParams
-    get() = ExtendedNotificationParams(
+private fun NotificationParams.extended(service: Service) =
+    ExtendedNotificationParams(
         title,
-        stopText,
-        Core.getSpeedTrafficText(onlyStatisticsProxy),
+        service.getString(R.string.stop),
+        if (networkSpeedNotification) {
+            Core.getSpeedTrafficText(onlyStatisticsProxy)
+        } else {
+            service.getString(R.string.connected)
+        },
     )
 
 internal class NotificationModule(
@@ -48,8 +50,10 @@ internal class NotificationModule(
     private val scope: CoroutineScope,
 ) : ServiceModule {
     override fun start() {
-        update(ServiceConfig.notificationParams.value.extended)
+        val initialParams = ServiceConfig.notificationParams.value.extended(service)
+        update(initialParams)
         scope.launch {
+            var displayedParams = initialParams
             val screenFlow = service.receiveBroadcastFlow {
                 addAction(Intent.ACTION_SCREEN_ON)
                 addAction(Intent.ACTION_SCREEN_OFF)
@@ -60,19 +64,31 @@ internal class NotificationModule(
             }
 
             combine(
-                flow {
-                    while (true) {
-                        delay(1_000)
-                        emit(Unit)
-                    }
-                },
                 ServiceConfig.notificationParams,
                 screenFlow,
-            ) { _, params, screenOn ->
-                params.takeIf { screenOn }?.extended
-            }.filterNotNull()
-                .distinctUntilChanged()
-                .collect(::update)
+            ) { params, screenOn ->
+                params to screenOn
+            }.collectLatest { (params, screenOn) ->
+                if (!screenOn) return@collectLatest
+
+                if (!params.networkSpeedNotification) {
+                    val nextParams = params.extended(service)
+                    if (nextParams != displayedParams) {
+                        update(nextParams)
+                        displayedParams = nextParams
+                    }
+                    return@collectLatest
+                }
+
+                while (true) {
+                    delay(1_000)
+                    val nextParams = params.extended(service)
+                    if (nextParams != displayedParams) {
+                        update(nextParams)
+                        displayedParams = nextParams
+                    }
+                }
+            }
         }
     }
 
