@@ -9,6 +9,7 @@ import 'chip.dart';
 import 'inherited.dart';
 
 typedef OnKeywordsUpdateCallback = void Function(List<String> keywords);
+typedef KeywordLabelBuilder = String Function(String keyword);
 
 typedef AppBarSearchStateBuilder =
     AppBarSearchState? Function(AppBarSearchState? state);
@@ -25,6 +26,7 @@ class CommonScaffold extends StatefulWidget {
   final AppBarEditState? editState;
   final AppBarSearchState? searchState;
   final OnKeywordsUpdateCallback? onKeywordsUpdate;
+  final KeywordLabelBuilder? keywordLabelBuilder;
   final bool? resizeToAvoidBottomInset;
 
   const CommonScaffold({
@@ -40,6 +42,7 @@ class CommonScaffold extends StatefulWidget {
     this.searchState,
     this.floatingActionButton,
     this.onKeywordsUpdate,
+    this.keywordLabelBuilder,
     this.resizeToAvoidBottomInset,
   });
 
@@ -331,7 +334,9 @@ class CommonScaffoldState extends State<CommonScaffold> {
                   children: [
                     for (final keyword in keywords)
                       CommonChip(
-                        label: keyword,
+                        label:
+                            widget.keywordLabelBuilder?.call(keyword) ??
+                            keyword,
                         type: ChipType.delete,
                         onPressed: () {
                           _deleteKeyword(keyword);
