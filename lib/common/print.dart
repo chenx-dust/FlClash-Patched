@@ -15,7 +15,7 @@ class CommonPrint {
   }
 
   void log(String? text, {LogLevel logLevel = LogLevel.info}) {
-    final payload = '[APP] $text';
+    final payload = text ?? '';
     debugPrint(payload);
     if (!globalState.isAttach) {
       return;
