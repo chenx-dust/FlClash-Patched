@@ -305,11 +305,9 @@ abstract class SharedState with _$SharedState {
   const factory SharedState({
     SetupParams? setupParams,
     VpnOptions? vpnOptions,
-    required String stopTip,
-    required String startTip,
     required String currentProfileName,
-    required String stopText,
     required bool onlyStatisticsProxy,
+    required bool networkSpeedNotification,
   }) = _SharedState;
 
   factory SharedState.fromJson(Map<String, Object?> json) =>
