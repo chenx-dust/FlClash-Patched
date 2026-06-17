@@ -398,6 +398,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "networkDetection": MessageLookupByLibrary.simpleMessage("网络检测"),
     "networkException": MessageLookupByLibrary.simpleMessage("网络异常，请检查连接后重试"),
     "networkSpeed": MessageLookupByLibrary.simpleMessage("网络速度"),
+    "networkSpeedNotification": MessageLookupByLibrary.simpleMessage("网速通知"),
+    "networkSpeedNotificationDesc": MessageLookupByLibrary.simpleMessage(
+      "在通知栏显示当前网速，稍微增加耗电",
+    ),
     "networkType": MessageLookupByLibrary.simpleMessage("网络类型"),
     "neutralScheme": MessageLookupByLibrary.simpleMessage("中性"),
     "noData": MessageLookupByLibrary.simpleMessage("暂无数据"),
