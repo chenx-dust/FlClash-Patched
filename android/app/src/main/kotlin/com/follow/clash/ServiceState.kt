@@ -134,7 +134,9 @@ object ServiceState {
             NotificationParams(
                 title = sharedState.currentProfileName,
                 stopText = sharedState.stopText,
+                connectedText = sharedState.connectedText,
                 onlyStatisticsProxy = sharedState.onlyStatisticsProxy,
+                networkSpeedNotification = sharedState.networkSpeedNotification,
             ),
         )
     }
