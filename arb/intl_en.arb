@@ -13,6 +13,8 @@
   "resourcesDesc": "External resource related info",
   "trafficUsage": "Traffic usage",
   "networkSpeed": "Network speed",
+  "networkSpeedNotification": "Speed in notification",
+  "networkSpeedNotificationDesc": "Show current speed in the notification bar; may slightly increase battery usage",
   "outboundMode": "Outbound mode",
   "networkDetection": "Network detection",
   "upload": "Upload",
