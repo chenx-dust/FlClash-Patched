@@ -62,6 +62,20 @@ class _LogsViewState extends ConsumerState<LogsView> {
     );
   }
 
+  String _getKeywordLabel(String keyword) {
+    for (final logSource in LogSource.values) {
+      if (logSource.name == keyword) {
+        return logSource.name.toUpperCase();
+      }
+    }
+    for (final logLevel in LogLevel.values) {
+      if (logLevel.name == keyword) {
+        return logLevel.name.toUpperCase();
+      }
+    }
+    return keyword;
+  }
+
   @override
   void dispose() {
     _logsStateNotifier.dispose();
@@ -111,6 +125,7 @@ class _LogsViewState extends ConsumerState<LogsView> {
     return CommonScaffold(
       actions: _buildActions(),
       onKeywordsUpdate: _onKeywordsUpdate,
+      keywordLabelBuilder: _getKeywordLabel,
       searchState: AppBarSearchState(onSearch: _onSearch),
       title: appLocalizations.logs,
       floatingActionButton: ValueListenableBuilder(
@@ -126,8 +141,8 @@ class _LogsViewState extends ConsumerState<LogsView> {
                 );
               },
               child: autoScrollToEnd
-                  ? const Icon(Icons.block)
-                  : const Icon(Icons.vertical_align_top),
+                  ? const Icon(Icons.pause)
+                  : const Icon(Icons.play_arrow),
             ),
           );
         },
@@ -192,8 +207,33 @@ class LogItem extends StatelessWidget {
 
   const LogItem({super.key, required this.log, this.onClick});
 
+  Widget _buildChipLabel(
+    BuildContext context, {
+    required String title,
+    required String value,
+  }) {
+    final style = context.textTheme.bodySmall?.copyWith(
+      color: context.colorScheme.onSurfaceVariant,
+    );
+    return Text.rich(
+      TextSpan(
+        style: style,
+        children: [
+          TextSpan(text: '$title '),
+          TextSpan(
+            text: value,
+            style: style?.copyWith(fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final appLocalizations = context.appLocalizations;
+    final sourceLabel = log.source.name.toUpperCase();
+    final levelLabel = log.logLevel.name.toUpperCase();
     return ListItem(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       onTap: () {},
@@ -205,7 +245,7 @@ class LogItem extends StatelessWidget {
       ),
       subtitle: Column(
         children: [
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -218,14 +258,30 @@ class LogItem extends StatelessWidget {
                       if (onClick == null) return;
                       onClick!(log.source.name);
                     },
-                    label: log.source.name,
+                    labelStyle: context.textTheme.bodySmall?.copyWith(
+                      color: context.colorScheme.onSurfaceVariant,
+                    ),
+                    label: sourceLabel,
+                    labelWidget: _buildChipLabel(
+                      context,
+                      title: appLocalizations.source,
+                      value: sourceLabel,
+                    ),
                   ),
                   CommonChip(
                     onPressed: () {
                       if (onClick == null) return;
                       onClick!(log.logLevel.name);
                     },
-                    label: log.logLevel.name,
+                    labelStyle: context.textTheme.bodySmall?.copyWith(
+                      color: context.colorScheme.onSurfaceVariant,
+                    ),
+                    label: levelLabel,
+                    labelWidget: _buildChipLabel(
+                      context,
+                      title: appLocalizations.level,
+                      value: levelLabel,
+                    ),
                   ),
                 ],
               ),
