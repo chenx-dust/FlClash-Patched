@@ -207,12 +207,25 @@ class LogItem extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CommonChip(
-                onPressed: () {
-                  if (onClick == null) return;
-                  onClick!(log.logLevel.name);
-                },
-                label: log.logLevel.name,
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  CommonChip(
+                    onPressed: () {
+                      if (onClick == null) return;
+                      onClick!(log.source.name);
+                    },
+                    label: log.source.name,
+                  ),
+                  CommonChip(
+                    onPressed: () {
+                      if (onClick == null) return;
+                      onClick!(log.logLevel.name);
+                    },
+                    label: log.logLevel.name,
+                  ),
+                ],
               ),
               Text(
                 log.dateTime,
