@@ -186,6 +186,7 @@
   "mode": "モード",
   "time": "時間",
   "source": "ソース",
+  "level": "レベル",
   "action": "アクション",
   "intelligentSelected": "インテリジェント選択",
   "clipboardImport": "クリップボードからインポート",
