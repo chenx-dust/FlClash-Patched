@@ -21,6 +21,7 @@ void main() {
       final value = container.read(appSettingProvider);
       expect(value.onlyStatisticsProxy, false);
       expect(value.autoLaunch, false);
+      expect(value.highPriorityAutoLaunch, false);
       expect(value.closeConnections, true);
       expect(value.isAnimateToPage, true);
     });
@@ -31,6 +32,7 @@ void main() {
           .update((_) => const AppSettingProps(autoLaunch: true));
       final value = container.read(appSettingProvider);
       expect(value.autoLaunch, true);
+      expect(value.highPriorityAutoLaunch, false);
     });
   });
 
