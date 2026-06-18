@@ -59,26 +59,57 @@ Future<void> runCommandStream(
     includeParentEnvironment: true,
     runInShell: Platform.isWindows,
   );
-  process.stdout.transform(systemEncoding.decoder).listen((data) {
-    for (final line in data.split('\n')) {
-      if (line.isNotEmpty) _log.info(line);
-    }
-  });
-  process.stderr.transform(systemEncoding.decoder).listen((data) {
-    for (final line in data.split('\n')) {
-      if (line.isNotEmpty) _log.warning(line);
-    }
-  });
+
+  final stdout = _collectProcessOutput(
+    process.stdout,
+    (line) => _log.info(line),
+  );
+  final stderr = _collectProcessOutput(
+    process.stderr,
+    (line) => _log.warning(line),
+  );
+
   final exitCode = await process.exitCode;
+  final output = await Future.wait([stdout, stderr]);
   if (exitCode != 0) {
     throw CommandFailedException(
       executable: executable,
       arguments: arguments,
       exitCode: exitCode,
-      stdout: '',
-      stderr: '',
+      stdout: output[0],
+      stderr: output[1],
     );
   }
+}
+
+Future<String> _collectProcessOutput(
+  Stream<List<int>> stream,
+  void Function(String line) logLine,
+) async {
+  final output = StringBuffer();
+  var pendingLine = '';
+
+  await for (final data in stream.transform(systemEncoding.decoder)) {
+    output.write(data);
+
+    final text = pendingLine + data;
+    final lines = text.split('\n');
+    pendingLine = lines.removeLast();
+
+    for (final line in lines) {
+      final normalizedLine = line.endsWith('\r')
+          ? line.substring(0, line.length - 1)
+          : line;
+      if (normalizedLine.isNotEmpty) logLine(normalizedLine);
+    }
+  }
+
+  final tail = pendingLine.endsWith('\r')
+      ? pendingLine.substring(0, pendingLine.length - 1)
+      : pendingLine;
+  if (tail.isNotEmpty) logLine(tail);
+
+  return output.toString().trim();
 }
 
 Future<String> calcSha256(String filePath) async {
