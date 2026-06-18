@@ -179,6 +179,7 @@ extension ProfileExtension on Profile {
     return copyWith(
       label: label.takeFirstValid([
         utils.getFileNameForDisposition(disposition),
+        utils.getFileNameFromUrl(url),
         id.toString(),
       ]),
       subscriptionInfo: SubscriptionInfo.formHString(userinfo),

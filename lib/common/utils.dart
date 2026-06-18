@@ -206,6 +206,25 @@ class Utils {
     return parameters[fileNameKey];
   }
 
+  String? getFileNameFromUrl(String? url) {
+    final realUrl = url?.trim();
+    if (realUrl == null || realUrl.isEmpty) return null;
+    final uri = Uri.tryParse(realUrl);
+    if (uri == null || uri.pathSegments.isEmpty) return null;
+    final fileName = uri.pathSegments.lastWhere(
+      (segment) => segment.trim().isNotEmpty,
+      orElse: () => '',
+    ).trim();
+    if (fileName.isEmpty || fileName.contains('/') || fileName.contains(r'\')) {
+      return null;
+    }
+    final dotIndex = fileName.lastIndexOf('.');
+    if (dotIndex <= 0 || dotIndex == fileName.length - 1) {
+      return null;
+    }
+    return fileName;
+  }
+
   FlutterView getScreen() {
     return WidgetsBinding.instance.platformDispatcher.views.first;
   }
