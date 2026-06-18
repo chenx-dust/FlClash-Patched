@@ -58,12 +58,12 @@ void main() {
       expect(utils.getTimeText(3661000), '01:01:01');
     });
 
-    test('formats three digit hours', () {
-      expect(utils.getTimeText(100 * 3600 * 1000), '100:00:00');
+    test('formats durations over 24 hours in days', () {
+      expect(utils.getTimeText(100 * 3600 * 1000), '4d 04:00:00');
     });
 
-    test('caps at 999:59:59', () {
-      expect(utils.getTimeText(1000 * 3600 * 1000), '999:59:59');
+    test('keeps long durations precise', () {
+      expect(utils.getTimeText(1000 * 3600 * 1000), '41d 16:00:00');
     });
   });
 
