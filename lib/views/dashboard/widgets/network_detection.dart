@@ -41,7 +41,7 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
       height: getWidgetHeight(1),
       child: CommonCard(
         radius: AppCorner.lg,
-        onPressed: () {},
+        onPressed: () => copyText(context, ipInfo?.ip),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

@@ -9,7 +9,6 @@ import 'package:fl_clash/views/profiles/overwrite/overwrite.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'add.dart';
@@ -286,13 +285,7 @@ class ProfileItem extends ConsumerWidget {
   }
 
   Future<void> _handleCopyLink(BuildContext context) async {
-    await Clipboard.setData(ClipboardData(text: profile.url));
-    if (context.mounted) {
-      context.showNotifier(
-        context.appLocalizations.copySuccess,
-        level: MessageLevel.success,
-      );
-    }
+    await copyText(context, profile.url);
   }
 
   Future<void> _handleExportFile(BuildContext context) async {
