@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/models/state.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:flutter/material.dart';
@@ -28,13 +29,17 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   @override
   void initState() {
     super.initState();
-    ref.listenManual(appSettingProvider.select((state) => state.autoLaunch), (
-      prev,
-      next,
-    ) {
+    ref.listenManual(
+      appSettingProvider.select(
+        (state) => VM2(state.autoLaunch, state.highPriorityAutoLaunch),
+      ),
+      (prev, next) {
       if (prev != next) {
         debouncer.call(FunctionTag.autoLaunch, () {
-          autoLaunch?.updateStatus(next);
+          autoLaunch?.updateStatus(
+            isAutoLaunch: next.a,
+            isHighPriorityAutoLaunch: next.b,
+          );
         });
       }
     });
