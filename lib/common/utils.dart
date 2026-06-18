@@ -296,29 +296,32 @@ class Utils {
     return '${appName}_${DateTime.now().show}.log';
   }
 
-  Future<String?> getLocalIpAddress() async {
+  Future<List<NetworkInterface>> getLocalNetworkInterfaces() async {
     final List<NetworkInterface> interfaces =
         await NetworkInterface.list(includeLoopback: false)
           ..sort((a, b) {
-            if (a.isWifi && !b.isWifi) return -1;
-            if (!a.isWifi && b.isWifi) return 1;
+            final typeCompare = a.interfaceType.index.compareTo(
+              b.interfaceType.index,
+            );
+            if (typeCompare != 0) return typeCompare;
             if (a.includesIPv4 && !b.includesIPv4) return -1;
             if (!a.includesIPv4 && b.includesIPv4) return 1;
             return 0;
           });
-    for (final interface in interfaces) {
-      final addresses = interface.addresses;
-      if (addresses.isEmpty) {
-        continue;
-      }
-      addresses.sort((a, b) {
-        if (a.isIPv4 && !b.isIPv4) return -1;
-        if (!a.isIPv4 && b.isIPv4) return 1;
-        return 0;
-      });
-      return addresses.first.address;
-    }
-    return '';
+    final sortedInterfaceNames = interfaces
+        .map((e) => '${e.name}(${e.interfaceType.name})')
+        .join(', ');
+    commonPrint.log('sorted network interfaces: $sortedInterfaceNames');
+    return interfaces
+        .where((interface) => interface.preferredAddress != null)
+        .toList();
+  }
+
+  Future<String?> getLocalIpAddress() async {
+    final interfaces = await getLocalNetworkInterfaces();
+    return interfaces.isNotEmpty
+        ? interfaces.first.preferredAddress?.address ?? ''
+        : '';
   }
 
   SingleActivator controlSingleActivator(LogicalKeyboardKey trigger) {
