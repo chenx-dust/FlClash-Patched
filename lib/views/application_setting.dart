@@ -119,7 +119,41 @@ class AutoLaunchItem extends ConsumerWidget {
         onChanged: (bool value) {
           ref
               .read(appSettingProvider.notifier)
-              .update((state) => state.copyWith(autoLaunch: value));
+              .update(
+                (state) => state.copyWith(
+                  autoLaunch: value,
+                  highPriorityAutoLaunch: false,
+                ),
+              );
+        },
+      ),
+    );
+  }
+}
+
+class HighPriorityAutoLaunchItem extends ConsumerWidget {
+  const HighPriorityAutoLaunchItem({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appLocalizations = context.appLocalizations;
+    final highPriorityAutoLaunch = ref.watch(
+      appSettingProvider.select((state) => state.highPriorityAutoLaunch),
+    );
+    return ListItem.switchItem(
+      title: Text(appLocalizations.highPriorityAutoLaunch),
+      subtitle: Text(appLocalizations.highPriorityAutoLaunchDesc),
+      delegate: SwitchDelegate(
+        value: highPriorityAutoLaunch,
+        onChanged: (bool value) {
+          ref
+              .read(appSettingProvider.notifier)
+              .update(
+                (state) => state.copyWith(
+                  autoLaunch: true,
+                  highPriorityAutoLaunch: value,
+                ),
+              );
         },
       ),
     );
@@ -270,15 +304,19 @@ class AutoCheckUpdateItem extends ConsumerWidget {
   }
 }
 
-class ApplicationSettingView extends StatelessWidget {
+class ApplicationSettingView extends ConsumerWidget {
   const ApplicationSettingView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final showHighPriorityAutoLaunch =
+        system.isWindows &&
+        ref.watch(appSettingProvider.select((state) => state.autoLaunch));
     final List<Widget> items = [
       const MinimizeItem(),
       if (system.isDesktop) ...[
         const AutoLaunchItem(),
+        if (showHighPriorityAutoLaunch) const HighPriorityAutoLaunchItem(),
         const SilentLaunchItem(),
       ],
       const AutoRunItem(),
