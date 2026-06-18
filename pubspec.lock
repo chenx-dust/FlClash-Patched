@@ -1565,8 +1565,8 @@ packages:
     description:
       path: "packages/tray_manager"
       ref: main
-      resolved-ref: da2d83dd1cc3c9709bf708ff827ad9072504ce52
-      url: "https://github.com/chen08209/tray_manager.git"
+      resolved-ref: ff3c93625d0eb7aa9eb6d9fd84db32c69304e9e1
+      url: "https://github.com/chenx-dust/tray_manager.git"
     source: git
     version: "0.5.3"
   typed_data:
@@ -1793,7 +1793,7 @@ packages:
     source: hosted
     version: "1.1.0"
   xml:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: xml
       sha256: "971043b3a0d3da28727e40ed3e0b5d18b742fa5a68665cca88e74b7876d5e025"
