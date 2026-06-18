@@ -100,6 +100,33 @@ void main() {
     });
   });
 
+  group('getFileNameForUrl', () {
+    test('returns last path file name without query', () {
+      expect(
+        utils.getFileNameFromUrl(
+          'https://example.com/subscriptions/my-profile.yaml?token=abc',
+        ),
+        'my-profile.yaml',
+      );
+    });
+
+    test('returns decoded file name', () {
+      expect(
+        utils.getFileNameFromUrl(
+          'https://example.com/subscriptions/%E8%AE%A2%E9%98%85.yaml',
+        ),
+        '订阅.yaml',
+      );
+    });
+
+    test('returns null when path does not look like a file', () {
+      expect(
+        utils.getFileNameFromUrl('https://example.com/api/subscribe?token=abc'),
+        isNull,
+      );
+    });
+  });
+
   group('compareVersions', () {
     test('equal versions', () {
       expect(utils.compareVersions('1.0.0', '1.0.0'), 0);
