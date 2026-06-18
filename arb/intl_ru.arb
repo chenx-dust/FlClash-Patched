@@ -41,6 +41,8 @@
   "minimizeOnExitDesc": "Изменить стандартное событие выхода из системы",
   "autoLaunch": "Автозапуск",
   "autoLaunchDesc": "Следовать автозапуску системы",
+  "highPriorityAutoLaunch": "Автозапуск с высоким приоритетом",
+  "highPriorityAutoLaunchDesc": "Использовать задачу Windows для более раннего запуска",
   "silentLaunch": "Тихий запуск",
   "silentLaunchDesc": "Запуск в фоновом режиме",
   "autoRun": "Автозапуск",

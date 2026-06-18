@@ -41,6 +41,8 @@
   "minimizeOnExitDesc": "システムの終了イベントを変更",
   "autoLaunch": "自動起動",
   "autoLaunchDesc": "システムの自動起動に従う",
+  "highPriorityAutoLaunch": "高優先度自動起動",
+  "highPriorityAutoLaunchDesc": "Windows タスクスケジューラでより早く起動します",
   "silentLaunch": "バックグラウンド起動",
   "silentLaunchDesc": "バックグラウンドで起動",
   "autoRun": "自動実行",

@@ -344,6 +344,26 @@ class AppLocalizations {
     );
   }
 
+  /// `High priority auto launch`
+  String get highPriorityAutoLaunch {
+    return Intl.message(
+      'High priority auto launch',
+      name: 'highPriorityAutoLaunch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Use a Windows scheduled task to start earlier`
+  String get highPriorityAutoLaunchDesc {
+    return Intl.message(
+      'Use a Windows scheduled task to start earlier',
+      name: 'highPriorityAutoLaunchDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `SilentLaunch`
   String get silentLaunch {
     return Intl.message(
