@@ -35,7 +35,7 @@ dependencies:
   win32_registry: ^3.0.3
   tray_manager:
     git:
-      url: https://github.com/chen08209/tray_manager.git
+      url: https://github.com/chenx-dust/tray_manager.git
       ref: main
       path: packages/tray_manager
   wifi_ssid:
@@ -69,6 +69,7 @@ dependencies:
   flutter_svg: ^2.1.0
   flutter_cache_manager: ^3.4.1
   crypto: ^3.0.3
+  xml: ^6.6.1
   yaml_writer:
     git:
       url: https://github.com/chen08209/yaml_writer
