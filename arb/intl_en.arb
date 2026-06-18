@@ -43,6 +43,8 @@
   "minimizeOnExitDesc": "Modify the default system exit event",
   "autoLaunch": "Auto launch",
   "autoLaunchDesc": "Follow the system self startup",
+  "highPriorityAutoLaunch": "High priority auto launch",
+  "highPriorityAutoLaunchDesc": "Use a Windows scheduled task to start earlier",
   "silentLaunch": "SilentLaunch",
   "silentLaunchDesc": "Start in the background",
   "autoRun": "AutoRun",

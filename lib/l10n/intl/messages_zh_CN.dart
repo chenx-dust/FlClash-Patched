@@ -305,6 +305,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Helper 服务不可用，无法启用 TUN 模式，请重新安装 FlClash。",
     ),
     "hideFromList": MessageLookupByLibrary.simpleMessage("从列表中隐藏"),
+    "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage("高优先级自启动"),
+    "highPriorityAutoLaunchDesc": MessageLookupByLibrary.simpleMessage(
+      "使用 Windows 计划任务更早启动",
+    ),
     "host": MessageLookupByLibrary.simpleMessage("主机"),
     "hostsDesc": MessageLookupByLibrary.simpleMessage("追加Hosts"),
     "hotkeyConflict": MessageLookupByLibrary.simpleMessage("快捷键冲突"),
