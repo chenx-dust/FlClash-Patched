@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:math';
 
 import 'package:fl_clash/common/common.dart';
@@ -21,9 +20,7 @@ class StatusManager extends StatefulWidget {
 
 class StatusManagerState extends State<StatusManager> {
   final _messagesNotifier = ValueNotifier<List<CommonMessage>>([]);
-  final _bufferMessages = Queue<CommonMessage>();
   final _activeTimers = <String, Timer>{};
-  bool _isDisplayingMessage = false;
 
   @override
   void initState() {
@@ -37,7 +34,6 @@ class StatusManagerState extends State<StatusManager> {
       timer.cancel();
     }
     _activeTimers.clear();
-    _bufferMessages.clear();
     super.dispose();
   }
 
@@ -47,25 +43,16 @@ class StatusManagerState extends State<StatusManager> {
       text: text,
       actionState: actionState,
     );
-    _bufferMessages.add(commonMessage);
     commonPrint.log('message: $text');
-    _processQueue();
+    _showMessage(commonMessage);
   }
 
-  void _cancelMessage(String id) {
-    _bufferMessages.removeWhere((msg) => msg.id == id);
-    if (_activeTimers.containsKey(id)) {
-      _removeMessage(id);
+  void _showMessage(CommonMessage message) {
+    for (final timer in _activeTimers.values) {
+      timer.cancel();
     }
-  }
-
-  void _processQueue() {
-    if (_isDisplayingMessage || _bufferMessages.isEmpty) {
-      return;
-    }
-    _isDisplayingMessage = true;
-    final message = _bufferMessages.removeFirst();
-    _messagesNotifier.value = List.from(_messagesNotifier.value)..add(message);
+    _activeTimers.clear();
+    _messagesNotifier.value = [message];
     final timer = Timer(message.duration, () {
       _removeMessage(message.id);
     });
@@ -77,8 +64,6 @@ class StatusManagerState extends State<StatusManager> {
     final currentMessages = List<CommonMessage>.from(_messagesNotifier.value);
     currentMessages.removeWhere((msg) => msg.id == id);
     _messagesNotifier.value = currentMessages;
-    _isDisplayingMessage = false;
-    _processQueue();
   }
 
   @override
@@ -115,10 +100,19 @@ class StatusManagerState extends State<StatusManager> {
                             : LayoutBuilder(
                                 key: Key(messages.last.id),
                                 builder: (_, constraints) {
+                                  final message = messages.last;
+                                  final actionState = message.actionState;
+                                  final cardWidth = min(
+                                    constraints.maxWidth,
+                                    500.0,
+                                  );
+                                  final showCloseButton =
+                                      cardWidth >=
+                                      (actionState == null ? 400 : 480);
                                   return Dismissible(
-                                    key: ValueKey(messages.last.id),
+                                    key: ValueKey(message.id),
                                     onDismissed: (_) {
-                                      _cancelMessage(messages.last.id);
+                                      _removeMessage(message.id);
                                     },
                                     child: Card(
                                       shape: const RoundedSuperellipseBorder(
@@ -131,52 +125,69 @@ class StatusManagerState extends State<StatusManager> {
                                           .colorScheme
                                           .surfaceContainerHigh,
                                       child: Container(
-                                        width: min(constraints.maxWidth, 500),
+                                        width: cardWidth,
                                         constraints: const BoxConstraints(
                                           minHeight: 54,
                                         ),
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16,
-                                          vertical: 8,
-                                        ),
+                                        padding: const EdgeInsets.all(8),
                                         child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Flexible(
-                                              child: Text(
-                                                messages.last.text,
-                                                maxLines: 3,
-                                                style: context
-                                                    .textTheme
-                                                    .labelLarge
-                                                    ?.copyWith(
-                                                      color: context
-                                                          .colorScheme
-                                                          .onSurfaceVariant,
+                                            Expanded(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 8,
                                                     ),
-                                                overflow: TextOverflow.ellipsis,
+                                                child: Text(
+                                                  message.text,
+                                                  maxLines: 3,
+                                                  style: context
+                                                      .textTheme
+                                                      .labelLarge
+                                                      ?.copyWith(
+                                                        color: context
+                                                            .colorScheme
+                                                            .onSurfaceVariant,
+                                                      ),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
                                               ),
                                             ),
-                                            const SizedBox(width: 16),
-                                            if (messages.last.actionState !=
-                                                null)
+                                            if (actionState != null) ...[
                                               CommonMinFilledButtonTheme(
                                                 child: FilledButton.tonal(
                                                   onPressed: () async {
-                                                    _cancelMessage(
-                                                      messages.last.id,
-                                                    );
-                                                    messages.last.actionState!
-                                                        .action();
+                                                    _removeMessage(message.id);
+                                                    actionState.action();
                                                   },
                                                   child: Text(
-                                                    messages
-                                                        .last
-                                                        .actionState!
-                                                        .actionText,
+                                                    actionState.actionText,
                                                   ),
                                                 ),
+                                              ),
+                                              if (showCloseButton)
+                                                const SizedBox(width: 4),
+                                            ],
+                                            if (showCloseButton)
+                                              IconButton(
+                                                style: IconButton.styleFrom(
+                                                  fixedSize: const Size.square(
+                                                    32,
+                                                  ),
+                                                  padding: EdgeInsets.zero,
+                                                  shape: const CircleBorder(),
+                                                  tapTargetSize:
+                                                      MaterialTapTargetSize
+                                                          .shrinkWrap,
+                                                ),
+                                                visualDensity:
+                                                    VisualDensity.compact,
+                                                iconSize: 20,
+                                                onPressed: () {
+                                                  _removeMessage(message.id);
+                                                },
+                                                icon: const Icon(Icons.close),
                                               ),
                                           ],
                                         ),
