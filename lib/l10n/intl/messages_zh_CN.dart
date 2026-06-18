@@ -298,6 +298,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "goToConfigureScript": MessageLookupByLibrary.simpleMessage("前往配置脚本"),
     "hasCacheChange": MessageLookupByLibrary.simpleMessage("是否缓存修改"),
     "hideFromList": MessageLookupByLibrary.simpleMessage("从列表中隐藏"),
+    "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage("高优先级自启动"),
+    "highPriorityAutoLaunchDesc": MessageLookupByLibrary.simpleMessage(
+      "使用 Windows 计划任务更早启动",
+    ),
     "host": MessageLookupByLibrary.simpleMessage("主机"),
     "hostsDesc": MessageLookupByLibrary.simpleMessage("追加Hosts"),
     "hotkeyConflict": MessageLookupByLibrary.simpleMessage("快捷键冲突"),
