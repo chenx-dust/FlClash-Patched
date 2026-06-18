@@ -26,6 +26,7 @@ void main() {
       );
       expect(restored.onlyStatisticsProxy, false);
       expect(restored.autoLaunch, false);
+      expect(restored.highPriorityAutoLaunch, false);
       expect(restored.silentLaunch, false);
       expect(restored.autoRun, false);
       expect(restored.openLogs, false);
@@ -43,6 +44,7 @@ void main() {
         locale: 'zh_CN',
         onlyStatisticsProxy: true,
         autoLaunch: true,
+        highPriorityAutoLaunch: true,
         closeConnections: false,
         testUrl: 'https://custom.test',
       );
@@ -53,6 +55,7 @@ void main() {
       expect(restored.locale, 'zh_CN');
       expect(restored.onlyStatisticsProxy, true);
       expect(restored.autoLaunch, true);
+      expect(restored.highPriorityAutoLaunch, true);
       expect(restored.closeConnections, false);
       expect(restored.testUrl, 'https://custom.test');
     });
