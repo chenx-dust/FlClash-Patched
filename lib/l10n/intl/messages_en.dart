@@ -430,6 +430,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Do you want to cache the changes?",
     ),
     "hideFromList": MessageLookupByLibrary.simpleMessage("Hide from list"),
+    "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage(
+      "High priority auto launch",
+    ),
+    "highPriorityAutoLaunchDesc": MessageLookupByLibrary.simpleMessage(
+      "Use a Windows scheduled task to start earlier",
+    ),
     "host": MessageLookupByLibrary.simpleMessage("Host"),
     "hostsDesc": MessageLookupByLibrary.simpleMessage("Add Hosts"),
     "hotkeyConflict": MessageLookupByLibrary.simpleMessage("Hotkey conflict"),

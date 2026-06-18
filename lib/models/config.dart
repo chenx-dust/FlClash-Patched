@@ -68,6 +68,7 @@ abstract class AppSettingProps with _$AppSettingProps {
     List<DashboardWidget> dashboardWidgets,
     @Default(false) bool onlyStatisticsProxy,
     @Default(false) bool autoLaunch,
+    @Default(false) bool highPriorityAutoLaunch,
     @Default(false) bool silentLaunch,
     @Default(false) bool autoRun,
     @Default(false) bool openLogs,
