@@ -340,6 +340,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "goToConfigureScript": MessageLookupByLibrary.simpleMessage("スクリプト設定に移動"),
     "hasCacheChange": MessageLookupByLibrary.simpleMessage("変更をキャッシュしますか？"),
     "hideFromList": MessageLookupByLibrary.simpleMessage("リストから隠す"),
+    "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage("高優先度自動起動"),
+    "highPriorityAutoLaunchDesc": MessageLookupByLibrary.simpleMessage(
+      "Windows タスクスケジューラでより早く起動します",
+    ),
     "host": MessageLookupByLibrary.simpleMessage("ホスト"),
     "hostsDesc": MessageLookupByLibrary.simpleMessage("ホストを追加"),
     "hotkeyConflict": MessageLookupByLibrary.simpleMessage("ホットキー競合"),
