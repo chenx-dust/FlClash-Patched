@@ -225,11 +225,11 @@ class _AccessViewState extends ConsumerState<AccessView> {
   }
 
   Future<void> _exportToClipboard() async {
-    await globalState.safeRun(() {
+    await globalState.safeRun(() async {
       final currentList = ref.read(
         accessControlStateProvider.select((state) => state.currentList),
       );
-      Clipboard.setData(ClipboardData(text: currentList.join('\n')));
+      await copyText(context, currentList.join('\n'));
     });
   }
 
