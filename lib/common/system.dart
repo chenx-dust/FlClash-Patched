@@ -10,6 +10,7 @@ import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/input.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
+import 'package:xml/xml.dart';
 
 class System {
   static System? _instance;
@@ -277,22 +278,49 @@ class Windows {
     return res && retryStatus == WindowsHelperServiceStatus.running;
   }
 
+  Future<bool> isTaskRegistered(String appName) async {
+    final result = await Process.run('schtasks.exe', [
+      '/Query',
+      '/TN',
+      appName,
+    ]);
+    if (result.exitCode != 0) {
+      return false;
+    }
+    return result.stdout.toString().contains(appName);
+  }
+
+  Future<bool> unregisterTask(String appName) async {
+    if (!await isTaskRegistered(appName)) {
+      return true;
+    }
+    final result = await Process.run('schtasks.exe', [
+      '/Delete',
+      '/TN',
+      appName,
+      '/F',
+    ]);
+    return result.exitCode == 0;
+  }
+
   Future<bool> registerTask(String appName) async {
+    final executable = XmlText(Platform.resolvedExecutable).toXmlString();
     final taskXml =
         '''
 <?xml version="1.0" encoding="UTF-16"?>
-<Task version="1.3" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <Principals>
     <Principal id="Author">
       <LogonType>InteractiveToken</LogonType>
-      <RunLevel>HighestAvailable</RunLevel>
     </Principal>
   </Principals>
   <Triggers>
-    <LogonTrigger/>
+    <LogonTrigger>
+      <Delay>PT0S</Delay>
+    </LogonTrigger>
   </Triggers>
   <Settings>
-    <MultipleInstancesPolicy>Parallel</MultipleInstancesPolicy>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
     <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
     <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
     <AllowHardTerminate>false</AllowHardTerminate>
@@ -307,12 +335,12 @@ class Windows {
     <Hidden>false</Hidden>
     <RunOnlyIfIdle>false</RunOnlyIfIdle>
     <WakeToRun>false</WakeToRun>
-    <ExecutionTimeLimit>PT72H</ExecutionTimeLimit>
+    <ExecutionTimeLimit>PT0S</ExecutionTimeLimit>
     <Priority>7</Priority>
   </Settings>
   <Actions Context="Author">
     <Exec>
-      <Command>"${Platform.resolvedExecutable}"</Command>
+      <Command>$executable</Command>
     </Exec>
   </Actions>
 </Task>''';
@@ -326,10 +354,14 @@ class Windows {
       '/TN',
       appName,
       '/XML',
-      '%s',
+      taskPath,
       '/F',
-    ].join(' ');
-    return runas('schtasks', commandLine.replaceFirst('%s', taskPath));
+    ];
+    final result = await Process.run('schtasks.exe', commandLine);
+    if (result.exitCode == 0) {
+      return true;
+    }
+    return runas('schtasks.exe', commandLine.join(' '));
   }
 }
 
