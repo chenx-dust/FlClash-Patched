@@ -178,7 +178,7 @@ class _PrimaryColorItemState extends ConsumerState<_PrimaryColorItem> {
     ref.read(themeSettingProvider.notifier).update((state) {
       return state.copyWith(
         primaryColors: defaultPrimaryColors,
-        primaryColor: null,
+        primaryColor: defaultPrimaryColor,
         schemeVariant: DynamicSchemeVariant.content,
       );
     });
