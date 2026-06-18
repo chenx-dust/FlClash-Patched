@@ -76,28 +76,26 @@ class Utils {
   }
 
   String getTimeDifference(DateTime dateTime) {
-    final currentDateTime = DateTime.now();
-    final difference = currentDateTime.difference(dateTime);
-    final inHours = difference.inHours;
-    final inMinutes = difference.inMinutes;
-    final inSeconds = difference.inSeconds;
-
-    return '${getDateStringLast2(inHours)}:${getDateStringLast2(inMinutes)}:${getDateStringLast2(inSeconds)}';
+    final difference = DateTime.now().difference(dateTime);
+    return getTimeText(difference.inMilliseconds);
   }
 
   String getTimeText(int? timeStamp) {
     if (timeStamp == null) {
       return '00:00:00';
     }
-    final diff = timeStamp / 1000;
-    final inHours = (diff / 3600).floor();
-    if (inHours > 99) {
-      return '99:59:59';
-    }
-    final inMinutes = (diff / 60 % 60).floor();
-    final inSeconds = (diff % 60).floor();
+    final totalSeconds = (timeStamp / 1000).floor();
+    final inHours = (totalSeconds / Duration.secondsPerHour).floor();
+    final inMinutes = (totalSeconds / Duration.secondsPerMinute).floor() % 60;
+    final inSeconds = totalSeconds % 60;
 
-    return '${getDateStringLast2(inHours)}:${getDateStringLast2(inMinutes)}:${getDateStringLast2(inSeconds)}';
+    if (inHours >= 24) {
+      final inDays = (inHours / 24).floor();
+      final remainHours = inHours % 24;
+      return '${inDays}d ${getDateStringLast2(remainHours)}:${getDateStringLast2(inMinutes)}:${getDateStringLast2(inSeconds)}';
+    } else {
+      return '${getDateStringLast2(inHours)}:${getDateStringLast2(inMinutes)}:${getDateStringLast2(inSeconds)}';
+    }
   }
 
   Locale? getLocaleForString(String? localString) {
