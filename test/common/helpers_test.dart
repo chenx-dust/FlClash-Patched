@@ -308,4 +308,31 @@ void main() {
       expect(getFileNameForDisposition('attachment'), isNull);
     });
   });
+
+  group('getFileNameFromUrl', () {
+    test('returns last path file name without query', () {
+      expect(
+        getFileNameFromUrl(
+          'https://example.com/subscriptions/my-profile.yaml?token=abc',
+        ),
+        'my-profile.yaml',
+      );
+    });
+
+    test('returns decoded file name', () {
+      expect(
+        getFileNameFromUrl(
+          'https://example.com/subscriptions/%E8%AE%A2%E9%98%85.yaml',
+        ),
+        '订阅.yaml',
+      );
+    });
+
+    test('returns null when path does not look like a file', () {
+      expect(
+        getFileNameFromUrl('https://example.com/api/subscribe?token=abc'),
+        isNull,
+      );
+    });
+  });
 }
