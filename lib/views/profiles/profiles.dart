@@ -6,7 +6,6 @@ import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/profiles/overwrite/overwrite.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'add.dart';
@@ -247,10 +246,7 @@ class ProfileItem extends StatelessWidget {
   }
 
   Future<void> _handleCopyLink(BuildContext context) async {
-    await Clipboard.setData(ClipboardData(text: profile.url));
-    if (context.mounted) {
-      context.showNotifier(context.appLocalizations.copySuccess);
-    }
+    await copyText(context, profile.url);
   }
 
   Future<void> _handleExportFile(BuildContext context) async {
