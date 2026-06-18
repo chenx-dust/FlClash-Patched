@@ -40,7 +40,7 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
     return SizedBox(
       height: getWidgetHeight(1),
       child: CommonCard(
-        onPressed: () {},
+        onPressed: () => copyText(context, ipInfo?.ip),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
