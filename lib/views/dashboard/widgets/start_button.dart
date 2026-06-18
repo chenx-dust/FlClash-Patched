@@ -17,6 +17,8 @@ class _StartButtonState extends ConsumerState<StartButton>
   AnimationController? _controller;
   late Animation<double> _animation;
   bool isStart = false;
+  double? _cachedShortWidth;
+  double? _cachedLongWidth;
 
   @override
   void initState() {
@@ -66,6 +68,21 @@ class _StartButtonState extends ConsumerState<StartButton>
     });
   }
 
+  double _measureTextWidth(String text, BuildContext context) {
+    return globalState.measure
+        .computeTextSize(
+          Text(text, style: context.textTheme.titleMedium?.toSoftBold),
+        )
+        .width;
+  }
+
+  double _getRunTimeTextWidth(String text, BuildContext context) {
+    if (text.contains('d ')) {
+      return _cachedLongWidth ??= _measureTextWidth('00d 00:00:00', context);
+    }
+    return _cachedShortWidth ??= _measureTextWidth('00:00:00', context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasProfile = ref.watch(
@@ -75,6 +92,8 @@ class _StartButtonState extends ConsumerState<StartButton>
       return Container();
     }
     final suspend = ref.watch(suspendProvider);
+    final runTime = ref.watch(runTimeProvider);
+    final runTimeText = utils.getTimeText(runTime);
     final theme = Theme.of(context);
     final appLocalizations = context.appLocalizations;
     return RepaintBoundary(
@@ -97,15 +116,7 @@ class _StartButtonState extends ConsumerState<StartButton>
                           )
                           .width +
                       24
-                : globalState.measure
-                          .computeTextSize(
-                            Text(
-                              utils.getTimeDifference(DateTime.now()),
-                              style: context.textTheme.titleMedium?.toSoftBold,
-                            ),
-                          )
-                          .width +
-                      16;
+                : _getRunTimeTextWidth(runTimeText, context) + 16;
             return FloatingActionButton(
               clipBehavior: Clip.antiAlias,
               materialTapTargetSize: MaterialTapTargetSize.padded,
@@ -142,20 +153,12 @@ class _StartButtonState extends ConsumerState<StartButton>
                     color: context.colorScheme.onPrimaryContainer,
                   ),
                 )
-              : Consumer(
-                  builder: (_, ref, _) {
-                    final runTime = ref.watch(runTimeProvider);
-                    final text = utils.getTimeText(runTime);
-                    return Text(
-                      text,
-                      maxLines: 1,
-                      overflow: TextOverflow.visible,
-                      style: Theme.of(context).textTheme.titleMedium?.toSoftBold
-                          .copyWith(
-                            color: context.colorScheme.onPrimaryContainer,
-                          ),
-                    );
-                  },
+              : Text(
+                  runTimeText,
+                  maxLines: 1,
+                  overflow: TextOverflow.visible,
+                  style: Theme.of(context).textTheme.titleMedium?.toSoftBold
+                      .copyWith(color: context.colorScheme.onPrimaryContainer),
                 ),
         ),
       ),
