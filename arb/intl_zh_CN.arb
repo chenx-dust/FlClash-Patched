@@ -43,6 +43,8 @@
   "minimizeOnExitDesc": "修改系统默认退出事件",
   "autoLaunch": "自启动",
   "autoLaunchDesc": "跟随系统自启动",
+  "highPriorityAutoLaunch": "高优先级自启动",
+  "highPriorityAutoLaunchDesc": "使用 Windows 计划任务更早启动",
   "silentLaunch": "静默启动",
   "silentLaunchDesc": "后台启动",
   "autoRun": "自动运行",

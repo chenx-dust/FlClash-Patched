@@ -621,7 +621,12 @@ class SystemAction extends _$SystemAction {
   void updateAutoLaunch() {
     ref
         .read(appSettingProvider.notifier)
-        .update((state) => state.copyWith(autoLaunch: !state.autoLaunch));
+        .update(
+          (state) => state.copyWith(
+            autoLaunch: !state.autoLaunch,
+            highPriorityAutoLaunch: false,
+          ),
+        );
   }
 
   Future<void> updateTray() async {
