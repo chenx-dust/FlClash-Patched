@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
@@ -60,12 +59,12 @@ Future<void> runCommandStream(
     includeParentEnvironment: true,
     runInShell: Platform.isWindows,
   );
-  process.stdout.transform(utf8.decoder).listen((data) {
+  process.stdout.transform(systemEncoding.decoder).listen((data) {
     for (final line in data.split('\n')) {
       if (line.isNotEmpty) _log.info(line);
     }
   });
-  process.stderr.transform(utf8.decoder).listen((data) {
+  process.stderr.transform(systemEncoding.decoder).listen((data) {
     for (final line in data.split('\n')) {
       if (line.isNotEmpty) _log.warning(line);
     }
