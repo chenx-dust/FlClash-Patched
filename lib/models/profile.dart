@@ -203,7 +203,8 @@ extension ProfileExtension on Profile {
     final userinfo = response.headers.value('subscription-userinfo');
     return copyWith(
       label: label.takeFirstValid([
-        utils.getFileNameForDisposition(disposition),
+        utils.getFileNameFromDisposition(disposition),
+        utils.getFileNameFromUrl(url),
         id.toString(),
       ]),
       subscriptionInfo: SubscriptionInfo.formHString(userinfo),
