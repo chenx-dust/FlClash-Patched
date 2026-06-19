@@ -5,7 +5,6 @@ import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/inherited.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'card.dart';
@@ -313,7 +312,7 @@ class ListItem<T> extends StatelessWidget {
             final supportsPredictiveBack = system.supportsPredictiveBack(
               globalState.container.read(versionProvider),
             );
-            if (!isMobile || themeProps.predictiveBack && supportsPredictiveBack || kDebugMode) {
+            if (!isMobile || themeProps.predictiveBack && supportsPredictiveBack) {
               final res = await showExtend(
                 context,
                 props: ExtendProps(
