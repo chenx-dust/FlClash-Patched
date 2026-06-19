@@ -254,6 +254,8 @@ enum ActionMethod {
   crash,
   setupConfig,
   deleteFile,
+  generateAgeKeyPair,
+  convertAgeSecretKeyToPublicKey,
 
   ///Android,
   setState,

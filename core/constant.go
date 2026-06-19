@@ -2,14 +2,25 @@ package main
 
 import (
 	"encoding/json"
+	"net/netip"
+	"time"
+
 	"github.com/metacubex/mihomo/adapter/provider"
 	P "github.com/metacubex/mihomo/component/process"
 	"github.com/metacubex/mihomo/constant"
 	"github.com/metacubex/mihomo/log"
 	"github.com/metacubex/mihomo/tunnel"
-	"net/netip"
-	"time"
 )
+
+type ValidateConfigParams struct {
+	Path         string `json:"path"`
+	AgeSecretKey string `json:"age-secret-key"`
+}
+
+type GetConfigParams struct {
+	Path         string `json:"path"`
+	AgeSecretKey string `json:"age-secret-key"`
+}
 
 type InitParams struct {
 	HomeDir string `json:"home-dir"`
@@ -72,39 +83,41 @@ type ProxiesData struct {
 }
 
 const (
-	messageMethod                  Method = "message"
-	initClashMethod                Method = "initClash"
-	getIsInitMethod                Method = "getIsInit"
-	forceGcMethod                  Method = "forceGc"
-	shutdownMethod                 Method = "shutdown"
-	validateConfigMethod           Method = "validateConfig"
-	updateConfigMethod             Method = "updateConfig"
-	getProxiesMethod               Method = "getProxies"
-	changeProxyMethod              Method = "changeProxy"
-	getTrafficMethod               Method = "getTraffic"
-	getTotalTrafficMethod          Method = "getTotalTraffic"
-	resetTrafficMethod             Method = "resetTraffic"
-	asyncTestDelayMethod           Method = "asyncTestDelay"
-	getConnectionsMethod           Method = "getConnections"
-	closeConnectionsMethod         Method = "closeConnections"
-	resetConnectionsMethod         Method = "resetConnections"
-	closeConnectionMethod          Method = "closeConnection"
-	getExternalProvidersMethod     Method = "getExternalProviders"
-	getExternalProviderMethod      Method = "getExternalProvider"
-	getCountryCodeMethod           Method = "getCountryCode"
-	getMemoryMethod                Method = "getMemory"
-	updateGeoDataMethod            Method = "updateGeoData"
-	updateExternalProviderMethod   Method = "updateExternalProvider"
-	sideLoadExternalProviderMethod Method = "sideLoadExternalProvider"
-	startLogMethod                 Method = "startLog"
-	stopLogMethod                  Method = "stopLog"
-	startListenerMethod            Method = "startListener"
-	stopListenerMethod             Method = "stopListener"
-	updateDnsMethod                Method = "updateDns"
-	crashMethod                    Method = "crash"
-	setupConfigMethod              Method = "setupConfig"
-	getConfigMethod                Method = "getConfig"
-	deleteFile                     Method = "deleteFile"
+	messageMethod                        Method = "message"
+	initClashMethod                      Method = "initClash"
+	getIsInitMethod                      Method = "getIsInit"
+	forceGcMethod                        Method = "forceGc"
+	shutdownMethod                       Method = "shutdown"
+	validateConfigMethod                 Method = "validateConfig"
+	updateConfigMethod                   Method = "updateConfig"
+	getProxiesMethod                     Method = "getProxies"
+	changeProxyMethod                    Method = "changeProxy"
+	getTrafficMethod                     Method = "getTraffic"
+	getTotalTrafficMethod                Method = "getTotalTraffic"
+	resetTrafficMethod                   Method = "resetTraffic"
+	asyncTestDelayMethod                 Method = "asyncTestDelay"
+	getConnectionsMethod                 Method = "getConnections"
+	closeConnectionsMethod               Method = "closeConnections"
+	resetConnectionsMethod               Method = "resetConnections"
+	closeConnectionMethod                Method = "closeConnection"
+	getExternalProvidersMethod           Method = "getExternalProviders"
+	getExternalProviderMethod            Method = "getExternalProvider"
+	getCountryCodeMethod                 Method = "getCountryCode"
+	getMemoryMethod                      Method = "getMemory"
+	updateGeoDataMethod                  Method = "updateGeoData"
+	updateExternalProviderMethod         Method = "updateExternalProvider"
+	sideLoadExternalProviderMethod       Method = "sideLoadExternalProvider"
+	startLogMethod                       Method = "startLog"
+	stopLogMethod                        Method = "stopLog"
+	startListenerMethod                  Method = "startListener"
+	stopListenerMethod                   Method = "stopListener"
+	updateDnsMethod                      Method = "updateDns"
+	crashMethod                          Method = "crash"
+	setupConfigMethod                    Method = "setupConfig"
+	getConfigMethod                      Method = "getConfig"
+	deleteFile                           Method = "deleteFile"
+	generateAgeKeyPairMethod             Method = "generateAgeKeyPair"
+	convertAgeSecretKeyToPublicKeyMethod Method = "convertAgeSecretKeyToPublicKey"
 )
 
 type Method string
