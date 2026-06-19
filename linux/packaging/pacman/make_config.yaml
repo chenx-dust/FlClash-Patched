@@ -1,18 +1,18 @@
 display_name: FlClash
-package_name: FlClash
+package_name: flclash
 maintainer:
   name: chen08209
   email: chen08209@gmail.com
 
-priority: optional
-section: x11
+licenses:
+  - GPL-3.0-or-later
+
 installed_size: 6604
-essential: false
 icon: ./assets/images/icon.png
 
 dependencies:
-  - libayatana-appindicator3-1
-  - libkeybinder-3.0-0
+  - libayatana-appindicator
+  - libkeybinder3
 
 keywords:
   - FlClash
