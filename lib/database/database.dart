@@ -33,7 +33,7 @@ class Database extends _$Database {
   Database([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   static LazyDatabase _openConnection() {
     return LazyDatabase(() async {
@@ -51,6 +51,11 @@ class Database extends _$Database {
           await m.createTable(iconRecords);
           await _resetOrders();
           await _migrateRules(m);
+        }
+        if (from < 3) {
+          await customStatement(
+            'ALTER TABLE profiles ADD COLUMN age_secret_key TEXT',
+          );
         }
       },
       beforeOpen: (details) async {
