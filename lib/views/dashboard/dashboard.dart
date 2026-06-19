@@ -46,6 +46,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
   }
 
   List<Widget> _buildActions(bool isEdit) {
+    final appLocalizations = context.appLocalizations;
     return [
       if (!isEdit && coreLib == null) const CoreStatusButton(),
       if (isEdit)
