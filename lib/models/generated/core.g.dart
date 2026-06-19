@@ -295,6 +295,8 @@ const _$ActionMethodEnumMap = {
   ActionMethod.crash: 'crash',
   ActionMethod.setupConfig: 'setupConfig',
   ActionMethod.deleteFile: 'deleteFile',
+  ActionMethod.generateAgeKeyPair: 'generateAgeKeyPair',
+  ActionMethod.convertAgeSecretKeyToPublicKey: 'convertAgeSecretKeyToPublicKey',
   ActionMethod.setState: 'setState',
   ActionMethod.startTun: 'startTun',
   ActionMethod.stopTun: 'stopTun',
