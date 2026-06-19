@@ -10,8 +10,10 @@ installed_size: 6604
 essential: false
 icon: ./assets/images/icon.png
 
+auto_req: false
+
 requires:
-  - libappindicator-gtk3
+  - libayatana-appindicator-gtk3
   - keybinder3
 
 keywords:
