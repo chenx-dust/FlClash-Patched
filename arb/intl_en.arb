@@ -175,7 +175,6 @@
   "proxyGroup": "Proxy group",
   "go": "Go",
   "externalLink": "External link",
-  "otherContributors": "Other contributors",
   "autoCloseConnections": "Auto close connections",
   "autoCloseConnectionsDesc": "Auto close connections after change node",
   "onlyStatisticsProxy": "Only statistics proxy",

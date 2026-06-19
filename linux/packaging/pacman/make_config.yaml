@@ -1,20 +1,18 @@
 display_name: FlClash
+package_name: flclash
+maintainer:
+  name: chen08209
+  email: chen08209@gmail.com
 
-packager: chen08209
-packagerEmail: chen08209@gmail.com
-license: GPL-3.0-or-later
+licenses:
+  - GPL-3.0-or-later
 
-priority: optional
-section: x11
 installed_size: 6604
-essential: false
 icon: ./assets/images/icon.png
 
-auto_req: false
-
-requires:
-  - libayatana-appindicator-gtk3
-  - keybinder3
+dependencies:
+  - libayatana-appindicator
+  - libkeybinder3
 
 keywords:
   - FlClash
@@ -26,8 +24,6 @@ generic_name: FlClash
 
 categories:
   - Network
-
-group: Applications/Internet
 
 startup_notify: true
 startup_wm_class: com.follow.clash
