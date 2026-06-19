@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -56,18 +57,24 @@ abstract class Profile with _$Profile {
     @Default(OverwriteType.standard) OverwriteType overwriteType,
     int? scriptId,
     int? order,
+    String? ageSecretKey,
   }) = _Profile;
 
   factory Profile.fromJson(Map<String, Object?> json) =>
       _$ProfileFromJson(json);
 
-  factory Profile.normal({String? label, String url = ''}) {
+  factory Profile.normal({
+    String? label,
+    String url = '',
+    String? ageSecretKey,
+  }) {
     final id = snowflake.id;
     return Profile(
       label: label ?? '',
       url: url,
       id: id,
       autoUpdateDuration: defaultUpdateDuration,
+      ageSecretKey: ageSecretKey,
     );
   }
 }
@@ -187,9 +194,19 @@ extension ProfileExtension on Profile {
   }
 
   Future<Profile> saveFile(Uint8List bytes) async {
+    String content = utf8.decode(bytes);
+    final key = ageSecretKey;
+    if (key != null && key.isNotEmpty) {
+      try {
+        final decrypted = await coreController.decryptAgeConfig(content, key);
+        if (decrypted.isNotEmpty) {
+          content = decrypted;
+        }
+      } catch (_) {}
+    }
     final path = await appPath.tempFilePath;
     final tempFile = File(path);
-    await tempFile.safeWriteAsBytes(bytes);
+    await tempFile.safeWriteAsString(content);
     final message = await coreController.validateConfig(path);
     if (message.isNotEmpty) {
       throw message;
@@ -197,16 +214,6 @@ extension ProfileExtension on Profile {
     final mFile = await file;
     await tempFile.copy(mFile.path);
     await tempFile.safeDelete();
-    return copyWith(lastUpdateDate: DateTime.now());
-  }
-
-  Future<Profile> saveFileWithPath(String path) async {
-    final message = await coreController.validateConfig(path);
-    if (message.isNotEmpty) {
-      throw message;
-    }
-    final mFile = await file;
-    await File(path).copy(mFile.path);
     return copyWith(lastUpdateDate: DateTime.now());
   }
 }
