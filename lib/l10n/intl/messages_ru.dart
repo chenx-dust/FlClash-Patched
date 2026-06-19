@@ -129,6 +129,27 @@ class MessageLookup extends MessageLookupByLibrary {
     "advancedConfigDesc": MessageLookupByLibrary.simpleMessage(
       "Предоставляет разнообразные варианты конфигурации",
     ),
+    "ageKeyGenerateTitle": MessageLookupByLibrary.simpleMessage(
+      "Генерация ключа Age",
+    ),
+    "ageKeyPairGeneratedSuccess": MessageLookupByLibrary.simpleMessage(
+      "Пара ключей X25519 создана, сохраните ее в надежном месте",
+    ),
+    "agePrivateKeyLabel": MessageLookupByLibrary.simpleMessage(
+      "Закрытый ключ Age",
+    ),
+    "agePrivateKeyRequired": MessageLookupByLibrary.simpleMessage(
+      "Пожалуйста, сначала введите корректный закрытый ключ Age",
+    ),
+    "agePublicKeyLabel": MessageLookupByLibrary.simpleMessage(
+      "Открытый ключ Age",
+    ),
+    "ageSecretKeyInvalidValidationDesc": MessageLookupByLibrary.simpleMessage(
+      "Пожалуйста, введите корректный приватный ключ Age (должен начинаться с AGE-SECRET-KEY-)",
+    ),
+    "ageSecretKeyOptional": MessageLookupByLibrary.simpleMessage(
+      "Приватный ключ Age (необязательно)",
+    ),
     "agree": MessageLookupByLibrary.simpleMessage("Согласен"),
     "allowBypass": MessageLookupByLibrary.simpleMessage(
       "Разрешить приложениям обходить VPN",
@@ -412,6 +433,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "fruitSaladScheme": MessageLookupByLibrary.simpleMessage("Фруктовый микс"),
     "general": MessageLookupByLibrary.simpleMessage("Общие"),
+    "generateFromPrivateKey": MessageLookupByLibrary.simpleMessage(
+      "Создать из закрытого ключа Age",
+    ),
+    "generateSecret": MessageLookupByLibrary.simpleMessage("Создать"),
     "geoAutoUpdate": MessageLookupByLibrary.simpleMessage("Автообновление"),
     "geoAutoUpdateInterval": MessageLookupByLibrary.simpleMessage(
       "Интервал автообновления",
@@ -1077,6 +1102,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "turnOff": MessageLookupByLibrary.simpleMessage("Выключить"),
     "turnOn": MessageLookupByLibrary.simpleMessage("Включить"),
+    "unauthorized": MessageLookupByLibrary.simpleMessage("Не разрешено"),
     "undo": MessageLookupByLibrary.simpleMessage("Отменить"),
     "unifiedDelay": MessageLookupByLibrary.simpleMessage(
       "Унифицированная задержка",
