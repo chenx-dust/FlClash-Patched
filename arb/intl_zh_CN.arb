@@ -173,7 +173,6 @@
   "proxyGroup": "策略组",
   "go": "前往",
   "externalLink": "外部链接",
-  "otherContributors": "其他贡献者",
   "autoCloseConnections": "自动关闭连接",
   "autoCloseConnectionsDesc": "切换节点后自动关闭连接",
   "onlyStatisticsProxy": "仅统计代理",
