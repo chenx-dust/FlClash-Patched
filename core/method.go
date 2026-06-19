@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"runtime"
 	"unsafe"
+
+	"github.com/metacubex/mihomo/component/age"
 )
 
 type MethodCall struct {
@@ -195,6 +197,33 @@ func handleMethodCall(call *MethodCall, response MethodResponse) {
 			return
 		}
 		response.success(config)
+		return
+	case generateAgeKeyPairMethod:
+		secretKey, publicKey, err := age.GenX25519KeyPair()
+		if err != nil {
+			response.failure("core_error", err.Error(), nil)
+			return
+		}
+		response.success(map[string]string{
+			"secret-key": secretKey,
+			"public-key": publicKey,
+		})
+		return
+	case convertAgeSecretKeyToPublicKeyMethod:
+		secretKey := ""
+		if !decodeMethodArguments(call, response, &secretKey) {
+			return
+		}
+		publicKeys, err := age.ToPublicKeys(secretKey)
+		if err != nil {
+			response.failure("core_error", err.Error(), nil)
+			return
+		}
+		if len(publicKeys) == 0 {
+			response.failure("core_error", "no public keys found", nil)
+			return
+		}
+		response.success(publicKeys[0])
 		return
 	case closeConnectionMethod:
 		id := ""

@@ -32,6 +32,8 @@ enum CoreMethod {
   setupConfig,
   deleteFile,
   updateDns,
+  generateAgeKeyPair,
+  convertAgeSecretKeyToPublicKey,
 }
 
 class CoreMethodCall {

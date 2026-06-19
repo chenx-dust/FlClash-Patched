@@ -3,6 +3,12 @@ package main
 import (
 	"cmp"
 	"context"
+	"net"
+	"os"
+	"runtime"
+	"runtime/debug"
+	"time"
+
 	"github.com/metacubex/mihomo/adapter"
 	"github.com/metacubex/mihomo/adapter/outboundgroup"
 	"github.com/metacubex/mihomo/common/observable"
@@ -20,11 +26,6 @@ import (
 	"github.com/metacubex/mihomo/tunnel"
 	"github.com/metacubex/mihomo/tunnel/statistic"
 	"golang.org/x/exp/slices"
-	"net"
-	"os"
-	"runtime"
-	"runtime/debug"
-	"time"
 )
 
 var (
