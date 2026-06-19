@@ -2,6 +2,7 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/pages/scan.dart';
 import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/state.dart';
+import 'package:fl_clash/views/profiles/age_key_generator.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -16,10 +17,13 @@ class AddProfileView extends StatelessWidget {
         .addProfileFormFile();
   }
 
-  Future<void> _handleAddProfileFormURL(String url) async {
+  Future<void> _handleAddProfileFormURL(
+    String url, {
+    String? ageSecretKey,
+  }) async {
     globalState.container
         .read(profilesActionProvider.notifier)
-        .addProfileFormURL(url);
+        .addProfileFormURL(url, ageSecretKey: ageSecretKey);
   }
 
   Future<void> _toScan() async {
@@ -38,27 +42,12 @@ class AddProfileView extends StatelessWidget {
   }
 
   Future<void> _toAdd() async {
-    final appLocalizations = context.appLocalizations;
-    final url = await globalState.showCommonDialog<String>(
-      child: InputDialog(
-        autovalidateMode: AutovalidateMode.onUnfocus,
-        title: appLocalizations.importFromURL,
-        labelText: appLocalizations.url,
-        value: '',
-        inputFormatters: TextInputLimits.limit(TextInputLimits.url),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return appLocalizations.emptyTip('').trim();
-          }
-          if (!value.isUrl) {
-            return appLocalizations.urlTip('').trim();
-          }
-          return null;
-        },
-      ),
+    final result = await globalState.showCommonDialog<Map<String, String>>(
+      child: const URLFormDialog(),
     );
+    final url = result?['url'];
     if (url != null) {
-      _handleAddProfileFormURL(url);
+      _handleAddProfileFormURL(url, ageSecretKey: result?['ageSecretKey']);
     }
   }
 
@@ -99,16 +88,36 @@ class URLFormDialog extends StatefulWidget {
 
 class _URLFormDialogState extends State<URLFormDialog> {
   final _urlController = TextEditingController();
+  final _ageSecretKeyController = TextEditingController();
+  bool _obscureAgeSecretKey = true;
 
   Future<void> _handleAddProfileFormURL() async {
-    final url = _urlController.value.text;
-    if (url.isEmpty) return;
-    Navigator.of(context).pop<String>(url);
+    final appLocalizations = context.appLocalizations;
+    final url = _urlController.value.text.trim();
+    if (url.isEmpty) {
+      context.showSnackBar(appLocalizations.emptyTip('').trim());
+      return;
+    }
+    if (!url.isUrl) {
+      context.showSnackBar(appLocalizations.urlTip('').trim());
+      return;
+    }
+    final ageSecretKey = _ageSecretKeyController.text.trim();
+    if (ageSecretKey.isNotEmpty &&
+        !ageSecretKey.startsWith('AGE-SECRET-KEY-')) {
+      context.showSnackBar(appLocalizations.ageSecretKeyInvalidValidationDesc);
+      return;
+    }
+    Navigator.of(context).pop<Map<String, String>>({
+      'url': url,
+      if (ageSecretKey.isNotEmpty) 'ageSecretKey': ageSecretKey,
+    });
   }
 
   @override
   void dispose() {
     _urlController.dispose();
+    _ageSecretKeyController.dispose();
     super.dispose();
   }
 
@@ -118,9 +127,32 @@ class _URLFormDialogState extends State<URLFormDialog> {
     return CommonDialog(
       title: appLocalizations.importFromURL,
       actions: [
-        TextButton(
-          onPressed: _handleAddProfileFormURL,
-          child: Text(appLocalizations.submit),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton.filledTonal(
+              tooltip: appLocalizations.generateSecret,
+              onPressed: () {
+                globalState.showCommonDialog(
+                  child: const AgeKeyGeneratorDialog(),
+                );
+              },
+              icon: const Icon(Icons.key),
+            ),
+            Row(
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(appLocalizations.cancel),
+                ),
+                const SizedBox(width: 4),
+                TextButton(
+                  onPressed: _handleAddProfileFormURL,
+                  child: Text(appLocalizations.submit),
+                ),
+              ],
+            ),
+          ],
         ),
       ],
       child: SizedBox(
@@ -141,6 +173,30 @@ class _URLFormDialogState extends State<URLFormDialog> {
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: appLocalizations.url,
+              ),
+            ),
+            TextField(
+              textInputAction: TextInputAction.next,
+              controller: _ageSecretKeyController,
+              obscureText: _obscureAgeSecretKey,
+              maxLines: 1,
+              minLines: 1,
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: appLocalizations.ageSecretKeyOptional,
+                hintText: 'AGE-SECRET-KEY-...',
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscureAgeSecretKey
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureAgeSecretKey = !_obscureAgeSecretKey;
+                    });
+                  },
+                ),
               ),
             ),
           ],
