@@ -596,5 +596,14 @@
   "authorize": "Разрешить",
   "installedAppsPermissionRequired": "Требуется разрешение на список приложений",
   "installedAppsPermissionDesc": "Эта система не выдаёт список установленных приложений без разрешения. Предоставьте его, чтобы настроить прокси для отдельных приложений.",
-  "installedAppsPermissionDeniedMessage": "Разрешение на список приложений отклонено, поэтому установленные приложения недоступны. Предоставьте его вручную в системных настройках."
+  "installedAppsPermissionDeniedMessage": "Разрешение на список приложений отклонено, поэтому установленные приложения недоступны. Предоставьте его вручную в системных настройках.",
+  "ageSecretKeyOptional": "Приватный ключ Age (необязательно)",
+  "ageSecretKeyInvalidValidationDesc": "Пожалуйста, введите корректный приватный ключ Age (должен начинаться с AGE-SECRET-KEY-)",
+  "ageKeyGenerateTitle": "Генерация ключа Age",
+  "agePrivateKeyLabel": "Закрытый ключ Age",
+  "agePublicKeyLabel": "Открытый ключ Age",
+  "generateFromPrivateKey": "Создать из закрытого ключа Age",
+  "ageKeyPairGeneratedSuccess": "Пара ключей X25519 создана, сохраните ее в надежном месте",
+  "agePrivateKeyRequired": "Пожалуйста, сначала введите корректный закрытый ключ Age",
+  "generateSecret": "Создать"
 }

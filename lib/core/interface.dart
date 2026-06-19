@@ -23,7 +23,13 @@ mixin CoreInterface {
 
   Future<String> validateConfig(String path);
 
+  Future<String> decryptAgeConfig(String data, String ageSecretKey);
+
   Future<Map<String, dynamic>> getConfig(String path);
+
+  Future<Map<String, String>> generateAgeKeyPair();
+
+  Future<String> convertAgeSecretKeyToPublicKey(String secretKey);
 
   Future<Delay?> asyncTestDelay(String url, String proxyName);
 
@@ -151,6 +157,36 @@ abstract class CoreHandlerInterface with CoreInterface {
   @override
   Future<String> validateConfig(String path) async {
     return _invokeMessage(method: CoreMethod.validateConfig, arguments: path);
+  }
+
+  @override
+  Future<String> decryptAgeConfig(String data, String ageSecretKey) async {
+    return _invokeMessage(
+      method: CoreMethod.decryptAgeConfig,
+      arguments: {'data': data, 'age-secret-key': ageSecretKey},
+    );
+  }
+
+  @override
+  Future<Map<String, String>> generateAgeKeyPair() async {
+    final result = await _invokeMethod<Map<String, dynamic>>(
+      method: CoreMethod.generateAgeKeyPair,
+    );
+    if (result == null) {
+      throw const CoreMethodException(
+        code: 'empty_result',
+        message: 'Core returned an empty Age key pair',
+      );
+    }
+    return Map<String, String>.from(result);
+  }
+
+  @override
+  Future<String> convertAgeSecretKeyToPublicKey(String secretKey) async {
+    return _invokeMessage(
+      method: CoreMethod.convertAgeSecretKeyToPublicKey,
+      arguments: secretKey,
+    );
   }
 
   @override

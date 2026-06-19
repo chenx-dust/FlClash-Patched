@@ -596,5 +596,14 @@
   "authorize": "許可する",
   "installedAppsPermissionRequired": "アプリ一覧の権限が必要です",
   "installedAppsPermissionDesc": "このシステムでは、権限を許可するまでインストール済みアプリの一覧を取得できません。許可するとアプリごとのプロキシを設定できます。",
-  "installedAppsPermissionDeniedMessage": "アプリ一覧の権限が拒否されたため、インストール済みアプリを取得できません。システム設定で手動で許可してください。"
+  "installedAppsPermissionDeniedMessage": "アプリ一覧の権限が拒否されたため、インストール済みアプリを取得できません。システム設定で手動で許可してください。",
+  "ageSecretKeyOptional": "Age 秘密鍵（任意）",
+  "ageSecretKeyInvalidValidationDesc": "有効な Age 秘密鍵を入力してください（AGE-SECRET-KEY-で始まる必要があります）",
+  "ageKeyGenerateTitle": "Age キー生成",
+  "agePrivateKeyLabel": "Age 秘密鍵",
+  "agePublicKeyLabel": "Age 公開鍵",
+  "generateFromPrivateKey": "Age 秘密鍵から生成",
+  "ageKeyPairGeneratedSuccess": "X25519 キーペアを生成しました。安全に保管してください",
+  "agePrivateKeyRequired": "先に正しい Age 秘密鍵を入力してください",
+  "generateSecret": "生成"
 }

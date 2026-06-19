@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -11,6 +12,7 @@ part 'generated/profile.freezed.dart';
 part 'generated/profile.g.dart';
 
 typedef ValidateConfig = Future<String> Function(String path);
+typedef DecryptAgeConfig = Future<String> Function(String data, String key);
 
 @freezed
 abstract class SubscriptionInfo with _$SubscriptionInfo {
@@ -57,18 +59,24 @@ abstract class Profile with _$Profile {
     @Default(OverwriteType.standard) OverwriteType overwriteType,
     int? scriptId,
     int? order,
+    String? ageSecretKey,
   }) = _Profile;
 
   factory Profile.fromJson(Map<String, Object?> json) =>
       _$ProfileFromJson(json);
 
-  factory Profile.normal({String? label, String url = ''}) {
+  factory Profile.normal({
+    String? label,
+    String url = '',
+    String? ageSecretKey,
+  }) {
     final id = snowflake.id;
     return Profile(
       label: label ?? '',
       url: url,
       id: id,
       autoUpdateDuration: defaultUpdateDuration,
+      ageSecretKey: ageSecretKey,
     );
   }
 }
@@ -152,13 +160,14 @@ extension ProfileExtension on Profile {
 
   Future<Profile?> checkAndUpdateAndCopy({
     required ValidateConfig validate,
+    DecryptAgeConfig? decryptAgeConfig,
   }) async {
     final mFile = await _getFile(false);
     final isExists = await mFile.exists();
     if (isExists || url.isEmpty) {
       return null;
     }
-    return update(validate: validate);
+    return update(validate: validate, decryptAgeConfig: decryptAgeConfig);
   }
 
   Future<File> _getFile([bool autoCreate = true]) async {
@@ -175,7 +184,10 @@ extension ProfileExtension on Profile {
     return _getFile();
   }
 
-  Future<Profile> update({required ValidateConfig validate}) async {
+  Future<Profile> update({
+    required ValidateConfig validate,
+    DecryptAgeConfig? decryptAgeConfig,
+  }) async {
     final response = await request.getFileResponseForUrl(url);
     final disposition = response.headers.value('content-disposition');
     final userinfo = response.headers.value('subscription-userinfo');
@@ -186,16 +198,31 @@ extension ProfileExtension on Profile {
         id.toString(),
       ]),
       subscriptionInfo: SubscriptionInfo.formHString(userinfo),
-    ).saveFile(response.data ?? Uint8List.fromList([]), validate: validate);
+    ).saveFile(
+      response.data ?? Uint8List.fromList([]),
+      validate: validate,
+      decryptAgeConfig: decryptAgeConfig,
+    );
   }
 
   Future<Profile> saveFile(
     Uint8List bytes, {
     required ValidateConfig validate,
+    DecryptAgeConfig? decryptAgeConfig,
   }) async {
+    var data = bytes;
+    final key = ageSecretKey;
+    if (key != null && key.isNotEmpty && decryptAgeConfig != null) {
+      try {
+        final decrypted = await decryptAgeConfig(utf8.decode(bytes), key);
+        if (decrypted.isNotEmpty) {
+          data = Uint8List.fromList(utf8.encode(decrypted));
+        }
+      } catch (_) {}
+    }
     final path = await appPath.tempFilePath;
     final tempFile = File(path);
-    await tempFile.safeWriteAsBytes(bytes);
+    await tempFile.safeWriteAsBytes(data);
     final message = await validate(path);
     if (message.isNotEmpty) {
       throw MessageException(message);

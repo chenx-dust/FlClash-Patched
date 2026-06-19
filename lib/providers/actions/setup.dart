@@ -434,6 +434,7 @@ class SetupAction extends _$SetupAction {
     final nextProfile = await globalState.safeRun(
       () => profile?.checkAndUpdateAndCopy(
         validate: (path) => _core.validateConfig(path),
+        decryptAgeConfig: _core.decryptAgeConfig,
       ),
     );
     if (nextProfile != null) {

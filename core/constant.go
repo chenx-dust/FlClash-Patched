@@ -15,6 +15,11 @@ type InitParams struct {
 	Version int    `json:"version"`
 }
 
+type DecryptAgeConfigParams struct {
+	Data         string `json:"data"`
+	AgeSecretKey string `json:"age-secret-key"`
+}
+
 type SetupParams struct {
 	SelectedMap map[string]string `json:"selected-map"`
 	TestURL     string            `json:"test-url"`
@@ -113,6 +118,9 @@ const (
 	setupConfigMethod              CoreMethod = "setupConfig"
 	getConfigMethod                CoreMethod = "getConfig"
 	clearEffectMethod              CoreMethod = "clearEffect"
+	generateAgeKeyPairMethod       CoreMethod = "generateAgeKeyPair"
+	convertAgeSecretKeyMethod      CoreMethod = "convertAgeSecretKeyToPublicKey"
+	decryptAgeConfigMethod         CoreMethod = "decryptAgeConfig"
 )
 
 type CoreMethod string

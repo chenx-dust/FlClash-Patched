@@ -12,6 +12,7 @@ import 'package:sqlite3/sqlite3.dart';
 /// real database back to v1 and reopening it is the only way to run the real
 /// `onUpgrade` against a real SQLite file.
 void _downgradeToV1(Database raw) {
+  raw.execute('ALTER TABLE profiles DROP COLUMN age_secret_key');
   raw.execute('DROP TABLE IF EXISTS proxy_groups');
   raw.execute('DROP TABLE IF EXISTS icon_records');
   raw.execute('DROP INDEX IF EXISTS idx_rule_target');
@@ -63,13 +64,13 @@ void main() {
     return database;
   }
 
-  test('a v1 database is left at schema version 2', () async {
+  test('a v1 database is migrated to the current schema version', () async {
     _downgradeToV1(raw);
     expect(_userVersion(raw), 1);
 
     await openAndMigrate();
 
-    expect(_userVersion(raw), 2);
+    expect(_userVersion(raw), 3);
   });
 
   test('the upgrade creates the tables v2 added', () async {
@@ -138,22 +139,25 @@ void main() {
     );
   });
 
-  test('an empty v1 rules table still reaches v2', () async {
+  test('an empty v1 rules table still reaches the current schema', () async {
     _downgradeToV1(raw);
 
     final database = await openAndMigrate();
 
-    expect(_userVersion(raw), 2);
+    expect(_userVersion(raw), 3);
     expect(await database.customSelect('SELECT * FROM rules').get(), isEmpty);
   });
 
-  test('opening a database already at v2 changes nothing', () async {
+  test('opening a database at v2 adds the age secret key column', () async {
+    raw.execute('ALTER TABLE profiles DROP COLUMN age_secret_key');
+    raw.execute('PRAGMA user_version = 2');
     final before = _columnsOf(raw, 'rules');
 
     await openAndMigrate();
 
     expect(_columnsOf(raw, 'rules'), before);
-    expect(_userVersion(raw), 2);
+    expect(_columnsOf(raw, 'profiles'), contains('age_secret_key'));
+    expect(_userVersion(raw), 3);
     expect(_hasTable(raw, 'proxy_groups'), isTrue);
   });
 }

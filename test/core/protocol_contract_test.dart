@@ -77,6 +77,12 @@ class _RecordingCoreHandler extends CoreHandlerInterface {
         'mode': 'rule',
         'rule': ['MATCH,DIRECT'],
       },
+      CoreMethod.generateAgeKeyPair => {
+        'secret-key': 'AGE-SECRET-KEY-1',
+        'public-key': 'age1public',
+      },
+      CoreMethod.convertAgeSecretKeyToPublicKey => 'age1public',
+      CoreMethod.decryptAgeConfig => 'mixed-port: 7890',
       CoreMethod.getMemory => 2048,
       _ => '',
     };
@@ -155,6 +161,8 @@ void main() {
     await handler.sideLoadExternalProvider(providerName: 'provider', data: 'x');
     await handler.asyncTestDelay('https://example.com', 'DIRECT');
     await handler.clearEffect(42);
+    await handler.convertAgeSecretKeyToPublicKey('AGE-SECRET-KEY-1');
+    await handler.decryptAgeConfig('encrypted', 'AGE-SECRET-KEY-1');
 
     for (final method in [
       CoreMethod.initClash,
@@ -166,6 +174,14 @@ void main() {
       expect(handler.calls[method], isA<Map>());
     }
     expect(handler.calls[CoreMethod.clearEffect], 42);
+    expect(
+      handler.calls[CoreMethod.convertAgeSecretKeyToPublicKey],
+      'AGE-SECRET-KEY-1',
+    );
+    expect(handler.calls[CoreMethod.decryptAgeConfig], {
+      'data': 'encrypted',
+      'age-secret-key': 'AGE-SECRET-KEY-1',
+    });
   });
 
   test('event contract accepts batches and legacy single events', () async {
@@ -219,6 +235,18 @@ void main() {
       'mode': 'rule',
       'rule': ['MATCH,DIRECT'],
     });
+    expect(await handler.generateAgeKeyPair(), {
+      'secret-key': 'AGE-SECRET-KEY-1',
+      'public-key': 'age1public',
+    });
+    expect(
+      await handler.convertAgeSecretKeyToPublicKey('AGE-SECRET-KEY-1'),
+      'age1public',
+    );
+    expect(
+      await handler.decryptAgeConfig('encrypted', 'AGE-SECRET-KEY-1'),
+      'mixed-port: 7890',
+    );
     expect(await handler.getMemory(), 2048);
   });
 

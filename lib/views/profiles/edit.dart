@@ -10,6 +10,7 @@ import 'package:fl_clash/pages/editor.dart';
 import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/providers/core.dart';
 import 'package:fl_clash/state.dart';
+import 'package:fl_clash/views/profiles/age_key_generator.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,7 +33,9 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
   late final TextEditingController _labelController;
   late final TextEditingController _urlController;
   late final TextEditingController _autoUpdateDurationController;
+  late final TextEditingController _ageSecretKeyController;
   late bool _autoUpdate;
+  bool _obscureAgeSecretKey = true;
   String? _rawText;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _fileInfoNotifier = ValueNotifier<FileInfo?>(null);
@@ -48,8 +51,16 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
     _autoUpdateDurationController = TextEditingController(
       text: widget.profile.autoUpdateDuration.inMinutes.toString(),
     );
+    _ageSecretKeyController = TextEditingController(
+      text: widget.profile.ageSecretKey,
+    );
     _setupAction = ref.read(setupActionProvider.notifier);
     _updateFileInfo();
+  }
+
+  String? get _ageSecretKey {
+    final value = _ageSecretKeyController.text.trim();
+    return value.isEmpty ? null : value;
   }
 
   Future<void> _updateFileInfo() async {
@@ -67,6 +78,7 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
       url: _urlController.text,
       label: _labelController.text,
       autoUpdate: _autoUpdate,
+      ageSecretKey: _ageSecretKey,
       autoUpdateDuration: Duration(
         minutes: int.parse(_autoUpdateDurationController.text),
       ),
@@ -89,6 +101,7 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
           _fileData!,
           validate: (path) =>
               ref.read(coreHandlerProvider).validateConfig(path),
+          decryptAgeConfig: ref.read(coreHandlerProvider).decryptAgeConfig,
         ),
       );
       if (savedProfile == null) {
@@ -117,6 +130,12 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
     setState(() {
       _autoUpdate = value;
     });
+  }
+
+  Future<void> _showAgeKeyGenerator() async {
+    await dialogs.showCommonDialog<void>(
+      child: const AgeKeyGeneratorDialog(),
+    );
   }
 
   Future<void> _handleSaveEdit(BuildContext context, String data) async {
@@ -222,6 +241,7 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
     _urlController.dispose();
     _fileInfoNotifier.dispose();
     _autoUpdateDurationController.dispose();
+    _ageSecretKeyController.dispose();
     super.dispose();
     _setupAction.autoApplyProfile();
   }
@@ -233,6 +253,50 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
       _ProfileNameField(controller: _labelController),
       if (widget.profile.type == ProfileType.url) ...[
         _ProfileUrlField(controller: _urlController),
+        ListItem(
+          title: TextFormField(
+            textInputAction: TextInputAction.next,
+            controller: _ageSecretKeyController,
+            obscureText: _obscureAgeSecretKey,
+            maxLines: 1,
+            decoration: InputDecoration(
+              labelText: appLocalizations.ageSecretKeyOptional,
+              hintText: 'AGE-SECRET-KEY-...',
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    tooltip: appLocalizations.ageKeyGenerateTitle,
+                    onPressed: _showAgeKeyGenerator,
+                    icon: const Icon(Icons.key),
+                  ),
+                  IconButton(
+                    tooltip: _obscureAgeSecretKey
+                        ? appLocalizations.showPassword
+                        : appLocalizations.hidePassword,
+                    onPressed: () {
+                      setState(() {
+                        _obscureAgeSecretKey = !_obscureAgeSecretKey;
+                      });
+                    },
+                    icon: Icon(
+                      _obscureAgeSecretKey
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            validator: (value) {
+              if (value?.isNotEmpty == true &&
+                  !value!.startsWith('AGE-SECRET-KEY-')) {
+                return appLocalizations.ageSecretKeyInvalidValidationDesc;
+              }
+              return null;
+            },
+          ),
+        ),
         ListItem.toggle(
           title: Text(appLocalizations.autoUpdate),
           value: _autoUpdate,

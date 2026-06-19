@@ -20,6 +20,7 @@ import (
 	"github.com/metacubex/mihomo/adapter/outboundgroup"
 	"github.com/metacubex/mihomo/common/observable"
 	"github.com/metacubex/mihomo/common/utils"
+	"github.com/metacubex/mihomo/component/age"
 	"github.com/metacubex/mihomo/component/resolver"
 	"github.com/metacubex/mihomo/component/updater"
 	"github.com/metacubex/mihomo/config"
@@ -104,6 +105,14 @@ func handleValidateConfig(path string) string {
 		return err.Error()
 	}
 	return ""
+}
+
+func handleDecryptAgeConfig(params *DecryptAgeConfigParams) (string, error) {
+	decrypted, err := age.DecryptBytes([]byte(params.Data), params.AgeSecretKey)
+	if err != nil {
+		return "", err
+	}
+	return string(decrypted), nil
 }
 
 const globalProxyName = "GLOBAL"
