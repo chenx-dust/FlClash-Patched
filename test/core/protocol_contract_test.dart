@@ -69,6 +69,11 @@ class _RecordingCoreHandler extends CoreHandlerInterface {
         'mode': 'rule',
         'rule': ['MATCH,DIRECT'],
       },
+      CoreMethod.generateAgeKeyPair => {
+        'secret-key': 'AGE-SECRET-KEY-1',
+        'public-key': 'age1public',
+      },
+      CoreMethod.convertAgeSecretKeyToPublicKey => 'age1public',
       CoreMethod.getMemory => 2048,
       _ => '',
     };
@@ -152,6 +157,7 @@ void main() {
     );
     await handler.sideLoadExternalProvider(providerName: 'provider', data: 'x');
     await handler.asyncTestDelay('https://example.com', 'DIRECT');
+    await handler.convertAgeSecretKeyToPublicKey('AGE-SECRET-KEY-1');
 
     for (final method in [
       CoreMethod.initClash,
@@ -162,6 +168,10 @@ void main() {
     ]) {
       expect(handler.calls[method], isA<Map>());
     }
+    expect(
+      handler.calls[CoreMethod.convertAgeSecretKeyToPublicKey],
+      'AGE-SECRET-KEY-1',
+    );
   });
 
   test('event contract accepts batches and legacy single events', () async {
@@ -205,6 +215,14 @@ void main() {
       'mode': 'rule',
       'rule': ['MATCH,DIRECT'],
     });
+    expect(await handler.generateAgeKeyPair(), {
+      'secret-key': 'AGE-SECRET-KEY-1',
+      'public-key': 'age1public',
+    });
+    expect(
+      await handler.convertAgeSecretKeyToPublicKey('AGE-SECRET-KEY-1'),
+      'age1public',
+    );
     expect(await handler.getMemory(), 2048);
   });
 
