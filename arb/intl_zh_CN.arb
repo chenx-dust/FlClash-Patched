@@ -553,5 +553,15 @@
   "geoSkipped": "{name} 已跳过",
   "geoUpdated": "{name} 已更新",
   "secondsCount": "{count} 秒",
-  "entriesCount": "{count} 个条目"
+  "entriesCount": "{count} 个条目",
+  "unauthorized": "未授权",
+  "ageSecretKeyOptional": "Age 私钥 (可选)",
+  "ageSecretKeyInvalidValidationDesc": "请输入有效的 Age 私钥 (必须以 AGE-SECRET-KEY- 开头)",
+  "ageKeyGenerateTitle": "Age Key 生成",
+  "agePrivateKeyLabel": "Age 私钥",
+  "agePublicKeyLabel": "Age 公钥",
+  "generateFromPrivateKey": "从 Age 私钥生成",
+  "ageKeyPairGeneratedSuccess": "已生成 X25519 密钥对，请妥善保存",
+  "agePrivateKeyRequired": "请先输入正确的 Age 私钥",
+  "generateSecret": "生成"
 }
