@@ -96,6 +96,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "addressTip": MessageLookupByLibrary.simpleMessage("有効なWebDAVアドレスを入力"),
     "advancedConfig": MessageLookupByLibrary.simpleMessage("高度な設定"),
     "advancedConfigDesc": MessageLookupByLibrary.simpleMessage("多様な設定を提供"),
+    "ageKeyGenerateTitle": MessageLookupByLibrary.simpleMessage("Ageキー生成"),
+    "ageKeyPairGeneratedSuccess": MessageLookupByLibrary.simpleMessage(
+      "X25519キーペアを生成しました。安全に保管してください",
+    ),
+    "agePrivateKeyLabel": MessageLookupByLibrary.simpleMessage("Age秘密鍵"),
+    "agePrivateKeyRequired": MessageLookupByLibrary.simpleMessage(
+      "先に正しいAge秘密鍵を入力してください",
+    ),
+    "agePublicKeyLabel": MessageLookupByLibrary.simpleMessage("Age公開鍵"),
+    "ageSecretKeyInvalidValidationDesc": MessageLookupByLibrary.simpleMessage(
+      "有効なAge秘密鍵を入力してください（AGE-SECRET-KEY-で始まる必要があります）",
+    ),
+    "ageSecretKeyOptional": MessageLookupByLibrary.simpleMessage("Age秘密鍵（任意）"),
     "agree": MessageLookupByLibrary.simpleMessage("同意"),
     "allowBypass": MessageLookupByLibrary.simpleMessage("アプリがVPNをバイパスすることを許可"),
     "allowBypassDesc": MessageLookupByLibrary.simpleMessage(
@@ -302,6 +315,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "fruitSaladScheme": MessageLookupByLibrary.simpleMessage("フルーツサラダ"),
     "general": MessageLookupByLibrary.simpleMessage("一般"),
+    "generateFromPrivateKey": MessageLookupByLibrary.simpleMessage(
+      "Age秘密鍵から生成",
+    ),
+    "generateSecret": MessageLookupByLibrary.simpleMessage("生成"),
     "geodataLoader": MessageLookupByLibrary.simpleMessage("Geo低メモリモード"),
     "geodataLoaderDesc": MessageLookupByLibrary.simpleMessage(
       "有効化するとGeo低メモリローダーを使用",
@@ -800,6 +817,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "tunDesc": MessageLookupByLibrary.simpleMessage("管理者モードでのみ有効"),
     "turnOff": MessageLookupByLibrary.simpleMessage("オフ"),
     "turnOn": MessageLookupByLibrary.simpleMessage("オン"),
+    "unauthorized": MessageLookupByLibrary.simpleMessage("未許可"),
     "undo": MessageLookupByLibrary.simpleMessage("元に戻す"),
     "unifiedDelay": MessageLookupByLibrary.simpleMessage("統一遅延"),
     "unifiedDelayDesc": MessageLookupByLibrary.simpleMessage(
