@@ -82,16 +82,25 @@ class CoreController {
 
   FutureOr<bool> get isInit => _interface.isInit;
 
-  Future<String> validateConfig(String path) async {
-    final res = await _interface.validateConfig(path);
+  Future<String> validateConfig(String path, {String? ageSecretKey}) async {
+    final res = await _interface.validateConfig(
+      path,
+      ageSecretKey: ageSecretKey,
+    );
     return res;
   }
 
-  Future<String> validateConfigWithData(String data) async {
+  Future<String> validateConfigWithData(
+    String data, {
+    String? ageSecretKey,
+  }) async {
     final path = await appPath.tempFilePath;
     final file = File(path);
     await file.safeWriteAsString(data);
-    final res = await _interface.validateConfig(path);
+    final res = await _interface.validateConfig(
+      path,
+      ageSecretKey: ageSecretKey,
+    );
     await File(path).safeDelete();
     return res;
   }
@@ -208,9 +217,12 @@ class CoreController {
     return Delay.fromJson(json.decode(data));
   }
 
-  Future<Map<String, dynamic>> getConfig(int id) async {
+  Future<Map<String, dynamic>> getConfig(int id, {String? ageSecretKey}) async {
     final profilePath = await appPath.getProfilePath(id.toString());
-    final res = await _interface.getConfig(profilePath);
+    final res = await _interface.getConfig(
+      profilePath,
+      ageSecretKey: ageSecretKey,
+    );
     if (res.isSuccess) {
       final data = Map<String, dynamic>.from(res.data);
       data['rules'] = data['rule'];
@@ -281,6 +293,14 @@ class CoreController {
 
   Future<String> deleteFile(String path) async {
     return _interface.deleteFile(path);
+  }
+
+  Future<Map<String, String>> generateAgeKeyPair() {
+    return _interface.generateAgeKeyPair();
+  }
+
+  Future<Result<String>> convertAgeSecretKeyToPublicKey(String secretKey) {
+    return _interface.convertAgeSecretKeyToPublicKey(secretKey);
   }
 }
 

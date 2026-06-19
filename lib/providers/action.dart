@@ -294,7 +294,11 @@ class SetupAction extends _$SetupAction {
     final overrideDns = ref.read(overrideDnsProvider);
     final appendSystemDns = networkVM2.a;
     final routeMode = networkVM2.b;
-    final configMap = await coreController.getConfig(profileId);
+    final profile = ref.read(profileProvider(profileId));
+    final configMap = await coreController.getConfig(
+      profileId,
+      ageSecretKey: profile?.ageSecretKey,
+    );
     String? scriptContent;
     final List<Rule> addedRules = [];
     final List<ProxyGroup> proxyGroups = [];
@@ -933,7 +937,7 @@ class ProfilesAction extends _$ProfilesAction {
     }
   }
 
-  Future<void> addProfileFormURL(String url) async {
+  Future<void> addProfileFormURL(String url, {String? ageSecretKey}) async {
     if (globalState.navigatorKey.currentState?.canPop() ?? false) {
       globalState.navigatorKey.currentState?.popUntil((route) => route.isFirst);
     }
@@ -941,7 +945,7 @@ class ProfilesAction extends _$ProfilesAction {
     final profile = await globalState.loadingRun(
       tag: LoadingTag.profiles,
       () async {
-        return Profile.normal(url: url).update();
+        return Profile.normal(url: url, ageSecretKey: ageSecretKey).update();
       },
       title: currentAppLocalizations.addProfile,
     );
