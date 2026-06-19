@@ -670,7 +670,11 @@ OverwriteType overwriteType(Ref ref, int? profileId) {
 
 @riverpod
 Future<ClashConfig> clashConfig(Ref ref, int profileId) async {
-  final configMap = await coreController.getConfig(profileId);
+  final profile = ref.watch(profileProvider(profileId));
+  final configMap = await coreController.getConfig(
+    profileId,
+    ageSecretKey: profile?.ageSecretKey,
+  );
   final clashConfig = ClashConfig.fromJson(configMap);
   final Map<String, String> proxyTypeMap = {};
   for (final proxy in clashConfig.proxies) {
