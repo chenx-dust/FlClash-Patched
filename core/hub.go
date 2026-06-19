@@ -3,10 +3,20 @@ package main
 import (
 	"cmp"
 	"context"
+	"net"
+	"os"
+	"path/filepath"
+	"runtime"
+	"runtime/debug"
+	"strconv"
+	"sync/atomic"
+	"time"
+
 	"github.com/metacubex/mihomo/adapter"
 	"github.com/metacubex/mihomo/adapter/outboundgroup"
 	"github.com/metacubex/mihomo/common/observable"
 	"github.com/metacubex/mihomo/common/utils"
+	"github.com/metacubex/mihomo/component/age"
 	"github.com/metacubex/mihomo/component/mmdb"
 	"github.com/metacubex/mihomo/component/resolver"
 	"github.com/metacubex/mihomo/component/updater"
@@ -20,14 +30,6 @@ import (
 	"github.com/metacubex/mihomo/tunnel"
 	"github.com/metacubex/mihomo/tunnel/statistic"
 	"golang.org/x/exp/slices"
-	"net"
-	"os"
-	"path/filepath"
-	"runtime"
-	"runtime/debug"
-	"strconv"
-	"sync/atomic"
-	"time"
 )
 
 var (
@@ -85,11 +87,22 @@ func handleShutdown() bool {
 
 func handleValidateConfig(path string) string {
 	buf, err := readFile(path)
+	if err != nil {
+		return err.Error()
+	}
 	_, err = config.UnmarshalRawConfig(buf)
 	if err != nil {
 		return err.Error()
 	}
 	return ""
+}
+
+func handleDecryptAgeConfig(params *DecryptAgeConfigParams) string {
+	decrypted, err := age.DecryptBytes([]byte(params.Data), params.AgeSecretKey)
+	if err != nil {
+		return ""
+	}
+	return string(decrypted)
 }
 
 func handleGetProxies() ProxiesData {
