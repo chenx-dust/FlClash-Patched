@@ -188,9 +188,9 @@ void main() {
       reason: 'tab 3 should reach the URL field',
     );
 
-    // 4th and 5th tabs move past the text fields onto the auto-update toggle
-    // (the ListItem tile, then the Switch itself).
-    for (var i = 0; i < 2; i++) {
+    // Fork-specific fields may add focusable inputs before the auto-update
+    // toggle. Keep tabbing until the switch itself is reached.
+    for (var i = 0; i < 8 && !_isSwitchFocused(); i++) {
       await tester.sendKeyEvent(LogicalKeyboardKey.tab);
       await tester.pump();
     }
