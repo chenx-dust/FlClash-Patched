@@ -246,6 +246,14 @@ class CoreController {
   Future<String> deleteFile(String path) async {
     return _interface.deleteFile(path);
   }
+
+  Future<Map<String, String>> generateAgeKeyPair() {
+    return _interface.generateAgeKeyPair();
+  }
+
+  Future<String> convertAgeSecretKeyToPublicKey(String secretKey) {
+    return _interface.convertAgeSecretKeyToPublicKey(secretKey);
+  }
 }
 
 final coreController = CoreController();
