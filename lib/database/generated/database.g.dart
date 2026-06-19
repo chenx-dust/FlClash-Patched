@@ -131,6 +131,17 @@ class $ProfilesTable extends Profiles
         type: DriftSqlType.string,
         requiredDuringInsert: true,
       ).withConverter<Set<String>>($ProfilesTable.$converterunfoldSet);
+  static const VerificationMeta _ageSecretKeyMeta = const VerificationMeta(
+    'ageSecretKey',
+  );
+  @override
+  late final GeneratedColumn<String> ageSecretKey = GeneratedColumn<String>(
+    'age_secret_key',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _orderMeta = const VerificationMeta('order');
   @override
   late final GeneratedColumn<int> order = GeneratedColumn<int>(
@@ -154,6 +165,7 @@ class $ProfilesTable extends Profiles
     autoUpdate,
     selectedMap,
     unfoldSet,
+    ageSecretKey,
     order,
   ];
   @override
@@ -230,6 +242,15 @@ class $ProfilesTable extends Profiles
     } else if (isInserting) {
       context.missing(_autoUpdateMeta);
     }
+    if (data.containsKey('age_secret_key')) {
+      context.handle(
+        _ageSecretKeyMeta,
+        ageSecretKey.isAcceptableOrUnknown(
+          data['age_secret_key']!,
+          _ageSecretKeyMeta,
+        ),
+      );
+    }
     if (data.containsKey('order')) {
       context.handle(
         _orderMeta,
@@ -301,6 +322,10 @@ class $ProfilesTable extends Profiles
           data['${effectivePrefix}unfold_set'],
         )!,
       ),
+      ageSecretKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}age_secret_key'],
+      ),
       order: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}order'],
@@ -338,6 +363,7 @@ class RawProfile extends DataClass implements Insertable<RawProfile> {
   final bool autoUpdate;
   final Map<String, String> selectedMap;
   final Set<String> unfoldSet;
+  final String? ageSecretKey;
   final int? order;
   const RawProfile({
     required this.id,
@@ -352,6 +378,7 @@ class RawProfile extends DataClass implements Insertable<RawProfile> {
     required this.autoUpdate,
     required this.selectedMap,
     required this.unfoldSet,
+    this.ageSecretKey,
     this.order,
   });
   @override
@@ -393,6 +420,9 @@ class RawProfile extends DataClass implements Insertable<RawProfile> {
         $ProfilesTable.$converterunfoldSet.toSql(unfoldSet),
       );
     }
+    if (!nullToAbsent || ageSecretKey != null) {
+      map['age_secret_key'] = Variable<String>(ageSecretKey);
+    }
     if (!nullToAbsent || order != null) {
       map['order'] = Variable<int>(order);
     }
@@ -421,6 +451,9 @@ class RawProfile extends DataClass implements Insertable<RawProfile> {
       autoUpdate: Value(autoUpdate),
       selectedMap: Value(selectedMap),
       unfoldSet: Value(unfoldSet),
+      ageSecretKey: ageSecretKey == null && nullToAbsent
+          ? const Value.absent()
+          : Value(ageSecretKey),
       order: order == null && nullToAbsent
           ? const Value.absent()
           : Value(order),
@@ -453,6 +486,7 @@ class RawProfile extends DataClass implements Insertable<RawProfile> {
         json['selectedMap'],
       ),
       unfoldSet: serializer.fromJson<Set<String>>(json['unfoldSet']),
+      ageSecretKey: serializer.fromJson<String?>(json['ageSecretKey']),
       order: serializer.fromJson<int?>(json['order']),
     );
   }
@@ -478,6 +512,7 @@ class RawProfile extends DataClass implements Insertable<RawProfile> {
       'autoUpdate': serializer.toJson<bool>(autoUpdate),
       'selectedMap': serializer.toJson<Map<String, String>>(selectedMap),
       'unfoldSet': serializer.toJson<Set<String>>(unfoldSet),
+      'ageSecretKey': serializer.toJson<String?>(ageSecretKey),
       'order': serializer.toJson<int?>(order),
     };
   }
@@ -495,6 +530,7 @@ class RawProfile extends DataClass implements Insertable<RawProfile> {
     bool? autoUpdate,
     Map<String, String>? selectedMap,
     Set<String>? unfoldSet,
+    Value<String?> ageSecretKey = const Value.absent(),
     Value<int?> order = const Value.absent(),
   }) => RawProfile(
     id: id ?? this.id,
@@ -516,6 +552,7 @@ class RawProfile extends DataClass implements Insertable<RawProfile> {
     autoUpdate: autoUpdate ?? this.autoUpdate,
     selectedMap: selectedMap ?? this.selectedMap,
     unfoldSet: unfoldSet ?? this.unfoldSet,
+    ageSecretKey: ageSecretKey.present ? ageSecretKey.value : this.ageSecretKey,
     order: order.present ? order.value : this.order,
   );
   RawProfile copyWithCompanion(ProfilesCompanion data) {
@@ -546,6 +583,9 @@ class RawProfile extends DataClass implements Insertable<RawProfile> {
           ? data.selectedMap.value
           : this.selectedMap,
       unfoldSet: data.unfoldSet.present ? data.unfoldSet.value : this.unfoldSet,
+      ageSecretKey: data.ageSecretKey.present
+          ? data.ageSecretKey.value
+          : this.ageSecretKey,
       order: data.order.present ? data.order.value : this.order,
     );
   }
@@ -565,6 +605,7 @@ class RawProfile extends DataClass implements Insertable<RawProfile> {
           ..write('autoUpdate: $autoUpdate, ')
           ..write('selectedMap: $selectedMap, ')
           ..write('unfoldSet: $unfoldSet, ')
+          ..write('ageSecretKey: $ageSecretKey, ')
           ..write('order: $order')
           ..write(')'))
         .toString();
@@ -584,6 +625,7 @@ class RawProfile extends DataClass implements Insertable<RawProfile> {
     autoUpdate,
     selectedMap,
     unfoldSet,
+    ageSecretKey,
     order,
   );
   @override
@@ -602,6 +644,7 @@ class RawProfile extends DataClass implements Insertable<RawProfile> {
           other.autoUpdate == this.autoUpdate &&
           other.selectedMap == this.selectedMap &&
           other.unfoldSet == this.unfoldSet &&
+          other.ageSecretKey == this.ageSecretKey &&
           other.order == this.order);
 }
 
@@ -618,6 +661,7 @@ class ProfilesCompanion extends UpdateCompanion<RawProfile> {
   final Value<bool> autoUpdate;
   final Value<Map<String, String>> selectedMap;
   final Value<Set<String>> unfoldSet;
+  final Value<String?> ageSecretKey;
   final Value<int?> order;
   const ProfilesCompanion({
     this.id = const Value.absent(),
@@ -632,6 +676,7 @@ class ProfilesCompanion extends UpdateCompanion<RawProfile> {
     this.autoUpdate = const Value.absent(),
     this.selectedMap = const Value.absent(),
     this.unfoldSet = const Value.absent(),
+    this.ageSecretKey = const Value.absent(),
     this.order = const Value.absent(),
   });
   ProfilesCompanion.insert({
@@ -647,6 +692,7 @@ class ProfilesCompanion extends UpdateCompanion<RawProfile> {
     required bool autoUpdate,
     required Map<String, String> selectedMap,
     required Set<String> unfoldSet,
+    this.ageSecretKey = const Value.absent(),
     this.order = const Value.absent(),
   }) : label = Value(label),
        url = Value(url),
@@ -668,6 +714,7 @@ class ProfilesCompanion extends UpdateCompanion<RawProfile> {
     Expression<bool>? autoUpdate,
     Expression<String>? selectedMap,
     Expression<String>? unfoldSet,
+    Expression<String>? ageSecretKey,
     Expression<int>? order,
   }) {
     return RawValuesInsertable({
@@ -684,6 +731,7 @@ class ProfilesCompanion extends UpdateCompanion<RawProfile> {
       if (autoUpdate != null) 'auto_update': autoUpdate,
       if (selectedMap != null) 'selected_map': selectedMap,
       if (unfoldSet != null) 'unfold_set': unfoldSet,
+      if (ageSecretKey != null) 'age_secret_key': ageSecretKey,
       if (order != null) 'order': order,
     });
   }
@@ -701,6 +749,7 @@ class ProfilesCompanion extends UpdateCompanion<RawProfile> {
     Value<bool>? autoUpdate,
     Value<Map<String, String>>? selectedMap,
     Value<Set<String>>? unfoldSet,
+    Value<String?>? ageSecretKey,
     Value<int?>? order,
   }) {
     return ProfilesCompanion(
@@ -717,6 +766,7 @@ class ProfilesCompanion extends UpdateCompanion<RawProfile> {
       autoUpdate: autoUpdate ?? this.autoUpdate,
       selectedMap: selectedMap ?? this.selectedMap,
       unfoldSet: unfoldSet ?? this.unfoldSet,
+      ageSecretKey: ageSecretKey ?? this.ageSecretKey,
       order: order ?? this.order,
     );
   }
@@ -770,6 +820,9 @@ class ProfilesCompanion extends UpdateCompanion<RawProfile> {
         $ProfilesTable.$converterunfoldSet.toSql(unfoldSet.value),
       );
     }
+    if (ageSecretKey.present) {
+      map['age_secret_key'] = Variable<String>(ageSecretKey.value);
+    }
     if (order.present) {
       map['order'] = Variable<int>(order.value);
     }
@@ -791,6 +844,7 @@ class ProfilesCompanion extends UpdateCompanion<RawProfile> {
           ..write('autoUpdate: $autoUpdate, ')
           ..write('selectedMap: $selectedMap, ')
           ..write('unfoldSet: $unfoldSet, ')
+          ..write('ageSecretKey: $ageSecretKey, ')
           ..write('order: $order')
           ..write(')'))
         .toString();
@@ -3479,6 +3533,7 @@ typedef $$ProfilesTableCreateCompanionBuilder =
       required bool autoUpdate,
       required Map<String, String> selectedMap,
       required Set<String> unfoldSet,
+      Value<String?> ageSecretKey,
       Value<int?> order,
     });
 typedef $$ProfilesTableUpdateCompanionBuilder =
@@ -3495,6 +3550,7 @@ typedef $$ProfilesTableUpdateCompanionBuilder =
       Value<bool> autoUpdate,
       Value<Map<String, String>> selectedMap,
       Value<Set<String>> unfoldSet,
+      Value<String?> ageSecretKey,
       Value<int?> order,
     });
 
@@ -3619,6 +3675,11 @@ class $$ProfilesTableFilterComposer
   get unfoldSet => $composableBuilder(
     column: $table.unfoldSet,
     builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<String> get ageSecretKey => $composableBuilder(
+    column: $table.ageSecretKey,
+    builder: (column) => ColumnFilters(column),
   );
 
   ColumnFilters<int> get order => $composableBuilder(
@@ -3746,6 +3807,11 @@ class $$ProfilesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get ageSecretKey => $composableBuilder(
+    column: $table.ageSecretKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get order => $composableBuilder(
     column: $table.order,
     builder: (column) => ColumnOrderings(column),
@@ -3813,6 +3879,11 @@ class $$ProfilesTableAnnotationComposer
 
   GeneratedColumnWithTypeConverter<Set<String>, String> get unfoldSet =>
       $composableBuilder(column: $table.unfoldSet, builder: (column) => column);
+
+  GeneratedColumn<String> get ageSecretKey => $composableBuilder(
+    column: $table.ageSecretKey,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get order =>
       $composableBuilder(column: $table.order, builder: (column) => column);
@@ -3912,6 +3983,7 @@ class $$ProfilesTableTableManager
                 Value<bool> autoUpdate = const Value.absent(),
                 Value<Map<String, String>> selectedMap = const Value.absent(),
                 Value<Set<String>> unfoldSet = const Value.absent(),
+                Value<String?> ageSecretKey = const Value.absent(),
                 Value<int?> order = const Value.absent(),
               }) => ProfilesCompanion(
                 id: id,
@@ -3926,6 +3998,7 @@ class $$ProfilesTableTableManager
                 autoUpdate: autoUpdate,
                 selectedMap: selectedMap,
                 unfoldSet: unfoldSet,
+                ageSecretKey: ageSecretKey,
                 order: order,
               ),
           createCompanionCallback:
@@ -3943,6 +4016,7 @@ class $$ProfilesTableTableManager
                 required bool autoUpdate,
                 required Map<String, String> selectedMap,
                 required Set<String> unfoldSet,
+                Value<String?> ageSecretKey = const Value.absent(),
                 Value<int?> order = const Value.absent(),
               }) => ProfilesCompanion.insert(
                 id: id,
@@ -3957,6 +4031,7 @@ class $$ProfilesTableTableManager
                 autoUpdate: autoUpdate,
                 selectedMap: selectedMap,
                 unfoldSet: unfoldSet,
+                ageSecretKey: ageSecretKey,
                 order: order,
               ),
           withReferenceMapper: (p0) => p0

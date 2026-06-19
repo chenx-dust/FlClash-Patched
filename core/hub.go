@@ -8,6 +8,7 @@ import (
 	"github.com/metacubex/mihomo/adapter/outboundgroup"
 	"github.com/metacubex/mihomo/common/observable"
 	"github.com/metacubex/mihomo/common/utils"
+	"github.com/metacubex/mihomo/component/age"
 	"github.com/metacubex/mihomo/component/mmdb"
 	"github.com/metacubex/mihomo/component/resolver"
 	"github.com/metacubex/mihomo/component/updater"
@@ -26,6 +27,7 @@ import (
 	"runtime"
 	"runtime/debug"
 	"strconv"
+	"sync"
 	"time"
 )
 
@@ -33,6 +35,7 @@ var (
 	isInit            = false
 	externalProviders = map[string]cp.Provider{}
 	logSubscriber     observable.Subscription[log.Event]
+	ageMutex          sync.Mutex
 )
 
 func handleInitClash(paramsString string) bool {
@@ -87,8 +90,19 @@ func handleShutdown() bool {
 	return true
 }
 
-func handleValidateConfig(path string) string {
-	buf, err := readFile(path)
+func handleValidateConfig(params *ValidateConfigParams) string {
+	ageMutex.Lock()
+	defer ageMutex.Unlock()
+
+	if params.AgeSecretKey != "" {
+		age.SetGlobalSecretKeys(params.AgeSecretKey)
+		defer age.SetGlobalSecretKeys()
+	}
+
+	buf, err := readFile(params.Path)
+	if err != nil {
+		return err.Error()
+	}
 	_, err = config.UnmarshalRawConfig(buf)
 	if err != nil {
 		return err.Error()
@@ -455,8 +469,16 @@ func handleGetMemory(fn func(value string)) {
 	}()
 }
 
-func handleGetConfig(path string) (*config.RawConfig, error) {
-	bytes, err := readFile(path)
+func handleGetConfig(params *GetConfigParams) (*config.RawConfig, error) {
+	ageMutex.Lock()
+	defer ageMutex.Unlock()
+
+	if params.AgeSecretKey != "" {
+		age.SetGlobalSecretKeys(params.AgeSecretKey)
+		defer age.SetGlobalSecretKeys()
+	}
+
+	bytes, err := readFile(params.Path)
 	if err != nil {
 		return nil, err
 	}
