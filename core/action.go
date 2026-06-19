@@ -122,7 +122,8 @@ func handleAction(action *Action, result ActionResult) {
 		var params GetConfigParams
 		err := json.Unmarshal([]byte(paramsString), &params)
 		if err != nil {
-			params.Path = paramsString
+			result.error(err)
+			return
 		}
 		config, err := handleGetConfig(&params)
 		if err != nil {
@@ -134,7 +135,7 @@ func handleAction(action *Action, result ActionResult) {
 	case generateAgeKeyPairMethod:
 		secretKey, publicKey, err := age.GenX25519KeyPair()
 		if err != nil {
-			result.error(err.Error())
+			result.error(err)
 			return
 		}
 		result.success(map[string]string{
@@ -146,7 +147,7 @@ func handleAction(action *Action, result ActionResult) {
 		secretKey := action.Data.(string)
 		publicKeys, err := age.ToPublicKeys(secretKey)
 		if err != nil {
-			result.error(err.Error())
+			result.error(err)
 			return
 		}
 		if len(publicKeys) == 0 {
