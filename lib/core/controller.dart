@@ -79,6 +79,11 @@ class CoreController {
 
   FutureOr<bool> get isInit => _interface.isInit;
 
+  Future<String> decryptAgeConfig(String data, String ageSecretKey) async {
+    final res = _interface.decryptAgeConfig(data, ageSecretKey);
+    return res;
+  }
+
   Future<String> validateConfig(String path) async {
     final res = await _interface.validateConfig(path);
     return res;
@@ -241,6 +246,14 @@ class CoreController {
 
   Future<String> clearEffect(int profileId) async {
     return _interface.clearEffect(profileId);
+  }
+
+  Future<Map<String, String>> generateAgeKeyPair() {
+    return _interface.generateAgeKeyPair();
+  }
+
+  Future<String> convertAgeSecretKeyToPublicKey(String secretKey) {
+    return _interface.convertAgeSecretKeyToPublicKey(secretKey);
   }
 }
 
