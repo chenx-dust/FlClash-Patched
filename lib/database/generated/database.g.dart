@@ -3561,10 +3561,7 @@ final class $$ProfilesTableReferences
   static MultiTypedResultKey<$ProfileRuleLinksTable, List<RawProfileRuleLink>>
   _profileRuleLinksRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
     db.profileRuleLinks,
-    aliasName: $_aliasNameGenerator(
-      db.profiles.id,
-      db.profileRuleLinks.profileId,
-    ),
+    aliasName: 'profiles__id__profile_rule_mapping__profile_id',
   );
 
   $$ProfileRuleLinksTableProcessedTableManager get profileRuleLinksRefs {
@@ -3584,7 +3581,7 @@ final class $$ProfilesTableReferences
   static MultiTypedResultKey<$ProxyGroupsTable, List<RawProxyGroup>>
   _proxyGroupsRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
     db.proxyGroups,
-    aliasName: $_aliasNameGenerator(db.profiles.id, db.proxyGroups.profileId),
+    aliasName: 'profiles__id__proxy_groups__profile_id',
   );
 
   $$ProxyGroupsTableProcessedTableManager get proxyGroupsRefs {
@@ -4298,7 +4295,7 @@ final class $$RulesTableReferences
   static MultiTypedResultKey<$ProfileRuleLinksTable, List<RawProfileRuleLink>>
   _profileRuleLinksRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
     db.profileRuleLinks,
-    aliasName: $_aliasNameGenerator(db.rules.id, db.profileRuleLinks.ruleId),
+    aliasName: 'rules__id__profile_rule_mapping__rule_id',
   );
 
   $$ProfileRuleLinksTableProcessedTableManager get profileRuleLinksRefs {
@@ -4655,9 +4652,7 @@ final class $$ProfileRuleLinksTableReferences
   );
 
   static $ProfilesTable _profileIdTable(_$Database db) =>
-      db.profiles.createAlias(
-        $_aliasNameGenerator(db.profileRuleLinks.profileId, db.profiles.id),
-      );
+      db.profiles.createAlias('profile_rule_mapping__profile_id__profiles__id');
 
   $$ProfilesTableProcessedTableManager? get profileId {
     final $_column = $_itemColumn<int>('profile_id');
@@ -4673,9 +4668,8 @@ final class $$ProfileRuleLinksTableReferences
     );
   }
 
-  static $RulesTable _ruleIdTable(_$Database db) => db.rules.createAlias(
-    $_aliasNameGenerator(db.profileRuleLinks.ruleId, db.rules.id),
-  );
+  static $RulesTable _ruleIdTable(_$Database db) =>
+      db.rules.createAlias('profile_rule_mapping__rule_id__rules__id');
 
   $$RulesTableProcessedTableManager get ruleId {
     final $_column = $_itemColumn<int>('rule_id')!;
@@ -5100,9 +5094,7 @@ final class $$ProxyGroupsTableReferences
   $$ProxyGroupsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $ProfilesTable _profileIdTable(_$Database db) =>
-      db.profiles.createAlias(
-        $_aliasNameGenerator(db.proxyGroups.profileId, db.profiles.id),
-      );
+      db.profiles.createAlias('proxy_groups__profile_id__profiles__id');
 
   $$ProfilesTableProcessedTableManager? get profileId {
     final $_column = $_itemColumn<int>('profile_id');
