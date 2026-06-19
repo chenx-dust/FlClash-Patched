@@ -246,6 +246,14 @@ class CoreController {
   Future<String> clearEffect(int profileId) async {
     return _interface.clearEffect(profileId);
   }
+
+  Future<Map<String, String>> generateAgeKeyPair() {
+    return _interface.generateAgeKeyPair();
+  }
+
+  Future<String> convertAgeSecretKeyToPublicKey(String secretKey) {
+    return _interface.convertAgeSecretKeyToPublicKey(secretKey);
+  }
 }
 
 final coreController = CoreController();

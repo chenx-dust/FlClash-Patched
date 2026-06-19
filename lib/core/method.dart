@@ -32,6 +32,8 @@ enum CoreMethod {
   setupConfig,
   clearEffect,
   updateDns,
+  generateAgeKeyPair,
+  convertAgeSecretKeyToPublicKey,
 }
 
 class CoreMethodCall {
