@@ -58,8 +58,8 @@ void main() {
       expect(utils.getTimeText(3661000), '01:01:01');
     });
 
-    test('caps at 99:59:59', () {
-      expect(utils.getTimeText(100 * 3600 * 1000), '99:59:59');
+    test('formats durations longer than a day', () {
+      expect(utils.getTimeText(100 * 3600 * 1000), '4d 04:00:00');
     });
   });
 
