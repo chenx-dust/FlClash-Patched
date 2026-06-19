@@ -73,7 +73,7 @@ dependencies:
       ref: master
   super_sliver_list: ^0.4.1
   drift: ^2.31.0
-  drift_flutter: ^0.2.8
+  drift_flutter: ^0.3.0
   fractional_indexing: ^1.0.0
   reorderable_grid: ^1.0.13
   smooth_sheets: ^1.0.2
