@@ -1208,7 +1208,6 @@ $MetadataCopyWith<$Res> get metadata {
 /// @nodoc
 mixin _$Log {
 
-// @JsonKey(fromJson: _logId) required String id,
 @JsonKey(name: 'LogLevel') LogLevel get logLevel; LogSource get source;@JsonKey(name: 'Payload') String get payload;@JsonKey(fromJson: _logDateTime) String get dateTime;
 /// Create a copy of Log
 /// with the given fields replaced by the non-null parameter values.
@@ -1409,7 +1408,6 @@ class _Log implements Log {
   const _Log({@JsonKey(name: 'LogLevel') this.logLevel = LogLevel.info, this.source = LogSource.app, @JsonKey(name: 'Payload') this.payload = '', @JsonKey(fromJson: _logDateTime) required this.dateTime});
   factory _Log.fromJson(Map<String, dynamic> json) => _$LogFromJson(json);
 
-// @JsonKey(fromJson: _logId) required String id,
 @override@JsonKey(name: 'LogLevel') final  LogLevel logLevel;
 @override@JsonKey() final  LogSource source;
 @override@JsonKey(name: 'Payload') final  String payload;
