@@ -57,7 +57,7 @@ jobs:
             os: windows-11-arm
             arch: arm64
           - platform: linux
-            os: ubuntu-24.04-arm
+            os: ubuntu-22.04-arm
             arch: arm64
 
     steps:
@@ -95,14 +95,6 @@ jobs:
         run: git config --global core.longpaths true
 
       - name: Setup Flutter
-        if: ${{ !(startsWith(matrix.os, 'windows-11-arm') || startsWith(matrix.os, 'ubuntu-24.04-arm')) }}
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          flutter-version: 3.44.2
-          cache: true
-      - name: Setup Flutter With Other
-        if: startsWith(matrix.os, 'windows-11-arm') || startsWith(matrix.os, 'ubuntu-24.04-arm')
         uses: subosito/flutter-action@v2
         with:
           channel: master
