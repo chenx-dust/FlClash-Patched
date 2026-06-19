@@ -538,5 +538,15 @@
   "editSsid": "Edit SSID",
   "authorized": "Authorized",
   "tapToAuthorize": "Tap to authorize",
-  "suspended": "Suspended..."
+  "suspended": "Suspended...",
+  "unauthorized": "Unauthorized",
+  "ageSecretKeyOptional": "Age Secret Key (Optional)",
+  "ageSecretKeyInvalidValidationDesc": "Please enter a valid Age secret key (must start with AGE-SECRET-KEY-)",
+  "ageKeyGenerateTitle": "Age Key Generation",
+  "agePrivateKeyLabel": "Age Private Key",
+  "agePublicKeyLabel": "Age Public Key",
+  "generateFromPrivateKey": "Generate from Age private key",
+  "ageKeyPairGeneratedSuccess": "X25519 key pair generated, please keep it safe",
+  "agePrivateKeyRequired": "Please enter a correct Age private key first",
+  "generateSecret": "Generate"
 }

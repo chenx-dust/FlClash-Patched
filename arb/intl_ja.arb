@@ -538,5 +538,15 @@
   "editSsid": "SSIDを編集",
   "authorized": "許可済み",
   "tapToAuthorize": "タップして許可",
-  "suspended": "一時停止中..."
+  "suspended": "一時停止中...",
+  "unauthorized": "未許可",
+  "ageSecretKeyOptional": "Age 秘密鍵（任意）",
+  "ageSecretKeyInvalidValidationDesc": "有効な Age 秘密鍵を入力してください（AGE-SECRET-KEY-で始まる必要があります）",
+  "ageKeyGenerateTitle": "Age キー生成",
+  "agePrivateKeyLabel": "Age 秘密鍵",
+  "agePublicKeyLabel": "Age 公開鍵",
+  "generateFromPrivateKey": "Age 秘密鍵から生成",
+  "ageKeyPairGeneratedSuccess": "X25519 キーペアを生成しました。安全に保管してください",
+  "agePrivateKeyRequired": "先に正しい Age 秘密鍵を入力してください",
+  "generateSecret": "生成"
 }

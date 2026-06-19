@@ -56,18 +56,24 @@ abstract class Profile with _$Profile {
     @Default(OverwriteType.standard) OverwriteType overwriteType,
     int? scriptId,
     int? order,
+    String? ageSecretKey,
   }) = _Profile;
 
   factory Profile.fromJson(Map<String, Object?> json) =>
       _$ProfileFromJson(json);
 
-  factory Profile.normal({String? label, String url = ''}) {
+  factory Profile.normal({
+    String? label,
+    String url = '',
+    String? ageSecretKey,
+  }) {
     final id = snowflake.id;
     return Profile(
       label: label ?? '',
       url: url,
       id: id,
       autoUpdateDuration: defaultUpdateDuration,
+      ageSecretKey: ageSecretKey,
     );
   }
 }
@@ -215,7 +221,10 @@ extension ProfileExtension on Profile {
     final path = await appPath.tempFilePath;
     final tempFile = File(path);
     await tempFile.safeWriteAsBytes(bytes);
-    final message = await coreController.validateConfig(path);
+    final message = await coreController.validateConfig(
+      path,
+      ageSecretKey: ageSecretKey,
+    );
     if (message.isNotEmpty) {
       throw message;
     }
@@ -226,7 +235,10 @@ extension ProfileExtension on Profile {
   }
 
   Future<Profile> saveFileWithPath(String path) async {
-    final message = await coreController.validateConfig(path);
+    final message = await coreController.validateConfig(
+      path,
+      ageSecretKey: ageSecretKey,
+    );
     if (message.isNotEmpty) {
       throw message;
     }

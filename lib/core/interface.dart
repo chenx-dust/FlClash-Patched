@@ -16,9 +16,13 @@ mixin CoreInterface {
 
   Future<bool> forceGc();
 
-  Future<String> validateConfig(String path);
+  Future<String> validateConfig(String path, {String? ageSecretKey});
 
-  Future<Result> getConfig(String path);
+  Future<Result> getConfig(String path, {String? ageSecretKey});
+
+  Future<Map<String, String>> generateAgeKeyPair();
+
+  Future<Result<String>> convertAgeSecretKeyToPublicKey(String secretKey);
 
   Future<String> asyncTestDelay(String url, String proxyName);
 
@@ -114,7 +118,8 @@ abstract class CoreHandlerInterface with CoreInterface {
 
   Future<T> parasResult<T>(ActionResult result) async {
     return switch (result.method) {
-      ActionMethod.getConfig => result.toResult as T,
+      ActionMethod.getConfig ||
+      ActionMethod.convertAgeSecretKeyToPublicKey => result.toResult as T,
       _ => result.data as T,
     };
   }
@@ -142,10 +147,14 @@ abstract class CoreHandlerInterface with CoreInterface {
   }
 
   @override
-  Future<String> validateConfig(String path) async {
+  Future<String> validateConfig(String path, {String? ageSecretKey}) async {
+    final params = {
+      'path': path,
+      'age-secret-key': ageSecretKey ?? '',
+    };
     return await _invoke<String>(
           method: ActionMethod.validateConfig,
-          data: path,
+          data: json.encode(params),
         ) ??
         '';
   }
@@ -160,9 +169,40 @@ abstract class CoreHandlerInterface with CoreInterface {
   }
 
   @override
-  Future<Result> getConfig(String path) async {
-    final res = await _invoke(method: ActionMethod.getConfig, data: path);
+  Future<Result> getConfig(String path, {String? ageSecretKey}) async {
+    final params = {
+      'path': path,
+      'age-secret-key': ageSecretKey ?? '',
+    };
+    final res = await _invoke(
+      method: ActionMethod.getConfig,
+      data: json.encode(params),
+    );
     return res ?? Result.success({});
+  }
+
+  @override
+  Future<Map<String, String>> generateAgeKeyPair() async {
+    final res = await _invoke<dynamic>(method: ActionMethod.generateAgeKeyPair);
+    if (res is! Map) {
+      return {};
+    }
+    return res.map(
+      (key, value) => MapEntry(key.toString(), value.toString()),
+    );
+  }
+
+  @override
+  Future<Result<String>> convertAgeSecretKeyToPublicKey(String secretKey) async {
+    final res = await _invoke<Result>(
+      method: ActionMethod.convertAgeSecretKeyToPublicKey,
+      data: secretKey,
+    );
+    return Result<String>(
+      data: res?.data?.toString(),
+      type: res?.type ?? ResultType.error,
+      message: res?.message ?? 'error',
+    );
   }
 
   @override
