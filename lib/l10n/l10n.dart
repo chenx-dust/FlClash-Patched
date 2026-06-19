@@ -4493,6 +4493,101 @@ class AppLocalizations {
       args: [count],
     );
   }
+
+  /// `Unauthorized`
+  String get unauthorized {
+    return Intl.message(
+      'Unauthorized',
+      name: 'unauthorized',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Age Secret Key (Optional)`
+  String get ageSecretKeyOptional {
+    return Intl.message(
+      'Age Secret Key (Optional)',
+      name: 'ageSecretKeyOptional',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a valid Age secret key (must start with AGE-SECRET-KEY-)`
+  String get ageSecretKeyInvalidValidationDesc {
+    return Intl.message(
+      'Please enter a valid Age secret key (must start with AGE-SECRET-KEY-)',
+      name: 'ageSecretKeyInvalidValidationDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Age Key Generation`
+  String get ageKeyGenerateTitle {
+    return Intl.message(
+      'Age Key Generation',
+      name: 'ageKeyGenerateTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Age Private Key`
+  String get agePrivateKeyLabel {
+    return Intl.message(
+      'Age Private Key',
+      name: 'agePrivateKeyLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Age Public Key`
+  String get agePublicKeyLabel {
+    return Intl.message(
+      'Age Public Key',
+      name: 'agePublicKeyLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Generate from Age private key`
+  String get generateFromPrivateKey {
+    return Intl.message(
+      'Generate from Age private key',
+      name: 'generateFromPrivateKey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `X25519 key pair generated, please keep it safe`
+  String get ageKeyPairGeneratedSuccess {
+    return Intl.message(
+      'X25519 key pair generated, please keep it safe',
+      name: 'ageKeyPairGeneratedSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a correct Age private key first`
+  String get agePrivateKeyRequired {
+    return Intl.message(
+      'Please enter a correct Age private key first',
+      name: 'agePrivateKeyRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Generate`
+  String get generateSecret {
+    return Intl.message('Generate', name: 'generateSecret', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

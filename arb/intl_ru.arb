@@ -550,5 +550,15 @@
   "geoSkipped": "{name} пропущено",
   "geoUpdated": "{name} обновлено",
   "secondsCount": "{count} секунд",
-  "entriesCount": "{count} записей"
+  "entriesCount": "{count} записей",
+  "unauthorized": "Не разрешено",
+  "ageSecretKeyOptional": "Приватный ключ Age (необязательно)",
+  "ageSecretKeyInvalidValidationDesc": "Пожалуйста, введите корректный приватный ключ Age (должен начинаться с AGE-SECRET-KEY-)",
+  "ageKeyGenerateTitle": "Генерация ключа Age",
+  "agePrivateKeyLabel": "Закрытый ключ Age",
+  "agePublicKeyLabel": "Открытый ключ Age",
+  "generateFromPrivateKey": "Создать из закрытого ключа Age",
+  "ageKeyPairGeneratedSuccess": "Пара ключей X25519 создана, сохраните ее в надежном месте",
+  "agePrivateKeyRequired": "Пожалуйста, сначала введите корректный закрытый ключ Age",
+  "generateSecret": "Создать"
 }
