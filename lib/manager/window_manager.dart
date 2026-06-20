@@ -21,6 +21,21 @@ class WindowManager extends ConsumerStatefulWidget {
 
 class _WindowContainerState extends ConsumerState<WindowManager>
     with WindowListener, WindowExtListener {
+  Timer? _renderToggleTimer;
+  bool? _pendingRenderResume;
+
+  void _scheduleRenderToggle(bool resume) {
+    _pendingRenderResume = resume;
+    _renderToggleTimer?.cancel();
+    _renderToggleTimer = Timer(const Duration(milliseconds: 500), () {
+      if (_pendingRenderResume == true) {
+        render?.resume();
+      } else {
+        render?.pause();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return widget.child;
@@ -34,15 +49,16 @@ class _WindowContainerState extends ConsumerState<WindowManager>
         (state) => VM2(state.autoLaunch, state.highPriorityAutoLaunch),
       ),
       (prev, next) {
-      if (prev != next) {
-        debouncer.call(FunctionTag.autoLaunch, () {
-          autoLaunch?.updateStatus(
-            isAutoLaunch: next.a,
-            isHighPriorityAutoLaunch: next.b,
-          );
-        });
-      }
-    });
+        if (prev != next) {
+          debouncer.call(FunctionTag.autoLaunch, () {
+            autoLaunch?.updateStatus(
+              isAutoLaunch: next.a,
+              isHighPriorityAutoLaunch: next.b,
+            );
+          });
+        }
+      },
+    );
     windowExtManager.addListener(this);
     windowManager.addListener(this);
   }
@@ -91,14 +107,17 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   void onWindowMinimize() async {
     ref.read(storeActionProvider.notifier).savePreferencesDebounce();
     commonPrint.log('minimize');
-    render?.pause();
+    _renderToggleTimer?.cancel();
+    await globalState.handleBackground();
     super.onWindowMinimize();
   }
 
   @override
   void onWindowRestore() {
     commonPrint.log('restore');
-    render?.resume();
+    globalState.handleForeground();
+    _scheduleRenderToggle(true);
+    unawaited(globalState.resumeForegroundUpdates());
     super.onWindowRestore();
   }
 
@@ -106,6 +125,7 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   Future<void> dispose() async {
     windowManager.removeListener(this);
     windowExtManager.removeListener(this);
+    _renderToggleTimer?.cancel();
     super.dispose();
   }
 }

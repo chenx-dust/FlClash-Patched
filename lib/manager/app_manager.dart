@@ -22,10 +22,26 @@ class AppStateManager extends ConsumerStatefulWidget {
 
 class _AppStateManagerState extends ConsumerState<AppStateManager>
     with WidgetsBindingObserver {
+  bool _isRefreshActive = false;
+  Timer? _dashboardRefreshDebounceTimer;
+  Timer? _missedUpdateCheckTimer;
+  DateTime? _lastMissedUpdateCheck;
+  late final VoidCallback _dashboardTickListener;
+
+  static const _missedUpdateCheckDelay = Duration(seconds: 5);
+  static const _missedUpdateCheckThrottle = Duration(seconds: 60);
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _dashboardTickListener = () {
+      if (!ref.read(isStartProvider)) {
+        return;
+      }
+      ref.read(commonActionProvider.notifier).updateRunTime();
+    };
+    dashboardRefreshManager.tick1s.addListener(_dashboardTickListener);
     ref.listenManual(checkIpProvider, (prev, next) {
       if (prev != next && next.a && next.c) {
         ref.read(networkDetectionProvider.notifier).startCheck();
@@ -70,19 +86,86 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
         }
       });
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(_updateDashboardRefreshState());
+    });
   }
 
   @override
   void dispose() {
+    _dashboardRefreshDebounceTimer?.cancel();
+    _missedUpdateCheckTimer?.cancel();
+    dashboardRefreshManager.tick1s.removeListener(_dashboardTickListener);
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  Future<void> _updateDashboardRefreshState() async {
+    final lifecycleState = WidgetsBinding.instance.lifecycleState;
+    final isForeground =
+        lifecycleState == null || lifecycleState == AppLifecycleState.resumed;
+    var isVisible = true;
+    var isMinimized = false;
+    if (system.isDesktop) {
+      isVisible = await window?.isVisible ?? true;
+      isMinimized = await window?.isMinimized ?? false;
+    }
+    final shouldRun = isForeground && isVisible && !isMinimized;
+    if (!shouldRun) {
+      _dashboardRefreshDebounceTimer?.cancel();
+      _dashboardRefreshDebounceTimer = null;
+      if (_isRefreshActive) {
+        dashboardRefreshManager.stop();
+        _isRefreshActive = false;
+      }
+      return;
+    }
+    if (_isRefreshActive) {
+      return;
+    }
+    _dashboardRefreshDebounceTimer?.cancel();
+    _dashboardRefreshDebounceTimer = Timer(const Duration(seconds: 1), () {
+      if (!mounted || _isRefreshActive) {
+        return;
+      }
+      dashboardRefreshManager.start();
+      _isRefreshActive = true;
+    });
+  }
+
+  bool get _shouldCheckMissedUpdates {
+    if (_lastMissedUpdateCheck == null) {
+      return true;
+    }
+    return DateTime.now().difference(_lastMissedUpdateCheck!) >
+        _missedUpdateCheckThrottle;
+  }
+
+  void _scheduleMissedUpdateCheck() {
+    if (!_shouldCheckMissedUpdates) {
+      return;
+    }
+    _missedUpdateCheckTimer?.cancel();
+    _missedUpdateCheckTimer = Timer(_missedUpdateCheckDelay, () {
+      _lastMissedUpdateCheck = DateTime.now();
+      ref.read(profilesActionProvider.notifier).autoUpdateProfiles();
+    });
   }
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     commonPrint.log('$state');
-    if (state == AppLifecycleState.resumed) {
+    final isBackgroundState =
+        state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden ||
+        (state == AppLifecycleState.inactive && !system.isDesktop);
+    if (isBackgroundState) {
+      _missedUpdateCheckTimer?.cancel();
+      await preferences.saveConfig(ref.read(configProvider));
+      await globalState.handleBackground();
+    } else if (state == AppLifecycleState.resumed) {
       permissions.check();
+      globalState.handleForeground();
       render?.resume();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final ref = globalState.container;
@@ -91,7 +174,11 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
           ref.read(coreActionProvider.notifier).tryStartCore();
         }
       });
+      await globalState.resumeForegroundUpdates();
+      _scheduleMissedUpdateCheck();
+      ref.read(proxiesActionProvider.notifier).updateGroupsDebounce();
     }
+    unawaited(_updateDashboardRefreshState());
   }
 
   @override

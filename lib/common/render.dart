@@ -35,6 +35,7 @@ class Render {
   }
 
   void _pause() async {
+    if (!system.isWindows) return;
     if (_isPaused) return;
     _isPaused = true;
     _beginFrame = _dispatcher.onBeginFrame;
@@ -45,6 +46,7 @@ class Render {
   }
 
   void _resume() {
+    if (!system.isWindows) return;
     if (!_isPaused) return;
     _isPaused = false;
     _dispatcher.onBeginFrame = _beginFrame;

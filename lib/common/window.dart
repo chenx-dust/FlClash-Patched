@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/models/config.dart';
+import 'package:fl_clash/state.dart';
 import 'package:flutter/material.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:window_manager/window_manager.dart';
@@ -76,16 +77,22 @@ class Window {
   }
 
   Future<void> show() async {
+    globalState.handleForeground();
     render?.resume();
     await windowManager.show();
     await windowManager.focus();
     await windowManager.setSkipTaskbar(false);
+    await globalState.resumeForegroundUpdates();
   }
 
   Future<bool> get isVisible async {
     final value = await windowManager.isVisible();
     commonPrint.log('window visible check: $value');
     return value;
+  }
+
+  Future<bool> get isMinimized async {
+    return windowManager.isMinimized();
   }
 
   Future<void> close() async {
@@ -97,9 +104,9 @@ class Window {
   }
 
   Future<void> hide() async {
-    render?.pause();
     await windowManager.hide();
     await windowManager.setSkipTaskbar(true);
+    await globalState.handleBackground();
   }
 }
 

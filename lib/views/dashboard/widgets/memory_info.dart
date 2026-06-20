@@ -17,32 +17,44 @@ class MemoryInfo extends StatefulWidget {
 }
 
 class _MemoryInfoState extends State<MemoryInfo> {
-  Timer? timer;
+  late final VoidCallback _tickListener;
+  Timer? _initTimer;
+  bool _isUpdating = false;
 
   @override
   void initState() {
     super.initState();
-    _updateMemory();
+    _tickListener = () {
+      unawaited(_updateMemory());
+    };
+    dashboardRefreshManager.tick2s.addListener(_tickListener);
+    _initTimer = Timer(const Duration(milliseconds: 500), () {
+      unawaited(_updateMemory());
+    });
   }
 
   @override
   void dispose() {
-    timer?.cancel();
+    _initTimer?.cancel();
+    dashboardRefreshManager.tick2s.removeListener(_tickListener);
     super.dispose();
   }
 
   Future<void> _updateMemory() async {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
+    if (!mounted || _isUpdating) {
+      return;
+    }
+    _isUpdating = true;
+    try {
       final rss = ProcessInfo.currentRss;
       if (coreController.isCompleted) {
         _memoryStateNotifier.value = await coreController.getMemory() + rss;
       } else {
         _memoryStateNotifier.value = rss;
       }
-      timer = Timer(const Duration(seconds: 2), () async {
-        _updateMemory();
-      });
-    });
+    } finally {
+      _isUpdating = false;
+    }
   }
 
   @override

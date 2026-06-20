@@ -2,28 +2,42 @@ import 'dart:async';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
+import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
+import 'package:fl_clash/providers/providers.dart';
+import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'item.dart';
 
 class ConnectionsView extends ConsumerStatefulWidget {
-  const ConnectionsView({super.key});
+  final bool respectCurrentPage;
+
+  const ConnectionsView({super.key, this.respectCurrentPage = true});
 
   @override
   ConsumerState<ConnectionsView> createState() => _ConnectionsViewState();
 }
 
-class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
+class _ConnectionsViewState extends ConsumerState<ConnectionsView>
+    with WidgetsBindingObserver, WindowListener {
   final _connectionsStateNotifier = ValueNotifier<TrackerInfosState>(
     const TrackerInfosState(),
   );
   final ScrollController _scrollController = ScrollController();
 
-  Timer? timer;
+  Timer? _timer;
+  ProviderSubscription? _pageLabelSubscription;
+
+  bool get _isForeground {
+    final lifecycleState = WidgetsBinding.instance.lifecycleState;
+    return lifecycleState == null ||
+        lifecycleState == AppLifecycleState.resumed;
+  }
 
   List<Widget> _buildActions() {
     return [
@@ -49,26 +63,100 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
     );
   }
 
-  Future<void> _updateConnectionsTask() async {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (mounted) {
-        await _updateConnections();
-        timer = Timer(const Duration(seconds: 1), () async {
-          _updateConnectionsTask();
-        });
-      }
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    _updateConnectionsTask();
+    WidgetsBinding.instance.addObserver(this);
+    globalState.backgroundMode.addListener(_handleBackgroundModeChanged);
+    if (system.isDesktop) {
+      windowManager.addListener(this);
+    }
+    _pageLabelSubscription = ref.listenManual(currentPageLabelProvider, (
+      prev,
+      next,
+    ) {
+      if (prev != next) {
+        unawaited(_syncUpdateTimer());
+      }
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(_syncUpdateTimer());
+    });
+  }
+
+  Future<bool> _shouldRunTimer() async {
+    if (!mounted) {
+      return false;
+    }
+    if (globalState.backgroundMode.value) {
+      return false;
+    }
+    if (widget.respectCurrentPage &&
+        ref.read(currentPageLabelProvider) != PageLabel.connections) {
+      return false;
+    }
+    if (!_isForeground) {
+      return false;
+    }
+    if (system.isDesktop && await window?.isVisible == false) {
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> _syncUpdateTimer() async {
+    final shouldRun = await _shouldRunTimer();
+    if (!mounted) {
+      return;
+    }
+    if (!shouldRun) {
+      _timer?.cancel();
+      _timer = null;
+      return;
+    }
+    if (_timer != null) {
+      return;
+    }
+    await _updateConnections();
+    if (!mounted || !await _shouldRunTimer()) {
+      return;
+    }
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      unawaited(_updateConnections());
+    });
   }
 
   Future<void> _updateConnections() async {
+    if (!mounted || !await _shouldRunTimer()) {
+      _timer?.cancel();
+      _timer = null;
+      return;
+    }
+    final connections = await coreController.getConnections();
+    if (!mounted || !await _shouldRunTimer()) {
+      _timer?.cancel();
+      _timer = null;
+      return;
+    }
+    final oldConnections = _connectionsStateNotifier.value.trackerInfos;
+    final oldMap = {
+      for (final connection in oldConnections) connection.id: connection,
+    };
+    final nextConnections = connections.map((connection) {
+      final oldConnection = oldMap[connection.id];
+      if (oldConnection == null) {
+        return connection.copyWith(uploadSpeed: 0, downloadSpeed: 0);
+      }
+      final uploadSpeed = connection.upload - oldConnection.upload;
+      final downloadSpeed = connection.download - oldConnection.download;
+      return connection.copyWith(
+        uploadSpeed: uploadSpeed > 0 ? uploadSpeed : 0,
+        downloadSpeed: downloadSpeed > 0 ? downloadSpeed : 0,
+      );
+    }).toList();
     _connectionsStateNotifier.value = _connectionsStateNotifier.value.copyWith(
-      trackerInfos: await coreController.getConnections(),
+      trackerInfos: nextConnections,
     );
   }
 
@@ -79,11 +167,36 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
 
   @override
   void dispose() {
-    timer?.cancel();
+    _pageLabelSubscription?.close();
+    globalState.backgroundMode.removeListener(_handleBackgroundModeChanged);
+    if (system.isDesktop) {
+      windowManager.removeListener(this);
+    }
+    WidgetsBinding.instance.removeObserver(this);
+    _timer?.cancel();
     _connectionsStateNotifier.dispose();
     _scrollController.dispose();
-    timer = null;
+    _timer = null;
     super.dispose();
+  }
+
+  void _handleBackgroundModeChanged() {
+    unawaited(_syncUpdateTimer());
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    unawaited(_syncUpdateTimer());
+  }
+
+  @override
+  void onWindowMinimize() {
+    unawaited(_syncUpdateTimer());
+  }
+
+  @override
+  void onWindowRestore() {
+    unawaited(_syncUpdateTimer());
   }
 
   @override

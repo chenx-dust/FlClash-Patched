@@ -15,15 +15,21 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'common/common.dart';
+import 'core/controller.dart';
 import 'database/database.dart';
 import 'enum/enum.dart';
 import 'l10n/l10n.dart';
 import 'models/models.dart';
+import 'plugins/service.dart';
 import 'providers/providers.dart';
+
+typedef UpdateTasks = List<FutureOr<void> Function()>;
 
 class GlobalState {
   static GlobalState? _instance;
   final navigatorKey = GlobalKey<NavigatorState>();
+  final backgroundMode = ValueNotifier<bool>(false);
+  final animationEnabled = ValueNotifier<bool>(true);
   bool isPre = true;
   late final String coreSHA256;
   late final PackageInfo packageInfo;
@@ -39,6 +45,12 @@ class GlobalState {
   String? lastConfigMd5;
   VpnState? lastVpnState;
   bool isAttach = false;
+  Timer? _taskTimer;
+  Timer? _backgroundCleanupTimer;
+  UpdateTasks _tasks = [];
+  int _taskLoopToken = 0;
+  bool _isExecutingTasks = false;
+  bool _needsTaskRestart = false;
 
   GlobalState._internal();
 
@@ -68,6 +80,163 @@ class GlobalState {
       .takeFirstValid([packageInfo.ua]);
 
   BuildContext get _context => navigatorKey.currentContext!;
+
+  Future<void> startUpdateTasks([UpdateTasks? tasks]) async {
+    if (tasks != null) {
+      _tasks = tasks;
+    }
+    final token = ++_taskLoopToken;
+    _taskTimer?.cancel();
+    _taskTimer = null;
+    if (_isExecutingTasks) {
+      _needsTaskRestart = true;
+      return;
+    }
+    await _runUpdateLoop(token);
+  }
+
+  Future<void> _runUpdateLoop(int token) async {
+    if (token != _taskLoopToken) {
+      return;
+    }
+    _isExecutingTasks = true;
+    try {
+      await _executeUpdateTasks();
+    } finally {
+      _isExecutingTasks = false;
+    }
+    if (_needsTaskRestart) {
+      _needsTaskRestart = false;
+      await _runUpdateLoop(_taskLoopToken);
+      return;
+    }
+    if (token != _taskLoopToken) {
+      return;
+    }
+    _taskTimer = Timer(const Duration(seconds: 1), () {
+      unawaited(_runUpdateLoop(token));
+    });
+  }
+
+  Future<void> _executeUpdateTasks() async {
+    for (final task in _tasks) {
+      try {
+        await task();
+      } catch (e, s) {
+        commonPrint.log(
+          'update task failed: $e, $s',
+          logLevel: LogLevel.warning,
+        );
+      }
+    }
+    _taskTimer = null;
+  }
+
+  void stopUpdateTasks() {
+    _taskLoopToken++;
+    _needsTaskRestart = false;
+    _taskTimer?.cancel();
+    _taskTimer = null;
+  }
+
+  bool get _shouldKeepBackgroundUpdateTasks {
+    return system.isAndroid &&
+        container.read(
+          vpnSettingProvider.select((state) => state.networkSpeedNotification),
+        );
+  }
+
+  Future<void> handleBackground() async {
+    if (system.isDesktop) {
+      final isMinimized = await window?.isMinimized ?? false;
+      final isVisible = await window?.isVisible ?? true;
+      if (!isMinimized && isVisible) {
+        return;
+      }
+      animationEnabled.value = false;
+    }
+    if (!backgroundMode.value) {
+      backgroundMode.value = true;
+      _scheduleBackgroundCleanup();
+    }
+    render?.pause();
+    if (!_shouldKeepBackgroundUpdateTasks) {
+      stopUpdateTasks();
+    }
+    dashboardRefreshManager.stop();
+  }
+
+  void handleForeground() {
+    if (system.isDesktop) {
+      animationEnabled.value = true;
+    }
+    if (!backgroundMode.value) {
+      return;
+    }
+    backgroundMode.value = false;
+    _backgroundCleanupTimer?.cancel();
+    _backgroundCleanupTimer = null;
+    unawaited(_syncVpnState());
+  }
+
+  Future<void> _syncVpnState() async {
+    if (!system.isAndroid) {
+      return;
+    }
+    try {
+      final startTime = await service?.getRunTime();
+      if (startTime != null) {
+        container.read(setupActionProvider.notifier).startTime = startTime;
+        if (container.read(runTimeProvider) == null) {
+          container.read(runTimeProvider.notifier).value = 0;
+        }
+      } else if (container.read(runTimeProvider) != null) {
+        container.read(setupActionProvider.notifier).startTime = null;
+        container.read(runTimeProvider.notifier).value = null;
+      }
+    } catch (e, s) {
+      commonPrint.log('sync vpn state failed: $e, $s');
+    }
+  }
+
+  Future<void> resumeForegroundUpdates() async {
+    dashboardRefreshManager.start();
+    if (!container.read(isStartProvider)) {
+      return;
+    }
+    final commonAction = container.read(commonActionProvider.notifier);
+    commonAction.updateRunTime();
+    await commonAction.updateTraffic();
+    await startUpdateTasks([commonAction.updateTraffic]);
+  }
+
+  void _scheduleBackgroundCleanup() {
+    _backgroundCleanupTimer?.cancel();
+    _backgroundCleanupTimer = Timer(const Duration(minutes: 3), () {
+      _backgroundCleanupTimer = null;
+      if (!backgroundMode.value) {
+        return;
+      }
+      unawaited(cleanupBackgroundResources());
+    });
+  }
+
+  Future<void> cleanupBackgroundResources() async {
+    if (!backgroundMode.value) {
+      return;
+    }
+    PaintingBinding.instance.imageCache.clearLiveImages();
+    await Future.delayed(const Duration(milliseconds: 250));
+    if (!backgroundMode.value) {
+      return;
+    }
+    WidgetsBinding.instance.handleMemoryPressure();
+    await Future.delayed(const Duration(milliseconds: 250));
+    if (!backgroundMode.value) {
+      return;
+    }
+    await coreController.requestGc();
+  }
 
   Future<ProviderContainer> _initData(int version) async {
     final appState = AppState(
@@ -383,4 +552,59 @@ class GlobalState {
   }
 }
 
+class DashboardRefreshManager {
+  final tick1s = ValueNotifier<int>(0);
+  final tick2s = ValueNotifier<int>(0);
+  final tick5s = ValueNotifier<int>(0);
+  Timer? _timer;
+  int _tickCount = 0;
+  int _tickToken = 0;
+
+  void start() {
+    if (_timer != null) {
+      return;
+    }
+    final token = ++_tickToken;
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      unawaited(_tick(token));
+    });
+  }
+
+  void stop() {
+    _tickToken++;
+    _timer?.cancel();
+    _timer = null;
+  }
+
+  Future<void> _tick(int token) async {
+    if (token != _tickToken) {
+      return;
+    }
+    final lifecycleState = WidgetsBinding.instance.lifecycleState;
+    if (lifecycleState != null && lifecycleState != AppLifecycleState.resumed) {
+      return;
+    }
+    if (system.isDesktop) {
+      if (await window?.isVisible == false) {
+        return;
+      }
+      if (await window?.isMinimized == true) {
+        return;
+      }
+    }
+    if (token != _tickToken) {
+      return;
+    }
+    _tickCount++;
+    tick1s.value++;
+    if (_tickCount % 2 == 0) {
+      tick2s.value++;
+    }
+    if (_tickCount % 5 == 0) {
+      tick5s.value++;
+    }
+  }
+}
+
+final dashboardRefreshManager = DashboardRefreshManager();
 final globalState = GlobalState();

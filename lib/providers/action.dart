@@ -44,6 +44,9 @@ class CommonAction extends _$CommonAction {
   }
 
   void updateRunTime() {
+    if (globalState.backgroundMode.value) {
+      return;
+    }
     final startTime = ref.read(setupActionProvider.notifier).startTime;
     if (startTime != null) {
       final startTimeStamp = startTime.millisecondsSinceEpoch;
@@ -54,14 +57,41 @@ class CommonAction extends _$CommonAction {
     }
   }
 
+  Future<bool> _shouldUpdateDashboardTraffic() async {
+    final lifecycleState = WidgetsBinding.instance.lifecycleState;
+    if (lifecycleState != null && lifecycleState != AppLifecycleState.resumed) {
+      return false;
+    }
+    if (system.isDesktop) {
+      if (await window?.isVisible == false) {
+        return false;
+      }
+      if (await window?.isMinimized == true) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   Future<void> updateTraffic() async {
     final onlyStatisticsProxy = ref.read(
       appSettingProvider.select((state) => state.onlyStatisticsProxy),
     );
-    final traffic = await coreController.getTraffic(onlyStatisticsProxy);
-    ref.read(trafficsProvider.notifier).addTraffic(traffic);
     ref.read(totalTrafficProvider.notifier).value = await coreController
         .getTotalTraffic(onlyStatisticsProxy);
+    final shouldUpdateDashboard = await _shouldUpdateDashboardTraffic();
+    final networkSpeedNotification =
+        system.isAndroid &&
+        ref.read(
+          vpnSettingProvider.select((state) => state.networkSpeedNotification),
+        );
+    if (!shouldUpdateDashboard && !networkSpeedNotification) {
+      return;
+    }
+    final traffic = await coreController.getTraffic(onlyStatisticsProxy);
+    if (shouldUpdateDashboard) {
+      ref.read(trafficsProvider.notifier).addTraffic(traffic);
+    }
   }
 
   Future<void> autoCheckUpdate() async {
@@ -112,7 +142,6 @@ class CommonAction extends _$CommonAction {
 
 @Riverpod(keepAlive: true)
 class SetupAction extends _$SetupAction {
-  Timer? _updateTimer;
   DateTime? startTime;
 
   bool get isStart => startTime != null && startTime!.isBeforeNow;
@@ -139,15 +168,13 @@ class SetupAction extends _$SetupAction {
   Future<void> _handleStart() async {
     startTime ??= DateTime.now();
     //The local status must be updated when performing the run task
-    ref.read(commonActionProvider.notifier).updateRunTime();
-    ref.read(commonActionProvider.notifier).updateTraffic();
+    final commonAction = ref.read(commonActionProvider.notifier);
+    commonAction.updateRunTime();
+    await commonAction.updateTraffic();
     if (!ref.read(suspendProvider)) {
       await coreController.startListener();
     }
-    _updateTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      ref.read(commonActionProvider.notifier).updateRunTime();
-      ref.read(commonActionProvider.notifier).updateTraffic();
-    });
+    await globalState.startUpdateTasks([commonAction.updateTraffic]);
   }
 
   Future _updateStartTime() async {
@@ -156,8 +183,7 @@ class SetupAction extends _$SetupAction {
 
   Future handleStop() async {
     startTime = null;
-    _updateTimer?.cancel();
-    _updateTimer = null;
+    globalState.stopUpdateTasks();
     await coreController.stopListener();
   }
 
