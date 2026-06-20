@@ -131,23 +131,23 @@ class MessageLookup extends MessageLookupByLibrary {
       "Provide diverse configuration options",
     ),
     "ageKeyGenerateTitle": MessageLookupByLibrary.simpleMessage(
-      "Age Key Generation",
+      "Age key generation",
     ),
     "ageKeyPairGeneratedSuccess": MessageLookupByLibrary.simpleMessage(
       "X25519 key pair generated, please keep it safe",
     ),
     "agePrivateKeyLabel": MessageLookupByLibrary.simpleMessage(
-      "Age Private Key",
+      "Age private key",
     ),
     "agePrivateKeyRequired": MessageLookupByLibrary.simpleMessage(
       "Please enter a correct Age private key first",
     ),
-    "agePublicKeyLabel": MessageLookupByLibrary.simpleMessage("Age Public Key"),
+    "agePublicKeyLabel": MessageLookupByLibrary.simpleMessage("Age public key"),
     "ageSecretKeyInvalidValidationDesc": MessageLookupByLibrary.simpleMessage(
       "Please enter a valid Age secret key (must start with AGE-SECRET-KEY-)",
     ),
     "ageSecretKeyOptional": MessageLookupByLibrary.simpleMessage(
-      "Age Secret Key (Optional)",
+      "Age secret key (Optional)",
     ),
     "agree": MessageLookupByLibrary.simpleMessage("Agree"),
     "allowBypass": MessageLookupByLibrary.simpleMessage(
@@ -192,7 +192,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "autoLaunchDesc": MessageLookupByLibrary.simpleMessage(
       "Follow the system self startup",
     ),
-    "autoRun": MessageLookupByLibrary.simpleMessage("AutoRun"),
+    "autoRun": MessageLookupByLibrary.simpleMessage("Auto run"),
     "autoRunDesc": MessageLookupByLibrary.simpleMessage(
       "Auto run when the application is opened",
     ),
@@ -240,7 +240,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "checkUpdateError": MessageLookupByLibrary.simpleMessage(
       "The current application is already the latest version",
     ),
-    "clearData": MessageLookupByLibrary.simpleMessage("Clear Data"),
+    "clearData": MessageLookupByLibrary.simpleMessage("Clear data"),
     "clipboardExport": MessageLookupByLibrary.simpleMessage("Export clipboard"),
     "clipboardImport": MessageLookupByLibrary.simpleMessage("Clipboard import"),
     "color": MessageLookupByLibrary.simpleMessage("Color"),
@@ -273,7 +273,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "connectionsDesc": MessageLookupByLibrary.simpleMessage(
       "View current connections data",
     ),
-    "connectivity": MessageLookupByLibrary.simpleMessage("Connectivity："),
+    "connectivity": MessageLookupByLibrary.simpleMessage("Connectivity:"),
     "content": MessageLookupByLibrary.simpleMessage("Content"),
     "contentNotEmpty": MessageLookupByLibrary.simpleMessage(
       "Content cannot be empty",
@@ -383,10 +383,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "expectedStatus": MessageLookupByLibrary.simpleMessage("Expected status"),
     "exportFile": MessageLookupByLibrary.simpleMessage("Export file"),
     "exportLogs": MessageLookupByLibrary.simpleMessage("Export logs"),
-    "exportSuccess": MessageLookupByLibrary.simpleMessage("Export Success"),
+    "exportSuccess": MessageLookupByLibrary.simpleMessage("Export success"),
     "expressiveScheme": MessageLookupByLibrary.simpleMessage("Expressive"),
     "externalController": MessageLookupByLibrary.simpleMessage(
-      "ExternalController",
+      "External controller",
     ),
     "externalControllerDesc": MessageLookupByLibrary.simpleMessage(
       "Once enabled, the Clash kernel can be controlled on port 9090",
@@ -410,7 +410,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "findProcessModeDesc": MessageLookupByLibrary.simpleMessage(
       "There is a certain performance loss after opening",
     ),
-    "fontFamily": MessageLookupByLibrary.simpleMessage("FontFamily"),
+    "fontFamily": MessageLookupByLibrary.simpleMessage("Font family"),
     "forceRestartCoreTip": MessageLookupByLibrary.simpleMessage(
       "Are you sure you want to force restart the core?",
     ),
@@ -438,7 +438,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "geodataLoaderDesc": MessageLookupByLibrary.simpleMessage(
       "Enabling will use the Geo low memory loader",
     ),
-    "geoipCode": MessageLookupByLibrary.simpleMessage("Geoip code"),
+    "geoipCode": MessageLookupByLibrary.simpleMessage("GeoIP code"),
     "global": MessageLookupByLibrary.simpleMessage("Global"),
     "go": MessageLookupByLibrary.simpleMessage("Go"),
     "goDownload": MessageLookupByLibrary.simpleMessage("Go to download"),
@@ -472,7 +472,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "iconStyle": MessageLookupByLibrary.simpleMessage("Icon style"),
     "iconUrl": MessageLookupByLibrary.simpleMessage("Icon URL"),
     "ignoreBatteryOptimization": MessageLookupByLibrary.simpleMessage(
-      "Ignore Battery Optimization",
+      "Ignore battery optimization",
     ),
     "import": MessageLookupByLibrary.simpleMessage("Import"),
     "importFile": MessageLookupByLibrary.simpleMessage("Import from file"),
@@ -514,7 +514,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "invalidProxy": m13,
     "invalidProxyProvider": m14,
     "invalidSubRule": m15,
-    "ipcidr": MessageLookupByLibrary.simpleMessage("Ipcidr"),
+    "ipcidr": MessageLookupByLibrary.simpleMessage("IP CIDR"),
     "ipv6Desc": MessageLookupByLibrary.simpleMessage(
       "When turned on it will be able to receive IPv6 traffic",
     ),
@@ -540,7 +540,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Backup local data to local",
     ),
     "locationPermission": MessageLookupByLibrary.simpleMessage(
-      "Location Permission",
+      "Location permission",
     ),
     "locationPermissionDeniedMessage": MessageLookupByLibrary.simpleMessage(
       "Location permission was denied, so the current Wi-Fi name cannot be obtained. Please open location permission manually in system settings.",
@@ -553,7 +553,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Location Permission Required",
     ),
     "log": MessageLookupByLibrary.simpleMessage("Log"),
-    "logLevel": MessageLookupByLibrary.simpleMessage("LogLevel"),
+    "logLevel": MessageLookupByLibrary.simpleMessage("Log level"),
     "logcat": MessageLookupByLibrary.simpleMessage("Logcat"),
     "logcatDesc": MessageLookupByLibrary.simpleMessage(
       "Disabling will hide the log entry",
@@ -579,7 +579,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Modify the default system exit event",
     ),
     "minutesAgo": m17,
-    "mixedPort": MessageLookupByLibrary.simpleMessage("Mixed Port"),
+    "mixedPort": MessageLookupByLibrary.simpleMessage("Mixed port"),
     "mode": MessageLookupByLibrary.simpleMessage("Mode"),
     "monochromeScheme": MessageLookupByLibrary.simpleMessage("Monochrome"),
     "monthsAgo": m18,
@@ -621,7 +621,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Don\'t remind again",
     ),
     "noNetwork": MessageLookupByLibrary.simpleMessage("No network"),
-    "noNetworkApp": MessageLookupByLibrary.simpleMessage("No network APP"),
+    "noNetworkApp": MessageLookupByLibrary.simpleMessage("No network app"),
     "noRecords": MessageLookupByLibrary.simpleMessage("No records"),
     "noResolve": MessageLookupByLibrary.simpleMessage("No resolve IP"),
     "noResolveHostname": MessageLookupByLibrary.simpleMessage(
@@ -636,7 +636,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "nullTip": m19,
     "numberTip": m20,
-    "onDemand": MessageLookupByLibrary.simpleMessage("On Demand"),
+    "onDemand": MessageLookupByLibrary.simpleMessage("On demand"),
     "onDemandDesc": MessageLookupByLibrary.simpleMessage(
       "Configure the program running state for specific scenarios",
     ),
@@ -741,7 +741,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxyNameserverDesc": MessageLookupByLibrary.simpleMessage(
       "Domain for resolving proxy nodes",
     ),
-    "proxyPort": MessageLookupByLibrary.simpleMessage("ProxyPort"),
+    "proxyPort": MessageLookupByLibrary.simpleMessage("Proxy port"),
     "proxyProviderDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
       "Detected selected proxy providers are abnormal",
     ),
@@ -761,7 +761,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "quickFill": MessageLookupByLibrary.simpleMessage("Quick fill"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("Rainbow"),
-    "redirPort": MessageLookupByLibrary.simpleMessage("Redir Port"),
+    "redirPort": MessageLookupByLibrary.simpleMessage("Redir port"),
     "redo": MessageLookupByLibrary.simpleMessage("redo"),
     "remote": MessageLookupByLibrary.simpleMessage("Remote"),
     "remoteBackupDesc": MessageLookupByLibrary.simpleMessage(
@@ -852,7 +852,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Match IP\'s country code",
     ),
     "ruleActionGeositeDesc": MessageLookupByLibrary.simpleMessage(
-      "Match domains within Geosite",
+      "Match domains within GeoSite",
     ),
     "ruleActionInNameDesc": MessageLookupByLibrary.simpleMessage(
       "Match inbound name",
@@ -959,12 +959,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),
     "show": MessageLookupByLibrary.simpleMessage("Show"),
     "shrink": MessageLookupByLibrary.simpleMessage("Shrink"),
-    "silentLaunch": MessageLookupByLibrary.simpleMessage("SilentLaunch"),
+    "silentLaunch": MessageLookupByLibrary.simpleMessage("Silent launch"),
     "silentLaunchDesc": MessageLookupByLibrary.simpleMessage(
       "Start in the background",
     ),
     "size": MessageLookupByLibrary.simpleMessage("Size"),
-    "socksPort": MessageLookupByLibrary.simpleMessage("Socks Port"),
+    "socksPort": MessageLookupByLibrary.simpleMessage("Socks port"),
     "sort": MessageLookupByLibrary.simpleMessage("Sort"),
     "source": MessageLookupByLibrary.simpleMessage("Source"),
     "sourceIp": MessageLookupByLibrary.simpleMessage("Source IP"),
@@ -999,10 +999,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "suspended": MessageLookupByLibrary.simpleMessage("Suspended..."),
     "sync": MessageLookupByLibrary.simpleMessage("Sync"),
     "system": MessageLookupByLibrary.simpleMessage("System"),
-    "systemApp": MessageLookupByLibrary.simpleMessage("System APP"),
+    "systemApp": MessageLookupByLibrary.simpleMessage("System app"),
     "systemProxy": MessageLookupByLibrary.simpleMessage("System proxy"),
     "systemProxyDesc": MessageLookupByLibrary.simpleMessage(
-      "Attach HTTP proxy to VpnService",
+      "Attach HTTP proxy to VPN Service",
     ),
     "tab": MessageLookupByLibrary.simpleMessage("Tab"),
     "tabAnimation": MessageLookupByLibrary.simpleMessage("Tab animation"),
@@ -1017,21 +1017,21 @@ class MessageLookup extends MessageLookupByLibrary {
     "testInterval": MessageLookupByLibrary.simpleMessage("Test interval"),
     "testUrl": MessageLookupByLibrary.simpleMessage("Test url"),
     "testWhenUsed": MessageLookupByLibrary.simpleMessage("Test when used"),
-    "textScale": MessageLookupByLibrary.simpleMessage("Text Scaling"),
+    "textScale": MessageLookupByLibrary.simpleMessage("Text scaling"),
     "theme": MessageLookupByLibrary.simpleMessage("Theme"),
     "themeColor": MessageLookupByLibrary.simpleMessage("Theme color"),
     "themeDesc": MessageLookupByLibrary.simpleMessage(
-      "Set dark mode,adjust the color",
+      "Set dark mode, adjust the color",
     ),
     "themeMode": MessageLookupByLibrary.simpleMessage("Theme mode"),
     "tight": MessageLookupByLibrary.simpleMessage("Tight"),
     "time": MessageLookupByLibrary.simpleMessage("Time"),
     "timeout": MessageLookupByLibrary.simpleMessage("Timeout"),
-    "tip": MessageLookupByLibrary.simpleMessage("tip"),
+    "tip": MessageLookupByLibrary.simpleMessage("Tip"),
     "toggle": MessageLookupByLibrary.simpleMessage("Toggle"),
     "tonalSpotScheme": MessageLookupByLibrary.simpleMessage("TonalSpot"),
     "tools": MessageLookupByLibrary.simpleMessage("Tools"),
-    "tproxyPort": MessageLookupByLibrary.simpleMessage("Tproxy Port"),
+    "tproxyPort": MessageLookupByLibrary.simpleMessage("TProxy port"),
     "trafficUsage": MessageLookupByLibrary.simpleMessage("Traffic usage"),
     "tun": MessageLookupByLibrary.simpleMessage("TUN"),
     "tunDesc": MessageLookupByLibrary.simpleMessage(
