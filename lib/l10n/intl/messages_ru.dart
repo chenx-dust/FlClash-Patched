@@ -34,7 +34,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m4(label) => "Вы уверены, что хотите удалить текущий ${label}?";
 
-  static String m5(label) => "Детали {}";
+  static String m5(label) => "Сведения о ${label}";
 
   static String m6(label) => "${label} не может быть пустым";
 
@@ -61,7 +61,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m16(subRule) => "${subRule} является недопустимым подправилом";
 
   static String m17(appName) =>
-      "1. Откройте Системные настройки > Конфиденциальность и безопасность\n2. Выберите Службы геолокации\n3. Найдите и отметьте ${appName} в списке справа\n\nПосле настройки вернитесь в приложение и продолжайте работу. Спасибо за сотрудничество.";
+      "1. Откройте Системные настройки > Конфиденциальность и безопасность\n2. Выберите Службы геолокации\n3. Найдите ${appName} в списке справа и установите флажок\n\nПосле завершения настройки вернитесь в приложение и продолжайте работу. Спасибо за содействие.";
 
   static String m18(count) =>
       "${Intl.plural(count, one: '${count} минута назад', few: '${count} минуты назад', many: '${count} минут назад', other: '${count} минуты назад')}";
@@ -236,7 +236,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "basicInfo": MessageLookupByLibrary.simpleMessage("Основная информация"),
     "basicStrategy": MessageLookupByLibrary.simpleMessage("Базовая стратегия"),
     "batteryOptimizationDesc": MessageLookupByLibrary.simpleMessage(
-      "Чтобы приложение работало в фоне, отключите для него оптимизацию батареи. Нажмите, чтобы перейти к настройкам.",
+      "Чтобы обеспечить работу в фоне, отключите оптимизацию батареи для этого приложения. Нажмите, чтобы перейти к настройкам.",
     ),
     "batteryOptimizationStatusTip": MessageLookupByLibrary.simpleMessage(
       "Из-за системных ограничений статус оптимизации батареи не может быть точно получен во время работы.",
@@ -441,7 +441,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "excludeSsids": MessageLookupByLibrary.simpleMessage("Исключить SSID"),
     "excludeSsidsDesc": MessageLookupByLibrary.simpleMessage(
-      "При подключении к Wi-Fi с исключённым SSID состояние работы приложения переключается автоматически.",
+      "При подключении к Wi-Fi с исключенным SSID состояние работы приложения будет переключаться автоматически.",
     ),
     "excludeType": MessageLookupByLibrary.simpleMessage("Тип исключения"),
     "existsTip": m8,
@@ -509,7 +509,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "geodataLoaderDesc": MessageLookupByLibrary.simpleMessage(
       "Включение будет использовать загрузчик геоданных с низким потреблением памяти",
     ),
-    "geoipCode": MessageLookupByLibrary.simpleMessage("Код Geoip"),
+    "geoipCode": MessageLookupByLibrary.simpleMessage("Код GeoIP"),
     "global": MessageLookupByLibrary.simpleMessage("Глобальный"),
     "go": MessageLookupByLibrary.simpleMessage("Перейти"),
     "goDownload": MessageLookupByLibrary.simpleMessage("Перейти к загрузке"),
@@ -741,7 +741,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "numberTip": m21,
     "onDemand": MessageLookupByLibrary.simpleMessage("По требованию"),
     "onDemandDesc": MessageLookupByLibrary.simpleMessage(
-      "Настройте состояние работы приложения для определённых сценариев",
+      "Настройка состояния работы приложения для определенных сценариев",
     ),
     "onlyIcon": MessageLookupByLibrary.simpleMessage("Только иконка"),
     "onlyStatisticsProxy": MessageLookupByLibrary.simpleMessage(
@@ -980,7 +980,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Сопоставить код страны IP-адреса",
     ),
     "ruleActionGeositeDesc": MessageLookupByLibrary.simpleMessage(
-      "Сопоставить домены внутри Geosite",
+      "Сопоставить домены внутри GeoSite",
     ),
     "ruleActionInNameDesc": MessageLookupByLibrary.simpleMessage(
       "Сопоставить входящее имя",
@@ -1173,14 +1173,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "tight": MessageLookupByLibrary.simpleMessage("Плотный"),
     "time": MessageLookupByLibrary.simpleMessage("Время"),
     "timeout": MessageLookupByLibrary.simpleMessage("Таймаут"),
-    "tip": MessageLookupByLibrary.simpleMessage("подсказка"),
+    "tip": MessageLookupByLibrary.simpleMessage("Кончик"),
     "toggle": MessageLookupByLibrary.simpleMessage("Переключить"),
     "toggleLabel": MessageLookupByLibrary.simpleMessage("Переключить подписи"),
     "tonalSpotScheme": MessageLookupByLibrary.simpleMessage("Тональный акцент"),
     "tools": MessageLookupByLibrary.simpleMessage("Инструменты"),
     "torch": MessageLookupByLibrary.simpleMessage("Фонарик"),
     "totalTraffic": MessageLookupByLibrary.simpleMessage("Общий трафик"),
-    "tproxyPort": MessageLookupByLibrary.simpleMessage("Tproxy-порт"),
+    "tproxyPort": MessageLookupByLibrary.simpleMessage("TProxy-порт"),
     "trafficUsage": MessageLookupByLibrary.simpleMessage(
       "Использование трафика",
     ),

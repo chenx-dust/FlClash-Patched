@@ -319,10 +319,10 @@ class AppLocalizations {
     return Intl.message('Theme', name: 'theme', desc: '', args: []);
   }
 
-  /// `Set dark mode,adjust the color`
+  /// `Set dark mode, adjust the color`
   String get themeDesc {
     return Intl.message(
-      'Set dark mode,adjust the color',
+      'Set dark mode, adjust the color',
       name: 'themeDesc',
       desc: '',
       args: [],
@@ -419,10 +419,10 @@ class AppLocalizations {
     );
   }
 
-  /// `SilentLaunch`
+  /// `Silent launch`
   String get silentLaunch {
     return Intl.message(
-      'SilentLaunch',
+      'Silent launch',
       name: 'silentLaunch',
       desc: '',
       args: [],
@@ -439,9 +439,9 @@ class AppLocalizations {
     );
   }
 
-  /// `AutoRun`
+  /// `Auto run`
   String get autoRun {
-    return Intl.message('AutoRun', name: 'autoRun', desc: '', args: []);
+    return Intl.message('Auto run', name: 'autoRun', desc: '', args: []);
   }
 
   /// `Auto run when the application is opened`
@@ -849,9 +849,9 @@ class AppLocalizations {
     return Intl.message('Port', name: 'port', desc: '', args: []);
   }
 
-  /// `LogLevel`
+  /// `Log level`
   String get logLevel {
-    return Intl.message('LogLevel', name: 'logLevel', desc: '', args: []);
+    return Intl.message('Log level', name: 'logLevel', desc: '', args: []);
   }
 
   /// `Show`
@@ -959,9 +959,9 @@ class AppLocalizations {
     );
   }
 
-  /// `tip`
+  /// `Tip`
   String get tip {
-    return Intl.message('tip', name: 'tip', desc: '', args: []);
+    return Intl.message('Tip', name: 'tip', desc: '', args: []);
   }
 
   /// `Account`
@@ -1004,10 +1004,10 @@ class AppLocalizations {
     return Intl.message('Bind', name: 'bind', desc: '', args: []);
   }
 
-  /// `Connectivity：`
+  /// `Connectivity:`
   String get connectivity {
     return Intl.message(
-      'Connectivity：',
+      'Connectivity:',
       name: 'connectivity',
       desc: '',
       args: [],
@@ -1129,10 +1129,10 @@ class AppLocalizations {
     );
   }
 
-  /// `ExternalController`
+  /// `External controller`
   String get externalController {
     return Intl.message(
-      'ExternalController',
+      'External controller',
       name: 'externalController',
       desc: '',
       args: [],
@@ -1909,14 +1909,14 @@ class AppLocalizations {
     );
   }
 
-  /// `Geoip code`
+  /// `GeoIP code`
   String get geoipCode {
-    return Intl.message('Geoip code', name: 'geoipCode', desc: '', args: []);
+    return Intl.message('GeoIP code', name: 'geoipCode', desc: '', args: []);
   }
 
-  /// `Ipcidr`
+  /// `IP CIDR`
   String get ipcidr {
-    return Intl.message('Ipcidr', name: 'ipcidr', desc: '', args: []);
+    return Intl.message('IP CIDR', name: 'ipcidr', desc: '', args: []);
   }
 
   /// `Domain`
@@ -2059,10 +2059,10 @@ class AppLocalizations {
     return Intl.message('Export logs', name: 'exportLogs', desc: '', args: []);
   }
 
-  /// `Export Success`
+  /// `Export success`
   String get exportSuccess {
     return Intl.message(
-      'Export Success',
+      'Export success',
       name: 'exportSuccess',
       desc: '',
       args: [],
@@ -2139,9 +2139,9 @@ class AppLocalizations {
     return Intl.message('No data', name: 'noData', desc: '', args: []);
   }
 
-  /// `FontFamily`
+  /// `Font family`
   String get fontFamily {
-    return Intl.message('FontFamily', name: 'fontFamily', desc: '', args: []);
+    return Intl.message('Font family', name: 'fontFamily', desc: '', args: []);
   }
 
   /// `Toggle`
@@ -2599,14 +2599,14 @@ class AppLocalizations {
     );
   }
 
-  /// `Clear Data`
+  /// `Clear data`
   String get clearData {
-    return Intl.message('Clear Data', name: 'clearData', desc: '', args: []);
+    return Intl.message('Clear data', name: 'clearData', desc: '', args: []);
   }
 
-  /// `Text Scaling`
+  /// `Text scaling`
   String get textScale {
-    return Intl.message('Text Scaling', name: 'textScale', desc: '', args: []);
+    return Intl.message('Text scaling', name: 'textScale', desc: '', args: []);
   }
 
   /// `Internet`
@@ -2614,15 +2614,15 @@ class AppLocalizations {
     return Intl.message('Internet', name: 'internet', desc: '', args: []);
   }
 
-  /// `System APP`
+  /// `System app`
   String get systemApp {
-    return Intl.message('System APP', name: 'systemApp', desc: '', args: []);
+    return Intl.message('System app', name: 'systemApp', desc: '', args: []);
   }
 
-  /// `No network APP`
+  /// `No network app`
   String get noNetworkApp {
     return Intl.message(
-      'No network APP',
+      'No network app',
       name: 'noNetworkApp',
       desc: '',
       args: [],
@@ -2764,24 +2764,24 @@ class AppLocalizations {
     );
   }
 
-  /// `Mixed Port`
+  /// `Mixed port`
   String get mixedPort {
-    return Intl.message('Mixed Port', name: 'mixedPort', desc: '', args: []);
+    return Intl.message('Mixed port', name: 'mixedPort', desc: '', args: []);
   }
 
-  /// `Socks Port`
+  /// `Socks port`
   String get socksPort {
-    return Intl.message('Socks Port', name: 'socksPort', desc: '', args: []);
+    return Intl.message('Socks port', name: 'socksPort', desc: '', args: []);
   }
 
-  /// `Redir Port`
+  /// `Redir port`
   String get redirPort {
-    return Intl.message('Redir Port', name: 'redirPort', desc: '', args: []);
+    return Intl.message('Redir port', name: 'redirPort', desc: '', args: []);
   }
 
-  /// `Tproxy Port`
+  /// `TProxy port`
   String get tproxyPort {
-    return Intl.message('Tproxy Port', name: 'tproxyPort', desc: '', args: []);
+    return Intl.message('TProxy port', name: 'tproxyPort', desc: '', args: []);
   }
 
   /// `{label} must be between 1024 and 49151`
@@ -3934,10 +3934,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Match domains within Geosite`
+  /// `Match domains within GeoSite`
   String get ruleActionGeositeDesc {
     return Intl.message(
-      'Match domains within Geosite',
+      'Match domains within GeoSite',
       name: 'ruleActionGeositeDesc',
       desc: '',
       args: [],
@@ -4399,10 +4399,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Ignore Battery Optimization`
+  /// `Ignore battery optimization`
   String get ignoreBatteryOptimization {
     return Intl.message(
-      'Ignore Battery Optimization',
+      'Ignore battery optimization',
       name: 'ignoreBatteryOptimization',
       desc: '',
       args: [],
@@ -4429,10 +4429,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Location Permission`
+  /// `Location permission`
   String get locationPermission {
     return Intl.message(
-      'Location Permission',
+      'Location permission',
       name: 'locationPermission',
       desc: '',
       args: [],
@@ -4479,9 +4479,9 @@ class AppLocalizations {
     );
   }
 
-  /// `On Demand`
+  /// `On demand`
   String get onDemand {
-    return Intl.message('On Demand', name: 'onDemand', desc: '', args: []);
+    return Intl.message('On demand', name: 'onDemand', desc: '', args: []);
   }
 
   /// `Configure the program running state for specific scenarios`
@@ -4898,10 +4898,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Age Secret Key (Optional)`
+  /// `Age secret key (Optional)`
   String get ageSecretKeyOptional {
     return Intl.message(
-      'Age Secret Key (Optional)',
+      'Age secret key (Optional)',
       name: 'ageSecretKeyOptional',
       desc: '',
       args: [],
@@ -4918,30 +4918,30 @@ class AppLocalizations {
     );
   }
 
-  /// `Age Key Generation`
+  /// `Age key generation`
   String get ageKeyGenerateTitle {
     return Intl.message(
-      'Age Key Generation',
+      'Age key generation',
       name: 'ageKeyGenerateTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Age Private Key`
+  /// `Age private key`
   String get agePrivateKeyLabel {
     return Intl.message(
-      'Age Private Key',
+      'Age private key',
       name: 'agePrivateKeyLabel',
       desc: '',
       args: [],
     );
   }
 
-  /// `Age Public Key`
+  /// `Age public key`
   String get agePublicKeyLabel {
     return Intl.message(
-      'Age Public Key',
+      'Age public key',
       name: 'agePublicKeyLabel',
       desc: '',
       args: [],
