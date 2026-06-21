@@ -8,8 +8,8 @@ plugins {
     id("com.google.firebase.crashlytics")
 }
 
-val localPropertiesFile = rootProject.file("local.properties")
 val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
     if (localPropertiesFile.exists()) {
         localPropertiesFile.inputStream().use { load(it) }
     }
