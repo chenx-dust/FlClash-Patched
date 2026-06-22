@@ -59,7 +59,8 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m15(label) => "${label} должно быть числом";
 
-  static String m16(label) => "${label} должен быть числом от 1024 до 49151";
+  static String m16(label) =>
+      "${label} должен быть числом от 1024 до 49151, 0 для отключения";
 
   static String m17(count) => "Выбрано ${count} элементов";
 
