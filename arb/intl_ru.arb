@@ -15,6 +15,8 @@
   "networkSpeed": "Скорость сети",
   "networkSpeedNotification": "Скорость в уведомлении",
   "networkSpeedNotificationDesc": "Показывать текущую скорость в панели уведомлений; может немного увеличить расход батареи",
+  "dozeSuspend": "Приостановка в Doze",
+  "dozeSuspendDesc": "Приостанавливать ядро в режиме Doze Android, чтобы снизить расход батареи",
   "outboundMode": "Режим исходящего трафика",
   "networkDetection": "Обнаружение сети",
   "upload": "Загрузка",

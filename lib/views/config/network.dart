@@ -237,6 +237,28 @@ class DNSHijackingItem extends ConsumerWidget {
   }
 }
 
+class DozeSuspendItem extends ConsumerWidget {
+  const DozeSuspendItem({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appLocalizations = context.appLocalizations;
+    final dozeSuspend = ref.watch(
+      vpnSettingProvider.select((state) => state.dozeSuspend),
+    );
+    return ListItem.toggle(
+      title: Text(appLocalizations.dozeSuspend),
+      subtitle: Text(appLocalizations.dozeSuspendDesc),
+      value: dozeSuspend,
+      onChanged: (bool value) async {
+        ref
+            .read(vpnSettingProvider.notifier)
+            .update((state) => state.copyWith(dozeSuspend: value));
+      },
+    );
+  }
+}
+
 class RouteModeItem extends ConsumerWidget {
   const RouteModeItem({super.key});
 
@@ -321,6 +343,7 @@ class NetworkListView extends StatelessWidget {
             const AllowBypassItem(),
             const Ipv6Item(),
             const DNSHijackingItem(),
+            const DozeSuspendItem(),
           ],
         ),
       if (system.isDesktop)

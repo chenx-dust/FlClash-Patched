@@ -164,6 +164,26 @@ class AppLocalizations {
     );
   }
 
+  /// `Doze suspend`
+  String get dozeSuspend {
+    return Intl.message(
+      'Doze suspend',
+      name: 'dozeSuspend',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Suspend the core while Android is in Doze mode to reduce battery usage`
+  String get dozeSuspendDesc {
+    return Intl.message(
+      'Suspend the core while Android is in Doze mode to reduce battery usage',
+      name: 'dozeSuspendDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Outbound mode`
   String get outboundMode {
     return Intl.message(
