@@ -150,46 +150,56 @@ class ApplicationState extends ConsumerState<Application> {
         final pageTransitionsTheme = _getPageTransitionsTheme(
           predictiveBack: supportsPredictiveBack && themeProps.predictiveBack,
         );
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          navigatorKey: globalState.navigatorKey,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-          ],
-          builder: (_, child) {
-            return AppEnvManager(
-              child: _buildApp(
-                child: _buildPlatformState(
-                  child: _buildState(child: _buildPlatformApp(child: child!)),
+        return ValueListenableBuilder<bool>(
+          valueListenable: globalState.isBackground,
+          builder: (_, backgroundMode, _) {
+            return TickerMode(
+              enabled: !backgroundMode,
+              child: MaterialApp(
+                debugShowCheckedModeBanner: false,
+                navigatorKey: globalState.navigatorKey,
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                ],
+                builder: (_, child) {
+                  return AppEnvManager(
+                    child: _buildApp(
+                      child: _buildPlatformState(
+                        child: _buildState(
+                          child: _buildPlatformApp(child: child!),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                scrollBehavior: BaseScrollBehavior(),
+                title: appName,
+                locale: utils.getLocaleForString(locale),
+                supportedLocales: AppLocalizations.delegate.supportedLocales,
+                themeMode: themeProps.themeMode,
+                theme: ThemeData(
+                  useMaterial3: true,
+                  pageTransitionsTheme: pageTransitionsTheme,
+                  colorScheme: _getAppColorScheme(
+                    brightness: Brightness.light,
+                    primaryColor: themeProps.primaryColor,
+                  ),
                 ),
+                darkTheme: ThemeData(
+                  useMaterial3: true,
+                  pageTransitionsTheme: pageTransitionsTheme,
+                  colorScheme: _getAppColorScheme(
+                    brightness: Brightness.dark,
+                    primaryColor: themeProps.primaryColor,
+                  ).toPureBlack(themeProps.pureBlack),
+                ),
+                home: child!,
               ),
             );
           },
-          scrollBehavior: BaseScrollBehavior(),
-          title: appName,
-          locale: utils.getLocaleForString(locale),
-          supportedLocales: AppLocalizations.delegate.supportedLocales,
-          themeMode: themeProps.themeMode,
-          theme: ThemeData(
-            useMaterial3: true,
-            pageTransitionsTheme: pageTransitionsTheme,
-            colorScheme: _getAppColorScheme(
-              brightness: Brightness.light,
-              primaryColor: themeProps.primaryColor,
-            ),
-          ),
-          darkTheme: ThemeData(
-            useMaterial3: true,
-            pageTransitionsTheme: pageTransitionsTheme,
-            colorScheme: _getAppColorScheme(
-              brightness: Brightness.dark,
-              primaryColor: themeProps.primaryColor,
-            ).toPureBlack(themeProps.pureBlack),
-          ),
-          home: child!,
         );
       },
       child: const HomePage(),

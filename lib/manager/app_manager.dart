@@ -81,9 +81,12 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     commonPrint.log('$state');
-    if (state == AppLifecycleState.resumed) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden) {
+      await preferences.saveConfig(ref.read(configProvider));
+      globalState.handleBackground();
+    } else if (state == AppLifecycleState.resumed) {
       permissions.check();
-      render?.resume();
+      globalState.handleForeground();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final ref = globalState.container;
         ref.read(setupActionProvider.notifier).tryCheckIp();
@@ -100,7 +103,7 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
   Widget build(BuildContext context) {
     return Listener(
       onPointerHover: (_) {
-        render?.resume();
+        globalState.handleForeground();
       },
       child: widget.child,
     );
