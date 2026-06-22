@@ -63,7 +63,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m20(label) => "${label} は数字でなければなりません";
 
-  static String m21(label) => "${label} は 1024 から 49151 の間でなければなりません";
+  static String m21(label) => "${label} は 1024 から 49151 の間でなければなりません，0 は無効です";
 
   static String m22(count) => "${count} 秒";
 

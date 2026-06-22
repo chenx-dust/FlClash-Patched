@@ -351,7 +351,7 @@
   "socksPort": "Socks ポート",
   "redirPort": "Redir ポート",
   "tproxyPort": "TProxy ポート",
-  "portTip": "{label} は 1024 から 49151 の間でなければなりません",
+  "portTip": "{label} は 1024 から 49151 の間でなければなりません，0 は無効です",
   "portConflictTip": "別のポートを入力してください",
   "import": "インポート",
   "importFile": "ファイルからインポート",
