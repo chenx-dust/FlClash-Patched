@@ -2,6 +2,7 @@ package com.follow.clash.service.modules
 
 import android.app.Service
 import android.content.Intent
+import android.os.Build
 import android.os.PowerManager
 import androidx.core.content.getSystemService
 import com.follow.clash.common.receiveBroadcastFlow
@@ -13,49 +14,80 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
-
 class SuspendModule(private val service: Service) : Module() {
     private val scope = CoroutineScope(Dispatchers.Default)
+    private var isSuspended = false
+
+    private val powerManager: PowerManager? by lazy {
+        service.getSystemService<PowerManager>()
+    }
 
     private fun isScreenOn(): Boolean {
-        val pm = service.getSystemService<PowerManager>()
-        return when (pm != null) {
-            true -> pm.isInteractive
+        return when (powerManager != null) {
+            true -> powerManager?.isInteractive == true
             false -> true
         }
     }
 
-    val isDeviceIdleMode: Boolean
+    private val isDeviceIdleMode: Boolean
         get() {
-            return service.getSystemService<PowerManager>()?.isDeviceIdleMode ?: true
+            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                powerManager?.isDeviceIdleMode == true
         }
 
-    private fun onUpdate(isScreenOn: Boolean) {
-        if (isScreenOn) {
-            Core.suspended(false)
-            return
+    private val shouldSuspend: Boolean
+        get() = !isScreenOn() && isDeviceIdleMode
+
+    private fun updateSuspendState() {
+        val shouldSuspendNow = shouldSuspend
+
+        when {
+            shouldSuspendNow && !isSuspended -> {
+                Core.suspended(true)
+                isSuspended = true
+            }
+
+            !shouldSuspendNow && isSuspended -> {
+                Core.suspended(false)
+                isSuspended = false
+            }
         }
-        Core.suspended(isDeviceIdleMode)
+    }
+
+    private fun resumeIfSuspended() {
+        if (isSuspended) {
+            Core.suspended(false)
+            isSuspended = false
+        }
     }
 
     override fun onInstall() {
+        isSuspended = false
         scope.launch {
             val screenFlow = service.receiveBroadcastFlow {
                 addAction(Intent.ACTION_SCREEN_ON)
                 addAction(Intent.ACTION_SCREEN_OFF)
-            }.map { intent ->
-                intent.action == Intent.ACTION_SCREEN_ON
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    addAction(PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED)
+                }
+            }.map {
+                it.action
             }.onStart {
-                emit(isScreenOn())
+                emit(null)
             }
 
-            screenFlow.collect {
-                    onUpdate(it)
+            screenFlow.collect { action ->
+                if (action == Intent.ACTION_SCREEN_ON) {
+                    resumeIfSuspended()
+                } else {
+                    updateSuspendState()
                 }
+            }
         }
     }
 
     override fun onUninstall() {
+        resumeIfSuspended()
         scope.cancel()
     }
 }

@@ -235,6 +235,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "doYouWantToPass": MessageLookupByLibrary.simpleMessage("是否要通过"),
     "domain": MessageLookupByLibrary.simpleMessage("域名"),
     "download": MessageLookupByLibrary.simpleMessage("下载"),
+    "dozeSuspend": MessageLookupByLibrary.simpleMessage("Doze 休眠"),
+    "dozeSuspendDesc": MessageLookupByLibrary.simpleMessage(
+      "Android 进入 Doze 模式时挂起核心以降低耗电",
+    ),
     "edit": MessageLookupByLibrary.simpleMessage("编辑"),
     "editGlobalRules": MessageLookupByLibrary.simpleMessage("编辑全局规则"),
     "editProxy": MessageLookupByLibrary.simpleMessage("编辑代理"),
