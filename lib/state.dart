@@ -71,12 +71,20 @@ class GlobalState {
   BuildContext get _context => navigatorKey.currentContext!;
 
   void handleBackground() async {
-    render?.pause();
+    if (isBackground.value) {
+      return;
+    }
     isBackground.value = true;
+    render?.pause();
+    foregroundTicker.pause();
   }
 
   void handleForeground() {
+    if (!isBackground.value) {
+      return;
+    }
     isBackground.value = false;
+    foregroundTicker.resume();
     render?.resume();
   }
 

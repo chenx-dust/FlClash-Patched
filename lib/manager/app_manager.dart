@@ -104,12 +104,7 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
 
   @override
   Widget build(BuildContext context) {
-    return Listener(
-      onPointerHover: (_) {
-        globalState.handleForeground();
-      },
-      child: widget.child,
-    );
+    return widget.child;
   }
 }
 
