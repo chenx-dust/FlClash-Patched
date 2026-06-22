@@ -15,6 +15,8 @@
   "networkSpeed": "Network speed",
   "networkSpeedNotification": "Speed in notification",
   "networkSpeedNotificationDesc": "Show current speed in the notification bar; may slightly increase battery usage",
+  "dozeSuspend": "Doze suspend",
+  "dozeSuspendDesc": "Suspend the core while Android is in Doze mode to reduce battery usage",
   "outboundMode": "Outbound mode",
   "networkDetection": "Network detection",
   "upload": "Upload",
