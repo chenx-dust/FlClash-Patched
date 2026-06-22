@@ -34,15 +34,16 @@ class _WindowContainerState extends ConsumerState<WindowManager>
         (state) => VM2(state.autoLaunch, state.highPriorityAutoLaunch),
       ),
       (prev, next) {
-      if (prev != next) {
-        debouncer.call(FunctionTag.autoLaunch, () {
-          autoLaunch?.updateStatus(
-            isAutoLaunch: next.a,
-            isHighPriorityAutoLaunch: next.b,
-          );
-        });
-      }
-    });
+        if (prev != next) {
+          debouncer.call(FunctionTag.autoLaunch, () {
+            autoLaunch?.updateStatus(
+              isAutoLaunch: next.a,
+              isHighPriorityAutoLaunch: next.b,
+            );
+          });
+        }
+      },
+    );
     windowExtManager.addListener(this);
     windowManager.addListener(this);
   }
@@ -57,7 +58,7 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   void onWindowFocus() {
     super.onWindowFocus();
     commonPrint.log('focus');
-    render?.resume();
+    globalState.handleForeground();
   }
 
   @override
@@ -91,14 +92,14 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   void onWindowMinimize() async {
     ref.read(storeActionProvider.notifier).savePreferencesDebounce();
     commonPrint.log('minimize');
-    render?.pause();
+    globalState.handleBackground();
     super.onWindowMinimize();
   }
 
   @override
   void onWindowRestore() {
     commonPrint.log('restore');
-    render?.resume();
+    globalState.handleForeground();
     super.onWindowRestore();
   }
 
