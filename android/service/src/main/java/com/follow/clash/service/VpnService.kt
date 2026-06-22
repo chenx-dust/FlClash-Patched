@@ -35,7 +35,9 @@ class VpnService : SystemVpnService(), IBaseService,
     private val loader = moduleLoader {
         install(NetworkObserveModule(self))
         install(NotificationModule(self))
-        install(SuspendModule(self))
+        if (State.options?.dozeSuspend != false) {
+            install(SuspendModule(self))
+        }
     }
 
     override fun onCreate() {

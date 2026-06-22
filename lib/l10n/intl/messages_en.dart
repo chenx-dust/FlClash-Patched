@@ -342,6 +342,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "domain": MessageLookupByLibrary.simpleMessage("Domain"),
     "download": MessageLookupByLibrary.simpleMessage("Download"),
+    "dozeSuspend": MessageLookupByLibrary.simpleMessage("Doze suspend"),
+    "dozeSuspendDesc": MessageLookupByLibrary.simpleMessage(
+      "Suspend the core while Android is in Doze mode to reduce battery usage",
+    ),
     "edit": MessageLookupByLibrary.simpleMessage("Edit"),
     "editGlobalRules": MessageLookupByLibrary.simpleMessage(
       "Edit global rules",
