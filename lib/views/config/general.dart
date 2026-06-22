@@ -839,6 +839,9 @@ class _PortDialogState extends ConsumerState<_PortDialog> {
                         appLocalizations.mixedPort,
                       );
                     }
+                    if (port == 0) {
+                      return null;
+                    }
                     if (port < 1024 || port > 49151) {
                       return appLocalizations.portTip(
                         appLocalizations.mixedPort,

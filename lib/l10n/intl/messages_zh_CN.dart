@@ -63,7 +63,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m20(label) => "${label} 必须为数字";
 
-  static String m21(label) => "${label} 必须在 1024 到 49151 之间";
+  static String m21(label) => "${label} 必须在 1024 到 49151 之间，0 为禁用";
 
   static String m22(count) => "${count} 秒";
 
@@ -556,7 +556,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "resourcesDesc": MessageLookupByLibrary.simpleMessage("外部资源相关信息"),
     "respectRules": MessageLookupByLibrary.simpleMessage("遵守规则"),
     "respectRulesDesc": MessageLookupByLibrary.simpleMessage(
-      "DNS 连接跟随 rules, 需配置 proxy-server-nameserver",
+      "DNS 连接跟随 rules，需配置 proxy-server-nameserver",
     ),
     "restart": MessageLookupByLibrary.simpleMessage("重启"),
     "restartCoreTip": MessageLookupByLibrary.simpleMessage("您确定要重启核心吗？"),
@@ -606,7 +606,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "ruleActionIpAsnDesc": MessageLookupByLibrary.simpleMessage("匹配 IP 所属 ASN"),
     "ruleActionIpCidr6Desc": MessageLookupByLibrary.simpleMessage(
-      "匹配 IP 地址范围, IP-CIDR6 只是一个别名",
+      "匹配 IP 地址范围，IP-CIDR6 只是一个别名",
     ),
     "ruleActionIpCidrDesc": MessageLookupByLibrary.simpleMessage("匹配 IP 地址范围"),
     "ruleActionIpSuffixDesc": MessageLookupByLibrary.simpleMessage(
