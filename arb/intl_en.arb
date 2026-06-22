@@ -348,7 +348,7 @@
   "socksPort": "Socks port",
   "redirPort": "Redir port",
   "tproxyPort": "TProxy port",
-  "portTip": "{label} must be between 1024 and 49151",
+  "portTip": "{label} must be between 1024 and 49151, 0 to disable",
   "portConflictTip": "Please enter a different port",
   "import": "Import",
   "importFile": "Import from file",
