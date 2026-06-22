@@ -112,7 +112,8 @@ class CommonAction extends _$CommonAction {
 
 @Riverpod(keepAlive: true)
 class SetupAction extends _$SetupAction {
-  Timer? _updateTimer;
+  static const _updateTickerTag = 'SetupAction.update';
+
   DateTime? startTime;
 
   bool get isStart => startTime != null && startTime!.isBeforeNow;
@@ -144,7 +145,7 @@ class SetupAction extends _$SetupAction {
     if (!ref.read(suspendProvider)) {
       await coreController.startListener();
     }
-    _updateTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+    foregroundTicker.register(_updateTickerTag, () {
       ref.read(commonActionProvider.notifier).updateRunTime();
       ref.read(commonActionProvider.notifier).updateTraffic();
     });
@@ -156,8 +157,7 @@ class SetupAction extends _$SetupAction {
 
   Future handleStop() async {
     startTime = null;
-    _updateTimer?.cancel();
-    _updateTimer = null;
+    foregroundTicker.unregister(_updateTickerTag);
     await coreController.stopListener();
   }
 
