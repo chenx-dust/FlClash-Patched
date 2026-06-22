@@ -152,9 +152,9 @@ class ApplicationState extends ConsumerState<Application> {
         );
         return ValueListenableBuilder<bool>(
           valueListenable: globalState.isBackground,
-          builder: (_, backgroundMode, _) {
+          builder: (_, isBackground, _) {
             return TickerMode(
-              enabled: !backgroundMode,
+              enabled: !isBackground,
               child: MaterialApp(
                 debugShowCheckedModeBanner: false,
                 navigatorKey: globalState.navigatorKey,

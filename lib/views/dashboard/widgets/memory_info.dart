@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
@@ -155,9 +154,5 @@ class _MemoryInfoState extends State<MemoryInfo> with WidgetsBindingObserver {
 }
 
 Future<num> _readMemory() async {
-  final rss = ProcessInfo.currentRss;
-  if (system.isDesktop && coreController.isCompleted) {
-    return await coreController.getMemory() + rss;
-  }
-  return rss;
+  return coreController.getMemory();
 }

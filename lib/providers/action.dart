@@ -115,8 +115,9 @@ enum _SetupTaskResult { completed, handoffToCoreRestart }
 
 @Riverpod(keepAlive: true)
 class SetupAction extends _$SetupAction {
-  Timer? _updateTimer;
   final _setupTaskScheduler = SerialTaskScheduler();
+  static const _updateTickerTag = 'SetupAction.update';
+
   DateTime? startTime;
 
   bool get isStart => startTime != null && startTime!.isBeforeNow;
@@ -145,8 +146,7 @@ class SetupAction extends _$SetupAction {
     //The local status must be updated when performing the run task
     ref.read(commonActionProvider.notifier).updateRunTime();
     ref.read(commonActionProvider.notifier).updateTraffic();
-    _updateTimer?.cancel();
-    _updateTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+    foregroundTicker.register(_updateTickerTag, () {
       ref.read(commonActionProvider.notifier).updateRunTime();
       ref.read(commonActionProvider.notifier).updateTraffic();
     });
@@ -162,8 +162,7 @@ class SetupAction extends _$SetupAction {
 
   Future<bool> handleStop() async {
     startTime = null;
-    _updateTimer?.cancel();
-    _updateTimer = null;
+    foregroundTicker.unregister(_updateTickerTag);
     debouncer.cancel(FunctionTag.applyProfile);
     await stopCoreListener();
     return startTime == null;
