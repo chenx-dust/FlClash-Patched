@@ -24,6 +24,7 @@ import 'providers/providers.dart';
 class GlobalState {
   static GlobalState? _instance;
   final navigatorKey = GlobalKey<NavigatorState>();
+  final isBackground = ValueNotifier<bool>(false);
   bool isPre = true;
   late final String coreSHA256;
   late final PackageInfo packageInfo;
@@ -68,6 +69,16 @@ class GlobalState {
       .takeFirstValid([packageInfo.ua]);
 
   BuildContext get _context => navigatorKey.currentContext!;
+
+  void handleBackground() async {
+    render?.pause();
+    isBackground.value = true;
+  }
+
+  void handleForeground() {
+    isBackground.value = false;
+    render?.resume();
+  }
 
   Future<ProviderContainer> _initData(int version) async {
     final appState = AppState(
