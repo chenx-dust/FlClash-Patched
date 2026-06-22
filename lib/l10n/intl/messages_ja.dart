@@ -265,6 +265,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "doYouWantToPass": MessageLookupByLibrary.simpleMessage("通過させますか？"),
     "domain": MessageLookupByLibrary.simpleMessage("ドメイン"),
     "download": MessageLookupByLibrary.simpleMessage("ダウンロード"),
+    "dozeSuspend": MessageLookupByLibrary.simpleMessage("Doze サスペンド"),
+    "dozeSuspendDesc": MessageLookupByLibrary.simpleMessage(
+      "Android が Doze モードの間、バッテリー消費を抑えるためコアを一時停止します",
+    ),
     "edit": MessageLookupByLibrary.simpleMessage("編集"),
     "editGlobalRules": MessageLookupByLibrary.simpleMessage("グローバルルールを編集"),
     "editProxy": MessageLookupByLibrary.simpleMessage("プロキシを編集"),
