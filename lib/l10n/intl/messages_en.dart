@@ -70,7 +70,8 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m20(label) => "${label} must be a number";
 
-  static String m21(label) => "${label} must be between 1024 and 49151";
+  static String m21(label) =>
+      "${label} must be between 1024 and 49151, 0 to disable";
 
   static String m22(count) => "${count} seconds";
 
