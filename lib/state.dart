@@ -28,6 +28,7 @@ class GlobalState {
   late final String appEnv;
   late final String coreSHA256;
   late final PackageInfo packageInfo;
+  final isBackground = ValueNotifier<bool>(false);
   Function? updateCurrentDelayDebounce;
   late Measure measure;
   late CommonTheme theme;
@@ -78,6 +79,16 @@ class GlobalState {
       .takeFirstValid([packageInfo.ua]);
 
   BuildContext get _context => navigatorKey.currentContext!;
+
+  void handleBackground() async {
+    render?.pause();
+    isBackground.value = true;
+  }
+
+  void handleForeground() {
+    isBackground.value = false;
+    render?.resume();
+  }
 
   Future<ProviderContainer> _initData(int version) async {
     final appState = AppState(
