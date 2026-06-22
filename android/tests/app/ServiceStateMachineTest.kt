@@ -31,6 +31,7 @@ private fun vpnOptions(enable: Boolean = true) = VpnOptions(
     ),
     allowBypass = false,
     systemProxy = true,
+    dozeSuspend = true,
     bypassDomain = emptyList(),
     stack = "gvisor",
     routeAddress = emptyList(),

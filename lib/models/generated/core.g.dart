@@ -90,6 +90,7 @@ _VpnOptions _$VpnOptionsFromJson(Map<String, dynamic> json) => _VpnOptions(
   ),
   allowBypass: json['allowBypass'] as bool,
   systemProxy: json['systemProxy'] as bool,
+  dozeSuspend: json['dozeSuspend'] as bool,
   bypassDomain: (json['bypassDomain'] as List<dynamic>)
       .map((e) => e as String)
       .toList(),
@@ -110,6 +111,7 @@ Map<String, dynamic> _$VpnOptionsToJson(_VpnOptions instance) =>
       'accessControlProps': instance.accessControlProps,
       'allowBypass': instance.allowBypass,
       'systemProxy': instance.systemProxy,
+      'dozeSuspend': instance.dozeSuspend,
       'bypassDomain': instance.bypassDomain,
       'stack': instance.stack,
       'routeAddress': instance.routeAddress,
