@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/models/models.dart';
@@ -22,8 +20,6 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
     const TrackerInfosState(),
   );
   final ScrollController _scrollController = ScrollController();
-
-  Timer? timer;
 
   List<Widget> _buildActions() {
     return [
@@ -49,26 +45,19 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
     );
   }
 
-  Future<void> _updateConnectionsTask() async {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (mounted) {
-        await _updateConnections();
-        timer = Timer(const Duration(seconds: 1), () async {
-          _updateConnectionsTask();
-        });
-      }
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    _updateConnectionsTask();
+    foregroundTicker.register(this, _updateConnections, runImmediately: true);
   }
 
   Future<void> _updateConnections() async {
+    final trackerInfos = await coreController.getConnections();
+    if (!mounted) {
+      return;
+    }
     _connectionsStateNotifier.value = _connectionsStateNotifier.value.copyWith(
-      trackerInfos: await coreController.getConnections(),
+      trackerInfos: trackerInfos,
     );
   }
 
@@ -79,10 +68,9 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
 
   @override
   void dispose() {
-    timer?.cancel();
+    foregroundTicker.unregister(this);
     _connectionsStateNotifier.dispose();
     _scrollController.dispose();
-    timer = null;
     super.dispose();
   }
 
