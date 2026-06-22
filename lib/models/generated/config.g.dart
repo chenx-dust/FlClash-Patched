@@ -145,6 +145,7 @@ _VpnProps _$VpnPropsFromJson(Map<String, dynamic> json) => _VpnProps(
   ipv6: json['ipv6'] as bool? ?? false,
   allowBypass: json['allowBypass'] as bool? ?? true,
   dnsHijacking: json['dnsHijacking'] as bool? ?? false,
+  dozeSuspend: json['dozeSuspend'] as bool? ?? true,
   networkSpeedNotification: json['networkSpeedNotification'] as bool? ?? false,
   accessControlProps: json['accessControlProps'] == null
       ? defaultAccessControlProps
@@ -159,6 +160,7 @@ Map<String, dynamic> _$VpnPropsToJson(_VpnProps instance) => <String, dynamic>{
   'ipv6': instance.ipv6,
   'allowBypass': instance.allowBypass,
   'dnsHijacking': instance.dnsHijacking,
+  'dozeSuspend': instance.dozeSuspend,
   'networkSpeedNotification': instance.networkSpeedNotification,
   'accessControlProps': instance.accessControlProps,
 };
