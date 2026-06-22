@@ -58,7 +58,6 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   void onWindowFocus() {
     super.onWindowFocus();
     commonPrint.log('focus');
-    globalState.handleForeground();
   }
 
   @override

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
@@ -18,85 +17,28 @@ class MemoryInfo extends StatefulWidget {
   State<MemoryInfo> createState() => _MemoryInfoState();
 }
 
-class _MemoryInfoState extends State<MemoryInfo> with WidgetsBindingObserver {
-  Timer? _timer;
-  bool _isForeground = false;
-  bool _isUpdating = false;
-  int _updateGeneration = 0;
-
+class _MemoryInfoState extends State<MemoryInfo> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _isForeground =
-        WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _isForeground) {
-        _startUpdating();
-      }
-    });
+    foregroundTicker.register(this, _updateMemory, runImmediately: true);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    _isForeground = false;
-    _stopUpdating();
+    foregroundTicker.unregister(this);
     super.dispose();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    final isForeground = state == AppLifecycleState.resumed;
-    if (_isForeground == isForeground) {
-      return;
-    }
-    _isForeground = isForeground;
-    if (isForeground) {
-      _startUpdating();
-    } else {
-      _stopUpdating();
-    }
-  }
-
-  void _startUpdating() {
-    if (!mounted || !_isForeground || _isUpdating) {
-      return;
-    }
-    _isUpdating = true;
-    final generation = ++_updateGeneration;
-    unawaited(_updateMemory(generation));
-  }
-
-  void _stopUpdating() {
-    _isUpdating = false;
-    _updateGeneration++;
-    _timer?.cancel();
-    _timer = null;
-  }
-
-  Future<void> _updateMemory(int generation) async {
+  Future<void> _updateMemory() async {
     final memoryReader = widget.memoryReader;
     final memory = memoryReader != null
         ? await memoryReader()
         : await _readMemory();
-    if (!mounted ||
-        !_isForeground ||
-        !_isUpdating ||
-        generation != _updateGeneration) {
+    if (!mounted) {
       return;
     }
     _memoryStateNotifier.value = memory;
-    _timer = Timer(const Duration(seconds: 2), () {
-      _timer = null;
-      if (mounted &&
-          _isForeground &&
-          _isUpdating &&
-          generation == _updateGeneration) {
-        unawaited(_updateMemory(generation));
-      }
-    });
   }
 
   @override
