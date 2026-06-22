@@ -10,10 +10,6 @@ PODS:
     - FlutterMacOS
   - setup (0.0.1):
     - FlutterMacOS
-  - wifi_ssid (0.0.1):
-    - FlutterMacOS
-  - window_ext (0.0.1):
-    - FlutterMacOS
 
 DEPENDENCIES:
   - flutter_js (from `Flutter/ephemeral/.symlinks/plugins/flutter_js/macos`)
@@ -21,8 +17,6 @@ DEPENDENCIES:
   - hotkey_manager_macos (from `Flutter/ephemeral/.symlinks/plugins/hotkey_manager_macos/macos`)
   - rust_api (from `Flutter/ephemeral/.symlinks/plugins/rust_api/macos`)
   - setup (from `Flutter/ephemeral/.symlinks/plugins/setup/macos`)
-  - wifi_ssid (from `Flutter/ephemeral/.symlinks/plugins/wifi_ssid/macos`)
-  - window_ext (from `Flutter/ephemeral/.symlinks/plugins/window_ext/macos`)
 
 SPEC REPOS:
   trunk:
@@ -39,10 +33,6 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/rust_api/macos
   setup:
     :path: Flutter/ephemeral/.symlinks/plugins/setup/macos
-  wifi_ssid:
-    :path: Flutter/ephemeral/.symlinks/plugins/wifi_ssid/macos
-  window_ext:
-    :path: Flutter/ephemeral/.symlinks/plugins/window_ext/macos
 
 SPEC CHECKSUMS:
   flutter_js: 79c3c70d33ba464c67d8eb88639a61aa718cd8b8
@@ -51,8 +41,6 @@ SPEC CHECKSUMS:
   hotkey_manager_macos: a4317849af96d2430fa89944d3c58977ca089fbe
   rust_api: 112f3cfd993afe61c6662bdb30fd6e3509fb3bf8
   setup: 8b838da8e99b84b526ac668469e84de76f32fb74
-  wifi_ssid: e8c7174872311b511ddfb86996e370a20739e4ad
-  window_ext: 4afef727fe428b30c68ce800ba92e890fd329f63
 
 PODFILE CHECKSUM: b9facb167d6b7e90fef40306c3fe521e010924ac
 
