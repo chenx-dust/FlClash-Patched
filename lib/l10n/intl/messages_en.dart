@@ -65,9 +65,14 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m17(count) => "${count} items have been selected";
 
-  static String m18(label) => "${label} must be a url";
+  static String m18(interval, idleInterval) =>
+      "${interval} · idle ${idleInterval}";
 
-  static String m19(count) =>
+  static String m19(interval) => "${interval} · idle disabled";
+
+  static String m20(label) => "${label} must be a url";
+
+  static String m21(count) =>
       "${Intl.plural(count, one: '1 year ago', other: '${count} years ago')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -660,6 +665,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Please enter a different port",
     ),
     "portTip": m16,
+    "positiveIntegerTip": MessageLookupByLibrary.simpleMessage(
+      "Please enter an integer greater than 0",
+    ),
     "predictiveBack": MessageLookupByLibrary.simpleMessage("Predictive back"),
     "preferH3Desc": MessageLookupByLibrary.simpleMessage(
       "Prioritize the use of DOH\'s http/3",
@@ -1016,6 +1024,20 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "turnOff": MessageLookupByLibrary.simpleMessage("Turn Off"),
     "turnOn": MessageLookupByLibrary.simpleMessage("Turn On"),
+    "uiUpdateIdleInterval": MessageLookupByLibrary.simpleMessage(
+      "Idle update interval",
+    ),
+    "uiUpdateIdleWhenUnfocused": MessageLookupByLibrary.simpleMessage(
+      "Idle when unfocused",
+    ),
+    "uiUpdateIdleWhenUnfocusedDesc": MessageLookupByLibrary.simpleMessage(
+      "Use the idle update interval when the app window loses focus",
+    ),
+    "uiUpdateInterval": MessageLookupByLibrary.simpleMessage(
+      "UI info update interval",
+    ),
+    "uiUpdateIntervalDesc": m18,
+    "uiUpdateIntervalIdleDisabledDesc": m19,
     "unauthorized": MessageLookupByLibrary.simpleMessage("Unauthorized"),
     "undo": MessageLookupByLibrary.simpleMessage("undo"),
     "unifiedDelay": MessageLookupByLibrary.simpleMessage("Unified delay"),
@@ -1033,7 +1055,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "urlDesc": MessageLookupByLibrary.simpleMessage(
       "Obtain profile through URL",
     ),
-    "urlTip": m18,
+    "urlTip": m20,
     "useHosts": MessageLookupByLibrary.simpleMessage("Use hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("Use system hosts"),
     "value": MessageLookupByLibrary.simpleMessage("Value"),
@@ -1052,7 +1074,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "WebDAV configuration",
     ),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("Whitelist mode"),
-    "yearsAgo": m19,
+    "yearsAgo": m21,
     "zh_CN": MessageLookupByLibrary.simpleMessage("Simplified Chinese"),
   };
 }

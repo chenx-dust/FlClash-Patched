@@ -57,9 +57,14 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m17(count) => "已选择 ${count} 项";
 
-  static String m18(label) => "${label} 必须为 URL";
+  static String m18(interval, idleInterval) =>
+      "${interval} · 怠速 ${idleInterval}";
 
-  static String m19(count) => "${count} 年前";
+  static String m19(interval) => "${interval} · 怠速已禁用";
+
+  static String m20(label) => "${label} 必须为 URL";
+
+  static String m21(count) => "${count} 年前";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -459,6 +464,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "port": MessageLookupByLibrary.simpleMessage("端口"),
     "portConflictTip": MessageLookupByLibrary.simpleMessage("请输入不同的端口"),
     "portTip": m16,
+    "positiveIntegerTip": MessageLookupByLibrary.simpleMessage("请输入大于 0 的整数"),
     "predictiveBack": MessageLookupByLibrary.simpleMessage("预见性返回"),
     "preferH3Desc": MessageLookupByLibrary.simpleMessage("优先使用 DOH 的 http/3"),
     "prerequisites": MessageLookupByLibrary.simpleMessage("前置条件"),
@@ -717,6 +723,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "tunDesc": MessageLookupByLibrary.simpleMessage("仅在管理员模式生效"),
     "turnOff": MessageLookupByLibrary.simpleMessage("关闭"),
     "turnOn": MessageLookupByLibrary.simpleMessage("开启"),
+    "uiUpdateIdleInterval": MessageLookupByLibrary.simpleMessage("怠速更新周期"),
+    "uiUpdateIdleWhenUnfocused": MessageLookupByLibrary.simpleMessage("失焦时怠速"),
+    "uiUpdateIdleWhenUnfocusedDesc": MessageLookupByLibrary.simpleMessage(
+      "应用窗口失去焦点时使用怠速更新周期",
+    ),
+    "uiUpdateInterval": MessageLookupByLibrary.simpleMessage("UI 信息更新周期"),
+    "uiUpdateIntervalDesc": m18,
+    "uiUpdateIntervalIdleDisabledDesc": m19,
     "unauthorized": MessageLookupByLibrary.simpleMessage("未授权"),
     "undo": MessageLookupByLibrary.simpleMessage("撤销"),
     "unifiedDelay": MessageLookupByLibrary.simpleMessage("统一延迟"),
@@ -728,7 +742,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "upload": MessageLookupByLibrary.simpleMessage("上传"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("通过 URL 获取配置文件"),
-    "urlTip": m18,
+    "urlTip": m20,
     "useHosts": MessageLookupByLibrary.simpleMessage("使用 Hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("使用系统 Hosts"),
     "value": MessageLookupByLibrary.simpleMessage("值"),
@@ -743,7 +757,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnTip": MessageLookupByLibrary.simpleMessage("重启 VPN 后改变生效"),
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV 配置"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("白名单模式"),
-    "yearsAgo": m19,
+    "yearsAgo": m21,
     "zh_CN": MessageLookupByLibrary.simpleMessage("中文简体"),
   };
 }
