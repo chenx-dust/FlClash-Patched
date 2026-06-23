@@ -71,23 +71,23 @@ class GlobalState {
   BuildContext get _context => navigatorKey.currentContext!;
 
   void handleBackground() async {
+    commonPrint.log('background');
     if (isBackground.value) {
       return;
     }
     isBackground.value = true;
     render?.pause();
     foregroundTicker.pause();
-    commonPrint.log('background');
   }
 
   void handleForeground() {
+    commonPrint.log('foreground');
+    foregroundTicker.resume();
     if (!isBackground.value) {
       return;
     }
     isBackground.value = false;
-    foregroundTicker.resume();
     render?.resume();
-    commonPrint.log('foreground');
   }
 
   Future<ProviderContainer> _initData(int version) async {
