@@ -8,8 +8,11 @@ import 'print.dart';
 typedef ForegroundTickerCallback = FutureOr<void> Function();
 
 class ForegroundTicker {
-  final Duration interval;
-  final Duration slowInterval;
+  static const _defaultInterval = Duration(seconds: 1);
+  static const _defaultSlowInterval = Duration(seconds: 2);
+
+  Duration _interval;
+  Duration _slowInterval;
 
   final _tasks = <Object, _ForegroundTickerTask>{};
   Timer? _timer;
@@ -17,10 +20,29 @@ class ForegroundTicker {
   bool _active = true;
 
   ForegroundTicker({
-    this.interval = const Duration(seconds: 1),
-    this.slowInterval = const Duration(seconds: 2),
+    Duration interval = _defaultInterval,
+    Duration slowInterval = _defaultSlowInterval,
+  }) : _interval = _safeInterval(interval, _defaultInterval),
+       _slowInterval = _safeInterval(slowInterval, _defaultSlowInterval) {
+    _currentInterval = _interval;
+  }
+
+  Duration get interval => _interval;
+
+  Duration get slowInterval => _slowInterval;
+
+  static Duration _safeInterval(Duration value, Duration fallback) {
+    return value > Duration.zero ? value : fallback;
+  }
+
+  void updateSettings({
+    required Duration interval,
+    required Duration slowInterval,
   }) {
-    _currentInterval = interval;
+    final wasSlow = _currentInterval == _slowInterval;
+    _interval = _safeInterval(interval, _defaultInterval);
+    _slowInterval = _safeInterval(slowInterval, _defaultSlowInterval);
+    _setInterval(wasSlow ? _slowInterval : _interval);
   }
 
   void register(
