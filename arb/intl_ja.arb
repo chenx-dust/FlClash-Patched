@@ -106,6 +106,7 @@
   "proxyPort": "プロキシポート",
   "port": "ポート",
   "logLevel": "ログレベル",
+  "userAgent": "ユーザーエージェント",
   "show": "表示",
   "exit": "終了",
   "systemProxy": "システムプロキシ",

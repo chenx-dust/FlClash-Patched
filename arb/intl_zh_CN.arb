@@ -106,6 +106,7 @@
   "proxyPort": "代理端口",
   "port": "端口",
   "logLevel": "日志等级",
+  "userAgent": "用户代理",
   "show": "显示",
   "exit": "退出",
   "systemProxy": "系统代理",
