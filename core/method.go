@@ -278,6 +278,14 @@ func handleMethodCall(call *MethodCall, response MethodResponse) {
 		handleStopLog()
 		response.success(true)
 		return
+	case startRequestMethod:
+		handleStartRequest()
+		response.success(true)
+		return
+	case stopRequestMethod:
+		handleStopRequest()
+		response.success(true)
+		return
 	case startListenerMethod:
 		response.success(handleStartListener())
 		return
