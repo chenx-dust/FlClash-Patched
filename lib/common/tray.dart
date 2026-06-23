@@ -88,7 +88,7 @@ class Tray {
       onClick: (_) async {
         commonAction.updateStart();
       },
-      checked: false,
+      checked: trayState.isStart,
     );
     menuItems.add(startMenuItem);
     if (system.isMacOS) {
