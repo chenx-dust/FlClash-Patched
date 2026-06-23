@@ -146,9 +146,14 @@ jobs:
           cd ./dist
           sha256sum * > SHA256SUMS
 
+      - name: Patch release.md
+        run: |
+          version=$(echo "${{ github.ref_name }}" | sed 's/^v//')
+          sed "s|VERSION|$version|g" ./.github/release_template.md > release.md
+
       - name: Release
         if: ${{ env.IS_STABLE == 'true' }}
         uses: softprops/action-gh-release@v3
         with:
           files: ./dist/*
-          body_path: './.github/release_template.md'
+          body_path: './release.md'
