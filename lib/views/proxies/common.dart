@@ -6,9 +6,15 @@ import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-double get listHeaderHeight {
+double getListHeaderHeight(ProxiesListHeaderStyle style) {
   final measure = globalState.measure;
-  return 20 + measure.titleMediumHeight + 4 + measure.bodyMediumHeight + 2;
+  return switch (style) {
+    ProxiesListHeaderStyle.loose =>
+      20 + measure.titleMediumHeight + 4 + measure.bodyMediumHeight + 2,
+    ProxiesListHeaderStyle.standard =>
+      18 + measure.titleSmallHeight + 3 + measure.labelSmallHeight + 3,
+    ProxiesListHeaderStyle.tight => 24 + measure.titleSmallHeight,
+  };
 }
 
 double getItemHeight(ProxyCardType proxyCardType) {
