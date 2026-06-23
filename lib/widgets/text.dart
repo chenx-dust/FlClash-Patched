@@ -4,6 +4,22 @@ import 'package:flutter/material.dart';
 
 import '../state.dart';
 
+final _emojiRegex = emojiRegex();
+
+String getFirstEmoji(String text) {
+  return _emojiRegex.firstMatch(text)?.group(0) ?? '';
+}
+
+String removeLeadingEmoji(String text) {
+  var value = text;
+  var match = _emojiRegex.matchAsPrefix(value);
+  while (match != null) {
+    value = value.substring(match.end).trimLeft();
+    match = _emojiRegex.matchAsPrefix(value);
+  }
+  return value;
+}
+
 class TooltipText extends StatelessWidget {
   final Text text;
 
@@ -93,7 +109,7 @@ class EmojiText extends StatelessWidget {
 
   List<TextSpan> _buildTextSpans(String emojis) {
     final List<TextSpan> spans = [];
-    final matches = emojiRegex().allMatches(text);
+    final matches = _emojiRegex.allMatches(text);
 
     int lastMatchEnd = 0;
     for (final match in matches) {
