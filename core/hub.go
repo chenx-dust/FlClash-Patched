@@ -28,14 +28,16 @@ import (
 	"runtime/debug"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
 var (
-	isInit            = false
-	externalProviders = map[string]cp.Provider{}
-	logSubscriber     observable.Subscription[log.Event]
-	ageMutex          sync.Mutex
+	isInit               = false
+	externalProviders    = map[string]cp.Provider{}
+	logSubscriber        observable.Subscription[log.Event]
+	ageMutex             sync.Mutex
+	requestNotifyEnabled atomic.Bool
 )
 
 func handleInitClash(paramsString string) bool {
@@ -464,6 +466,14 @@ func handleStopLog() {
 	}
 }
 
+func handleStartRequest() {
+	requestNotifyEnabled.Store(true)
+}
+
+func handleStopRequest() {
+	requestNotifyEnabled.Store(false)
+}
+
 func handleGetCountryCode(ip string, fn func(value string)) {
 	go func() {
 		runLock.Lock()
@@ -579,6 +589,9 @@ func init() {
 		})
 	}
 	statistic.DefaultRequestNotify = func(c statistic.Tracker) {
+		if !requestNotifyEnabled.Load() {
+			return
+		}
 		sendMessage(Message{
 			Type: RequestMessage,
 			Data: c,

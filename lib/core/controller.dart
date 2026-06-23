@@ -279,6 +279,14 @@ class CoreController {
     _interface.stopLog();
   }
 
+  void startRequest() {
+    _interface.startRequest();
+  }
+
+  void stopRequest() {
+    _interface.stopRequest();
+  }
+
   Future<void> requestGc() async {
     await _interface.forceGc();
   }
