@@ -342,6 +342,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hoursCount": m11,
     "icon": MessageLookupByLibrary.simpleMessage("图片"),
     "iconRecords": MessageLookupByLibrary.simpleMessage("图标记录"),
+    "iconSource": MessageLookupByLibrary.simpleMessage("图标来源"),
     "iconStyle": MessageLookupByLibrary.simpleMessage("图标样式"),
     "iconUrl": MessageLookupByLibrary.simpleMessage("图标链接"),
     "ignoreBatteryOptimization": MessageLookupByLibrary.simpleMessage("忽略电池优化"),
@@ -455,6 +456,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "numberTip": m20,
     "onDemand": MessageLookupByLibrary.simpleMessage("按需运行"),
     "onDemandDesc": MessageLookupByLibrary.simpleMessage("配置程序特定场景运行状态"),
+    "onlyConfig": MessageLookupByLibrary.simpleMessage("仅配置"),
+    "onlyEmoji": MessageLookupByLibrary.simpleMessage("仅 Emoji"),
     "onlyIcon": MessageLookupByLibrary.simpleMessage("仅图标"),
     "onlyStatisticsProxy": MessageLookupByLibrary.simpleMessage("仅统计代理"),
     "onlyStatisticsProxyDesc": MessageLookupByLibrary.simpleMessage(
