@@ -24,6 +24,8 @@ enum CoreMethod {
   sideLoadExternalProvider,
   startLog,
   stopLog,
+  startRequest,
+  stopRequest,
   startListener,
   stopListener,
   getCountryCode,

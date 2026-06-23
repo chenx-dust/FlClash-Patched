@@ -66,6 +66,10 @@ mixin CoreInterface {
 
   FutureOr<void> stopLog();
 
+  FutureOr<void> startRequest();
+
+  FutureOr<void> stopRequest();
+
   Future<bool> crash();
 
   FutureOr<List<TrackerInfo>> getConnections();
@@ -366,6 +370,16 @@ abstract class CoreHandlerInterface with CoreInterface {
   @override
   FutureOr<void> stopLog() {
     _invokeMethod<bool>(method: CoreMethod.stopLog);
+  }
+
+  @override
+  FutureOr<void> startRequest() {
+    _invokeMethod(method: CoreMethod.startRequest);
+  }
+
+  @override
+  FutureOr<void> stopRequest() {
+    _invokeMethod<bool>(method: CoreMethod.stopRequest);
   }
 
   @override
