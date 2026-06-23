@@ -202,6 +202,7 @@
   "clipboardImport": "剪贴板导入",
   "clipboardExport": "导出剪贴板",
   "layout": "布局",
+  "header": "标题",
   "tight": "紧凑",
   "standard": "标准",
   "loose": "宽松",

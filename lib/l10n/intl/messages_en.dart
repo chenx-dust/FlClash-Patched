@@ -458,6 +458,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hasCacheChange": MessageLookupByLibrary.simpleMessage(
       "Do you want to cache the changes?",
     ),
+    "header": MessageLookupByLibrary.simpleMessage("Header"),
     "hideFromList": MessageLookupByLibrary.simpleMessage("Hide from list"),
     "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage(
       "High priority auto launch",

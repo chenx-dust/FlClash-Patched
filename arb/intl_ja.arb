@@ -202,6 +202,7 @@
   "clipboardImport": "クリップボードからインポート",
   "clipboardExport": "クリップボードにエクスポート",
   "layout": "レイアウト",
+  "header": "ヘッダー",
   "tight": "密",
   "standard": "標準",
   "loose": "疎",

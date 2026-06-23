@@ -202,6 +202,7 @@
   "clipboardImport": "Clipboard import",
   "clipboardExport": "Export clipboard",
   "layout": "Layout",
+  "header": "Header",
   "tight": "Tight",
   "standard": "Standard",
   "loose": "Loose",
