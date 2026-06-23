@@ -7,6 +7,7 @@ import (
 	"os"
 	"runtime"
 	"runtime/debug"
+	"sync/atomic"
 	"time"
 
 	"github.com/metacubex/mihomo/adapter"
@@ -29,9 +30,10 @@ import (
 )
 
 var (
-	isInit            = false
-	externalProviders = map[string]cp.Provider{}
-	logSubscriber     observable.Subscription[log.Event]
+	isInit               = false
+	externalProviders    = map[string]cp.Provider{}
+	logSubscriber        observable.Subscription[log.Event]
+	requestNotifyEnabled atomic.Bool
 )
 
 func handleInitClash(params *InitParams) bool {
@@ -390,6 +392,14 @@ func handleStopLog() {
 	}
 }
 
+func handleStartRequest() {
+	requestNotifyEnabled.Store(true)
+}
+
+func handleStopRequest() {
+	requestNotifyEnabled.Store(false)
+}
+
 func handleGetCountryCode(ip string, fn func(value string)) {
 	go func() {
 		runLock.Lock()
@@ -486,6 +496,9 @@ func init() {
 		})
 	}
 	statistic.DefaultRequestNotify = func(c statistic.Tracker) {
+		if !requestNotifyEnabled.Load() {
+			return
+		}
 		sendMessage(Message{
 			Type: RequestMessage,
 			Data: c,
