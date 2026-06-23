@@ -6,7 +6,7 @@ on:
       - 'v*'
 env:
   IS_STABLE: ${{ !contains(github.ref, 'pre') }}
-  FLUTTER_VERSION: '3.44.4'
+  FLUTTER_VERSION: '3.44.6'
 
 jobs:
   test:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -129,6 +129,7 @@ jobs:
           - platform: linux
             os: ubuntu-22.04-arm
             arch: arm64
+      fail-fast: false
 
     steps:
       - name: Setup rust
@@ -141,7 +142,7 @@ jobs:
           Add-Content $env:GITHUB_PATH $cargoPath
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -156,9 +157,9 @@ jobs:
           } >> android/local.properties
 
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
-          go-version: '1.26.4'
+          go-version: '1.26.5'
           cache-dependency-path: |
             core/go.sum
 
@@ -183,7 +184,7 @@ jobs:
         if: startsWith(matrix.platform,'android')
         uses: nttld/setup-ndk@v1
         with:
-          ndk-version: r28c
+          ndk-version: r29
           add-to-path: true
           link-to-sdk: true
 
@@ -196,7 +197,7 @@ jobs:
         run: dart setup.dart ${{ matrix.platform }} ${{ env.IS_STABLE == 'true' && '--env stable' || '' }} -v
 
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: artifact-${{ matrix.platform }}${{ matrix.arch && format('-{0}', matrix.arch) }}
           path: ./dist
@@ -209,12 +210,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Download
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: ./dist/
           pattern: artifact-*
@@ -240,9 +241,14 @@ jobs:
           cd ./dist
           sha256sum ./* > SHA256SUMS
 
+      - name: Patch release.md
+        run: |
+          version=$(echo "${{ github.ref_name }}" | sed 's/^v//')
+          sed "s|VERSION|$version|g" ./.github/release_template.md > release.md
+
       - name: Release
         if: ${{ env.IS_STABLE == 'true' }}
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: ./dist/*
           body_path: './release.md'
