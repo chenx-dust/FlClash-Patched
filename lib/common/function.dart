@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/common/constant.dart';
 
 class Debouncer {
   final Map<dynamic, Timer?> _operations = {};
