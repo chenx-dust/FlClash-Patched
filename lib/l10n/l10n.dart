@@ -854,6 +854,11 @@ class AppLocalizations {
     return Intl.message('Log level', name: 'logLevel', desc: '', args: []);
   }
 
+  /// `User agent`
+  String get userAgent {
+    return Intl.message('User agent', name: 'userAgent', desc: '', args: []);
+  }
+
   /// `Show`
   String get show {
     return Intl.message('Show', name: 'show', desc: '', args: []);
