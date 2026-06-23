@@ -454,6 +454,66 @@ class AppLocalizations {
     );
   }
 
+  /// `UI info update interval`
+  String get uiUpdateInterval {
+    return Intl.message(
+      'UI info update interval',
+      name: 'uiUpdateInterval',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{interval} · idle {idleInterval}`
+  String uiUpdateIntervalDesc(Object interval, Object idleInterval) {
+    return Intl.message(
+      '$interval · idle $idleInterval',
+      name: 'uiUpdateIntervalDesc',
+      desc: '',
+      args: [interval, idleInterval],
+    );
+  }
+
+  /// `Idle when unfocused`
+  String get uiUpdateIdleWhenUnfocused {
+    return Intl.message(
+      'Idle when unfocused',
+      name: 'uiUpdateIdleWhenUnfocused',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Use the idle update interval when the app window loses focus`
+  String get uiUpdateIdleWhenUnfocusedDesc {
+    return Intl.message(
+      'Use the idle update interval when the app window loses focus',
+      name: 'uiUpdateIdleWhenUnfocusedDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Idle update interval`
+  String get uiUpdateIdleInterval {
+    return Intl.message(
+      'Idle update interval',
+      name: 'uiUpdateIdleInterval',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{interval} · idle disabled`
+  String uiUpdateIntervalIdleDisabledDesc(Object interval) {
+    return Intl.message(
+      '$interval · idle disabled',
+      name: 'uiUpdateIntervalIdleDisabledDesc',
+      desc: '',
+      args: [interval],
+    );
+  }
+
   /// `AccessControl`
   String get accessControl {
     return Intl.message(
@@ -2586,6 +2646,16 @@ class AppLocalizations {
       name: 'numberTip',
       desc: '',
       args: [label],
+    );
+  }
+
+  /// `Please enter an integer greater than 0`
+  String get positiveIntegerTip {
+    return Intl.message(
+      'Please enter an integer greater than 0',
+      name: 'positiveIntegerTip',
+      desc: '',
+      args: [],
     );
   }
 

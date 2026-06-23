@@ -136,6 +136,14 @@ class GlobalState {
     container = ProviderContainer(
       overrides: [...appStateOverrides, ...configOverrides],
     );
+    foregroundTicker.updateSettings(
+      interval: Duration(
+        seconds: config.appSettingProps.foregroundTickerInterval,
+      ),
+      slowInterval: Duration(
+        seconds: config.appSettingProps.foregroundTickerIdleInterval,
+      ),
+    );
     final profiles = await database.profilesDao.query().get();
     container.read(profilesProvider.notifier).setAndReorder(profiles);
     await AppLocalizations.load(
