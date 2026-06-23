@@ -35,6 +35,8 @@ const defaultProxiesStyleProps = ProxiesStyleProps();
 const defaultWindowProps = WindowProps();
 const defaultAccessControlProps = AccessControlProps();
 const defaultThemeProps = ThemeProps(primaryColor: defaultPrimaryColor);
+const defaultForegroundTickerInterval = 1;
+const defaultForegroundTickerIdleInterval = 2;
 
 const List<DashboardWidget> defaultDashboardWidgets = [
   DashboardWidget.networkSpeed,
@@ -84,6 +86,10 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default(RestoreStrategy.compatible) RestoreStrategy restoreStrategy,
     @Default(true) bool showTrayTitle,
     @Default('') String customUserAgent,
+    @Default(defaultForegroundTickerInterval) int foregroundTickerInterval,
+    @Default(true) bool foregroundTickerIdleWhenUnfocused,
+    @Default(defaultForegroundTickerIdleInterval)
+    int foregroundTickerIdleInterval,
   }) = _AppSettingProps;
 
   factory AppSettingProps.fromJson(Map<String, Object?> json) =>
