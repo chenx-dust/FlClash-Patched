@@ -162,12 +162,13 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
     if (index == -1) {
       return;
     }
-    final isAnimateToPage = ref.read(appSettingProvider).isAnimateToPage;
-    final isMobile = ref.read(isMobileViewProvider);
-    if (isAnimateToPage && isMobile && !ignoreAnimateTo) {
+    final isAnimateToPage = ref
+        .read(appSettingProvider)
+        .isAnimateToPage;
+    if (isAnimateToPage && !ignoreAnimateTo) {
       await _pageController.animateToPage(
         index,
-        duration: kTabScrollDuration,
+        duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
       );
     } else {
@@ -191,7 +192,9 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
     final itemCount = ref.watch(
       currentNavigationItemsStateProvider.select((state) => state.value.length),
     );
+    final isMobile = ref.read(isMobileViewProvider);
     return PageView.builder(
+      scrollDirection: isMobile ? Axis.horizontal : Axis.vertical,
       controller: _pageController,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: itemCount,
