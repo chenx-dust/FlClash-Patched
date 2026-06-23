@@ -77,6 +77,7 @@ class GlobalState {
     isBackground.value = true;
     render?.pause();
     foregroundTicker.pause();
+    commonPrint.log('background');
   }
 
   void handleForeground() {
@@ -86,6 +87,7 @@ class GlobalState {
     isBackground.value = false;
     foregroundTicker.resume();
     render?.resume();
+    commonPrint.log('foreground');
   }
 
   Future<ProviderContainer> _initData(int version) async {
