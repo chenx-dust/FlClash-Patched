@@ -41,26 +41,90 @@ class LogLevelItem extends ConsumerWidget {
 class UaItem extends ConsumerWidget {
   const UaItem({super.key});
 
+  static const _customUaOption = '__custom_user_agent__';
+  static const _uaOptions = <String?>[
+    null,
+    'clash-verge/v2.5.1',
+    'mihomo.party/v1.9.6',
+    'ClashforWindows/0.19.23',
+    _customUaOption,
+  ];
+
+  String _customUaText(String label, String? globalUa) {
+    if (globalUa == null || globalUa.isEmpty || _uaOptions.contains(globalUa)) {
+      return label;
+    }
+    return '$label · $globalUa';
+  }
+
+  String? _selectedUa(String? globalUa) {
+    if (globalUa == null || globalUa.isEmpty) {
+      return null;
+    }
+    if (_uaOptions.contains(globalUa)) {
+      return globalUa;
+    }
+    return _customUaOption;
+  }
+
+  Future<void> _handleChanged(
+    BuildContext context,
+    WidgetRef ref,
+    String? value,
+    String? globalUa,
+  ) async {
+    final notifier = ref.read(patchClashConfigProvider.notifier);
+    if (value != _customUaOption) {
+      notifier.update((state) => state.copyWith(globalUa: value));
+      return;
+    }
+
+    final appLocalizations = context.appLocalizations;
+    final customUa = await globalState.showCommonDialog<String>(
+      child: InputDialog(
+        title: appLocalizations.userAgent,
+        labelText: appLocalizations.custom,
+        value: globalUa ?? '',
+      ),
+    );
+    final trimmedUa = customUa?.trim();
+    if (trimmedUa?.isEmpty ?? true) {
+      return;
+    }
+    notifier.update((state) => state.copyWith(globalUa: trimmedUa));
+  }
+
   @override
   Widget build(BuildContext context, ref) {
     final appLocalizations = context.appLocalizations;
     final globalUa = ref.watch(
       patchClashConfigProvider.select((state) => state.globalUa),
     );
+    final selectedUa = _selectedUa(globalUa);
     return ListItem<String?>.options(
       leading: const Icon(Icons.computer_outlined),
-      title: const Text('UA'),
-      subtitle: Text(globalUa ?? appLocalizations.defaultText),
+      title: Text(appLocalizations.userAgent),
+      subtitle: Text(
+        globalUa == null || globalUa.isEmpty
+            ? appLocalizations.defaultText
+            : globalUa,
+      ),
       delegate: OptionsDelegate<String?>(
-        title: 'UA',
-        options: [null, 'clash-verge/v2.4.2', 'ClashforWindows/0.19.23'],
-        value: globalUa,
+        title: appLocalizations.userAgent,
+        options: _uaOptions,
+        value: selectedUa,
         onChanged: (value) {
-          ref
-              .read(patchClashConfigProvider.notifier)
-              .update((state) => state.copyWith(globalUa: value));
+          _handleChanged(context, ref, value, globalUa);
         },
-        textBuilder: (ua) => ua ?? appLocalizations.defaultText,
+        textBuilder: (ua) {
+          if (ua == null) {
+            return appLocalizations.defaultText;
+          }
+          if (ua == _customUaOption) {
+            return _customUaText(appLocalizations.custom, globalUa);
+          }
+          return ua;
+        },
       ),
     );
   }
