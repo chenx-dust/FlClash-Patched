@@ -6,7 +6,7 @@ import 'package:path/path.dart' as p;
 
 const _allTargets = <String, String>{
   'android': 'apk',
-  'linux': 'deb,rpm,appimage',
+  'linux': 'deb,rpm,pacman,appimage',
   'macos': 'dmg',
   'windows': 'exe,zip',
 };
