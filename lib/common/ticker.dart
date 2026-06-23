@@ -9,12 +9,19 @@ typedef ForegroundTickerCallback = FutureOr<void> Function();
 
 class ForegroundTicker {
   final Duration interval;
+  final Duration slowInterval;
 
   final _tasks = <Object, _ForegroundTickerTask>{};
   Timer? _timer;
+  late Duration _currentInterval;
   bool _active = true;
 
-  ForegroundTicker({this.interval = const Duration(seconds: 1)});
+  ForegroundTicker({
+    this.interval = const Duration(seconds: 1),
+    this.slowInterval = const Duration(seconds: 2),
+  }) {
+    _currentInterval = interval;
+  }
 
   void register(
     Object tag,
@@ -37,6 +44,13 @@ class ForegroundTicker {
   void pause() {
     throttler.cancel(FunctionTag.tickerResume);
     debouncer.call(FunctionTag.tickerPause, _pause, duration: interval);
+  }
+
+  void slow() {
+    if (!_active) {
+      return;
+    }
+    _setInterval(slowInterval);
   }
 
   void resume() {
@@ -66,12 +80,13 @@ class ForegroundTicker {
   }
 
   void _resume() {
-    if (_active) {
-      return;
-    }
+    final wasActive = _active;
+    final wasSlow = _currentInterval != interval;
     _active = true;
-    _syncTimer();
-    _tick();
+    _setInterval(interval);
+    if (!wasActive || wasSlow) {
+      _tick();
+    }
   }
 
   void _syncTimer() {
@@ -80,9 +95,20 @@ class ForegroundTicker {
       _timer = null;
       return;
     }
-    _timer ??= Timer.periodic(interval, (_) {
+    _timer ??= Timer.periodic(_currentInterval, (_) {
       _tick();
     });
+  }
+
+  void _setInterval(Duration interval) {
+    if (_currentInterval == interval) {
+      _syncTimer();
+      return;
+    }
+    _currentInterval = interval;
+    _timer?.cancel();
+    _timer = null;
+    _syncTimer();
   }
 
   void _tick() {

@@ -89,6 +89,7 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
           final isMinimized = await windowManager.isMinimized();
           commonPrint.log('isVisible: $isVisible, isMinimized: $isMinimized');
           if (isVisible || !isMinimized) {
+            foregroundTicker.slow();
             break;
           }
         }
