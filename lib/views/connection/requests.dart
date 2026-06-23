@@ -1,7 +1,9 @@
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
+import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,6 +24,7 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
   );
   List<TrackerInfo> _requests = [];
   late final ScrollController _scrollController;
+  bool _requestListening = false;
 
   void _onSearch(String value) {
     _requestsStateNotifier.value = _requestsStateNotifier.value.copyWith(
@@ -38,6 +41,8 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
   @override
   void initState() {
     super.initState();
+    globalState.isBackground.addListener(_syncListening);
+    _syncListening();
     _requests = ref.read(requestsProvider).list;
     _scrollController = ScrollController(initialScrollOffset: double.maxFinite);
     _requestsStateNotifier.value = _requestsStateNotifier.value.copyWith(
@@ -54,9 +59,35 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
 
   @override
   void dispose() {
+    globalState.isBackground.removeListener(_syncListening);
+    _stopListening();
     _requestsStateNotifier.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _syncListening() {
+    if (globalState.isBackground.value) {
+      _stopListening();
+    } else {
+      _startListening();
+    }
+  }
+
+  void _startListening() {
+    if (_requestListening) {
+      return;
+    }
+    _requestListening = true;
+    coreController.startRequest();
+  }
+
+  void _stopListening() {
+    if (!_requestListening) {
+      return;
+    }
+    _requestListening = false;
+    coreController.stopRequest();
   }
 
   void updateRequestsThrottler() {
