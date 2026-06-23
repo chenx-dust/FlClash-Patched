@@ -106,6 +106,7 @@
   "proxyPort": "Proxy port",
   "port": "Port",
   "logLevel": "Log level",
+  "userAgent": "User agent",
   "show": "Show",
   "exit": "Exit",
   "systemProxy": "System proxy",
