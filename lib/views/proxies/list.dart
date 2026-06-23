@@ -404,6 +404,8 @@ class _ListHeaderState extends State<ListHeader> {
 
   String get groupName => widget.group.name;
 
+  String get emojiIcon => getFirstEmoji(groupName);
+
   String get groupType => widget.group.type.name;
 
   bool get isExpand => widget.isExpand;
@@ -419,12 +421,40 @@ class _ListHeaderState extends State<ListHeader> {
     widget.onChange(groupName);
   }
 
+  bool _shouldUseEmojiAsIcon(ProxiesIconSource source) {
+    final emoji = emojiIcon;
+    return switch (source) {
+      ProxiesIconSource.standard => icon.isEmpty && emoji.isNotEmpty,
+      ProxiesIconSource.config => false,
+      ProxiesIconSource.emoji => emoji.isNotEmpty,
+    };
+  }
+
+  Widget _buildIconContent(double size, ProxiesIconSource source) {
+    final emoji = emojiIcon;
+    if (_shouldUseEmojiAsIcon(source)) {
+      return EmojiText(
+        emoji,
+        style: TextStyle(fontSize: size * 0.75, height: 1.2),
+      );
+    }
+    final src = source == ProxiesIconSource.emoji ? '' : icon;
+    return IconTheme.merge(
+      data: IconThemeData(size: size),
+      child: CommonTargetIcon(src: src),
+    );
+  }
+
   Widget _buildIcon() {
     return Consumer(
-      builder: (_, ref, child) {
-        final iconStyle = ref.watch(
-          proxiesStyleSettingProvider.select((state) => state.iconStyle),
+      builder: (_, ref, _) {
+        final props = ref.watch(
+          proxiesStyleSettingProvider.select(
+            (state) => VM2(state.iconStyle, state.iconSource),
+          ),
         );
+        final iconStyle = props.a;
+        final iconSource = props.b;
         return switch (iconStyle) {
           ProxiesIconStyle.standard => LayoutBuilder(
             builder: (_, constraints) {
@@ -442,9 +472,9 @@ class _ListHeaderState extends State<ListHeader> {
                       color: context.colorScheme.secondaryContainer,
                     ),
                     clipBehavior: Clip.antiAlias,
-                    child: IconTheme.merge(
-                      data: IconThemeData(size: constraints.maxHeight - 12.ap),
-                      child: CommonTargetIcon(src: icon),
+                    child: _buildIconContent(
+                      constraints.maxHeight - 12.ap,
+                      iconSource,
                     ),
                   ),
                 ),
@@ -455,15 +485,36 @@ class _ListHeaderState extends State<ListHeader> {
             margin: const EdgeInsets.only(right: 16),
             child: LayoutBuilder(
               builder: (_, constraints) {
-                return IconTheme.merge(
-                  data: IconThemeData(size: constraints.maxHeight - 8.ap),
-                  child: CommonTargetIcon(src: icon),
+                return _buildIconContent(
+                  constraints.maxHeight - 8.ap,
+                  iconSource,
                 );
               },
             ),
           ),
           ProxiesIconStyle.none => Container(),
         };
+      },
+    );
+  }
+
+  Widget _buildTitle() {
+    return Consumer(
+      builder: (_, ref, _) {
+        final props = ref.watch(
+          proxiesStyleSettingProvider.select(
+            (state) => VM2(state.iconStyle, state.iconSource),
+          ),
+        );
+        final shouldUseEmojiAsIcon =
+            props.a != ProxiesIconStyle.none && _shouldUseEmojiAsIcon(props.b);
+        final displayGroupName = shouldUseEmojiAsIcon
+            ? removeLeadingEmoji(groupName).takeFirstValid([groupName])
+            : groupName;
+        return EmojiText(
+          displayGroupName,
+          style: context.textTheme.titleMedium,
+        );
       },
     );
   }
@@ -489,10 +540,7 @@ class _ListHeaderState extends State<ListHeader> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        EmojiText(
-                          groupName,
-                          style: context.textTheme.titleMedium,
-                        ),
+                        _buildTitle(),
                         const SizedBox(height: 4),
                         Flexible(
                           flex: 1,

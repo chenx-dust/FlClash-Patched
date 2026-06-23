@@ -287,7 +287,7 @@ as String,
 /// @nodoc
 mixin _$UpdateParams {
 
- Tun get tun;@JsonKey(name: 'mixed-port') int get mixedPort;@JsonKey(name: 'allow-lan') bool get allowLan;@JsonKey(name: 'find-process-mode') FindProcessMode get findProcessMode; Mode get mode;@JsonKey(name: 'log-level') LogLevel get logLevel; bool get ipv6;@JsonKey(name: 'tcp-concurrent') bool get tcpConcurrent;@JsonKey(name: 'external-controller') ExternalControllerStatus get externalController;@JsonKey(name: 'unified-delay') bool get unifiedDelay;
+ Tun get tun;@JsonKey(name: 'mixed-port') int get mixedPort;@JsonKey(name: 'allow-lan') bool get allowLan;@JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always) FindProcessMode get findProcessMode;@JsonKey(unknownEnumValue: Mode.rule) Mode get mode;@JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error) LogLevel get logLevel; bool get ipv6;@JsonKey(name: 'tcp-concurrent') bool get tcpConcurrent;@JsonKey(name: 'external-controller', unknownEnumValue: ExternalControllerStatus.close) ExternalControllerStatus get externalController;@JsonKey(name: 'unified-delay') bool get unifiedDelay;
 /// Create a copy of UpdateParams
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -320,7 +320,7 @@ abstract mixin class $UpdateParamsCopyWith<$Res>  {
   factory $UpdateParamsCopyWith(UpdateParams value, $Res Function(UpdateParams) _then) = _$UpdateParamsCopyWithImpl;
 @useResult
 $Res call({
- Tun tun,@JsonKey(name: 'mixed-port') int mixedPort,@JsonKey(name: 'allow-lan') bool allowLan,@JsonKey(name: 'find-process-mode') FindProcessMode findProcessMode, Mode mode,@JsonKey(name: 'log-level') LogLevel logLevel, bool ipv6,@JsonKey(name: 'tcp-concurrent') bool tcpConcurrent,@JsonKey(name: 'external-controller') ExternalControllerStatus externalController,@JsonKey(name: 'unified-delay') bool unifiedDelay
+ Tun tun,@JsonKey(name: 'mixed-port') int mixedPort,@JsonKey(name: 'allow-lan') bool allowLan,@JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always) FindProcessMode findProcessMode,@JsonKey(unknownEnumValue: Mode.rule) Mode mode,@JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error) LogLevel logLevel, bool ipv6,@JsonKey(name: 'tcp-concurrent') bool tcpConcurrent,@JsonKey(name: 'external-controller', unknownEnumValue: ExternalControllerStatus.close) ExternalControllerStatus externalController,@JsonKey(name: 'unified-delay') bool unifiedDelay
 });
 
 
@@ -443,7 +443,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Tun tun, @JsonKey(name: 'mixed-port')  int mixedPort, @JsonKey(name: 'allow-lan')  bool allowLan, @JsonKey(name: 'find-process-mode')  FindProcessMode findProcessMode,  Mode mode, @JsonKey(name: 'log-level')  LogLevel logLevel,  bool ipv6, @JsonKey(name: 'tcp-concurrent')  bool tcpConcurrent, @JsonKey(name: 'external-controller')  ExternalControllerStatus externalController, @JsonKey(name: 'unified-delay')  bool unifiedDelay)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Tun tun, @JsonKey(name: 'mixed-port')  int mixedPort, @JsonKey(name: 'allow-lan')  bool allowLan, @JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always)  FindProcessMode findProcessMode, @JsonKey(unknownEnumValue: Mode.rule)  Mode mode, @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error)  LogLevel logLevel,  bool ipv6, @JsonKey(name: 'tcp-concurrent')  bool tcpConcurrent, @JsonKey(name: 'external-controller', unknownEnumValue: ExternalControllerStatus.close)  ExternalControllerStatus externalController, @JsonKey(name: 'unified-delay')  bool unifiedDelay)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UpdateParams() when $default != null:
 return $default(_that.tun,_that.mixedPort,_that.allowLan,_that.findProcessMode,_that.mode,_that.logLevel,_that.ipv6,_that.tcpConcurrent,_that.externalController,_that.unifiedDelay);case _:
@@ -464,7 +464,7 @@ return $default(_that.tun,_that.mixedPort,_that.allowLan,_that.findProcessMode,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Tun tun, @JsonKey(name: 'mixed-port')  int mixedPort, @JsonKey(name: 'allow-lan')  bool allowLan, @JsonKey(name: 'find-process-mode')  FindProcessMode findProcessMode,  Mode mode, @JsonKey(name: 'log-level')  LogLevel logLevel,  bool ipv6, @JsonKey(name: 'tcp-concurrent')  bool tcpConcurrent, @JsonKey(name: 'external-controller')  ExternalControllerStatus externalController, @JsonKey(name: 'unified-delay')  bool unifiedDelay)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Tun tun, @JsonKey(name: 'mixed-port')  int mixedPort, @JsonKey(name: 'allow-lan')  bool allowLan, @JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always)  FindProcessMode findProcessMode, @JsonKey(unknownEnumValue: Mode.rule)  Mode mode, @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error)  LogLevel logLevel,  bool ipv6, @JsonKey(name: 'tcp-concurrent')  bool tcpConcurrent, @JsonKey(name: 'external-controller', unknownEnumValue: ExternalControllerStatus.close)  ExternalControllerStatus externalController, @JsonKey(name: 'unified-delay')  bool unifiedDelay)  $default,) {final _that = this;
 switch (_that) {
 case _UpdateParams():
 return $default(_that.tun,_that.mixedPort,_that.allowLan,_that.findProcessMode,_that.mode,_that.logLevel,_that.ipv6,_that.tcpConcurrent,_that.externalController,_that.unifiedDelay);case _:
@@ -484,7 +484,7 @@ return $default(_that.tun,_that.mixedPort,_that.allowLan,_that.findProcessMode,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Tun tun, @JsonKey(name: 'mixed-port')  int mixedPort, @JsonKey(name: 'allow-lan')  bool allowLan, @JsonKey(name: 'find-process-mode')  FindProcessMode findProcessMode,  Mode mode, @JsonKey(name: 'log-level')  LogLevel logLevel,  bool ipv6, @JsonKey(name: 'tcp-concurrent')  bool tcpConcurrent, @JsonKey(name: 'external-controller')  ExternalControllerStatus externalController, @JsonKey(name: 'unified-delay')  bool unifiedDelay)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Tun tun, @JsonKey(name: 'mixed-port')  int mixedPort, @JsonKey(name: 'allow-lan')  bool allowLan, @JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always)  FindProcessMode findProcessMode, @JsonKey(unknownEnumValue: Mode.rule)  Mode mode, @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error)  LogLevel logLevel,  bool ipv6, @JsonKey(name: 'tcp-concurrent')  bool tcpConcurrent, @JsonKey(name: 'external-controller', unknownEnumValue: ExternalControllerStatus.close)  ExternalControllerStatus externalController, @JsonKey(name: 'unified-delay')  bool unifiedDelay)?  $default,) {final _that = this;
 switch (_that) {
 case _UpdateParams() when $default != null:
 return $default(_that.tun,_that.mixedPort,_that.allowLan,_that.findProcessMode,_that.mode,_that.logLevel,_that.ipv6,_that.tcpConcurrent,_that.externalController,_that.unifiedDelay);case _:
@@ -499,18 +499,18 @@ return $default(_that.tun,_that.mixedPort,_that.allowLan,_that.findProcessMode,_
 @JsonSerializable()
 
 class _UpdateParams implements UpdateParams {
-  const _UpdateParams({required this.tun, @JsonKey(name: 'mixed-port') required this.mixedPort, @JsonKey(name: 'allow-lan') required this.allowLan, @JsonKey(name: 'find-process-mode') required this.findProcessMode, required this.mode, @JsonKey(name: 'log-level') required this.logLevel, required this.ipv6, @JsonKey(name: 'tcp-concurrent') required this.tcpConcurrent, @JsonKey(name: 'external-controller') required this.externalController, @JsonKey(name: 'unified-delay') required this.unifiedDelay});
+  const _UpdateParams({required this.tun, @JsonKey(name: 'mixed-port') required this.mixedPort, @JsonKey(name: 'allow-lan') required this.allowLan, @JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always) required this.findProcessMode, @JsonKey(unknownEnumValue: Mode.rule) required this.mode, @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error) required this.logLevel, required this.ipv6, @JsonKey(name: 'tcp-concurrent') required this.tcpConcurrent, @JsonKey(name: 'external-controller', unknownEnumValue: ExternalControllerStatus.close) required this.externalController, @JsonKey(name: 'unified-delay') required this.unifiedDelay});
   factory _UpdateParams.fromJson(Map<String, dynamic> json) => _$UpdateParamsFromJson(json);
 
 @override final  Tun tun;
 @override@JsonKey(name: 'mixed-port') final  int mixedPort;
 @override@JsonKey(name: 'allow-lan') final  bool allowLan;
-@override@JsonKey(name: 'find-process-mode') final  FindProcessMode findProcessMode;
-@override final  Mode mode;
-@override@JsonKey(name: 'log-level') final  LogLevel logLevel;
+@override@JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always) final  FindProcessMode findProcessMode;
+@override@JsonKey(unknownEnumValue: Mode.rule) final  Mode mode;
+@override@JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error) final  LogLevel logLevel;
 @override final  bool ipv6;
 @override@JsonKey(name: 'tcp-concurrent') final  bool tcpConcurrent;
-@override@JsonKey(name: 'external-controller') final  ExternalControllerStatus externalController;
+@override@JsonKey(name: 'external-controller', unknownEnumValue: ExternalControllerStatus.close) final  ExternalControllerStatus externalController;
 @override@JsonKey(name: 'unified-delay') final  bool unifiedDelay;
 
 /// Create a copy of UpdateParams
@@ -546,7 +546,7 @@ abstract mixin class _$UpdateParamsCopyWith<$Res> implements $UpdateParamsCopyWi
   factory _$UpdateParamsCopyWith(_UpdateParams value, $Res Function(_UpdateParams) _then) = __$UpdateParamsCopyWithImpl;
 @override @useResult
 $Res call({
- Tun tun,@JsonKey(name: 'mixed-port') int mixedPort,@JsonKey(name: 'allow-lan') bool allowLan,@JsonKey(name: 'find-process-mode') FindProcessMode findProcessMode, Mode mode,@JsonKey(name: 'log-level') LogLevel logLevel, bool ipv6,@JsonKey(name: 'tcp-concurrent') bool tcpConcurrent,@JsonKey(name: 'external-controller') ExternalControllerStatus externalController,@JsonKey(name: 'unified-delay') bool unifiedDelay
+ Tun tun,@JsonKey(name: 'mixed-port') int mixedPort,@JsonKey(name: 'allow-lan') bool allowLan,@JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always) FindProcessMode findProcessMode,@JsonKey(unknownEnumValue: Mode.rule) Mode mode,@JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error) LogLevel logLevel, bool ipv6,@JsonKey(name: 'tcp-concurrent') bool tcpConcurrent,@JsonKey(name: 'external-controller', unknownEnumValue: ExternalControllerStatus.close) ExternalControllerStatus externalController,@JsonKey(name: 'unified-delay') bool unifiedDelay
 });
 
 
@@ -1716,7 +1716,7 @@ as String,
 /// @nodoc
 mixin _$CoreEvent {
 
- CoreEventType get type; dynamic get data;
+@JsonKey(unknownEnumValue: CoreEventType.crash) CoreEventType get type; dynamic get data;
 /// Create a copy of CoreEvent
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1749,7 +1749,7 @@ abstract mixin class $CoreEventCopyWith<$Res>  {
   factory $CoreEventCopyWith(CoreEvent value, $Res Function(CoreEvent) _then) = _$CoreEventCopyWithImpl;
 @useResult
 $Res call({
- CoreEventType type, dynamic data
+@JsonKey(unknownEnumValue: CoreEventType.crash) CoreEventType type, dynamic data
 });
 
 
@@ -1855,7 +1855,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( CoreEventType type,  dynamic data)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: CoreEventType.crash)  CoreEventType type,  dynamic data)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CoreEvent() when $default != null:
 return $default(_that.type,_that.data);case _:
@@ -1876,7 +1876,7 @@ return $default(_that.type,_that.data);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( CoreEventType type,  dynamic data)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: CoreEventType.crash)  CoreEventType type,  dynamic data)  $default,) {final _that = this;
 switch (_that) {
 case _CoreEvent():
 return $default(_that.type,_that.data);case _:
@@ -1896,7 +1896,7 @@ return $default(_that.type,_that.data);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( CoreEventType type,  dynamic data)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(unknownEnumValue: CoreEventType.crash)  CoreEventType type,  dynamic data)?  $default,) {final _that = this;
 switch (_that) {
 case _CoreEvent() when $default != null:
 return $default(_that.type,_that.data);case _:
@@ -1911,10 +1911,10 @@ return $default(_that.type,_that.data);case _:
 @JsonSerializable()
 
 class _CoreEvent implements CoreEvent {
-  const _CoreEvent({required this.type, this.data});
+  const _CoreEvent({@JsonKey(unknownEnumValue: CoreEventType.crash) required this.type, this.data});
   factory _CoreEvent.fromJson(Map<String, dynamic> json) => _$CoreEventFromJson(json);
 
-@override final  CoreEventType type;
+@override@JsonKey(unknownEnumValue: CoreEventType.crash) final  CoreEventType type;
 @override final  dynamic data;
 
 /// Create a copy of CoreEvent
@@ -1950,7 +1950,7 @@ abstract mixin class _$CoreEventCopyWith<$Res> implements $CoreEventCopyWith<$Re
   factory _$CoreEventCopyWith(_CoreEvent value, $Res Function(_CoreEvent) _then) = __$CoreEventCopyWithImpl;
 @override @useResult
 $Res call({
- CoreEventType type, dynamic data
+@JsonKey(unknownEnumValue: CoreEventType.crash) CoreEventType type, dynamic data
 });
 
 
@@ -1982,7 +1982,7 @@ as dynamic,
 /// @nodoc
 mixin _$InvokeMessage {
 
- InvokeMessageType get type; dynamic get data;
+@JsonKey(unknownEnumValue: InvokeMessageType.process) InvokeMessageType get type; dynamic get data;
 /// Create a copy of InvokeMessage
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -2015,7 +2015,7 @@ abstract mixin class $InvokeMessageCopyWith<$Res>  {
   factory $InvokeMessageCopyWith(InvokeMessage value, $Res Function(InvokeMessage) _then) = _$InvokeMessageCopyWithImpl;
 @useResult
 $Res call({
- InvokeMessageType type, dynamic data
+@JsonKey(unknownEnumValue: InvokeMessageType.process) InvokeMessageType type, dynamic data
 });
 
 
@@ -2121,7 +2121,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( InvokeMessageType type,  dynamic data)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: InvokeMessageType.process)  InvokeMessageType type,  dynamic data)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _InvokeMessage() when $default != null:
 return $default(_that.type,_that.data);case _:
@@ -2142,7 +2142,7 @@ return $default(_that.type,_that.data);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( InvokeMessageType type,  dynamic data)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: InvokeMessageType.process)  InvokeMessageType type,  dynamic data)  $default,) {final _that = this;
 switch (_that) {
 case _InvokeMessage():
 return $default(_that.type,_that.data);case _:
@@ -2162,7 +2162,7 @@ return $default(_that.type,_that.data);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( InvokeMessageType type,  dynamic data)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(unknownEnumValue: InvokeMessageType.process)  InvokeMessageType type,  dynamic data)?  $default,) {final _that = this;
 switch (_that) {
 case _InvokeMessage() when $default != null:
 return $default(_that.type,_that.data);case _:
@@ -2177,10 +2177,10 @@ return $default(_that.type,_that.data);case _:
 @JsonSerializable()
 
 class _InvokeMessage implements InvokeMessage {
-  const _InvokeMessage({required this.type, this.data});
+  const _InvokeMessage({@JsonKey(unknownEnumValue: InvokeMessageType.process) required this.type, this.data});
   factory _InvokeMessage.fromJson(Map<String, dynamic> json) => _$InvokeMessageFromJson(json);
 
-@override final  InvokeMessageType type;
+@override@JsonKey(unknownEnumValue: InvokeMessageType.process) final  InvokeMessageType type;
 @override final  dynamic data;
 
 /// Create a copy of InvokeMessage
@@ -2216,7 +2216,7 @@ abstract mixin class _$InvokeMessageCopyWith<$Res> implements $InvokeMessageCopy
   factory _$InvokeMessageCopyWith(_InvokeMessage value, $Res Function(_InvokeMessage) _then) = __$InvokeMessageCopyWithImpl;
 @override @useResult
 $Res call({
- InvokeMessageType type, dynamic data
+@JsonKey(unknownEnumValue: InvokeMessageType.process) InvokeMessageType type, dynamic data
 });
 
 
@@ -3360,7 +3360,7 @@ $SubscriptionInfoCopyWith<$Res>? get subscriptionInfo {
 /// @nodoc
 mixin _$Action {
 
- ActionMethod get method; dynamic get data; String get id;
+@JsonKey(unknownEnumValue: ActionMethod.message) ActionMethod get method; dynamic get data; String get id;
 /// Create a copy of Action
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -3393,7 +3393,7 @@ abstract mixin class $ActionCopyWith<$Res>  {
   factory $ActionCopyWith(Action value, $Res Function(Action) _then) = _$ActionCopyWithImpl;
 @useResult
 $Res call({
- ActionMethod method, dynamic data, String id
+@JsonKey(unknownEnumValue: ActionMethod.message) ActionMethod method, dynamic data, String id
 });
 
 
@@ -3500,7 +3500,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ActionMethod method,  dynamic data,  String id)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: ActionMethod.message)  ActionMethod method,  dynamic data,  String id)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Action() when $default != null:
 return $default(_that.method,_that.data,_that.id);case _:
@@ -3521,7 +3521,7 @@ return $default(_that.method,_that.data,_that.id);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ActionMethod method,  dynamic data,  String id)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: ActionMethod.message)  ActionMethod method,  dynamic data,  String id)  $default,) {final _that = this;
 switch (_that) {
 case _Action():
 return $default(_that.method,_that.data,_that.id);case _:
@@ -3541,7 +3541,7 @@ return $default(_that.method,_that.data,_that.id);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ActionMethod method,  dynamic data,  String id)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(unknownEnumValue: ActionMethod.message)  ActionMethod method,  dynamic data,  String id)?  $default,) {final _that = this;
 switch (_that) {
 case _Action() when $default != null:
 return $default(_that.method,_that.data,_that.id);case _:
@@ -3556,10 +3556,10 @@ return $default(_that.method,_that.data,_that.id);case _:
 @JsonSerializable()
 
 class _Action implements Action {
-  const _Action({required this.method, required this.data, required this.id});
+  const _Action({@JsonKey(unknownEnumValue: ActionMethod.message) required this.method, required this.data, required this.id});
   factory _Action.fromJson(Map<String, dynamic> json) => _$ActionFromJson(json);
 
-@override final  ActionMethod method;
+@override@JsonKey(unknownEnumValue: ActionMethod.message) final  ActionMethod method;
 @override final  dynamic data;
 @override final  String id;
 
@@ -3596,7 +3596,7 @@ abstract mixin class _$ActionCopyWith<$Res> implements $ActionCopyWith<$Res> {
   factory _$ActionCopyWith(_Action value, $Res Function(_Action) _then) = __$ActionCopyWithImpl;
 @override @useResult
 $Res call({
- ActionMethod method, dynamic data, String id
+@JsonKey(unknownEnumValue: ActionMethod.message) ActionMethod method, dynamic data, String id
 });
 
 
@@ -3907,7 +3907,7 @@ as List<String>,
 /// @nodoc
 mixin _$ActionResult {
 
- ActionMethod get method; dynamic get data; String? get id; ResultType get code;
+@JsonKey(unknownEnumValue: ActionMethod.message) ActionMethod get method; dynamic get data; String? get id;@JsonKey(unknownEnumValue: ResultType.error) ResultType get code;
 /// Create a copy of ActionResult
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -3940,7 +3940,7 @@ abstract mixin class $ActionResultCopyWith<$Res>  {
   factory $ActionResultCopyWith(ActionResult value, $Res Function(ActionResult) _then) = _$ActionResultCopyWithImpl;
 @useResult
 $Res call({
- ActionMethod method, dynamic data, String? id, ResultType code
+@JsonKey(unknownEnumValue: ActionMethod.message) ActionMethod method, dynamic data, String? id,@JsonKey(unknownEnumValue: ResultType.error) ResultType code
 });
 
 
@@ -4048,7 +4048,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ActionMethod method,  dynamic data,  String? id,  ResultType code)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: ActionMethod.message)  ActionMethod method,  dynamic data,  String? id, @JsonKey(unknownEnumValue: ResultType.error)  ResultType code)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ActionResult() when $default != null:
 return $default(_that.method,_that.data,_that.id,_that.code);case _:
@@ -4069,7 +4069,7 @@ return $default(_that.method,_that.data,_that.id,_that.code);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ActionMethod method,  dynamic data,  String? id,  ResultType code)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: ActionMethod.message)  ActionMethod method,  dynamic data,  String? id, @JsonKey(unknownEnumValue: ResultType.error)  ResultType code)  $default,) {final _that = this;
 switch (_that) {
 case _ActionResult():
 return $default(_that.method,_that.data,_that.id,_that.code);case _:
@@ -4089,7 +4089,7 @@ return $default(_that.method,_that.data,_that.id,_that.code);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ActionMethod method,  dynamic data,  String? id,  ResultType code)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(unknownEnumValue: ActionMethod.message)  ActionMethod method,  dynamic data,  String? id, @JsonKey(unknownEnumValue: ResultType.error)  ResultType code)?  $default,) {final _that = this;
 switch (_that) {
 case _ActionResult() when $default != null:
 return $default(_that.method,_that.data,_that.id,_that.code);case _:
@@ -4104,13 +4104,13 @@ return $default(_that.method,_that.data,_that.id,_that.code);case _:
 @JsonSerializable()
 
 class _ActionResult implements ActionResult {
-  const _ActionResult({required this.method, required this.data, this.id, this.code = ResultType.success});
+  const _ActionResult({@JsonKey(unknownEnumValue: ActionMethod.message) required this.method, required this.data, this.id, @JsonKey(unknownEnumValue: ResultType.error) this.code = ResultType.success});
   factory _ActionResult.fromJson(Map<String, dynamic> json) => _$ActionResultFromJson(json);
 
-@override final  ActionMethod method;
+@override@JsonKey(unknownEnumValue: ActionMethod.message) final  ActionMethod method;
 @override final  dynamic data;
 @override final  String? id;
-@override@JsonKey() final  ResultType code;
+@override@JsonKey(unknownEnumValue: ResultType.error) final  ResultType code;
 
 /// Create a copy of ActionResult
 /// with the given fields replaced by the non-null parameter values.
@@ -4145,7 +4145,7 @@ abstract mixin class _$ActionResultCopyWith<$Res> implements $ActionResultCopyWi
   factory _$ActionResultCopyWith(_ActionResult value, $Res Function(_ActionResult) _then) = __$ActionResultCopyWithImpl;
 @override @useResult
 $Res call({
- ActionMethod method, dynamic data, String? id, ResultType code
+@JsonKey(unknownEnumValue: ActionMethod.message) ActionMethod method, dynamic data, String? id,@JsonKey(unknownEnumValue: ResultType.error) ResultType code
 });
 
 

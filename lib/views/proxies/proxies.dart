@@ -1,6 +1,5 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/common.dart';
 import 'package:fl_clash/models/state.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/views/proxies/list.dart';
@@ -35,49 +34,34 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
           },
           icon: const Icon(Icons.adjust, weight: 1),
         ),
-      CommonPopupBox(
-        targetBuilder: (open) {
-          return IconButton(
-            onPressed: () {
-              final isMobile = ref.read(isMobileViewProvider);
-              open(offset: Offset(0, isMobile ? 0 : 20));
+      if (_hasProviders)
+        IconButton(
+          tooltip: appLocalizations.providers,
+          onPressed: () {
+            showExtend(
+              context,
+              builder: (_) {
+                return const ProvidersView();
+              },
+            );
+          },
+          icon: const Icon(Icons.poll_outlined),
+        ),
+      IconButton(
+        tooltip: appLocalizations.settings,
+        onPressed: () {
+          showSheet(
+            context: context,
+            props: const SheetProps(isScrollControlled: true),
+            builder: (_) {
+              return AdaptiveSheetScaffold(
+                body: const ProxiesSetting(),
+                title: appLocalizations.settings,
+              );
             },
-            icon: const Icon(Icons.more_vert),
           );
         },
-        popup: CommonPopupMenu(
-          items: [
-            PopupMenuItemData(
-              icon: Icons.tune,
-              label: appLocalizations.settings,
-              onPressed: () {
-                showSheet(
-                  context: context,
-                  props: const SheetProps(isScrollControlled: true),
-                  builder: (_) {
-                    return AdaptiveSheetScaffold(
-                      body: const ProxiesSetting(),
-                      title: appLocalizations.settings,
-                    );
-                  },
-                );
-              },
-            ),
-            if (_hasProviders)
-              PopupMenuItemData(
-                icon: Icons.poll_outlined,
-                label: appLocalizations.providers,
-                onPressed: () {
-                  showExtend(
-                    context,
-                    builder: (_) {
-                      return const ProvidersView();
-                    },
-                  );
-                },
-              ),
-          ],
-        ),
+        icon: const Icon(Icons.more_vert),
       ),
     ];
   }
