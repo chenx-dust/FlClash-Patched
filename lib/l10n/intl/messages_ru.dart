@@ -64,9 +64,14 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m17(count) => "Выбрано ${count} элементов";
 
-  static String m18(label) => "${label} должен быть URL";
+  static String m18(interval, idleInterval) =>
+      "${interval} · бездействие ${idleInterval}";
 
-  static String m19(count) =>
+  static String m19(interval) => "${interval} · бездействие отключено";
+
+  static String m20(label) => "${label} должен быть URL";
+
+  static String m21(count) =>
       "${Intl.plural(count, one: '${count} год назад', few: '${count} года назад', many: '${count} лет назад', other: '${count} года назад')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -697,6 +702,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Введите другой порт",
     ),
     "portTip": m16,
+    "positiveIntegerTip": MessageLookupByLibrary.simpleMessage(
+      "Введите целое число больше 0",
+    ),
     "predictiveBack": MessageLookupByLibrary.simpleMessage(
       "Предиктивный возврат",
     ),
@@ -1081,6 +1089,20 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "turnOff": MessageLookupByLibrary.simpleMessage("Выключить"),
     "turnOn": MessageLookupByLibrary.simpleMessage("Включить"),
+    "uiUpdateIdleInterval": MessageLookupByLibrary.simpleMessage(
+      "Интервал обновления в бездействии",
+    ),
+    "uiUpdateIdleWhenUnfocused": MessageLookupByLibrary.simpleMessage(
+      "Бездействие без фокуса",
+    ),
+    "uiUpdateIdleWhenUnfocusedDesc": MessageLookupByLibrary.simpleMessage(
+      "Использовать интервал бездействия, когда окно приложения теряет фокус",
+    ),
+    "uiUpdateInterval": MessageLookupByLibrary.simpleMessage(
+      "Интервал обновления информации UI",
+    ),
+    "uiUpdateIntervalDesc": m18,
+    "uiUpdateIntervalIdleDisabledDesc": m19,
     "unauthorized": MessageLookupByLibrary.simpleMessage("Не разрешено"),
     "undo": MessageLookupByLibrary.simpleMessage("Отменить"),
     "unifiedDelay": MessageLookupByLibrary.simpleMessage(
@@ -1100,7 +1122,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "urlDesc": MessageLookupByLibrary.simpleMessage(
       "Получить профиль через URL",
     ),
-    "urlTip": m18,
+    "urlTip": m20,
     "useHosts": MessageLookupByLibrary.simpleMessage("Использовать hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage(
       "Использовать системные hosts",
@@ -1123,7 +1145,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "whitelistMode": MessageLookupByLibrary.simpleMessage(
       "Режим белого списка",
     ),
-    "yearsAgo": m19,
+    "yearsAgo": m21,
     "zh_CN": MessageLookupByLibrary.simpleMessage("Упрощенный китайский"),
   };
 }
