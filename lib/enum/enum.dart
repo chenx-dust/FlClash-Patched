@@ -248,6 +248,8 @@ enum FunctionTag {
   saveSharedFile,
   removeProxy,
   suspend,
+  tickerPause,
+  tickerResume,
 }
 
 enum DashboardWidget {

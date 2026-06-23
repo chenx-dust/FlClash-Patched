@@ -48,7 +48,7 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
   @override
   void initState() {
     super.initState();
-    foregroundTicker.register(this, _updateConnections, runImmediately: true);
+    foregroundTicker.register(this, _updateConnections, fire: true);
   }
 
   Future<void> _updateConnections() async {

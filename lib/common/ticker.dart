@@ -1,24 +1,29 @@
 import 'dart:async';
 
+import 'package:fl_clash/enum/enum.dart';
+
+import 'function.dart';
 import 'print.dart';
 
 typedef ForegroundTickerCallback = FutureOr<void> Function();
 
 class ForegroundTicker {
-  static const interval = Duration(seconds: 1);
+  final Duration interval;
 
   final _tasks = <Object, _ForegroundTickerTask>{};
   Timer? _timer;
   bool _active = true;
 
+  ForegroundTicker({this.interval = const Duration(seconds: 1)});
+
   void register(
     Object tag,
     ForegroundTickerCallback callback, {
-    bool runImmediately = false,
+    bool fire = false,
   }) {
     final task = _ForegroundTickerTask(callback: callback);
     _tasks[tag] = task;
-    if (runImmediately && _active) {
+    if (fire && _active) {
       _runTask(task);
     }
     _syncTimer();
@@ -30,6 +35,28 @@ class ForegroundTicker {
   }
 
   void pause() {
+    throttler.cancel(FunctionTag.tickerResume);
+    debouncer.call(FunctionTag.tickerPause, _pause, duration: interval);
+  }
+
+  void resume() {
+    debouncer.cancel(FunctionTag.tickerPause);
+    throttler.call(
+      FunctionTag.tickerResume,
+      _resume,
+      duration: interval,
+      fire: true,
+    );
+  }
+
+  void dispose() {
+    debouncer.cancel(FunctionTag.tickerPause);
+    throttler.cancel(FunctionTag.tickerResume);
+    _pause();
+    _tasks.clear();
+  }
+
+  void _pause() {
     if (!_active) {
       return;
     }
@@ -38,18 +65,13 @@ class ForegroundTicker {
     _timer = null;
   }
 
-  void resume() {
+  void _resume() {
     if (_active) {
       return;
     }
     _active = true;
     _syncTimer();
     _tick();
-  }
-
-  void dispose() {
-    pause();
-    _tasks.clear();
   }
 
   void _syncTimer() {
