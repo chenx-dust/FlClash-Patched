@@ -19,7 +19,7 @@ class _MemoryInfoState extends State<MemoryInfo> {
   @override
   void initState() {
     super.initState();
-    foregroundTicker.register(this, _updateMemory, runImmediately: true);
+    foregroundTicker.register(this, _updateMemory, fire: true);
   }
 
   @override
