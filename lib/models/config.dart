@@ -203,6 +203,9 @@ abstract class ProxiesStyleProps with _$ProxiesStyleProps {
     @Default(ProxiesLayout.standard)
     @JsonKey(unknownEnumValue: ProxiesLayout.standard)
     ProxiesLayout layout,
+    @Default(ProxiesListHeaderStyle.loose)
+    @JsonKey(unknownEnumValue: ProxiesListHeaderStyle.loose)
+    ProxiesListHeaderStyle listHeaderStyle,
     @Default(ProxiesIconStyle.standard)
     @JsonKey(unknownEnumValue: ProxiesIconStyle.standard)
     ProxiesIconStyle iconStyle,
