@@ -105,7 +105,7 @@ abstract class ProxyGroup with _$ProxyGroup {
     int? profileId,
     @JsonKey(fromJson: Snowflake.buildId) required int id,
     required String name,
-    required GroupType type,
+    @JsonKey(unknownEnumValue: GroupType.Selector) required GroupType type,
     List<String>? proxies,
     List<String>? use,
     int? interval,
@@ -209,7 +209,9 @@ abstract class Tun with _$Tun {
     @Default(false) bool enable,
     @Default(appName) String device,
     @JsonKey(name: 'auto-route') @Default(false) bool autoRoute,
-    @Default(TunStack.mixed) TunStack stack,
+    @Default(TunStack.mixed)
+    @JsonKey(unknownEnumValue: TunStack.mixed)
+    TunStack stack,
     @JsonKey(name: 'dns-hijack') @Default(['any:53']) List<String> dnsHijack,
     @JsonKey(name: 'route-address') @Default([]) List<String> routeAddress,
   }) = _Tun;
@@ -272,7 +274,7 @@ abstract class Dns with _$Dns {
     @JsonKey(name: 'default-nameserver')
     List<String> defaultNameserver,
     @Default(DnsMode.fakeIp)
-    @JsonKey(name: 'enhanced-mode')
+    @JsonKey(name: 'enhanced-mode', unknownEnumValue: DnsMode.fakeIp)
     DnsMode enhancedMode,
     @Default('198.18.0.1/16')
     @JsonKey(name: 'fake-ip-range')
@@ -349,7 +351,9 @@ abstract class GeoXUrl with _$GeoXUrl {
 abstract class Rule with _$Rule {
   const factory Rule({
     @Default(-1) int id,
-    @Default(RuleAction.DOMAIN) RuleAction ruleAction,
+    @Default(RuleAction.DOMAIN)
+    @JsonKey(unknownEnumValue: RuleAction.DOMAIN)
+    RuleAction ruleAction,
     String? content,
     String? ruleTarget,
     String? ruleProvider,
@@ -550,9 +554,13 @@ abstract class PatchClashConfig with _$PatchClashConfig {
     @Default(0) @JsonKey(name: 'port') int port,
     @Default(0) @JsonKey(name: 'redir-port') int redirPort,
     @Default(0) @JsonKey(name: 'tproxy-port') int tproxyPort,
-    @Default(Mode.rule) Mode mode,
+    @Default(Mode.rule)
+    @JsonKey(unknownEnumValue: Mode.rule)
+    Mode mode,
     @Default(false) @JsonKey(name: 'allow-lan') bool allowLan,
-    @Default(LogLevel.error) @JsonKey(name: 'log-level') LogLevel logLevel,
+    @Default(LogLevel.error)
+    @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error)
+    LogLevel logLevel,
     @Default(false) bool ipv6,
     @Default(FindProcessMode.always)
     @JsonKey(
@@ -571,11 +579,17 @@ abstract class PatchClashConfig with _$PatchClashConfig {
     @JsonKey(name: 'geox-url', fromJson: GeoXUrl.safeFormJson)
     GeoXUrl geoXUrl,
     @Default(GeodataLoader.memconservative)
-    @JsonKey(name: 'geodata-loader')
+    @JsonKey(
+      name: 'geodata-loader',
+      unknownEnumValue: GeodataLoader.memconservative,
+    )
     GeodataLoader geodataLoader,
     @JsonKey(name: 'global-ua') String? globalUa,
     @Default(ExternalControllerStatus.close)
-    @JsonKey(name: 'external-controller')
+    @JsonKey(
+      name: 'external-controller',
+      unknownEnumValue: ExternalControllerStatus.close,
+    )
     ExternalControllerStatus externalController,
     @Default({}) Map<String, String> hosts,
   }) = _PatchClashConfig;

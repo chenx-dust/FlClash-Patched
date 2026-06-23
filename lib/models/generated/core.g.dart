@@ -25,14 +25,20 @@ _UpdateParams _$UpdateParamsFromJson(Map<String, dynamic> json) =>
       findProcessMode: $enumDecode(
         _$FindProcessModeEnumMap,
         json['find-process-mode'],
+        unknownValue: FindProcessMode.always,
       ),
-      mode: $enumDecode(_$ModeEnumMap, json['mode']),
-      logLevel: $enumDecode(_$LogLevelEnumMap, json['log-level']),
+      mode: $enumDecode(_$ModeEnumMap, json['mode'], unknownValue: Mode.rule),
+      logLevel: $enumDecode(
+        _$LogLevelEnumMap,
+        json['log-level'],
+        unknownValue: LogLevel.error,
+      ),
       ipv6: json['ipv6'] as bool,
       tcpConcurrent: json['tcp-concurrent'] as bool,
       externalController: $enumDecode(
         _$ExternalControllerStatusEnumMap,
         json['external-controller'],
+        unknownValue: ExternalControllerStatus.close,
       ),
       unifiedDelay: json['unified-delay'] as bool,
     );
@@ -150,7 +156,11 @@ Map<String, dynamic> _$UpdateGeoDataParamsToJson(
 };
 
 _CoreEvent _$CoreEventFromJson(Map<String, dynamic> json) => _CoreEvent(
-  type: $enumDecode(_$CoreEventTypeEnumMap, json['type']),
+  type: $enumDecode(
+    _$CoreEventTypeEnumMap,
+    json['type'],
+    unknownValue: CoreEventType.crash,
+  ),
   data: json['data'],
 );
 
@@ -170,7 +180,11 @@ const _$CoreEventTypeEnumMap = {
 
 _InvokeMessage _$InvokeMessageFromJson(Map<String, dynamic> json) =>
     _InvokeMessage(
-      type: $enumDecode(_$InvokeMessageTypeEnumMap, json['type']),
+      type: $enumDecode(
+        _$InvokeMessageTypeEnumMap,
+        json['type'],
+        unknownValue: InvokeMessageType.process,
+      ),
       data: json['data'],
     );
 
@@ -248,7 +262,11 @@ Map<String, dynamic> _$ExternalProviderToJson(_ExternalProvider instance) =>
     };
 
 _Action _$ActionFromJson(Map<String, dynamic> json) => _Action(
-  method: $enumDecode(_$ActionMethodEnumMap, json['method']),
+  method: $enumDecode(
+    _$ActionMethodEnumMap,
+    json['method'],
+    unknownValue: ActionMethod.message,
+  ),
   data: json['data'],
   id: json['id'] as String,
 );
@@ -315,11 +333,19 @@ Map<String, dynamic> _$ProxiesDataToJson(_ProxiesData instance) =>
 
 _ActionResult _$ActionResultFromJson(Map<String, dynamic> json) =>
     _ActionResult(
-      method: $enumDecode(_$ActionMethodEnumMap, json['method']),
+      method: $enumDecode(
+        _$ActionMethodEnumMap,
+        json['method'],
+        unknownValue: ActionMethod.message,
+      ),
       data: json['data'],
       id: json['id'] as String?,
       code:
-          $enumDecodeNullable(_$ResultTypeEnumMap, json['code']) ??
+          $enumDecodeNullable(
+            _$ResultTypeEnumMap,
+            json['code'],
+            unknownValue: ResultType.error,
+          ) ??
           ResultType.success,
     );
 
