@@ -1569,6 +1569,11 @@ class AppLocalizations {
     return Intl.message('Layout', name: 'layout', desc: '', args: []);
   }
 
+  /// `Header`
+  String get header {
+    return Intl.message('Header', name: 'header', desc: '', args: []);
+  }
+
   /// `Tight`
   String get tight {
     return Intl.message('Tight', name: 'tight', desc: '', args: []);
