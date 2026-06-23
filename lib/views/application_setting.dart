@@ -1,5 +1,7 @@
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/config.dart';
+import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -278,6 +280,196 @@ class AutoCheckUpdateItem extends ConsumerWidget {
   }
 }
 
+class ForegroundTickerIntervalItem extends ConsumerWidget {
+  const ForegroundTickerIntervalItem({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appLocalizations = context.appLocalizations;
+    final setting = ref.watch(
+      appSettingProvider.select(
+        (state) => (
+          state.foregroundTickerInterval,
+          state.foregroundTickerIdleWhenUnfocused,
+          state.foregroundTickerIdleInterval,
+        ),
+      ),
+    );
+    final interval = '${setting.$1} ${appLocalizations.seconds}';
+    final idleInterval = '${setting.$3} ${appLocalizations.seconds}';
+    final subtitle = setting.$2
+        ? appLocalizations.uiUpdateIntervalDesc(interval, idleInterval)
+        : appLocalizations.uiUpdateIntervalIdleDisabledDesc(interval);
+    return ListItem(
+      title: Text(appLocalizations.uiUpdateInterval),
+      subtitle: Text(subtitle),
+      onTap: () {
+        globalState.showCommonDialog(
+          child: const _ForegroundTickerIntervalDialog(),
+        );
+      },
+    );
+  }
+}
+
+class _ForegroundTickerIntervalDialog extends ConsumerStatefulWidget {
+  const _ForegroundTickerIntervalDialog();
+
+  @override
+  ConsumerState<_ForegroundTickerIntervalDialog> createState() {
+    return _ForegroundTickerIntervalDialogState();
+  }
+}
+
+class _ForegroundTickerIntervalDialogState
+    extends ConsumerState<_ForegroundTickerIntervalDialog> {
+  final _formKey = GlobalKey<FormState>();
+
+  late final TextEditingController _intervalController;
+  late final TextEditingController _idleIntervalController;
+  late bool _idleWhenUnfocused;
+
+  @override
+  void initState() {
+    super.initState();
+    final appSetting = ref.read(appSettingProvider);
+    _intervalController = TextEditingController(
+      text: appSetting.foregroundTickerInterval.toString(),
+    );
+    _idleIntervalController = TextEditingController(
+      text: appSetting.foregroundTickerIdleInterval.toString(),
+    );
+    _idleWhenUnfocused = appSetting.foregroundTickerIdleWhenUnfocused;
+  }
+
+  String? _validateSeconds(String? value) {
+    final appLocalizations = context.appLocalizations;
+    if (value == null || value.isEmpty) {
+      return appLocalizations.emptyTip(appLocalizations.interval);
+    }
+    final intValue = int.tryParse(value);
+    if (intValue == null) {
+      return appLocalizations.numberTip(appLocalizations.interval);
+    }
+    if (intValue <= 0) {
+      return appLocalizations.positiveIntegerTip;
+    }
+    return null;
+  }
+
+  void _handleReset() {
+    setState(() {
+      _intervalController.text = defaultForegroundTickerInterval.toString();
+      _idleIntervalController.text =
+          defaultForegroundTickerIdleInterval.toString();
+      _idleWhenUnfocused = true;
+    });
+  }
+
+  void _handleUpdate() {
+    if (_formKey.currentState?.validate() == false) {
+      return;
+    }
+    ref
+        .read(appSettingProvider.notifier)
+        .update(
+          (state) => state.copyWith(
+            foregroundTickerInterval: int.parse(_intervalController.text),
+            foregroundTickerIdleWhenUnfocused: _idleWhenUnfocused,
+            foregroundTickerIdleInterval: int.parse(
+              _idleIntervalController.text,
+            ),
+          ),
+        );
+    Navigator.of(context).pop();
+  }
+
+  @override
+  void dispose() {
+    _intervalController.dispose();
+    _idleIntervalController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final appLocalizations = context.appLocalizations;
+    return CommonDialog(
+      title: appLocalizations.uiUpdateInterval,
+      actions: [
+        TextButton(
+          onPressed: _handleReset,
+          child: Text(appLocalizations.reset),
+        ),
+        TextButton(
+          onPressed: _handleUpdate,
+          child: Text(appLocalizations.submit),
+        ),
+      ],
+      child: Form(
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 16,
+          children: [
+            TextFormField(
+              keyboardType: TextInputType.number,
+              maxLines: 1,
+              minLines: 1,
+              controller: _intervalController,
+              onFieldSubmitted: (_) {
+                _handleUpdate();
+              },
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: appLocalizations.uiUpdateInterval,
+                suffixText: appLocalizations.seconds,
+              ),
+              validator: _validateSeconds,
+            ),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(appLocalizations.uiUpdateIdleWhenUnfocused),
+              subtitle: Text(
+                appLocalizations.uiUpdateIdleWhenUnfocusedDesc,
+              ),
+              value: _idleWhenUnfocused,
+              onChanged: (value) {
+                setState(() {
+                  _idleWhenUnfocused = value;
+                });
+              },
+            ),
+            AnimatedSize(
+              duration: midDuration,
+              curve: Curves.easeOutQuad,
+              alignment: Alignment.topCenter,
+              child: _idleWhenUnfocused
+                  ? TextFormField(
+                      keyboardType: TextInputType.number,
+                      maxLines: 1,
+                      minLines: 1,
+                      controller: _idleIntervalController,
+                      onFieldSubmitted: (_) {
+                        _handleUpdate();
+                      },
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: appLocalizations.uiUpdateIdleInterval,
+                        suffixText: appLocalizations.seconds,
+                      ),
+                      validator: _validateSeconds,
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class ApplicationSettingView extends ConsumerWidget {
   const ApplicationSettingView({super.key});
 
@@ -297,6 +489,7 @@ class ApplicationSettingView extends ConsumerWidget {
       if (system.isAndroid) ...[const HiddenItem()],
       const AnimateTabItem(),
       const OpenLogsItem(),
+      const ForegroundTickerIntervalItem(),
       const CloseConnectionsItem(),
       const UsageItem(),
       if (system.isAndroid) const NetworkSpeedNotificationItem(),

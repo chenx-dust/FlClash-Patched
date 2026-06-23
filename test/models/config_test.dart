@@ -111,6 +111,15 @@ void main() {
       expect(restored.restoreStrategy, RestoreStrategy.compatible);
       expect(restored.customUserAgent, '');
       expect(restored.testUrl, defaultTestUrl);
+      expect(
+        restored.foregroundTickerInterval,
+        defaultForegroundTickerInterval,
+      );
+      expect(restored.foregroundTickerIdleWhenUnfocused, true);
+      expect(
+        restored.foregroundTickerIdleInterval,
+        defaultForegroundTickerIdleInterval,
+      );
     });
 
     test('custom values survive round-trip', () {
@@ -122,6 +131,9 @@ void main() {
         closeConnections: false,
         testUrl: 'https://custom.test',
         customUserAgent: 'CustomUA/1.0',
+        foregroundTickerInterval: 3,
+        foregroundTickerIdleWhenUnfocused: false,
+        foregroundTickerIdleInterval: 8,
       );
       final restored = roundTrip(
         () => props.toJson(),
@@ -134,6 +146,9 @@ void main() {
       expect(restored.closeConnections, false);
       expect(restored.testUrl, 'https://custom.test');
       expect(restored.customUserAgent, 'CustomUA/1.0');
+      expect(restored.foregroundTickerInterval, 3);
+      expect(restored.foregroundTickerIdleWhenUnfocused, false);
+      expect(restored.foregroundTickerIdleInterval, 8);
     });
 
     test('safeFromJson returns default on null', () {
