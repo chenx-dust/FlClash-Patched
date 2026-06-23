@@ -2074,6 +2074,21 @@ class AppLocalizations {
     return Intl.message('Icon', name: 'onlyIcon', desc: '', args: []);
   }
 
+  /// `Icon source`
+  String get iconSource {
+    return Intl.message('Icon source', name: 'iconSource', desc: '', args: []);
+  }
+
+  /// `Config only`
+  String get onlyConfig {
+    return Intl.message('Config only', name: 'onlyConfig', desc: '', args: []);
+  }
+
+  /// `Emoji only`
+  String get onlyEmoji {
+    return Intl.message('Emoji only', name: 'onlyEmoji', desc: '', args: []);
+  }
+
   /// `Stack mode`
   String get stackMode {
     return Intl.message('Stack mode', name: 'stackMode', desc: '', args: []);
