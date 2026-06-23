@@ -1,5 +1,4 @@
 import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
 import 'package:flutter/scheduler.dart';
 
 class Render {
@@ -21,36 +20,21 @@ class Render {
     pause();
   }
 
-  void pause() {
-    throttler.call(
-      FunctionTag.renderPause,
-      _pause,
-      duration: const Duration(seconds: 5),
-    );
-  }
-
-  void resume() {
-    throttler.cancel(FunctionTag.renderPause);
-    _resume();
-  }
-
-  void _pause() async {
+  void pause() async {
     if (_isPaused) return;
     _isPaused = true;
     _beginFrame = _dispatcher.onBeginFrame;
     _drawFrame = _dispatcher.onDrawFrame;
     _dispatcher.onBeginFrame = null;
     _dispatcher.onDrawFrame = null;
-    commonPrint.log('pause');
   }
 
-  void _resume() {
+  void resume() {
     if (!_isPaused) return;
     _isPaused = false;
     _dispatcher.onBeginFrame = _beginFrame;
     _dispatcher.onDrawFrame = _drawFrame;
     _dispatcher.scheduleFrame();
-    commonPrint.log('resume');
   }
 }
 
