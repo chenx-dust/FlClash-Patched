@@ -287,7 +287,7 @@ as String,
 /// @nodoc
 mixin _$UpdateParams {
 
- Tun get tun;@JsonKey(name: 'mixed-port') int get mixedPort;@JsonKey(name: 'allow-lan') bool get allowLan;@JsonKey(name: 'find-process-mode') FindProcessMode get findProcessMode; Mode get mode;@JsonKey(name: 'log-level') LogLevel get logLevel; bool get ipv6;@JsonKey(name: 'tcp-concurrent') bool get tcpConcurrent;@JsonKey(name: 'external-controller') ExternalControllerStatus get externalController;@JsonKey(name: 'unified-delay') bool get unifiedDelay;@JsonKey(name: 'geo-auto-update') bool get geoAutoUpdate;@JsonKey(name: 'geo-update-interval') int get geoUpdateInterval;
+ Tun get tun;@JsonKey(name: 'mixed-port') int get mixedPort;@JsonKey(name: 'allow-lan') bool get allowLan;@JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always) FindProcessMode get findProcessMode;@JsonKey(unknownEnumValue: Mode.rule) Mode get mode;@JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error) LogLevel get logLevel; bool get ipv6;@JsonKey(name: 'tcp-concurrent') bool get tcpConcurrent;@JsonKey(name: 'external-controller', unknownEnumValue: ExternalControllerStatus.close) ExternalControllerStatus get externalController;@JsonKey(name: 'unified-delay') bool get unifiedDelay;@JsonKey(name: 'geo-auto-update') bool get geoAutoUpdate;@JsonKey(name: 'geo-update-interval') int get geoUpdateInterval;
 /// Create a copy of UpdateParams
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -320,7 +320,7 @@ abstract mixin class $UpdateParamsCopyWith<$Res>  {
   factory $UpdateParamsCopyWith(UpdateParams value, $Res Function(UpdateParams) _then) = _$UpdateParamsCopyWithImpl;
 @useResult
 $Res call({
- Tun tun,@JsonKey(name: 'mixed-port') int mixedPort,@JsonKey(name: 'allow-lan') bool allowLan,@JsonKey(name: 'find-process-mode') FindProcessMode findProcessMode, Mode mode,@JsonKey(name: 'log-level') LogLevel logLevel, bool ipv6,@JsonKey(name: 'tcp-concurrent') bool tcpConcurrent,@JsonKey(name: 'external-controller') ExternalControllerStatus externalController,@JsonKey(name: 'unified-delay') bool unifiedDelay,@JsonKey(name: 'geo-auto-update') bool geoAutoUpdate,@JsonKey(name: 'geo-update-interval') int geoUpdateInterval
+ Tun tun,@JsonKey(name: 'mixed-port') int mixedPort,@JsonKey(name: 'allow-lan') bool allowLan,@JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always) FindProcessMode findProcessMode,@JsonKey(unknownEnumValue: Mode.rule) Mode mode,@JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error) LogLevel logLevel, bool ipv6,@JsonKey(name: 'tcp-concurrent') bool tcpConcurrent,@JsonKey(name: 'external-controller', unknownEnumValue: ExternalControllerStatus.close) ExternalControllerStatus externalController,@JsonKey(name: 'unified-delay') bool unifiedDelay,@JsonKey(name: 'geo-auto-update') bool geoAutoUpdate,@JsonKey(name: 'geo-update-interval') int geoUpdateInterval
 });
 
 
@@ -445,7 +445,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Tun tun, @JsonKey(name: 'mixed-port')  int mixedPort, @JsonKey(name: 'allow-lan')  bool allowLan, @JsonKey(name: 'find-process-mode')  FindProcessMode findProcessMode,  Mode mode, @JsonKey(name: 'log-level')  LogLevel logLevel,  bool ipv6, @JsonKey(name: 'tcp-concurrent')  bool tcpConcurrent, @JsonKey(name: 'external-controller')  ExternalControllerStatus externalController, @JsonKey(name: 'unified-delay')  bool unifiedDelay, @JsonKey(name: 'geo-auto-update')  bool geoAutoUpdate, @JsonKey(name: 'geo-update-interval')  int geoUpdateInterval)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Tun tun, @JsonKey(name: 'mixed-port')  int mixedPort, @JsonKey(name: 'allow-lan')  bool allowLan, @JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always)  FindProcessMode findProcessMode, @JsonKey(unknownEnumValue: Mode.rule)  Mode mode, @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error)  LogLevel logLevel,  bool ipv6, @JsonKey(name: 'tcp-concurrent')  bool tcpConcurrent, @JsonKey(name: 'external-controller', unknownEnumValue: ExternalControllerStatus.close)  ExternalControllerStatus externalController, @JsonKey(name: 'unified-delay')  bool unifiedDelay, @JsonKey(name: 'geo-auto-update')  bool geoAutoUpdate, @JsonKey(name: 'geo-update-interval')  int geoUpdateInterval)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UpdateParams() when $default != null:
 return $default(_that.tun,_that.mixedPort,_that.allowLan,_that.findProcessMode,_that.mode,_that.logLevel,_that.ipv6,_that.tcpConcurrent,_that.externalController,_that.unifiedDelay,_that.geoAutoUpdate,_that.geoUpdateInterval);case _:
@@ -466,7 +466,7 @@ return $default(_that.tun,_that.mixedPort,_that.allowLan,_that.findProcessMode,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Tun tun, @JsonKey(name: 'mixed-port')  int mixedPort, @JsonKey(name: 'allow-lan')  bool allowLan, @JsonKey(name: 'find-process-mode')  FindProcessMode findProcessMode,  Mode mode, @JsonKey(name: 'log-level')  LogLevel logLevel,  bool ipv6, @JsonKey(name: 'tcp-concurrent')  bool tcpConcurrent, @JsonKey(name: 'external-controller')  ExternalControllerStatus externalController, @JsonKey(name: 'unified-delay')  bool unifiedDelay, @JsonKey(name: 'geo-auto-update')  bool geoAutoUpdate, @JsonKey(name: 'geo-update-interval')  int geoUpdateInterval)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Tun tun, @JsonKey(name: 'mixed-port')  int mixedPort, @JsonKey(name: 'allow-lan')  bool allowLan, @JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always)  FindProcessMode findProcessMode, @JsonKey(unknownEnumValue: Mode.rule)  Mode mode, @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error)  LogLevel logLevel,  bool ipv6, @JsonKey(name: 'tcp-concurrent')  bool tcpConcurrent, @JsonKey(name: 'external-controller', unknownEnumValue: ExternalControllerStatus.close)  ExternalControllerStatus externalController, @JsonKey(name: 'unified-delay')  bool unifiedDelay, @JsonKey(name: 'geo-auto-update')  bool geoAutoUpdate, @JsonKey(name: 'geo-update-interval')  int geoUpdateInterval)  $default,) {final _that = this;
 switch (_that) {
 case _UpdateParams():
 return $default(_that.tun,_that.mixedPort,_that.allowLan,_that.findProcessMode,_that.mode,_that.logLevel,_that.ipv6,_that.tcpConcurrent,_that.externalController,_that.unifiedDelay,_that.geoAutoUpdate,_that.geoUpdateInterval);case _:
@@ -486,7 +486,7 @@ return $default(_that.tun,_that.mixedPort,_that.allowLan,_that.findProcessMode,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Tun tun, @JsonKey(name: 'mixed-port')  int mixedPort, @JsonKey(name: 'allow-lan')  bool allowLan, @JsonKey(name: 'find-process-mode')  FindProcessMode findProcessMode,  Mode mode, @JsonKey(name: 'log-level')  LogLevel logLevel,  bool ipv6, @JsonKey(name: 'tcp-concurrent')  bool tcpConcurrent, @JsonKey(name: 'external-controller')  ExternalControllerStatus externalController, @JsonKey(name: 'unified-delay')  bool unifiedDelay, @JsonKey(name: 'geo-auto-update')  bool geoAutoUpdate, @JsonKey(name: 'geo-update-interval')  int geoUpdateInterval)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Tun tun, @JsonKey(name: 'mixed-port')  int mixedPort, @JsonKey(name: 'allow-lan')  bool allowLan, @JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always)  FindProcessMode findProcessMode, @JsonKey(unknownEnumValue: Mode.rule)  Mode mode, @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error)  LogLevel logLevel,  bool ipv6, @JsonKey(name: 'tcp-concurrent')  bool tcpConcurrent, @JsonKey(name: 'external-controller', unknownEnumValue: ExternalControllerStatus.close)  ExternalControllerStatus externalController, @JsonKey(name: 'unified-delay')  bool unifiedDelay, @JsonKey(name: 'geo-auto-update')  bool geoAutoUpdate, @JsonKey(name: 'geo-update-interval')  int geoUpdateInterval)?  $default,) {final _that = this;
 switch (_that) {
 case _UpdateParams() when $default != null:
 return $default(_that.tun,_that.mixedPort,_that.allowLan,_that.findProcessMode,_that.mode,_that.logLevel,_that.ipv6,_that.tcpConcurrent,_that.externalController,_that.unifiedDelay,_that.geoAutoUpdate,_that.geoUpdateInterval);case _:
@@ -501,18 +501,18 @@ return $default(_that.tun,_that.mixedPort,_that.allowLan,_that.findProcessMode,_
 @JsonSerializable()
 
 class _UpdateParams implements UpdateParams {
-  const _UpdateParams({required this.tun, @JsonKey(name: 'mixed-port') required this.mixedPort, @JsonKey(name: 'allow-lan') required this.allowLan, @JsonKey(name: 'find-process-mode') required this.findProcessMode, required this.mode, @JsonKey(name: 'log-level') required this.logLevel, required this.ipv6, @JsonKey(name: 'tcp-concurrent') required this.tcpConcurrent, @JsonKey(name: 'external-controller') required this.externalController, @JsonKey(name: 'unified-delay') required this.unifiedDelay, @JsonKey(name: 'geo-auto-update') this.geoAutoUpdate = false, @JsonKey(name: 'geo-update-interval') this.geoUpdateInterval = 24});
+  const _UpdateParams({required this.tun, @JsonKey(name: 'mixed-port') required this.mixedPort, @JsonKey(name: 'allow-lan') required this.allowLan, @JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always) required this.findProcessMode, @JsonKey(unknownEnumValue: Mode.rule) required this.mode, @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error) required this.logLevel, required this.ipv6, @JsonKey(name: 'tcp-concurrent') required this.tcpConcurrent, @JsonKey(name: 'external-controller', unknownEnumValue: ExternalControllerStatus.close) required this.externalController, @JsonKey(name: 'unified-delay') required this.unifiedDelay, @JsonKey(name: 'geo-auto-update') this.geoAutoUpdate = false, @JsonKey(name: 'geo-update-interval') this.geoUpdateInterval = 24});
   factory _UpdateParams.fromJson(Map<String, dynamic> json) => _$UpdateParamsFromJson(json);
 
 @override final  Tun tun;
 @override@JsonKey(name: 'mixed-port') final  int mixedPort;
 @override@JsonKey(name: 'allow-lan') final  bool allowLan;
-@override@JsonKey(name: 'find-process-mode') final  FindProcessMode findProcessMode;
-@override final  Mode mode;
-@override@JsonKey(name: 'log-level') final  LogLevel logLevel;
+@override@JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always) final  FindProcessMode findProcessMode;
+@override@JsonKey(unknownEnumValue: Mode.rule) final  Mode mode;
+@override@JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error) final  LogLevel logLevel;
 @override final  bool ipv6;
 @override@JsonKey(name: 'tcp-concurrent') final  bool tcpConcurrent;
-@override@JsonKey(name: 'external-controller') final  ExternalControllerStatus externalController;
+@override@JsonKey(name: 'external-controller', unknownEnumValue: ExternalControllerStatus.close) final  ExternalControllerStatus externalController;
 @override@JsonKey(name: 'unified-delay') final  bool unifiedDelay;
 @override@JsonKey(name: 'geo-auto-update') final  bool geoAutoUpdate;
 @override@JsonKey(name: 'geo-update-interval') final  int geoUpdateInterval;
@@ -550,7 +550,7 @@ abstract mixin class _$UpdateParamsCopyWith<$Res> implements $UpdateParamsCopyWi
   factory _$UpdateParamsCopyWith(_UpdateParams value, $Res Function(_UpdateParams) _then) = __$UpdateParamsCopyWithImpl;
 @override @useResult
 $Res call({
- Tun tun,@JsonKey(name: 'mixed-port') int mixedPort,@JsonKey(name: 'allow-lan') bool allowLan,@JsonKey(name: 'find-process-mode') FindProcessMode findProcessMode, Mode mode,@JsonKey(name: 'log-level') LogLevel logLevel, bool ipv6,@JsonKey(name: 'tcp-concurrent') bool tcpConcurrent,@JsonKey(name: 'external-controller') ExternalControllerStatus externalController,@JsonKey(name: 'unified-delay') bool unifiedDelay,@JsonKey(name: 'geo-auto-update') bool geoAutoUpdate,@JsonKey(name: 'geo-update-interval') int geoUpdateInterval
+ Tun tun,@JsonKey(name: 'mixed-port') int mixedPort,@JsonKey(name: 'allow-lan') bool allowLan,@JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always) FindProcessMode findProcessMode,@JsonKey(unknownEnumValue: Mode.rule) Mode mode,@JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error) LogLevel logLevel, bool ipv6,@JsonKey(name: 'tcp-concurrent') bool tcpConcurrent,@JsonKey(name: 'external-controller', unknownEnumValue: ExternalControllerStatus.close) ExternalControllerStatus externalController,@JsonKey(name: 'unified-delay') bool unifiedDelay,@JsonKey(name: 'geo-auto-update') bool geoAutoUpdate,@JsonKey(name: 'geo-update-interval') int geoUpdateInterval
 });
 
 
@@ -1722,7 +1722,7 @@ as String,
 /// @nodoc
 mixin _$CoreEvent {
 
- CoreEventType get type; dynamic get data;
+@JsonKey(unknownEnumValue: CoreEventType.crash) CoreEventType get type; dynamic get data;
 /// Create a copy of CoreEvent
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1755,7 +1755,7 @@ abstract mixin class $CoreEventCopyWith<$Res>  {
   factory $CoreEventCopyWith(CoreEvent value, $Res Function(CoreEvent) _then) = _$CoreEventCopyWithImpl;
 @useResult
 $Res call({
- CoreEventType type, dynamic data
+@JsonKey(unknownEnumValue: CoreEventType.crash) CoreEventType type, dynamic data
 });
 
 
@@ -1861,7 +1861,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( CoreEventType type,  dynamic data)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: CoreEventType.crash)  CoreEventType type,  dynamic data)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CoreEvent() when $default != null:
 return $default(_that.type,_that.data);case _:
@@ -1882,7 +1882,7 @@ return $default(_that.type,_that.data);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( CoreEventType type,  dynamic data)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: CoreEventType.crash)  CoreEventType type,  dynamic data)  $default,) {final _that = this;
 switch (_that) {
 case _CoreEvent():
 return $default(_that.type,_that.data);case _:
@@ -1902,7 +1902,7 @@ return $default(_that.type,_that.data);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( CoreEventType type,  dynamic data)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(unknownEnumValue: CoreEventType.crash)  CoreEventType type,  dynamic data)?  $default,) {final _that = this;
 switch (_that) {
 case _CoreEvent() when $default != null:
 return $default(_that.type,_that.data);case _:
@@ -1917,10 +1917,10 @@ return $default(_that.type,_that.data);case _:
 @JsonSerializable()
 
 class _CoreEvent implements CoreEvent {
-  const _CoreEvent({required this.type, this.data});
+  const _CoreEvent({@JsonKey(unknownEnumValue: CoreEventType.crash) required this.type, this.data});
   factory _CoreEvent.fromJson(Map<String, dynamic> json) => _$CoreEventFromJson(json);
 
-@override final  CoreEventType type;
+@override@JsonKey(unknownEnumValue: CoreEventType.crash) final  CoreEventType type;
 @override final  dynamic data;
 
 /// Create a copy of CoreEvent
@@ -1956,7 +1956,7 @@ abstract mixin class _$CoreEventCopyWith<$Res> implements $CoreEventCopyWith<$Re
   factory _$CoreEventCopyWith(_CoreEvent value, $Res Function(_CoreEvent) _then) = __$CoreEventCopyWithImpl;
 @override @useResult
 $Res call({
- CoreEventType type, dynamic data
+@JsonKey(unknownEnumValue: CoreEventType.crash) CoreEventType type, dynamic data
 });
 
 
@@ -1988,7 +1988,7 @@ as dynamic,
 /// @nodoc
 mixin _$InvokeMessage {
 
- InvokeMessageType get type; dynamic get data;
+@JsonKey(unknownEnumValue: InvokeMessageType.process) InvokeMessageType get type; dynamic get data;
 /// Create a copy of InvokeMessage
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -2021,7 +2021,7 @@ abstract mixin class $InvokeMessageCopyWith<$Res>  {
   factory $InvokeMessageCopyWith(InvokeMessage value, $Res Function(InvokeMessage) _then) = _$InvokeMessageCopyWithImpl;
 @useResult
 $Res call({
- InvokeMessageType type, dynamic data
+@JsonKey(unknownEnumValue: InvokeMessageType.process) InvokeMessageType type, dynamic data
 });
 
 
@@ -2127,7 +2127,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( InvokeMessageType type,  dynamic data)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: InvokeMessageType.process)  InvokeMessageType type,  dynamic data)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _InvokeMessage() when $default != null:
 return $default(_that.type,_that.data);case _:
@@ -2148,7 +2148,7 @@ return $default(_that.type,_that.data);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( InvokeMessageType type,  dynamic data)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: InvokeMessageType.process)  InvokeMessageType type,  dynamic data)  $default,) {final _that = this;
 switch (_that) {
 case _InvokeMessage():
 return $default(_that.type,_that.data);case _:
@@ -2168,7 +2168,7 @@ return $default(_that.type,_that.data);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( InvokeMessageType type,  dynamic data)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(unknownEnumValue: InvokeMessageType.process)  InvokeMessageType type,  dynamic data)?  $default,) {final _that = this;
 switch (_that) {
 case _InvokeMessage() when $default != null:
 return $default(_that.type,_that.data);case _:
@@ -2183,10 +2183,10 @@ return $default(_that.type,_that.data);case _:
 @JsonSerializable()
 
 class _InvokeMessage implements InvokeMessage {
-  const _InvokeMessage({required this.type, this.data});
+  const _InvokeMessage({@JsonKey(unknownEnumValue: InvokeMessageType.process) required this.type, this.data});
   factory _InvokeMessage.fromJson(Map<String, dynamic> json) => _$InvokeMessageFromJson(json);
 
-@override final  InvokeMessageType type;
+@override@JsonKey(unknownEnumValue: InvokeMessageType.process) final  InvokeMessageType type;
 @override final  dynamic data;
 
 /// Create a copy of InvokeMessage
@@ -2222,7 +2222,7 @@ abstract mixin class _$InvokeMessageCopyWith<$Res> implements $InvokeMessageCopy
   factory _$InvokeMessageCopyWith(_InvokeMessage value, $Res Function(_InvokeMessage) _then) = __$InvokeMessageCopyWithImpl;
 @override @useResult
 $Res call({
- InvokeMessageType type, dynamic data
+@JsonKey(unknownEnumValue: InvokeMessageType.process) InvokeMessageType type, dynamic data
 });
 
 

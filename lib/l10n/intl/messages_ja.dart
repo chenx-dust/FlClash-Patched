@@ -382,6 +382,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hoursCount": m11,
     "icon": MessageLookupByLibrary.simpleMessage("アイコン"),
     "iconRecords": MessageLookupByLibrary.simpleMessage("アイコン履歴"),
+    "iconSource": MessageLookupByLibrary.simpleMessage("アイコンソース"),
     "iconStyle": MessageLookupByLibrary.simpleMessage("アイコンスタイル"),
     "iconUrl": MessageLookupByLibrary.simpleMessage("アイコン URL"),
     "ignoreBatteryOptimization": MessageLookupByLibrary.simpleMessage(
@@ -515,6 +516,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "onDemandDesc": MessageLookupByLibrary.simpleMessage(
       "特定のシナリオでのアプリの実行状態を設定",
     ),
+    "onlyConfig": MessageLookupByLibrary.simpleMessage("設定のみ"),
+    "onlyEmoji": MessageLookupByLibrary.simpleMessage("Emoji のみ"),
     "onlyIcon": MessageLookupByLibrary.simpleMessage("アイコンのみ"),
     "onlyStatisticsProxy": MessageLookupByLibrary.simpleMessage("プロキシのみ統計"),
     "onlyStatisticsProxyDesc": MessageLookupByLibrary.simpleMessage(
