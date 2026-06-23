@@ -15,11 +15,6 @@ class Render {
     return _instance!;
   }
 
-  void active() {
-    resume();
-    pause();
-  }
-
   void pause() async {
     if (_isPaused) return;
     _isPaused = true;
