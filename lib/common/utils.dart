@@ -155,8 +155,8 @@ class Utils {
   }
 
   int compareVersions(String version1, String version2) {
-    final List<String> v1 = version1.split('+')[0].split('-')[0].split('.');
-    final List<String> v2 = version2.split('+')[0].split('-')[0].split('.');
+    final List<String> v1 = version1.split('+')[0].split('.');
+    final List<String> v2 = version2.split('+')[0].split('.');
     final int major1 = int.parse(v1[0]);
     final int major2 = int.parse(v2[0]);
     if (major1 != major2) {
@@ -167,17 +167,13 @@ class Utils {
     if (minor1 != minor2) {
       return minor1.compareTo(minor2);
     }
-    final int patch1 = v1.length > 2 ? int.parse(v1[2]) : 0;
-    final int patch2 = v2.length > 2 ? int.parse(v2[2]) : 0;
+    final int patch1 = v1.length > 2 ? int.parse(v1[2].split('-')[0]) : 0;
+    final int patch2 = v2.length > 2 ? int.parse(v2[2].split('-')[0]) : 0;
     if (patch1 != patch2) {
       return patch1.compareTo(patch2);
     }
-    final int pre1 = version1.contains('-')
-        ? int.parse(version1.split('+')[0].split('-')[1].split('.')[1])
-        : 0;
-    final int pre2 = version2.contains('-')
-        ? int.parse(version2.split('+')[0].split('-')[1].split('.')[1])
-        : 0;
+    final int pre1 = v1.length > 3 ? int.parse(v1[3]) : 0;
+    final int pre2 = v2.length > 3 ? int.parse(v2[3]) : 0;
     if (pre1 != pre2) {
       return pre1.compareTo(pre2);
     }
