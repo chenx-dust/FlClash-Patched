@@ -571,7 +571,7 @@ as int,
 /// @nodoc
 mixin _$Metadata {
 
- int get uid; String get network; String get sourceIP; String get sourcePort; String get destinationIP; String get destinationPort; String get host; DnsMode? get dnsMode; String get process; String get processPath; String get remoteDestination; List<String> get sourceGeoIP; List<String> get destinationGeoIP; String get destinationIPASN; String get sourceIPASN; String get specialRules; String get specialProxy;
+ int get uid; String get network; String get sourceIP; String get sourcePort; String get destinationIP; String get destinationPort; String get host;@JsonKey(unknownEnumValue: JsonKey.nullForUndefinedEnumValue) DnsMode? get dnsMode; String get process; String get processPath; String get remoteDestination; List<String> get sourceGeoIP; List<String> get destinationGeoIP; String get destinationIPASN; String get sourceIPASN; String get specialRules; String get specialProxy;
 /// Create a copy of Metadata
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -604,7 +604,7 @@ abstract mixin class $MetadataCopyWith<$Res>  {
   factory $MetadataCopyWith(Metadata value, $Res Function(Metadata) _then) = _$MetadataCopyWithImpl;
 @useResult
 $Res call({
- int uid, String network, String sourceIP, String sourcePort, String destinationIP, String destinationPort, String host, DnsMode? dnsMode, String process, String processPath, String remoteDestination, List<String> sourceGeoIP, List<String> destinationGeoIP, String destinationIPASN, String sourceIPASN, String specialRules, String specialProxy
+ int uid, String network, String sourceIP, String sourcePort, String destinationIP, String destinationPort, String host,@JsonKey(unknownEnumValue: JsonKey.nullForUndefinedEnumValue) DnsMode? dnsMode, String process, String processPath, String remoteDestination, List<String> sourceGeoIP, List<String> destinationGeoIP, String destinationIPASN, String sourceIPASN, String specialRules, String specialProxy
 });
 
 
@@ -725,7 +725,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int uid,  String network,  String sourceIP,  String sourcePort,  String destinationIP,  String destinationPort,  String host,  DnsMode? dnsMode,  String process,  String processPath,  String remoteDestination,  List<String> sourceGeoIP,  List<String> destinationGeoIP,  String destinationIPASN,  String sourceIPASN,  String specialRules,  String specialProxy)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int uid,  String network,  String sourceIP,  String sourcePort,  String destinationIP,  String destinationPort,  String host, @JsonKey(unknownEnumValue: JsonKey.nullForUndefinedEnumValue)  DnsMode? dnsMode,  String process,  String processPath,  String remoteDestination,  List<String> sourceGeoIP,  List<String> destinationGeoIP,  String destinationIPASN,  String sourceIPASN,  String specialRules,  String specialProxy)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Metadata() when $default != null:
 return $default(_that.uid,_that.network,_that.sourceIP,_that.sourcePort,_that.destinationIP,_that.destinationPort,_that.host,_that.dnsMode,_that.process,_that.processPath,_that.remoteDestination,_that.sourceGeoIP,_that.destinationGeoIP,_that.destinationIPASN,_that.sourceIPASN,_that.specialRules,_that.specialProxy);case _:
@@ -746,7 +746,7 @@ return $default(_that.uid,_that.network,_that.sourceIP,_that.sourcePort,_that.de
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int uid,  String network,  String sourceIP,  String sourcePort,  String destinationIP,  String destinationPort,  String host,  DnsMode? dnsMode,  String process,  String processPath,  String remoteDestination,  List<String> sourceGeoIP,  List<String> destinationGeoIP,  String destinationIPASN,  String sourceIPASN,  String specialRules,  String specialProxy)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int uid,  String network,  String sourceIP,  String sourcePort,  String destinationIP,  String destinationPort,  String host, @JsonKey(unknownEnumValue: JsonKey.nullForUndefinedEnumValue)  DnsMode? dnsMode,  String process,  String processPath,  String remoteDestination,  List<String> sourceGeoIP,  List<String> destinationGeoIP,  String destinationIPASN,  String sourceIPASN,  String specialRules,  String specialProxy)  $default,) {final _that = this;
 switch (_that) {
 case _Metadata():
 return $default(_that.uid,_that.network,_that.sourceIP,_that.sourcePort,_that.destinationIP,_that.destinationPort,_that.host,_that.dnsMode,_that.process,_that.processPath,_that.remoteDestination,_that.sourceGeoIP,_that.destinationGeoIP,_that.destinationIPASN,_that.sourceIPASN,_that.specialRules,_that.specialProxy);case _:
@@ -766,7 +766,7 @@ return $default(_that.uid,_that.network,_that.sourceIP,_that.sourcePort,_that.de
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int uid,  String network,  String sourceIP,  String sourcePort,  String destinationIP,  String destinationPort,  String host,  DnsMode? dnsMode,  String process,  String processPath,  String remoteDestination,  List<String> sourceGeoIP,  List<String> destinationGeoIP,  String destinationIPASN,  String sourceIPASN,  String specialRules,  String specialProxy)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int uid,  String network,  String sourceIP,  String sourcePort,  String destinationIP,  String destinationPort,  String host, @JsonKey(unknownEnumValue: JsonKey.nullForUndefinedEnumValue)  DnsMode? dnsMode,  String process,  String processPath,  String remoteDestination,  List<String> sourceGeoIP,  List<String> destinationGeoIP,  String destinationIPASN,  String sourceIPASN,  String specialRules,  String specialProxy)?  $default,) {final _that = this;
 switch (_that) {
 case _Metadata() when $default != null:
 return $default(_that.uid,_that.network,_that.sourceIP,_that.sourcePort,_that.destinationIP,_that.destinationPort,_that.host,_that.dnsMode,_that.process,_that.processPath,_that.remoteDestination,_that.sourceGeoIP,_that.destinationGeoIP,_that.destinationIPASN,_that.sourceIPASN,_that.specialRules,_that.specialProxy);case _:
@@ -781,7 +781,7 @@ return $default(_that.uid,_that.network,_that.sourceIP,_that.sourcePort,_that.de
 @JsonSerializable()
 
 class _Metadata implements Metadata {
-  const _Metadata({this.uid = 0, this.network = '', this.sourceIP = '', this.sourcePort = '', this.destinationIP = '', this.destinationPort = '', this.host = '', this.dnsMode, this.process = '', this.processPath = '', this.remoteDestination = '', final  List<String> sourceGeoIP = const [], final  List<String> destinationGeoIP = const [], this.destinationIPASN = '', this.sourceIPASN = '', this.specialRules = '', this.specialProxy = ''}): _sourceGeoIP = sourceGeoIP,_destinationGeoIP = destinationGeoIP;
+  const _Metadata({this.uid = 0, this.network = '', this.sourceIP = '', this.sourcePort = '', this.destinationIP = '', this.destinationPort = '', this.host = '', @JsonKey(unknownEnumValue: JsonKey.nullForUndefinedEnumValue) this.dnsMode, this.process = '', this.processPath = '', this.remoteDestination = '', final  List<String> sourceGeoIP = const [], final  List<String> destinationGeoIP = const [], this.destinationIPASN = '', this.sourceIPASN = '', this.specialRules = '', this.specialProxy = ''}): _sourceGeoIP = sourceGeoIP,_destinationGeoIP = destinationGeoIP;
   factory _Metadata.fromJson(Map<String, dynamic> json) => _$MetadataFromJson(json);
 
 @override@JsonKey() final  int uid;
@@ -791,7 +791,7 @@ class _Metadata implements Metadata {
 @override@JsonKey() final  String destinationIP;
 @override@JsonKey() final  String destinationPort;
 @override@JsonKey() final  String host;
-@override final  DnsMode? dnsMode;
+@override@JsonKey(unknownEnumValue: JsonKey.nullForUndefinedEnumValue) final  DnsMode? dnsMode;
 @override@JsonKey() final  String process;
 @override@JsonKey() final  String processPath;
 @override@JsonKey() final  String remoteDestination;
@@ -847,7 +847,7 @@ abstract mixin class _$MetadataCopyWith<$Res> implements $MetadataCopyWith<$Res>
   factory _$MetadataCopyWith(_Metadata value, $Res Function(_Metadata) _then) = __$MetadataCopyWithImpl;
 @override @useResult
 $Res call({
- int uid, String network, String sourceIP, String sourcePort, String destinationIP, String destinationPort, String host, DnsMode? dnsMode, String process, String processPath, String remoteDestination, List<String> sourceGeoIP, List<String> destinationGeoIP, String destinationIPASN, String sourceIPASN, String specialRules, String specialProxy
+ int uid, String network, String sourceIP, String sourcePort, String destinationIP, String destinationPort, String host,@JsonKey(unknownEnumValue: JsonKey.nullForUndefinedEnumValue) DnsMode? dnsMode, String process, String processPath, String remoteDestination, List<String> sourceGeoIP, List<String> destinationGeoIP, String destinationIPASN, String sourceIPASN, String specialRules, String specialProxy
 });
 
 
@@ -1208,7 +1208,7 @@ $MetadataCopyWith<$Res> get metadata {
 /// @nodoc
 mixin _$Log {
 
-@JsonKey(name: 'LogLevel') LogLevel get logLevel; LogSource get source;@JsonKey(name: 'Payload') String get payload;@JsonKey(fromJson: _logDateTime) String get dateTime;
+@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info) LogLevel get logLevel;@JsonKey(unknownEnumValue: LogSource.app) LogSource get source;@JsonKey(name: 'Payload') String get payload;@JsonKey(fromJson: _logDateTime) String get dateTime;
 /// Create a copy of Log
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1241,7 +1241,7 @@ abstract mixin class $LogCopyWith<$Res>  {
   factory $LogCopyWith(Log value, $Res Function(Log) _then) = _$LogCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'LogLevel') LogLevel logLevel, LogSource source,@JsonKey(name: 'Payload') String payload,@JsonKey(fromJson: _logDateTime) String dateTime
+@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info) LogLevel logLevel,@JsonKey(unknownEnumValue: LogSource.app) LogSource source,@JsonKey(name: 'Payload') String payload,@JsonKey(fromJson: _logDateTime) String dateTime
 });
 
 
@@ -1349,7 +1349,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'LogLevel')  LogLevel logLevel,  LogSource source, @JsonKey(name: 'Payload')  String payload, @JsonKey(fromJson: _logDateTime)  String dateTime)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info)  LogLevel logLevel, @JsonKey(unknownEnumValue: LogSource.app)  LogSource source, @JsonKey(name: 'Payload')  String payload, @JsonKey(fromJson: _logDateTime)  String dateTime)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Log() when $default != null:
 return $default(_that.logLevel,_that.source,_that.payload,_that.dateTime);case _:
@@ -1370,7 +1370,7 @@ return $default(_that.logLevel,_that.source,_that.payload,_that.dateTime);case _
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'LogLevel')  LogLevel logLevel,  LogSource source, @JsonKey(name: 'Payload')  String payload, @JsonKey(fromJson: _logDateTime)  String dateTime)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info)  LogLevel logLevel, @JsonKey(unknownEnumValue: LogSource.app)  LogSource source, @JsonKey(name: 'Payload')  String payload, @JsonKey(fromJson: _logDateTime)  String dateTime)  $default,) {final _that = this;
 switch (_that) {
 case _Log():
 return $default(_that.logLevel,_that.source,_that.payload,_that.dateTime);case _:
@@ -1390,7 +1390,7 @@ return $default(_that.logLevel,_that.source,_that.payload,_that.dateTime);case _
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'LogLevel')  LogLevel logLevel,  LogSource source, @JsonKey(name: 'Payload')  String payload, @JsonKey(fromJson: _logDateTime)  String dateTime)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info)  LogLevel logLevel, @JsonKey(unknownEnumValue: LogSource.app)  LogSource source, @JsonKey(name: 'Payload')  String payload, @JsonKey(fromJson: _logDateTime)  String dateTime)?  $default,) {final _that = this;
 switch (_that) {
 case _Log() when $default != null:
 return $default(_that.logLevel,_that.source,_that.payload,_that.dateTime);case _:
@@ -1405,11 +1405,11 @@ return $default(_that.logLevel,_that.source,_that.payload,_that.dateTime);case _
 @JsonSerializable()
 
 class _Log implements Log {
-  const _Log({@JsonKey(name: 'LogLevel') this.logLevel = LogLevel.info, this.source = LogSource.app, @JsonKey(name: 'Payload') this.payload = '', @JsonKey(fromJson: _logDateTime) required this.dateTime});
+  const _Log({@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info) this.logLevel = LogLevel.info, @JsonKey(unknownEnumValue: LogSource.app) this.source = LogSource.app, @JsonKey(name: 'Payload') this.payload = '', @JsonKey(fromJson: _logDateTime) required this.dateTime});
   factory _Log.fromJson(Map<String, dynamic> json) => _$LogFromJson(json);
 
-@override@JsonKey(name: 'LogLevel') final  LogLevel logLevel;
-@override@JsonKey() final  LogSource source;
+@override@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info) final  LogLevel logLevel;
+@override@JsonKey(unknownEnumValue: LogSource.app) final  LogSource source;
 @override@JsonKey(name: 'Payload') final  String payload;
 @override@JsonKey(fromJson: _logDateTime) final  String dateTime;
 
@@ -1446,7 +1446,7 @@ abstract mixin class _$LogCopyWith<$Res> implements $LogCopyWith<$Res> {
   factory _$LogCopyWith(_Log value, $Res Function(_Log) _then) = __$LogCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'LogLevel') LogLevel logLevel, LogSource source,@JsonKey(name: 'Payload') String payload,@JsonKey(fromJson: _logDateTime) String dateTime
+@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info) LogLevel logLevel,@JsonKey(unknownEnumValue: LogSource.app) LogSource source,@JsonKey(name: 'Payload') String payload,@JsonKey(fromJson: _logDateTime) String dateTime
 });
 
 
@@ -4167,7 +4167,7 @@ as String,
 /// @nodoc
 mixin _$HotKeyAction {
 
- HotAction get action; int? get key; Set<KeyboardModifier> get modifiers;
+@JsonKey(unknownEnumValue: HotAction.start) HotAction get action; int? get key; Set<KeyboardModifier> get modifiers;
 /// Create a copy of HotKeyAction
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -4200,7 +4200,7 @@ abstract mixin class $HotKeyActionCopyWith<$Res>  {
   factory $HotKeyActionCopyWith(HotKeyAction value, $Res Function(HotKeyAction) _then) = _$HotKeyActionCopyWithImpl;
 @useResult
 $Res call({
- HotAction action, int? key, Set<KeyboardModifier> modifiers
+@JsonKey(unknownEnumValue: HotAction.start) HotAction action, int? key, Set<KeyboardModifier> modifiers
 });
 
 
@@ -4307,7 +4307,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( HotAction action,  int? key,  Set<KeyboardModifier> modifiers)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: HotAction.start)  HotAction action,  int? key,  Set<KeyboardModifier> modifiers)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _HotKeyAction() when $default != null:
 return $default(_that.action,_that.key,_that.modifiers);case _:
@@ -4328,7 +4328,7 @@ return $default(_that.action,_that.key,_that.modifiers);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( HotAction action,  int? key,  Set<KeyboardModifier> modifiers)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: HotAction.start)  HotAction action,  int? key,  Set<KeyboardModifier> modifiers)  $default,) {final _that = this;
 switch (_that) {
 case _HotKeyAction():
 return $default(_that.action,_that.key,_that.modifiers);case _:
@@ -4348,7 +4348,7 @@ return $default(_that.action,_that.key,_that.modifiers);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( HotAction action,  int? key,  Set<KeyboardModifier> modifiers)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(unknownEnumValue: HotAction.start)  HotAction action,  int? key,  Set<KeyboardModifier> modifiers)?  $default,) {final _that = this;
 switch (_that) {
 case _HotKeyAction() when $default != null:
 return $default(_that.action,_that.key,_that.modifiers);case _:
@@ -4363,10 +4363,10 @@ return $default(_that.action,_that.key,_that.modifiers);case _:
 @JsonSerializable()
 
 class _HotKeyAction implements HotKeyAction {
-  const _HotKeyAction({required this.action, this.key, final  Set<KeyboardModifier> modifiers = const {}}): _modifiers = modifiers;
+  const _HotKeyAction({@JsonKey(unknownEnumValue: HotAction.start) required this.action, this.key, final  Set<KeyboardModifier> modifiers = const {}}): _modifiers = modifiers;
   factory _HotKeyAction.fromJson(Map<String, dynamic> json) => _$HotKeyActionFromJson(json);
 
-@override final  HotAction action;
+@override@JsonKey(unknownEnumValue: HotAction.start) final  HotAction action;
 @override final  int? key;
  final  Set<KeyboardModifier> _modifiers;
 @override@JsonKey() Set<KeyboardModifier> get modifiers {
@@ -4409,7 +4409,7 @@ abstract mixin class _$HotKeyActionCopyWith<$Res> implements $HotKeyActionCopyWi
   factory _$HotKeyActionCopyWith(_HotKeyAction value, $Res Function(_HotKeyAction) _then) = __$HotKeyActionCopyWithImpl;
 @override @useResult
 $Res call({
- HotAction action, int? key, Set<KeyboardModifier> modifiers
+@JsonKey(unknownEnumValue: HotAction.start) HotAction action, int? key, Set<KeyboardModifier> modifiers
 });
 
 
