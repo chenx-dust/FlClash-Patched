@@ -479,6 +479,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hoursCount": m11,
     "icon": MessageLookupByLibrary.simpleMessage("Icon"),
     "iconRecords": MessageLookupByLibrary.simpleMessage("Icon records"),
+    "iconSource": MessageLookupByLibrary.simpleMessage("Icon source"),
     "iconStyle": MessageLookupByLibrary.simpleMessage("Icon style"),
     "iconUrl": MessageLookupByLibrary.simpleMessage("Icon URL"),
     "ignoreBatteryOptimization": MessageLookupByLibrary.simpleMessage(
@@ -650,6 +651,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "onDemandDesc": MessageLookupByLibrary.simpleMessage(
       "Configure the program running state for specific scenarios",
     ),
+    "onlyConfig": MessageLookupByLibrary.simpleMessage("Config only"),
+    "onlyEmoji": MessageLookupByLibrary.simpleMessage("Emoji only"),
     "onlyIcon": MessageLookupByLibrary.simpleMessage("Icon"),
     "onlyStatisticsProxy": MessageLookupByLibrary.simpleMessage(
       "Only statistics proxy",
