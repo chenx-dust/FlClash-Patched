@@ -4,6 +4,7 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/manager/window_manager.dart';
+import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:flutter/foundation.dart';
@@ -23,10 +24,35 @@ class AppStateManager extends ConsumerStatefulWidget {
 
 class _AppStateManagerState extends ConsumerState<AppStateManager>
     with WidgetsBindingObserver {
+  void _syncForegroundTickerSettings(AppSettingProps appSetting) {
+    foregroundTicker.updateSettings(
+      interval: Duration(seconds: appSetting.foregroundTickerInterval),
+      slowInterval: Duration(seconds: appSetting.foregroundTickerIdleInterval),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _syncForegroundTickerSettings(ref.read(appSettingProvider));
+    ref.listenManual(
+      appSettingProvider.select(
+        (state) => (
+          state.foregroundTickerInterval,
+          state.foregroundTickerIdleWhenUnfocused,
+          state.foregroundTickerIdleInterval,
+        ),
+      ),
+      (prev, next) {
+        final appSetting = ref.read(appSettingProvider);
+        _syncForegroundTickerSettings(appSetting);
+        if (!appSetting.foregroundTickerIdleWhenUnfocused &&
+            !globalState.isBackground.value) {
+          foregroundTicker.resume();
+        }
+      },
+    );
     ref.listenManual(checkIpProvider, (prev, next) {
       if (prev != next && next.a && next.c) {
         ref.read(networkDetectionProvider.notifier).startCheck();
@@ -89,7 +115,11 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
           final isMinimized = await windowManager.isMinimized();
           commonPrint.log('isVisible: $isVisible, isMinimized: $isMinimized');
           if (isVisible || !isMinimized) {
-            foregroundTicker.slow();
+            if (ref.read(appSettingProvider).foregroundTickerIdleWhenUnfocused) {
+              foregroundTicker.slow();
+            } else {
+              foregroundTicker.resume();
+            }
             break;
           }
         }
