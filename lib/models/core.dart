@@ -22,13 +22,20 @@ abstract class UpdateParams with _$UpdateParams {
     required Tun tun,
     @JsonKey(name: 'mixed-port') required int mixedPort,
     @JsonKey(name: 'allow-lan') required bool allowLan,
-    @JsonKey(name: 'find-process-mode')
+    @JsonKey(
+      name: 'find-process-mode',
+      unknownEnumValue: FindProcessMode.always,
+    )
     required FindProcessMode findProcessMode,
-    required Mode mode,
-    @JsonKey(name: 'log-level') required LogLevel logLevel,
+    @JsonKey(unknownEnumValue: Mode.rule) required Mode mode,
+    @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error)
+    required LogLevel logLevel,
     required bool ipv6,
     @JsonKey(name: 'tcp-concurrent') required bool tcpConcurrent,
-    @JsonKey(name: 'external-controller')
+    @JsonKey(
+      name: 'external-controller',
+      unknownEnumValue: ExternalControllerStatus.close,
+    )
     required ExternalControllerStatus externalController,
     @JsonKey(name: 'unified-delay') required bool unifiedDelay,
     @Default(false) @JsonKey(name: 'geo-auto-update') bool geoAutoUpdate,
@@ -94,8 +101,11 @@ abstract class UpdateGeoDataParams with _$UpdateGeoDataParams {
 
 @freezed
 abstract class CoreEvent with _$CoreEvent {
-  const factory CoreEvent({required CoreEventType type, dynamic data}) =
-      _CoreEvent;
+  const factory CoreEvent({
+    @JsonKey(unknownEnumValue: CoreEventType.crash)
+    required CoreEventType type,
+    dynamic data,
+  }) = _CoreEvent;
 
   factory CoreEvent.fromJson(Map<String, Object?> json) =>
       _$CoreEventFromJson(json);
@@ -103,8 +113,11 @@ abstract class CoreEvent with _$CoreEvent {
 
 @freezed
 abstract class InvokeMessage with _$InvokeMessage {
-  const factory InvokeMessage({required InvokeMessageType type, dynamic data}) =
-      _InvokeMessage;
+  const factory InvokeMessage({
+    @JsonKey(unknownEnumValue: InvokeMessageType.process)
+    required InvokeMessageType type,
+    dynamic data,
+  }) = _InvokeMessage;
 
   factory InvokeMessage.fromJson(Map<String, Object?> json) =>
       _$InvokeMessageFromJson(json);
