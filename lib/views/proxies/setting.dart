@@ -45,6 +45,18 @@ class ProxiesSetting extends StatelessWidget {
     };
   }
 
+  String _getTextForProxiesListHeaderStyle(
+    BuildContext context,
+    ProxiesListHeaderStyle style,
+  ) {
+    final appLocalizations = context.appLocalizations;
+    return switch (style) {
+      ProxiesListHeaderStyle.loose => appLocalizations.loose,
+      ProxiesListHeaderStyle.standard => appLocalizations.standard,
+      ProxiesListHeaderStyle.tight => appLocalizations.tight,
+    };
+  }
+
   String _getTextWithProxiesIconStyle(
     BuildContext context,
     ProxiesIconStyle style,
@@ -224,6 +236,45 @@ class ProxiesSetting extends StatelessWidget {
     );
   }
 
+  List<Widget> _buildListHeaderStyleSetting(BuildContext context) {
+    final appLocalizations = context.appLocalizations;
+    return generateSection(
+      title: appLocalizations.header,
+      items: [
+        SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          scrollDirection: Axis.horizontal,
+          child: Consumer(
+            builder: (_, ref, _) {
+              final listHeaderStyle = ref.watch(
+                proxiesStyleSettingProvider.select(
+                  (state) => state.listHeaderStyle,
+                ),
+              );
+              return Wrap(
+                spacing: 16,
+                children: [
+                  for (final item in ProxiesListHeaderStyle.values)
+                    SettingTextCard(
+                      _getTextForProxiesListHeaderStyle(context, item),
+                      isSelected: item == listHeaderStyle,
+                      onPressed: () {
+                        ref.read(proxiesStyleSettingProvider.notifier).update((
+                          state,
+                        ) {
+                          return state.copyWith(listHeaderStyle: item);
+                        });
+                      },
+                    ),
+                ],
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   List<Widget> _buildGroupIconStyleSetting(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     return generateSection(
@@ -326,6 +377,7 @@ class ProxiesSetting extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                ..._buildListHeaderStyleSetting(context),
                 ..._buildGroupIconStyleSetting(context),
                 ..._buildGroupIconSourceSetting(context),
               ],
