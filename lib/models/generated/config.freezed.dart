@@ -1498,7 +1498,7 @@ as bool,
 /// @nodoc
 mixin _$ProxiesStyleProps {
 
-@JsonKey(unknownEnumValue: ProxiesType.tab) ProxiesType get type;@JsonKey(unknownEnumValue: ProxiesSortType.none) ProxiesSortType get sortType;@JsonKey(unknownEnumValue: ProxiesLayout.standard) ProxiesLayout get layout;@JsonKey(unknownEnumValue: ProxiesIconStyle.standard) ProxiesIconStyle get iconStyle;@JsonKey(unknownEnumValue: ProxiesIconSource.standard) ProxiesIconSource get iconSource;@JsonKey(unknownEnumValue: ProxyCardType.expand) ProxyCardType get cardType;
+@JsonKey(unknownEnumValue: ProxiesType.tab) ProxiesType get type;@JsonKey(unknownEnumValue: ProxiesSortType.none) ProxiesSortType get sortType;@JsonKey(unknownEnumValue: ProxiesLayout.standard) ProxiesLayout get layout;@JsonKey(unknownEnumValue: ProxiesListHeaderStyle.loose) ProxiesListHeaderStyle get listHeaderStyle;@JsonKey(unknownEnumValue: ProxiesIconStyle.standard) ProxiesIconStyle get iconStyle;@JsonKey(unknownEnumValue: ProxiesIconSource.standard) ProxiesIconSource get iconSource;@JsonKey(unknownEnumValue: ProxyCardType.expand) ProxyCardType get cardType;
 /// Create a copy of ProxiesStyleProps
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1511,16 +1511,16 @@ $ProxiesStylePropsCopyWith<ProxiesStyleProps> get copyWith => _$ProxiesStyleProp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProxiesStyleProps&&(identical(other.type, type) || other.type == type)&&(identical(other.sortType, sortType) || other.sortType == sortType)&&(identical(other.layout, layout) || other.layout == layout)&&(identical(other.iconStyle, iconStyle) || other.iconStyle == iconStyle)&&(identical(other.iconSource, iconSource) || other.iconSource == iconSource)&&(identical(other.cardType, cardType) || other.cardType == cardType));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProxiesStyleProps&&(identical(other.type, type) || other.type == type)&&(identical(other.sortType, sortType) || other.sortType == sortType)&&(identical(other.layout, layout) || other.layout == layout)&&(identical(other.listHeaderStyle, listHeaderStyle) || other.listHeaderStyle == listHeaderStyle)&&(identical(other.iconStyle, iconStyle) || other.iconStyle == iconStyle)&&(identical(other.iconSource, iconSource) || other.iconSource == iconSource)&&(identical(other.cardType, cardType) || other.cardType == cardType));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,type,sortType,layout,iconStyle,iconSource,cardType);
+int get hashCode => Object.hash(runtimeType,type,sortType,layout,listHeaderStyle,iconStyle,iconSource,cardType);
 
 @override
 String toString() {
-  return 'ProxiesStyleProps(type: $type, sortType: $sortType, layout: $layout, iconStyle: $iconStyle, iconSource: $iconSource, cardType: $cardType)';
+  return 'ProxiesStyleProps(type: $type, sortType: $sortType, layout: $layout, listHeaderStyle: $listHeaderStyle, iconStyle: $iconStyle, iconSource: $iconSource, cardType: $cardType)';
 }
 
 
@@ -1531,7 +1531,7 @@ abstract mixin class $ProxiesStylePropsCopyWith<$Res>  {
   factory $ProxiesStylePropsCopyWith(ProxiesStyleProps value, $Res Function(ProxiesStyleProps) _then) = _$ProxiesStylePropsCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(unknownEnumValue: ProxiesType.tab) ProxiesType type,@JsonKey(unknownEnumValue: ProxiesSortType.none) ProxiesSortType sortType,@JsonKey(unknownEnumValue: ProxiesLayout.standard) ProxiesLayout layout,@JsonKey(unknownEnumValue: ProxiesIconStyle.standard) ProxiesIconStyle iconStyle,@JsonKey(unknownEnumValue: ProxiesIconSource.standard) ProxiesIconSource iconSource,@JsonKey(unknownEnumValue: ProxyCardType.expand) ProxyCardType cardType
+@JsonKey(unknownEnumValue: ProxiesType.tab) ProxiesType type,@JsonKey(unknownEnumValue: ProxiesSortType.none) ProxiesSortType sortType,@JsonKey(unknownEnumValue: ProxiesLayout.standard) ProxiesLayout layout,@JsonKey(unknownEnumValue: ProxiesListHeaderStyle.loose) ProxiesListHeaderStyle listHeaderStyle,@JsonKey(unknownEnumValue: ProxiesIconStyle.standard) ProxiesIconStyle iconStyle,@JsonKey(unknownEnumValue: ProxiesIconSource.standard) ProxiesIconSource iconSource,@JsonKey(unknownEnumValue: ProxyCardType.expand) ProxyCardType cardType
 });
 
 
@@ -1548,12 +1548,13 @@ class _$ProxiesStylePropsCopyWithImpl<$Res>
 
 /// Create a copy of ProxiesStyleProps
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? type = null,Object? sortType = null,Object? layout = null,Object? iconStyle = null,Object? iconSource = null,Object? cardType = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? type = null,Object? sortType = null,Object? layout = null,Object? listHeaderStyle = null,Object? iconStyle = null,Object? iconSource = null,Object? cardType = null,}) {
   return _then(_self.copyWith(
 type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as ProxiesType,sortType: null == sortType ? _self.sortType : sortType // ignore: cast_nullable_to_non_nullable
 as ProxiesSortType,layout: null == layout ? _self.layout : layout // ignore: cast_nullable_to_non_nullable
-as ProxiesLayout,iconStyle: null == iconStyle ? _self.iconStyle : iconStyle // ignore: cast_nullable_to_non_nullable
+as ProxiesLayout,listHeaderStyle: null == listHeaderStyle ? _self.listHeaderStyle : listHeaderStyle // ignore: cast_nullable_to_non_nullable
+as ProxiesListHeaderStyle,iconStyle: null == iconStyle ? _self.iconStyle : iconStyle // ignore: cast_nullable_to_non_nullable
 as ProxiesIconStyle,iconSource: null == iconSource ? _self.iconSource : iconSource // ignore: cast_nullable_to_non_nullable
 as ProxiesIconSource,cardType: null == cardType ? _self.cardType : cardType // ignore: cast_nullable_to_non_nullable
 as ProxyCardType,
@@ -1641,10 +1642,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: ProxiesType.tab)  ProxiesType type, @JsonKey(unknownEnumValue: ProxiesSortType.none)  ProxiesSortType sortType, @JsonKey(unknownEnumValue: ProxiesLayout.standard)  ProxiesLayout layout, @JsonKey(unknownEnumValue: ProxiesIconStyle.standard)  ProxiesIconStyle iconStyle, @JsonKey(unknownEnumValue: ProxiesIconSource.standard)  ProxiesIconSource iconSource, @JsonKey(unknownEnumValue: ProxyCardType.expand)  ProxyCardType cardType)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: ProxiesType.tab)  ProxiesType type, @JsonKey(unknownEnumValue: ProxiesSortType.none)  ProxiesSortType sortType, @JsonKey(unknownEnumValue: ProxiesLayout.standard)  ProxiesLayout layout, @JsonKey(unknownEnumValue: ProxiesListHeaderStyle.loose)  ProxiesListHeaderStyle listHeaderStyle, @JsonKey(unknownEnumValue: ProxiesIconStyle.standard)  ProxiesIconStyle iconStyle, @JsonKey(unknownEnumValue: ProxiesIconSource.standard)  ProxiesIconSource iconSource, @JsonKey(unknownEnumValue: ProxyCardType.expand)  ProxyCardType cardType)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProxiesStyleProps() when $default != null:
-return $default(_that.type,_that.sortType,_that.layout,_that.iconStyle,_that.iconSource,_that.cardType);case _:
+return $default(_that.type,_that.sortType,_that.layout,_that.listHeaderStyle,_that.iconStyle,_that.iconSource,_that.cardType);case _:
   return orElse();
 
 }
@@ -1662,10 +1663,10 @@ return $default(_that.type,_that.sortType,_that.layout,_that.iconStyle,_that.ico
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: ProxiesType.tab)  ProxiesType type, @JsonKey(unknownEnumValue: ProxiesSortType.none)  ProxiesSortType sortType, @JsonKey(unknownEnumValue: ProxiesLayout.standard)  ProxiesLayout layout, @JsonKey(unknownEnumValue: ProxiesIconStyle.standard)  ProxiesIconStyle iconStyle, @JsonKey(unknownEnumValue: ProxiesIconSource.standard)  ProxiesIconSource iconSource, @JsonKey(unknownEnumValue: ProxyCardType.expand)  ProxyCardType cardType)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: ProxiesType.tab)  ProxiesType type, @JsonKey(unknownEnumValue: ProxiesSortType.none)  ProxiesSortType sortType, @JsonKey(unknownEnumValue: ProxiesLayout.standard)  ProxiesLayout layout, @JsonKey(unknownEnumValue: ProxiesListHeaderStyle.loose)  ProxiesListHeaderStyle listHeaderStyle, @JsonKey(unknownEnumValue: ProxiesIconStyle.standard)  ProxiesIconStyle iconStyle, @JsonKey(unknownEnumValue: ProxiesIconSource.standard)  ProxiesIconSource iconSource, @JsonKey(unknownEnumValue: ProxyCardType.expand)  ProxyCardType cardType)  $default,) {final _that = this;
 switch (_that) {
 case _ProxiesStyleProps():
-return $default(_that.type,_that.sortType,_that.layout,_that.iconStyle,_that.iconSource,_that.cardType);case _:
+return $default(_that.type,_that.sortType,_that.layout,_that.listHeaderStyle,_that.iconStyle,_that.iconSource,_that.cardType);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1682,10 +1683,10 @@ return $default(_that.type,_that.sortType,_that.layout,_that.iconStyle,_that.ico
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(unknownEnumValue: ProxiesType.tab)  ProxiesType type, @JsonKey(unknownEnumValue: ProxiesSortType.none)  ProxiesSortType sortType, @JsonKey(unknownEnumValue: ProxiesLayout.standard)  ProxiesLayout layout, @JsonKey(unknownEnumValue: ProxiesIconStyle.standard)  ProxiesIconStyle iconStyle, @JsonKey(unknownEnumValue: ProxiesIconSource.standard)  ProxiesIconSource iconSource, @JsonKey(unknownEnumValue: ProxyCardType.expand)  ProxyCardType cardType)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(unknownEnumValue: ProxiesType.tab)  ProxiesType type, @JsonKey(unknownEnumValue: ProxiesSortType.none)  ProxiesSortType sortType, @JsonKey(unknownEnumValue: ProxiesLayout.standard)  ProxiesLayout layout, @JsonKey(unknownEnumValue: ProxiesListHeaderStyle.loose)  ProxiesListHeaderStyle listHeaderStyle, @JsonKey(unknownEnumValue: ProxiesIconStyle.standard)  ProxiesIconStyle iconStyle, @JsonKey(unknownEnumValue: ProxiesIconSource.standard)  ProxiesIconSource iconSource, @JsonKey(unknownEnumValue: ProxyCardType.expand)  ProxyCardType cardType)?  $default,) {final _that = this;
 switch (_that) {
 case _ProxiesStyleProps() when $default != null:
-return $default(_that.type,_that.sortType,_that.layout,_that.iconStyle,_that.iconSource,_that.cardType);case _:
+return $default(_that.type,_that.sortType,_that.layout,_that.listHeaderStyle,_that.iconStyle,_that.iconSource,_that.cardType);case _:
   return null;
 
 }
@@ -1697,12 +1698,13 @@ return $default(_that.type,_that.sortType,_that.layout,_that.iconStyle,_that.ico
 @JsonSerializable()
 
 class _ProxiesStyleProps implements ProxiesStyleProps {
-  const _ProxiesStyleProps({@JsonKey(unknownEnumValue: ProxiesType.tab) this.type = ProxiesType.tab, @JsonKey(unknownEnumValue: ProxiesSortType.none) this.sortType = ProxiesSortType.none, @JsonKey(unknownEnumValue: ProxiesLayout.standard) this.layout = ProxiesLayout.standard, @JsonKey(unknownEnumValue: ProxiesIconStyle.standard) this.iconStyle = ProxiesIconStyle.standard, @JsonKey(unknownEnumValue: ProxiesIconSource.standard) this.iconSource = ProxiesIconSource.standard, @JsonKey(unknownEnumValue: ProxyCardType.expand) this.cardType = ProxyCardType.expand});
+  const _ProxiesStyleProps({@JsonKey(unknownEnumValue: ProxiesType.tab) this.type = ProxiesType.tab, @JsonKey(unknownEnumValue: ProxiesSortType.none) this.sortType = ProxiesSortType.none, @JsonKey(unknownEnumValue: ProxiesLayout.standard) this.layout = ProxiesLayout.standard, @JsonKey(unknownEnumValue: ProxiesListHeaderStyle.loose) this.listHeaderStyle = ProxiesListHeaderStyle.loose, @JsonKey(unknownEnumValue: ProxiesIconStyle.standard) this.iconStyle = ProxiesIconStyle.standard, @JsonKey(unknownEnumValue: ProxiesIconSource.standard) this.iconSource = ProxiesIconSource.standard, @JsonKey(unknownEnumValue: ProxyCardType.expand) this.cardType = ProxyCardType.expand});
   factory _ProxiesStyleProps.fromJson(Map<String, dynamic> json) => _$ProxiesStylePropsFromJson(json);
 
 @override@JsonKey(unknownEnumValue: ProxiesType.tab) final  ProxiesType type;
 @override@JsonKey(unknownEnumValue: ProxiesSortType.none) final  ProxiesSortType sortType;
 @override@JsonKey(unknownEnumValue: ProxiesLayout.standard) final  ProxiesLayout layout;
+@override@JsonKey(unknownEnumValue: ProxiesListHeaderStyle.loose) final  ProxiesListHeaderStyle listHeaderStyle;
 @override@JsonKey(unknownEnumValue: ProxiesIconStyle.standard) final  ProxiesIconStyle iconStyle;
 @override@JsonKey(unknownEnumValue: ProxiesIconSource.standard) final  ProxiesIconSource iconSource;
 @override@JsonKey(unknownEnumValue: ProxyCardType.expand) final  ProxyCardType cardType;
@@ -1720,16 +1722,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProxiesStyleProps&&(identical(other.type, type) || other.type == type)&&(identical(other.sortType, sortType) || other.sortType == sortType)&&(identical(other.layout, layout) || other.layout == layout)&&(identical(other.iconStyle, iconStyle) || other.iconStyle == iconStyle)&&(identical(other.iconSource, iconSource) || other.iconSource == iconSource)&&(identical(other.cardType, cardType) || other.cardType == cardType));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProxiesStyleProps&&(identical(other.type, type) || other.type == type)&&(identical(other.sortType, sortType) || other.sortType == sortType)&&(identical(other.layout, layout) || other.layout == layout)&&(identical(other.listHeaderStyle, listHeaderStyle) || other.listHeaderStyle == listHeaderStyle)&&(identical(other.iconStyle, iconStyle) || other.iconStyle == iconStyle)&&(identical(other.iconSource, iconSource) || other.iconSource == iconSource)&&(identical(other.cardType, cardType) || other.cardType == cardType));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,type,sortType,layout,iconStyle,iconSource,cardType);
+int get hashCode => Object.hash(runtimeType,type,sortType,layout,listHeaderStyle,iconStyle,iconSource,cardType);
 
 @override
 String toString() {
-  return 'ProxiesStyleProps(type: $type, sortType: $sortType, layout: $layout, iconStyle: $iconStyle, iconSource: $iconSource, cardType: $cardType)';
+  return 'ProxiesStyleProps(type: $type, sortType: $sortType, layout: $layout, listHeaderStyle: $listHeaderStyle, iconStyle: $iconStyle, iconSource: $iconSource, cardType: $cardType)';
 }
 
 
@@ -1740,7 +1742,7 @@ abstract mixin class _$ProxiesStylePropsCopyWith<$Res> implements $ProxiesStyleP
   factory _$ProxiesStylePropsCopyWith(_ProxiesStyleProps value, $Res Function(_ProxiesStyleProps) _then) = __$ProxiesStylePropsCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(unknownEnumValue: ProxiesType.tab) ProxiesType type,@JsonKey(unknownEnumValue: ProxiesSortType.none) ProxiesSortType sortType,@JsonKey(unknownEnumValue: ProxiesLayout.standard) ProxiesLayout layout,@JsonKey(unknownEnumValue: ProxiesIconStyle.standard) ProxiesIconStyle iconStyle,@JsonKey(unknownEnumValue: ProxiesIconSource.standard) ProxiesIconSource iconSource,@JsonKey(unknownEnumValue: ProxyCardType.expand) ProxyCardType cardType
+@JsonKey(unknownEnumValue: ProxiesType.tab) ProxiesType type,@JsonKey(unknownEnumValue: ProxiesSortType.none) ProxiesSortType sortType,@JsonKey(unknownEnumValue: ProxiesLayout.standard) ProxiesLayout layout,@JsonKey(unknownEnumValue: ProxiesListHeaderStyle.loose) ProxiesListHeaderStyle listHeaderStyle,@JsonKey(unknownEnumValue: ProxiesIconStyle.standard) ProxiesIconStyle iconStyle,@JsonKey(unknownEnumValue: ProxiesIconSource.standard) ProxiesIconSource iconSource,@JsonKey(unknownEnumValue: ProxyCardType.expand) ProxyCardType cardType
 });
 
 
@@ -1757,12 +1759,13 @@ class __$ProxiesStylePropsCopyWithImpl<$Res>
 
 /// Create a copy of ProxiesStyleProps
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? type = null,Object? sortType = null,Object? layout = null,Object? iconStyle = null,Object? iconSource = null,Object? cardType = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? type = null,Object? sortType = null,Object? layout = null,Object? listHeaderStyle = null,Object? iconStyle = null,Object? iconSource = null,Object? cardType = null,}) {
   return _then(_ProxiesStyleProps(
 type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as ProxiesType,sortType: null == sortType ? _self.sortType : sortType // ignore: cast_nullable_to_non_nullable
 as ProxiesSortType,layout: null == layout ? _self.layout : layout // ignore: cast_nullable_to_non_nullable
-as ProxiesLayout,iconStyle: null == iconStyle ? _self.iconStyle : iconStyle // ignore: cast_nullable_to_non_nullable
+as ProxiesLayout,listHeaderStyle: null == listHeaderStyle ? _self.listHeaderStyle : listHeaderStyle // ignore: cast_nullable_to_non_nullable
+as ProxiesListHeaderStyle,iconStyle: null == iconStyle ? _self.iconStyle : iconStyle // ignore: cast_nullable_to_non_nullable
 as ProxiesIconStyle,iconSource: null == iconSource ? _self.iconSource : iconSource // ignore: cast_nullable_to_non_nullable
 as ProxiesIconSource,cardType: null == cardType ? _self.cardType : cardType // ignore: cast_nullable_to_non_nullable
 as ProxyCardType,
