@@ -244,6 +244,13 @@ _ProxiesStyleProps _$ProxiesStylePropsFromJson(Map<String, dynamic> json) =>
             unknownValue: ProxiesLayout.standard,
           ) ??
           ProxiesLayout.standard,
+      listHeaderStyle:
+          $enumDecodeNullable(
+            _$ProxiesListHeaderStyleEnumMap,
+            json['listHeaderStyle'],
+            unknownValue: ProxiesListHeaderStyle.loose,
+          ) ??
+          ProxiesListHeaderStyle.loose,
       iconStyle:
           $enumDecodeNullable(
             _$ProxiesIconStyleEnumMap,
@@ -267,15 +274,17 @@ _ProxiesStyleProps _$ProxiesStylePropsFromJson(Map<String, dynamic> json) =>
           ProxyCardType.expand,
     );
 
-Map<String, dynamic> _$ProxiesStylePropsToJson(_ProxiesStyleProps instance) =>
-    <String, dynamic>{
-      'type': _$ProxiesTypeEnumMap[instance.type]!,
-      'sortType': _$ProxiesSortTypeEnumMap[instance.sortType]!,
-      'layout': _$ProxiesLayoutEnumMap[instance.layout]!,
-      'iconStyle': _$ProxiesIconStyleEnumMap[instance.iconStyle]!,
-      'iconSource': _$ProxiesIconSourceEnumMap[instance.iconSource]!,
-      'cardType': _$ProxyCardTypeEnumMap[instance.cardType]!,
-    };
+Map<String, dynamic> _$ProxiesStylePropsToJson(
+  _ProxiesStyleProps instance,
+) => <String, dynamic>{
+  'type': _$ProxiesTypeEnumMap[instance.type]!,
+  'sortType': _$ProxiesSortTypeEnumMap[instance.sortType]!,
+  'layout': _$ProxiesLayoutEnumMap[instance.layout]!,
+  'listHeaderStyle': _$ProxiesListHeaderStyleEnumMap[instance.listHeaderStyle]!,
+  'iconStyle': _$ProxiesIconStyleEnumMap[instance.iconStyle]!,
+  'iconSource': _$ProxiesIconSourceEnumMap[instance.iconSource]!,
+  'cardType': _$ProxyCardTypeEnumMap[instance.cardType]!,
+};
 
 const _$ProxiesTypeEnumMap = {ProxiesType.tab: 'tab', ProxiesType.list: 'list'};
 
@@ -289,6 +298,12 @@ const _$ProxiesLayoutEnumMap = {
   ProxiesLayout.loose: 'loose',
   ProxiesLayout.standard: 'standard',
   ProxiesLayout.tight: 'tight',
+};
+
+const _$ProxiesListHeaderStyleEnumMap = {
+  ProxiesListHeaderStyle.loose: 'loose',
+  ProxiesListHeaderStyle.standard: 'standard',
+  ProxiesListHeaderStyle.tight: 'tight',
 };
 
 const _$ProxiesIconStyleEnumMap = {
