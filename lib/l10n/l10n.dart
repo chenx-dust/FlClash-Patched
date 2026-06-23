@@ -854,6 +854,11 @@ class AppLocalizations {
     return Intl.message('Log level', name: 'logLevel', desc: '', args: []);
   }
 
+  /// `User-Agent`
+  String get userAgent {
+    return Intl.message('User-Agent', name: 'userAgent', desc: '', args: []);
+  }
+
   /// `Show`
   String get show {
     return Intl.message('Show', name: 'show', desc: '', args: []);
@@ -1157,11 +1162,6 @@ class AppLocalizations {
       desc: '',
       args: [],
     );
-  }
-
-  /// `User-Agent`
-  String get userAgent {
-    return Intl.message('User-Agent', name: 'userAgent', desc: '', args: []);
   }
 
   /// `Unified delay`
