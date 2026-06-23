@@ -51,5 +51,35 @@ void main() {
 
       ticker.dispose();
     });
+
+    test('slow uses slow interval until resume restores normal interval', () async {
+      final ticker = ForegroundTicker(
+        interval: const Duration(milliseconds: 30),
+        slowInterval: const Duration(milliseconds: 120),
+      );
+      var runs = 0;
+
+      ticker.register(Object(), () {
+        runs++;
+      });
+
+      await Future<void>.delayed(const Duration(milliseconds: 80));
+      expect(runs, greaterThanOrEqualTo(2));
+
+      ticker.slow();
+      final slowStartRuns = runs;
+      await Future<void>.delayed(const Duration(milliseconds: 70));
+      expect(runs, slowStartRuns);
+
+      await Future<void>.delayed(const Duration(milliseconds: 70));
+      expect(runs, greaterThanOrEqualTo(slowStartRuns + 1));
+
+      ticker.resume();
+      final resumeStartRuns = runs;
+      await Future<void>.delayed(const Duration(milliseconds: 80));
+      expect(runs, greaterThanOrEqualTo(resumeStartRuns + 2));
+
+      ticker.dispose();
+    });
   });
 }
