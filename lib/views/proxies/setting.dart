@@ -33,7 +33,7 @@ class ProxiesSetting extends StatelessWidget {
     };
   }
 
-  String getTextForProxiesLayout(
+  String _getTextForProxiesLayout(
     BuildContext context,
     ProxiesLayout proxiesLayout,
   ) {
@@ -54,6 +54,18 @@ class ProxiesSetting extends StatelessWidget {
       ProxiesIconStyle.standard => appLocalizations.standard,
       ProxiesIconStyle.none => appLocalizations.none,
       ProxiesIconStyle.icon => appLocalizations.onlyIcon,
+    };
+  }
+
+  String _getTextWithProxiesIconSource(
+    BuildContext context,
+    ProxiesIconSource source,
+  ) {
+    final appLocalizations = context.appLocalizations;
+    return switch (source) {
+      ProxiesIconSource.standard => appLocalizations.defaultText,
+      ProxiesIconSource.config => appLocalizations.onlyConfig,
+      ProxiesIconSource.emoji => appLocalizations.onlyEmoji,
     };
   }
 
@@ -193,10 +205,10 @@ class ProxiesSetting extends StatelessWidget {
                 children: [
                   for (final item in ProxiesLayout.values)
                     SettingTextCard(
-                      getTextForProxiesLayout(context, item),
+                      _getTextForProxiesLayout(context, item),
                       isSelected: item == layout,
                       onPressed: () {
-                        ref.watch(proxiesStyleSettingProvider.notifier).update((
+                        ref.read(proxiesStyleSettingProvider.notifier).update((
                           state,
                         ) {
                           return state.copyWith(layout: item);
@@ -212,7 +224,7 @@ class ProxiesSetting extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildGroupStyleSetting(BuildContext context) {
+  List<Widget> _buildGroupIconStyleSetting(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     return generateSection(
       title: appLocalizations.iconStyle,
@@ -237,6 +249,43 @@ class ProxiesSetting extends StatelessWidget {
                           state,
                         ) {
                           return state.copyWith(iconStyle: item);
+                        });
+                      },
+                    ),
+                ],
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> _buildGroupIconSourceSetting(BuildContext context) {
+    final appLocalizations = context.appLocalizations;
+    return generateSection(
+      title: appLocalizations.iconSource,
+      items: [
+        SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          scrollDirection: Axis.horizontal,
+          child: Consumer(
+            builder: (_, ref, _) {
+              final iconSource = ref.watch(
+                proxiesStyleSettingProvider.select((state) => state.iconSource),
+              );
+              return Wrap(
+                spacing: 16,
+                children: [
+                  for (final item in ProxiesIconSource.values)
+                    SettingTextCard(
+                      _getTextWithProxiesIconSource(context, item),
+                      isSelected: iconSource == item,
+                      onPressed: () {
+                        ref.read(proxiesStyleSettingProvider.notifier).update((
+                          state,
+                        ) {
+                          return state.copyWith(iconSource: item);
                         });
                       },
                     ),
@@ -276,7 +325,10 @@ class ProxiesSetting extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [..._buildGroupStyleSetting(context)],
+              children: [
+                ..._buildGroupIconStyleSetting(context),
+                ..._buildGroupIconSourceSetting(context),
+              ],
             ),
           ),
         ],
