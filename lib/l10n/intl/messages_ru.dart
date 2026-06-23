@@ -475,6 +475,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hasCacheChange": MessageLookupByLibrary.simpleMessage(
       "Хотите сохранить изменения в кэше?",
     ),
+    "header": MessageLookupByLibrary.simpleMessage("Заголовок"),
     "hideFromList": MessageLookupByLibrary.simpleMessage("Скрыть из списка"),
     "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage(
       "Автозапуск с высоким приоритетом",
