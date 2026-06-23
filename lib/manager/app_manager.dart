@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:window_manager/window_manager.dart';
 
 class AppStateManager extends ConsumerStatefulWidget {
   final Widget child;
@@ -81,16 +82,31 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     commonPrint.log('$state');
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden) {
-      await preferences.saveConfig(ref.read(configProvider));
-      globalState.handleBackground();
-    } else if (state == AppLifecycleState.resumed) {
-      permissions.check();
-      globalState.handleForeground();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final ref = globalState.container;
-        ref.read(setupActionProvider.notifier).tryCheckIp();
-      });
+    switch (state) {
+      case AppLifecycleState.inactive:
+        if (system.isDesktop) {
+          final isVisible = await windowManager.isVisible();
+          final isMinimized = await windowManager.isMinimized();
+          commonPrint.log('isVisible: $isVisible, isMinimized: $isMinimized');
+          if (isVisible || !isMinimized) {
+            break;
+          }
+        }
+      case AppLifecycleState.paused:
+      case AppLifecycleState.hidden:
+        await preferences.saveConfig(ref.read(configProvider));
+        globalState.handleBackground();
+        break;
+      case AppLifecycleState.resumed:
+        permissions.check();
+        globalState.handleForeground();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final ref = globalState.container;
+          ref.read(setupActionProvider.notifier).tryCheckIp();
+        });
+        break;
+      default:
+        break;
     }
   }
 
