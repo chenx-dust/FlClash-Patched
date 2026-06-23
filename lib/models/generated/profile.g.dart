@@ -48,7 +48,11 @@ _Profile _$ProfileFromJson(Map<String, dynamic> json) => _Profile(
       (json['unfoldSet'] as List<dynamic>?)?.map((e) => e as String).toSet() ??
       const {},
   overwriteType:
-      $enumDecodeNullable(_$OverwriteTypeEnumMap, json['overwriteType']) ??
+      $enumDecodeNullable(
+        _$OverwriteTypeEnumMap,
+        json['overwriteType'],
+        unknownValue: OverwriteType.standard,
+      ) ??
       OverwriteType.standard,
   scriptId: (json['scriptId'] as num?)?.toInt(),
   order: (json['order'] as num?)?.toInt(),
