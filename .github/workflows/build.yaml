@@ -151,33 +151,6 @@ jobs:
           pattern: artifact-*
           merge-multiple: true
 
-      - name: Generate release.md
-        run: |
-          mapfile -t tags < <(git tag --merged HEAD --sort=-creatordate)
-          preTag=$(curl -s "https://api.github.com/repos/chenx-dust/FlClash-Patched/releases/latest" | \
-          sed -nE 's/.*"tag_name": "([^"]+)".*/\1/p')
-          
-          [ -z "$preTag" ] && preTag=""
-          
-          out="release.md"
-          : > "$out"
-          
-          for i in "${!tags[@]}"; do
-            curr="${tags[i]}"
-            [[ "$curr" == "$preTag" ]] && break
-          
-            prev="${tags[i+1]}"
-            range="${prev:+$prev..}$curr"
-          
-            git log --no-merges --pretty=format:"%B" "$range" | \
-            awk '!/Update changelog/ && NF {print "- " $0 "\n"}' >> "$out"
-          done
-
-      - name: Patch release.md
-        run: |
-          version=$(echo "${{ github.ref_name }}" | sed 's/^v//')
-          sed "s|VERSION|$version|g" ./.github/release_template.md >> release.md
-
       - name: Generate sha256
         if: ${{ env.IS_STABLE == 'true' }}
         run: |
@@ -189,4 +162,4 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: ./dist/*
-          body_path: './release.md'
+          body_path: './.github/release_template.md'
