@@ -212,8 +212,8 @@ abstract class ProxiesStyleProps with _$ProxiesStyleProps {
     @Default(ProxiesIconSource.standard)
     @JsonKey(unknownEnumValue: ProxiesIconSource.standard)
     ProxiesIconSource iconSource,
-    @Default(ProxyCardType.expand)
-    @JsonKey(unknownEnumValue: ProxyCardType.expand)
+    @Default(ProxyCardType.standard)
+    @JsonKey(unknownEnumValue: ProxyCardType.standard)
     ProxyCardType cardType,
   }) = _ProxiesStyleProps;
 
