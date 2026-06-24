@@ -207,6 +207,49 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
     await _updateConnections();
   }
 
+  Widget _buildBody(TrackerInfosState state) {
+    final appLocalizations = context.appLocalizations;
+    final connections = _sortConnections(state.list);
+    if (connections.isEmpty) {
+      return NullStatus(
+        label: appLocalizations.nullTip(appLocalizations.connections),
+        illustration: const ConnectionEmptyIllustration(),
+      );
+    }
+    final items = connections
+        .map<Widget>(
+          (trackerInfo) => TrackerInfoItem(
+            key: Key(trackerInfo.id),
+            trackerInfo: trackerInfo,
+            onClickKeyword: (value) {
+              context.commonScaffoldState?.addKeyword(value);
+            },
+            onDetailClosed: () async {
+              await _updateConnections(flushDeferred: true);
+            },
+            trailing: IconButton(
+              padding: EdgeInsets.zero,
+              visualDensity: VisualDensity.compact,
+              style: IconButton.styleFrom(minimumSize: Size.zero),
+              icon: const Icon(Icons.close),
+              onPressed: () {
+                _handleBlockConnection(trackerInfo.id);
+              },
+            ),
+            detailTitle: appLocalizations.details(appLocalizations.connection),
+          ),
+        )
+        .separated(const Divider(height: 0))
+        .toList();
+    return SuperListView.builder(
+      controller: _scrollController,
+      itemBuilder: (context, index) {
+        return items[index];
+      },
+      itemCount: connections.length,
+    );
+  }
+
   @override
   void dispose() {
     foregroundTicker.unregister(this);
@@ -218,62 +261,22 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
-    return CommonScaffold(
-      title: appLocalizations.connections,
-      onKeywordsUpdate: _onKeywordsUpdate,
-      searchState: AppBarSearchState(
-        onSearch: _onSearch,
-        onRegexChange: _onRegexSearchChange,
-        useRegex: _connectionsStateNotifier.value.useRegex,
-      ),
-      actions: _buildActions(context),
-      floatingActionButton: _buildFAB(),
-      body: ValueListenableBuilder<TrackerInfosState>(
-        valueListenable: _connectionsStateNotifier,
-        builder: (context, state, _) {
-          final connections = _sortConnections(state.list);
-          if (connections.isEmpty) {
-            return NullStatus(
-              label: appLocalizations.nullTip(appLocalizations.connections),
-              illustration: const ConnectionEmptyIllustration(),
-            );
-          }
-          final items = connections
-              .map<Widget>(
-                (trackerInfo) => TrackerInfoItem(
-                  key: Key(trackerInfo.id),
-                  trackerInfo: trackerInfo,
-                  onClickKeyword: (value) {
-                    context.commonScaffoldState?.addKeyword(value);
-                  },
-                  onDetailClosed: () async {
-                    await _updateConnections(flushDeferred: true);
-                  },
-                  trailing: IconButton(
-                    padding: EdgeInsets.zero,
-                    visualDensity: VisualDensity.compact,
-                    style: IconButton.styleFrom(minimumSize: Size.zero),
-                    icon: const Icon(Icons.close),
-                    onPressed: () {
-                      _handleBlockConnection(trackerInfo.id);
-                    },
-                  ),
-                  detailTitle: appLocalizations.details(
-                    appLocalizations.connection,
-                  ),
-                ),
-              )
-              .separated(const Divider(height: 0))
-              .toList();
-          return SuperListView.builder(
-            controller: _scrollController,
-            itemBuilder: (context, index) {
-              return items[index];
-            },
-            itemCount: connections.length,
-          );
-        },
-      ),
+    return ValueListenableBuilder<TrackerInfosState>(
+      valueListenable: _connectionsStateNotifier,
+      builder: (context, state, _) {
+        return CommonScaffold(
+          title: appLocalizations.connections,
+          onKeywordsUpdate: _onKeywordsUpdate,
+          searchState: AppBarSearchState(
+            onSearch: _onSearch,
+            onRegexChange: _onRegexSearchChange,
+            useRegex: state.useRegex,
+          ),
+          actions: _buildActions(context),
+          floatingActionButton: state.trackerInfos.isEmpty ? null : _buildFAB(),
+          body: _buildBody(state),
+        );
+      },
     );
   }
 }
