@@ -42,12 +42,14 @@ class _LogsViewState extends ConsumerState<LogsView> {
   }
 
   List<Widget> _buildActions() {
+    final appLocalizations = context.appLocalizations;
     return [
       IconButton(
+        tooltip: appLocalizations.exportFile,
         onPressed: () {
           _handleExport();
         },
-        icon: const Icon(Icons.save_as_outlined),
+        icon: const Icon(Icons.save_outlined),
       ),
     ];
   }
