@@ -174,20 +174,19 @@ abstract class LogsState with _$LogsState {
     @Default([]) List<Log> logs,
     @Default([]) List<String> keywords,
     @Default('') String query,
+    @Default(false) bool useRegex,
     @Default(true) bool autoScrollToEnd,
   }) = _LogsState;
 }
 
 extension LogsStateExt on LogsState {
   List<Log> get list {
-    final lowQuery = query.toLowerCase();
+    final matcher = SearchMatcher(query, useRegex: useRegex);
     return logs.where((log) {
       final logLevelName = log.logLevel.name;
       final logSourceName = log.source.name;
       return {logLevelName, logSourceName}.containsAll(keywords) &&
-          ((log.payload.toLowerCase().contains(lowQuery)) ||
-              logLevelName.contains(lowQuery) ||
-              logSourceName.contains(lowQuery));
+          matcher.hasAnyMatch([log.payload, logLevelName, logSourceName]);
     }).toList();
   }
 }
@@ -198,29 +197,30 @@ abstract class TrackerInfosState with _$TrackerInfosState {
     @Default([]) List<TrackerInfo> trackerInfos,
     @Default([]) List<String> keywords,
     @Default('') String query,
+    @Default(false) bool useRegex,
     @Default(true) bool autoScrollToEnd,
   }) = _TrackerInfosState;
 }
 
 extension TrackerInfosStateExt on TrackerInfosState {
   List<TrackerInfo> get list {
-    final lowerQuery = query.toLowerCase().trim();
-    final lowQuery = query.toLowerCase();
+    final matcher = SearchMatcher(query, useRegex: useRegex);
     return trackerInfos.where((trackerInfo) {
       final chains = trackerInfo.chains;
       final process = trackerInfo.metadata.process;
-      final networkText = trackerInfo.metadata.network.toLowerCase();
-      final hostText = trackerInfo.metadata.host.toLowerCase();
-      final destinationIPText = trackerInfo.metadata.destinationIP
-          .toLowerCase();
-      final processText = trackerInfo.metadata.process.toLowerCase();
-      final chainsText = chains.join('').toLowerCase();
+      final networkText = trackerInfo.metadata.network;
+      final hostText = trackerInfo.metadata.host;
+      final destinationIPText = trackerInfo.metadata.destinationIP;
+      final processText = trackerInfo.metadata.process;
+      final chainsText = chains.join('');
       return {...chains, process}.containsAll(keywords) &&
-          (networkText.contains(lowerQuery) ||
-              hostText.contains(lowerQuery) ||
-              destinationIPText.contains(lowQuery) ||
-              processText.contains(lowerQuery) ||
-              chainsText.contains(lowerQuery));
+          matcher.hasAnyMatch([
+            networkText,
+            hostText,
+            destinationIPText,
+            processText,
+            chainsText,
+          ]);
     }).toList();
   }
 }
