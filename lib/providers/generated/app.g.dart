@@ -1398,6 +1398,96 @@ abstract class _$Query extends $Notifier<String> {
   }
 }
 
+@ProviderFor(SearchUseRegex)
+final searchUseRegexProvider = SearchUseRegexFamily._();
+
+final class SearchUseRegexProvider
+    extends $NotifierProvider<SearchUseRegex, bool> {
+  SearchUseRegexProvider._({
+    required SearchUseRegexFamily super.from,
+    required QueryTag super.argument,
+  }) : super(
+         retry: null,
+         name: r'searchUseRegexProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$searchUseRegexHash();
+
+  @override
+  String toString() {
+    return r'searchUseRegexProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  SearchUseRegex create() => SearchUseRegex();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SearchUseRegexProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$searchUseRegexHash() => r'89557faf318f80ba5c09001518baa9a9194a5e71';
+
+final class SearchUseRegexFamily extends $Family
+    with $ClassFamilyOverride<SearchUseRegex, bool, bool, bool, QueryTag> {
+  SearchUseRegexFamily._()
+    : super(
+        retry: null,
+        name: r'searchUseRegexProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  SearchUseRegexProvider call(QueryTag tag) =>
+      SearchUseRegexProvider._(argument: tag, from: this);
+
+  @override
+  String toString() => r'searchUseRegexProvider';
+}
+
+abstract class _$SearchUseRegex extends $Notifier<bool> {
+  late final _$args = ref.$arg as QueryTag;
+  QueryTag get tag => _$args;
+
+  bool build(QueryTag tag);
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, () => build(_$args));
+  }
+}
+
 @ProviderFor(Loading)
 final loadingProvider = LoadingFamily._();
 

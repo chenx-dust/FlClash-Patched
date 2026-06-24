@@ -58,6 +58,12 @@ class _LogsViewState extends ConsumerState<LogsView> {
     _logsStateNotifier.value = _logsStateNotifier.value.copyWith(query: value);
   }
 
+  void _onRegexSearchChange(bool value) {
+    _logsStateNotifier.value = _logsStateNotifier.value.copyWith(
+      useRegex: value,
+    );
+  }
+
   void _onKeywordsUpdate(List<String> keywords) {
     _logsStateNotifier.value = _logsStateNotifier.value.copyWith(
       keywords: keywords,
@@ -88,9 +94,7 @@ class _LogsViewState extends ConsumerState<LogsView> {
   Future<void> _handleExport() async {
     final appLocalizations = context.appLocalizations;
     final res = await globalState.safeRun<bool>(() async {
-      return globalState.container
-          .read(logsProvider.notifier)
-          .exportLogs();
+      return globalState.container.read(logsProvider.notifier).exportLogs();
     }, title: appLocalizations.exportLogs);
     if (res != true) return;
     globalState.showMessage(
@@ -128,7 +132,11 @@ class _LogsViewState extends ConsumerState<LogsView> {
       actions: _buildActions(),
       onKeywordsUpdate: _onKeywordsUpdate,
       keywordLabelBuilder: _getKeywordLabel,
-      searchState: AppBarSearchState(onSearch: _onSearch),
+      searchState: AppBarSearchState(
+        onSearch: _onSearch,
+        onRegexChange: _onRegexSearchChange,
+        useRegex: _logsStateNotifier.value.useRegex,
+      ),
       title: appLocalizations.logs,
       floatingActionButton: ValueListenableBuilder(
         valueListenable: _logsStateNotifier,

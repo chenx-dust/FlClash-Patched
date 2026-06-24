@@ -248,12 +248,13 @@ GroupsState filterGroupsState(Ref ref, String query) {
   if (query.isEmpty) {
     return currentGroups;
   }
-  final lowQuery = query.toLowerCase();
+  final useRegex = ref.watch(searchUseRegexProvider(QueryTag.proxies));
+  final matcher = SearchMatcher(query, useRegex: useRegex);
   final groups = currentGroups.value
       .map((group) {
         return group.copyWith(
           all: group.all
-              .where((proxy) => proxy.name.toLowerCase().contains(lowQuery))
+              .where((proxy) => matcher.hasMatch(proxy.name))
               .toList(),
         );
       })
