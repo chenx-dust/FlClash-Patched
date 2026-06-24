@@ -605,5 +605,20 @@
   "ageKeyPairGeneratedSuccess": "已生成 X25519 密钥对，请妥善保存",
   "agePrivateKeyRequired": "请先输入正确的 Age 私钥",
   "generateSecret": "生成",
-  "predictiveBack": "预见性返回"
+  "predictiveBack": "预见性返回",
+  "uploadTraffic": "上传流量",
+  "downloadTraffic": "下载流量",
+  "uploadSpeed": "上传速度",
+  "downloadSpeed": "下载速度",
+  "uiUpdateInterval": "界面信息更新间隔",
+  "uiUpdateIntervalDesc": "{interval} · 空闲时 {idleInterval}",
+  "uiUpdateIdleWhenUnfocused": "失去焦点时进入空闲",
+  "uiUpdateIdleWhenUnfocusedDesc": "应用窗口失去焦点时使用空闲更新间隔",
+  "uiUpdateIdleInterval": "空闲更新间隔",
+  "uiUpdateIntervalIdleDisabledDesc": "{interval} · 已禁用空闲更新",
+  "regexSearch": "正则表达式搜索",
+  "iconSource": "图标来源",
+  "onlyConfig": "仅配置",
+  "onlyEmoji": "仅 Emoji",
+  "closeAll": "全部关闭"
 }

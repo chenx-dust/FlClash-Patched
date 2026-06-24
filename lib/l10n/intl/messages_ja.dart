@@ -77,9 +77,14 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m26(count) => "${count} 項目が選択されています";
 
-  static String m27(label) => "${label} は URL である必要があります";
+  static String m27(interval, idleInterval) =>
+      "${interval}・アイドル時 ${idleInterval}";
 
-  static String m28(count) => "${count} 年前";
+  static String m28(interval) => "${interval}・アイドル時は無効";
+
+  static String m29(label) => "${label} は URL である必要があります";
+
+  static String m30(count) => "${count} 年前";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -214,6 +219,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "clipboardExport": MessageLookupByLibrary.simpleMessage("クリップボードにエクスポート"),
     "clipboardImport": MessageLookupByLibrary.simpleMessage("クリップボードからインポート"),
     "close": MessageLookupByLibrary.simpleMessage("閉じる"),
+    "closeAll": MessageLookupByLibrary.simpleMessage("すべて閉じる"),
     "closeConnections": MessageLookupByLibrary.simpleMessage("接続を閉じる"),
     "color": MessageLookupByLibrary.simpleMessage("カラー"),
     "colorSchemes": MessageLookupByLibrary.simpleMessage("カラースキーム"),
@@ -316,6 +322,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "doYouWantToPass": MessageLookupByLibrary.simpleMessage("通過させますか？"),
     "domain": MessageLookupByLibrary.simpleMessage("ドメイン"),
     "download": MessageLookupByLibrary.simpleMessage("ダウンロード"),
+    "downloadSpeed": MessageLookupByLibrary.simpleMessage("ダウンロード速度"),
+    "downloadTraffic": MessageLookupByLibrary.simpleMessage("ダウンロード通信量"),
     "dozeSuspend": MessageLookupByLibrary.simpleMessage("Doze サスペンド"),
     "dozeSuspendDesc": MessageLookupByLibrary.simpleMessage(
       "Android が Doze モードの間、バッテリー消費を抑えるためコアを一時停止します",
@@ -420,6 +428,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hoursCount": m12,
     "icon": MessageLookupByLibrary.simpleMessage("アイコン"),
     "iconRecords": MessageLookupByLibrary.simpleMessage("アイコン履歴"),
+    "iconSource": MessageLookupByLibrary.simpleMessage("アイコンソース"),
     "iconStyle": MessageLookupByLibrary.simpleMessage("アイコンスタイル"),
     "iconUrl": MessageLookupByLibrary.simpleMessage("アイコン URL"),
     "ignoreBatteryOptimization": MessageLookupByLibrary.simpleMessage(
@@ -568,6 +577,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "onDemandDesc": MessageLookupByLibrary.simpleMessage(
       "特定のシナリオでのアプリの実行状態を設定",
     ),
+    "onlyConfig": MessageLookupByLibrary.simpleMessage("設定のみ"),
+    "onlyEmoji": MessageLookupByLibrary.simpleMessage("絵文字のみ"),
     "onlyIcon": MessageLookupByLibrary.simpleMessage("アイコンのみ"),
     "onlyStatisticsProxy": MessageLookupByLibrary.simpleMessage("プロキシのみ統計"),
     "onlyStatisticsProxyDesc": MessageLookupByLibrary.simpleMessage(
@@ -608,6 +619,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "port": MessageLookupByLibrary.simpleMessage("ポート"),
     "portConflictTip": MessageLookupByLibrary.simpleMessage("別のポートを入力してください"),
     "portTip": m22,
+    "predictiveBack": MessageLookupByLibrary.simpleMessage("予測型戻る"),
     "preferH3Desc": MessageLookupByLibrary.simpleMessage("DOH の HTTP/3 を優先使用"),
     "prerequisites": MessageLookupByLibrary.simpleMessage("前提条件"),
     "pressKeyboard": MessageLookupByLibrary.simpleMessage("キーボードを押してください"),
@@ -679,6 +691,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("レインボー"),
     "redirPort": MessageLookupByLibrary.simpleMessage("Redir ポート"),
     "redo": MessageLookupByLibrary.simpleMessage("やり直す"),
+    "regexSearch": MessageLookupByLibrary.simpleMessage("正規表現検索"),
     "remote": MessageLookupByLibrary.simpleMessage("リモート"),
     "remoteBackupDesc": MessageLookupByLibrary.simpleMessage(
       "WebDAV にデータをバックアップ",
@@ -921,6 +934,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "tunDesc": MessageLookupByLibrary.simpleMessage("管理者モードでのみ有効"),
     "turnOff": MessageLookupByLibrary.simpleMessage("オフ"),
     "turnOn": MessageLookupByLibrary.simpleMessage("オン"),
+    "uiUpdateIdleInterval": MessageLookupByLibrary.simpleMessage("アイドル時の更新間隔"),
+    "uiUpdateIdleWhenUnfocused": MessageLookupByLibrary.simpleMessage(
+      "フォーカス喪失時にアイドル",
+    ),
+    "uiUpdateIdleWhenUnfocusedDesc": MessageLookupByLibrary.simpleMessage(
+      "アプリのウィンドウがフォーカスを失ったときにアイドル時の更新間隔を使用",
+    ),
+    "uiUpdateInterval": MessageLookupByLibrary.simpleMessage("UI 情報の更新間隔"),
+    "uiUpdateIntervalDesc": m27,
+    "uiUpdateIntervalIdleDisabledDesc": m28,
     "undo": MessageLookupByLibrary.simpleMessage("元に戻す"),
     "unifiedDelay": MessageLookupByLibrary.simpleMessage("統一遅延"),
     "unifiedDelayDesc": MessageLookupByLibrary.simpleMessage(
@@ -933,9 +956,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "unpinWindow": MessageLookupByLibrary.simpleMessage("最前面固定を解除"),
     "update": MessageLookupByLibrary.simpleMessage("更新"),
     "upload": MessageLookupByLibrary.simpleMessage("アップロード"),
+    "uploadSpeed": MessageLookupByLibrary.simpleMessage("アップロード速度"),
+    "uploadTraffic": MessageLookupByLibrary.simpleMessage("アップロード通信量"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("URL 経由でプロファイルを取得"),
-    "urlTip": m27,
+    "urlTip": m29,
     "useHosts": MessageLookupByLibrary.simpleMessage("ホストを使用"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("システムホストを使用"),
     "usedTraffic": MessageLookupByLibrary.simpleMessage("使用済み通信量"),
@@ -952,7 +977,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnTip": MessageLookupByLibrary.simpleMessage("変更は VPN 再起動後に有効"),
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV 設定"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("ホワイトリストモード"),
-    "yearsAgo": m28,
+    "yearsAgo": m30,
     "zh_CN": MessageLookupByLibrary.simpleMessage("簡体字中国語"),
   };
 }

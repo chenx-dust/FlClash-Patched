@@ -77,9 +77,14 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m26(count) => "已选择 ${count} 项";
 
-  static String m27(label) => "${label} 必须为 URL";
+  static String m27(interval, idleInterval) =>
+      "${interval} · 空闲时 ${idleInterval}";
 
-  static String m28(count) => "${count} 年前";
+  static String m28(interval) => "${interval} · 已禁用空闲更新";
+
+  static String m29(label) => "${label} 必须为 URL";
+
+  static String m30(count) => "${count} 年前";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -202,6 +207,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "clipboardExport": MessageLookupByLibrary.simpleMessage("导出剪贴板"),
     "clipboardImport": MessageLookupByLibrary.simpleMessage("剪贴板导入"),
     "close": MessageLookupByLibrary.simpleMessage("关闭"),
+    "closeAll": MessageLookupByLibrary.simpleMessage("全部关闭"),
     "closeConnections": MessageLookupByLibrary.simpleMessage("关闭连接"),
     "color": MessageLookupByLibrary.simpleMessage("颜色"),
     "colorSchemes": MessageLookupByLibrary.simpleMessage("配色方案"),
@@ -286,6 +292,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "doYouWantToPass": MessageLookupByLibrary.simpleMessage("是否要通过"),
     "domain": MessageLookupByLibrary.simpleMessage("域名"),
     "download": MessageLookupByLibrary.simpleMessage("下载"),
+    "downloadSpeed": MessageLookupByLibrary.simpleMessage("下载速度"),
+    "downloadTraffic": MessageLookupByLibrary.simpleMessage("下载流量"),
     "dozeSuspend": MessageLookupByLibrary.simpleMessage("Doze 休眠"),
     "dozeSuspendDesc": MessageLookupByLibrary.simpleMessage(
       "Android 进入 Doze 模式时挂起核心以降低耗电",
@@ -380,6 +388,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hoursCount": m12,
     "icon": MessageLookupByLibrary.simpleMessage("图片"),
     "iconRecords": MessageLookupByLibrary.simpleMessage("图标记录"),
+    "iconSource": MessageLookupByLibrary.simpleMessage("图标来源"),
     "iconStyle": MessageLookupByLibrary.simpleMessage("图标样式"),
     "iconUrl": MessageLookupByLibrary.simpleMessage("图标链接"),
     "ignoreBatteryOptimization": MessageLookupByLibrary.simpleMessage("忽略电池优化"),
@@ -508,6 +517,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "numberTip": m21,
     "onDemand": MessageLookupByLibrary.simpleMessage("按需运行"),
     "onDemandDesc": MessageLookupByLibrary.simpleMessage("配置程序特定场景运行状态"),
+    "onlyConfig": MessageLookupByLibrary.simpleMessage("仅配置"),
+    "onlyEmoji": MessageLookupByLibrary.simpleMessage("仅 Emoji"),
     "onlyIcon": MessageLookupByLibrary.simpleMessage("仅图标"),
     "onlyStatisticsProxy": MessageLookupByLibrary.simpleMessage("仅统计代理"),
     "onlyStatisticsProxyDesc": MessageLookupByLibrary.simpleMessage(
@@ -544,6 +555,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "port": MessageLookupByLibrary.simpleMessage("端口"),
     "portConflictTip": MessageLookupByLibrary.simpleMessage("请输入不同的端口"),
     "portTip": m22,
+    "predictiveBack": MessageLookupByLibrary.simpleMessage("预见性返回"),
     "preferH3Desc": MessageLookupByLibrary.simpleMessage("优先使用 DOH 的 http/3"),
     "prerequisites": MessageLookupByLibrary.simpleMessage("前置条件"),
     "pressKeyboard": MessageLookupByLibrary.simpleMessage("请按下按键"),
@@ -603,6 +615,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("彩虹"),
     "redirPort": MessageLookupByLibrary.simpleMessage("Redir 端口"),
     "redo": MessageLookupByLibrary.simpleMessage("重做"),
+    "regexSearch": MessageLookupByLibrary.simpleMessage("正则表达式搜索"),
     "remote": MessageLookupByLibrary.simpleMessage("远程"),
     "remoteBackupDesc": MessageLookupByLibrary.simpleMessage("备份数据到 WebDAV"),
     "remoteDestination": MessageLookupByLibrary.simpleMessage("远程目标"),
@@ -811,6 +824,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "tunDesc": MessageLookupByLibrary.simpleMessage("仅在管理员模式生效"),
     "turnOff": MessageLookupByLibrary.simpleMessage("关闭"),
     "turnOn": MessageLookupByLibrary.simpleMessage("开启"),
+    "uiUpdateIdleInterval": MessageLookupByLibrary.simpleMessage("空闲更新间隔"),
+    "uiUpdateIdleWhenUnfocused": MessageLookupByLibrary.simpleMessage(
+      "失去焦点时进入空闲",
+    ),
+    "uiUpdateIdleWhenUnfocusedDesc": MessageLookupByLibrary.simpleMessage(
+      "应用窗口失去焦点时使用空闲更新间隔",
+    ),
+    "uiUpdateInterval": MessageLookupByLibrary.simpleMessage("界面信息更新间隔"),
+    "uiUpdateIntervalDesc": m27,
+    "uiUpdateIntervalIdleDisabledDesc": m28,
     "undo": MessageLookupByLibrary.simpleMessage("撤销"),
     "unifiedDelay": MessageLookupByLibrary.simpleMessage("统一延迟"),
     "unifiedDelayDesc": MessageLookupByLibrary.simpleMessage("去除握手等额外延迟"),
@@ -821,9 +844,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "unpinWindow": MessageLookupByLibrary.simpleMessage("取消置顶"),
     "update": MessageLookupByLibrary.simpleMessage("更新"),
     "upload": MessageLookupByLibrary.simpleMessage("上传"),
+    "uploadSpeed": MessageLookupByLibrary.simpleMessage("上传速度"),
+    "uploadTraffic": MessageLookupByLibrary.simpleMessage("上传流量"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("通过 URL 获取配置文件"),
-    "urlTip": m27,
+    "urlTip": m29,
     "useHosts": MessageLookupByLibrary.simpleMessage("使用 Hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("使用系统 Hosts"),
     "usedTraffic": MessageLookupByLibrary.simpleMessage("已用流量"),
@@ -840,7 +865,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnTip": MessageLookupByLibrary.simpleMessage("重启 VPN 后改变生效"),
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV 配置"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("白名单模式"),
-    "yearsAgo": m28,
+    "yearsAgo": m30,
     "zh_CN": MessageLookupByLibrary.simpleMessage("中文简体"),
   };
 }

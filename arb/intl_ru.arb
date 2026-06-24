@@ -604,5 +604,21 @@
   "generateFromPrivateKey": "Создать из закрытого ключа Age",
   "ageKeyPairGeneratedSuccess": "Пара ключей X25519 создана, сохраните ее в надежном месте",
   "agePrivateKeyRequired": "Пожалуйста, сначала введите корректный закрытый ключ Age",
-  "generateSecret": "Создать"
+  "generateSecret": "Создать",
+  "uploadTraffic": "Объем исходящего трафика",
+  "downloadTraffic": "Объем входящего трафика",
+  "uploadSpeed": "Скорость отправки",
+  "downloadSpeed": "Скорость загрузки",
+  "uiUpdateInterval": "Интервал обновления интерфейса",
+  "uiUpdateIntervalDesc": "{interval} · В режиме ожидания {idleInterval}",
+  "uiUpdateIdleWhenUnfocused": "Режим ожидания без фокуса",
+  "uiUpdateIdleWhenUnfocusedDesc": "Использовать интервал ожидания, когда окно приложения теряет фокус",
+  "uiUpdateIdleInterval": "Интервал обновления в режиме ожидания",
+  "uiUpdateIntervalIdleDisabledDesc": "{interval} · Режим ожидания отключен",
+  "regexSearch": "Поиск по регулярному выражению",
+  "predictiveBack": "Предиктивный жест «Назад»",
+  "iconSource": "Источник значков",
+  "onlyConfig": "Только конфигурация",
+  "onlyEmoji": "Только эмодзи",
+  "closeAll": "Закрыть все"
 }

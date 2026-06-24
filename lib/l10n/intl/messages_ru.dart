@@ -85,9 +85,14 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m26(count) => "Выбрано ${count} элементов";
 
-  static String m27(label) => "${label} должен быть URL";
+  static String m27(interval, idleInterval) =>
+      "${interval} · В режиме ожидания ${idleInterval}";
 
-  static String m28(count) =>
+  static String m28(interval) => "${interval} · Режим ожидания отключен";
+
+  static String m29(label) => "${label} должен быть URL";
+
+  static String m30(count) =>
       "${Intl.plural(count, one: '${count} год назад', few: '${count} года назад', many: '${count} лет назад', other: '${count} года назад')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -291,6 +296,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Импорт из буфера обмена",
     ),
     "close": MessageLookupByLibrary.simpleMessage("Закрыть"),
+    "closeAll": MessageLookupByLibrary.simpleMessage("Закрыть все"),
     "closeConnections": MessageLookupByLibrary.simpleMessage(
       "Закрыть соединения",
     ),
@@ -413,6 +419,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "domain": MessageLookupByLibrary.simpleMessage("Домен"),
     "download": MessageLookupByLibrary.simpleMessage("Скачивание"),
+    "downloadSpeed": MessageLookupByLibrary.simpleMessage("Скорость загрузки"),
+    "downloadTraffic": MessageLookupByLibrary.simpleMessage(
+      "Объем входящего трафика",
+    ),
     "dozeSuspend": MessageLookupByLibrary.simpleMessage("Приостановка в Doze"),
     "dozeSuspendDesc": MessageLookupByLibrary.simpleMessage(
       "Приостанавливать ядро в режиме Doze Android, чтобы снизить расход батареи",
@@ -547,6 +557,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hoursCount": m12,
     "icon": MessageLookupByLibrary.simpleMessage("Иконка"),
     "iconRecords": MessageLookupByLibrary.simpleMessage("История иконок"),
+    "iconSource": MessageLookupByLibrary.simpleMessage("Источник значков"),
     "iconStyle": MessageLookupByLibrary.simpleMessage("Стиль иконки"),
     "iconUrl": MessageLookupByLibrary.simpleMessage("URL иконки"),
     "ignoreBatteryOptimization": MessageLookupByLibrary.simpleMessage(
@@ -744,6 +755,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "onDemandDesc": MessageLookupByLibrary.simpleMessage(
       "Настройка состояния работы приложения для определенных сценариев",
     ),
+    "onlyConfig": MessageLookupByLibrary.simpleMessage("Только конфигурация"),
+    "onlyEmoji": MessageLookupByLibrary.simpleMessage("Только эмодзи"),
     "onlyIcon": MessageLookupByLibrary.simpleMessage("Только иконка"),
     "onlyStatisticsProxy": MessageLookupByLibrary.simpleMessage(
       "Только статистика прокси",
@@ -796,6 +809,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Введите другой порт",
     ),
     "portTip": m22,
+    "predictiveBack": MessageLookupByLibrary.simpleMessage(
+      "Предиктивный жест «Назад»",
+    ),
     "preferH3Desc": MessageLookupByLibrary.simpleMessage(
       "Приоритетное использование HTTP/3 для DOH",
     ),
@@ -883,6 +899,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("Радужные"),
     "redirPort": MessageLookupByLibrary.simpleMessage("Redir-порт"),
     "redo": MessageLookupByLibrary.simpleMessage("Повторить"),
+    "regexSearch": MessageLookupByLibrary.simpleMessage(
+      "Поиск по регулярному выражению",
+    ),
     "remote": MessageLookupByLibrary.simpleMessage("Удаленный"),
     "remoteBackupDesc": MessageLookupByLibrary.simpleMessage(
       "Резервное копирование локальных данных на WebDAV",
@@ -1191,6 +1210,20 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "turnOff": MessageLookupByLibrary.simpleMessage("Выключить"),
     "turnOn": MessageLookupByLibrary.simpleMessage("Включить"),
+    "uiUpdateIdleInterval": MessageLookupByLibrary.simpleMessage(
+      "Интервал обновления в режиме ожидания",
+    ),
+    "uiUpdateIdleWhenUnfocused": MessageLookupByLibrary.simpleMessage(
+      "Режим ожидания без фокуса",
+    ),
+    "uiUpdateIdleWhenUnfocusedDesc": MessageLookupByLibrary.simpleMessage(
+      "Использовать интервал ожидания, когда окно приложения теряет фокус",
+    ),
+    "uiUpdateInterval": MessageLookupByLibrary.simpleMessage(
+      "Интервал обновления интерфейса",
+    ),
+    "uiUpdateIntervalDesc": m27,
+    "uiUpdateIntervalIdleDisabledDesc": m28,
     "undo": MessageLookupByLibrary.simpleMessage("Отменить"),
     "unifiedDelay": MessageLookupByLibrary.simpleMessage(
       "Унифицированная задержка",
@@ -1207,11 +1240,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "unpinWindow": MessageLookupByLibrary.simpleMessage("Открепить окно"),
     "update": MessageLookupByLibrary.simpleMessage("Обновить"),
     "upload": MessageLookupByLibrary.simpleMessage("Загрузка"),
+    "uploadSpeed": MessageLookupByLibrary.simpleMessage("Скорость отправки"),
+    "uploadTraffic": MessageLookupByLibrary.simpleMessage(
+      "Объем исходящего трафика",
+    ),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage(
       "Получить профиль через URL",
     ),
-    "urlTip": m27,
+    "urlTip": m29,
     "useHosts": MessageLookupByLibrary.simpleMessage("Использовать hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage(
       "Использовать системные hosts",
@@ -1238,7 +1275,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "whitelistMode": MessageLookupByLibrary.simpleMessage(
       "Режим белого списка",
     ),
-    "yearsAgo": m28,
+    "yearsAgo": m30,
     "zh_CN": MessageLookupByLibrary.simpleMessage("Упрощенный китайский"),
   };
 }

@@ -605,5 +605,20 @@
   "ageKeyPairGeneratedSuccess": "X25519 キーペアを生成しました。安全に保管してください",
   "agePrivateKeyRequired": "先に正しい Age 秘密鍵を入力してください",
   "generateSecret": "生成",
-  "predictiveBack": "予測型戻る"
+  "predictiveBack": "予測型戻る",
+  "uploadTraffic": "アップロード通信量",
+  "downloadTraffic": "ダウンロード通信量",
+  "uploadSpeed": "アップロード速度",
+  "downloadSpeed": "ダウンロード速度",
+  "uiUpdateInterval": "UI 情報の更新間隔",
+  "uiUpdateIntervalDesc": "{interval}・アイドル時 {idleInterval}",
+  "uiUpdateIdleWhenUnfocused": "フォーカス喪失時にアイドル",
+  "uiUpdateIdleWhenUnfocusedDesc": "アプリのウィンドウがフォーカスを失ったときにアイドル時の更新間隔を使用",
+  "uiUpdateIdleInterval": "アイドル時の更新間隔",
+  "uiUpdateIntervalIdleDisabledDesc": "{interval}・アイドル時は無効",
+  "regexSearch": "正規表現検索",
+  "iconSource": "アイコンソース",
+  "onlyConfig": "設定のみ",
+  "onlyEmoji": "絵文字のみ",
+  "closeAll": "すべて閉じる"
 }
