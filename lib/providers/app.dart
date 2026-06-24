@@ -292,6 +292,14 @@ class Query extends _$Query with AutoDisposeNotifierMixin {
   }
 }
 
+@riverpod
+class SearchUseRegex extends _$SearchUseRegex with AutoDisposeNotifierMixin {
+  @override
+  bool build(QueryTag tag) {
+    return false;
+  }
+}
+
 @Riverpod(keepAlive: true)
 class Loading extends _$Loading with AutoDisposeNotifierMixin {
   DateTime? _start;
