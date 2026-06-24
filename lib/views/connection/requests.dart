@@ -32,6 +32,12 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
     );
   }
 
+  void _onRegexSearchChange(bool value) {
+    _requestsStateNotifier.value = _requestsStateNotifier.value.copyWith(
+      useRegex: value,
+    );
+  }
+
   void _onKeywordsUpdate(List<String> keywords) {
     _requestsStateNotifier.value = _requestsStateNotifier.value.copyWith(
       keywords: keywords,
@@ -117,7 +123,11 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
     final appLocalizations = context.appLocalizations;
     return CommonScaffold(
       title: appLocalizations.requests,
-      searchState: AppBarSearchState(onSearch: _onSearch),
+      searchState: AppBarSearchState(
+        onSearch: _onSearch,
+        onRegexChange: _onRegexSearchChange,
+        useRegex: _requestsStateNotifier.value.useRegex,
+      ),
       onKeywordsUpdate: _onKeywordsUpdate,
       floatingActionButton: ValueListenableBuilder(
         valueListenable: _requestsStateNotifier,
