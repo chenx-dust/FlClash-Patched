@@ -5,8 +5,7 @@ maintainer:
   email: chen08209@gmail.com
 
 priority: optional
-section: x11
-installed_size: 6604
+section: net
 essential: false
 icon: ./assets/images/icon.png
 
