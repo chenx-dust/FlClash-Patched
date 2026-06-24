@@ -122,6 +122,20 @@ enum Network { tcp, udp }
 
 enum ProxiesSortType { none, delay, name }
 
+enum TrackerInfoSortType {
+  start,
+  uploadTraffic,
+  downloadTraffic,
+  uploadSpeed,
+  downloadSpeed,
+  destination,
+  process,
+  port,
+  network,
+  rule,
+  proxyChains,
+}
+
 enum TunStack { gvisor, system, mixed }
 
 enum AccessControlMode { acceptSelected, rejectSelected }
