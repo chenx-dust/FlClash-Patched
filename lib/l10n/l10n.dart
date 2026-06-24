@@ -1154,6 +1154,16 @@ class AppLocalizations {
     return Intl.message('Search', name: 'search', desc: '', args: []);
   }
 
+  /// `Regex search`
+  String get regexSearch {
+    return Intl.message(
+      'Regex search',
+      name: 'regexSearch',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Allow applications to bypass VPN`
   String get allowBypass {
     return Intl.message(
