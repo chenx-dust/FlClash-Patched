@@ -981,7 +981,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Режим скрипта, использование внешних расширяющих скриптов, предоставление возможности переопределения конфигурации одним кликом",
     ),
     "search": MessageLookupByLibrary.simpleMessage("Поиск"),
-    "seconds": MessageLookupByLibrary.simpleMessage("Секунд"),
+    "seconds": MessageLookupByLibrary.simpleMessage("секунд"),
     "selectAll": MessageLookupByLibrary.simpleMessage("Выбрать все"),
     "selectProxies": MessageLookupByLibrary.simpleMessage("Выбрать прокси"),
     "selectProxyProviders": MessageLookupByLibrary.simpleMessage(

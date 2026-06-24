@@ -66,9 +66,9 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m17(count) => "${count} items have been selected";
 
   static String m18(interval, idleInterval) =>
-      "${interval} · idle ${idleInterval}";
+      "${interval} · Idle ${idleInterval}";
 
-  static String m19(interval) => "${interval} · idle disabled";
+  static String m19(interval) => "${interval} · Idle disabled";
 
   static String m20(label) => "${label} must be a url";
 
@@ -612,7 +612,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "noResolveHostname": MessageLookupByLibrary.simpleMessage(
       "No resolve hostname",
     ),
-    "none": MessageLookupByLibrary.simpleMessage("none"),
+    "none": MessageLookupByLibrary.simpleMessage("None"),
     "notSelectedTip": MessageLookupByLibrary.simpleMessage(
       "The current proxy group cannot be selected.",
     ),
@@ -752,7 +752,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "quickFill": MessageLookupByLibrary.simpleMessage("Quick fill"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("Rainbow"),
     "redirPort": MessageLookupByLibrary.simpleMessage("Redir port"),
-    "redo": MessageLookupByLibrary.simpleMessage("redo"),
+    "redo": MessageLookupByLibrary.simpleMessage("Redo"),
     "remote": MessageLookupByLibrary.simpleMessage("Remote"),
     "remoteBackupDesc": MessageLookupByLibrary.simpleMessage(
       "Backup local data to WebDAV",
@@ -928,7 +928,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Script mode, use external extension scripts, provide one-click override configuration capability",
     ),
     "search": MessageLookupByLibrary.simpleMessage("Search"),
-    "seconds": MessageLookupByLibrary.simpleMessage("Seconds"),
+    "seconds": MessageLookupByLibrary.simpleMessage("seconds"),
     "selectAll": MessageLookupByLibrary.simpleMessage("Select all"),
     "selectProxies": MessageLookupByLibrary.simpleMessage("Select proxies"),
     "selectProxyProviders": MessageLookupByLibrary.simpleMessage(
@@ -1043,7 +1043,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "uiUpdateIntervalDesc": m18,
     "uiUpdateIntervalIdleDisabledDesc": m19,
     "unauthorized": MessageLookupByLibrary.simpleMessage("Unauthorized"),
-    "undo": MessageLookupByLibrary.simpleMessage("undo"),
+    "undo": MessageLookupByLibrary.simpleMessage("Undo"),
     "unifiedDelay": MessageLookupByLibrary.simpleMessage("Unified delay"),
     "unifiedDelayDesc": MessageLookupByLibrary.simpleMessage(
       "Remove extra delays such as handshaking",
