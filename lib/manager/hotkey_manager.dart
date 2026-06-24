@@ -4,6 +4,7 @@ import 'package:fl_clash/models/common.dart';
 import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/state.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +20,8 @@ class HotKeyManager extends ConsumerStatefulWidget {
 }
 
 class _HotKeyManagerState extends ConsumerState<HotKeyManager> {
+  bool _isHandlingBack = false;
+
   @override
   void initState() {
     super.initState();
@@ -27,6 +30,42 @@ class _HotKeyManagerState extends ConsumerState<HotKeyManager> {
         _updateHotKeys(hotKeyActions: next);
       }
     }, fireImmediately: true);
+  }
+
+  Future<void> _handleBack() async {
+    if (_isHandlingBack) {
+      return;
+    }
+    _isHandlingBack = true;
+    try {
+      final navigator = globalState.navigatorKey.currentState;
+      final didPop = await navigator?.maybePop() ?? false;
+      if (didPop) {
+        return;
+      }
+      await globalState.container
+          .read(systemActionProvider.notifier)
+          .handleClose();
+    } finally {
+      _isHandlingBack = false;
+    }
+  }
+
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent ||
+        event.logicalKey != LogicalKeyboardKey.escape) {
+      return KeyEventResult.ignored;
+    }
+    _handleBack();
+    return KeyEventResult.handled;
+  }
+
+  void _handlePointerDown(PointerDownEvent event) {
+    if (event.kind != PointerDeviceKind.mouse ||
+        event.buttons & kBackMouseButton == 0) {
+      return;
+    }
+    _handleBack();
   }
 
   Future<void> _handleHotKeyAction(HotAction action) async {
@@ -95,8 +134,16 @@ class _HotKeyManagerState extends ConsumerState<HotKeyManager> {
     );
   }
 
+  Widget _buildBackActionListener(Widget child) {
+    return Focus(
+      canRequestFocus: false,
+      onKeyEvent: _handleKeyEvent,
+      child: Listener(onPointerDown: _handlePointerDown, child: child),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return _buildCloseShortcuts(widget.child);
+    return _buildBackActionListener(_buildCloseShortcuts(widget.child));
   }
 }
