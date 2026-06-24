@@ -4,6 +4,7 @@ import 'package:fl_clash/models/common.dart';
 import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/state.dart';
+import 'package:fl_clash/widgets/pop_scope.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -38,14 +39,14 @@ class _HotKeyManagerState extends ConsumerState<HotKeyManager> {
     }
     _isHandlingBack = true;
     try {
+      if (await SystemBackBlock.maybeHandleBack()) {
+        return;
+      }
       final navigator = globalState.navigatorKey.currentState;
       final didPop = await navigator?.maybePop() ?? false;
       if (didPop) {
         return;
       }
-      await globalState.container
-          .read(systemActionProvider.notifier)
-          .handleClose();
     } finally {
       _isHandlingBack = false;
     }

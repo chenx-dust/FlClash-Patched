@@ -293,6 +293,10 @@ class CommonScaffoldState extends State<CommonScaffold> {
     final appBar = _isSearch ? _buildSearchingAppBarTheme(child) : child;
     if (_isEdit || _isSearch) {
       return SystemBackBlock(
+        onBack: () {
+          handleExitSearching();
+          _appBarState.value.editState?.onExit();
+        },
         child: CommonPopScope(
           onPop: (context) {
             if (_isEdit || _isSearch) {
