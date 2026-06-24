@@ -126,6 +126,10 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
     ref.read(queryProvider(QueryTag.proxies).notifier).value = value;
   }
 
+  void _onRegexSearchChange(bool value) {
+    ref.read(searchUseRegexProvider(QueryTag.proxies).notifier).value = value;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -168,6 +172,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
       proxiesStyleSettingProvider.select((state) => state.type),
     );
     final isLoading = ref.watch(loadingProvider(LoadingTag.proxies));
+    final useRegex = ref.watch(searchUseRegexProvider(QueryTag.proxies));
     return CommonScaffold(
       key: _scaffoldKey,
       isLoading: isLoading,
@@ -175,8 +180,11 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
       floatingActionButton: _buildFAB(),
       actions: _buildActions(context),
       title: context.appLocalizations.proxies,
-      searchActions: [_buildRegexSearchButton()],
-      searchState: AppBarSearchState(onSearch: _onSearch),
+      searchState: AppBarSearchState(
+        onSearch: _onSearch,
+        onRegexChange: _onRegexSearchChange,
+        useRegex: useRegex,
+      ),
       body: switch (proxiesType) {
         ProxiesType.tab => ProxiesTabView(key: _proxiesTabKey),
         ProxiesType.list => ProxiesListView(key: _proxiesListKey),
