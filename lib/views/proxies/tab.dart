@@ -70,6 +70,7 @@ class ProxiesTabViewState extends ConsumerState<ProxiesTabView>
       builder: (_, ref, _) {
         final isMobileView = ref.watch(isMobileViewProvider);
         return IconButton(
+          tooltip: context.appLocalizations.more,
           onPressed: _showMoreMenu,
           icon: isMobileView
               ? const Icon(Icons.expand_more)

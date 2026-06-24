@@ -879,6 +879,26 @@ class AppLocalizations {
     return Intl.message('Selected', name: 'selected', desc: '', args: []);
   }
 
+  /// `Scroll to selected`
+  String get scrollToSelected {
+    return Intl.message(
+      'Scroll to selected',
+      name: 'scrollToSelected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Expand`
+  String get expand {
+    return Intl.message('Expand', name: 'expand', desc: '', args: []);
+  }
+
+  /// `Collapse`
+  String get collapse {
+    return Intl.message('Collapse', name: 'collapse', desc: '', args: []);
+  }
+
   /// `Proxy port`
   String get proxyPort {
     return Intl.message('Proxy port', name: 'proxyPort', desc: '', args: []);
@@ -1372,11 +1392,6 @@ class AppLocalizations {
       desc: '',
       args: [],
     );
-  }
-
-  /// `Standard`
-  String get expand {
-    return Intl.message('Standard', name: 'expand', desc: '', args: []);
   }
 
   /// `Shrink`

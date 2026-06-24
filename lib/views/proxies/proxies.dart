@@ -30,6 +30,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
     return [
       if (_isTab)
         IconButton(
+          tooltip: appLocalizations.scrollToSelected,
           onPressed: () {
             _proxiesTabKey.currentState?.scrollToGroupSelected();
           },
@@ -76,6 +77,9 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
           (group) => !state.currentUnfoldSet.contains(group.name),
         );
         return IconButton(
+          tooltip: allCollapsed
+              ? context.appLocalizations.expand
+              : context.appLocalizations.collapse,
           onPressed: () {
             final unfoldSet = allCollapsed
                 ? state.groups.map((group) => group.name).toSet()
@@ -155,6 +159,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
       floatingActionButton: _buildFAB(),
       actions: _buildActions(context),
       title: context.appLocalizations.proxies,
+      searchActions: [_buildRegexSearchButton()],
       searchState: AppBarSearchState(onSearch: _onSearch),
       body: switch (proxiesType) {
         ProxiesType.tab => ProxiesTabView(key: _proxiesTabKey),

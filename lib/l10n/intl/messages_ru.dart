@@ -247,6 +247,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Импорт из буфера обмена",
     ),
     "closeAll": MessageLookupByLibrary.simpleMessage("Закрыть все"),
+    "collapse": MessageLookupByLibrary.simpleMessage("Свернуть"),
     "color": MessageLookupByLibrary.simpleMessage("Цвет"),
     "colorSchemes": MessageLookupByLibrary.simpleMessage("Цветовые схемы"),
     "columns": MessageLookupByLibrary.simpleMessage("Столбцы"),
@@ -394,7 +395,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "excludeType": MessageLookupByLibrary.simpleMessage("Тип исключения"),
     "existsTip": m5,
     "exit": MessageLookupByLibrary.simpleMessage("Выход"),
-    "expand": MessageLookupByLibrary.simpleMessage("Стандартный"),
+    "expand": MessageLookupByLibrary.simpleMessage("Развернуть"),
     "expectedStatus": MessageLookupByLibrary.simpleMessage("Ожидаемый статус"),
     "exportFile": MessageLookupByLibrary.simpleMessage("Экспорт файла"),
     "exportLogs": MessageLookupByLibrary.simpleMessage("Экспорт логов"),
@@ -984,6 +985,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "script": MessageLookupByLibrary.simpleMessage("Скрипт"),
     "scriptModeDesc": MessageLookupByLibrary.simpleMessage(
       "Режим скрипта, использование внешних расширяющих скриптов, предоставление возможности переопределения конфигурации одним кликом",
+    ),
+    "scrollToSelected": MessageLookupByLibrary.simpleMessage(
+      "Прокрутить к выбранному",
     ),
     "search": MessageLookupByLibrary.simpleMessage("Поиск"),
     "seconds": MessageLookupByLibrary.simpleMessage("секунд"),

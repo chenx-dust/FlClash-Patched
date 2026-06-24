@@ -202,6 +202,7 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
           if (selectedScriptId != null) ...[
             CommonMinIconButtonTheme(
               child: IconButton.filledTonal(
+                tooltip: context.appLocalizations.delete,
                 onPressed: () {
                   _handleDelScript(selectedScriptId);
                 },
