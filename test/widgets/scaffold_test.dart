@@ -106,16 +106,57 @@ void main() {
     expect(find.text('Profiles'), findsOneWidget);
     expect(searchValue, '');
   });
+
+  testWidgets('CommonScaffold keeps app bar color while scrolling', (
+    tester,
+  ) async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    globalState.container = container;
+
+    final theme = ThemeData(
+      useMaterial3: true,
+      colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: _TestApp(
+          theme: theme,
+          child: CommonScaffold(
+            title: 'Profiles',
+            body: ListView.builder(
+              itemBuilder: (_, index) {
+                return SizedBox(height: 48, child: Text('Item $index'));
+              },
+              itemCount: 50,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final initialColor = _appBarMaterial(tester).color;
+
+    await tester.drag(find.byType(ListView), const Offset(0, -400));
+    await tester.pumpAndSettle();
+
+    expect(_appBarMaterial(tester).color, initialColor);
+    expect(initialColor, theme.colorScheme.surface);
+  });
 }
 
 class _TestApp extends StatelessWidget {
   final Widget child;
+  final ThemeData? theme;
 
-  const _TestApp({required this.child});
+  const _TestApp({required this.child, this.theme});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: theme,
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -130,4 +171,13 @@ class _TestApp extends StatelessWidget {
       home: child,
     );
   }
+}
+
+Material _appBarMaterial(WidgetTester tester) {
+  final materials = tester.widgetList<Material>(
+    find.descendant(of: find.byType(AppBar), matching: find.byType(Material)),
+  );
+  return materials.firstWhere(
+    (material) => material.type == MaterialType.canvas,
+  );
 }

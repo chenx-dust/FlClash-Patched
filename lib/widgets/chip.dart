@@ -26,7 +26,7 @@ class CommonChip extends StatelessWidget {
         avatar: avatar,
         labelPadding: const EdgeInsets.symmetric(
           vertical: 0,
-          horizontal: 4,
+          horizontal: 2,
         ),
         clipBehavior: Clip.antiAlias,
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -41,7 +41,7 @@ class CommonChip extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       labelPadding: const EdgeInsets.symmetric(
         vertical: 0,
-        horizontal: 4,
+        horizontal: 2,
       ),
       onPressed: onPressed ?? () {},
       labelStyle: labelStyle,
