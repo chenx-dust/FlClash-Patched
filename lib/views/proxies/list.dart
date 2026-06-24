@@ -425,29 +425,32 @@ class _ProxyGroupBody extends StatefulWidget {
 }
 
 class _ProxyGroupBodyState extends State<_ProxyGroupBody>
-    with SingleTickerProviderStateMixin {
-  static const int _animationBaseMs = 80;
-  static const int _animationMsPerRow = 20;
-  static const int _animationMaxMs = 400;
+    with TickerProviderStateMixin {
+  static const Duration _fadeDuration = Duration(milliseconds: 120);
 
-  late final AnimationController _controller;
-  late final Animation<double> _animation;
+  late final AnimationController _resizeController;
+  late final AnimationController _fadeController;
+  late final Animation<double> _resizeAnimation;
+  late final Animation<double> _fadeAnimation;
   late bool _showContent;
 
-  int get _rowCount {
+  double get _contentHeight {
     if (widget.group.all.isEmpty) {
       return 0;
     }
-    return (widget.group.all.length / max(widget.columns, 1)).ceil();
+    final rowCount = (widget.group.all.length / max(widget.columns, 1)).ceil();
+    return rowCount * getItemHeight(widget.cardType) +
+        (rowCount - 1) * _listRowSpacing +
+        _listBodyBottomSpacing;
   }
 
   Duration get _animationDuration {
-    final milliseconds = _animationBaseMs + _rowCount * _animationMsPerRow;
-    return Duration(milliseconds: min(milliseconds, _animationMaxMs));
+    final milliseconds = 80 + _contentHeight * 0.25;
+    return Duration(milliseconds: min(milliseconds, 400).round());
   }
 
   void _updateAnimationDuration() {
-    _controller
+    _resizeController
       ..duration = _animationDuration
       ..reverseDuration = _animationDuration * 0.8;
   }
@@ -456,16 +459,26 @@ class _ProxyGroupBodyState extends State<_ProxyGroupBody>
   void initState() {
     super.initState();
     _showContent = widget.isExpand;
-    _controller = AnimationController(
+    _resizeController = AnimationController(
       vsync: this,
       duration: _animationDuration,
       reverseDuration: _animationDuration * 0.8,
       value: widget.isExpand ? 1 : 0,
     );
-    _animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOutCubic,
-      reverseCurve: Curves.easeInOutCubic,
+    _fadeController = AnimationController(
+      vsync: this,
+      duration: _fadeDuration,
+      value: widget.isExpand ? 1 : 0,
+    );
+    _resizeAnimation = CurvedAnimation(
+      parent: _resizeController,
+      curve: Curves.easeInOut,
+      reverseCurve: Curves.easeInOut,
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _fadeController,
+      curve: Curves.easeInOut,
+      reverseCurve: Curves.easeInOut,
     );
   }
 
@@ -480,21 +493,24 @@ class _ProxyGroupBodyState extends State<_ProxyGroupBody>
       setState(() {
         _showContent = true;
       });
-      _controller.forward();
+      _resizeController.forward();
+      _fadeController.forward();
       return;
     }
-    _controller.reverse().whenCompleteOrCancel(() {
+    _resizeController.reverse().whenCompleteOrCancel(() {
       if (mounted && !widget.isExpand) {
         setState(() {
           _showContent = false;
         });
       }
     });
+    _fadeController.reverse();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _resizeController.dispose();
+    _fadeController.dispose();
     super.dispose();
   }
 
@@ -543,10 +559,10 @@ class _ProxyGroupBodyState extends State<_ProxyGroupBody>
       children: [
         const SizedBox(height: _listGroupSpacing),
         SizeTransition(
-          sizeFactor: _animation,
+          sizeFactor: _resizeAnimation,
           alignment: Alignment.topCenter,
           child: FadeTransition(
-            opacity: _animation,
+            opacity: _fadeAnimation,
             child: _showContent ? _buildRows() : const SizedBox(),
           ),
         ),
