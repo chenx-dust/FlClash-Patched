@@ -464,10 +464,10 @@ class AppLocalizations {
     );
   }
 
-  /// `{interval} · idle {idleInterval}`
+  /// `{interval} · Idle {idleInterval}`
   String uiUpdateIntervalDesc(Object interval, Object idleInterval) {
     return Intl.message(
-      '$interval · idle $idleInterval',
+      '$interval · Idle $idleInterval',
       name: 'uiUpdateIntervalDesc',
       desc: '',
       args: [interval, idleInterval],
@@ -504,10 +504,10 @@ class AppLocalizations {
     );
   }
 
-  /// `{interval} · idle disabled`
+  /// `{interval} · Idle disabled`
   String uiUpdateIntervalIdleDisabledDesc(Object interval) {
     return Intl.message(
-      '$interval · idle disabled',
+      '$interval · Idle disabled',
       name: 'uiUpdateIntervalIdleDisabledDesc',
       desc: '',
       args: [interval],
@@ -579,9 +579,9 @@ class AppLocalizations {
     return Intl.message('Delete', name: 'delete', desc: '', args: []);
   }
 
-  /// `Seconds`
+  /// `seconds`
   String get seconds {
-    return Intl.message('Seconds', name: 'seconds', desc: '', args: []);
+    return Intl.message('seconds', name: 'seconds', desc: '', args: []);
   }
 
   /// `QR code`
@@ -2319,19 +2319,19 @@ class AppLocalizations {
     return Intl.message('Listen', name: 'listen', desc: '', args: []);
   }
 
-  /// `undo`
+  /// `Undo`
   String get undo {
-    return Intl.message('undo', name: 'undo', desc: '', args: []);
+    return Intl.message('Undo', name: 'undo', desc: '', args: []);
   }
 
-  /// `redo`
+  /// `Redo`
   String get redo {
-    return Intl.message('redo', name: 'redo', desc: '', args: []);
+    return Intl.message('Redo', name: 'redo', desc: '', args: []);
   }
 
-  /// `none`
+  /// `None`
   String get none {
-    return Intl.message('none', name: 'none', desc: '', args: []);
+    return Intl.message('None', name: 'none', desc: '', args: []);
   }
 
   /// `Basic configuration`
