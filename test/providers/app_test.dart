@@ -7,6 +7,7 @@ import 'package:fl_clash/common/request.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
+import 'package:fl_clash/providers/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:riverpod/riverpod.dart';
@@ -30,6 +31,38 @@ void main() {
     test('can update to true', () {
       container.read(realTunEnableProvider.notifier).update((_) => true);
       expect(container.read(realTunEnableProvider), true);
+    });
+  });
+
+  group('Logs provider', () {
+    Log log(LogLevel level, String payload) {
+      return Log.app(payload).copyWith(logLevel: level);
+    }
+
+    test('keeps logs at or above the configured log level', () {
+      container
+          .read(patchClashConfigProvider.notifier)
+          .update((state) => state.copyWith(logLevel: LogLevel.warning));
+
+      final notifier = container.read(logsProvider.notifier);
+      notifier.add(log(LogLevel.info, 'info'));
+      notifier.add(log(LogLevel.warning, 'warning'));
+      notifier.add(log(LogLevel.error, 'error'));
+
+      final logs = container.read(logsProvider).list;
+      expect(logs.map((item) => item.payload), ['warning', 'error']);
+    });
+
+    test('drops all logs when configured log level is silent', () {
+      container
+          .read(patchClashConfigProvider.notifier)
+          .update((state) => state.copyWith(logLevel: LogLevel.silent));
+
+      final notifier = container.read(logsProvider.notifier);
+      notifier.add(log(LogLevel.error, 'error'));
+      notifier.add(log(LogLevel.warning, 'warning'));
+
+      expect(container.read(logsProvider).list, isEmpty);
     });
   });
 
