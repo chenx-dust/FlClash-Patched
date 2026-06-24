@@ -361,6 +361,8 @@ extension GeoResourceExt on GeoResource {
       GeoResource.GEOSITE => 'geo-site',
     };
   }
+
+  String get updatingKey => 'geo_resource_$name';
 }
 
 enum PageLabel {

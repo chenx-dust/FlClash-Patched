@@ -469,3 +469,55 @@ abstract class _$ProfilesAction extends $Notifier<void> {
     element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(GeoResourceAction)
+final geoResourceActionProvider = GeoResourceActionProvider._();
+
+final class GeoResourceActionProvider
+    extends $NotifierProvider<GeoResourceAction, void> {
+  GeoResourceActionProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'geoResourceActionProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$geoResourceActionHash();
+
+  @$internal
+  @override
+  GeoResourceAction create() => GeoResourceAction();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(void value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<void>(value),
+    );
+  }
+}
+
+String _$geoResourceActionHash() => r'345ab6fd8191a631edc340421438c01b59e587cb';
+
+abstract class _$GeoResourceAction extends $Notifier<void> {
+  void build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<void, void>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<void, void>,
+              void,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

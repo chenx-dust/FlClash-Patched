@@ -975,3 +975,30 @@ class ProfilesAction extends _$ProfilesAction {
     await coreController.deleteFile(providersDirPath);
   }
 }
+
+@Riverpod(keepAlive: true)
+class GeoResourceAction extends _$GeoResourceAction {
+  @override
+  void build() {}
+
+  Future<void> updateGeoResource(GeoResource geoResource) async {
+    try {
+      ref.read(isUpdatingProvider(geoResource.updatingKey).notifier).value =
+          true;
+      final message = await coreController.updateGeoData(geoResource.name);
+      if (message.isNotEmpty) throw message;
+    } finally {
+      ref.read(isUpdatingProvider(geoResource.updatingKey).notifier).value =
+          false;
+    }
+  }
+
+  void updateGeoResourceUrl(GeoResource geoResource, String newUrl) {
+    if (!newUrl.isUrl) {
+      throw 'Invalid url';
+    }
+    ref.read(patchClashConfigProvider.notifier).update((state) {
+      return state.copyWith(geoXUrl: {...state.geoXUrl, geoResource: newUrl});
+    });
+  }
+}
