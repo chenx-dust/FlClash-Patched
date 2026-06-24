@@ -173,7 +173,7 @@ enum ProxiesLayout { loose, standard, tight }
 
 enum ProxiesListHeaderStyle { loose, standard, tight }
 
-enum ProxyCardType { expand, shrink, min }
+enum ProxyCardType { standard, shrink, min }
 
 enum DnsMode {
   normal,
