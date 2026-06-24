@@ -32,6 +32,10 @@ class Logs extends _$Logs with AutoDisposeNotifierMixin {
     if (!ref.mounted) {
       return;
     }
+    final logLevel = ref.read(patchClashConfigProvider).logLevel;
+    if (!logLevel.allows(value.logLevel)) {
+      return;
+    }
     this.value = state.copyWith()..add(value);
   }
 
