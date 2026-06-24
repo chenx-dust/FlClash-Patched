@@ -51,7 +51,7 @@ class TrackerInfoItem extends ConsumerWidget {
     final title = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(trackerInfo.desc, style: context.textTheme.bodyLarge),
+        Text(trackerInfo.desc, style: context.textTheme.bodyMedium),
         // Row(
         //   mainAxisSize: MainAxisSize.max,
         //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -73,7 +73,7 @@ class TrackerInfoItem extends ConsumerWidget {
           _getSourceText(context, trackerInfo),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: context.textTheme.bodyMedium?.copyWith(
+          style: context.textTheme.labelMedium?.copyWith(
             color: context.colorScheme.onSurfaceVariant,
           ),
         ),
@@ -96,7 +96,7 @@ class TrackerInfoItem extends ConsumerWidget {
                 final chain = trackerInfo.chains[index];
                 return CommonChip(
                   label: chain,
-                  labelStyle: context.textTheme.bodySmall?.copyWith(
+                  labelStyle: context.textTheme.labelSmall?.copyWith(
                     color: context.colorScheme.onSurfaceVariant,
                   ),
                   onPressed: () {
@@ -142,7 +142,7 @@ class TrackerInfoItem extends ConsumerWidget {
           )
         : null;
     return ListItem(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       onTap: () async {
         await showExtend(
           context,
