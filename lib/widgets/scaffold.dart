@@ -88,12 +88,33 @@ class CommonScaffoldState extends State<CommonScaffold> {
     _updateSearchState((state) => state?.copyWith(query: ''));
   }
 
+  AppBarThemeData _buildStaticAppBarTheme(
+    ThemeData theme, {
+    Color? backgroundColor,
+    IconThemeData? iconTheme,
+    TextStyle? titleTextStyle,
+    TextStyle? toolbarTextStyle,
+  }) {
+    return theme.appBarTheme.copyWith(
+      backgroundColor:
+          backgroundColor ??
+          theme.appBarTheme.backgroundColor ??
+          theme.colorScheme.surface,
+      scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
+      iconTheme: iconTheme,
+      titleTextStyle: titleTextStyle,
+      toolbarTextStyle: toolbarTextStyle,
+    );
+  }
+
   Widget _buildSearchingAppBarTheme(Widget child) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
     return Theme(
       data: theme.copyWith(
-        appBarTheme: theme.appBarTheme.copyWith(
+        appBarTheme: _buildStaticAppBarTheme(
+          theme,
           backgroundColor: colorScheme.brightness == Brightness.dark
               ? Colors.grey[900]
               : Colors.white,
@@ -310,43 +331,47 @@ class CommonScaffoldState extends State<CommonScaffold> {
   }
 
   PreferredSizeWidget _buildAppBar(VoidCallback? backAction) {
+    final theme = Theme.of(context);
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          widget.appBar ??
-              ValueListenableBuilder<AppBarState>(
-                valueListenable: _appBarState,
-                builder: (_, state, _) {
-                  return _buildAppBarWrap(
-                    AppBar(
-                      automaticallyImplyLeading: backAction != null
-                          ? false
-                          : true,
-                      animateColor: true,
-                      centerTitle: widget.centerTitle ?? false,
-                      leading: _buildLeading(backAction),
-                      title: _buildTitle(state.searchState),
-                      actions: _buildActions(
-                        state.searchState,
-                        state.actions.isNotEmpty
-                            ? state.actions
-                            : widget.actions ?? [],
+      child: Theme(
+        data: theme.copyWith(appBarTheme: _buildStaticAppBarTheme(theme)),
+        child: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            widget.appBar ??
+                ValueListenableBuilder<AppBarState>(
+                  valueListenable: _appBarState,
+                  builder: (_, state, _) {
+                    return _buildAppBarWrap(
+                      AppBar(
+                        automaticallyImplyLeading: backAction != null
+                            ? false
+                            : true,
+                        animateColor: true,
+                        centerTitle: widget.centerTitle ?? false,
+                        leading: _buildLeading(backAction),
+                        title: _buildTitle(state.searchState),
+                        actions: _buildActions(
+                          state.searchState,
+                          state.actions.isNotEmpty
+                              ? state.actions
+                              : widget.actions ?? [],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
-          ValueListenableBuilder(
-            valueListenable: _loadingNotifier,
-            builder: (_, value, _) {
-              return value == true
-                  ? const LinearProgressIndicator()
-                  : Container();
-            },
-          ),
-        ],
+                    );
+                  },
+                ),
+            ValueListenableBuilder(
+              valueListenable: _loadingNotifier,
+              builder: (_, value, _) {
+                return value == true
+                    ? const LinearProgressIndicator()
+                    : Container();
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -373,7 +398,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
               return Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
-                  vertical: 16,
+                  vertical: 8,
                 ),
                 child: Wrap(
                   runSpacing: 8,
@@ -384,6 +409,9 @@ class CommonScaffoldState extends State<CommonScaffold> {
                         label:
                             widget.keywordLabelBuilder?.call(keyword) ??
                             keyword,
+                        labelStyle: context.textTheme.labelSmall?.copyWith(
+                          color: context.colorScheme.onSurfaceVariant,
+                        ),
                         type: ChipType.delete,
                         onPressed: () {
                           _deleteKeyword(keyword);
