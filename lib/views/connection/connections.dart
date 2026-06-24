@@ -156,6 +156,12 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
     );
   }
 
+  void _onRegexSearchChange(bool value) {
+    _connectionsStateNotifier.value = _connectionsStateNotifier.value.copyWith(
+      useRegex: value,
+    );
+  }
+
   void _onKeywordsUpdate(List<String> keywords) {
     _connectionsStateNotifier.value = _connectionsStateNotifier.value.copyWith(
       keywords: keywords,
@@ -212,7 +218,11 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
     return CommonScaffold(
       title: appLocalizations.connections,
       onKeywordsUpdate: _onKeywordsUpdate,
-      searchState: AppBarSearchState(onSearch: _onSearch),
+      searchState: AppBarSearchState(
+        onSearch: _onSearch,
+        onRegexChange: _onRegexSearchChange,
+        useRegex: _connectionsStateNotifier.value.useRegex,
+      ),
       actions: _buildActions(context),
       floatingActionButton: _buildFAB(),
       body: ValueListenableBuilder<TrackerInfosState>(
