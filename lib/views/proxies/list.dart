@@ -416,9 +416,31 @@ class _ProxyGroupBody extends StatefulWidget {
 
 class _ProxyGroupBodyState extends State<_ProxyGroupBody>
     with SingleTickerProviderStateMixin {
+  static const int _animationBaseMs = 80;
+  static const int _animationMsPerRow = 20;
+  static const int _animationMaxMs = 400;
+
   late final AnimationController _controller;
   late final Animation<double> _animation;
   late bool _showContent;
+
+  int get _rowCount {
+    if (widget.group.all.isEmpty) {
+      return 0;
+    }
+    return (widget.group.all.length / max(widget.columns, 1)).ceil();
+  }
+
+  Duration get _animationDuration {
+    final milliseconds = _animationBaseMs + _rowCount * _animationMsPerRow;
+    return Duration(milliseconds: min(milliseconds, _animationMaxMs));
+  }
+
+  void _updateAnimationDuration() {
+    _controller
+      ..duration = _animationDuration
+      ..reverseDuration = _animationDuration * 0.8;
+  }
 
   @override
   void initState() {
@@ -426,7 +448,8 @@ class _ProxyGroupBodyState extends State<_ProxyGroupBody>
     _showContent = widget.isExpand;
     _controller = AnimationController(
       vsync: this,
-      duration: commonDuration,
+      duration: _animationDuration,
+      reverseDuration: _animationDuration * 0.8,
       value: widget.isExpand ? 1 : 0,
     );
     _animation = CurvedAnimation(
@@ -442,6 +465,7 @@ class _ProxyGroupBodyState extends State<_ProxyGroupBody>
     if (oldWidget.isExpand == widget.isExpand) {
       return;
     }
+    _updateAnimationDuration();
     if (widget.isExpand) {
       setState(() {
         _showContent = true;
