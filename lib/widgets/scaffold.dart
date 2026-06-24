@@ -233,6 +233,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
     return genActions([
       if (hasSearch && widget.searchState?.autoAddSearch == true)
         IconButton(
+          tooltip: context.appLocalizations.search,
           onPressed: () {
             _updateSearchState((state) => state?.copyWith(query: ''));
           },
