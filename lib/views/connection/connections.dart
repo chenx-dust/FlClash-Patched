@@ -171,7 +171,10 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
   @override
   void initState() {
     super.initState();
-    foregroundTicker.register(this, _updateConnections, fire: true);
+    foregroundTicker.register(this, _updateConnections);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateConnections();
+    });
   }
 
   Future<void> _updateConnections({bool flushDeferred = false}) async {
