@@ -167,6 +167,7 @@ class _CustomRulesViewState extends ConsumerState<CustomRulesView>
         if (selectedRules.isNotEmpty) ...[
           CommonMinIconButtonTheme(
             child: IconButton.filledTonal(
+              tooltip: appLocalizations.delete,
               onPressed: _handleDelete,
               icon: const Icon(Icons.delete),
             ),

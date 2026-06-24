@@ -81,15 +81,18 @@ class _ProfilesViewState extends State<ProfilesView> {
   }
 
   List<Widget> _buildActions(List<Profile> profiles) {
+    final appLocalizations = context.appLocalizations;
     return profiles.isNotEmpty
         ? [
             IconButton(
+              tooltip: appLocalizations.update,
               onPressed: () {
                 _updateProfiles(profiles);
               },
               icon: const Icon(Icons.sync),
             ),
             IconButton(
+              tooltip: appLocalizations.sort,
               onPressed: () {
                 showSheet(
                   context: context,
