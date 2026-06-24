@@ -4,10 +4,6 @@ packager: chen08209
 packagerEmail: chen08209@gmail.com
 license: GPL-3.0-or-later
 
-priority: optional
-section: x11
-installed_size: 6604
-essential: false
 icon: ./assets/images/icon.png
 
 auto_req: false
