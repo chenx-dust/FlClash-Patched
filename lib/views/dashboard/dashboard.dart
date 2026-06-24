@@ -160,6 +160,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
             return child!;
           },
           child: IconButton(
+            tooltip: appLocalizations.add,
             onPressed: () {
               _showAddWidgetsModal();
             },
@@ -170,11 +171,13 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
         child: isEdit
             ? IconButton(
                 key: const ValueKey(true),
+                tooltip: appLocalizations.save,
                 icon: const Icon(Icons.save, key: ValueKey('save-icon')),
                 onPressed: _handleUpdateIsEdit,
               )
             : IconButton(
                 key: const ValueKey(false),
+                tooltip: appLocalizations.edit,
                 icon: const Icon(Icons.edit, key: ValueKey('edit-icon')),
                 onPressed: _handleUpdateIsEdit,
               ),
