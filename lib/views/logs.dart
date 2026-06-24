@@ -222,7 +222,7 @@ class LogItem extends StatelessWidget {
     required String title,
     required String value,
   }) {
-    final style = context.textTheme.bodySmall?.copyWith(
+    final style = context.textTheme.labelSmall?.copyWith(
       color: context.colorScheme.onSurfaceVariant,
     );
     return Text.rich(
@@ -250,11 +250,13 @@ class LogItem extends StatelessWidget {
     final sourceLabel = log.source.name.toUpperCase();
     final levelLabel = log.logLevel.name.toUpperCase();
     return ListItem(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      onTap: () {},
-      title: SelectableText(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      onTap: () {
+        copyText(context, log.payload);
+      },
+      title: Text(
         log.payload,
-        style: context.textTheme.bodyLarge?.copyWith(
+        style: context.textTheme.bodyMedium?.copyWith(
           color: log.logLevel.color(context),
         ),
       ),
@@ -273,7 +275,7 @@ class LogItem extends StatelessWidget {
                       if (onClick == null) return;
                       onClick!(log.source.name);
                     },
-                    labelStyle: context.textTheme.bodySmall?.copyWith(
+                    labelStyle: context.textTheme.labelSmall?.copyWith(
                       color: context.colorScheme.onSurfaceVariant,
                     ),
                     label: sourceLabel,
@@ -288,7 +290,7 @@ class LogItem extends StatelessWidget {
                       if (onClick == null) return;
                       onClick!(log.logLevel.name);
                     },
-                    labelStyle: context.textTheme.bodySmall?.copyWith(
+                    labelStyle: context.textTheme.labelSmall?.copyWith(
                       color: context.colorScheme.onSurfaceVariant,
                     ),
                     label: levelLabel,
