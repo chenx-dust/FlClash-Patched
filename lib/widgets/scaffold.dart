@@ -119,8 +119,11 @@ class CommonScaffoldState extends State<CommonScaffold> {
       );
     }
     if (oldWidget.searchState != widget.searchState) {
+      final currentSearchState = _appBarState.value.searchState;
       _appBarState.value = _appBarState.value.copyWith(
-        searchState: widget.searchState,
+        searchState: widget.searchState?.copyWith(
+          query: currentSearchState?.query,
+        ),
       );
     }
     if (oldWidget.isLoading != widget.isLoading) {
@@ -133,6 +136,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
     if (_appBarState.value.searchState != null) {
       _appBarState.value.searchState!.onSearch('');
     }
+    _updateSearchState((state) => state?.copyWith(query: ''));
   }
 
   void _handleClear() {
@@ -200,18 +204,30 @@ class CommonScaffoldState extends State<CommonScaffold> {
         : null;
   }
 
+  bool _isInvalidRegexSearch(AppBarSearchState searchState) {
+    final query = searchState.query ?? '';
+    return searchState.useRegex &&
+        query.isNotEmpty &&
+        !SearchMatcher.isValidRegex(query);
+  }
+
   Widget _buildTitle(AppBarSearchState? startState) {
     final appLocalizations = context.appLocalizations;
+    final isInvalidRegex =
+        startState != null && _isInvalidRegexSearch(startState);
     return _isSearch
         ? TextField(
             autofocus: true,
             controller: _textController,
             inputFormatters: TextInputLimits.limit(TextInputLimits.search),
-            style: context.textTheme.titleLarge,
+            style: context.textTheme.titleLarge?.copyWith(
+              color: isInvalidRegex ? context.colorScheme.error : null,
+            ),
             onChanged: (value) {
               if (startState != null) {
                 startState.onSearch(value);
               }
+              _updateSearchState((state) => state?.copyWith(query: value));
             },
             decoration: InputDecoration(hintText: appLocalizations.search),
           )
@@ -224,14 +240,44 @@ class CommonScaffoldState extends State<CommonScaffold> {
           );
   }
 
-  List<Widget> _buildActions(bool hasSearch, List<Widget> actions) {
+  void _toggleRegexSearch(AppBarSearchState searchState) {
+    final useRegex = !searchState.useRegex;
+    searchState.onRegexChange?.call(useRegex);
+    _updateSearchState((state) => state?.copyWith(useRegex: useRegex));
+  }
+
+  Widget _buildRegexSearchButton(AppBarSearchState searchState) {
+    void onPressed() {
+      _toggleRegexSearch(searchState);
+    }
+
+    if (searchState.useRegex) {
+      return IconButton.filledTonal(
+        tooltip: context.appLocalizations.regexSearch,
+        onPressed: onPressed,
+        icon: const Icon(Icons.code),
+      );
+    }
+    return IconButton(
+      tooltip: context.appLocalizations.regexSearch,
+      onPressed: onPressed,
+      icon: const Icon(Icons.code_outlined),
+    );
+  }
+
+  List<Widget> _buildActions(
+    AppBarSearchState? searchState,
+    List<Widget> actions,
+  ) {
     if (_isSearch) {
       return genActions([
+        if (searchState?.onRegexChange != null)
+          _buildRegexSearchButton(searchState!),
         IconButton(onPressed: _handleClear, icon: const Icon(Icons.close)),
       ]);
     }
     return genActions([
-      if (hasSearch && widget.searchState?.autoAddSearch == true)
+      if (searchState != null && widget.searchState?.autoAddSearch == true)
         IconButton(
           tooltip: context.appLocalizations.search,
           onPressed: () {
@@ -283,7 +329,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
                       leading: _buildLeading(backAction),
                       title: _buildTitle(state.searchState),
                       actions: _buildActions(
-                        state.searchState != null,
+                        state.searchState,
                         state.actions.isNotEmpty
                             ? state.actions
                             : widget.actions ?? [],
