@@ -1,6 +1,6 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/state.dart';
+import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/views/proxies/list.dart';
 import 'package:fl_clash/views/proxies/providers.dart';
@@ -106,6 +106,27 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
     );
   }
 
+  bool _canDelayTest(ProxiesType proxiesType) {
+    return switch (proxiesType) {
+      ProxiesType.tab => ref.watch(
+        proxiesTabStateProvider.select((state) {
+          final currentGroup = state.groups.getGroup(
+            state.currentGroupName ?? '',
+          );
+          return currentGroup?.all.isNotEmpty ?? false;
+        }),
+      ),
+      ProxiesType.list => ref.watch(
+        proxiesListStateProvider.select((state) {
+          return state.groups.any((group) {
+            return state.currentUnfoldSet.contains(group.name) &&
+                group.all.isNotEmpty;
+          });
+        }),
+      ),
+    };
+  }
+
   void _onSearch(String value) {
     ref.read(queryProvider(QueryTag.proxies).notifier).value = value;
   }
@@ -161,7 +182,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
       key: _scaffoldKey,
       isLoading: isLoading,
       resizeToAvoidBottomInset: false,
-      floatingActionButton: _buildFAB(),
+      floatingActionButton: _canDelayTest(proxiesType) ? _buildFAB() : null,
       actions: _buildActions(context),
       title: context.appLocalizations.proxies,
       searchState: AppBarSearchState(
