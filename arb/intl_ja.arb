@@ -145,6 +145,7 @@
   "unknown": "不明",
   "country": "国",
   "search": "検索",
+  "regexSearch": "正規表現検索",
   "allowBypass": "アプリが VPN をバイパスすることを許可",
   "allowBypassDesc": "有効化すると一部アプリが VPN をバイパス",
   "externalController": "外部コントローラー",
