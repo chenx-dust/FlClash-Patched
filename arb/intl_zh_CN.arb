@@ -145,6 +145,7 @@
   "unknown": "未知",
   "country": "区域",
   "search": "搜索",
+  "regexSearch": "正则搜索",
   "allowBypass": "允许应用绕过 VPN",
   "allowBypassDesc": "开启后部分应用可绕过 VPN",
   "externalController": "外部控制器",
