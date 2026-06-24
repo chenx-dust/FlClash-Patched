@@ -269,9 +269,9 @@ _ProxiesStyleProps _$ProxiesStylePropsFromJson(Map<String, dynamic> json) =>
           $enumDecodeNullable(
             _$ProxyCardTypeEnumMap,
             json['cardType'],
-            unknownValue: ProxyCardType.expand,
+            unknownValue: ProxyCardType.standard,
           ) ??
-          ProxyCardType.expand,
+          ProxyCardType.standard,
     );
 
 Map<String, dynamic> _$ProxiesStylePropsToJson(
@@ -319,7 +319,7 @@ const _$ProxiesIconSourceEnumMap = {
 };
 
 const _$ProxyCardTypeEnumMap = {
-  ProxyCardType.expand: 'expand',
+  ProxyCardType.standard: 'standard',
   ProxyCardType.shrink: 'shrink',
   ProxyCardType.min: 'min',
 };
