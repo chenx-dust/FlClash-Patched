@@ -379,10 +379,17 @@ class _AccessViewState extends ConsumerState<AccessView> {
     _pinedList = null;
   }
 
+  void _onRegexSearchChange(bool value) {
+    ref.read(searchUseRegexProvider(QueryTag.access).notifier).value = value;
+    _pinedList = null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(loadingProvider(LoadingTag.access));
     final query = ref.watch(queryProvider(QueryTag.access));
+    final useRegex = ref.watch(searchUseRegexProvider(QueryTag.access));
+    final matcher = SearchMatcher(query, useRegex: useRegex);
     final packages = ref.watch(packagesProvider);
     final accessControl = ref.watch(accessControlStateProvider);
     if (_isInit) {
@@ -402,8 +409,7 @@ class _AccessViewState extends ConsumerState<AccessView> {
         )
         .where(
           (package) =>
-              package.label.toLowerCase().contains(query) ||
-              package.packageName.contains(query),
+              matcher.hasAnyMatch([package.label, package.packageName]),
         )
         .toList();
     final mode = accessControl.mode;
@@ -413,7 +419,12 @@ class _AccessViewState extends ConsumerState<AccessView> {
     return CommonScaffold(
       key: _scaffoldKey,
       isLoading: isLoading,
-      searchState: AppBarSearchState(onSearch: _onSearch, autoAddSearch: false),
+      searchState: AppBarSearchState(
+        onSearch: _onSearch,
+        onRegexChange: _onRegexSearchChange,
+        autoAddSearch: false,
+        useRegex: useRegex,
+      ),
       title: context.appLocalizations.appAccessControl,
       actions: _buildActions(context, enable: accessControl.enable),
       body: DisabledMask(
