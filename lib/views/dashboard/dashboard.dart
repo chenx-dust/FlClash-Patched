@@ -87,7 +87,10 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                           },
                         ),
                         onPressed: _handleConnection,
-                        icon: const Icon(Icons.check, fontWeight: FontWeight.w900),
+                        icon: const Icon(
+                          Icons.check,
+                          fontWeight: FontWeight.w900,
+                        ),
                       )
                     : FilledButton.icon(
                         key: ValueKey(coreStatus),
@@ -262,6 +265,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
             padding: const EdgeInsets.all(16).copyWith(bottom: 88),
             child: isEdit
                 ? SystemBackBlock(
+                    onBack: _handleUpdateIsEdit,
                     child: CommonPopScope(
                       child: SuperGrid(
                         key: key,
