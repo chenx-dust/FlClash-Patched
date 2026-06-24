@@ -214,6 +214,46 @@ class AppLocalizations {
     return Intl.message('Download', name: 'download', desc: '', args: []);
   }
 
+  /// `Upload traffic`
+  String get uploadTraffic {
+    return Intl.message(
+      'Upload traffic',
+      name: 'uploadTraffic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Download traffic`
+  String get downloadTraffic {
+    return Intl.message(
+      'Download traffic',
+      name: 'downloadTraffic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload speed`
+  String get uploadSpeed {
+    return Intl.message(
+      'Upload speed',
+      name: 'uploadSpeed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Download speed`
+  String get downloadSpeed {
+    return Intl.message(
+      'Download speed',
+      name: 'downloadSpeed',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `No profile, Please add a profile`
   String get nullProfileDesc {
     return Intl.message(
@@ -3427,6 +3467,11 @@ class AppLocalizations {
   /// `Delay Test`
   String get delayTest {
     return Intl.message('Delay Test', name: 'delayTest', desc: '', args: []);
+  }
+
+  /// `Close all`
+  String get closeAll {
+    return Intl.message('Close all', name: 'closeAll', desc: '', args: []);
   }
 
   /// `Proxy group is empty`
