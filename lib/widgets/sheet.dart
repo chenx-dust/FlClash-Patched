@@ -177,6 +177,7 @@ class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
     Widget buildIconButton(IconButtonData data) {
       if (type == SheetType.bottomSheet) {
         return IconButton.filledTonal(
+          tooltip: data.tooltip,
           onPressed: data.onPressed,
           style: IconButton.styleFrom(
             visualDensity: VisualDensity.standard,
@@ -186,6 +187,7 @@ class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
         );
       }
       return IconButton(
+        tooltip: data.tooltip,
         onPressed: data.onPressed,
         style: IconButton.styleFrom(
           visualDensity: VisualDensity.standard,
