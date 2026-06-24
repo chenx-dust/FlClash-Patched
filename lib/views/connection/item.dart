@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class TrackerInfoItem extends ConsumerWidget {
   final TrackerInfo trackerInfo;
   final Function(String)? onClickKeyword;
+  final Future<void> Function()? onDetailClosed;
   final Widget? trailing;
   final String detailTitle;
 
@@ -18,6 +19,7 @@ class TrackerInfoItem extends ConsumerWidget {
     super.key,
     required this.trackerInfo,
     this.onClickKeyword,
+    this.onDetailClosed,
     this.trailing,
     required this.detailTitle,
   });
@@ -141,8 +143,8 @@ class TrackerInfoItem extends ConsumerWidget {
         : null;
     return ListItem(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      onTap: () {
-        showExtend(
+      onTap: () async {
+        await showExtend(
           context,
           builder: (_) {
             return AdaptiveSheetScaffold(
@@ -151,6 +153,7 @@ class TrackerInfoItem extends ConsumerWidget {
             );
           },
         );
+        await onDetailClosed?.call();
       },
       title: Column(
         mainAxisSize: MainAxisSize.min,

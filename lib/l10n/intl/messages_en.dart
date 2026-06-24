@@ -249,6 +249,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "clearData": MessageLookupByLibrary.simpleMessage("Clear data"),
     "clipboardExport": MessageLookupByLibrary.simpleMessage("Export clipboard"),
     "clipboardImport": MessageLookupByLibrary.simpleMessage("Clipboard import"),
+    "closeAll": MessageLookupByLibrary.simpleMessage("Close all"),
     "color": MessageLookupByLibrary.simpleMessage("Color"),
     "colorSchemes": MessageLookupByLibrary.simpleMessage("Color schemes"),
     "columns": MessageLookupByLibrary.simpleMessage("Columns"),
@@ -359,6 +360,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "domain": MessageLookupByLibrary.simpleMessage("Domain"),
     "download": MessageLookupByLibrary.simpleMessage("Download"),
+    "downloadSpeed": MessageLookupByLibrary.simpleMessage("Download speed"),
+    "downloadTraffic": MessageLookupByLibrary.simpleMessage("Download traffic"),
     "dozeSuspend": MessageLookupByLibrary.simpleMessage("Doze suspend"),
     "dozeSuspendDesc": MessageLookupByLibrary.simpleMessage(
       "Suspend the core while Android is in Doze mode to reduce battery usage",
@@ -1083,6 +1086,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "unnamed": MessageLookupByLibrary.simpleMessage("Unnamed"),
     "update": MessageLookupByLibrary.simpleMessage("Update"),
     "upload": MessageLookupByLibrary.simpleMessage("Upload"),
+    "uploadSpeed": MessageLookupByLibrary.simpleMessage("Upload speed"),
+    "uploadTraffic": MessageLookupByLibrary.simpleMessage("Upload traffic"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage(
       "Obtain profile through URL",
