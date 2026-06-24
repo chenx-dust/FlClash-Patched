@@ -2,6 +2,7 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/pages/scan.dart';
 import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/state.dart';
+import 'package:fl_clash/views/profiles/age_key_generator.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -126,13 +127,32 @@ class _URLFormDialogState extends State<URLFormDialog> {
     return CommonDialog(
       title: appLocalizations.importFromURL,
       actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(appLocalizations.cancel),
-        ),
-        TextButton(
-          onPressed: _handleAddProfileFormURL,
-          child: Text(appLocalizations.submit),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton.filledTonal(
+              tooltip: appLocalizations.generateSecret,
+              onPressed: () {
+                globalState.showCommonDialog(
+                  child: const AgeKeyGeneratorDialog(),
+                );
+              },
+              icon: const Icon(Icons.key),
+            ),
+            Row(
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(appLocalizations.cancel),
+                ),
+                const SizedBox(width: 4),
+                TextButton(
+                  onPressed: _handleAddProfileFormURL,
+                  child: Text(appLocalizations.submit),
+                ),
+              ],
+            ),
+          ],
         ),
       ],
       child: SizedBox(
