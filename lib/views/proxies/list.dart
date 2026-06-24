@@ -23,10 +23,10 @@ class ProxiesListView extends StatefulWidget {
   const ProxiesListView({super.key});
 
   @override
-  State<ProxiesListView> createState() => _ProxiesListViewState();
+  State<ProxiesListView> createState() => ProxiesListViewState();
 }
 
-class _ProxiesListViewState extends State<ProxiesListView> {
+class ProxiesListViewState extends State<ProxiesListView> {
   final _controller = ScrollController();
   final _headerStateNotifier = ValueNotifier<ProxiesListHeaderSelectorState?>(
     null,
@@ -279,6 +279,16 @@ class _ProxiesListViewState extends State<ProxiesListView> {
             proxies: proxies ?? [],
           ),
     );
+  }
+
+  Future<void> delayTestUnfoldedGroups() async {
+    final state = globalState.container.read(proxiesListStateProvider);
+    final expandedGroups = state.groups.where(
+      (group) => state.currentUnfoldSet.contains(group.name),
+    );
+    for (final group in expandedGroups) {
+      await delayTest(group.all, group.testUrl);
+    }
   }
 
   void _jumpTo(double offset) {
