@@ -12,7 +12,7 @@ class ProxyPlugin : public flutter::Plugin {
  public:
   static void RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar);
 
-  ProxyPlugin();
+  ProxyPlugin(flutter::PluginRegistrarWindows *registrar);
 
   virtual ~ProxyPlugin();
 
@@ -24,6 +24,15 @@ class ProxyPlugin : public flutter::Plugin {
   void HandleMethodCall(
       const flutter::MethodCall<flutter::EncodableValue> &method_call,
       std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+
+  std::optional<LRESULT> HandleWindowProc(
+      HWND hwnd,
+      UINT message,
+      WPARAM wparam,
+      LPARAM lparam);
+
+  int window_proc_id = -1;
+  flutter::PluginRegistrarWindows *registrar;
 };
 
 }  // namespace proxy
