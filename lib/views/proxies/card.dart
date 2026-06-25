@@ -42,29 +42,23 @@ class ProxyCard extends StatelessWidget {
             alignment: type == ProxyCardType.standard
                 ? Alignment.centerLeft
                 : Alignment.centerRight,
-            child: delay == 0 || delay == null
+            child: delay == 0
                 ? SizedBox(
                     height: measure.labelSmallHeight,
                     width: measure.labelSmallHeight,
-                    child: delay == 0
-                        ? const CircularProgressIndicator(strokeWidth: 2)
-                        : IconButton(
-                            tooltip: context.appLocalizations.delayTest,
-                            icon: const Icon(Icons.bolt),
-                            iconSize: globalState.measure.labelSmallHeight,
-                            padding: EdgeInsets.zero,
-                            onPressed: _handleTestCurrentDelay,
-                          ),
+                    child: const CircularProgressIndicator(strokeWidth: 2),
                   )
                 : GestureDetector(
                     onTap: _handleTestCurrentDelay,
-                    child: Text(
-                      delay > 0 ? '$delay ms' : 'Timeout',
-                      style: context.textTheme.labelSmall?.copyWith(
-                        overflow: TextOverflow.ellipsis,
-                        color: utils.getDelayColor(delay),
-                      ),
-                    ),
+                    child: delay == null
+                        ? Icon(Icons.bolt, size: measure.labelSmallHeight)
+                        : Text(
+                            delay > 0 ? '$delay ms' : 'Timeout',
+                            style: context.textTheme.labelSmall?.copyWith(
+                              overflow: TextOverflow.ellipsis,
+                              color: utils.getDelayColor(delay),
+                            ),
+                          ),
                   ),
           );
         },
@@ -131,6 +125,7 @@ class ProxyCard extends StatelessWidget {
             );
             return CommonCard(
               key: key,
+              onLongPress: _handleTestCurrentDelay,
               onPressed: () {
                 _changeProxy(ref);
               },
