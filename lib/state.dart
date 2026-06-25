@@ -417,6 +417,7 @@ class GlobalState {
     )) {
       return;
     }
+    await WidgetsBinding.instance.endOfFrame;
     final isDisclaimerAccepted = await showDisclaimer();
     if (!isDisclaimerAccepted) {
       await container.read(systemActionProvider.notifier).handleExit();
