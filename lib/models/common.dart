@@ -477,6 +477,10 @@ class CloseWindowIntent extends Intent {
   const CloseWindowIntent();
 }
 
+class BackIntent extends Intent {
+  const BackIntent();
+}
+
 @freezed
 abstract class Result<T> with _$Result<T> {
   const factory Result({
