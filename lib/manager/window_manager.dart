@@ -55,6 +55,13 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   }
 
   @override
+  void onWindowFocus() {
+    super.onWindowFocus();
+    commonPrint.log('focus', logLevel: LogLevel.debug);
+    globalState.handleForeground();
+  }
+
+  @override
   Future<void> onShouldTerminate() async {
     await ref.read(systemActionProvider.notifier).handleExit();
     super.onShouldTerminate();

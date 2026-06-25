@@ -85,7 +85,7 @@ class GlobalState {
   BuildContext get _context => navigatorKey.currentContext!;
 
   void handleBackground() async {
-    commonPrint.log('background');
+    commonPrint.log('background', logLevel: LogLevel.debug);
     if (isBackground.value) {
       return;
     }
@@ -95,7 +95,7 @@ class GlobalState {
   }
 
   void handleForeground() {
-    commonPrint.log('foreground');
+    commonPrint.log('foreground', logLevel: LogLevel.debug);
     foregroundTicker.resume();
     if (!isBackground.value) {
       return;
