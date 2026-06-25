@@ -107,13 +107,13 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    commonPrint.log('$state');
+    commonPrint.log('$state', logLevel: LogLevel.debug);
     switch (state) {
       case AppLifecycleState.inactive:
         if (system.isDesktop) {
           final isVisible = await windowManager.isVisible();
           final isMinimized = await windowManager.isMinimized();
-          commonPrint.log('isVisible: $isVisible, isMinimized: $isMinimized');
+          commonPrint.log('isVisible: $isVisible, isMinimized: $isMinimized', logLevel: LogLevel.debug);
           if (isVisible || !isMinimized) {
             if (ref.read(appSettingProvider).foregroundTickerIdleWhenUnfocused) {
               foregroundTicker.slow();
