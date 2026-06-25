@@ -159,7 +159,7 @@ class EditProfileViewState extends State<EditProfileView> {
         _handleSaveEdit(context, content);
       },
       onPop: (context, _, content) async {
-        if (content == _rawText) {
+        if (content == _rawText?.replaceAll('\r', '')) {
           return true;
         }
         final res = await globalState.showMessage(
