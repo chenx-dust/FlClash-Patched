@@ -17,18 +17,20 @@ class NullStatus extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       alignment: const Alignment(0.0, -0.25),
-      child: Wrap(
-        direction: Axis.vertical,
-        runAlignment: WrapAlignment.center,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          illustration,
-          const SizedBox(height: 16),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.titleMedium?.toBold.toLight,
-          ),
-        ],
+      child: Focus(
+        child: Wrap(
+          direction: Axis.vertical,
+          runAlignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            illustration,
+            const SizedBox(height: 16),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.titleMedium?.toBold.toLight,
+            ),
+          ],
+        ),
       ),
     );
   }
