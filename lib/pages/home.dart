@@ -95,6 +95,8 @@ class HomePage extends StatelessWidget {
                           : Navigator(
                               pages: [MaterialPage(child: navigationView)],
                               onDidRemovePage: (_) {},
+                              routeDirectionalTraversalEdgeBehavior:
+                                  TraversalEdgeBehavior.parentScope,
                             ),
                     );
                     return view;
@@ -162,9 +164,7 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
     if (index == -1) {
       return;
     }
-    final isAnimateToPage = ref
-        .read(appSettingProvider)
-        .isAnimateToPage;
+    final isAnimateToPage = ref.read(appSettingProvider).isAnimateToPage;
     if (isAnimateToPage && !ignoreAnimateTo) {
       await _pageController.animateToPage(
         index,
@@ -193,13 +193,21 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
       currentNavigationItemsStateProvider.select((state) => state.value.length),
     );
     final isMobile = ref.read(isMobileViewProvider);
+    final pageLabel = ref.watch(currentPageLabelProvider);
+    final pageIndex = widget.navigationItems.indexWhere(
+      (item) => item.label == pageLabel,
+    );
+    final currentIndex = pageIndex == -1 ? 0 : pageIndex;
     return PageView.builder(
       scrollDirection: isMobile ? Axis.horizontal : Axis.vertical,
       controller: _pageController,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: itemCount,
       itemBuilder: (context, index) {
-        return widget.pageBuilder(context, index);
+        return ExcludeFocus(
+          excluding: index != currentIndex,
+          child: widget.pageBuilder(context, index),
+        );
       },
     );
   }
