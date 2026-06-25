@@ -145,6 +145,9 @@ class CoreController {
 
   Future<List<TrackerInfo>> getConnections() async {
     final res = await _interface.getConnections();
+    if (res.isEmpty) {
+      return [];
+    }
     final connectionsData = json.decode(res) as Map;
     final connectionsRaw = connectionsData['connections'] as List? ?? [];
     return connectionsRaw.map((e) => TrackerInfo.fromJson(e)).toList();
