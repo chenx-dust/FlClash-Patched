@@ -33,10 +33,9 @@ class Request {
 
   Future<Response<Uint8List>> getFileResponseForUrl(String url) async {
     try {
-      return await _clashDio.get<Uint8List>(
-        url,
-        options: Options(responseType: ResponseType.bytes),
-      );
+      return await _clashDio
+          .get<Uint8List>(url, options: Options(responseType: ResponseType.bytes))
+          .timeout(const Duration(seconds: 10));
     } catch (e) {
       commonPrint.log('getFileResponseForUrl error ${e.toString()}');
       if (e is DioException) {
@@ -52,19 +51,17 @@ class Request {
   }
 
   Future<Response<String>> getTextResponseForUrl(String url) async {
-    final response = await _clashDio.get<String>(
-      url,
-      options: Options(responseType: ResponseType.plain),
-    );
+    final response = await _clashDio
+        .get<String>(url, options: Options(responseType: ResponseType.plain))
+        .timeout(const Duration(seconds: 10));
     return response;
   }
 
   Future<MemoryImage?> getImage(String url) async {
     if (url.isEmpty) return null;
-    final response = await dio.get<Uint8List>(
-      url,
-      options: Options(responseType: ResponseType.bytes),
-    );
+    final response = await dio
+        .get<Uint8List>(url, options: Options(responseType: ResponseType.bytes))
+        .timeout(const Duration(seconds: 10));
     final data = response.data;
     if (data == null) return null;
     return MemoryImage(data);
@@ -75,7 +72,8 @@ class Request {
       final response = await dio.get(
         'https://api.github.com/repos/$repository/releases/latest',
         options: Options(responseType: ResponseType.json),
-      );
+      )
+          .timeout(const Duration(seconds: 10));
       if (response.statusCode != 200) return null;
       final data = response.data as Map<String, dynamic>;
       final remoteVersion = data['tag_name'];
