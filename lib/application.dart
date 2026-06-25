@@ -133,7 +133,9 @@ class ApplicationState extends ConsumerState<Application> {
   }
 
   Widget _buildApp({required Widget child}) {
-    return StatusManager(child: ThemeManager(child: child));
+    return StatusManager(
+      child: ThemeManager(child: BackManager(child: child)),
+    );
   }
 
   @override
