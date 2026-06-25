@@ -180,7 +180,7 @@ namespace proxy
             registrar->messenger(), "proxy",
             &flutter::StandardMethodCodec::GetInstance());
 
-    auto plugin = std::make_unique<ProxyPlugin>();
+    auto plugin = std::make_unique<ProxyPlugin>(registrar);
 
     channel->SetMethodCallHandler(
         [plugin_pointer = plugin.get()](const auto &call, auto result)
@@ -189,6 +189,33 @@ namespace proxy
         });
 
     registrar->AddPlugin(std::move(plugin));
+  }
+
+  ProxyPlugin::ProxyPlugin(flutter::PluginRegistrarWindows *registrar)
+      : registrar(registrar) {
+    window_proc_id = registrar->RegisterTopLevelWindowProcDelegate(
+        [this](HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+          return HandleWindowProc(hwnd, message, wparam, lparam);
+        });
+  }
+
+  ProxyPlugin::~ProxyPlugin() {
+    if (registrar && window_proc_id != -1) {
+      registrar->UnregisterTopLevelWindowProcDelegate(window_proc_id);
+    }
+  }
+
+  std::optional<LRESULT> ProxyPlugin::HandleWindowProc(
+      HWND hwnd,
+      UINT message,
+      WPARAM wparam,
+      LPARAM lparam) {
+    if (message == WM_ENDSESSION) {
+      if (wparam == TRUE) {
+        stopProxy();
+      }
+    }
+    return std::nullopt;
   }
 
   void ProxyPlugin::HandleMethodCall(
