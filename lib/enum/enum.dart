@@ -258,6 +258,7 @@ enum FunctionTag {
   changeProxy,
   checkIp,
   handleWill,
+  handleBack,
   updateDelay,
   vpnTip,
   autoLaunch,
