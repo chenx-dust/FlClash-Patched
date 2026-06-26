@@ -11,10 +11,17 @@ class Picker {
     return FilePicker.pickFile(initialDirectory: await appPath.downloadDirPath);
   }
 
-  Future<String?> saveFile(String fileName, Uint8List bytes) async {
+  Future<String?> saveFile(
+    String fileName,
+    Uint8List bytes, {
+    FileType type = FileType.any,
+    List<String>? allowedExtensions,
+  }) async {
     final path = await FilePicker.saveFile(
       fileName: fileName,
       initialDirectory: await appPath.downloadDirPath,
+      type: type,
+      allowedExtensions: allowedExtensions,
       bytes: bytes,
     );
     if (!system.isAndroid && path != null) {
