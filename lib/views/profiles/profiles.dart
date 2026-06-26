@@ -369,6 +369,7 @@ class ProfileItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CommonPopupBox(
+      key: const ValueKey('menu'),
       popup: _buildPopupMenu(context),
       targetBuilder: (open) {
         return LayoutBuilder(
@@ -405,7 +406,6 @@ class ProfileItem extends StatelessWidget {
                                 child: CircularProgressIndicator(),
                               )
                             : ExcludeFocus(
-                                key: const ValueKey('menu'),
                                 child: IconButton(
                                   onPressed: openMenu,
                                   icon: const Icon(Icons.more_vert),
