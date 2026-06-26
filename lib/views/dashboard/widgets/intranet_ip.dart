@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/providers/app.dart';
@@ -115,6 +116,8 @@ class _IntranetIpDialogState extends State<_IntranetIpDialog> {
     BuildContext context,
     String name,
     InternetAddress address,
+    double nameWidth,
+    TextStyle? nameStyle,
   ) {
     final ip = address.address;
     return ListTile(
@@ -122,9 +125,15 @@ class _IntranetIpDialogState extends State<_IntranetIpDialog> {
       contentPadding: EdgeInsets.zero,
       title: Row(
         children: [
-          Expanded(
+          SizedBox(
+            width: nameWidth,
             child: TooltipText(
-              text: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis),
+              text: Text(
+                name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: nameStyle,
+              ),
             ),
           ),
           const SizedBox(width: 8),
@@ -149,12 +158,30 @@ class _IntranetIpDialogState extends State<_IntranetIpDialog> {
     );
   }
 
+  double _getMaxNameWidth(
+    List<NetworkInterface> items,
+    TextStyle? nameStyle,
+    BoxConstraints constraints,
+  ) {
+    double maxWidth = 0;
+    for (final interface in items) {
+      final width = globalState.measure
+          .computeTextSize(Text(interface.name, style: nameStyle))
+          .width;
+      if (width > maxWidth) {
+        maxWidth = width;
+      }
+    }
+    return min(maxWidth + 18, constraints.maxWidth * 0.4);
+  }
+
   @override
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
+    final nameStyle = context.textTheme.bodyMedium;
     return CommonDialog(
       title: appLocalizations.intranetIP,
-      maxWidth: 560,
+      maxWidth: 480,
       actions: [
         TextButton(
           onPressed: () {
@@ -166,30 +193,41 @@ class _IntranetIpDialogState extends State<_IntranetIpDialog> {
       child: FutureBuilder<List<NetworkInterface>>(
         future: _future,
         builder: (context, snapshot) {
-          final items = snapshot.data ?? [];
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const SizedBox(
-              height: 80,
-              child: Center(child: CommonCircleLoading()),
-            );
-          }
-          if (items.isEmpty) {
-            return Text(appLocalizations.noNetwork);
-          }
-          final children = <Widget>[];
-          for (final interface in items) {
-            if (children.isNotEmpty) {
-              children.add(const Divider(height: 0));
-            }
-            bool isFirst = true;
-            for (final address in interface.sortedAddresses) {
-              children.add(
-                _buildItem(context, isFirst ? interface.name : '', address),
-              );
-              isFirst = false;
-            }
-          }
-          return Column(mainAxisSize: MainAxisSize.min, children: children);
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final items = snapshot.data ?? [];
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const SizedBox(
+                  height: 80,
+                  child: Center(child: CommonCircleLoading()),
+                );
+              }
+              if (items.isEmpty) {
+                return Text(appLocalizations.noNetwork);
+              }
+              final nameWidth = _getMaxNameWidth(items, nameStyle, constraints);
+              final children = <Widget>[];
+              for (final interface in items) {
+                if (children.isNotEmpty) {
+                  children.add(const Divider(height: 0));
+                }
+                bool isFirst = true;
+                for (final address in interface.sortedAddresses) {
+                  children.add(
+                    _buildItem(
+                      context,
+                      isFirst ? interface.name : '',
+                      address,
+                      nameWidth,
+                      nameStyle,
+                    ),
+                  );
+                  isFirst = false;
+                }
+              }
+              return Column(mainAxisSize: MainAxisSize.min, children: children);
+            },
+          );
         },
       ),
     );
