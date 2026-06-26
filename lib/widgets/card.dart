@@ -86,6 +86,7 @@ class CommonCard extends StatelessWidget {
     super.key,
     bool? isSelected,
     this.type = CommonCardType.plain,
+    this.focusNode,
     this.onPressed,
     this.selectWidget,
     this.radius,
@@ -101,6 +102,7 @@ class CommonCard extends StatelessWidget {
   final bool enterAnimated;
   final bool isSelected;
   final bool isError;
+  final FocusNode? focusNode;
   final void Function()? onPressed;
   final void Function()? onLongPress;
   final Widget? selectWidget;
@@ -214,6 +216,16 @@ class CommonCard extends StatelessWidget {
     }).resolve(states);
   }
 
+  FocusNode? _buildFocusNode() {
+    if (focusNode != null) {
+      return focusNode;
+    }
+    if (onPressed == null && onLongPress == null) {
+      return FocusNode(skipTraversal: true);
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     var childWidget = child;
@@ -241,7 +253,7 @@ class CommonCard extends StatelessWidget {
     final card = switch (type == CommonCardType.filled) {
       true => FilledButton(
         onLongPress: onLongPress,
-        focusNode: onPressed == null && onLongPress == null ? FocusNode(skipTraversal: true) : null,
+        focusNode: _buildFocusNode(),
         clipBehavior: Clip.antiAlias,
         style:
             FilledButton.styleFrom(
@@ -267,12 +279,12 @@ class CommonCard extends StatelessWidget {
                 (states) => _buildOverlayColor(context, states),
               ),
             ),
-        onPressed: onPressed ?? (onLongPress == null ? () {} : null),
+        onPressed: onPressed,
         child: childWidget,
       ),
       false => OutlinedButton(
         onLongPress: onLongPress,
-        focusNode: onPressed == null && onLongPress == null ? FocusNode(skipTraversal: true) : null,
+        focusNode: _buildFocusNode(),
         clipBehavior: Clip.antiAlias,
         style:
             OutlinedButton.styleFrom(
@@ -295,7 +307,7 @@ class CommonCard extends StatelessWidget {
                 (states) => _buildOverlayColor(context, states),
               ),
             ),
-        onPressed: onPressed ?? (onLongPress == null ? () {} : null),
+        onPressed: onPressed,
         child: childWidget,
       ),
     };
