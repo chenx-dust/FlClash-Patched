@@ -20,8 +20,13 @@ class Delegate {
 class RadioDelegate<T> extends Delegate {
   final T value;
   final void Function()? onTab;
+  final bool excludeFocus;
 
-  const RadioDelegate({required this.value, this.onTab});
+  const RadioDelegate({
+    required this.value,
+    this.onTab,
+    this.excludeFocus = false,
+  });
 }
 
 class SwitchDelegate<T> extends Delegate {
@@ -320,7 +325,8 @@ class ListItem<T> extends StatelessWidget {
             final supportsPredictiveBack = system.supportsPredictiveBack(
               globalState.container.read(versionProvider),
             );
-            if (!isMobile || themeProps.predictiveBack && supportsPredictiveBack) {
+            if (!isMobile ||
+                themeProps.predictiveBack && supportsPredictiveBack) {
               final res = await showExtend(
                 context,
                 props: ExtendProps(
@@ -434,14 +440,17 @@ class ListItem<T> extends StatelessWidget {
     }
     if (delegate is RadioDelegate) {
       final radioDelegate = delegate as RadioDelegate<T>;
+      final radio = Radio<T>(
+        visualDensity: VisualDensity.compact,
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        value: radioDelegate.value,
+        toggleable: true,
+      );
       return _buildListTile(
         onTap: radioDelegate.onTab,
-        leading: Radio<T>(
-          visualDensity: VisualDensity.compact,
-          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          value: radioDelegate.value,
-          toggleable: true,
-        ),
+        leading: radioDelegate.excludeFocus
+            ? ExcludeFocus(child: radio)
+            : radio,
         trailing: trailing,
       );
     }
