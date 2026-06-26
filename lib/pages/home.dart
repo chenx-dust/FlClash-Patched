@@ -207,7 +207,6 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
     final pageIndex = widget.navigationItems.indexWhere(
       (item) => item.label == pageLabel,
     );
-    final currentIndex = pageIndex == -1 ? 0 : pageIndex;
     return PageView.builder(
       scrollDirection: isMobile ? Axis.horizontal : Axis.vertical,
       controller: _pageController,
@@ -215,7 +214,7 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
       itemCount: itemCount,
       itemBuilder: (context, index) {
         return ExcludeFocus(
-          excluding: index != currentIndex,
+          excluding: pageIndex != -1 && index != pageIndex,
           child: widget.pageBuilder(context, index),
         );
       },
@@ -280,34 +279,55 @@ class _NavigationBarDefaultsM3 extends NavigationBarThemeData {
   }
 }
 
-class HomeBackScopeContainer extends ConsumerWidget {
+class HomeBackScopeContainer extends ConsumerStatefulWidget {
   final Widget child;
 
   const HomeBackScopeContainer({super.key, required this.child});
 
   @override
-  Widget build(BuildContext context, ref) {
-    final pageLabel = ref.watch(currentPageLabelProvider);
+  ConsumerState<HomeBackScopeContainer> createState() =>
+      _HomeBackScopeContainerState();
+}
+
+class _HomeBackScopeContainerState
+    extends ConsumerState<HomeBackScopeContainer> {
+  bool _canHandlePop = false;
+
+  @override
+  Widget build(BuildContext context) {
     final isMobile = ref.watch(isMobileViewProvider);
-    final realContext = GlobalObjectKey(pageLabel).currentContext ?? context;
-    final canPop = isMobile && !Navigator.canPop(realContext);
+    final canPop = isMobile && !_canHandlePop;
     return CommonPopScope(
       canPop: canPop,
       onPop: (context) async {
         final pageLabel = ref.read(currentPageLabelProvider);
         final realContext =
             GlobalObjectKey(pageLabel).currentContext ?? context;
-        final canPop = Navigator.canPop(realContext);
-        if (canPop) {
-          Navigator.of(realContext).pop();
-        } else {
-          await globalState.container
-              .read(systemActionProvider.notifier)
-              .handleClose();
+        final navigator = Navigator.of(realContext);
+        if (isMobile) {
+          if (navigator.canPop()) {
+            navigator.pop();
+            return false;
+          }
+        } else if (await navigator.maybePop()) {
+          return false;
         }
+        await globalState.container
+            .read(systemActionProvider.notifier)
+            .handleClose();
         return false;
       },
-      child: child,
+      child: NotificationListener<NavigationNotification>(
+        onNotification: (NavigationNotification notification) {
+          if (_canHandlePop != notification.canHandlePop) {
+            setState(() {
+              _canHandlePop = notification.canHandlePop;
+            });
+          }
+          return false;
+        },
+        child: widget.child,
+      ),
     );
   }
 }
