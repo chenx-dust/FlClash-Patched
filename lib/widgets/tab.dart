@@ -7,6 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 
 const EdgeInsetsGeometry _kHorizontalItemPadding = EdgeInsets.symmetric(
   vertical: 2,
@@ -23,7 +24,7 @@ const double _kMinSegmentedControlHeight = 28.0;
 
 const EdgeInsets _kSeparatorInset = EdgeInsets.symmetric(vertical: 5);
 
-const double _kSeparatorWidth = 1;
+const double _kSeparatorWidth = 4;
 
 const double _kMinThumbScale = 0.95;
 
@@ -34,6 +35,8 @@ const double _kTouchYDistanceThreshold = 50.0 * 50.0;
 const double _kContentPressedMinOpacity = 0.2;
 
 const double _kFontSize = 13.0;
+
+const int _kThumbHoverAlpha = 20;
 
 const FontWeight _kFontWeight = FontWeight.w500;
 
@@ -53,6 +56,8 @@ const Duration _kSpringAnimationDuration = Duration(milliseconds: 412);
 const Duration _kOpacityAnimationDuration = Duration(milliseconds: 470);
 
 const Duration _kHighlightAnimationDuration = Duration(milliseconds: 200);
+
+const Duration _kHoverAnimationDuration = Duration(milliseconds: 100);
 
 class CommonTabBar<T extends Object> extends StatefulWidget {
   CommonTabBar({
@@ -101,7 +106,6 @@ class _CommonTabBarState<T extends Object> extends State<CommonTabBar<T>>
     Tween<double>(begin: 1, end: _kMinThumbScale),
   );
 
-  final TapGestureRecognizer tap = TapGestureRecognizer();
   final HorizontalDragGestureRecognizer drag =
       HorizontalDragGestureRecognizer();
   final LongPressGestureRecognizer longPress = LongPressGestureRecognizer();
@@ -121,7 +125,6 @@ class _CommonTabBarState<T extends Object> extends State<CommonTabBar<T>>
       ..onEnd = onEnd
       ..onCancel = onCancel;
 
-    tap.onTapUp = onTapUp;
     longPress.onLongPress = () {};
 
     highlighted = widget.groupValue;
@@ -143,7 +146,6 @@ class _CommonTabBarState<T extends Object> extends State<CommonTabBar<T>>
     thumbController.dispose();
 
     drag.dispose();
-    tap.dispose();
     longPress.dispose();
 
     super.dispose();
@@ -219,18 +221,6 @@ class _CommonTabBarState<T extends Object> extends State<CommonTabBar<T>>
     }
   }
 
-  void onTapUp(TapUpDetails details) {
-    if (isThumbDragging) {
-      return;
-    }
-    final T segment = segmentForXPosition(details.localPosition.dx);
-    onPressedChangedByGesture(null);
-    if (segment != widget.groupValue &&
-        !widget.disabledChildren.contains(segment)) {
-      widget.onValueChanged(segment);
-    }
-  }
-
   void onDown(DragDownDetails details) {
     final T touchDownSegment = segmentForXPosition(details.localPosition.dx);
     _startedOnSelectedSegment = touchDownSegment == highlighted;
@@ -293,9 +283,23 @@ class _CommonTabBarState<T extends Object> extends State<CommonTabBar<T>>
     _startedOnSelectedSegment = null;
   }
 
+  void onSegmentTap(T segment) {
+    if (widget.disabledChildren.contains(segment)) {
+      return;
+    }
+    onPressedChangedByGesture(null);
+    if (segment != widget.groupValue) {
+      widget.onValueChanged(segment);
+    }
+  }
+
   T? highlighted;
 
   T? pressed;
+
+  T? hovered;
+
+  T? focused;
 
   @override
   Widget build(BuildContext context) {
@@ -307,6 +311,7 @@ class _CommonTabBarState<T extends Object> extends State<CommonTabBar<T>>
     int? highlightedIndex;
     for (final MapEntry<T, Widget> entry in widget.children.entries) {
       final bool isHighlighted = highlighted == entry.key;
+      final bool isInkResponseTransparent = isThumbDragging || isHighlighted;
       if (isHighlighted) {
         highlightedIndex = index;
       }
@@ -331,26 +336,63 @@ class _CommonTabBarState<T extends Object> extends State<CommonTabBar<T>>
         TextDirection.ltr || TextDirection.rtl => _SegmentLocation.inbetween,
       };
       children.add(
-        Semantics(
-          button: true,
-          onTap: () {
-            if (widget.disabledChildren.contains(entry.key)) {
-              return;
-            }
-            widget.onValueChanged(entry.key);
+        FocusableActionDetector(
+          enabled: !widget.disabledChildren.contains(entry.key),
+          descendantsAreFocusable: false,
+          shortcuts: const <ShortcutActivator, Intent>{
+            SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+            SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
           },
-          inMutuallyExclusiveGroup: true,
-          selected: widget.groupValue == entry.key,
-          child: MouseRegion(
-            cursor: kIsWeb ? SystemMouseCursors.click : MouseCursor.defer,
-            child: _Segment<T>(
-              key: ValueKey<T>(entry.key),
-              highlighted: isHighlighted,
-              pressed: pressed == entry.key,
-              isDragging: isThumbDragging,
-              enabled: !widget.disabledChildren.contains(entry.key),
-              segmentLocation: segmentLocation,
-              child: entry.value,
+          actions: <Type, Action<Intent>>{
+            ActivateIntent: CallbackAction<ActivateIntent>(
+              onInvoke: (_) {
+                onSegmentTap(entry.key);
+                return null;
+              },
+            ),
+          },
+          onFocusChange: (value) {
+            setState(() {
+              focused = value ? entry.key : null;
+            });
+          },
+          onShowHoverHighlight: (value) {
+            setState(() {
+              hovered = value ? entry.key : null;
+            });
+          },
+          child: Semantics(
+            button: true,
+            onTap: widget.disabledChildren.contains(entry.key)
+                ? null
+                : () => onSegmentTap(entry.key),
+            inMutuallyExclusiveGroup: true,
+            selected: widget.groupValue == entry.key,
+            child: MouseRegion(
+              cursor: kIsWeb ? SystemMouseCursors.click : MouseCursor.defer,
+              child: InkResponse(
+                containedInkWell: true,
+                highlightShape: BoxShape.rectangle,
+                customBorder: const RoundedSuperellipseBorder(
+                  borderRadius: BorderRadius.all(_kThumbRadius),
+                ),
+                overlayColor: isInkResponseTransparent
+                    ? const WidgetStatePropertyAll(Colors.transparent)
+                    : null,
+                onTap: widget.disabledChildren.contains(entry.key)
+                    ? null
+                    : () => onSegmentTap(entry.key),
+                child: _Segment<T>(
+                  key: ValueKey<T>(entry.key),
+                  highlighted: isHighlighted,
+                  focused: focused == entry.key,
+                  pressed: pressed == entry.key,
+                  isDragging: isThumbDragging,
+                  enabled: !widget.disabledChildren.contains(entry.key),
+                  segmentLocation: segmentLocation,
+                  child: entry.value,
+                ),
+              ),
             ),
           ),
         ),
@@ -383,21 +425,39 @@ class _CommonTabBarState<T extends Object> extends State<CommonTabBar<T>>
           ),
           color: widget.backgroundColor,
         ),
-        child: AnimatedBuilder(
-          animation: thumbScaleAnimation,
-          builder: (BuildContext context, Widget? child) {
-            return _CommonTabBarRenderWidget<T>(
-              proportionalWidth: widget.proportionalWidth,
-              key: segmentedControlRenderWidgetKey,
-              highlightedIndex: highlightedIndex,
-              thumbColor: widget.thumbColor,
-              thumbScale: thumbScaleAnimation.value,
-              state: this,
-              children: children,
+        child: TweenAnimationBuilder<Color?>(
+          duration: _kHoverAnimationDuration,
+          curve: Curves.ease,
+          tween: ColorTween(end: _getThumbColor(context)),
+          builder: (context, thumbColor, _) {
+            return AnimatedBuilder(
+              animation: thumbScaleAnimation,
+              builder: (BuildContext context, Widget? child) {
+                return _CommonTabBarRenderWidget<T>(
+                  proportionalWidth: widget.proportionalWidth,
+                  key: segmentedControlRenderWidgetKey,
+                  highlightedIndex: highlightedIndex,
+                  thumbColor: thumbColor ?? widget.thumbColor,
+                  thumbScale: thumbScaleAnimation.value,
+                  state: this,
+                  children: children,
+                );
+              },
             );
           },
         ),
       ),
+    );
+  }
+
+  Color _getThumbColor(BuildContext context) {
+    if (highlighted == null ||
+        hovered != highlighted && focused != highlighted && !isThumbDragging) {
+      return widget.thumbColor;
+    }
+    return Color.alphaBlend(
+      Theme.of(context).colorScheme.onSurface.withAlpha(_kThumbHoverAlpha),
+      widget.thumbColor,
     );
   }
 }
@@ -408,6 +468,7 @@ class _Segment<T> extends StatefulWidget {
     required this.child,
     required this.pressed,
     required this.highlighted,
+    required this.focused,
     required this.isDragging,
     required this.enabled,
     required this.segmentLocation,
@@ -417,6 +478,7 @@ class _Segment<T> extends StatefulWidget {
 
   final bool pressed;
   final bool highlighted;
+  final bool focused;
   final bool enabled;
   final _SegmentLocation segmentLocation;
   final bool isDragging;
@@ -483,42 +545,52 @@ class _SegmentState<T> extends State<_Segment<T>>
 
     return MetaData(
       behavior: HitTestBehavior.opaque,
-      child: IndexedStack(
-        alignment: Alignment.center,
-        children: <Widget>[
-          AnimatedOpacity(
-            opacity: widget.shouldFadeoutContent
-                ? _kContentPressedMinOpacity
-                : 1,
-            duration: _kOpacityAnimationDuration,
-            curve: Curves.ease,
-            child: AnimatedDefaultTextStyle(
-              style: DefaultTextStyle.of(context).style.merge(
-                TextStyle(
-                  fontWeight: widget.highlighted
-                      ? _kHighlightedFontWeight
-                      : _kFontWeight,
-                  fontSize: _kFontSize,
-                  color: widget.enabled ? null : _kDisabledContentColor,
+      child: DecoratedBox(
+        decoration: ShapeDecoration(
+          shape: RoundedSuperellipseBorder(
+            borderRadius: const BorderRadius.all(_kThumbRadius),
+            side: widget.focused
+                ? BorderSide(color: Theme.of(context).colorScheme.primary)
+                : BorderSide.none,
+          ),
+        ),
+        child: IndexedStack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            AnimatedOpacity(
+              opacity: widget.shouldFadeoutContent
+                  ? _kContentPressedMinOpacity
+                  : 1,
+              duration: _kOpacityAnimationDuration,
+              curve: Curves.ease,
+              child: AnimatedDefaultTextStyle(
+                style: DefaultTextStyle.of(context).style.merge(
+                  TextStyle(
+                    fontWeight: widget.highlighted
+                        ? _kHighlightedFontWeight
+                        : _kFontWeight,
+                    fontSize: _kFontSize,
+                    color: widget.enabled ? null : _kDisabledContentColor,
+                  ),
+                ),
+                duration: _kHighlightAnimationDuration,
+                curve: Curves.ease,
+                child: ScaleTransition(
+                  alignment: scaleAlignment,
+                  scale: highlightPressScaleAnimation,
+                  child: widget.child,
                 ),
               ),
-              duration: _kHighlightAnimationDuration,
-              curve: Curves.ease,
-              child: ScaleTransition(
-                alignment: scaleAlignment,
-                scale: highlightPressScaleAnimation,
-                child: widget.child,
+            ),
+            DefaultTextStyle.merge(
+              style: const TextStyle(
+                fontWeight: _kHighlightedFontWeight,
+                fontSize: _kFontSize,
               ),
+              child: widget.child,
             ),
-          ),
-          DefaultTextStyle.merge(
-            style: const TextStyle(
-              fontWeight: _kHighlightedFontWeight,
-              fontSize: _kFontSize,
-            ),
-            child: widget.child,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -726,7 +798,6 @@ class _RenderSegmentedControl<T extends Object> extends RenderBox
   void handleEvent(PointerEvent event, BoxHitTestEntry entry) {
     assert(debugHandleEvent(event, entry));
     if (event is PointerDownEvent && !state.isThumbDragging) {
-      state.tap.addPointer(event);
       state.longPress.addPointer(event);
       state.drag.addPointer(event);
     }
