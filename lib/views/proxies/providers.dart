@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/core.dart';
 import 'package:fl_clash/models/common.dart';
@@ -11,6 +12,8 @@ import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'provider_editor.dart';
 
 typedef UpdatingMap = Map<String, bool>;
 
@@ -111,6 +114,38 @@ class ProviderItem extends StatelessWidget {
     ref.read(proxiesActionProvider.notifier).updateGroupsDebounce();
   }
 
+  Future<void> _handlePreview(BuildContext context) async {
+    if (provider.path == null) return;
+    BaseNavigator.push<String>(context, ProviderEditorView(provider: provider));
+  }
+
+  Future<void> _handleEdit(BuildContext context) async {
+    if (provider.path == null) return;
+    BaseNavigator.push<String>(
+      context,
+      ProviderEditorView(provider: provider, editable: true),
+    );
+  }
+
+  Future<void> _handleExportFile(BuildContext context) async {
+    final appLocalizations = context.appLocalizations;
+    final path = provider.path;
+    if (path == null) return;
+    final res = await globalState.safeRun<bool>(() async {
+      final value = await picker.saveFile(
+        provider.name,
+        await File(path).readAsBytes(),
+        type: FileType.custom,
+        allowedExtensions: const ['yaml', 'yml'],
+      );
+      if (value == null) return false;
+      return true;
+    }, title: appLocalizations.tip);
+    if (res == true && context.mounted) {
+      context.showNotifier(appLocalizations.exportSuccess);
+    }
+  }
+
   String _buildProviderDesc(BuildContext context) {
     final baseInfo = provider.updateAt.getLastUpdateTimeDesc(context);
     final count = provider.count;
@@ -120,10 +155,86 @@ class ProviderItem extends StatelessWidget {
     };
   }
 
+  Widget _buildPopupMenu(BuildContext context) {
+    final appLocalizations = context.appLocalizations;
+    final hasFile = provider.path != null;
+    return CommonPopupMenu(
+      items: [
+        if (provider.vehicleType == 'HTTP')
+          PopupMenuItemData(
+            icon: Icons.sync,
+            label: appLocalizations.sync,
+            onPressed: _handleUpdateProvider,
+          ),
+        PopupMenuItemData(
+          icon: Icons.visibility_outlined,
+          label: appLocalizations.preview,
+          onPressed: hasFile
+              ? () {
+                  _handlePreview(context);
+                }
+              : null,
+        ),
+        PopupMenuItemData(
+          icon: Icons.edit_outlined,
+          label: appLocalizations.edit,
+          onPressed: hasFile
+              ? () {
+                  _handleEdit(context);
+                }
+              : null,
+        ),
+        PopupMenuItemData(
+          icon: Icons.upload,
+          label: appLocalizations.upload,
+          onPressed: _handleSideLoadProvider,
+        ),
+        PopupMenuItemData(
+          icon: Icons.file_copy_outlined,
+          label: appLocalizations.exportFile,
+          onPressed: hasFile
+              ? () {
+                  _handleExportFile(context);
+                }
+              : null,
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListItem(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      tileTitleAlignment: ListTileTitleAlignment.top,
+      trailing: CommonPopupBox(
+        popup: _buildPopupMenu(context),
+        targetBuilder: (open) {
+          return SizedBox(
+            height: 40,
+            width: 40,
+            child: Consumer(
+              builder: (_, ref, _) {
+                final isUpdating = ref.watch(
+                  isUpdatingProvider(provider.updatingKey),
+                );
+                return FadeThroughBox(
+                  child: isUpdating
+                      ? const Padding(
+                          key: ValueKey('loading'),
+                          padding: EdgeInsets.all(8),
+                          child: CircularProgressIndicator(),
+                        )
+                      : IconButton(
+                          onPressed: open,
+                          icon: const Icon(Icons.more_vert),
+                        ),
+                );
+              },
+            ),
+          );
+        },
+      ),
       title: Text(provider.name),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,41 +245,6 @@ class ProviderItem extends StatelessWidget {
           const SizedBox(height: 4),
           if (provider.subscriptionInfo != null)
             SubscriptionInfoView(subscriptionInfo: provider.subscriptionInfo),
-          const SizedBox(height: 8),
-          Wrap(
-            runSpacing: 6,
-            spacing: 12,
-            runAlignment: WrapAlignment.center,
-            children: [
-              CommonChip(
-                avatar: const Icon(Icons.upload),
-                label: context.appLocalizations.upload,
-                onPressed: _handleSideLoadProvider,
-              ),
-              if (provider.vehicleType == 'HTTP')
-                Consumer(
-                  builder: (_, ref, _) {
-                    final isUpdating = ref.watch(
-                      isUpdatingProvider(provider.updatingKey),
-                    );
-                    return isUpdating
-                        ? const SizedBox(
-                            height: 30,
-                            width: 30,
-                            child: Padding(
-                              padding: EdgeInsets.all(2),
-                              child: CircularProgressIndicator(),
-                            ),
-                          )
-                        : CommonChip(
-                            avatar: const Icon(Icons.sync),
-                            label: context.appLocalizations.sync,
-                            onPressed: _handleUpdateProvider,
-                          );
-                  },
-                ),
-            ],
-          ),
           const SizedBox(height: 4),
         ],
       ),
