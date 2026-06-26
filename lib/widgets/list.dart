@@ -24,8 +24,13 @@ final class _DefaultAction extends _ListItemAction {
 final class _RadioAction<T> extends _ListItemAction {
   final T value;
   final VoidCallback? onTap;
+  final bool excludeFocus;
 
-  const _RadioAction({required this.value, this.onTap});
+  const _RadioAction({
+    required this.value,
+    this.onTap,
+    this.excludeFocus = false,
+  });
 }
 
 final class _ToggleAction extends _ListItemAction {
@@ -309,6 +314,7 @@ class ListItem<T> extends StatelessWidget {
     this.padding = const EdgeInsets.only(left: 12, right: 16),
     required T value,
     VoidCallback? onTap,
+    bool excludeFocus = false,
     this.horizontalTitleGap = 8,
     this.dense,
     this.titleTextStyle,
@@ -318,7 +324,11 @@ class ListItem<T> extends StatelessWidget {
     this.visualDensity,
     this.minVerticalPadding = 12,
     this.tileTitleAlignment = ListTileTitleAlignment.center,
-  }) : _action = _RadioAction<T>(value: value, onTap: onTap),
+  }) : _action = _RadioAction<T>(
+         value: value,
+         onTap: onTap,
+         excludeFocus: excludeFocus,
+       ),
        leading = null,
        onTap = null;
 
@@ -464,14 +474,17 @@ class ListItem<T> extends StatelessWidget {
         );
       case final _RadioAction radio:
         final radioDelegate = radio as _RadioAction<T>;
+        final child = Radio<T>(
+          visualDensity: VisualDensity.compact,
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          value: radioDelegate.value,
+          toggleable: true,
+        );
         return _buildListTile(
           onTap: radioDelegate.onTap,
-          leading: Radio<T>(
-            visualDensity: VisualDensity.compact,
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            value: radioDelegate.value,
-            toggleable: true,
-          ),
+          leading: radioDelegate.excludeFocus
+              ? ExcludeFocus(child: child)
+              : child,
           trailing: trailing,
         );
       case _DefaultAction():
