@@ -59,7 +59,6 @@ class TrafficUsage extends StatelessWidget {
             label: appLocalizations.trafficUsage,
             iconData: Icons.data_saver_off,
           ),
-          onPressed: () {},
           child: Consumer(
             builder: (_, ref, _) {
               final totalTraffic = ref.watch(totalTrafficProvider);
