@@ -375,7 +375,7 @@ class ProfileItem extends StatelessWidget {
           builder: (_, constraints) {
             void openMenu() {
               open(
-                offset: Offset(constraints.maxWidth, 24),
+                offset: Offset(constraints.maxWidth, 64),
               );
             }
 
