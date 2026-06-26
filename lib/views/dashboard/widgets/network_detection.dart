@@ -40,7 +40,7 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
     return SizedBox(
       height: getWidgetHeight(1),
       child: CommonCard(
-        onPressed: () => copyText(context, ipInfo?.ip),
+        onLongPress: () => copyText(context, ipInfo?.ip),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -65,27 +65,6 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: descTextStyle,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 2),
-                  AspectRatio(
-                    aspectRatio: 1,
-                    child: IconButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        globalState.showMessage(
-                          title: appLocalizations.tip,
-                          message: TextSpan(
-                            text: appLocalizations.detectionTip,
-                          ),
-                          cancelable: false,
-                        );
-                      },
-                      icon: Icon(
-                        size: 16.ap,
-                        Icons.info_outline,
-                        color: context.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),
