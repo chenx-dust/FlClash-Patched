@@ -34,6 +34,7 @@ class OutboundMode extends StatelessWidget {
               hoverColor: Colors.transparent,
             ),
             child: CommonCard(
+              onLongPress: () {},
               info: Info(
                 label: appLocalizations.outboundMode,
                 iconData: Icons.call_split_sharp,
