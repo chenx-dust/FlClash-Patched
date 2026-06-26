@@ -34,7 +34,6 @@ class OutboundMode extends StatelessWidget {
               hoverColor: Colors.transparent,
             ),
             child: CommonCard(
-              onPressed: () {},
               info: Info(
                 label: appLocalizations.outboundMode,
                 iconData: Icons.call_split_sharp,
@@ -75,6 +74,7 @@ class OutboundMode extends StatelessWidget {
                                   _handleChangeMode(item);
                                 },
                                 value: item,
+                                excludeFocus: true,
                               ),
                               title: Text(
                                 Intl.message(item.name),

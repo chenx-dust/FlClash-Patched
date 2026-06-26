@@ -198,6 +198,22 @@ class CommonCard extends StatelessWidget {
     return colorScheme.primary;
   }
 
+  Color? _buildOverlayColor(BuildContext context, Set<WidgetState> states) {
+    final color = context.colorScheme.onSurface;
+    if (onPressed == null) {
+      return WidgetStateProperty<Color?>.fromMap(<WidgetState, Color?>{
+        WidgetState.pressed: color.withAlpha(26),
+        WidgetState.hovered: Colors.transparent,
+        WidgetState.focused: Colors.transparent,
+      }).resolve(states);
+    }
+    return WidgetStateProperty<Color?>.fromMap(<WidgetState, Color?>{
+      WidgetState.pressed: color.withAlpha(26),
+      WidgetState.hovered: color.withAlpha(20),
+      WidgetState.focused: color.withAlpha(26),
+    }).resolve(states);
+  }
+
   @override
   Widget build(BuildContext context) {
     var childWidget = child;
@@ -225,6 +241,7 @@ class CommonCard extends StatelessWidget {
     final card = switch (type == CommonCardType.filled) {
       true => FilledButton(
         onLongPress: onLongPress,
+        focusNode: onPressed == null && onLongPress == null ? FocusNode(skipTraversal: true) : null,
         clipBehavior: Clip.antiAlias,
         style:
             FilledButton.styleFrom(
@@ -246,12 +263,16 @@ class CommonCard extends StatelessWidget {
               side: WidgetStateProperty.resolveWith(
                 (states) => _buildBorderSide(context, states),
               ),
+              overlayColor: WidgetStateProperty.resolveWith(
+                (states) => _buildOverlayColor(context, states),
+              ),
             ),
-        onPressed: onPressed,
+        onPressed: onPressed ?? (onLongPress == null ? () {} : null),
         child: childWidget,
       ),
       false => OutlinedButton(
         onLongPress: onLongPress,
+        focusNode: onPressed == null && onLongPress == null ? FocusNode(skipTraversal: true) : null,
         clipBehavior: Clip.antiAlias,
         style:
             OutlinedButton.styleFrom(
@@ -270,8 +291,11 @@ class CommonCard extends StatelessWidget {
               side: WidgetStateProperty.resolveWith(
                 (states) => _buildBorderSide(context, states),
               ),
+              overlayColor: WidgetStateProperty.resolveWith(
+                (states) => _buildOverlayColor(context, states),
+              ),
             ),
-        onPressed: onPressed,
+        onPressed: onPressed ?? (onLongPress == null ? () {} : null),
         child: childWidget,
       ),
     };
