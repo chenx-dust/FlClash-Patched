@@ -25,7 +25,7 @@ class IntranetIP extends ConsumerWidget {
     return SizedBox(
       height: getWidgetHeight(1),
       child: CommonCard(
-        onPressed: () => copyText(context, localIp),
+        onLongPress: _showInterfaceIpDialog,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -51,13 +51,15 @@ class IntranetIP extends ConsumerWidget {
                   const SizedBox(width: 2),
                   AspectRatio(
                     aspectRatio: 1,
-                    child: IconButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: _showInterfaceIpDialog,
-                      icon: Icon(
-                        size: 16.ap,
-                        Icons.info_outline,
-                        color: context.colorScheme.onSurfaceVariant,
+                    child: ExcludeFocus(
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        onPressed: _showInterfaceIpDialog,
+                        icon: Icon(
+                          size: 16.ap,
+                          Icons.info_outline,
+                          color: context.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
                   ),
