@@ -44,6 +44,7 @@ class _NetworkSpeedState extends State<NetworkSpeed> {
       height: getWidgetHeight(2),
       child: RepaintBoundary(
         child: CommonCard(
+          onLongPress: () {},
           child: Consumer(
             builder: (_, ref, _) {
               final traffics = ref.watch(trafficsProvider).list;
