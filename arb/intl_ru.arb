@@ -145,6 +145,8 @@
   "unknown": "Неизвестно",
   "country": "Страна",
   "search": "Поиск",
+  "filter": "Фильтр",
+  "noFilterCondition": "Нет условий фильтрации",
   "regexSearch": "Поиск по regex",
   "allowBypass": "Разрешить приложениям обходить VPN",
   "allowBypassDesc": "Некоторые приложения могут обходить VPN при включении",
