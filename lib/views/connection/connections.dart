@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
+import 'filter.dart';
 import 'item.dart';
 
 class ConnectionsView extends ConsumerStatefulWidget {
@@ -21,6 +22,8 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
     const TrackerInfosState(),
   );
   final ScrollController _scrollController = ScrollController();
+  TrackerInfoFilter _trackerFilter = const TrackerInfoFilter();
+  bool _showFilterBar = false;
   TrackerInfoSortType? _sortType;
   bool _sortAscending = false;
   bool _hasDeferredUpdate = false;
@@ -32,6 +35,11 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
   List<Widget> _buildActions(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     return [
+      TrackerInfoFilterButton(
+        visible: _showFilterBar,
+        filter: _trackerFilter,
+        onPressed: _toggleFilterBar,
+      ),
       IconButton(
         tooltip: appLocalizations.sort,
         onPressed: () async {
@@ -162,10 +170,24 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
     );
   }
 
-  void _onKeywordsUpdate(List<String> keywords) {
-    _connectionsStateNotifier.value = _connectionsStateNotifier.value.copyWith(
-      keywords: keywords,
-    );
+  void _setTrackerFilter(TrackerInfoFilter filter) {
+    setState(() {
+      _trackerFilter = filter;
+      if (filter.isNotEmpty) {
+        _showFilterBar = true;
+      }
+    });
+  }
+
+  void _toggleFilterBar() {
+    setState(() {
+      if (_showFilterBar || _trackerFilter.isNotEmpty) {
+        _showFilterBar = false;
+        _trackerFilter = const TrackerInfoFilter();
+        return;
+      }
+      _showFilterBar = true;
+    });
   }
 
   @override
@@ -209,44 +231,64 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
 
   Widget _buildBody(TrackerInfosState state) {
     final appLocalizations = context.appLocalizations;
-    final connections = _sortConnections(state.list);
-    if (connections.isEmpty) {
-      return NullStatus(
-        label: appLocalizations.nullTip(appLocalizations.connections),
-        illustration: const ConnectionEmptyIllustration(),
-      );
-    }
-    final items = connections
-        .map<Widget>(
-          (trackerInfo) => TrackerInfoItem(
-            key: Key(trackerInfo.id),
-            trackerInfo: trackerInfo,
-            onClickKeyword: (value) {
-              context.commonScaffoldState?.addKeyword(value);
-            },
-            onDetailClosed: () async {
-              await _updateConnections(flushDeferred: true);
-            },
-            trailing: IconButton(
-              padding: EdgeInsets.zero,
-              visualDensity: VisualDensity.compact,
-              style: IconButton.styleFrom(minimumSize: Size.zero),
-              icon: const Icon(Icons.close),
-              onPressed: () {
-                _handleBlockConnection(trackerInfo.id);
-              },
-            ),
-            detailTitle: appLocalizations.details(appLocalizations.connection),
+    final connections = _sortConnections(
+      state.list.withTrackerFilter(_trackerFilter),
+    );
+    final body = () {
+      if (connections.isEmpty) {
+        return Expanded(
+          child: NullStatus(
+            label: appLocalizations.nullTip(appLocalizations.connections),
+            illustration: const ConnectionEmptyIllustration(),
           ),
-        )
-        .separated(const Divider(height: 0))
-        .toList();
-    return SuperListView.builder(
-      controller: _scrollController,
-      itemBuilder: (context, index) {
-        return items[index];
-      },
-      itemCount: connections.length,
+        );
+      }
+      final items = connections
+          .map<Widget>(
+            (trackerInfo) => TrackerInfoItem(
+              key: Key(trackerInfo.id),
+              trackerInfo: trackerInfo,
+              onClickFilter: (type, value) {
+                _setTrackerFilter(_trackerFilter.add(type, value));
+              },
+              onDetailClosed: () async {
+                await _updateConnections(flushDeferred: true);
+              },
+              trailing: IconButton(
+                padding: EdgeInsets.zero,
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(Icons.close),
+                onPressed: () {
+                  _handleBlockConnection(trackerInfo.id);
+                },
+              ),
+              detailTitle: appLocalizations.details(
+                appLocalizations.connection,
+              ),
+            ),
+          )
+          .separated(const Divider(height: 0))
+          .toList();
+      return Expanded(
+        child: SuperListView.builder(
+          controller: _scrollController,
+          itemBuilder: (context, index) {
+            return items[index];
+          },
+          itemCount: connections.length,
+        ),
+      );
+    }();
+    return Column(
+      children: [
+        TrackerInfoFilterBar(
+          visible: _showFilterBar,
+          trackerInfos: state.trackerInfos,
+          filter: _trackerFilter,
+          onChanged: _setTrackerFilter,
+        ),
+        body,
+      ],
     );
   }
 
@@ -266,7 +308,6 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
       builder: (context, state, _) {
         return CommonScaffold(
           title: appLocalizations.connections,
-          onKeywordsUpdate: _onKeywordsUpdate,
           searchState: AppBarSearchState(
             onSearch: _onSearch,
             onRegexChange: _onRegexSearchChange,
