@@ -211,6 +211,9 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
   Future<void> _handleUpdateIsEdit() async {
     if (_isEditNotifier.value == true) {
       await _handleSave();
+      if (!mounted) {
+        return;
+      }
     }
     _isEditNotifier.value = !_isEditNotifier.value;
   }
@@ -222,6 +225,9 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
     }
     if (mounted && currentState.children.isNotEmpty) {
       await currentState.isTransformCompleter;
+      if (!mounted) {
+        return;
+      }
       final dashboardWidgets = currentState.children
           .map((item) => DashboardWidget.getDashboardWidget(item))
           .toList();
@@ -246,6 +252,9 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
           .map((item) => item.widget),
     ];
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
       _addedWidgetsNotifier.value = DashboardWidget.values
           .where(
             (item) =>
