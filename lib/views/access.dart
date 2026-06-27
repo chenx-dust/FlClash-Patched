@@ -253,9 +253,7 @@ class _AccessViewState extends ConsumerState<AccessView> {
         targetBuilder: (open) {
           return IconButton(
             tooltip: appLocalizations.more,
-            onPressed: () {
-              open(offset: const Offset(0, 0));
-            },
+            onPressed: open,
             icon: const Icon(Icons.more_vert),
           );
         },
