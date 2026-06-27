@@ -145,6 +145,8 @@
   "unknown": "Unknown",
   "country": "Country",
   "search": "Search",
+  "filter": "Filter",
+  "noFilterCondition": "No filter conditions",
   "regexSearch": "Regex search",
   "allowBypass": "Allow Applications to Bypass VPN",
   "allowBypassDesc": "Some apps can bypass VPN when turned on",
