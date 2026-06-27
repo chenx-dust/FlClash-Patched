@@ -208,17 +208,30 @@ extension TrackerInfosStateExt on TrackerInfosState {
     return trackerInfos.where((trackerInfo) {
       final chains = trackerInfo.chains;
       final process = trackerInfo.metadata.process;
-      final networkText = trackerInfo.metadata.network;
-      final hostText = trackerInfo.metadata.host;
-      final destinationIPText = trackerInfo.metadata.destinationIP;
-      final processText = trackerInfo.metadata.process;
+      final metadata = trackerInfo.metadata;
+      final ruleText = [
+        trackerInfo.rule,
+        trackerInfo.rulePayload,
+      ].where((value) => value.isNotEmpty).join(' ');
       final chainsText = chains.join('');
       return {...chains, process}.containsAll(keywords) &&
           matcher.hasAnyMatch([
-            networkText,
-            hostText,
-            destinationIPText,
-            processText,
+            metadata.network,
+            metadata.host,
+            metadata.remoteDestination,
+            metadata.sourceIP,
+            metadata.sourcePort,
+            metadata.destinationIP,
+            metadata.destinationPort,
+            metadata.process,
+            metadata.processPath,
+            metadata.sourceGeoIP.join(' '),
+            metadata.destinationGeoIP.join(' '),
+            metadata.sourceIPASN,
+            metadata.destinationIPASN,
+            metadata.specialRules,
+            metadata.specialProxy,
+            ruleText,
             chainsText,
           ]);
     }).toList();
