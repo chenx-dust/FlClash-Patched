@@ -142,6 +142,9 @@ class SuperGridState extends State<SuperGrid> with TickerProviderStateMixin {
   }
 
   void handleAdd(GridItem gridItem) {
+    if (!mounted) {
+      return;
+    }
     _childrenNotifier.value = List.from(_childrenNotifier.value)..add(gridItem);
   }
 
@@ -277,6 +280,9 @@ class SuperGridState extends State<SuperGrid> with TickerProviderStateMixin {
 
     _transformCompleter = Completer<bool>();
     await _fakeDragWidgetController.animateWith(simulation);
+    if (!mounted) {
+      return;
+    }
     _transformCompleter?.complete(true);
     _animating.value = false;
     _fakeDragWidgetAnimation = null;
@@ -292,6 +298,9 @@ class SuperGridState extends State<SuperGrid> with TickerProviderStateMixin {
   }
 
   Future<void> _handleWill(int index) async {
+    if (!mounted) {
+      return;
+    }
     final dragIndex = _dragIndexNotifier.value;
     if (dragIndex < 0 || dragIndex > _offsets.length - 1) {
       return;
@@ -318,10 +327,16 @@ class SuperGridState extends State<SuperGrid> with TickerProviderStateMixin {
   }
 
   Future<void> _handleDelete(int index) async {
+    if (!mounted) {
+      return;
+    }
     _preTransformState();
     final indexWhere = _tempIndexList.indexWhere((i) => i == index);
     _tempIndexList.removeAt(indexWhere);
     await _transform();
+    if (!mounted) {
+      return;
+    }
     final children = List<GridItem>.from(_childrenNotifier.value);
     children.removeAt(index);
     _childrenNotifier.value = children;
@@ -566,6 +581,10 @@ class SuperGridState extends State<SuperGrid> with TickerProviderStateMixin {
   @override
   void dispose() {
     _scrollable = null;
+    debouncer.cancel(FunctionTag.handleWill);
+    if (_transformCompleter != null && !_transformCompleter!.isCompleted) {
+      _transformCompleter!.complete(false);
+    }
     _fakeDragWidgetController.dispose();
     _shakeController.dispose();
     _transformController.dispose();
