@@ -140,6 +140,9 @@ class SuperGridState extends State<SuperGrid> with TickerProviderStateMixin {
   }
 
   void handleAdd(GridItem gridItem) {
+    if (!mounted) {
+      return;
+    }
     _childrenNotifier.value = [..._childrenNotifier.value, gridItem];
   }
 
@@ -326,6 +329,9 @@ class SuperGridState extends State<SuperGrid> with TickerProviderStateMixin {
   }
 
   Future<void> _handleWill(int index) async {
+    if (!mounted) {
+      return;
+    }
     final dragIndex = _dragIndexNotifier.value;
     if (dragIndex < 0 || dragIndex >= _offsets.length) {
       return;
@@ -352,6 +358,9 @@ class SuperGridState extends State<SuperGrid> with TickerProviderStateMixin {
   }
 
   Future<void> _handleDelete(int index) async {
+    if (!mounted) {
+      return;
+    }
     _preTransformState();
     final indexWhere = _tempIndexList.indexWhere((i) => i == index);
     _tempIndexList.removeAt(indexWhere);
