@@ -96,7 +96,10 @@ class PopupController extends ValueNotifier<bool> {
   }
 }
 
-typedef PopupOpen = Function({Offset offset});
+typedef PopupOpen = void Function({
+  Offset offset,
+  BuildContext? targetContext,
+});
 
 class CommonPopupBox extends StatefulWidget {
   final Widget Function(PopupOpen open) targetBuilder;
@@ -116,9 +119,11 @@ class _CommonPopupBoxState extends State<CommonPopupBox> {
   bool _isOpen = false;
   final _targetOffsetValueNotifier = ValueNotifier<Offset>(Offset.zero);
   Offset _offset = Offset.zero;
+  BuildContext? _targetContext;
 
-  void _open({Offset offset = Offset.zero}) {
+  void _open({Offset offset = Offset.zero, BuildContext? targetContext}) {
     _offset = offset;
+    _targetContext = targetContext;
     _updateOffset();
     _isOpen = true;
     Navigator.of(context)
@@ -133,20 +138,27 @@ class _CommonPopupBoxState extends State<CommonPopupBox> {
         )
         .then((_) {
           _isOpen = false;
+          _targetContext = null;
         });
   }
 
   void _updateOffset() {
-    final renderBox = context.findRenderObject() as RenderBox?;
-    if (renderBox == null) {
+    final renderContext = _targetContext ?? context;
+    if (!renderContext.mounted) {
+      return;
+    }
+    final renderObject = renderContext.findRenderObject();
+    if (renderObject is! RenderBox || !renderObject.hasSize) {
       return;
     }
     final viewPadding = MediaQuery.of(context).viewPadding;
-    _targetOffsetValueNotifier.value = renderBox
-        .localToGlobal(
-          Offset.zero.translate(viewPadding.right, viewPadding.top),
-        )
-        .translate(_offset.dx, _offset.dy);
+    final targetOffset = _targetContext == null
+        ? _offset
+        : _offset.translate(renderObject.size.width - 48, 0);
+    _targetOffsetValueNotifier.value = renderObject
+        .localToGlobal(Offset.zero)
+        .translate(-viewPadding.left, -viewPadding.top)
+        .translate(targetOffset.dx, targetOffset.dy);
   }
 
   @override
