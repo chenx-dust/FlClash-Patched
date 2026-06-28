@@ -260,6 +260,28 @@ class _CommonPopupMenuItemsState extends State<_CommonPopupMenuItems> {
   List<PopupMenuItemData> _nextItems = [];
   String? _subTitle;
   bool _status = false;
+  late Set<String> _selectedLabels;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedLabels = _getSelectedLabels(widget.items);
+  }
+
+  @override
+  void didUpdateWidget(covariant _CommonPopupMenuItems oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.items != widget.items) {
+      _selectedLabels = _getSelectedLabels(widget.items);
+    }
+  }
+
+  Set<String> _getSelectedLabels(List<PopupMenuItemData> items) {
+    return items
+        .where((item) => item.selected)
+        .map((item) => item.label)
+        .toSet();
+  }
 
   Widget _popupMenuItem(
     BuildContext context, {
@@ -276,6 +298,8 @@ class _CommonPopupMenuItemsState extends State<_CommonPopupMenuItems> {
           }
         : item.onPressed;
     final disabled = onPressed == null;
+    final selected = _selectedLabels.contains(item.label);
+    final selectable = !item.closeOnPressed || item.selected;
     final color = item.danger
         ? context.colorScheme.onError
         : context.colorScheme.onSurface;
@@ -292,10 +316,19 @@ class _CommonPopupMenuItemsState extends State<_CommonPopupMenuItems> {
       ),
       onPressed: onPressed != null
           ? () {
-              if (item.subItems.isEmpty) {
+              if (item.subItems.isEmpty && item.closeOnPressed) {
                 Navigator.of(context).pop();
               }
               onPressed();
+              if (item.subItems.isEmpty && !item.closeOnPressed) {
+                setState(() {
+                  if (selected) {
+                    _selectedLabels.remove(item.label);
+                  } else {
+                    _selectedLabels.add(item.label);
+                  }
+                });
+              }
             }
           : null,
       child: Container(
@@ -309,6 +342,20 @@ class _CommonPopupMenuItemsState extends State<_CommonPopupMenuItems> {
         child: Row(
           mainAxisSize: MainAxisSize.max,
           children: [
+            if (selectable) ...[
+              SizedBox(
+                width: widget.fontSize + 4,
+                child: Opacity(
+                  opacity: selected ? 1 : 0,
+                  child: Icon(
+                    Icons.check,
+                    size: widget.fontSize + 4,
+                    color: foregroundColor,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+            ],
             if (item.icon != null) ...[
               Icon(
                 item.icon,
