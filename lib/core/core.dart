@@ -3,3 +3,4 @@ export 'core.dart';
 export 'event.dart';
 export 'lib.dart';
 export 'service.dart';
+export 'unsupported.dart';

@@ -38,6 +38,7 @@ class ApplicationState extends ConsumerState<Application> {
         TargetPlatform.windows: commonSharedXPageTransitions,
         TargetPlatform.linux: commonSharedXPageTransitions,
         TargetPlatform.macOS: commonSharedXPageTransitions,
+        TargetPlatform.iOS: commonSharedXPageTransitions,
       },
     );
   }
@@ -103,7 +104,10 @@ class ApplicationState extends ConsumerState<Application> {
         ),
       );
     }
-    return AndroidManager(child: TileManager(child: child));
+    if (system.isAndroid) {
+      return AndroidManager(child: TileManager(child: child));
+    }
+    return child;
   }
 
   Widget _buildState({required Widget child}) {
@@ -129,7 +133,10 @@ class ApplicationState extends ConsumerState<Application> {
     if (system.isDesktop) {
       return WindowHeaderContainer(child: child);
     }
-    return VpnManager(child: child);
+    if (system.isAndroid) {
+      return VpnManager(child: child);
+    }
+    return child;
   }
 
   Widget _buildApp({required Widget child}) {
