@@ -144,8 +144,8 @@ class CommonScaffoldState extends State<CommonScaffold> {
   Widget _buildAppBarTransition(Widget child) {
     return AnimatedSwitcher(
       duration: midDuration,
-      switchInCurve: Curves.easeOut,
-      switchOutCurve: Curves.easeIn,
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeInCubic,
       layoutBuilder: (currentChild, previousChildren) {
         return Stack(
           alignment: Alignment.center,
