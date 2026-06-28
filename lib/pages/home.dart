@@ -133,6 +133,7 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
     _pageController = PageController(initialPage: _pageIndex);
     ref.listenManual(currentPageLabelProvider, (prev, next) {
       if (prev != next) {
+        _closePopupMenus(prev);
         _toPage(next);
       }
     });
@@ -179,6 +180,17 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
   void _updatePageController() {
     final pageLabel = ref.read(currentPageLabelProvider);
     _toPage(pageLabel, true);
+  }
+
+  void _closePopupMenus(PageLabel? pageLabel) {
+    if (pageLabel == null) {
+      return;
+    }
+    final pageContext = GlobalObjectKey(pageLabel).currentContext;
+    if (pageContext == null) {
+      return;
+    }
+    CommonPopupRoute.closeAll(pageContext);
   }
 
   @override
