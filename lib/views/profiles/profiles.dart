@@ -381,75 +381,78 @@ class ProfileItem extends StatelessWidget {
           open(targetContext: popupButtonContext);
         }
 
-        return CommonCard(
-          isSelected: profile.id == groupValue,
-          onPressed: () {
-            onChanged(profile.id);
-          },
-          onLongPress: openMenu,
-          child: ListItem(
-            key: Key(profile.id.toString()),
-            horizontalTitleGap: 16,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            trailing: SizedBox(
-              height: 40,
-              width: 40,
-              child: Consumer(
-                builder: (_, ref, _) {
-                  final isUpdating = ref.watch(
-                    isUpdatingProvider(profile.updatingKey),
-                  );
-                  return FadeThroughBox(
-                    child: isUpdating
-                        ? const Padding(
-                            key: ValueKey('loading'),
-                            padding: EdgeInsets.all(8),
-                            child: CircularProgressIndicator(),
-                          )
-                        : Builder(
-                            builder: (buttonContext) {
-                              popupButtonContext = buttonContext;
-                              return ExcludeFocus(
-                                child: IconButton(
-                                  onPressed: () {
-                                    open(targetContext: buttonContext);
-                                  },
-                                  icon: const Icon(Icons.more_vert),
-                                ),
-                              );
-                            },
-                          ),
-                  );
-                },
+        return GestureDetector(
+          onSecondaryTapDown: (_) => openMenu(),
+          child: CommonCard(
+            isSelected: profile.id == groupValue,
+            onPressed: () {
+              onChanged(profile.id);
+            },
+            onLongPress: openMenu,
+            child: ListItem(
+              key: Key(profile.id.toString()),
+              horizontalTitleGap: 16,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              trailing: SizedBox(
+                height: 40,
+                width: 40,
+                child: Consumer(
+                  builder: (_, ref, _) {
+                    final isUpdating = ref.watch(
+                      isUpdatingProvider(profile.updatingKey),
+                    );
+                    return FadeThroughBox(
+                      child: isUpdating
+                          ? const Padding(
+                              key: ValueKey('loading'),
+                              padding: EdgeInsets.all(8),
+                              child: CircularProgressIndicator(),
+                            )
+                          : Builder(
+                              builder: (buttonContext) {
+                                popupButtonContext = buttonContext;
+                                return ExcludeFocus(
+                                  child: IconButton(
+                                    onPressed: () {
+                                      open(targetContext: buttonContext);
+                                    },
+                                    icon: const Icon(Icons.more_vert),
+                                  ),
+                                );
+                              },
+                            ),
+                    );
+                  },
+                ),
               ),
-            ),
-            title: Container(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    profile.realLabel,
-                    style: context.textTheme.titleMedium,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ...switch (profile.type) {
-                        ProfileType.file => _buildFileProfileInfo(context),
-                        ProfileType.url => _buildUrlProfileInfo(context),
-                      },
-                    ],
-                  ),
-                ],
+              title: Container(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      profile.realLabel,
+                      style: context.textTheme.titleMedium,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ...switch (profile.type) {
+                          ProfileType.file => _buildFileProfileInfo(context),
+                          ProfileType.url => _buildUrlProfileInfo(context),
+                        },
+                      ],
+                    ),
+                  ],
+                ),
               ),
+              tileTitleAlignment: ListTileTitleAlignment.titleHeight,
             ),
-            tileTitleAlignment: ListTileTitleAlignment.titleHeight,
           ),
         );
       },
