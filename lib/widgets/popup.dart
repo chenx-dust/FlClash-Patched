@@ -81,7 +81,7 @@ class CommonPopupRoute<T> extends PopupRoute<T> {
   }
 
   @override
-  Duration get transitionDuration => const Duration(milliseconds: 250);
+  Duration get transitionDuration => const Duration(milliseconds: 180);
 
   static void closeAll(BuildContext context) {
     Navigator.of(context).popUntil((route) => route is! CommonPopupRoute);
@@ -452,7 +452,7 @@ class _CommonPopupMenuItemsState extends State<_CommonPopupMenuItems> {
       crossSlideState: _status
           ? CrossSlideState.showSecond
           : CrossSlideState.showFirst,
-      duration: const Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 120),
     );
   }
 }
