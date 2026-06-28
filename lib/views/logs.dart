@@ -43,7 +43,30 @@ class _LogsViewState extends ConsumerState<LogsView> {
 
   List<Widget> _buildActions() {
     final appLocalizations = context.appLocalizations;
+    final logsState = _logsStateNotifier.value;
     return [
+      _LogFilterButton(
+        logsState: logsState,
+        onToggleSource: (source) {
+          setState(() {
+            _logsStateNotifier.value = _logsStateNotifier.value.toggleSource(
+              source,
+            );
+          });
+        },
+        onToggleLevel: (level) {
+          setState(() {
+            _logsStateNotifier.value = _logsStateNotifier.value.toggleLevel(
+              level,
+            );
+          });
+        },
+        onClear: () {
+          setState(() {
+            _logsStateNotifier.value = _logsStateNotifier.value.clearFilters();
+          });
+        },
+      ),
       IconButton(
         tooltip: appLocalizations.exportFile,
         onPressed: () {
@@ -62,26 +85,6 @@ class _LogsViewState extends ConsumerState<LogsView> {
     _logsStateNotifier.value = _logsStateNotifier.value.copyWith(
       useRegex: value,
     );
-  }
-
-  void _onKeywordsUpdate(List<String> keywords) {
-    _logsStateNotifier.value = _logsStateNotifier.value.copyWith(
-      keywords: keywords,
-    );
-  }
-
-  String _getKeywordLabel(String keyword) {
-    for (final logSource in LogSource.values) {
-      if (logSource.name == keyword) {
-        return logSource.name.toUpperCase();
-      }
-    }
-    for (final logLevel in LogLevel.values) {
-      if (logLevel.name == keyword) {
-        return logLevel.name.toUpperCase();
-      }
-    }
-    return keyword;
   }
 
   @override
@@ -130,8 +133,6 @@ class _LogsViewState extends ConsumerState<LogsView> {
     final appLocalizations = context.appLocalizations;
     return CommonScaffold(
       actions: _buildActions(),
-      onKeywordsUpdate: _onKeywordsUpdate,
-      keywordLabelBuilder: _getKeywordLabel,
       searchState: AppBarSearchState(
         onSearch: _onSearch,
         onRegexChange: _onRegexSearchChange,
@@ -172,9 +173,6 @@ class _LogsViewState extends ConsumerState<LogsView> {
                 (log) => LogItem(
                   key: Key(log.dateTime),
                   log: log,
-                  onClick: (value) {
-                    context.commonScaffoldState?.addKeyword(value);
-                  },
                 ),
               )
               .separated(const Divider(height: 0))
@@ -211,38 +209,97 @@ class _LogsViewState extends ConsumerState<LogsView> {
   }
 }
 
-class LogItem extends StatelessWidget {
-  final Log log;
-  final Function(String)? onClick;
+class _LogFilterButton extends StatelessWidget {
+  final LogsState logsState;
+  final ValueChanged<LogSource> onToggleSource;
+  final ValueChanged<LogLevel> onToggleLevel;
+  final VoidCallback onClear;
 
-  const LogItem({super.key, required this.log, this.onClick});
+  const _LogFilterButton({
+    required this.logsState,
+    required this.onToggleSource,
+    required this.onToggleLevel,
+    required this.onClear,
+  });
 
-  Widget _buildChipLabel(
-    BuildContext context, {
-    required String title,
-    required String value,
-  }) {
-    final style = context.textTheme.labelSmall?.copyWith(
-      color: context.colorScheme.onSurfaceVariant,
-    );
-    return Text.rich(
-      TextSpan(
-        style: style,
-        children: [
-          TextSpan(
-            text: '$title ',
-            style: style?.copyWith(
-              color: context.colorScheme.onSurfaceVariant.opacity80,
+  String _getLabel(Enum value) {
+    return value.name.toUpperCase();
+  }
+
+  List<PopupMenuItemData> _buildItems(BuildContext context) {
+    final appLocalizations = context.appLocalizations;
+    final levels = LogLevel.values
+        .where((level) => level != LogLevel.silent)
+        .toList();
+    return [
+      PopupMenuItemData(
+        icon: Icons.source_outlined,
+        label: appLocalizations.source,
+        subItems: [
+          for (final source in LogSource.values)
+            PopupMenuItemData(
+              label: _getLabel(source),
+              selected: logsState.sources.contains(source),
+              closeOnPressed: false,
+              onPressed: () {
+                onToggleSource(source);
+              },
             ),
-          ),
-          TextSpan(
-            text: value,
-            style: style?.copyWith(fontWeight: FontWeight.w600),
-          ),
         ],
       ),
+      PopupMenuItemData(
+        icon: Icons.flag_outlined,
+        label: appLocalizations.level,
+        subItems: [
+          for (final level in levels)
+            PopupMenuItemData(
+              label: _getLabel(level),
+              selected: logsState.levels.contains(level),
+              closeOnPressed: false,
+              onPressed: () {
+                onToggleLevel(level);
+              },
+            ),
+        ],
+      ),
+      PopupMenuItemData(
+        icon: Icons.filter_alt_off_outlined,
+        label: appLocalizations.reset,
+        onPressed: onClear,
+      ),
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CommonPopupBox(
+      popup: CommonPopupMenu(items: _buildItems(context)),
+      targetBuilder: (open) {
+        if (logsState.hasFilters) {
+          return IconButton.filledTonal(
+            tooltip: context.appLocalizations.filter,
+            onPressed: () {
+              open(targetContext: context);
+            },
+            icon: const Icon(Icons.filter_alt_outlined),
+          );
+        }
+        return IconButton(
+          tooltip: context.appLocalizations.filter,
+          onPressed: () {
+            open(targetContext: context);
+          },
+          icon: const Icon(Icons.filter_alt_outlined),
+        );
+      },
     );
   }
+}
+
+class LogItem extends StatelessWidget {
+  final Log log;
+
+  const LogItem({super.key, required this.log});
 
   @override
   Widget build(BuildContext context) {
@@ -266,41 +323,13 @@ class LogItem extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  CommonChip(
-                    onPressed: () {
-                      if (onClick == null) return;
-                      onClick!(log.source.name);
-                    },
-                    labelStyle: context.textTheme.labelSmall?.copyWith(
-                      color: context.colorScheme.onSurfaceVariant,
-                    ),
-                    label: sourceLabel,
-                    labelWidget: _buildChipLabel(
-                      context,
-                      title: appLocalizations.source,
-                      value: sourceLabel,
-                    ),
-                  ),
-                  CommonChip(
-                    onPressed: () {
-                      if (onClick == null) return;
-                      onClick!(log.logLevel.name);
-                    },
-                    labelStyle: context.textTheme.labelSmall?.copyWith(
-                      color: context.colorScheme.onSurfaceVariant,
-                    ),
-                    label: levelLabel,
-                    labelWidget: _buildChipLabel(
-                      context,
-                      title: appLocalizations.level,
-                      value: levelLabel,
-                    ),
-                  ),
-                ],
+              Text(
+                '${appLocalizations.source} $sourceLabel · ${appLocalizations.level} $levelLabel',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: context.textTheme.labelMedium?.copyWith(
+                  color: context.colorScheme.onSurfaceVariant,
+                ),
               ),
               Text(
                 log.dateTime,
