@@ -7,7 +7,7 @@ import (
 	"os"
 	"runtime"
 	"runtime/debug"
-	"sync/atomic"
+	"sync"
 	"time"
 
 	"github.com/metacubex/mihomo/adapter"
@@ -30,11 +30,20 @@ import (
 )
 
 var (
-	isInit               = false
-	externalProviders    = map[string]cp.Provider{}
-	logSubscriber        observable.Subscription[log.Event]
-	requestNotifyEnabled atomic.Bool
+	isInit            = false
+	externalProviders = map[string]cp.Provider{}
+	logSubscriber     observable.Subscription[log.Event]
 )
+
+var (
+	requestNotifyMutex   sync.Mutex
+	requestNotifyEnabled bool
+	requestNotifyCache   [maxCachedRequestNotify]*statistic.TrackerInfo
+	requestNotifyStart   int
+	requestNotifyLen     int
+)
+
+const maxCachedRequestNotify = 100
 
 func handleInitClash(params *InitParams) bool {
 	runLock.Lock()
@@ -392,12 +401,27 @@ func handleStopLog() {
 	}
 }
 
-func handleStartRequest() {
-	requestNotifyEnabled.Store(true)
+func handleStartRequestNotify() []*statistic.TrackerInfo {
+	requestNotifyMutex.Lock()
+	defer requestNotifyMutex.Unlock()
+
+	requests := make([]*statistic.TrackerInfo, requestNotifyLen)
+	for i := 0; i < requestNotifyLen; i++ {
+		index := (requestNotifyStart + i) % maxCachedRequestNotify
+		requests[i] = requestNotifyCache[index]
+		requestNotifyCache[index] = nil
+	}
+	requestNotifyStart = 0
+	requestNotifyLen = 0
+	requestNotifyEnabled = true
+
+	return requests
 }
 
-func handleStopRequest() {
-	requestNotifyEnabled.Store(false)
+func handleStopRequestNotify() {
+	requestNotifyMutex.Lock()
+	defer requestNotifyMutex.Unlock()
+	requestNotifyEnabled = false
 }
 
 func handleGetCountryCode(ip string, fn func(value string)) {
@@ -496,9 +520,21 @@ func init() {
 		})
 	}
 	statistic.DefaultRequestNotify = func(c statistic.Tracker) {
-		if !requestNotifyEnabled.Load() {
+		requestNotifyMutex.Lock()
+		if !requestNotifyEnabled {
+			defer requestNotifyMutex.Unlock()
+			request := c.Info()
+			if requestNotifyLen < maxCachedRequestNotify {
+				index := (requestNotifyStart + requestNotifyLen) % maxCachedRequestNotify
+				requestNotifyCache[index] = request
+				requestNotifyLen++
+				return
+			}
+			requestNotifyCache[requestNotifyStart] = request
+			requestNotifyStart = (requestNotifyStart + 1) % maxCachedRequestNotify
 			return
 		}
+		requestNotifyMutex.Unlock()
 		sendMessage(Message{
 			Type: RequestMessage,
 			Data: c,
