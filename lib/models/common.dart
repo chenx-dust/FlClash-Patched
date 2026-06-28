@@ -172,7 +172,8 @@ abstract class Log with _$Log {
 abstract class LogsState with _$LogsState {
   const factory LogsState({
     @Default([]) List<Log> logs,
-    @Default([]) List<String> keywords,
+    @Default({}) Set<LogSource> sources,
+    @Default({}) Set<LogLevel> levels,
     @Default('') String query,
     @Default(false) bool useRegex,
     @Default(true) bool autoScrollToEnd,
@@ -180,14 +181,39 @@ abstract class LogsState with _$LogsState {
 }
 
 extension LogsStateExt on LogsState {
+  bool get hasFilters {
+    return sources.isNotEmpty || levels.isNotEmpty;
+  }
+
+  LogsState toggleSource(LogSource source) {
+    return copyWith(sources: _toggle(sources, source));
+  }
+
+  LogsState toggleLevel(LogLevel level) {
+    return copyWith(levels: _toggle(levels, level));
+  }
+
+  LogsState clearFilters() {
+    return copyWith(sources: {}, levels: {});
+  }
+
   List<Log> get list {
     final matcher = SearchMatcher(query, useRegex: useRegex);
     return logs.where((log) {
-      final logLevelName = log.logLevel.name;
-      final logSourceName = log.source.name;
-      return {logLevelName, logSourceName}.containsAll(keywords) &&
-          matcher.hasAnyMatch([log.payload, logLevelName, logSourceName]);
+      final matchesSource = sources.isEmpty || sources.contains(log.source);
+      final matchesLevel = levels.isEmpty || levels.contains(log.logLevel);
+      return matchesSource && matchesLevel && matcher.hasMatch(log.payload);
     }).toList();
+  }
+
+  Set<T> _toggle<T>(Set<T> values, T value) {
+    final nextValues = Set<T>.from(values);
+    if (nextValues.contains(value)) {
+      nextValues.remove(value);
+    } else {
+      nextValues.add(value);
+    }
+    return nextValues;
   }
 }
 
@@ -477,6 +503,8 @@ class PopupMenuItemData {
     required this.label,
     this.onPressed,
     this.danger = false,
+    this.selected = false,
+    this.closeOnPressed = true,
     this.subItems = const [],
   });
 
@@ -484,6 +512,8 @@ class PopupMenuItemData {
   final VoidCallback? onPressed;
   final IconData? icon;
   final bool danger;
+  final bool selected;
+  final bool closeOnPressed;
   final List<PopupMenuItemData> subItems;
 }
 
