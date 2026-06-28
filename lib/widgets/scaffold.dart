@@ -51,6 +51,9 @@ class CommonScaffold extends StatefulWidget {
 }
 
 class CommonScaffoldState extends State<CommonScaffold> {
+  static const _normalAppBarKey = ValueKey('normalAppBar');
+  static const _searchAppBarKey = ValueKey('searchAppBar');
+
   late final ValueNotifier<AppBarState> _appBarState;
   final ValueNotifier<bool> _loadingNotifier = ValueNotifier(false);
   final ValueNotifier<bool> _isFabExtendedNotifier = ValueNotifier(true);
@@ -108,26 +111,53 @@ class CommonScaffoldState extends State<CommonScaffold> {
     );
   }
 
-  Widget _buildSearchingAppBarTheme(Widget child) {
+  Widget _buildAppBarTheme(Widget child) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
-    return Theme(
+    final appBarTheme = _isSearch
+        ? _buildStaticAppBarTheme(
+            theme,
+            backgroundColor: colorScheme.brightness == Brightness.dark
+                ? Colors.grey[900]
+                : Colors.white,
+            iconTheme: theme.primaryIconTheme.copyWith(color: Colors.grey),
+            titleTextStyle: theme.textTheme.titleLarge,
+            toolbarTextStyle: theme.textTheme.bodyMedium,
+          )
+        : _buildStaticAppBarTheme(theme);
+    return AnimatedTheme(
+      duration: commonDuration,
+      curve: Curves.easeOutCubic,
       data: theme.copyWith(
-        appBarTheme: _buildStaticAppBarTheme(
-          theme,
-          backgroundColor: colorScheme.brightness == Brightness.dark
-              ? Colors.grey[900]
-              : Colors.white,
-          iconTheme: theme.primaryIconTheme.copyWith(color: Colors.grey),
-          titleTextStyle: theme.textTheme.titleLarge,
-          toolbarTextStyle: theme.textTheme.bodyMedium,
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          hintStyle: theme.inputDecorationTheme.hintStyle,
-          border: InputBorder.none,
-        ),
+        appBarTheme: appBarTheme,
+        inputDecorationTheme: _isSearch
+            ? InputDecorationTheme(
+                hintStyle: theme.inputDecorationTheme.hintStyle,
+                border: InputBorder.none,
+              )
+            : theme.inputDecorationTheme,
       ),
       child: child,
+    );
+  }
+
+  Widget _buildAppBarTransition(Widget child) {
+    return AnimatedSwitcher(
+      duration: midDuration,
+      switchInCurve: Curves.easeOut,
+      switchOutCurve: Curves.easeIn,
+      layoutBuilder: (currentChild, previousChildren) {
+        return Stack(
+          alignment: Alignment.center,
+          children: <Widget>[...previousChildren, ?currentChild],
+        );
+      },
+      transitionBuilder: (child, animation) =>
+          FadeTransition(opacity: animation, child: child),
+      child: KeyedSubtree(
+        key: _isSearch ? _searchAppBarKey : _normalAppBarKey,
+        child: child,
+      ),
     );
   }
 
@@ -158,14 +188,6 @@ class CommonScaffoldState extends State<CommonScaffold> {
       _appBarState.value.searchState!.onSearch('');
     }
     _updateSearchState((state) => state?.copyWith(query: ''));
-  }
-
-  void _handleClear() {
-    if (_textController.text.isNotEmpty) {
-      _handleClearInput();
-      return;
-    }
-    _updateSearchState((state) => state?.copyWith(query: null));
   }
 
   void handleExitSearching() {
@@ -292,9 +314,13 @@ class CommonScaffoldState extends State<CommonScaffold> {
   ) {
     if (_isSearch) {
       return genActions([
+        if (_textController.text.isNotEmpty)
+          IconButton(
+            onPressed: _handleClearInput,
+            icon: const Icon(Icons.close),
+          ),
         if (searchState?.onRegexChange != null)
           _buildRegexSearchButton(searchState!),
-        IconButton(onPressed: _handleClear, icon: const Icon(Icons.close)),
       ]);
     }
     return genActions([
@@ -311,7 +337,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
   }
 
   Widget _buildAppBarWrap(Widget child) {
-    final appBar = _isSearch ? _buildSearchingAppBarTheme(child) : child;
+    final appBar = _buildAppBarTheme(child);
     if (_isEdit || _isSearch) {
       return SystemBackBlock(
         child: CommonPopScope(
@@ -343,20 +369,22 @@ class CommonScaffoldState extends State<CommonScaffold> {
                 ValueListenableBuilder<AppBarState>(
                   valueListenable: _appBarState,
                   builder: (_, state, _) {
-                    return _buildAppBarWrap(
-                      AppBar(
-                        automaticallyImplyLeading: backAction != null
-                            ? false
-                            : true,
-                        animateColor: true,
-                        centerTitle: widget.centerTitle ?? false,
-                        leading: _buildLeading(backAction),
-                        title: _buildTitle(state.searchState),
-                        actions: _buildActions(
-                          state.searchState,
-                          state.actions.isNotEmpty
-                              ? state.actions
-                              : widget.actions ?? [],
+                    return _buildAppBarTransition(
+                      _buildAppBarWrap(
+                        AppBar(
+                          automaticallyImplyLeading: backAction != null
+                              ? false
+                              : true,
+                          animateColor: true,
+                          centerTitle: widget.centerTitle ?? false,
+                          leading: _buildLeading(backAction),
+                          title: _buildTitle(state.searchState),
+                          actions: _buildActions(
+                            state.searchState,
+                            state.actions.isNotEmpty
+                                ? state.actions
+                                : widget.actions ?? [],
+                          ),
                         ),
                       ),
                     );
