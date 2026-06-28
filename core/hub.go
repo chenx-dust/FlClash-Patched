@@ -4,6 +4,14 @@ import (
 	"cmp"
 	"context"
 	"encoding/json"
+	"net"
+	"os"
+	"runtime"
+	"runtime/debug"
+	"strconv"
+	"sync"
+	"time"
+
 	"github.com/metacubex/mihomo/adapter"
 	"github.com/metacubex/mihomo/adapter/outboundgroup"
 	"github.com/metacubex/mihomo/common/observable"
@@ -22,23 +30,24 @@ import (
 	"github.com/metacubex/mihomo/tunnel"
 	"github.com/metacubex/mihomo/tunnel/statistic"
 	"golang.org/x/exp/slices"
-	"net"
-	"os"
-	"runtime"
-	"runtime/debug"
-	"strconv"
-	"sync"
-	"sync/atomic"
-	"time"
 )
 
 var (
-	isInit               = false
-	externalProviders    = map[string]cp.Provider{}
-	logSubscriber        observable.Subscription[log.Event]
-	ageMutex             sync.Mutex
-	requestNotifyEnabled atomic.Bool
+	isInit            = false
+	externalProviders = map[string]cp.Provider{}
+	logSubscriber     observable.Subscription[log.Event]
+	ageMutex          sync.Mutex
 )
+
+var (
+	requestNotifyMutex   sync.Mutex
+	requestNotifyEnabled bool
+	requestNotifyCache   [maxCachedRequestNotify]*statistic.TrackerInfo
+	requestNotifyStart   int
+	requestNotifyLen     int
+)
+
+const maxCachedRequestNotify = 100
 
 func handleInitClash(paramsString string) bool {
 	runLock.Lock()
@@ -452,12 +461,28 @@ func handleStopLog() {
 	}
 }
 
-func handleStartRequest() {
-	requestNotifyEnabled.Store(true)
+func handleStartRequestNotify() []*statistic.TrackerInfo {
+	requestNotifyMutex.Lock()
+	defer requestNotifyMutex.Unlock()
+	requests := make([]*statistic.TrackerInfo, requestNotifyLen)
+	if requestNotifyLen != 0 {
+		for i := 0; i < requestNotifyLen; i++ {
+			index := (requestNotifyStart + i) % maxCachedRequestNotify
+			requests[i] = requestNotifyCache[index]
+			requestNotifyCache[index] = nil
+		}
+	}
+	requestNotifyStart = 0
+	requestNotifyLen = 0
+	requestNotifyEnabled = true
+
+	return requests
 }
 
-func handleStopRequest() {
-	requestNotifyEnabled.Store(false)
+func handleStopRequestNotify() {
+	requestNotifyMutex.Lock()
+	defer requestNotifyMutex.Unlock()
+	requestNotifyEnabled = false
 }
 
 func handleGetCountryCode(ip string, fn func(value string)) {
@@ -575,9 +600,21 @@ func init() {
 		})
 	}
 	statistic.DefaultRequestNotify = func(c statistic.Tracker) {
-		if !requestNotifyEnabled.Load() {
+		requestNotifyMutex.Lock()
+		if !requestNotifyEnabled {
+			defer requestNotifyMutex.Unlock()
+			request := c.Info()
+			if requestNotifyLen < maxCachedRequestNotify {
+				index := (requestNotifyStart + requestNotifyLen) % maxCachedRequestNotify
+				requestNotifyCache[index] = request
+				requestNotifyLen++
+				return
+			}
+			requestNotifyCache[requestNotifyStart] = request
+			requestNotifyStart = (requestNotifyStart + 1) % maxCachedRequestNotify
 			return
 		}
+		requestNotifyMutex.Unlock()
 		sendMessage(Message{
 			Type: RequestMessage,
 			Data: c,

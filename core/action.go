@@ -200,12 +200,11 @@ func handleAction(action *Action, result ActionResult) {
 		handleStopLog()
 		result.success(true)
 		return
-	case startRequestMethod:
-		handleStartRequest()
-		result.success(true)
+	case startRequestNotifyMethod:
+		result.success(handleStartRequestNotify())
 		return
-	case stopRequestMethod:
-		handleStopRequest()
+	case stopRequestNotifyMethod:
+		handleStopRequestNotify()
 		result.success(true)
 		return
 	case startListenerMethod:
