@@ -82,6 +82,10 @@ class CommonPopupRoute<T> extends PopupRoute<T> {
 
   @override
   Duration get transitionDuration => const Duration(milliseconds: 250);
+
+  static void closeAll(BuildContext context) {
+    Navigator.of(context).popUntil((route) => route is! CommonPopupRoute);
+  }
 }
 
 class PopupController extends ValueNotifier<bool> {
