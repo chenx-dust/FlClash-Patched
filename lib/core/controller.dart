@@ -282,12 +282,12 @@ class CoreController {
     _interface.stopLog();
   }
 
-  void startRequest() {
-    _interface.startRequest();
+  Future<List<TrackerInfo>> startRequestNotify() async {
+    return await _interface.startRequestNotify();
   }
 
-  void stopRequest() {
-    _interface.stopRequest();
+  void stopRequestNotify() {
+    _interface.stopRequestNotify();
   }
 
   Future<void> requestGc() async {

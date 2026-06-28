@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/enum/enum.dart';
@@ -101,16 +103,25 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
     if (_requestListening) {
       return;
     }
+    commonPrint.log('start listening requests', logLevel: LogLevel.debug);
     _requestListening = true;
-    coreController.startRequest();
+    unawaited(
+      coreController.startRequestNotify().then((requests) {
+        if (!mounted || !_requestListening) {
+          return;
+        }
+        ref.read(requestsProvider.notifier).addRequests(requests);
+      }),
+    );
   }
 
   void _stopListening() {
     if (!_requestListening) {
       return;
     }
+    commonPrint.log('stop listening requests', logLevel: LogLevel.debug);
     _requestListening = false;
-    coreController.stopRequest();
+    coreController.stopRequestNotify();
   }
 
   void updateRequestsThrottler() {

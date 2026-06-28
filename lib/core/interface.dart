@@ -65,9 +65,9 @@ mixin CoreInterface {
 
   FutureOr<void> stopLog();
 
-  FutureOr<void> startRequest();
+  FutureOr<List<TrackerInfo>> startRequestNotify();
 
-  FutureOr<void> stopRequest();
+  FutureOr<void> stopRequestNotify();
 
   Future<bool> crash();
 
@@ -351,13 +351,22 @@ abstract class CoreHandlerInterface with CoreInterface {
   }
 
   @override
-  FutureOr<void> startRequest() {
-    _invoke(method: ActionMethod.startRequest);
+  Future<List<TrackerInfo>> startRequestNotify() async {
+    final res = await _invoke<List<dynamic>>(
+      method: ActionMethod.startRequestNotify,
+    );
+    if (res == null || res.isEmpty) {
+      return [];
+    }
+    return res
+        .whereType<Map>()
+        .map((item) => TrackerInfo.fromJson(Map<String, Object?>.from(item)))
+        .toList();
   }
 
   @override
-  FutureOr<void> stopRequest() {
-    _invoke<bool>(method: ActionMethod.stopRequest);
+  FutureOr<void> stopRequestNotify() {
+    _invoke<bool>(method: ActionMethod.stopRequestNotify);
   }
 
   @override
