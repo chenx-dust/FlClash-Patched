@@ -115,8 +115,9 @@ class BuildLinuxCommand extends BuildCommand {
     await ensureGeoData(rootDir: _rootDir);
 
     final arch = archName ?? await _hostGoArch();
-    final targets =
-        Target.forPlatform('linux').where((t) => t.goarch == arch).toList();
+    final targets = Target.forPlatform(
+      'linux',
+    ).where((t) => t.goarch == arch).toList();
 
     if (targets.isEmpty) {
       throw BuildException('Invalid arch: $arch');
@@ -152,8 +153,9 @@ class BuildWindowsCommand extends BuildCommand {
     await ensureGeoData(rootDir: _rootDir);
 
     final arch = archName ?? await _hostGoArch();
-    final targets =
-        Target.forPlatform('windows').where((t) => t.goarch == arch).toList();
+    final targets = Target.forPlatform(
+      'windows',
+    ).where((t) => t.goarch == arch).toList();
 
     if (targets.isEmpty) {
       throw BuildException('Invalid arch: $arch');
@@ -176,8 +178,9 @@ class BuildWindowsCommand extends BuildCommand {
       final coreSha256 = await calcSha256(corePaths.first);
       final rustBuilder = RustBuilder(rootDir: _rootDir, config: config);
       await rustBuilder.build(targets.first, coreSha256);
-      await File(p.join(_rootDir, 'core_sha256.json'))
-          .writeAsString(jsonEncode({'CORE_SHA256': coreSha256}));
+      await File(
+        p.join(_rootDir, 'core_sha256.json'),
+      ).writeAsString(jsonEncode({'CORE_SHA256': coreSha256}));
     }
 
     _log.info('Build complete: $corePaths');
@@ -206,11 +209,47 @@ class BuildMacosCommand extends BuildCommand {
     await ensureGeoData(rootDir: _rootDir);
 
     final arch = archName ?? await _hostGoArch();
-    final targets =
-        Target.forPlatform('darwin').where((t) => t.goarch == arch).toList();
+    final targets = Target.forPlatform(
+      'darwin',
+    ).where((t) => t.goarch == arch).toList();
 
     if (targets.isEmpty) {
       throw BuildException('Invalid arch: $arch');
+    }
+
+    final builder = GoBuilder(rootDir: _rootDir, config: config);
+    final corePaths = await builder.buildAll(targets);
+
+    _log.info('Build complete: $corePaths');
+  }
+}
+
+class BuildIosCommand extends BuildCommand {
+  BuildIosCommand() {
+    argParser.addOption(
+      'arch',
+      valueHelp: 'arm64',
+      help: 'Target architecture (default: arm64)',
+    );
+  }
+
+  @override
+  final name = 'ios';
+
+  @override
+  final description = 'Build iOS Go core (c-archive library)';
+
+  @override
+  Future<void> runBuildCommand() async {
+    final archName = (argResults?['arch'] as String?) ?? 'arm64';
+    final config = BuildConfig.load(rootDir: _rootDir);
+
+    final targets = Target.forPlatform(
+      'ios',
+    ).where((t) => t.goarch == archName).toList();
+
+    if (targets.isEmpty) {
+      throw BuildException('Invalid arch: $archName');
     }
 
     final builder = GoBuilder(rootDir: _rootDir, config: config);
@@ -233,7 +272,8 @@ Future<void> runMain(List<String> args) async {
       ..addCommand(BuildAndroidCommand())
       ..addCommand(BuildLinuxCommand())
       ..addCommand(BuildWindowsCommand())
-      ..addCommand(BuildMacosCommand());
+      ..addCommand(BuildMacosCommand())
+      ..addCommand(BuildIosCommand());
 
     final topResults = runner.parse(args);
     _rootDir = (topResults['root-dir'] as String?) ?? _findProjectRoot();

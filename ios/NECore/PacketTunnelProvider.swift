@@ -9,6 +9,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     
     override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
         // Add code here to start the process of stopping the tunnel.
+        NECoreBridge.stopTun()
         completionHandler()
     }
     
@@ -17,15 +18,18 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             return
         }
 
-        guard let object = try? JSONSerialization.jsonObject(with: messageData) as? [String: Any] else {
-            handler(actionResult(method: "message", id: nil, data: "invalid action", code: -1))
+        guard let action = String(data: messageData, encoding: .utf8) else {
+            handler(actionResult(messageData: nil, message: "invalid action"))
             return
         }
 
-        let method = object["method"] as? String ?? "message"
-        let id = object["id"] as? String
-        let data = object["data"] ?? NSNull()
-        handler(actionResult(method: method, id: id, data: data, code: 0))
+        NECoreBridge.invokeAction(action) { response in
+            guard let response = response, let data = response.data(using: .utf8) else {
+                handler(self.actionResult(messageData: messageData, message: "empty core response"))
+                return
+            }
+            handler(data)
+        }
     }
     
     override func sleep(completionHandler: @escaping () -> Void) {
@@ -37,11 +41,18 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         // Add code here to wake up.
     }
 
-    private func actionResult(method: String, id: String?, data: Any, code: Int) -> Data? {
+    private func actionResult(messageData: Data?, message: String) -> Data? {
+        var method = "message"
+        var id: String?
+        if let messageData,
+           let object = try? JSONSerialization.jsonObject(with: messageData) as? [String: Any] {
+            method = object["method"] as? String ?? method
+            id = object["id"] as? String
+        }
         var payload: [String: Any] = [
             "method": method,
-            "data": data,
-            "code": code,
+            "data": message,
+            "code": -1,
         ]
         if let id = id {
             payload["id"] = id
