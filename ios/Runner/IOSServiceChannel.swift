@@ -200,12 +200,17 @@ final class IOSServiceChannel {
     status: NEVPNStatus,
     result: @escaping FlutterResult
   ) {
-    result(
-      actionResult(
-        data: data,
-        message: "iOS app core bridge is not linked, tunnel status: \(statusDescription(status))"
-      )
-    )
+    guard let action = String(data: data, encoding: .utf8) else {
+      result(actionResult(data: data, message: "invalid action"))
+      return
+    }
+    IOSCoreBridge.invokeAction(action) { response in
+      guard let response = response else {
+        result(self.actionResult(data: data, message: "empty app core response"))
+        return
+      }
+      result(response)
+    }
   }
 
   private func canSendProviderMessage(status: NEVPNStatus) -> Bool {
