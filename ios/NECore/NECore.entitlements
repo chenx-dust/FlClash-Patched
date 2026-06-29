@@ -4,7 +4,7 @@
 <dict>
     <key>com.apple.security.application-groups</key>
     <array>
-        <string>group.com.follow.flClash</string>
+        <string>group.site.yinmo.clash</string>
     </array>
 </dict>
 </plist>
