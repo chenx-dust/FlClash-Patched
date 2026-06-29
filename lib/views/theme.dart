@@ -12,6 +12,7 @@ import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:material_color_utilities/hct/hct.dart';
 
 class ThemeModeItem {
   final ThemeMode themeMode;
@@ -500,7 +501,7 @@ class _TextScaleFactorItem extends ConsumerWidget {
                     child: ActivateBox(
                       active: textScale.enable,
                       child: SliderTheme(
-                        data: _SliderDefaultsM3(context),
+                        data: SliderDefaultsM3(context),
                         child: Slider(
                           padding: EdgeInsets.zero,
                           min: minTextScale,
@@ -540,7 +541,9 @@ class _PaletteDialog extends StatefulWidget {
 }
 
 class _PaletteDialogState extends State<_PaletteDialog> {
-  final _controller = ValueNotifier<ui.Color>(Colors.transparent);
+  final _controller = ValueNotifier<ui.Color>(
+    Color(Hct.from(0, 0, 60).toInt()),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -562,22 +565,26 @@ class _PaletteDialogState extends State<_PaletteDialog> {
         ),
       ],
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           const SizedBox(height: 8),
-          SizedBox(
-            width: 250,
-            height: 250,
-            child: Palette(controller: _controller),
-          ),
-          const SizedBox(height: 24),
+          SizedBox(width: 300, child: Palette(controller: _controller)),
+          const SizedBox(height: 16),
           ValueListenableBuilder(
             valueListenable: _controller,
             builder: (_, color, _) {
               return PrimaryColorBox(
                 primaryColor: color,
-                child: FilledButton(
-                  onPressed: () {},
-                  child: Text(_controller.value.hex),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const _ColorSchemePreview(),
+                    const SizedBox(height: 8),
+                    Text(
+                      _controller.value.hex,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
                 ),
               );
             },
@@ -588,110 +595,56 @@ class _PaletteDialogState extends State<_PaletteDialog> {
   }
 }
 
-class _SliderDefaultsM3 extends SliderThemeData {
-  _SliderDefaultsM3(this.context) : super(trackHeight: 16.0);
-
-  final BuildContext context;
-  late final ColorScheme _colors = Theme.of(context).colorScheme;
+class _ColorSchemePreview extends StatelessWidget {
+  const _ColorSchemePreview();
 
   @override
-  Color? get activeTrackColor => _colors.primary;
-
-  @override
-  Color? get inactiveTrackColor => _colors.secondaryContainer;
-
-  @override
-  Color? get secondaryActiveTrackColor => _colors.primary.withOpacity(0.54);
-
-  @override
-  Color? get disabledActiveTrackColor => _colors.onSurface.withOpacity(0.38);
-
-  @override
-  Color? get disabledInactiveTrackColor => _colors.onSurface.withOpacity(0.12);
-
-  @override
-  Color? get disabledSecondaryActiveTrackColor =>
-      _colors.onSurface.withOpacity(0.38);
-
-  @override
-  Color? get activeTickMarkColor => _colors.onPrimary.withOpacity(1.0);
-
-  @override
-  Color? get inactiveTickMarkColor =>
-      _colors.onSecondaryContainer.withOpacity(1.0);
-
-  @override
-  Color? get disabledActiveTickMarkColor => _colors.onInverseSurface;
-
-  @override
-  Color? get disabledInactiveTickMarkColor => _colors.onSurface;
-
-  @override
-  Color? get thumbColor => _colors.primary;
-
-  @override
-  Color? get disabledThumbColor => _colors.onSurface.withOpacity(0.38);
-
-  @override
-  Color? get overlayColor =>
-      WidgetStateColor.resolveWith((Set<WidgetState> states) {
-        if (states.contains(WidgetState.dragged)) {
-          return _colors.primary.withOpacity(0.1);
-        }
-        if (states.contains(WidgetState.hovered)) {
-          return _colors.primary.withOpacity(0.08);
-        }
-        if (states.contains(WidgetState.focused)) {
-          return _colors.primary.withOpacity(0.1);
-        }
-
-        return Colors.transparent;
-      });
-
-  @override
-  TextStyle? get valueIndicatorTextStyle => Theme.of(
-    context,
-  ).textTheme.labelLarge!.copyWith(color: _colors.onInverseSurface);
-
-  @override
-  Color? get valueIndicatorColor => _colors.inverseSurface;
-
-  @override
-  SliderComponentShape? get valueIndicatorShape =>
-      const RoundedRectSliderValueIndicatorShape();
-
-  @override
-  SliderComponentShape? get thumbShape => const HandleThumbShape();
-
-  @override
-  SliderTrackShape? get trackShape => const GappedSliderTrackShape();
-
-  @override
-  SliderComponentShape? get overlayShape => const RoundSliderOverlayShape();
-
-  @override
-  SliderTickMarkShape? get tickMarkShape =>
-      const RoundSliderTickMarkShape(tickMarkRadius: 4.0 / 2);
-
-  @override
-  WidgetStateProperty<Size?>? get thumbSize {
-    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
-      if (states.contains(WidgetState.disabled)) {
-        return const Size(4.0, 44.0);
-      }
-      if (states.contains(WidgetState.hovered)) {
-        return const Size(4.0, 44.0);
-      }
-      if (states.contains(WidgetState.focused)) {
-        return const Size(2.0, 44.0);
-      }
-      if (states.contains(WidgetState.pressed)) {
-        return const Size(2.0, 44.0);
-      }
-      return const Size(4.0, 44.0);
-    });
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final roles = [
+      (colorScheme.primary, colorScheme.onPrimary, 'Primary'),
+      (colorScheme.secondary, colorScheme.onSecondary, 'Secondary'),
+      (colorScheme.tertiary, colorScheme.onTertiary, 'Tertiary'),
+      (colorScheme.error, colorScheme.onError, 'Error'),
+      (colorScheme.surface, colorScheme.onSurface, 'Surface'),
+      (
+        colorScheme.primaryContainer,
+        colorScheme.onPrimaryContainer,
+        'Primary\nCont.',
+      ),
+      (
+        colorScheme.secondaryContainer,
+        colorScheme.onSecondaryContainer,
+        'Secondary\nCont.',
+      ),
+      (
+        colorScheme.tertiaryContainer,
+        colorScheme.onTertiaryContainer,
+        'Tertiary\nCont.',
+      ),
+    ];
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        for (final (bg, fg, label) in roles)
+          Container(
+            width: 60,
+            height: 44,
+            decoration: BoxDecoration(
+              color: bg,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              label,
+              style: TextStyle(color: fg, fontSize: 9),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+      ],
+    );
   }
-
-  @override
-  double? get trackGap => 6.0;
 }
