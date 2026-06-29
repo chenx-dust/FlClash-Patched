@@ -4,11 +4,13 @@ import os
 
 class PacketTunnelProvider: NEPacketTunnelProvider {
   private let logger = Logger(
-    subsystem: "site.yinmo.clash.NECore",
+    subsystem: "com.follow.flClash.Y8RH943F65.NECore",
     category: "PacketTunnelProvider"
   )
   private let sharedStateKey = "sharedState"
-  private let appGroupIdentifier = "group.site.yinmo.clash"
+  private let appGroupIdentifier = "group.com.follow.flClash.Y8RH943F65"
+  private let eventQueueDirectoryName = "core-events"
+  private let eventNotificationName = "com.follow.flClash.Y8RH943F65.NECore.event"
   private let ipv4Address = "172.19.0.1"
   private let ipv4AddressPrefix = "172.19.0.1/30"
   private let ipv4SubnetMask = "255.255.255.252"
@@ -44,6 +46,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         return
       }
       self.log("startTunnel fileDescriptor=\(tunnelFileDescriptor)")
+      self.installCoreEventListener()
       let started = NECoreBridge.startTun(
         withFileDescriptor: tunnelFileDescriptor,
         stack: vpnOptions.stack,
@@ -58,6 +61,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
   override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
     // Add code here to start the process of stopping the tunnel.
     log("stopTunnel reason=\(reason.rawValue)")
+    NECoreBridge.setEventListener(nil)
     NECoreBridge.stopTun()
     completionHandler()
   }
@@ -151,6 +155,52 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
       return nil
     }
     return try? JSONDecoder().decode(SharedState.self, from: data)
+  }
+
+  private func installCoreEventListener() {
+    NECoreBridge.setEventListener { [weak self] event in
+      guard let self = self, let event = event, !event.isEmpty else {
+        return
+      }
+      self.enqueueCoreEvent(event)
+    }
+  }
+
+  private func enqueueCoreEvent(_ event: String) {
+    guard let directory = eventQueueDirectory() else {
+      log("enqueueCoreEvent failed: missing event queue directory")
+      return
+    }
+    do {
+      try FileManager.default.createDirectory(
+        at: directory,
+        withIntermediateDirectories: true
+      )
+      let timestamp = UInt64(Date().timeIntervalSince1970 * 1_000_000)
+      let fileURL = directory.appendingPathComponent(
+        "\(timestamp)-\(UUID().uuidString).json"
+      )
+      try event.write(to: fileURL, atomically: true, encoding: .utf8)
+      notifyCoreEventAvailable()
+    } catch {
+      log("enqueueCoreEvent failed: \(error.localizedDescription)")
+    }
+  }
+
+  private func eventQueueDirectory() -> URL? {
+    FileManager.default.containerURL(
+      forSecurityApplicationGroupIdentifier: appGroupIdentifier
+    )?.appendingPathComponent(eventQueueDirectoryName, isDirectory: true)
+  }
+
+  private func notifyCoreEventAvailable() {
+    CFNotificationCenterPostNotification(
+      CFNotificationCenterGetDarwinNotifyCenter(),
+      CFNotificationName(eventNotificationName as CFString),
+      nil,
+      nil,
+      true
+    )
   }
 
   private func makeNetworkSettings(vpnOptions: VpnOptions) -> NEPacketTunnelNetworkSettings {

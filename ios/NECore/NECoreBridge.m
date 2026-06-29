@@ -41,7 +41,7 @@ static os_log_t NECoreLogger(void) {
   static os_log_t logger;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    logger = os_log_create("site.yinmo.clash.NECore", "Clash");
+    logger = os_log_create("com.follow.flClash.Y8RH943F65.NECore", "Clash");
   });
   return logger;
 }
@@ -90,6 +90,16 @@ static void NECoreSystemLog(const char *level, const char *message) {
   NECoreResultHandler retainedResult = [result copy];
   char *params = strdup(action.UTF8String);
   invokeAction((void *)CFBridgingRetain(retainedResult), params);
+}
+
++ (void)setEventListener:(NECoreResultHandler _Nullable)listener {
+  [self initializeBridge];
+  if (listener == nil) {
+    setEventListener(NULL);
+    return;
+  }
+  NECoreResultHandler retainedListener = [listener copy];
+  setEventListener((void *)CFBridgingRetain(retainedListener));
 }
 
 + (BOOL)startTunWithFileDescriptor:(int)fileDescriptor

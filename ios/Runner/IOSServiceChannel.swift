@@ -6,9 +6,14 @@ final class IOSServiceChannel {
   private static var instance: IOSServiceChannel?
 
   private let channel: FlutterMethodChannel
-  private let providerBundleIdentifier = "site.yinmo.clash.NECore"
-  private let appGroupIdentifier = "group.site.yinmo.clash"
+  private var tunnelStatusObserver: NSObjectProtocol?
+  private var lastTunnelStatus: NEVPNStatus?
+  private var isTunnelStopExpected = false
+  private let providerBundleIdentifier = "com.follow.flClash.Y8RH943F65.NECore"
+  private let appGroupIdentifier = "group.com.follow.flClash.Y8RH943F65"
   private let sharedStateKey = "sharedState"
+  private let eventQueueDirectoryName = "core-events"
+  private let eventNotificationName = "com.follow.flClash.Y8RH943F65.NECore.event"
   private let localizedDescription = "FlClash"
   private let appCoreMethods: Set<String> = [
     "validateConfig",
@@ -33,6 +38,21 @@ final class IOSServiceChannel {
       binaryMessenger: messenger
     )
     channel.setMethodCallHandler(handle)
+    registerCoreEventObserver()
+    registerTunnelStatusObserver()
+    drainCoreEventQueue()
+  }
+
+  deinit {
+    CFNotificationCenterRemoveObserver(
+      CFNotificationCenterGetDarwinNotifyCenter(),
+      Unmanaged.passUnretained(self).toOpaque(),
+      CFNotificationName(eventNotificationName as CFString),
+      nil
+    )
+    if let tunnelStatusObserver = tunnelStatusObserver {
+      NotificationCenter.default.removeObserver(tunnelStatusObserver)
+    }
   }
 
   private func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -50,6 +70,7 @@ final class IOSServiceChannel {
     case "stop":
       stopTunnel(result: result)
     case "init":
+      drainCoreEventQueue()
       result("")
     case "syncState":
       syncState(call, result: result)
@@ -150,9 +171,12 @@ final class IOSServiceChannel {
             self.log("startTunnel startVPNTunnel currentStatus=\(self.statusDescription(manager.connection.status))")
             if manager.connection.status == .connected {
               self.log("startTunnel already connected")
+              self.isTunnelStopExpected = false
+              self.lastTunnelStatus = .connected
               completion(true)
               return
             }
+            self.isTunnelStopExpected = false
             try manager.connection.startVPNTunnel()
             self.log("startTunnel startVPNTunnel requested")
             self.waitForTunnelConnected(manager: manager) { connected in
@@ -213,8 +237,13 @@ final class IOSServiceChannel {
   private func stopTunnel(result: @escaping FlutterResult) {
     log("stopTunnel requested")
     loadManager { manager, _ in
-      self.log("stopTunnel currentStatus=\(self.statusDescription(manager?.connection.status ?? .invalid))")
+      let status = manager?.connection.status ?? .invalid
+      self.log("stopTunnel currentStatus=\(self.statusDescription(status))")
+      self.isTunnelStopExpected = self.isActiveTunnelStatus(status)
       manager?.connection.stopVPNTunnel()
+      if !self.isTunnelStopExpected {
+        self.isTunnelStopExpected = false
+      }
       result(true)
     }
   }
@@ -241,6 +270,126 @@ final class IOSServiceChannel {
       return ""
     }
     return url.path
+  }
+
+  private func registerCoreEventObserver() {
+    CFNotificationCenterAddObserver(
+      CFNotificationCenterGetDarwinNotifyCenter(),
+      Unmanaged.passUnretained(self).toOpaque(),
+      IOSServiceChannel.coreEventNotificationCallback,
+      eventNotificationName as CFString,
+      nil,
+      .deliverImmediately
+    )
+  }
+
+  private static let coreEventNotificationCallback: CFNotificationCallback = { _, observer, _, _, _ in
+    guard let observer = observer else {
+      return
+    }
+    let instance = Unmanaged<IOSServiceChannel>
+      .fromOpaque(observer)
+      .takeUnretainedValue()
+    instance.handleCoreEventNotification()
+  }
+
+  private func handleCoreEventNotification() {
+    DispatchQueue.main.async {
+      self.drainCoreEventQueue()
+    }
+  }
+
+  private func drainCoreEventQueue() {
+    guard let directory = eventQueueDirectory() else {
+      log("drainCoreEventQueue skipped: missing app group dir")
+      return
+    }
+    guard let files = try? FileManager.default.contentsOfDirectory(
+      at: directory,
+      includingPropertiesForKeys: nil
+    ) else {
+      return
+    }
+    for fileURL in files.sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
+      guard let event = try? String(contentsOf: fileURL, encoding: .utf8),
+            !event.isEmpty else {
+        try? FileManager.default.removeItem(at: fileURL)
+        continue
+      }
+      channel.invokeMethod("event", arguments: event) { callbackResult in
+        if callbackResult != nil {
+          self.log("drainCoreEventQueue event not delivered")
+          return
+        }
+        try? FileManager.default.removeItem(at: fileURL)
+      }
+    }
+  }
+
+  private func eventQueueDirectory() -> URL? {
+    FileManager.default.containerURL(
+      forSecurityApplicationGroupIdentifier: appGroupIdentifier
+    )?.appendingPathComponent(eventQueueDirectoryName, isDirectory: true)
+  }
+
+  private func registerTunnelStatusObserver() {
+    loadManager(createIfNeeded: false) { manager, _ in
+      guard let manager else { return }
+      DispatchQueue.main.async {
+        self.tunnelStatusObserver = NotificationCenter.default.addObserver(
+          forName: .NEVPNStatusDidChange,
+          object: manager.connection,
+          queue: .main
+        ) { [weak self] _ in
+          self?.handleTunnelStatusDidChange()
+        }
+        self.lastTunnelStatus = manager.connection.status
+      }
+    }
+  }
+
+  private func handleTunnelStatusDidChange() {
+    loadManager(createIfNeeded: false) { manager, _ in
+      DispatchQueue.main.async {
+        let status = manager?.connection.status ?? .invalid
+        if self.lastTunnelStatus != status {
+          self.handleTunnelStatus(status)
+        }
+      }
+    }
+  }
+
+  private func handleTunnelStatus(_ status: NEVPNStatus) {
+    let previousStatus = lastTunnelStatus
+    lastTunnelStatus = status
+    log("tunnel status changed \(statusDescription(previousStatus ?? .invalid)) -> \(statusDescription(status)) expectedStop=\(isTunnelStopExpected)")
+
+    if isConnectedTunnelStatus(status) {
+      isTunnelStopExpected = false
+      return
+    }
+
+    guard isTerminalTunnelStatus(status) else {
+      return
+    }
+
+    if isTunnelStopExpected {
+      isTunnelStopExpected = false
+      return
+    }
+
+    guard let previousStatus,
+          isActiveTunnelStatus(previousStatus) else {
+      return
+    }
+    isTunnelStopExpected = false
+    notifyTunnelCrashed(status: status)
+  }
+
+  private func notifyTunnelCrashed(status: NEVPNStatus) {
+    let message = "network extension disconnected: \(statusDescription(status))"
+    log("notifyTunnelCrashed \(message)")
+    channel.invokeMethod("crash", arguments: message)
   }
 
   private func routeAction(_ data: Data, result: @escaping FlutterResult) {
@@ -339,6 +488,39 @@ final class IOSServiceChannel {
     case .connected, .reasserting:
       return true
     case .connecting, .disconnecting, .disconnected, .invalid:
+      return false
+    @unknown default:
+      return false
+    }
+  }
+
+  private func isActiveTunnelStatus(_ status: NEVPNStatus) -> Bool {
+    switch status {
+    case .connecting, .connected, .reasserting, .disconnecting:
+      return true
+    case .disconnected, .invalid:
+      return false
+    @unknown default:
+      return false
+    }
+  }
+
+  private func isConnectedTunnelStatus(_ status: NEVPNStatus) -> Bool {
+    switch status {
+    case .connected, .reasserting:
+      return true
+    case .connecting, .disconnecting, .disconnected, .invalid:
+      return false
+    @unknown default:
+      return false
+    }
+  }
+
+  private func isTerminalTunnelStatus(_ status: NEVPNStatus) -> Bool {
+    switch status {
+    case .disconnected, .invalid:
+      return true
+    case .connecting, .connected, .reasserting, .disconnecting:
       return false
     @unknown default:
       return false
