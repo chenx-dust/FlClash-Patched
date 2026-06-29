@@ -28,6 +28,7 @@ import (
 )
 
 var eventListener unsafe.Pointer
+var systemLogOnce sync.Once
 
 type TunHandler struct {
 	listener *sing_tun.Listener
@@ -161,6 +162,20 @@ func handleUpdateDns(value string) {
 	}()
 }
 
+func startSystemLog() {
+	systemLogOnce.Do(func() {
+		sub := log.Subscribe()
+		go func() {
+			for logData := range sub {
+				if logData.LogLevel < log.Level() {
+					continue
+				}
+				writeSystemLog(logData.LogLevel.String(), logData.Payload)
+			}
+		}()
+	})
+}
+
 func (result ActionResult) send() {
 	data, err := result.Json()
 	if err != nil {
@@ -185,6 +200,7 @@ func nextHandle(action *Action, result ActionResult) bool {
 
 //export invokeAction
 func invokeAction(callback unsafe.Pointer, paramsChar *C.char) {
+	startSystemLog()
 	params := takeCString(paramsChar)
 	var action = &Action{}
 	err := json.Unmarshal([]byte(params), action)
@@ -202,6 +218,7 @@ func invokeAction(callback unsafe.Pointer, paramsChar *C.char) {
 
 //export startTUN
 func startTUN(callback unsafe.Pointer, fd C.int, stackChar, addressChar, dnsChar *C.char) bool {
+	startSystemLog()
 	started := handleStartTun(callback, int(fd), takeCString(stackChar), takeCString(addressChar), takeCString(dnsChar))
 	if !started {
 		return false

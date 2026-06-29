@@ -55,6 +55,8 @@ final class IOSServiceChannel {
       syncState(call, result: result)
     case "shutdown":
       stopTunnel(result: result)
+    case "getAppGroupDir":
+      result(appGroupDir())
     case "getRunTime":
       result(0)
     default:
@@ -146,15 +148,47 @@ final class IOSServiceChannel {
           }
           do {
             self.log("startTunnel startVPNTunnel currentStatus=\(self.statusDescription(manager.connection.status))")
+            if manager.connection.status == .connected {
+              self.log("startTunnel already connected")
+              completion(true)
+              return
+            }
             try manager.connection.startVPNTunnel()
             self.log("startTunnel startVPNTunnel requested")
-            completion(true)
+            self.waitForTunnelConnected(manager: manager) { connected in
+              self.log("startTunnel connected result=\(connected)")
+              completion(connected)
+            }
           } catch {
             self.log("startTunnel startVPNTunnel failed: \(error.localizedDescription)")
             completion(false)
           }
         }
       }
+    }
+  }
+
+  private func waitForTunnelConnected(
+    manager: NETunnelProviderManager,
+    deadline: Date = Date().addingTimeInterval(8),
+    completion: @escaping (Bool) -> Void
+  ) {
+    let status = manager.connection.status
+    if status == .connected || status == .reasserting {
+      completion(true)
+      return
+    }
+    if Date() >= deadline {
+      log("waitForTunnelConnected timeout status=\(statusDescription(status))")
+      completion(false)
+      return
+    }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+      self.waitForTunnelConnected(
+        manager: manager,
+        deadline: deadline,
+        completion: completion
+      )
     }
   }
 
@@ -197,6 +231,16 @@ final class IOSServiceChannel {
     userDefaults.synchronize()
     log("syncState saved bytes=\(data.count)")
     result("")
+  }
+
+  private func appGroupDir() -> String {
+    guard let url = FileManager.default.containerURL(
+      forSecurityApplicationGroupIdentifier: appGroupIdentifier
+    ) else {
+      log("appGroupDir missing")
+      return ""
+    }
+    return url.path
   }
 
   private func routeAction(_ data: Data, result: @escaping FlutterResult) {

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:isolate';
 
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -57,8 +58,17 @@ class Service {
     if (data == null) {
       return null;
     }
-    final dataJson = await data.commonToJSON<dynamic>();
-    return ActionResult.fromJson(dataJson);
+    try {
+      final dataJson = await data.commonToJSON<dynamic>();
+      return ActionResult.fromJson(dataJson);
+    } catch (_) {
+      return ActionResult(
+        method: action.method,
+        data: data,
+        id: action.id,
+        code: ResultType.error,
+      );
+    }
   }
 
   Future<bool> start() async {
@@ -83,6 +93,10 @@ class Service {
 
   Future<bool> shutdown() async {
     return await methodChannel.invokeMethod<bool>('shutdown') ?? true;
+  }
+
+  Future<String> getAppGroupDir() async {
+    return await methodChannel.invokeMethod<String>('getAppGroupDir') ?? '';
   }
 
   Future<DateTime?> getRunTime() async {
