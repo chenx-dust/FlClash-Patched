@@ -55,6 +55,19 @@ static void NECoreResult(void *invokeInterface, const char *data) {
   invokeAction((void *)CFBridgingRetain(retainedResult), params);
 }
 
++ (BOOL)startTunWithFileDescriptor:(int)fileDescriptor
+                              stack:(NSString *)stack
+                            address:(NSString *)address
+                                dns:(NSString *)dns {
+  [self initializeBridge];
+  return startTUN(
+      NULL,
+      fileDescriptor,
+      strdup(stack.UTF8String),
+      strdup(address.UTF8String),
+      strdup(dns.UTF8String));
+}
+
 + (void)stopTun {
   [self initializeBridge];
   stopTun();

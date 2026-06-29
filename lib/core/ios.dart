@@ -26,20 +26,20 @@ class CoreIOS extends CoreHandlerInterface {
     if (_connectedCompleter.isCompleted) {
       return 'core is connected';
     }
+    commonPrint.log('[iOS] preload app core');
     final res = await service?.init();
     if (res?.isEmpty != true) {
+      commonPrint.log('[iOS] init app core failed: $res');
       return res ?? '';
     }
     final syncRes = await service?.syncState(
       globalState.container.read(sharedStateProvider),
     );
     if (syncRes?.isEmpty != true) {
+      commonPrint.log('[iOS] sync shared state failed: $syncRes');
       return syncRes ?? '';
     }
-    final started = await service?.start() ?? false;
-    if (!started) {
-      return 'failed to start network extension';
-    }
+    commonPrint.log('[iOS] app core ready without starting NECore');
     _connectedCompleter.complete(true);
     return '';
   }
@@ -54,20 +54,27 @@ class CoreIOS extends CoreHandlerInterface {
     if (!_connectedCompleter.isCompleted) {
       return false;
     }
+    commonPrint.log('[iOS] shutdown NECore');
     _connectedCompleter = Completer();
     return service?.shutdown() ?? true;
   }
 
   @override
   Future<bool> startListener() async {
-    await super.startListener();
-    return true;
+    commonPrint.log('[iOS] start VPN: stop app core listener before NECore');
+    await super.stopListener();
+    final started = await service?.start() ?? false;
+    commonPrint.log('[iOS] start NECore result: $started');
+    return started;
   }
 
   @override
   Future<bool> stopListener() async {
+    commonPrint.log('[iOS] stop VPN: stop app core listener and NECore');
     await super.stopListener();
-    return true;
+    final stopped = await service?.stop() ?? false;
+    commonPrint.log('[iOS] stop NECore result: $stopped');
+    return stopped;
   }
 
   @override

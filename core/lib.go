@@ -138,7 +138,7 @@ func handleStopTun() {
 	}
 }
 
-func handleStartTun(callback unsafe.Pointer, fd int, stack, address, dns string) {
+func handleStartTun(callback unsafe.Pointer, fd int, stack, address, dns string) bool {
 	handleStopTun()
 	tunLock.Lock()
 	defer tunLock.Unlock()
@@ -148,7 +148,9 @@ func handleStartTun(callback unsafe.Pointer, fd int, stack, address, dns string)
 			limit:    semaphore.NewWeighted(4),
 		}
 		tunHandler.start(fd, stack, address, dns)
+		return tunHandler.listener != nil
 	}
+	return false
 }
 
 func handleUpdateDns(value string) {
@@ -200,13 +202,16 @@ func invokeAction(callback unsafe.Pointer, paramsChar *C.char) {
 
 //export startTUN
 func startTUN(callback unsafe.Pointer, fd C.int, stackChar, addressChar, dnsChar *C.char) bool {
-	handleStartTun(callback, int(fd), takeCString(stackChar), takeCString(addressChar), takeCString(dnsChar))
+	started := handleStartTun(callback, int(fd), takeCString(stackChar), takeCString(addressChar), takeCString(dnsChar))
+	if !started {
+		return false
+	}
 	if !isRunning {
 		handleStartListener()
 	} else {
 		handleResetConnections()
 	}
-	return true
+	return started
 }
 
 //export quickSetup
