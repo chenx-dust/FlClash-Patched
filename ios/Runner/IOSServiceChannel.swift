@@ -7,6 +7,8 @@ final class IOSServiceChannel {
 
   private let channel: FlutterMethodChannel
   private let providerBundleIdentifier = "site.yinmo.clash.NECore"
+  private let appGroupIdentifier = "group.site.yinmo.clash"
+  private let sharedStateKey = "sharedState"
   private let localizedDescription = "FlClash"
   private let appCoreMethods: Set<String> = [
     "validateConfig",
@@ -16,6 +18,10 @@ final class IOSServiceChannel {
     "convertAgeSecretKeyToPublicKey",
     "deleteFile",
   ]
+
+  private func log(_ message: String) {
+    NSLog("[IOSServiceChannel] %@", message)
+  }
 
   static func register(with messenger: FlutterBinaryMessenger) {
     instance = IOSServiceChannel(messenger: messenger)
@@ -30,6 +36,7 @@ final class IOSServiceChannel {
   }
 
   private func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    log("handle method=\(call.method)")
     switch call.method {
     case "invokeAction":
       guard let message = call.arguments as? String,
@@ -42,8 +49,10 @@ final class IOSServiceChannel {
       startTunnel(result: result)
     case "stop":
       stopTunnel(result: result)
-    case "init", "syncState":
+    case "init":
       result("")
+    case "syncState":
+      syncState(call, result: result)
     case "shutdown":
       stopTunnel(result: result)
     case "getRunTime":
@@ -59,6 +68,7 @@ final class IOSServiceChannel {
   ) {
     NETunnelProviderManager.loadAllFromPreferences { managers, error in
       if let error = error {
+        self.log("loadManager failed: \(error.localizedDescription)")
         completion(nil, error)
         return
       }
@@ -69,15 +79,18 @@ final class IOSServiceChannel {
         }
         return proto.providerBundleIdentifier == self.providerBundleIdentifier
       }) {
+        self.log("loadManager found existing manager status=\(self.statusDescription(manager.connection.status))")
         completion(manager, nil)
         return
       }
 
       if !createIfNeeded {
+        self.log("loadManager manager not found")
         completion(nil, nil)
         return
       }
 
+      self.log("loadManager create manager")
       let manager = NETunnelProviderManager()
       let proto = NETunnelProviderProtocol()
       proto.providerBundleIdentifier = self.providerBundleIdentifier
@@ -96,31 +109,48 @@ final class IOSServiceChannel {
   }
 
   private func startTunnelWithCompletion(completion: @escaping (Bool) -> Void) {
+    log("startTunnelWithCompletion begin")
+    stopAppCoreListener {
+      self.log("app core listener stopped, start NECore")
+      self.startTunnelAfterStoppingAppCore(completion: completion)
+    }
+  }
+
+  private func startTunnelAfterStoppingAppCore(completion: @escaping (Bool) -> Void) {
     loadManager { manager, error in
       guard let manager = manager else {
+        self.log("startTunnel failed: manager missing")
         completion(false)
         return
       }
-      if error != nil {
+      if let error = error {
+        self.log("startTunnel failed: \(error.localizedDescription)")
         completion(false)
         return
       }
 
       manager.isEnabled = true
+      self.log("startTunnel save preferences")
       manager.saveToPreferences { error in
-        if error != nil {
+        if let error = error {
+          self.log("startTunnel save preferences failed: \(error.localizedDescription)")
           completion(false)
           return
         }
+        self.log("startTunnel reload preferences")
         manager.loadFromPreferences { error in
-          if error != nil {
+          if let error = error {
+            self.log("startTunnel reload preferences failed: \(error.localizedDescription)")
             completion(false)
             return
           }
           do {
+            self.log("startTunnel startVPNTunnel currentStatus=\(self.statusDescription(manager.connection.status))")
             try manager.connection.startVPNTunnel()
+            self.log("startTunnel startVPNTunnel requested")
             completion(true)
           } catch {
+            self.log("startTunnel startVPNTunnel failed: \(error.localizedDescription)")
             completion(false)
           }
         }
@@ -128,18 +158,54 @@ final class IOSServiceChannel {
     }
   }
 
+  private func stopAppCoreListener(completion: @escaping () -> Void) {
+    log("stopAppCoreListener begin")
+    let action: [String: Any] = [
+      "id": "stopListener#ios",
+      "method": "stopListener",
+    ]
+    guard let data = try? JSONSerialization.data(withJSONObject: action),
+          let message = String(data: data, encoding: .utf8) else {
+      log("stopAppCoreListener serialize action failed")
+      completion()
+      return
+    }
+    IOSCoreBridge.invokeAction(message) { _ in
+      self.log("stopAppCoreListener completed")
+      completion()
+    }
+  }
+
   private func stopTunnel(result: @escaping FlutterResult) {
+    log("stopTunnel requested")
     loadManager { manager, _ in
+      self.log("stopTunnel currentStatus=\(self.statusDescription(manager?.connection.status ?? .invalid))")
       manager?.connection.stopVPNTunnel()
       result(true)
     }
   }
 
+  private func syncState(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    guard let message = call.arguments as? String,
+          let data = message.data(using: .utf8),
+          let userDefaults = UserDefaults(suiteName: self.appGroupIdentifier) else {
+      log("syncState failed")
+      result("failed to sync shared state")
+      return
+    }
+    userDefaults.set(data, forKey: sharedStateKey)
+    userDefaults.synchronize()
+    log("syncState saved bytes=\(data.count)")
+    result("")
+  }
+
   private func routeAction(_ data: Data, result: @escaping FlutterResult) {
     guard let action = actionInfo(data) else {
+      log("routeAction invalid action")
       result(actionResult(data: data, message: "invalid action"))
       return
     }
+    log("routeAction method=\(action.method) id=\(action.id ?? "")")
 
     if action.method == "startTun" {
       startTunnelWithCompletion { isStarted in
@@ -161,6 +227,7 @@ final class IOSServiceChannel {
       }
 
       let status = manager?.connection.status ?? .invalid
+      self.log("routeAction status=\(self.statusDescription(status)) method=\(action.method)")
       if self.canSendProviderMessage(status: status) && !self.appCoreMethods.contains(action.method) {
         self.sendProviderMessage(data, result: result)
         return
@@ -173,23 +240,29 @@ final class IOSServiceChannel {
   private func sendProviderMessage(_ data: Data, result: @escaping FlutterResult) {
     loadManager(createIfNeeded: false) { manager, error in
       if let error = error {
+        self.log("sendProviderMessage failed load manager: \(error.localizedDescription)")
         result(self.actionResult(data: data, message: error.localizedDescription))
         return
       }
       guard let session = manager?.connection as? NETunnelProviderSession else {
+        self.log("sendProviderMessage failed: session not found")
         result(self.actionResult(data: data, message: "network extension session not found"))
         return
       }
       do {
+        self.log("sendProviderMessage to NECore")
         try session.sendProviderMessage(data) { response in
           guard let response = response,
                 let message = String(data: response, encoding: .utf8) else {
+            self.log("sendProviderMessage empty response")
             result(self.actionResult(data: data, message: "empty network extension response"))
             return
           }
+          self.log("sendProviderMessage response bytes=\(response.count)")
           result(message)
         }
       } catch {
+        self.log("sendProviderMessage failed: \(error.localizedDescription)")
         result(self.actionResult(data: data, message: error.localizedDescription))
       }
     }
@@ -201,14 +274,18 @@ final class IOSServiceChannel {
     result: @escaping FlutterResult
   ) {
     guard let action = String(data: data, encoding: .utf8) else {
+      log("invokeAppCore invalid action")
       result(actionResult(data: data, message: "invalid action"))
       return
     }
+    log("invokeAppCore status=\(statusDescription(status))")
     IOSCoreBridge.invokeAction(action) { response in
       guard let response = response else {
+        self.log("invokeAppCore empty response")
         result(self.actionResult(data: data, message: "empty app core response"))
         return
       }
+      self.log("invokeAppCore response received")
       result(response)
     }
   }
