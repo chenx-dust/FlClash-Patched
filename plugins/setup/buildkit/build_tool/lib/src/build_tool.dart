@@ -7,6 +7,7 @@ import 'package:path/path.dart' as p;
 
 import 'environment.dart';
 import 'error.dart';
+import 'geodata.dart';
 import 'go_builder.dart';
 import 'logging.dart';
 import 'options.dart';
@@ -78,6 +79,7 @@ class BuildAndroidCommand extends BuildCommand {
     final archName = argResults?['arch'] as String?;
     final flutterTargetPlatforms = argResults?['target-platform'] as String?;
     final config = BuildConfig.load(rootDir: _rootDir);
+    await ensureGeoData(rootDir: _rootDir);
 
     final targets = Target.resolveAndroidTargets(
       archName: archName,
@@ -110,6 +112,7 @@ class BuildLinuxCommand extends BuildCommand {
   Future<void> runBuildCommand() async {
     final archName = argResults?['arch'] as String?;
     final config = BuildConfig.load(rootDir: _rootDir);
+    await ensureGeoData(rootDir: _rootDir);
 
     final arch = archName ?? await _hostGoArch();
     final targets =
@@ -146,6 +149,7 @@ class BuildWindowsCommand extends BuildCommand {
     final archName = argResults?['arch'] as String?;
     final debug = Environment.isDebug;
     final config = BuildConfig.load(rootDir: _rootDir);
+    await ensureGeoData(rootDir: _rootDir);
 
     final arch = archName ?? await _hostGoArch();
     final targets =
@@ -199,6 +203,7 @@ class BuildMacosCommand extends BuildCommand {
   Future<void> runBuildCommand() async {
     final archName = argResults?['arch'] as String?;
     final config = BuildConfig.load(rootDir: _rootDir);
+    await ensureGeoData(rootDir: _rootDir);
 
     final arch = archName ?? await _hostGoArch();
     final targets =
