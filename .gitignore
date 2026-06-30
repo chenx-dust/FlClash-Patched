@@ -69,6 +69,7 @@ docs/
 /env.json
 /core_sha256.json
 /core/*.exe
+/assets/data/
 /plugins/rust_api/.claude/
 devtools_options.yaml
 

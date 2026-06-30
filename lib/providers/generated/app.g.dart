@@ -144,7 +144,7 @@ final class RequestsProvider
   }
 }
 
-String _$requestsHash() => r'f2c0cbaaf60baff1be6913cb9e351e177594e10d';
+String _$requestsHash() => r'694abfcdb3d98716fbeec350562965f733d41bbb';
 
 abstract class _$Requests extends $Notifier<FixedList<TrackerInfo>> {
   FixedList<TrackerInfo> build();
