@@ -59,6 +59,10 @@ func handleInitClash(paramsString string) bool {
 	}
 	version = params.Version
 	constant.SetHomeDir(params.HomeDir)
+	constant.Path.MMDB()
+	constant.Path.ASN()
+	constant.Path.GeoIP()
+	constant.Path.GeoSite()
 	isInit = true
 	return isInit
 }
