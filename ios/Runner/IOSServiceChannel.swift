@@ -38,6 +38,7 @@ final class IOSServiceChannel {
       binaryMessenger: messenger
     )
     channel.setMethodCallHandler(handle)
+    installAppCoreEventListener()
     registerCoreEventObserver()
     registerTunnelStatusObserver()
     drainCoreEventQueue()
@@ -296,6 +297,15 @@ final class IOSServiceChannel {
   private func handleCoreEventNotification() {
     DispatchQueue.main.async {
       self.drainCoreEventQueue()
+    }
+  }
+
+  private func installAppCoreEventListener() {
+    IOSCoreBridge.setEventListener { [weak self] event in
+      guard let self = self, let event = event, !event.isEmpty else {
+        return
+      }
+      self.channel.invokeMethod("event", arguments: event)
     }
   }
 

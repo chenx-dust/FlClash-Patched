@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
-import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path_provider_foundation/path_provider_foundation.dart';
 
 class AppPath {
   static AppPath? _instance;
@@ -58,9 +58,9 @@ class AppPath {
 
   Future<String> _getIOSAppGroupPath() async {
     try {
-      return await const MethodChannel(
-            '$packageName/service',
-          ).invokeMethod<String>('getAppGroupDir') ??
+      return await PathProviderFoundation().getContainerPath(
+            appGroupIdentifier: appGroupIdentifier,
+          ) ??
           '';
     } catch (_) {
       return '';

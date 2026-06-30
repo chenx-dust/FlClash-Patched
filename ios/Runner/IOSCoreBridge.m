@@ -92,4 +92,14 @@ static void IOSCoreSystemLog(const char *level, const char *message) {
   invokeAction((void *)CFBridgingRetain(retainedResult), params);
 }
 
++ (void)setEventListener:(IOSCoreResultHandler _Nullable)listener {
+  [self initializeBridge];
+  if (listener == nil) {
+    setEventListener(NULL);
+    return;
+  }
+  IOSCoreResultHandler retainedListener = [listener copy];
+  setEventListener((void *)CFBridgingRetain(retainedListener));
+}
+
 @end

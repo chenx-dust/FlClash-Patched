@@ -7,6 +7,7 @@ typedef void (^IOSCoreResultHandler)(NSString *_Nullable result);
 @interface IOSCoreBridge : NSObject
 
 + (void)invokeAction:(NSString *)action result:(IOSCoreResultHandler)result;
++ (void)setEventListener:(IOSCoreResultHandler _Nullable)listener;
 
 @end
 
