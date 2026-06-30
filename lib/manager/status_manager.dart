@@ -7,6 +7,7 @@ import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/widgets/fade_box.dart';
 import 'package:fl_clash/widgets/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class StatusManager extends StatefulWidget {
@@ -106,15 +107,14 @@ class StatusManagerState extends State<StatusManager> {
                                     constraints.maxWidth,
                                     500.0,
                                   );
-                                  final showCloseButton =
-                                      cardWidth >=
-                                      (actionState == null ? 400 : 480);
+                                  final showCloseButton = cardWidth >= 480;
                                   return Dismissible(
                                     key: ValueKey(message.id),
                                     onDismissed: (_) {
                                       _removeMessage(message.id);
                                     },
                                     child: Card(
+                                      clipBehavior: Clip.antiAlias,
                                       shape: const RoundedSuperellipseBorder(
                                         borderRadius: BorderRadius.all(
                                           Radius.circular(14),
@@ -124,72 +124,104 @@ class StatusManagerState extends State<StatusManager> {
                                       color: context
                                           .colorScheme
                                           .surfaceContainerHigh,
-                                      child: Container(
-                                        width: cardWidth,
-                                        constraints: const BoxConstraints(
-                                          minHeight: 54,
-                                        ),
-                                        padding: const EdgeInsets.all(8),
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                    ),
-                                                child: Text(
-                                                  message.text,
-                                                  maxLines: 3,
-                                                  style: context
-                                                      .textTheme
-                                                      .labelLarge
-                                                      ?.copyWith(
-                                                        color: context
-                                                            .colorScheme
-                                                            .onSurfaceVariant,
+                                      child: InkWell(
+                                        onLongPress: () {
+                                          Clipboard.setData(
+                                            ClipboardData(text: message.text),
+                                          );
+                                        },
+                                        child: Container(
+                                          width: cardWidth,
+                                          constraints: const BoxConstraints(
+                                            minHeight: 54,
+                                          ),
+                                          padding: const EdgeInsets.all(8),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 8,
                                                       ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                            ),
-                                            if (actionState != null) ...[
-                                              CommonMinFilledButtonTheme(
-                                                child: FilledButton.tonal(
-                                                  onPressed: () async {
-                                                    _removeMessage(message.id);
-                                                    actionState.action();
-                                                  },
                                                   child: Text(
-                                                    actionState.actionText,
+                                                    message.text,
+                                                    maxLines: 3,
+                                                    style: context
+                                                        .textTheme
+                                                        .labelLarge
+                                                        ?.copyWith(
+                                                          color: context
+                                                              .colorScheme
+                                                              .onSurfaceVariant,
+                                                        ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                   ),
                                                 ),
                                               ),
-                                              if (showCloseButton)
+                                              if (actionState != null) ...[
+                                                CommonMinFilledButtonTheme(
+                                                  child: FilledButton.tonal(
+                                                    onPressed: () async {
+                                                      _removeMessage(
+                                                        message.id,
+                                                      );
+                                                      actionState.action();
+                                                    },
+                                                    child: Text(
+                                                      actionState.actionText,
+                                                    ),
+                                                  ),
+                                                ),
+                                                if (showCloseButton)
+                                                  const SizedBox(width: 4),
+                                              ] else if (showCloseButton) ...[
+                                                IconButton(
+                                                  style: IconButton.styleFrom(
+                                                    fixedSize:
+                                                        const Size.square(32),
+                                                    padding: EdgeInsets.zero,
+                                                    shape: const CircleBorder(),
+                                                    tapTargetSize:
+                                                        MaterialTapTargetSize
+                                                            .shrinkWrap,
+                                                  ),
+                                                  visualDensity:
+                                                      VisualDensity.compact,
+                                                  iconSize: 20,
+                                                  onPressed: () {
+                                                    Clipboard.setData(
+                                                      ClipboardData(
+                                                        text: message.text,
+                                                      ),
+                                                    );
+                                                  },
+                                                  icon: const Icon(Icons.copy),
+                                                ),
                                                 const SizedBox(width: 4),
-                                            ],
-                                            if (showCloseButton)
-                                              IconButton(
-                                                style: IconButton.styleFrom(
-                                                  fixedSize: const Size.square(
-                                                    32,
+                                              ],
+                                              if (showCloseButton)
+                                                IconButton(
+                                                  style: IconButton.styleFrom(
+                                                    fixedSize:
+                                                        const Size.square(32),
+                                                    padding: EdgeInsets.zero,
+                                                    shape: const CircleBorder(),
+                                                    tapTargetSize:
+                                                        MaterialTapTargetSize
+                                                            .shrinkWrap,
                                                   ),
-                                                  padding: EdgeInsets.zero,
-                                                  shape: const CircleBorder(),
-                                                  tapTargetSize:
-                                                      MaterialTapTargetSize
-                                                          .shrinkWrap,
+                                                  visualDensity:
+                                                      VisualDensity.compact,
+                                                  iconSize: 20,
+                                                  onPressed: () {
+                                                    _removeMessage(message.id);
+                                                  },
+                                                  icon: const Icon(Icons.close),
                                                 ),
-                                                visualDensity:
-                                                    VisualDensity.compact,
-                                                iconSize: 20,
-                                                onPressed: () {
-                                                  _removeMessage(message.id);
-                                                },
-                                                icon: const Icon(Icons.close),
-                                              ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
