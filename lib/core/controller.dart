@@ -287,7 +287,7 @@ class CoreController {
   }
 
   Future<List<TrackerInfo>> startRequestNotify() async {
-    return await _interface.startRequestNotify();
+    return _interface.startRequestNotify();
   }
 
   void stopRequestNotify() {

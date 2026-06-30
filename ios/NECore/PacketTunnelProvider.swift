@@ -4,13 +4,13 @@ import os
 
 class PacketTunnelProvider: NEPacketTunnelProvider {
   private let logger = Logger(
-    subsystem: "com.follow.flClash.Y8RH943F65.NECore",
+    subsystem: "com.follow.clash.Y8RH943F65.NECore",
     category: "PacketTunnelProvider"
   )
   private let sharedStateKey = "sharedState"
-  private let appGroupIdentifier = "group.com.follow.flClash.Y8RH943F65"
+  private let appGroupIdentifier = "group.com.follow.clash.Y8RH943F65"
   private let eventQueueDirectoryName = "core-events"
-  private let eventNotificationName = "com.follow.flClash.Y8RH943F65.NECore.event"
+  private let eventNotificationName = "com.follow.clash.Y8RH943F65.NECore.event"
   private let ipv4Address = "172.19.0.1"
   private let ipv4AddressPrefix = "172.19.0.1/30"
   private let ipv4SubnetMask = "255.255.255.252"

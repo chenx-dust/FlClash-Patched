@@ -4,7 +4,12 @@ package main
 
 //#include "bride.h"
 import "C"
-import "unsafe"
+import (
+	"runtime/debug"
+	"unsafe"
+
+	"github.com/metacubex/mihomo/log"
+)
 
 func protect(callback unsafe.Pointer, fd int) {
 	C.protect(callback, C.int(fd))
@@ -40,4 +45,22 @@ func releaseObject(callback unsafe.Pointer) {
 func takeCString(s *C.char) string {
 	defer C.free_string(s)
 	return C.GoString(s)
+}
+
+func handleUpdateDns(value string) {
+}
+
+func initLibImpl() {
+	debug.SetGCPercent(20)
+	debug.SetMemoryLimit(32 * 1024 * 1024)
+
+	sub := log.Subscribe()
+	go func() {
+		for logData := range sub {
+			if logData.LogLevel < log.Level() {
+				continue
+			}
+			writeSystemLog(logData.LogLevel.String(), logData.Payload)
+		}
+	}()
 }

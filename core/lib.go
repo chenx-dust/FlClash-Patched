@@ -13,22 +13,21 @@ import (
 	t "core/tun"
 	"encoding/json"
 	"errors"
-	"github.com/metacubex/mihomo/component/dialer"
-	"github.com/metacubex/mihomo/component/process"
-	"github.com/metacubex/mihomo/constant"
-	"github.com/metacubex/mihomo/dns"
-	"github.com/metacubex/mihomo/listener/sing_tun"
-	"github.com/metacubex/mihomo/log"
-	"golang.org/x/sync/semaphore"
 	"net"
-	"strings"
 	"sync"
 	"syscall"
 	"unsafe"
+
+	"github.com/metacubex/mihomo/component/dialer"
+	"github.com/metacubex/mihomo/component/process"
+	"github.com/metacubex/mihomo/constant"
+	"github.com/metacubex/mihomo/listener/sing_tun"
+	"github.com/metacubex/mihomo/log"
+	"golang.org/x/sync/semaphore"
 )
 
 var eventListener unsafe.Pointer
-var systemLogOnce sync.Once
+var initLibOnce sync.Once
 
 type TunHandler struct {
 	listener *sing_tun.Listener
@@ -154,26 +153,8 @@ func handleStartTun(callback unsafe.Pointer, fd int, stack, address, dns string)
 	return false
 }
 
-func handleUpdateDns(value string) {
-	go func() {
-		log.Infoln("[DNS] updateDns %s", value)
-		dns.UpdateSystemDNS(strings.Split(value, ","))
-		dns.FlushCacheWithDefaultResolver()
-	}()
-}
-
-func startSystemLog() {
-	systemLogOnce.Do(func() {
-		sub := log.Subscribe()
-		go func() {
-			for logData := range sub {
-				if logData.LogLevel < log.Level() {
-					continue
-				}
-				writeSystemLog(logData.LogLevel.String(), logData.Payload)
-			}
-		}()
-	})
+func initLib() {
+	initLibOnce.Do(initLibImpl)
 }
 
 func (result ActionResult) send() {
@@ -200,7 +181,7 @@ func nextHandle(action *Action, result ActionResult) bool {
 
 //export invokeAction
 func invokeAction(callback unsafe.Pointer, paramsChar *C.char) {
-	startSystemLog()
+	initLib()
 	params := takeCString(paramsChar)
 	var action = &Action{}
 	err := json.Unmarshal([]byte(params), action)
@@ -218,7 +199,7 @@ func invokeAction(callback unsafe.Pointer, paramsChar *C.char) {
 
 //export startTUN
 func startTUN(callback unsafe.Pointer, fd C.int, stackChar, addressChar, dnsChar *C.char) bool {
-	startSystemLog()
+	initLib()
 	started := handleStartTun(callback, int(fd), takeCString(stackChar), takeCString(addressChar), takeCString(dnsChar))
 	if !started {
 		return false

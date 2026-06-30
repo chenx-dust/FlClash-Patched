@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -15,9 +16,7 @@ class AppPath {
 
   AppPath._internal() {
     appDirPath = join(dirname(Platform.resolvedExecutable));
-    getApplicationSupportDirectory().then((value) {
-      dataDir.complete(value);
-    });
+    _initDataDir();
     getTemporaryDirectory().then((value) {
       tempDir.complete(value);
     });
@@ -32,6 +31,65 @@ class AppPath {
   factory AppPath() {
     _instance ??= AppPath._internal();
     return _instance!;
+  }
+
+  Future<void> _initDataDir() async {
+    final supportDir = await getApplicationSupportDirectory();
+    try {
+      if (!system.isIOS) {
+        dataDir.complete(supportDir);
+        return;
+      }
+
+      final appGroupPath = await _getIOSAppGroupPath();
+      if (appGroupPath.isEmpty) {
+        dataDir.complete(supportDir);
+        return;
+      }
+
+      final appGroupDir = Directory(appGroupPath);
+      await appGroupDir.create(recursive: true);
+      await _copyDirectoryContentsIfMissing(supportDir, appGroupDir);
+      dataDir.complete(appGroupDir);
+    } catch (_) {
+      dataDir.complete(supportDir);
+    }
+  }
+
+  Future<String> _getIOSAppGroupPath() async {
+    try {
+      return await const MethodChannel(
+            '$packageName/service',
+          ).invokeMethod<String>('getAppGroupDir') ??
+          '';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  Future<void> _copyDirectoryContentsIfMissing(
+    Directory source,
+    Directory target,
+  ) async {
+    if (!await source.exists()) {
+      return;
+    }
+    if (equals(source.path, target.path)) {
+      return;
+    }
+    await for (final entity in source.list(recursive: true)) {
+      final relativePath = relative(entity.path, from: source.path);
+      final targetPath = join(target.path, relativePath);
+      if (entity is Directory) {
+        await Directory(targetPath).create(recursive: true);
+        continue;
+      }
+      if (entity is! File || await File(targetPath).exists()) {
+        continue;
+      }
+      await File(targetPath).parent.create(recursive: true);
+      await entity.copy(targetPath);
+    }
   }
 
   String get executableExtension {

@@ -9,11 +9,11 @@ final class IOSServiceChannel {
   private var tunnelStatusObserver: NSObjectProtocol?
   private var lastTunnelStatus: NEVPNStatus?
   private var isTunnelStopExpected = false
-  private let providerBundleIdentifier = "com.follow.flClash.Y8RH943F65.NECore"
-  private let appGroupIdentifier = "group.com.follow.flClash.Y8RH943F65"
+  private let providerBundleIdentifier = "com.follow.clash.Y8RH943F65.NECore"
+  private let appGroupIdentifier = "group.com.follow.clash.Y8RH943F65"
   private let sharedStateKey = "sharedState"
   private let eventQueueDirectoryName = "core-events"
-  private let eventNotificationName = "com.follow.flClash.Y8RH943F65.NECore.event"
+  private let eventNotificationName = "com.follow.clash.Y8RH943F65.NECore.event"
   private let localizedDescription = "FlClash"
   private let appCoreMethods: Set<String> = [
     "validateConfig",
