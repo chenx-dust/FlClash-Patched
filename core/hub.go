@@ -43,6 +43,10 @@ func handleInitClash(params *InitParams) bool {
 	defer runLock.Unlock()
 	version = params.Version
 	constant.SetHomeDir(params.HomeDir)
+	constant.Path.MMDB()
+	constant.Path.ASN()
+	constant.Path.GeoIP()
+	constant.Path.GeoSite()
 	isInit.Store(true)
 	return true
 }
