@@ -243,6 +243,7 @@ class BuildIosCommand extends BuildCommand {
   Future<void> runBuildCommand() async {
     final archName = (argResults?['arch'] as String?) ?? 'arm64';
     final config = BuildConfig.load(rootDir: _rootDir);
+    await ensureGeoData(rootDir: _rootDir);
 
     final targets = Target.forPlatform(
       'ios',
