@@ -6,20 +6,20 @@ import (
 	"net"
 	"net/netip"
 	"strings"
+	"syscall"
 
 	"github.com/metacubex/mihomo/constant"
 	LC "github.com/metacubex/mihomo/listener/config"
 	"github.com/metacubex/mihomo/listener/sing_tun"
 	"github.com/metacubex/mihomo/log"
 	"github.com/metacubex/mihomo/tunnel"
-	"golang.org/x/sys/unix"
 )
 
 func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
 	if fd <= 0 {
 		return nil
 	}
-	tunFd, err := unix.Dup(fd)
+	tunFd, err := syscall.Dup(fd)
 	if err != nil {
 		log.Errorln("TUN: dup fd: %v", err)
 		return nil
@@ -38,7 +38,7 @@ func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
 		}
 		prefix, err := netip.ParsePrefix(a)
 		if err != nil {
-			_ = unix.Close(tunFd)
+			_ = syscall.Close(tunFd)
 			log.Errorln("TUN:", err)
 			return nil
 		}
@@ -75,7 +75,7 @@ func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
 
 	listener, err := sing_tun.New(options, tunnel.Tunnel)
 	if err != nil {
-		_ = unix.Close(tunFd)
+		_ = syscall.Close(tunFd)
 		log.Errorln("TUN:", err)
 		return nil
 	}

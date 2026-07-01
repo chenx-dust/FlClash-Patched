@@ -1,8 +1,10 @@
-//go:build ios
+//go:build ios && cgo
 
 package platform
 
-import "net"
+import (
+	"net"
+)
 
 func ShouldBlockConnection() bool {
 	return false

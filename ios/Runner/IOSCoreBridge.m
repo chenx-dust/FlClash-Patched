@@ -2,6 +2,8 @@
 
 #import "../../core/bride.h"
 #import "../../libclash/ios/arm64/libclash.h"
+#import <os/log.h>
+#import <string.h>
 
 static void IOSCoreReleaseObject(void *obj) {
   if (obj != NULL) {
@@ -35,6 +37,40 @@ static void IOSCoreResult(void *invokeInterface, const char *data) {
   });
 }
 
+static os_log_t IOSCoreLogger(void) {
+  static os_log_t logger;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    logger = os_log_create("com.follow.clash.Y8RH943F65.Runner", "Clash");
+  });
+  return logger;
+}
+
+static os_log_type_t IOSCoreLogType(const char *level) {
+  if (level == NULL) {
+    return OS_LOG_TYPE_DEFAULT;
+  }
+  if (strcmp(level, "debug") == 0) {
+    return OS_LOG_TYPE_DEBUG;
+  }
+  if (strcmp(level, "warning") == 0) {
+    return OS_LOG_TYPE_ERROR;
+  }
+  if (strcmp(level, "error") == 0) {
+    return OS_LOG_TYPE_FAULT;
+  }
+  return OS_LOG_TYPE_DEFAULT;
+}
+
+static void IOSCoreSystemLog(const char *level, const char *message) {
+  os_log_with_type(
+      IOSCoreLogger(),
+      IOSCoreLogType(level),
+      "[%{public}s] %{public}s",
+      level == NULL ? "unknown" : level,
+      message == NULL ? "" : message);
+}
+
 @implementation IOSCoreBridge
 
 + (void)initializeBridge {
@@ -45,6 +81,7 @@ static void IOSCoreResult(void *invokeInterface, const char *data) {
     protect_func = &IOSCoreProtect;
     resolve_process_func = &IOSCoreResolveProcess;
     result_func = &IOSCoreResult;
+    system_log_func = &IOSCoreSystemLog;
   });
 }
 
@@ -53,6 +90,16 @@ static void IOSCoreResult(void *invokeInterface, const char *data) {
   IOSCoreResultHandler retainedResult = [result copy];
   char *params = strdup(action.UTF8String);
   invokeAction((void *)CFBridgingRetain(retainedResult), params);
+}
+
++ (void)setEventListener:(IOSCoreResultHandler _Nullable)listener {
+  [self initializeBridge];
+  if (listener == nil) {
+    setEventListener(NULL);
+    return;
+  }
+  IOSCoreResultHandler retainedListener = [listener copy];
+  setEventListener((void *)CFBridgingRetain(retainedListener));
 }
 
 @end

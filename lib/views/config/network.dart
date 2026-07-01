@@ -360,10 +360,9 @@ class NetworkListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
-    final supportsTunOptions = system.isDesktop || system.isAndroid;
     return generateListView([
       if (system.isAndroid) const VPNItem(),
-      if (system.isAndroid)
+      if (system.isMobile)
         ...generateSection(
           title: 'VPN',
           items: [
@@ -372,7 +371,7 @@ class NetworkListView extends StatelessWidget {
             const AllowBypassItem(),
             const Ipv6Item(),
             const DNSHijackingItem(),
-            const DozeSuspendItem(),
+            if (system.isAndroid) const DozeSuspendItem(),
           ],
         ),
       if (system.isDesktop)
@@ -385,8 +384,8 @@ class NetworkListView extends StatelessWidget {
         items: [
           if (system.isDesktop) const TUNItem(),
           if (system.isMacOS) const AutoSetSystemDnsItem(),
-          if (supportsTunOptions) const TunStackItem(),
-          if (system.isAndroid) ...[
+          const TunStackItem(),
+          if (system.isMobile) ...[
             const RouteModeItem(),
             const RouteAddressItem(),
           ],

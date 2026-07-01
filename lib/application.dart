@@ -104,11 +104,15 @@ class ApplicationState extends ConsumerState<Application> {
           child: HotKeyManager(child: ProxyManager(child: child)),
         ),
       );
+    } else if (system.isAndroid) {
+      return AndroidManager(
+        child: MobileManager(child: TileManager(child: child)),
+      );
+    } else if (system.isIOS) {
+      return MobileManager(child: child);
+    } else {
+      return child;
     }
-    if (system.isAndroid) {
-      return AndroidManager(child: TileManager(child: child));
-    }
-    return child;
   }
 
   Widget _buildState({required Widget child}) {

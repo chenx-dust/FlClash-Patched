@@ -21,6 +21,7 @@ struct sockaddr_ctl {
 @interface NECoreBridge : NSObject
 
 + (void)invokeAction:(NSString *)action result:(NECoreResultHandler)result;
++ (void)setEventListener:(NECoreResultHandler _Nullable)listener;
 + (BOOL)startTunWithFileDescriptor:(int)fileDescriptor
                               stack:(NSString *)stack
                             address:(NSString *)address

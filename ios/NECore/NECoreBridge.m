@@ -2,6 +2,8 @@
 
 #import "../../core/bride.h"
 #import "../../libclash/ios/arm64/libclash.h"
+#import <os/log.h>
+#import <string.h>
 
 static void NECoreReleaseObject(void *obj) {
   if (obj != NULL) {
@@ -35,6 +37,40 @@ static void NECoreResult(void *invokeInterface, const char *data) {
   });
 }
 
+static os_log_t NECoreLogger(void) {
+  static os_log_t logger;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    logger = os_log_create("com.follow.clash.Y8RH943F65.NECore", "Clash");
+  });
+  return logger;
+}
+
+static os_log_type_t NECoreLogType(const char *level) {
+  if (level == NULL) {
+    return OS_LOG_TYPE_DEFAULT;
+  }
+  if (strcmp(level, "debug") == 0) {
+    return OS_LOG_TYPE_DEBUG;
+  }
+  if (strcmp(level, "warning") == 0) {
+    return OS_LOG_TYPE_ERROR;
+  }
+  if (strcmp(level, "error") == 0) {
+    return OS_LOG_TYPE_FAULT;
+  }
+  return OS_LOG_TYPE_DEFAULT;
+}
+
+static void NECoreSystemLog(const char *level, const char *message) {
+  os_log_with_type(
+      NECoreLogger(),
+      NECoreLogType(level),
+      "[%{public}s] %{public}s",
+      level == NULL ? "unknown" : level,
+      message == NULL ? "" : message);
+}
+
 @implementation NECoreBridge
 
 + (void)initializeBridge {
@@ -45,6 +81,8 @@ static void NECoreResult(void *invokeInterface, const char *data) {
     protect_func = &NECoreProtect;
     resolve_process_func = &NECoreResolveProcess;
     result_func = &NECoreResult;
+    system_log_func = &NECoreSystemLog;
+    setLowMemoryMode(true);
   });
 }
 
@@ -53,6 +91,16 @@ static void NECoreResult(void *invokeInterface, const char *data) {
   NECoreResultHandler retainedResult = [result copy];
   char *params = strdup(action.UTF8String);
   invokeAction((void *)CFBridgingRetain(retainedResult), params);
+}
+
++ (void)setEventListener:(NECoreResultHandler _Nullable)listener {
+  [self initializeBridge];
+  if (listener == nil) {
+    setEventListener(NULL);
+    return;
+  }
+  NECoreResultHandler retainedListener = [listener copy];
+  setEventListener((void *)CFBridgingRetain(retainedListener));
 }
 
 + (BOOL)startTunWithFileDescriptor:(int)fileDescriptor

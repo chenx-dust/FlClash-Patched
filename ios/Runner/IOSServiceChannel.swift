@@ -6,18 +6,15 @@ final class IOSServiceChannel {
   private static var instance: IOSServiceChannel?
 
   private let channel: FlutterMethodChannel
-  private let providerBundleIdentifier = "site.yinmo.clash.NECore"
-  private let appGroupIdentifier = "group.site.yinmo.clash"
+  private var tunnelStatusObserver: NSObjectProtocol?
+  private var lastTunnelStatus: NEVPNStatus?
+  private var isTunnelStopExpected = false
+  private let providerBundleIdentifier = "com.follow.clash.Y8RH943F65.NECore"
+  private let appGroupIdentifier = "group.com.follow.clash.Y8RH943F65"
   private let sharedStateKey = "sharedState"
+  private let eventQueueDirectoryName = "core-events"
+  private let eventNotificationName = "com.follow.clash.Y8RH943F65.NECore.event"
   private let localizedDescription = "FlClash"
-  private let appCoreMethods: Set<String> = [
-    "validateConfig",
-    "asyncTestDelay",
-    "getConfig",
-    "generateAgeKeyPair",
-    "convertAgeSecretKeyToPublicKey",
-    "deleteFile",
-  ]
 
   private func log(_ message: String) {
     NSLog("[IOSServiceChannel] %@", message)
@@ -33,6 +30,22 @@ final class IOSServiceChannel {
       binaryMessenger: messenger
     )
     channel.setMethodCallHandler(handle)
+    installAppCoreEventListener()
+    registerCoreEventObserver()
+    registerTunnelStatusObserver()
+    drainCoreEventQueue()
+  }
+
+  deinit {
+    CFNotificationCenterRemoveObserver(
+      CFNotificationCenterGetDarwinNotifyCenter(),
+      Unmanaged.passUnretained(self).toOpaque(),
+      CFNotificationName(eventNotificationName as CFString),
+      nil
+    )
+    if let tunnelStatusObserver = tunnelStatusObserver {
+      NotificationCenter.default.removeObserver(tunnelStatusObserver)
+    }
   }
 
   private func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -44,19 +57,38 @@ final class IOSServiceChannel {
         result(actionResult(data: nil, message: "invalid action"))
         return
       }
-      routeAction(data, result: result)
+      invokeAppCore(data, result: result)
+    case "invokeAppCore":
+      guard let message = call.arguments as? String,
+            let data = message.data(using: .utf8) else {
+        result(actionResult(data: nil, message: "invalid action"))
+        return
+      }
+      invokeAppCore(data, result: result)
+    case "invokeNetworkExtensionCore":
+      guard let message = call.arguments as? String,
+            let data = message.data(using: .utf8) else {
+        result(actionResult(data: nil, message: "invalid action"))
+        return
+      }
+      sendProviderMessage(data, result: result)
     case "start":
       startTunnel(result: result)
     case "stop":
       stopTunnel(result: result)
     case "init":
+      drainCoreEventQueue()
       result("")
     case "syncState":
       syncState(call, result: result)
     case "shutdown":
       stopTunnel(result: result)
+    case "getAppGroupDir":
+      result(appGroupDir())
     case "getRunTime":
       result(0)
+    case "isNetworkExtensionCoreActive":
+      isNetworkExtensionCoreActive(result: result)
     default:
       result(FlutterMethodNotImplemented)
     }
@@ -110,13 +142,10 @@ final class IOSServiceChannel {
 
   private func startTunnelWithCompletion(completion: @escaping (Bool) -> Void) {
     log("startTunnelWithCompletion begin")
-    stopAppCoreListener {
-      self.log("app core listener stopped, start NECore")
-      self.startTunnelAfterStoppingAppCore(completion: completion)
-    }
+    startTunnelAfterLoadingManager(completion: completion)
   }
 
-  private func startTunnelAfterStoppingAppCore(completion: @escaping (Bool) -> Void) {
+  private func startTunnelAfterLoadingManager(completion: @escaping (Bool) -> Void) {
     loadManager { manager, error in
       guard let manager = manager else {
         self.log("startTunnel failed: manager missing")
@@ -146,9 +175,20 @@ final class IOSServiceChannel {
           }
           do {
             self.log("startTunnel startVPNTunnel currentStatus=\(self.statusDescription(manager.connection.status))")
+            if manager.connection.status == .connected {
+              self.log("startTunnel already connected")
+              self.isTunnelStopExpected = false
+              self.lastTunnelStatus = .connected
+              completion(true)
+              return
+            }
+            self.isTunnelStopExpected = false
             try manager.connection.startVPNTunnel()
             self.log("startTunnel startVPNTunnel requested")
-            completion(true)
+            self.waitForTunnelConnected(manager: manager) { connected in
+              self.log("startTunnel connected result=\(connected)")
+              completion(connected)
+            }
           } catch {
             self.log("startTunnel startVPNTunnel failed: \(error.localizedDescription)")
             completion(false)
@@ -158,29 +198,40 @@ final class IOSServiceChannel {
     }
   }
 
-  private func stopAppCoreListener(completion: @escaping () -> Void) {
-    log("stopAppCoreListener begin")
-    let action: [String: Any] = [
-      "id": "stopListener#ios",
-      "method": "stopListener",
-    ]
-    guard let data = try? JSONSerialization.data(withJSONObject: action),
-          let message = String(data: data, encoding: .utf8) else {
-      log("stopAppCoreListener serialize action failed")
-      completion()
+  private func waitForTunnelConnected(
+    manager: NETunnelProviderManager,
+    deadline: Date = Date().addingTimeInterval(8),
+    completion: @escaping (Bool) -> Void
+  ) {
+    let status = manager.connection.status
+    if status == .connected || status == .reasserting {
+      completion(true)
       return
     }
-    IOSCoreBridge.invokeAction(message) { _ in
-      self.log("stopAppCoreListener completed")
-      completion()
+    if Date() >= deadline {
+      log("waitForTunnelConnected timeout status=\(statusDescription(status))")
+      completion(false)
+      return
+    }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+      self.waitForTunnelConnected(
+        manager: manager,
+        deadline: deadline,
+        completion: completion
+      )
     }
   }
 
   private func stopTunnel(result: @escaping FlutterResult) {
     log("stopTunnel requested")
     loadManager { manager, _ in
-      self.log("stopTunnel currentStatus=\(self.statusDescription(manager?.connection.status ?? .invalid))")
+      let status = manager?.connection.status ?? .invalid
+      self.log("stopTunnel currentStatus=\(self.statusDescription(status))")
+      self.isTunnelStopExpected = self.isActiveTunnelStatus(status)
       manager?.connection.stopVPNTunnel()
+      if !self.isTunnelStopExpected {
+        self.isTunnelStopExpected = false
+      }
       result(true)
     }
   }
@@ -199,42 +250,143 @@ final class IOSServiceChannel {
     result("")
   }
 
-  private func routeAction(_ data: Data, result: @escaping FlutterResult) {
-    guard let action = actionInfo(data) else {
-      log("routeAction invalid action")
-      result(actionResult(data: data, message: "invalid action"))
-      return
+  private func appGroupDir() -> String {
+    guard let url = FileManager.default.containerURL(
+      forSecurityApplicationGroupIdentifier: appGroupIdentifier
+    ) else {
+      log("appGroupDir missing")
+      return ""
     }
-    log("routeAction method=\(action.method) id=\(action.id ?? "")")
+    return url.path
+  }
 
-    if action.method == "startTun" {
-      startTunnelWithCompletion { isStarted in
-        result(self.actionResult(data: data, payload: isStarted, code: 0))
-      }
-      return
-    }
-    if action.method == "stopTun" {
-      stopTunnel { _ in
-        result(self.actionResult(data: data, payload: true, code: 0))
-      }
-      return
-    }
+  private func registerCoreEventObserver() {
+    CFNotificationCenterAddObserver(
+      CFNotificationCenterGetDarwinNotifyCenter(),
+      Unmanaged.passUnretained(self).toOpaque(),
+      IOSServiceChannel.coreEventNotificationCallback,
+      eventNotificationName as CFString,
+      nil,
+      .deliverImmediately
+    )
+  }
 
-    loadManager(createIfNeeded: false) { manager, error in
-      if let error = error {
-        result(self.actionResult(data: data, message: error.localizedDescription))
+  private static let coreEventNotificationCallback: CFNotificationCallback = { _, observer, _, _, _ in
+    guard let observer = observer else {
+      return
+    }
+    let instance = Unmanaged<IOSServiceChannel>
+      .fromOpaque(observer)
+      .takeUnretainedValue()
+    instance.handleCoreEventNotification()
+  }
+
+  private func handleCoreEventNotification() {
+    DispatchQueue.main.async {
+      self.drainCoreEventQueue()
+    }
+  }
+
+  private func installAppCoreEventListener() {
+    IOSCoreBridge.setEventListener { [weak self] event in
+      guard let self = self, let event = event, !event.isEmpty else {
         return
       }
-
-      let status = manager?.connection.status ?? .invalid
-      self.log("routeAction status=\(self.statusDescription(status)) method=\(action.method)")
-      if self.canSendProviderMessage(status: status) && !self.appCoreMethods.contains(action.method) {
-        self.sendProviderMessage(data, result: result)
-        return
-      }
-
-      self.invokeAppCore(data, status: status, result: result)
+      self.channel.invokeMethod("event", arguments: event)
     }
+  }
+
+  private func drainCoreEventQueue() {
+    guard let directory = eventQueueDirectory() else {
+      log("drainCoreEventQueue skipped: missing app group dir")
+      return
+    }
+    guard let files = try? FileManager.default.contentsOfDirectory(
+      at: directory,
+      includingPropertiesForKeys: nil
+    ) else {
+      return
+    }
+    for fileURL in files.sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
+      guard let event = try? String(contentsOf: fileURL, encoding: .utf8),
+            !event.isEmpty else {
+        try? FileManager.default.removeItem(at: fileURL)
+        continue
+      }
+      channel.invokeMethod("event", arguments: event) { callbackResult in
+        if callbackResult != nil {
+          self.log("drainCoreEventQueue event not delivered")
+          return
+        }
+        try? FileManager.default.removeItem(at: fileURL)
+      }
+    }
+  }
+
+  private func eventQueueDirectory() -> URL? {
+    FileManager.default.containerURL(
+      forSecurityApplicationGroupIdentifier: appGroupIdentifier
+    )?.appendingPathComponent(eventQueueDirectoryName, isDirectory: true)
+  }
+
+  private func registerTunnelStatusObserver() {
+    loadManager(createIfNeeded: false) { manager, _ in
+      guard let manager else { return }
+      DispatchQueue.main.async {
+        self.tunnelStatusObserver = NotificationCenter.default.addObserver(
+          forName: .NEVPNStatusDidChange,
+          object: manager.connection,
+          queue: .main
+        ) { [weak self] _ in
+          self?.handleTunnelStatusDidChange()
+        }
+        self.lastTunnelStatus = manager.connection.status
+      }
+    }
+  }
+
+  private func handleTunnelStatusDidChange() {
+    loadManager(createIfNeeded: false) { manager, _ in
+      DispatchQueue.main.async {
+        let status = manager?.connection.status ?? .invalid
+        if self.lastTunnelStatus != status {
+          self.handleTunnelStatus(status)
+        }
+      }
+    }
+  }
+
+  private func handleTunnelStatus(_ status: NEVPNStatus) {
+    let previousStatus = lastTunnelStatus
+    lastTunnelStatus = status
+    log("tunnel status changed \(statusDescription(previousStatus ?? .invalid)) -> \(statusDescription(status)) expectedStop=\(isTunnelStopExpected)")
+
+    if isConnectedTunnelStatus(status) {
+      isTunnelStopExpected = false
+      return
+    }
+
+    guard isTerminalTunnelStatus(status) else {
+      return
+    }
+
+    if isTunnelStopExpected {
+      isTunnelStopExpected = false
+      return
+    }
+
+    guard let previousStatus,
+          isActiveTunnelStatus(previousStatus) else {
+      return
+    }
+    isTunnelStopExpected = false
+    notifyTunnelCrashed(status: status)
+  }
+
+  private func notifyTunnelCrashed(status: NEVPNStatus) {
+    let message = "network extension disconnected: \(statusDescription(status))"
+    log("notifyTunnelCrashed \(message)")
+    channel.invokeMethod("crash", arguments: message)
   }
 
   private func sendProviderMessage(_ data: Data, result: @escaping FlutterResult) {
@@ -270,7 +422,6 @@ final class IOSServiceChannel {
 
   private func invokeAppCore(
     _ data: Data,
-    status: NEVPNStatus,
     result: @escaping FlutterResult
   ) {
     guard let action = String(data: data, encoding: .utf8) else {
@@ -278,7 +429,7 @@ final class IOSServiceChannel {
       result(actionResult(data: data, message: "invalid action"))
       return
     }
-    log("invokeAppCore status=\(statusDescription(status))")
+    log("invokeAppCore")
     IOSCoreBridge.invokeAction(action) { response in
       guard let response = response else {
         self.log("invokeAppCore empty response")
@@ -290,11 +441,51 @@ final class IOSServiceChannel {
     }
   }
 
+  private func isNetworkExtensionCoreActive(result: @escaping FlutterResult) {
+    loadManager(createIfNeeded: false) { manager, _ in
+      let status = manager?.connection.status ?? .invalid
+      result(self.canSendProviderMessage(status: status))
+    }
+  }
+
   private func canSendProviderMessage(status: NEVPNStatus) -> Bool {
     switch status {
     case .connected, .reasserting:
       return true
     case .connecting, .disconnecting, .disconnected, .invalid:
+      return false
+    @unknown default:
+      return false
+    }
+  }
+
+  private func isActiveTunnelStatus(_ status: NEVPNStatus) -> Bool {
+    switch status {
+    case .connecting, .connected, .reasserting, .disconnecting:
+      return true
+    case .disconnected, .invalid:
+      return false
+    @unknown default:
+      return false
+    }
+  }
+
+  private func isConnectedTunnelStatus(_ status: NEVPNStatus) -> Bool {
+    switch status {
+    case .connected, .reasserting:
+      return true
+    case .connecting, .disconnecting, .disconnected, .invalid:
+      return false
+    @unknown default:
+      return false
+    }
+  }
+
+  private func isTerminalTunnelStatus(_ status: NEVPNStatus) -> Bool {
+    switch status {
+    case .disconnected, .invalid:
+      return true
+    case .connecting, .connected, .reasserting, .disconnecting:
       return false
     @unknown default:
       return false
