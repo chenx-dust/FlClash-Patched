@@ -19,11 +19,6 @@ func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
 	if fd <= 0 {
 		return nil
 	}
-	tunFd, err := unix.Dup(fd)
-	if err != nil {
-		log.Errorln("TUN: dup fd: %v", err)
-		return nil
-	}
 
 	var prefix4 []netip.Prefix
 	var prefix6 []netip.Prefix
@@ -38,7 +33,7 @@ func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
 		}
 		prefix, err := netip.ParsePrefix(a)
 		if err != nil {
-			_ = unix.Close(tunFd)
+			_ = unix.Close(fd)
 			log.Errorln("TUN:", err)
 			return nil
 		}
@@ -68,14 +63,14 @@ func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
 		Inet4Address:        prefix4,
 		Inet6Address:        prefix6,
 		MTU:                 9000,
-		FileDescriptor:      tunFd,
+		FileDescriptor:      fd,
 		RecvMsgX:            true,
 		SendMsgX:            true,
 	}
 
 	listener, err := sing_tun.New(options, tunnel.Tunnel)
 	if err != nil {
-		_ = unix.Close(tunFd)
+		_ = unix.Close(fd)
 		log.Errorln("TUN:", err)
 		return nil
 	}

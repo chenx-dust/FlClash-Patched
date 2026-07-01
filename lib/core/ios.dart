@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
@@ -8,18 +7,29 @@ import 'package:fl_clash/models/core.dart';
 import 'package:fl_clash/plugins/service.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
-import 'package:path/path.dart';
 
 import 'interface.dart';
 
-class CoreIOS extends CoreHandlerInterface {
+class CoreIOS extends CoreHandlerInterface with ServiceListener {
   static CoreIOS? _instance;
+
+  static const _appCoreMethods = {
+    ActionMethod.validateConfig,
+    ActionMethod.asyncTestDelay,
+    ActionMethod.getConfig,
+    ActionMethod.generateAgeKeyPair,
+    ActionMethod.convertAgeSecretKeyToPublicKey,
+    ActionMethod.deleteFile,
+  };
 
   Completer<bool> _connectedCompleter = Completer();
   InitParams? _initParams;
   SetupParams? _setupParams;
+  bool _isNetworkExtensionCoreActive = false;
 
-  CoreIOS._internal();
+  CoreIOS._internal() {
+    service?.addListener(this);
+  }
 
   factory CoreIOS() {
     _instance ??= CoreIOS._internal();
@@ -44,6 +54,8 @@ class CoreIOS extends CoreHandlerInterface {
       commonPrint.log('[iOS] sync shared state failed: $syncRes');
       return syncRes ?? '';
     }
+    _isNetworkExtensionCoreActive =
+        await service?.isNetworkExtensionCoreActive() ?? false;
     commonPrint.log('[iOS] app core ready without starting NECore');
     _connectedCompleter.complete(true);
     return '';
@@ -83,8 +95,10 @@ class CoreIOS extends CoreHandlerInterface {
     final started = await service?.start() ?? false;
     commonPrint.log('[iOS] start NECore result: $started');
     if (!started) {
+      _isNetworkExtensionCoreActive = false;
       return false;
     }
+    _isNetworkExtensionCoreActive = true;
     final setup = await _setupNetworkExtensionCore();
     commonPrint.log('[iOS] setup NECore result: $setup');
     return setup;
@@ -95,6 +109,7 @@ class CoreIOS extends CoreHandlerInterface {
     commonPrint.log('[iOS] stop VPN: stop app core listener and NECore');
     await super.stopListener();
     final stopped = await service?.stop() ?? false;
+    _isNetworkExtensionCoreActive = false;
     commonPrint.log('[iOS] stop NECore result: $stopped');
     return stopped;
   }
@@ -106,9 +121,18 @@ class CoreIOS extends CoreHandlerInterface {
     Duration? timeout,
   }) async {
     final id = '${method.name}#${utils.id}';
-    final result = await service
-        ?.invokeAction(Action(id: id, method: method, data: data))
-        .withTimeout(onTimeout: () => null);
+    final action = Action(id: id, method: method, data: data);
+    final useNetworkExtensionCore =
+        _isNetworkExtensionCoreActive && !_appCoreMethods.contains(method);
+    commonPrint.log(
+      '[iOS] route ${method.name} to '
+      '${useNetworkExtensionCore ? 'NECore' : 'app core'}',
+      logLevel: LogLevel.debug,
+    );
+    final invokeFuture = useNetworkExtensionCore
+        ? service?.invokeNetworkExtensionCore(action)
+        : service?.invokeAppCore(action);
+    final result = await invokeFuture?.withTimeout(onTimeout: () => null);
     if (result == null) {
       return null;
     }
@@ -117,6 +141,11 @@ class CoreIOS extends CoreHandlerInterface {
 
   @override
   Completer get completer => _connectedCompleter;
+
+  @override
+  void onServiceCrash(String message) {
+    _isNetworkExtensionCoreActive = false;
+  }
 
   Future<bool> _setupNetworkExtensionCore() async {
     final initParams = _initParams;

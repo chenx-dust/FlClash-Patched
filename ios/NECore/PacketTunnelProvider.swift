@@ -238,12 +238,12 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
       settings.ipv6Settings = ipv6Settings
     }
 
-    let dnsServers = vpnOptions.ipv6 ? [ipv4Dns, ipv6Dns] : [ipv4Dns]
-    let dnsSettings = NEDNSSettings(servers: dnsServers)
-    if vpnOptions.dnsHijacking {
-      dnsSettings.matchDomains = [""]
-    }
-    settings.dnsSettings = dnsSettings
+    // let dnsServers = vpnOptions.ipv6 ? [ipv4Dns, ipv6Dns] : [ipv4Dns]
+    // let dnsSettings = NEDNSSettings(servers: dnsServers)
+    // if vpnOptions.dnsHijacking {
+    //   dnsSettings.matchDomains = [""]
+    // }
+    // settings.dnsSettings = dnsSettings
 
     if vpnOptions.systemProxy {
       let proxySettings = NEProxySettings()
@@ -254,6 +254,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
       proxySettings.exceptionList = vpnOptions.bypassDomain
       settings.proxySettings = proxySettings
     }
+
+    log("makeNetworkSettings settings=\(settings)")
 
     return settings
   }

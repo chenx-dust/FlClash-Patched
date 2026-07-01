@@ -8,6 +8,7 @@ import (
 	"runtime/debug"
 	"unsafe"
 
+	"github.com/metacubex/mihomo/common/lowmemory"
 	"github.com/metacubex/mihomo/log"
 )
 
@@ -51,8 +52,10 @@ func handleUpdateDns(value string) {
 }
 
 func initLibImpl() {
-	debug.SetGCPercent(20)
-	debug.SetMemoryLimit(32 * 1024 * 1024)
+	if lowmemory.Enabled() {
+		debug.SetGCPercent(20)
+		debug.SetMemoryLimit(32 * 1024 * 1024)
+	}
 
 	sub := log.Subscribe()
 	go func() {

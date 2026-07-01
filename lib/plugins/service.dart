@@ -51,8 +51,20 @@ class Service {
   }
 
   Future<ActionResult?> invokeAction(Action action) async {
+    return _invokeAction('invokeAction', action);
+  }
+
+  Future<ActionResult?> invokeAppCore(Action action) async {
+    return _invokeAction('invokeAppCore', action);
+  }
+
+  Future<ActionResult?> invokeNetworkExtensionCore(Action action) async {
+    return _invokeAction('invokeNetworkExtensionCore', action);
+  }
+
+  Future<ActionResult?> _invokeAction(String method, Action action) async {
     final data = await methodChannel.invokeMethod<String>(
-      'invokeAction',
+      method,
       json.encode(action),
     );
     if (data == null) {
@@ -69,6 +81,13 @@ class Service {
         code: ResultType.error,
       );
     }
+  }
+
+  Future<bool> isNetworkExtensionCoreActive() async {
+    return await methodChannel.invokeMethod<bool>(
+          'isNetworkExtensionCoreActive',
+        ) ??
+        false;
   }
 
   Future<bool> start() async {
