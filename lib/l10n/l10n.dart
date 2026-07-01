@@ -1039,6 +1039,11 @@ class AppLocalizations {
     );
   }
 
+  /// `User-Agent`
+  String get userAgent {
+    return Intl.message('User-Agent', name: 'userAgent', desc: '', args: []);
+  }
+
   /// `Unified delay`
   String get unifiedDelay {
     return Intl.message(

@@ -133,6 +133,7 @@
   "app": "アプリ",
   "general": "一般",
   "systemProxyDesc": "HTTPプロキシをVpnServiceに接続",
+  "userAgent": "ユーザーエージェント",
   "unifiedDelay": "統一遅延",
   "unifiedDelayDesc": "ハンドシェイクなどの余分な遅延を削除",
   "tcpConcurrent": "TCP並列処理",

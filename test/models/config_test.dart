@@ -108,6 +108,7 @@ void main() {
       expect(restored.showLabel, false);
       expect(restored.minimizeOnExit, true);
       expect(restored.restoreStrategy, RestoreStrategy.compatible);
+      expect(restored.customUserAgent, '');
       expect(restored.testUrl, defaultTestUrl);
     });
 
@@ -118,6 +119,7 @@ void main() {
         autoLaunch: true,
         closeConnections: false,
         testUrl: 'https://custom.test',
+        customUserAgent: 'CustomUA/1.0',
       );
       final restored = roundTrip(
         () => props.toJson(),
@@ -128,6 +130,7 @@ void main() {
       expect(restored.autoLaunch, true);
       expect(restored.closeConnections, false);
       expect(restored.testUrl, 'https://custom.test');
+      expect(restored.customUserAgent, 'CustomUA/1.0');
     });
 
     test('safeFromJson returns default on null', () {

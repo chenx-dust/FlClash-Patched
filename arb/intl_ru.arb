@@ -133,6 +133,7 @@
   "app": "Приложение",
   "general": "Общие",
   "systemProxyDesc": "Прикрепить HTTP-прокси к VpnService",
+  "userAgent": "User-Agent",
   "unifiedDelay": "Унифицированная задержка",
   "unifiedDelayDesc": "Убрать дополнительные задержки, такие как рукопожатие",
   "tcpConcurrent": "TCP параллелизм",

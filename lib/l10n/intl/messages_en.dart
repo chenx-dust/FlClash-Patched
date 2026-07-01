@@ -1034,6 +1034,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "urlTip": m24,
     "useHosts": MessageLookupByLibrary.simpleMessage("Use hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("Use system hosts"),
+    "userAgent": MessageLookupByLibrary.simpleMessage("User-Agent"),
     "value": MessageLookupByLibrary.simpleMessage("Value"),
     "vibrantScheme": MessageLookupByLibrary.simpleMessage("Vibrant"),
     "view": MessageLookupByLibrary.simpleMessage("View"),

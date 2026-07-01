@@ -1097,6 +1097,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "useSystemHosts": MessageLookupByLibrary.simpleMessage(
       "Использовать системные hosts",
     ),
+    "userAgent": MessageLookupByLibrary.simpleMessage("User-Agent"),
     "value": MessageLookupByLibrary.simpleMessage("Значение"),
     "vibrantScheme": MessageLookupByLibrary.simpleMessage("Яркие"),
     "view": MessageLookupByLibrary.simpleMessage("Просмотр"),

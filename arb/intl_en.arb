@@ -133,6 +133,7 @@
   "app": "App",
   "general": "General",
   "systemProxyDesc": "Attach HTTP proxy to VpnService",
+  "userAgent": "User-Agent",
   "unifiedDelay": "Unified delay",
   "unifiedDelayDesc": "Remove extra delays such as handshaking",
   "tcpConcurrent": "TCP concurrent",
