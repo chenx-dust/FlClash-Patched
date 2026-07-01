@@ -1,7 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:math';
-import 'dart:ui' as ui;
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
@@ -541,9 +540,7 @@ class _PaletteDialog extends StatefulWidget {
 }
 
 class _PaletteDialogState extends State<_PaletteDialog> {
-  final _controller = ValueNotifier<ui.Color>(
-    Color(Hct.from(0, 0, 60).toInt()),
-  );
+  final _controller = ValueNotifier<Color>(Color(Hct.from(0, 0, 60).toInt()));
 
   @override
   Widget build(BuildContext context) {
@@ -567,84 +564,9 @@ class _PaletteDialogState extends State<_PaletteDialog> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 8),
           SizedBox(width: 300, child: Palette(controller: _controller)),
-          const SizedBox(height: 16),
-          ValueListenableBuilder(
-            valueListenable: _controller,
-            builder: (_, color, _) {
-              return PrimaryColorBox(
-                primaryColor: color,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const _ColorSchemePreview(),
-                    const SizedBox(height: 8),
-                    Text(
-                      _controller.value.hex,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
         ],
       ),
-    );
-  }
-}
-
-class _ColorSchemePreview extends StatelessWidget {
-  const _ColorSchemePreview();
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final roles = [
-      (colorScheme.primary, colorScheme.onPrimary, 'Primary'),
-      (colorScheme.secondary, colorScheme.onSecondary, 'Secondary'),
-      (colorScheme.tertiary, colorScheme.onTertiary, 'Tertiary'),
-      (colorScheme.error, colorScheme.onError, 'Error'),
-      (colorScheme.surface, colorScheme.onSurface, 'Surface'),
-      (
-        colorScheme.primaryContainer,
-        colorScheme.onPrimaryContainer,
-        'Primary\nCont.',
-      ),
-      (
-        colorScheme.secondaryContainer,
-        colorScheme.onSecondaryContainer,
-        'Secondary\nCont.',
-      ),
-      (
-        colorScheme.tertiaryContainer,
-        colorScheme.onTertiaryContainer,
-        'Tertiary\nCont.',
-      ),
-    ];
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        for (final (bg, fg, label) in roles)
-          Container(
-            width: 60,
-            height: 44,
-            decoration: BoxDecoration(
-              color: bg,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              label,
-              style: TextStyle(color: fg, fontSize: 9),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-      ],
     );
   }
 }
