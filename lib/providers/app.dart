@@ -70,7 +70,7 @@ class Requests extends _$Requests with AutoDisposeNotifierMixin {
     for (final value in values) {
       newState.add(value);
     }
-    this.value = newState;
+    value = newState;
   }
 }
 
