@@ -26,8 +26,10 @@
         <tr>
             <td>Windows</td>
             <td>
-                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-windows-amd64-setup.exe"><img src="https://img.shields.io/badge/Installer-x64-00E5FF.svg?logo=nsis"></a><a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-windows-arm64-setup.exe"><img src="https://img.shields.io/badge/Installer-arm64-00B8D4.svg?logo=nsis"></a><br>
-                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-windows-amd64.zip"><img src="https://img.shields.io/badge/Portable-x64-0091EA.svg?logo=7zip"></a><a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-windows-arm64.zip"><img src="https://img.shields.io/badge/Portable-arm64-00B0FF.svg?logo=7zip"></a>
+                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-windows-amd64-setup.exe"><img src="https://img.shields.io/badge/Installer-x64-00E5FF.svg?logo=nsis"></a>
+                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-windows-arm64-setup.exe"><img src="https://img.shields.io/badge/Installer-arm64-00B8D4.svg?logo=nsis"></a><br>
+                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-windows-amd64.zip"><img src="https://img.shields.io/badge/Portable-x64-0091EA.svg?logo=7zip"></a>
+                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-windows-arm64.zip"><img src="https://img.shields.io/badge/Portable-arm64-00B0FF.svg?logo=7zip"></a>
             </td>
         </tr>
         <tr>
@@ -40,10 +42,14 @@
         <tr>
             <td>Linux</td>
             <td>
-                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-amd64.AppImage"><img src="https://img.shields.io/badge/AppImage-x64-FF5252.svg?logo=linux"> </a><a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-arm64.AppImage"><img src="https://img.shields.io/badge/AppImage-arm64-D50000.svg?logo=linux"> </a><br>
-                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-amd64.deb"><img src="https://img.shields.io/badge/DebPackage-x64-FF8A80.svg?logo=debian"> </a><a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-arm64.deb"><img src="https://img.shields.io/badge/DebPackage-arm64-FF1744.svg?logo=debian"> </a><br>
-                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-amd64.rpm"><img src="https://img.shields.io/badge/RpmPackage-x64-F50057.svg?logo=redhat"> </a><a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-arm64.rpm"><img src="https://img.shields.io/badge/RpmPackage-arm64-C51162.svg?logo=redhat"> </a><br>
-                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-amd64.tar.zst"><img src="https://img.shields.io/badge/PacmanPackage-x64-FF4081.svg?logo=archlinux"> </a><a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-arm64.tar.zst"><img src="https://img.shields.io/badge/PacmanPackage-arm64-F50057.svg?logo=archlinux"> </a>
+                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-amd64.AppImage"><img src="https://img.shields.io/badge/AppImage-x64-FF5252.svg?logo=linux"></a>
+                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-arm64.AppImage"><img src="https://img.shields.io/badge/AppImage-arm64-D50000.svg?logo=linux"></a><br>
+                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-amd64.deb"><img src="https://img.shields.io/badge/DebPackage-x64-FF8A80.svg?logo=debian"></a>
+                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-arm64.deb"><img src="https://img.shields.io/badge/DebPackage-arm64-FF1744.svg?logo=debian"></a><br>
+                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-amd64.rpm"><img src="https://img.shields.io/badge/RpmPackage-x64-F50057.svg?logo=redhat"></a>
+                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-arm64.rpm"><img src="https://img.shields.io/badge/RpmPackage-arm64-C51162.svg?logo=redhat"></a><br>
+                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-amd64.tar.zst"><img src="https://img.shields.io/badge/PacmanPackage-x64-FF4081.svg?logo=archlinux"></a>
+                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-arm64.tar.zst"><img src="https://img.shields.io/badge/PacmanPackage-arm64-F50057.svg?logo=archlinux"></a>
             </td>
         </tr>
     </tbody>
