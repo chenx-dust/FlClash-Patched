@@ -62,9 +62,26 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
   }
 
   @override
+  Future<bool> get isInit async {
+    final id = '${ActionMethod.getIsInit.name}#${utils.id}';
+    final action = Action(id: id, method: ActionMethod.getIsInit, data: null);
+    final result = await service?.invokeAppCore(action);
+    if (result == null) return false;
+    return parasResult<bool>(result);
+  }
+
+  @override
   Future<bool> init(InitParams params) async {
     _initParams = params;
-    return super.init(params);
+    final id = '${ActionMethod.initClash.name}#${utils.id}';
+    final action = Action(
+      id: id,
+      method: ActionMethod.initClash,
+      data: json.encode(params),
+    );
+    final result = await service?.invokeAppCore(action);
+    if (result == null) return false;
+    return parasResult<bool>(result);
   }
 
   @override
@@ -90,6 +107,14 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
 
   @override
   Future<bool> startListener() async {
+    if (_isNetworkExtensionCoreActive) {
+      commonPrint.log('[iOS] NECore already active: ensure listener is running');
+      return await invoke<bool>(
+            method: ActionMethod.startListener,
+            data: null,
+          ) ??
+          false;
+    }
     commonPrint.log('[iOS] start VPN: stop app core listener before NECore');
     await super.stopListener();
     final started = await service?.start() ?? false;
