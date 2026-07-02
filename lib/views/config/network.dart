@@ -265,18 +265,18 @@ class DozeSuspendItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appLocalizations = context.appLocalizations;
-    final dozeSuspend = ref.watch(
-      vpnSettingProvider.select((state) => state.dozeSuspend),
+    final suspendSupport = ref.watch(
+      vpnSettingProvider.select((state) => state.suspendSupport),
     );
     return ListItem.switchItem(
-      title: Text(appLocalizations.dozeSuspend),
-      subtitle: Text(appLocalizations.dozeSuspendDesc),
+      title: Text(appLocalizations.suspendSupport),
+      subtitle: Text(appLocalizations.suspendSupportDesc),
       delegate: SwitchDelegate(
-        value: dozeSuspend,
+        value: suspendSupport,
         onChanged: (bool value) async {
           ref
               .read(vpnSettingProvider.notifier)
-              .update((state) => state.copyWith(dozeSuspend: value));
+              .update((state) => state.copyWith(suspendSupport: value));
         },
       ),
     );
@@ -362,7 +362,7 @@ class NetworkListView extends StatelessWidget {
     final appLocalizations = context.appLocalizations;
     return generateListView([
       if (system.isAndroid) const VPNItem(),
-      if (system.isAndroid)
+      if (system.isMobile)
         ...generateSection(
           title: 'VPN',
           items: [
@@ -371,7 +371,7 @@ class NetworkListView extends StatelessWidget {
             const AllowBypassItem(),
             const Ipv6Item(),
             const DNSHijackingItem(),
-            const DozeSuspendItem(),
+            if (system.isAndroid) const DozeSuspendItem(),
           ],
         ),
       if (system.isDesktop)
@@ -385,7 +385,7 @@ class NetworkListView extends StatelessWidget {
           if (system.isDesktop) const TUNItem(),
           if (system.isMacOS) const AutoSetSystemDnsItem(),
           const TunStackItem(),
-          if (!system.isDesktop) ...[
+          if (system.isMobile) ...[
             const RouteModeItem(),
             const RouteAddressItem(),
           ],

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:isolate';
 
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -50,15 +51,43 @@ class Service {
   }
 
   Future<ActionResult?> invokeAction(Action action) async {
+    return _invokeAction('invokeAction', action);
+  }
+
+  Future<ActionResult?> invokeAppCore(Action action) async {
+    return _invokeAction('invokeAppCore', action);
+  }
+
+  Future<ActionResult?> invokeNetworkExtensionCore(Action action) async {
+    return _invokeAction('invokeNetworkExtensionCore', action);
+  }
+
+  Future<ActionResult?> _invokeAction(String method, Action action) async {
     final data = await methodChannel.invokeMethod<String>(
-      'invokeAction',
+      method,
       json.encode(action),
     );
     if (data == null) {
       return null;
     }
-    final dataJson = await data.commonToJSON<dynamic>();
-    return ActionResult.fromJson(dataJson);
+    try {
+      final dataJson = await data.commonToJSON<dynamic>();
+      return ActionResult.fromJson(dataJson);
+    } catch (_) {
+      return ActionResult(
+        method: action.method,
+        data: data,
+        id: action.id,
+        code: ResultType.error,
+      );
+    }
+  }
+
+  Future<bool> isNetworkExtensionCoreActive() async {
+    return await methodChannel.invokeMethod<bool>(
+          'isNetworkExtensionCoreActive',
+        ) ??
+        false;
   }
 
   Future<bool> start() async {
@@ -85,6 +114,10 @@ class Service {
     return await methodChannel.invokeMethod<bool>('shutdown') ?? true;
   }
 
+  Future<String> getAppGroupDir() async {
+    return await methodChannel.invokeMethod<String>('getAppGroupDir') ?? '';
+  }
+
   Future<DateTime?> getRunTime() async {
     final ms = await methodChannel.invokeMethod<int>('getRunTime') ?? 0;
     if (ms == 0) {
@@ -106,4 +139,4 @@ class Service {
   }
 }
 
-Service? get service => system.isAndroid ? Service() : null;
+Service? get service => system.isAndroid || system.isIOS ? Service() : null;

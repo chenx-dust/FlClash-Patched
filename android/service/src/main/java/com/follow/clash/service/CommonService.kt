@@ -21,7 +21,7 @@ class CommonService : Service(), IBaseService,
     private val loader = moduleLoader {
         install(NetworkObserveModule(self))
         install(NotificationModule(self))
-        if (State.options?.dozeSuspend != false) {
+        if (State.options?.suspendSupport != false) {
             install(SuspendModule(self))
         }
     }
