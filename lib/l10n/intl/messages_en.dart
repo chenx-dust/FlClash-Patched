@@ -119,7 +119,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "addRule": MessageLookupByLibrary.simpleMessage("Add Rule"),
     "addSsid": MessageLookupByLibrary.simpleMessage("Add SSID"),
-    "addedRules": MessageLookupByLibrary.simpleMessage("Added rules"),
+    "addedRules": MessageLookupByLibrary.simpleMessage("Added Rules"),
     "additionalParameters": MessageLookupByLibrary.simpleMessage(
       "Additional parameters",
     ),
@@ -242,7 +242,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "cancelSelectAll": MessageLookupByLibrary.simpleMessage(
       "Cancel select all",
     ),
-    "checkUpdate": MessageLookupByLibrary.simpleMessage("Check for updates"),
+    "checkUpdate": MessageLookupByLibrary.simpleMessage("Check for Updates"),
     "checkUpdateError": MessageLookupByLibrary.simpleMessage(
       "The current application is already the latest version",
     ),
@@ -355,7 +355,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Update DNS related settings",
     ),
     "dnsHijacking": MessageLookupByLibrary.simpleMessage("DNS hijacking"),
-    "dnsMode": MessageLookupByLibrary.simpleMessage("DNS mode"),
+    "dnsMode": MessageLookupByLibrary.simpleMessage("DNS Mode"),
     "doYouWantToPass": MessageLookupByLibrary.simpleMessage(
       "Do you want to pass",
     ),
@@ -407,8 +407,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "externalFetch": MessageLookupByLibrary.simpleMessage("External fetch"),
     "externalLink": MessageLookupByLibrary.simpleMessage("External link"),
-    "fakeipFilter": MessageLookupByLibrary.simpleMessage("Fakeip filter"),
-    "fakeipRange": MessageLookupByLibrary.simpleMessage("Fakeip range"),
+    "fakeipFilter": MessageLookupByLibrary.simpleMessage("FakeIP filter"),
+    "fakeipRange": MessageLookupByLibrary.simpleMessage("FakeIP range"),
     "fallback": MessageLookupByLibrary.simpleMessage("Fallback"),
     "fallbackDesc": MessageLookupByLibrary.simpleMessage(
       "Generally use offshore DNS",

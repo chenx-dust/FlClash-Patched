@@ -1099,10 +1099,10 @@ class AppLocalizations {
     return Intl.message('Password', name: 'password', desc: '', args: []);
   }
 
-  /// `Check for updates`
+  /// `Check for Updates`
   String get checkUpdate {
     return Intl.message(
-      'Check for updates',
+      'Check for Updates',
       name: 'checkUpdate',
       desc: '',
       args: [],
@@ -1849,25 +1849,25 @@ class AppLocalizations {
     );
   }
 
-  /// `DNS mode`
+  /// `DNS Mode`
   String get dnsMode {
-    return Intl.message('DNS mode', name: 'dnsMode', desc: '', args: []);
+    return Intl.message('DNS Mode', name: 'dnsMode', desc: '', args: []);
   }
 
-  /// `Fakeip range`
+  /// `FakeIP range`
   String get fakeipRange {
     return Intl.message(
-      'Fakeip range',
+      'FakeIP range',
       name: 'fakeipRange',
       desc: '',
       args: [],
     );
   }
 
-  /// `Fakeip filter`
+  /// `FakeIP filter`
   String get fakeipFilter {
     return Intl.message(
-      'Fakeip filter',
+      'FakeIP filter',
       name: 'fakeipFilter',
       desc: '',
       args: [],
@@ -3144,9 +3144,9 @@ class AppLocalizations {
     );
   }
 
-  /// `Added rules`
+  /// `Added Rules`
   String get addedRules {
-    return Intl.message('Added rules', name: 'addedRules', desc: '', args: []);
+    return Intl.message('Added Rules', name: 'addedRules', desc: '', args: []);
   }
 
   /// `Control global added rules`
