@@ -53,7 +53,7 @@ class Permissions {
   }
 
   Future<void> checkLocationPermissions() async {
-    if (!(system.isAndroid || system.isMacOS)) {
+    if (!(system.isMobile || system.isMacOS)) {
       return;
     }
     final res = await WifiSsidManager.instance.checkPermission();

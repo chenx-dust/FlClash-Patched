@@ -326,7 +326,8 @@ class ListItem<T> extends StatelessWidget {
               globalState.container.read(versionProvider),
             );
             if (!isMobile ||
-                themeProps.predictiveBack && supportsPredictiveBack) {
+                themeProps.predictiveBack && supportsPredictiveBack ||
+                system.isIOS) {
               final res = await showExtend(
                 context,
                 props: ExtendProps(

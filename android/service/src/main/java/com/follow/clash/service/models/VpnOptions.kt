@@ -48,7 +48,7 @@ data class VpnOptions(
     val accessControlProps: AccessControlProps,
     val allowBypass: Boolean,
     val systemProxy: Boolean,
-    val dozeSuspend: Boolean,
+    val suspendSupport: Boolean,
     val bypassDomain: List<String>,
     val stack: String,
     val routeAddress: List<String>,
@@ -61,7 +61,7 @@ data class VpnOptions(
         accessControlProps = readAccessControlProps(parcel),
         allowBypass = parcel.readByte() != 0.toByte(),
         systemProxy = parcel.readByte() != 0.toByte(),
-        dozeSuspend = parcel.readByte() != 0.toByte(),
+        suspendSupport = parcel.readByte() != 0.toByte(),
         bypassDomain = parcel.createStringArrayList() ?: emptyList(),
         stack = parcel.readString() ?: "",
         routeAddress = parcel.createStringArrayList() ?: emptyList(),
@@ -75,7 +75,7 @@ data class VpnOptions(
         parcel.writeParcelable(accessControlProps, flags)
         parcel.writeByte(if (allowBypass) 1.toByte() else 0.toByte())
         parcel.writeByte(if (systemProxy) 1.toByte() else 0.toByte())
-        parcel.writeByte(if (dozeSuspend) 1.toByte() else 0.toByte())
+        parcel.writeByte(if (suspendSupport) 1.toByte() else 0.toByte())
         parcel.writeStringList(bypassDomain)
         parcel.writeString(stack)
         parcel.writeStringList(routeAddress)
