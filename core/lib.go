@@ -13,18 +13,18 @@ import (
 	t "core/tun"
 	"encoding/json"
 	"errors"
-	"github.com/metacubex/mihomo/component/dialer"
-	"github.com/metacubex/mihomo/component/process"
-	"github.com/metacubex/mihomo/constant"
-	"github.com/metacubex/mihomo/dns"
-	"github.com/metacubex/mihomo/listener/sing_tun"
-	"github.com/metacubex/mihomo/log"
-	"golang.org/x/sync/semaphore"
 	"net"
-	"strings"
 	"sync"
 	"syscall"
 	"unsafe"
+
+	"github.com/metacubex/mihomo/common/lowmemory"
+	"github.com/metacubex/mihomo/component/dialer"
+	"github.com/metacubex/mihomo/component/process"
+	"github.com/metacubex/mihomo/constant"
+	"github.com/metacubex/mihomo/listener/sing_tun"
+	"github.com/metacubex/mihomo/log"
+	"golang.org/x/sync/semaphore"
 )
 
 var eventListener unsafe.Pointer
@@ -138,7 +138,7 @@ func handleStopTun() {
 	}
 }
 
-func handleStartTun(callback unsafe.Pointer, fd int, stack, address, dns string) {
+func handleStartTun(callback unsafe.Pointer, fd int, stack, address, dns string) bool {
 	handleStopTun()
 	tunLock.Lock()
 	defer tunLock.Unlock()
@@ -148,15 +148,14 @@ func handleStartTun(callback unsafe.Pointer, fd int, stack, address, dns string)
 			limit:    semaphore.NewWeighted(4),
 		}
 		tunHandler.start(fd, stack, address, dns)
+		return tunHandler.listener != nil
 	}
+	return false
 }
 
-func handleUpdateDns(value string) {
-	go func() {
-		log.Infoln("[DNS] updateDns %s", value)
-		dns.UpdateSystemDNS(strings.Split(value, ","))
-		dns.FlushCacheWithDefaultResolver()
-	}()
+//export setLowMemoryMode
+func setLowMemoryMode(enabled bool) {
+	lowmemory.SetEnabled(enabled)
 }
 
 func (result ActionResult) send() {
@@ -200,13 +199,16 @@ func invokeAction(callback unsafe.Pointer, paramsChar *C.char) {
 
 //export startTUN
 func startTUN(callback unsafe.Pointer, fd C.int, stackChar, addressChar, dnsChar *C.char) bool {
-	handleStartTun(callback, int(fd), takeCString(stackChar), takeCString(addressChar), takeCString(dnsChar))
+	started := handleStartTun(callback, int(fd), takeCString(stackChar), takeCString(addressChar), takeCString(dnsChar))
+	if !started {
+		return false
+	}
 	if !isRunning {
 		handleStartListener()
 	} else {
 		handleResetConnections()
 	}
-	return true
+	return started
 }
 
 //export quickSetup
