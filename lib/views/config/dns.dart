@@ -437,7 +437,7 @@ class GeoipItem extends ConsumerWidget {
       ),
     );
     return ListItem.toggle(
-      title: const Text('Geoip'),
+      title: const Text('GeoIP'),
       value: geoip,
       onChanged: (bool value) async {
         ref
@@ -496,10 +496,10 @@ class GeositeItem extends ConsumerWidget {
       ),
     );
     return ListItem.open(
-      title: const Text('Geosite'),
+      title: const Text('GeoSite'),
       blur: false,
       widget: ListInputPage(
-        title: 'Geosite',
+        title: 'GeoSite',
         items: geosite,
         itemMaxLength: TextInputLimits.geoSite,
         titleBuilder: (item) => Text(item),

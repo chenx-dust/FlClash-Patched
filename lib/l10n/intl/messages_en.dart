@@ -119,7 +119,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "addRule": MessageLookupByLibrary.simpleMessage("Add Rule"),
     "addSsid": MessageLookupByLibrary.simpleMessage("Add SSID"),
-    "addedRules": MessageLookupByLibrary.simpleMessage("Added rules"),
+    "addedRules": MessageLookupByLibrary.simpleMessage("Added Rules"),
     "additionalParameters": MessageLookupByLibrary.simpleMessage(
       "Additional parameters",
     ),
@@ -242,7 +242,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "cancelSelectAll": MessageLookupByLibrary.simpleMessage(
       "Cancel select all",
     ),
-    "checkUpdate": MessageLookupByLibrary.simpleMessage("Check for updates"),
+    "checkUpdate": MessageLookupByLibrary.simpleMessage("Check for Updates"),
     "checkUpdateError": MessageLookupByLibrary.simpleMessage(
       "The current application is already the latest version",
     ),
@@ -355,7 +355,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Update DNS related settings",
     ),
     "dnsHijacking": MessageLookupByLibrary.simpleMessage("DNS hijacking"),
-    "dnsMode": MessageLookupByLibrary.simpleMessage("DNS mode"),
+    "dnsMode": MessageLookupByLibrary.simpleMessage("DNS Mode"),
     "doYouWantToPass": MessageLookupByLibrary.simpleMessage(
       "Do you want to pass",
     ),
@@ -363,10 +363,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "download": MessageLookupByLibrary.simpleMessage("Download"),
     "downloadSpeed": MessageLookupByLibrary.simpleMessage("Download speed"),
     "downloadTraffic": MessageLookupByLibrary.simpleMessage("Download traffic"),
-    "dozeSuspend": MessageLookupByLibrary.simpleMessage("Doze Suspend"),
-    "dozeSuspendDesc": MessageLookupByLibrary.simpleMessage(
-      "Suspend the core while Android is in Doze mode to reduce battery usage",
-    ),
     "edit": MessageLookupByLibrary.simpleMessage("Edit"),
     "editGlobalRules": MessageLookupByLibrary.simpleMessage(
       "Edit global rules",
@@ -407,8 +403,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "externalFetch": MessageLookupByLibrary.simpleMessage("External fetch"),
     "externalLink": MessageLookupByLibrary.simpleMessage("External link"),
-    "fakeipFilter": MessageLookupByLibrary.simpleMessage("Fakeip filter"),
-    "fakeipRange": MessageLookupByLibrary.simpleMessage("Fakeip range"),
+    "fakeipFilter": MessageLookupByLibrary.simpleMessage("FakeIP filter"),
+    "fakeipRange": MessageLookupByLibrary.simpleMessage("FakeIP range"),
     "fallback": MessageLookupByLibrary.simpleMessage("Fallback"),
     "fallbackDesc": MessageLookupByLibrary.simpleMessage(
       "Generally use offshore DNS",
@@ -1025,6 +1021,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Sub rule cannot be empty",
     ),
     "submit": MessageLookupByLibrary.simpleMessage("Submit"),
+    "suspendSupport": MessageLookupByLibrary.simpleMessage("Suspend Support"),
+    "suspendSupportDesc": MessageLookupByLibrary.simpleMessage(
+      "Suspend the core while the device is idle to reduce battery usage",
+    ),
     "suspended": MessageLookupByLibrary.simpleMessage("Suspended..."),
     "sync": MessageLookupByLibrary.simpleMessage("Sync"),
     "system": MessageLookupByLibrary.simpleMessage("System"),
