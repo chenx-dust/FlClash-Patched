@@ -24,13 +24,23 @@ if [ -z "${APP_ENV:-}" ]; then
   export APP_ENV="pre"
 fi
 
-build_args=(macos)
-case "${ARCHS:-}" in
-  arm64)
-    build_args+=(--arch arm64)
+build_args=()
+
+case "${PLATFORM_NAME:-macosx}" in
+  iphoneos)
+    build_args+=(ios --arch arm64)
     ;;
-  x86_64)
-    build_args+=(--arch amd64)
+  *)
+    build_args+=(macos)
+
+    case "${ARCHS:-}" in
+      arm64)
+        build_args+=(--arch arm64)
+        ;;
+      x86_64)
+        build_args+=(--arch amd64)
+        ;;
+    esac
     ;;
 esac
 

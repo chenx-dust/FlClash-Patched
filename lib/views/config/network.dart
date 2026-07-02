@@ -237,23 +237,23 @@ class DNSHijackingItem extends ConsumerWidget {
   }
 }
 
-class DozeSuspendItem extends ConsumerWidget {
-  const DozeSuspendItem({super.key});
+class SuspendSupportItem extends ConsumerWidget {
+  const SuspendSupportItem({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appLocalizations = context.appLocalizations;
-    final dozeSuspend = ref.watch(
-      vpnSettingProvider.select((state) => state.dozeSuspend),
+    final suspendSupport = ref.watch(
+      vpnSettingProvider.select((state) => state.suspendSupport),
     );
     return ListItem.toggle(
-      title: Text(appLocalizations.dozeSuspend),
-      subtitle: Text(appLocalizations.dozeSuspendDesc),
-      value: dozeSuspend,
+      title: Text(appLocalizations.suspendSupport),
+      subtitle: Text(appLocalizations.suspendSupportDesc),
+      value: suspendSupport,
       onChanged: (bool value) async {
         ref
             .read(vpnSettingProvider.notifier)
-            .update((state) => state.copyWith(dozeSuspend: value));
+            .update((state) => state.copyWith(suspendSupport: value));
       },
     );
   }
@@ -334,7 +334,7 @@ class NetworkListView extends StatelessWidget {
     final appLocalizations = context.appLocalizations;
     return generateListView([
       if (system.isAndroid) const VPNItem(),
-      if (system.isAndroid)
+      if (system.isMobile)
         ...generateSection(
           title: 'VPN',
           items: [
@@ -343,7 +343,7 @@ class NetworkListView extends StatelessWidget {
             const AllowBypassItem(),
             const Ipv6Item(),
             const DNSHijackingItem(),
-            const DozeSuspendItem(),
+            if (system.isAndroid) const SuspendSupportItem(),
           ],
         ),
       if (system.isDesktop)
@@ -356,8 +356,8 @@ class NetworkListView extends StatelessWidget {
         items: [
           if (system.isDesktop) const TUNItem(),
           if (system.isMacOS) const AutoSetSystemDnsItem(),
-          const TunStackItem(),
-          if (!system.isDesktop) ...[
+          if (!system.isIOS) const TunStackItem(),
+          if (system.isMobile) ...[
             const RouteModeItem(),
             const RouteAddressItem(),
           ],

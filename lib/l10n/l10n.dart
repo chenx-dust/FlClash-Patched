@@ -164,21 +164,21 @@ class AppLocalizations {
     );
   }
 
-  /// `Doze Suspend`
-  String get dozeSuspend {
+  /// `Suspend Support`
+  String get suspendSupport {
     return Intl.message(
-      'Doze Suspend',
-      name: 'dozeSuspend',
+      'Suspend Support',
+      name: 'suspendSupport',
       desc: '',
       args: [],
     );
   }
 
-  /// `Suspend the core while Android is in Doze mode to reduce battery usage`
-  String get dozeSuspendDesc {
+  /// `Suspend the core while the device is idle to reduce battery usage`
+  String get suspendSupportDesc {
     return Intl.message(
-      'Suspend the core while Android is in Doze mode to reduce battery usage',
-      name: 'dozeSuspendDesc',
+      'Suspend the core while the device is idle to reduce battery usage',
+      name: 'suspendSupportDesc',
       desc: '',
       args: [],
     );
@@ -1099,10 +1099,10 @@ class AppLocalizations {
     return Intl.message('Password', name: 'password', desc: '', args: []);
   }
 
-  /// `Check for updates`
+  /// `Check for Updates`
   String get checkUpdate {
     return Intl.message(
-      'Check for updates',
+      'Check for Updates',
       name: 'checkUpdate',
       desc: '',
       args: [],
@@ -1849,25 +1849,25 @@ class AppLocalizations {
     );
   }
 
-  /// `DNS mode`
+  /// `DNS Mode`
   String get dnsMode {
-    return Intl.message('DNS mode', name: 'dnsMode', desc: '', args: []);
+    return Intl.message('DNS Mode', name: 'dnsMode', desc: '', args: []);
   }
 
-  /// `Fakeip range`
+  /// `FakeIP range`
   String get fakeipRange {
     return Intl.message(
-      'Fakeip range',
+      'FakeIP range',
       name: 'fakeipRange',
       desc: '',
       args: [],
     );
   }
 
-  /// `Fakeip filter`
+  /// `FakeIP filter`
   String get fakeipFilter {
     return Intl.message(
-      'Fakeip filter',
+      'FakeIP filter',
       name: 'fakeipFilter',
       desc: '',
       args: [],
@@ -3144,9 +3144,9 @@ class AppLocalizations {
     );
   }
 
-  /// `Added rules`
+  /// `Added Rules`
   String get addedRules {
-    return Intl.message('Added rules', name: 'addedRules', desc: '', args: []);
+    return Intl.message('Added Rules', name: 'addedRules', desc: '', args: []);
   }
 
   /// `Control global added rules`
