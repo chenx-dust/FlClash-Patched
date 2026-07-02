@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 
 const _allTargets = <String, String>{
   'android': 'apk',
+  'ios': 'ipa',
   'linux': 'deb,rpm,pacman,appimage',
   'macos': 'dmg',
   'windows': 'exe,zip',
@@ -43,9 +44,13 @@ Future<void> main(List<String> args) async {
 
   final platform = rest.isNotEmpty ? rest.first : host;
 
-  if (platform != host && platform != 'android') {
+  if (platform != host &&
+      platform != 'android' &&
+      !(host == 'macos' && platform == 'ios')) {
+    final allowed = [host, 'android', if (host == 'macos') 'ios'];
     stderr.writeln(
-      'Cannot build "$platform" on $hostOs. Allowed: $host, android',
+      'Cannot build "$platform" on $hostOs. '
+      'Allowed: ${allowed.join(', ')}',
     );
     _showHelp(parser);
     exit(1);
@@ -57,6 +62,8 @@ Future<void> main(List<String> args) async {
   final targets = _getTargets(platform, arch, results['targets']);
   final androidArch = results['arch'] as String?;
   final verbose = results['verbose'] as bool;
+  final iosExportMethod = results['export-method'] as String;
+  final iosExportOptionsPlist = results['export-options-plist'] as String?;
 
   final exitCode = await _package(
     platform,
@@ -65,6 +72,8 @@ Future<void> main(List<String> args) async {
     rootDir,
     arch,
     androidArch: androidArch,
+    iosExportMethod: iosExportMethod,
+    iosExportOptionsPlist: iosExportOptionsPlist,
     verbose: verbose,
   );
   exit(exitCode);
@@ -89,6 +98,17 @@ ArgParser createSetupArgParser() {
       allowed: ['arm', 'arm64', 'amd64'],
       help: 'Target architecture (Android only)',
     )
+    ..addOption(
+      'export-method',
+      defaultsTo: 'app-store',
+      allowed: ['app-store', 'ad-hoc', 'development', 'enterprise'],
+      help: 'iOS IPA export method',
+    )
+    ..addOption(
+      'export-options-plist',
+      valueHelp: 'ios/ExportOptions.plist',
+      help: 'iOS IPA export options plist',
+    )
     ..addFlag(
       'verbose',
       abbr: 'v',
@@ -100,13 +120,22 @@ ArgParser createSetupArgParser() {
 List<String> createFlutterBuildArgs({
   required String platform,
   required bool verbose,
+  String? iosExportMethod,
+  String? iosExportOptionsPlist,
 }) {
   final flutterBuildArgs = <String>[
     if (verbose) 'verbose',
     'dart-define-from-file=env.json',
   ];
-  if (platform == 'android') {
-    flutterBuildArgs.add('split-per-abi');
+  switch (platform) {
+    case 'android':
+      flutterBuildArgs.add('split-per-abi');
+    case 'ios':
+      if (iosExportOptionsPlist != null && iosExportOptionsPlist.isNotEmpty) {
+        flutterBuildArgs.add('export-options-plist=$iosExportOptionsPlist');
+      } else {
+        flutterBuildArgs.add('export-method=${iosExportMethod ?? 'app-store'}');
+      }
   }
   return flutterBuildArgs;
 }
@@ -118,7 +147,9 @@ String _getTargets(String platform, String arch, String? customTargets) {
 
 void _showHelp(ArgParser parser) {
   stderr.writeln('Usage: dart setup.dart [platform] [options]');
-  stderr.writeln('Platform: current host platform (default) or android');
+  stderr.writeln(
+    'Platform: current host platform (default), android, or ios (on macOS)',
+  );
   stderr.writeln();
   stderr.writeln('Default package targets:');
   _allTargets.forEach((p, t) => stderr.writeln('  $p: $t'));
@@ -133,6 +164,8 @@ Future<int> _package(
   String rootDir,
   String arch, {
   String? androidArch,
+  required String iosExportMethod,
+  String? iosExportOptionsPlist,
   required bool verbose,
 }) async {
   final coreSha256 = platform == 'windows' ? await _buildGoCore(rootDir) : null;
@@ -146,6 +179,8 @@ Future<int> _package(
   final flutterBuildArgs = createFlutterBuildArgs(
     platform: platform,
     verbose: verbose,
+    iosExportMethod: iosExportMethod,
+    iosExportOptionsPlist: iosExportOptionsPlist,
   );
   final descriptionArgs = <String>[];
   if (platform != 'android') {
