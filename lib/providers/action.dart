@@ -59,10 +59,14 @@ class CommonAction extends _$CommonAction {
     final onlyStatisticsProxy = ref.read(
       appSettingProvider.select((state) => state.onlyStatisticsProxy),
     );
-    final traffic = await coreController.getTraffic(onlyStatisticsProxy);
-    ref.read(trafficsProvider.notifier).addTraffic(traffic);
-    ref.read(totalTrafficProvider.notifier).value = await coreController
-        .getTotalTraffic(onlyStatisticsProxy);
+    try {
+      final traffic = await coreController.getTraffic(onlyStatisticsProxy);
+      ref.read(trafficsProvider.notifier).addTraffic(traffic);
+      ref.read(totalTrafficProvider.notifier).value =
+          await coreController.getTotalTraffic(onlyStatisticsProxy);
+    } catch (e) {
+      commonPrint.log('update traffic error: $e', logLevel: LogLevel.error);
+    }
   }
 
   Future<void> autoCheckUpdate() async {
@@ -169,7 +173,7 @@ class SetupAction extends _$SetupAction {
       return;
     }
     commonPrint.log('init status');
-    if (system.isAndroid) {
+    if (system.isMobile) {
       await _updateStartTime();
     }
     final status = isStart == true
