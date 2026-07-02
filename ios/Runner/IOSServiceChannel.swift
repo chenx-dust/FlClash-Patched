@@ -52,24 +52,25 @@ final class IOSServiceChannel {
   private func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     log("handle method=\(call.method)")
     switch call.method {
-    case "invokeAction":
+    case "invokeMethod", "invokeAppCore":
       guard let message = call.arguments as? String,
             let data = message.data(using: .utf8) else {
-        result(actionResult(data: nil, message: "invalid action"))
-        return
-      }
-      invokeAppCore(data, result: result)
-    case "invokeAppCore":
-      guard let message = call.arguments as? String,
-            let data = message.data(using: .utf8) else {
-        result(actionResult(data: nil, message: "invalid action"))
+        result(methodErrorResponse(
+          data: nil,
+          code: "invalid_method_call",
+          message: "invalid method call"
+        ))
         return
       }
       invokeAppCore(data, result: result)
     case "invokeNetworkExtensionCore":
       guard let message = call.arguments as? String,
             let data = message.data(using: .utf8) else {
-        result(actionResult(data: nil, message: "invalid action"))
+        result(methodErrorResponse(
+          data: nil,
+          code: "invalid_method_call",
+          message: "invalid method call"
+        ))
         return
       }
       sendProviderMessage(data, result: result)
@@ -425,12 +426,20 @@ final class IOSServiceChannel {
     loadManager(createIfNeeded: false) { manager, error in
       if let error = error {
         self.log("sendProviderMessage failed load manager: \(error.localizedDescription)")
-        result(self.actionResult(data: data, message: error.localizedDescription))
+        result(self.methodErrorResponse(
+          data: data,
+          code: "network_extension_error",
+          message: error.localizedDescription
+        ))
         return
       }
       guard let session = manager?.connection as? NETunnelProviderSession else {
         self.log("sendProviderMessage failed: session not found")
-        result(self.actionResult(data: data, message: "network extension session not found"))
+        result(self.methodErrorResponse(
+          data: data,
+          code: "network_extension_unavailable",
+          message: "network extension session not found"
+        ))
         return
       }
       do {
@@ -439,7 +448,11 @@ final class IOSServiceChannel {
           guard let response = response,
                 let message = String(data: response, encoding: .utf8) else {
             self.log("sendProviderMessage empty response")
-            result(self.actionResult(data: data, message: "empty network extension response"))
+            result(self.methodErrorResponse(
+              data: data,
+              code: "empty_response",
+              message: "empty network extension response"
+            ))
             return
           }
           self.log("sendProviderMessage response bytes=\(response.count)")
@@ -447,7 +460,11 @@ final class IOSServiceChannel {
         }
       } catch {
         self.log("sendProviderMessage failed: \(error.localizedDescription)")
-        result(self.actionResult(data: data, message: error.localizedDescription))
+        result(self.methodErrorResponse(
+          data: data,
+          code: "network_extension_error",
+          message: error.localizedDescription
+        ))
       }
     }
   }
@@ -456,16 +473,24 @@ final class IOSServiceChannel {
     _ data: Data,
     result: @escaping FlutterResult
   ) {
-    guard let action = String(data: data, encoding: .utf8) else {
-      log("invokeAppCore invalid action")
-      result(actionResult(data: data, message: "invalid action"))
+    guard let methodCall = String(data: data, encoding: .utf8) else {
+      log("invokeAppCore invalid method call")
+      result(methodErrorResponse(
+        data: data,
+        code: "invalid_method_call",
+        message: "invalid method call"
+      ))
       return
     }
     log("invokeAppCore")
-    IOSCoreBridge.invokeAction(action) { response in
+    IOSCoreBridge.invokeMethod(methodCall) { response in
       guard let response = response else {
         self.log("invokeAppCore empty response")
-        result(self.actionResult(data: data, message: "empty app core response"))
+        result(self.methodErrorResponse(
+          data: data,
+          code: "empty_response",
+          message: "empty app core response"
+        ))
         return
       }
       self.log("invokeAppCore response received")
@@ -565,43 +590,35 @@ final class IOSServiceChannel {
     }
   }
 
-  private func actionInfo(_ data: Data) -> (method: String, id: String?)? {
-    guard let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+  private func methodCallID(_ data: Data?) -> String? {
+    guard let data,
+          let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
       return nil
     }
-    return (
-      object["method"] as? String ?? "message",
-      object["id"] as? String
-    )
+    return object["id"] as? String
   }
 
-  private func actionResult(data: Data?, message: String) -> String {
-    return actionResult(data: data, payload: message, code: -1)
-  }
-
-  private func actionResult(data: Data?, payload resultPayload: Any, code: Int) -> String {
-    var method = "message"
-    var id: String?
-
-    if let data = data,
-       let action = actionInfo(data) {
-      method = action.method
-      id = action.id
-    }
-
+  private func methodErrorResponse(
+    data: Data?,
+    code: String,
+    message: String
+  ) -> String {
     var payload: [String: Any] = [
-      "method": method,
-      "data": resultPayload,
-      "code": code,
+      "result": NSNull(),
+      "error": [
+        "code": code,
+        "message": message,
+        "details": NSNull(),
+      ],
     ]
-    if let id = id {
+    if let id = methodCallID(data) {
       payload["id"] = id
     }
 
-    guard let resultData = try? JSONSerialization.data(withJSONObject: payload),
-          let result = String(data: resultData, encoding: .utf8) else {
-      return #"{"method":"message","data":"serialization failed","code":-1}"#
+    guard let responseData = try? JSONSerialization.data(withJSONObject: payload),
+          let response = String(data: responseData, encoding: .utf8) else {
+      return #"{"result":null,"error":{"code":"serialization_error","message":"failed to serialize method response","details":null}}"#
     }
-    return result
+    return response
   }
 }

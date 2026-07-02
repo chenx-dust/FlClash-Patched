@@ -75,16 +75,24 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
       return
     }
 
-    guard let action = String(data: messageData, encoding: .utf8) else {
-      log("handleAppMessage invalid action")
-      handler(actionResult(messageData: nil, message: "invalid action"))
+    guard let methodCall = String(data: messageData, encoding: .utf8) else {
+      log("handleAppMessage invalid method call")
+      handler(methodErrorResponse(
+        messageData: nil,
+        code: "invalid_method_call",
+        message: "invalid method call"
+      ))
       return
     }
 
-    NECoreBridge.invokeAction(action) { response in
+    NECoreBridge.invokeMethod(methodCall) { response in
       guard let response = response, let data = response.data(using: .utf8) else {
         self.log("handleAppMessage empty core response")
-        handler(self.actionResult(messageData: messageData, message: "empty core response"))
+        handler(self.methodErrorResponse(
+          messageData: messageData,
+          code: "empty_response",
+          message: "empty core response"
+        ))
         return
       }
       self.log("handleAppMessage response bytes=\(data.count)")
@@ -107,20 +115,28 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     }
   }
 
-  private func actionResult(messageData: Data?, message: String) -> Data? {
-    var method = "message"
-    var id: String?
-    if let messageData,
-       let object = try? JSONSerialization.jsonObject(with: messageData) as? [String: Any] {
-      method = object["method"] as? String ?? method
-      id = object["id"] as? String
+  private func methodCallID(_ messageData: Data?) -> String? {
+    guard let messageData,
+          let object = try? JSONSerialization.jsonObject(with: messageData) as? [String: Any] else {
+      return nil
     }
+    return object["id"] as? String
+  }
+
+  private func methodErrorResponse(
+    messageData: Data?,
+    code: String,
+    message: String
+  ) -> Data? {
     var payload: [String: Any] = [
-      "method": method,
-      "data": message,
-      "code": -1,
+      "result": NSNull(),
+      "error": [
+        "code": code,
+        "message": message,
+        "details": NSNull(),
+      ],
     ]
-    if let id = id {
+    if let id = methodCallID(messageData) {
       payload["id"] = id
     }
     return try? JSONSerialization.data(withJSONObject: payload)

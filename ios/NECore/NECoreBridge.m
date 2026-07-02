@@ -85,11 +85,11 @@ static void NECoreSystemLog(const char *level, const char *message) {
   });
 }
 
-+ (void)invokeAction:(NSString *)action result:(NECoreResultHandler)result {
++ (void)invokeMethod:(NSString *)methodCall result:(NECoreResultHandler)result {
   [self initializeBridge];
   NECoreResultHandler retainedResult = [result copy];
-  char *params = strdup(action.UTF8String);
-  invokeAction((void *)CFBridgingRetain(retainedResult), params);
+  char *params = strdup(methodCall.UTF8String);
+  invokeMethod((void *)CFBridgingRetain(retainedResult), params);
 }
 
 + (void)setEventListener:(NECoreResultHandler _Nullable)listener {

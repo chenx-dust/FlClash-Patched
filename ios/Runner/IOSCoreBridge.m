@@ -85,11 +85,11 @@ static void IOSCoreSystemLog(const char *level, const char *message) {
   });
 }
 
-+ (void)invokeAction:(NSString *)action result:(IOSCoreResultHandler)result {
++ (void)invokeMethod:(NSString *)methodCall result:(IOSCoreResultHandler)result {
   [self initializeBridge];
   IOSCoreResultHandler retainedResult = [result copy];
-  char *params = strdup(action.UTF8String);
-  invokeAction((void *)CFBridgingRetain(retainedResult), params);
+  char *params = strdup(methodCall.UTF8String);
+  invokeMethod((void *)CFBridgingRetain(retainedResult), params);
 }
 
 + (void)setEventListener:(IOSCoreResultHandler _Nullable)listener {

@@ -256,10 +256,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "download": MessageLookupByLibrary.simpleMessage("下载"),
     "downloadSpeed": MessageLookupByLibrary.simpleMessage("下载速度"),
     "downloadTraffic": MessageLookupByLibrary.simpleMessage("下载流量"),
-    "dozeSuspend": MessageLookupByLibrary.simpleMessage("Doze 休眠"),
-    "dozeSuspendDesc": MessageLookupByLibrary.simpleMessage(
-      "Android 进入 Doze 模式时挂起核心以降低耗电",
-    ),
     "edit": MessageLookupByLibrary.simpleMessage("编辑"),
     "editGlobalRules": MessageLookupByLibrary.simpleMessage("编辑全局规则"),
     "editProxy": MessageLookupByLibrary.simpleMessage("编辑代理"),
@@ -728,6 +724,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "subRuleEmpty": MessageLookupByLibrary.simpleMessage("子规则为空"),
     "subRuleNotEmpty": MessageLookupByLibrary.simpleMessage("子规则不能为空"),
     "submit": MessageLookupByLibrary.simpleMessage("提交"),
+    "suspendSupport": MessageLookupByLibrary.simpleMessage("休眠支持"),
+    "suspendSupportDesc": MessageLookupByLibrary.simpleMessage(
+      "设备空闲时挂起核心以降低耗电",
+    ),
     "suspended": MessageLookupByLibrary.simpleMessage("挂起中..."),
     "sync": MessageLookupByLibrary.simpleMessage("同步"),
     "system": MessageLookupByLibrary.simpleMessage("系统"),
