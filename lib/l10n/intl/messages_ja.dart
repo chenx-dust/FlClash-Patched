@@ -286,10 +286,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "download": MessageLookupByLibrary.simpleMessage("ダウンロード"),
     "downloadSpeed": MessageLookupByLibrary.simpleMessage("ダウンロード速度"),
     "downloadTraffic": MessageLookupByLibrary.simpleMessage("ダウンロード通信量"),
-    "dozeSuspend": MessageLookupByLibrary.simpleMessage("Doze サスペンド"),
-    "dozeSuspendDesc": MessageLookupByLibrary.simpleMessage(
-      "Android が Doze モードの間、バッテリー消費を抑えるためコアを一時停止します",
-    ),
     "edit": MessageLookupByLibrary.simpleMessage("編集"),
     "editGlobalRules": MessageLookupByLibrary.simpleMessage("グローバルルールを編集"),
     "editProxy": MessageLookupByLibrary.simpleMessage("プロキシを編集"),
@@ -838,6 +834,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "subRuleEmpty": MessageLookupByLibrary.simpleMessage("サブルールが空です"),
     "subRuleNotEmpty": MessageLookupByLibrary.simpleMessage("サブルールは空にできません"),
     "submit": MessageLookupByLibrary.simpleMessage("送信"),
+    "suspendSupport": MessageLookupByLibrary.simpleMessage("サスペンド対応"),
+    "suspendSupportDesc": MessageLookupByLibrary.simpleMessage(
+      "デバイスがアイドル状態の間、バッテリー消費を抑えるためコアを一時停止します",
+    ),
     "suspended": MessageLookupByLibrary.simpleMessage("一時停止中..."),
     "sync": MessageLookupByLibrary.simpleMessage("同期"),
     "system": MessageLookupByLibrary.simpleMessage("システム"),

@@ -137,8 +137,9 @@ class BuildLinuxCommand extends BuildCommand {
     await ensureGeoData(rootDir: _rootDir);
 
     final arch = archName ?? await _hostGoArch();
-    final targets =
-        Target.forPlatform('linux').where((t) => t.goarch == arch).toList();
+    final targets = Target.forPlatform(
+      'linux',
+    ).where((t) => t.goarch == arch).toList();
 
     if (targets.isEmpty) {
       throw BuildException('Invalid arch: $arch');
@@ -185,8 +186,9 @@ class BuildWindowsCommand extends BuildCommand {
     await ensureGeoData(rootDir: _rootDir);
 
     final arch = archName ?? await _hostGoArch();
-    final targets =
-        Target.forPlatform('windows').where((t) => t.goarch == arch).toList();
+    final targets = Target.forPlatform(
+      'windows',
+    ).where((t) => t.goarch == arch).toList();
 
     if (targets.isEmpty) {
       throw BuildException('Invalid arch: $arch');
@@ -263,8 +265,9 @@ class BuildMacosCommand extends BuildCommand {
     await ensureGeoData(rootDir: _rootDir);
 
     final arch = archName ?? await _hostGoArch();
-    final targets =
-        Target.forPlatform('darwin').where((t) => t.goarch == arch).toList();
+    final targets = Target.forPlatform(
+      'darwin',
+    ).where((t) => t.goarch == arch).toList();
 
     if (targets.isEmpty) {
       throw BuildException('Invalid arch: $arch');
@@ -295,6 +298,53 @@ Future<void> _writeCoreSha256(String coreSha256) async {
   await file.writeAsString(content, flush: true);
 }
 
+class BuildIosCommand extends BuildCommand {
+  BuildIosCommand() {
+    argParser.addOption(
+      'arch',
+      valueHelp: 'arm64',
+      help: 'Target architecture (default: arm64)',
+    );
+  }
+
+  @override
+  final name = 'ios';
+
+  @override
+  final description = 'Build iOS Go core (c-archive library)';
+
+  @override
+  Future<void> runBuildCommand() async {
+    final archName = (argResults?['arch'] as String?) ?? 'arm64';
+    final config = BuildConfig.load(rootDir: _rootDir);
+    await ensureGeoData(rootDir: _rootDir);
+
+    final targets = Target.forPlatform(
+      'ios',
+    ).where((t) => t.goarch == archName).toList();
+
+    if (targets.isEmpty) {
+      throw BuildException('Invalid arch: $archName');
+    }
+
+    final cache = BuildCache(rootDir: _rootDir);
+    final notice = BuildNotice();
+    final builder = GoBuilder(
+      rootDir: _rootDir,
+      config: config,
+      cache: cache,
+      notice: notice,
+    );
+    final results = await builder.buildAll(targets, force: force);
+
+    if (results.any((result) => result.rebuilt)) {
+      _log.info(
+        'Build complete: ${results.map((result) => result.primaryOutput)}',
+      );
+    }
+  }
+}
+
 Future<void> runMain(List<String> args) async {
   try {
     initLogging();
@@ -308,7 +358,8 @@ Future<void> runMain(List<String> args) async {
       ..addCommand(BuildAndroidCommand())
       ..addCommand(BuildLinuxCommand())
       ..addCommand(BuildWindowsCommand())
-      ..addCommand(BuildMacosCommand());
+      ..addCommand(BuildMacosCommand())
+      ..addCommand(BuildIosCommand());
 
     final topResults = runner.parse(args);
     _rootDir = (topResults['root-dir'] as String?) ?? _findProjectRoot();
