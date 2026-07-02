@@ -19,6 +19,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
   private let ipv6AddressPrefix = "fdfe:dcba:9876::1/126"
   private let ipv6Dns = "fdfe:dcba:9876::2"
   private let netAny = "0.0.0.0"
+  private var suspendSupport = true
 
   private func log(_ message: String) {
     logger.notice("\(message, privacy: .public)")
@@ -31,7 +32,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
       completionHandler(PacketTunnelProviderError.missingVpnOptions)
       return
     }
-    log("startTunnel options stack=\(vpnOptions.stack) ipv6=\(vpnOptions.ipv6) dnsHijacking=\(vpnOptions.dnsHijacking) systemProxy=\(vpnOptions.systemProxy)")
+    log("startTunnel options stack=\(vpnOptions.stack) ipv6=\(vpnOptions.ipv6) dnsHijacking=\(vpnOptions.dnsHijacking) systemProxy=\(vpnOptions.systemProxy) suspendSupport=\(vpnOptions.suspendSupport)")
+    suspendSupport = vpnOptions.suspendSupport
 
     setTunnelNetworkSettings(makeNetworkSettings(vpnOptions: vpnOptions)) { error in
       if let error = error {
@@ -91,12 +93,18 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
   }
   
   override func sleep(completionHandler: @escaping () -> Void) {
-    // Add code here to get ready to sleep.
+    if suspendSupport {
+      log("sleep: suspending tunnel")
+      NECoreBridge.setSuspended(true)
+    }
     completionHandler()
   }
-  
+
   override func wake() {
-    // Add code here to wake up.
+    if suspendSupport {
+      log("wake: resuming tunnel")
+      NECoreBridge.setSuspended(false)
+    }
   }
 
   private func actionResult(messageData: Data?, message: String) -> Data? {
@@ -311,6 +319,7 @@ private struct VpnOptions: Decodable {
   let ipv6: Bool
   let dnsHijacking: Bool
   let systemProxy: Bool
+  let suspendSupport: Bool
   let bypassDomain: [String]
   let stack: String
   let routeAddress: [String]
@@ -320,6 +329,7 @@ private struct VpnOptions: Decodable {
     case ipv6
     case dnsHijacking
     case systemProxy
+    case suspendSupport
     case bypassDomain
     case stack
     case routeAddress
@@ -331,6 +341,7 @@ private struct VpnOptions: Decodable {
     ipv6 = try container.decode(Bool.self, forKey: .ipv6)
     dnsHijacking = try container.decode(Bool.self, forKey: .dnsHijacking)
     systemProxy = try container.decode(Bool.self, forKey: .systemProxy)
+    suspendSupport = try container.decodeIfPresent(Bool.self, forKey: .suspendSupport) ?? true
     bypassDomain = try container.decodeIfPresent([String].self, forKey: .bypassDomain) ?? []
     stack = try container.decode(String.self, forKey: .stack)
     routeAddress = try container.decodeIfPresent([String].self, forKey: .routeAddress) ?? []

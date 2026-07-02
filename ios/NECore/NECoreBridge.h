@@ -27,6 +27,7 @@ struct sockaddr_ctl {
                             address:(NSString *)address
                                 dns:(NSString *)dns;
 + (void)stopTun;
++ (void)setSuspended:(BOOL)suspended;
 
 @end
 

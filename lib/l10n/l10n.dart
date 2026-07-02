@@ -164,21 +164,21 @@ class AppLocalizations {
     );
   }
 
-  /// `Doze Suspend`
-  String get dozeSuspend {
+  /// `Suspend Support`
+  String get suspendSupport {
     return Intl.message(
-      'Doze Suspend',
-      name: 'dozeSuspend',
+      'Suspend Support',
+      name: 'suspendSupport',
       desc: '',
       args: [],
     );
   }
 
-  /// `Suspend the core while Android is in Doze mode to reduce battery usage`
-  String get dozeSuspendDesc {
+  /// `Suspend the core while the device is idle to reduce battery usage`
+  String get suspendSupportDesc {
     return Intl.message(
-      'Suspend the core while Android is in Doze mode to reduce battery usage',
-      name: 'dozeSuspendDesc',
+      'Suspend the core while the device is idle to reduce battery usage',
+      name: 'suspendSupportDesc',
       desc: '',
       args: [],
     );

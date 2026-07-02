@@ -265,18 +265,18 @@ class DozeSuspendItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appLocalizations = context.appLocalizations;
-    final dozeSuspend = ref.watch(
-      vpnSettingProvider.select((state) => state.dozeSuspend),
+    final suspendSupport = ref.watch(
+      vpnSettingProvider.select((state) => state.suspendSupport),
     );
     return ListItem.switchItem(
-      title: Text(appLocalizations.dozeSuspend),
-      subtitle: Text(appLocalizations.dozeSuspendDesc),
+      title: Text(appLocalizations.suspendSupport),
+      subtitle: Text(appLocalizations.suspendSupportDesc),
       delegate: SwitchDelegate(
-        value: dozeSuspend,
+        value: suspendSupport,
         onChanged: (bool value) async {
           ref
               .read(vpnSettingProvider.notifier)
-              .update((state) => state.copyWith(dozeSuspend: value));
+              .update((state) => state.copyWith(suspendSupport: value));
         },
       ),
     );

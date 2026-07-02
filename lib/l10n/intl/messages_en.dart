@@ -363,10 +363,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "download": MessageLookupByLibrary.simpleMessage("Download"),
     "downloadSpeed": MessageLookupByLibrary.simpleMessage("Download speed"),
     "downloadTraffic": MessageLookupByLibrary.simpleMessage("Download traffic"),
-    "dozeSuspend": MessageLookupByLibrary.simpleMessage("Doze Suspend"),
-    "dozeSuspendDesc": MessageLookupByLibrary.simpleMessage(
-      "Suspend the core while Android is in Doze mode to reduce battery usage",
-    ),
     "edit": MessageLookupByLibrary.simpleMessage("Edit"),
     "editGlobalRules": MessageLookupByLibrary.simpleMessage(
       "Edit global rules",
@@ -1025,6 +1021,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Sub rule cannot be empty",
     ),
     "submit": MessageLookupByLibrary.simpleMessage("Submit"),
+    "suspendSupport": MessageLookupByLibrary.simpleMessage("Suspend Support"),
+    "suspendSupportDesc": MessageLookupByLibrary.simpleMessage(
+      "Suspend the core while the device is idle to reduce battery usage",
+    ),
     "suspended": MessageLookupByLibrary.simpleMessage("Suspended..."),
     "sync": MessageLookupByLibrary.simpleMessage("Sync"),
     "system": MessageLookupByLibrary.simpleMessage("System"),
