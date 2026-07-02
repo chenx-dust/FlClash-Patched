@@ -1,0 +1,40 @@
+PODS:
+  - Flutter (1.0.0)
+  - flutter_js (0.1.0):
+    - Flutter
+  - rust_api (0.0.1):
+    - Flutter
+  - setup (0.0.1):
+    - Flutter
+  - wifi_ssid (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - flutter_js (from `.symlinks/plugins/flutter_js/ios`)
+  - rust_api (from `.symlinks/plugins/rust_api/ios`)
+  - setup (from `.symlinks/plugins/setup/ios`)
+  - wifi_ssid (from `.symlinks/plugins/wifi_ssid/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  flutter_js:
+    :path: ".symlinks/plugins/flutter_js/ios"
+  rust_api:
+    :path: ".symlinks/plugins/rust_api/ios"
+  setup:
+    :path: ".symlinks/plugins/setup/ios"
+  wifi_ssid:
+    :path: ".symlinks/plugins/wifi_ssid/ios"
+
+SPEC CHECKSUMS:
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  flutter_js: 867813c1830e1d9b2c5d547cdb6f61801e2f2145
+  rust_api: 4634cff4c089f133234a97cf499354c955bd49af
+  setup: 80e3b0b66db653bcb9d6663786c487deeaa73e43
+  wifi_ssid: b4bc102237c7d1cb6c9e92b1031e5786a1b216e9
+
+PODFILE CHECKSUM: e30f02f9d1c72c47bb6344a0a748c9d268180865
+
+COCOAPODS: 1.16.2

@@ -131,6 +131,18 @@ brew install --cask flclash
            dart setup.dart macos
            ```
 
+    - iOS
+
+        1. 你需要一个macOS客户端
+
+        2. 为 App Bundle 和 Network Extension Bundle 配置 Apple Developer capabilities、App Group 以及描述文件
+
+        3. 运行构建脚本
+
+           ```bash
+           dart setup.dart ios --ios-bundle-id com.example.flclash
+           ```
+
 ## Star
 
 支持开发者的最简单方式是点击页面顶部的星标（⭐）。

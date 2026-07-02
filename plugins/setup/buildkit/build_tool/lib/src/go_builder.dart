@@ -20,10 +20,21 @@ String _resolveGoLdflags(Target target, BuildConfig config) {
 }
 
 String _resolveCc(Target target) {
+  if (target.goos == 'ios') {
+    final result = Process.runSync('xcrun', [
+      '--sdk',
+      'iphoneos',
+      '--find',
+      'clang',
+    ]);
+    if (result.exitCode != 0) {
+      throw BuildException('Failed to locate iOS clang: ${result.stderr}');
+    }
+    return (result.stdout as String).trim();
+  }
+
   final ndk = Environment.androidNdk;
-  final prebuiltDir = Directory(
-    p.join(ndk, 'toolchains', 'llvm', 'prebuilt'),
-  );
+  final prebuiltDir = Directory(p.join(ndk, 'toolchains', 'llvm', 'prebuilt'));
   final entries = prebuiltDir
       .listSync()
       .where((e) => !p.basename(e.path).startsWith('.'))
@@ -32,6 +43,25 @@ String _resolveCc(Target target) {
     throw BuildException('No NDK prebuilt toolchain found in $prebuiltDir');
   }
   return p.join(entries.first.path, 'bin', target.ndkCcName);
+}
+
+String _resolveIosSdkPath() {
+  final result = Process.runSync('xcrun', [
+    '--sdk',
+    'iphoneos',
+    '--show-sdk-path',
+  ]);
+  if (result.exitCode != 0) {
+    throw BuildException('Failed to locate iOS SDK: ${result.stderr}');
+  }
+  return (result.stdout as String).trim();
+}
+
+class BuildVariant {
+  final String suffix;
+  final String extraTags;
+
+  const BuildVariant({this.suffix = '', this.extraTags = ''});
 }
 
 class GoBuilder {
@@ -43,25 +73,35 @@ class GoBuilder {
   String get _corePath => p.join(rootDir, config.coreDir);
   String get _outputPath => p.join(rootDir, config.outputDir);
 
-  Future<String> build(Target target) async {
+  Future<String> build(
+    Target target, {
+    String? outputName,
+    String? tags,
+  }) async {
     // Desktop: output directly to libclash/{platform}/
-    // Android: output to libclash/android/{abi}/
+    // Android/iOS: output to libclash/{platform}/{abi}/
     final outDir = target.isLib
         ? p.join(_outputPath, target.platformDir, target.abi!)
         : p.join(_outputPath, target.platformDir);
     ensureDir(outDir);
 
-    final fileName = target.isLib
-        ? '${config.libName}${target.dynamicLibExtension}'
-        : '${config.coreName}${target.executableExtension}';
+    final fileName = outputName ??
+        (target.isLib
+            ? '${config.libName}${target.dynamicLibExtension}'
+            : '${config.coreName}${target.executableExtension}');
     final outFile = p.join(outDir, fileName);
 
-    final env = <String, String>{
-      'GOOS': target.goos,
-      'GOARCH': target.goarch,
-    };
+    final env = <String, String>{'GOOS': target.goos, 'GOARCH': target.goarch};
 
-    if (target.isLib) {
+    if (target.isLib && target.goos == 'ios') {
+      final sdkPath = _resolveIosSdkPath();
+      env['CGO_ENABLED'] = '1';
+      env['CC'] = _resolveCc(target);
+      env['CGO_CFLAGS'] =
+          '-isysroot $sdkPath -miphoneos-version-min=14.0 -arch ${target.goarch}';
+      env['CGO_LDFLAGS'] =
+          '-isysroot $sdkPath -miphoneos-version-min=14.0 -arch ${target.goarch}';
+    } else if (target.isLib) {
       env['CGO_ENABLED'] = '1';
       env['CC'] = _resolveCc(target);
       env['CFLAGS'] = '-O3 -Werror';
@@ -72,35 +112,60 @@ class GoBuilder {
     final args = [
       'build',
       '-ldflags=${_resolveGoLdflags(target, config)}',
-      '-tags=${config.tags}',
-      if (target.isLib) '-buildmode=c-shared',
+      '-tags=${tags ?? config.tags}',
+      if (target.isLib)
+        target.goos == 'ios' ? '-buildmode=c-archive' : '-buildmode=c-shared',
       '-o',
       outFile,
     ];
 
     _log.info(kDoubleSeparator);
+    final buildMode = target.isLib
+        ? target.goos == 'ios'
+            ? 'CGO, c-archive'
+            : 'CGO, c-shared'
+        : 'standalone';
     _log.info(
-        'Building Go core: $target ${target.isLib ? "(CGO, c-shared)" : "(standalone)"}');
+      'Building Go core: $target ($buildMode)',
+    );
     _log.info(kSeparator);
 
-    await runCommandStream('go', args,
-        workingDirectory: _corePath, environment: env);
+    await runCommandStream(
+      'go',
+      args,
+      workingDirectory: _corePath,
+      environment: env,
+    );
 
-    if (target.isLib && target.abi != null) {
+    if (target.isLib && target.goos == 'android' && target.abi != null) {
       await _adjustAndroidOutput(
-          outDir: p.join(_outputPath, target.platformDir),
-          abiDir: target.abi!,
-          archName: target.abi!,
-          libPath: outFile,
-          libName: fileName);
+        outDir: p.join(_outputPath, target.platformDir),
+        abiDir: target.abi!,
+        archName: target.abi!,
+        libPath: outFile,
+        libName: fileName,
+      );
     }
 
     _log.info('Built: $outFile');
     return outFile;
   }
 
-  Future<List<String>> buildAll(List<Target> targets) async {
-    final results = await Future.wait(targets.map(build));
+  Future<List<String>> buildAll(
+    List<Target> targets, {
+    List<BuildVariant> variants = const [BuildVariant()],
+  }) async {
+    final results = await Future.wait(
+      targets.expand((target) => variants.map((v) {
+        final name = v.suffix.isEmpty
+            ? null
+            : '${config.libName}${v.suffix}${target.dynamicLibExtension}';
+        final effectiveTags = v.extraTags.isEmpty
+            ? null
+            : '${config.tags} ${v.extraTags}';
+        return build(target, outputName: name, tags: effectiveTags);
+      })).toList(),
+    );
     return results;
   }
 
@@ -112,11 +177,20 @@ class GoBuilder {
     required String libName,
   }) async {
     final includesPath = p.join(outDir, 'includes', archName);
-    final androidCoreMainPath =
-        p.join(rootDir, 'android', 'core', 'src', 'main');
+    final androidCoreMainPath = p.join(
+      rootDir,
+      'android',
+      'core',
+      'src',
+      'main',
+    );
     final jniLibsPath = p.join(androidCoreMainPath, 'jniLibs', abiDir);
-    final cppIncludesPath =
-        p.join(androidCoreMainPath, 'cpp', 'includes', archName);
+    final cppIncludesPath = p.join(
+      androidCoreMainPath,
+      'cpp',
+      'includes',
+      archName,
+    );
 
     ensureDir(jniLibsPath);
     ensureDir(includesPath);
