@@ -12,6 +12,7 @@ final class IOSServiceChannel {
   private let providerBundleIdentifier = "com.follow.clash.Y8RH943F65.NECore"
   private let appGroupIdentifier = "group.com.follow.clash.Y8RH943F65"
   private let sharedStateKey = "sharedState"
+  private let runTimeKey = "runTime"
   private let eventQueueDirectoryName = "core-events"
   private let eventNotificationName = "com.follow.clash.Y8RH943F65.NECore.event"
   private let localizedDescription = "FlClash"
@@ -86,7 +87,7 @@ final class IOSServiceChannel {
     case "getAppGroupDir":
       result(appGroupDir())
     case "getRunTime":
-      result(0)
+      getRunTime(result: result)
     case "isNetworkExtensionCoreActive":
       isNetworkExtensionCoreActive(result: result)
     default:
@@ -179,6 +180,7 @@ final class IOSServiceChannel {
               self.log("startTunnel already connected")
               self.isTunnelStopExpected = false
               self.lastTunnelStatus = .connected
+              self.saveRunTime()
               completion(true)
               return
             }
@@ -187,6 +189,9 @@ final class IOSServiceChannel {
             self.log("startTunnel startVPNTunnel requested")
             self.waitForTunnelConnected(manager: manager) { connected in
               self.log("startTunnel connected result=\(connected)")
+              if connected {
+                self.saveRunTime()
+              }
               completion(connected)
             }
           } catch {
@@ -232,6 +237,7 @@ final class IOSServiceChannel {
       if !self.isTunnelStopExpected {
         self.isTunnelStopExpected = false
       }
+      self.clearRunTime()
       result(true)
     }
   }
@@ -446,6 +452,28 @@ final class IOSServiceChannel {
       let status = manager?.connection.status ?? .invalid
       result(self.canSendProviderMessage(status: status))
     }
+  }
+
+  private func getRunTime(result: @escaping FlutterResult) {
+    loadManager(createIfNeeded: false) { manager, _ in
+      let status = manager?.connection.status ?? .invalid
+      guard self.canSendProviderMessage(status: status) else {
+        result(0)
+        return
+      }
+      let ms = UserDefaults(suiteName: self.appGroupIdentifier)?
+        .integer(forKey: self.runTimeKey) ?? 0
+      result(ms)
+    }
+  }
+
+  private func saveRunTime() {
+    let ms = Int(Date().timeIntervalSince1970 * 1000)
+    UserDefaults(suiteName: appGroupIdentifier)?.set(ms, forKey: runTimeKey)
+  }
+
+  private func clearRunTime() {
+    UserDefaults(suiteName: appGroupIdentifier)?.removeObject(forKey: runTimeKey)
   }
 
   private func canSendProviderMessage(status: NEVPNStatus) -> Bool {
