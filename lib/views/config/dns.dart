@@ -94,7 +94,7 @@ class PreferH3Item extends ConsumerWidget {
       patchClashConfigProvider.select((state) => state.dns.preferH3),
     );
     return ListItem.switchItem(
-      title: const Text('PreferH3'),
+      title: const Text('Prefer HTTP/3'),
       subtitle: Text(appLocalizations.preferH3Desc),
       delegate: SwitchDelegate(
         value: preferH3,
@@ -471,7 +471,7 @@ class GeoipItem extends ConsumerWidget {
       ),
     );
     return ListItem.switchItem(
-      title: const Text('Geoip'),
+      title: const Text('GeoIP'),
       delegate: SwitchDelegate(
         value: geoip,
         onChanged: (bool value) async {
@@ -536,11 +536,11 @@ class GeositeItem extends ConsumerWidget {
       ),
     );
     return ListItem.open(
-      title: const Text('Geosite'),
+      title: const Text('GeoSite'),
       delegate: OpenDelegate(
         blur: false,
         widget: ListInputPage(
-          title: 'Geosite',
+          title: 'GeoSite',
           items: geosite,
           itemMaxLength: TextInputLimits.geoSite,
           titleBuilder: (item) => Text(item),
