@@ -20,7 +20,7 @@
 		7891A0032FF2361D00620D82 /* IOSCoreBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 7891A0022FF2361D00620D82 /* IOSCoreBridge.m */; };
 		7891A0062FF2361D00620D82 /* libclash.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7891A0052FF2361D00620D82 /* libclash.a */; };
 		7891A0082FF23B9500620D82 /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 7891A0072FF23B9500620D82 /* libresolv.tbd */; };
-		7891A0092FF2A10100620D82 /* libclash.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7891A0052FF2361D00620D82 /* libclash.a */; };
+		7891A0092FF2A10100620D82 /* libclash_lowmem.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7891A00B2FF2C4D700620D82 /* libclash_lowmem.a */; };
 		7891A00A2FF2A10100620D82 /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 7891A0072FF23B9500620D82 /* libresolv.tbd */; };
 		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
@@ -90,6 +90,7 @@
 		7891A0042FF2361D00620D82 /* IOSCoreBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IOSCoreBridge.h; sourceTree = "<group>"; };
 		7891A0052FF2361D00620D82 /* libclash.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libclash.a; path = ../libclash/ios/arm64/libclash.a; sourceTree = "<group>"; };
 		7891A0072FF23B9500620D82 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
+		7891A00B2FF2C4D700620D82 /* libclash_lowmem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libclash_lowmem.a; path = ../libclash/ios/arm64/libclash_lowmem.a; sourceTree = "<group>"; };
 		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
@@ -136,7 +137,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				059852A62FF20A1200620D82 /* NetworkExtension.framework in Frameworks */,
-				7891A0092FF2A10100620D82 /* libclash.a in Frameworks */,
+				7891A0092FF2A10100620D82 /* libclash_lowmem.a in Frameworks */,
 				7891A00A2FF2A10100620D82 /* libresolv.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -246,6 +247,7 @@
 				35334DA7DC4F8101DB01E237 /* Pods_RunnerTests.framework */,
 				059852A52FF20A1200620D82 /* NetworkExtension.framework */,
 				7891A0052FF2361D00620D82 /* libclash.a */,
+				7891A00B2FF2C4D700620D82 /* libclash_lowmem.a */,
 				7891A0072FF23B9500620D82 /* libresolv.tbd */,
 			);
 			name = Frameworks;

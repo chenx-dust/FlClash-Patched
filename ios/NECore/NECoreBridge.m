@@ -82,7 +82,6 @@ static void NECoreSystemLog(const char *level, const char *message) {
     resolve_process_func = &NECoreResolveProcess;
     result_func = &NECoreResult;
     system_log_func = &NECoreSystemLog;
-    setLowMemoryMode(true);
   });
 }
 

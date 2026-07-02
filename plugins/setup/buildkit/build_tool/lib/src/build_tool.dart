@@ -254,7 +254,10 @@ class BuildIosCommand extends BuildCommand {
     }
 
     final builder = GoBuilder(rootDir: _rootDir, config: config);
-    final corePaths = await builder.buildAll(targets);
+    final corePaths = await builder.buildAll(targets, variants: [
+      const BuildVariant(),
+      const BuildVariant(suffix: '_lowmem', extraTags: 'with_low_memory'),
+    ]);
 
     _log.info('Build complete: $corePaths');
   }

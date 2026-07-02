@@ -57,6 +57,13 @@ String _resolveIosSdkPath() {
   return (result.stdout as String).trim();
 }
 
+class BuildVariant {
+  final String suffix;
+  final String extraTags;
+
+  const BuildVariant({this.suffix = '', this.extraTags = ''});
+}
+
 class GoBuilder {
   final String rootDir;
   final BuildConfig config;
@@ -66,7 +73,11 @@ class GoBuilder {
   String get _corePath => p.join(rootDir, config.coreDir);
   String get _outputPath => p.join(rootDir, config.outputDir);
 
-  Future<String> build(Target target) async {
+  Future<String> build(
+    Target target, {
+    String? outputName,
+    String? tags,
+  }) async {
     // Desktop: output directly to libclash/{platform}/
     // Android/iOS: output to libclash/{platform}/{abi}/
     final outDir = target.isLib
@@ -74,9 +85,10 @@ class GoBuilder {
         : p.join(_outputPath, target.platformDir);
     ensureDir(outDir);
 
-    final fileName = target.isLib
-        ? '${config.libName}${target.dynamicLibExtension}'
-        : '${config.coreName}${target.executableExtension}';
+    final fileName = outputName ??
+        (target.isLib
+            ? '${config.libName}${target.dynamicLibExtension}'
+            : '${config.coreName}${target.executableExtension}');
     final outFile = p.join(outDir, fileName);
 
     final env = <String, String>{'GOOS': target.goos, 'GOARCH': target.goarch};
@@ -100,7 +112,7 @@ class GoBuilder {
     final args = [
       'build',
       '-ldflags=${_resolveGoLdflags(target, config)}',
-      '-tags=${config.tags}',
+      '-tags=${tags ?? config.tags}',
       if (target.isLib)
         target.goos == 'ios' ? '-buildmode=c-archive' : '-buildmode=c-shared',
       '-o',
@@ -139,8 +151,21 @@ class GoBuilder {
     return outFile;
   }
 
-  Future<List<String>> buildAll(List<Target> targets) async {
-    final results = await Future.wait(targets.map(build));
+  Future<List<String>> buildAll(
+    List<Target> targets, {
+    List<BuildVariant> variants = const [BuildVariant()],
+  }) async {
+    final results = await Future.wait(
+      targets.expand((target) => variants.map((v) {
+        final name = v.suffix.isEmpty
+            ? null
+            : '${config.libName}${v.suffix}${target.dynamicLibExtension}';
+        final effectiveTags = v.extraTags.isEmpty
+            ? null
+            : '${config.tags} ${v.extraTags}';
+        return build(target, outputName: name, tags: effectiveTags);
+      })).toList(),
+    );
     return results;
   }
 

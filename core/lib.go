@@ -14,7 +14,6 @@ import (
 	"encoding/json"
 	"errors"
 	"net"
-	"runtime/debug"
 	"sync"
 	"syscall"
 	"unsafe"
@@ -157,10 +156,6 @@ func handleStartTun(callback unsafe.Pointer, fd int, stack, address, dns string)
 //export setLowMemoryMode
 func setLowMemoryMode(enabled bool) {
 	lowmemory.SetEnabled(enabled)
-	if enabled {
-		debug.SetGCPercent(20)
-		debug.SetMemoryLimit(32 * 1024 * 1024)
-	}
 }
 
 func (result ActionResult) send() {
