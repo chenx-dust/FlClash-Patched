@@ -10,6 +10,8 @@ char* (*resolve_process_func)(void *tun_interface,int protocol, const char *sour
 
 void (*result_func)(void *invoke_Interface, const char *data);
 
+void (*system_log_func)(const char *level, const char *message);
+
 void protect(void *tun_interface, int fd) {
     protect_func(tun_interface, fd);
 }
@@ -28,4 +30,10 @@ void free_string(char *data) {
 
 void result(void *invoke_Interface, const char *data) {
     return result_func(invoke_Interface, data);
+}
+
+void system_log(const char *level, const char *message) {
+    if (system_log_func != NULL) {
+        system_log_func(level, message);
+    }
 }
