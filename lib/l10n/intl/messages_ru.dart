@@ -374,10 +374,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Скорость скачивания",
     ),
     "downloadTraffic": MessageLookupByLibrary.simpleMessage("Входящий трафик"),
-    "dozeSuspend": MessageLookupByLibrary.simpleMessage("Приостановка в Doze"),
-    "dozeSuspendDesc": MessageLookupByLibrary.simpleMessage(
-      "Приостанавливать ядро в режиме Doze Android, чтобы снизить расход батареи",
-    ),
     "edit": MessageLookupByLibrary.simpleMessage("Редактировать"),
     "editGlobalRules": MessageLookupByLibrary.simpleMessage(
       "Редактировать глобальные правила",
@@ -1084,6 +1080,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Подправило не может быть пустым",
     ),
     "submit": MessageLookupByLibrary.simpleMessage("Отправить"),
+    "suspendSupport": MessageLookupByLibrary.simpleMessage(
+      "Поддержка приостановки",
+    ),
+    "suspendSupportDesc": MessageLookupByLibrary.simpleMessage(
+      "Приостанавливать ядро при простое устройства, чтобы снизить расход батареи",
+    ),
     "suspended": MessageLookupByLibrary.simpleMessage("Приостановлено..."),
     "sync": MessageLookupByLibrary.simpleMessage("Синхронизация"),
     "system": MessageLookupByLibrary.simpleMessage("Система"),

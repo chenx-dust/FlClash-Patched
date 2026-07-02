@@ -26,7 +26,7 @@ internal class ServiceModules(private val service: Service) {
             NotificationModule(service, nextScope),
             NetworkObserveModule(service),
         )
-        if (ServiceConfig.vpnOptions?.dozeSuspend != false) {
+        if (ServiceConfig.vpnOptions?.suspendSupport != false) {
             nextModules.add(SuspendModule(service, nextScope))
         }
         val startedModules = mutableListOf<ServiceModule>()
