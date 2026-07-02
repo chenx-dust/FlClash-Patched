@@ -56,8 +56,25 @@ class Service {
   }
 
   Future<CoreMethodResponse?> invokeMethod(CoreMethodCall call) async {
+    return _invokeMethod('invokeMethod', call);
+  }
+
+  Future<CoreMethodResponse?> invokeAppCore(CoreMethodCall call) async {
+    return _invokeMethod('invokeAppCore', call);
+  }
+
+  Future<CoreMethodResponse?> invokeNetworkExtensionCore(
+    CoreMethodCall call,
+  ) async {
+    return _invokeMethod('invokeNetworkExtensionCore', call);
+  }
+
+  Future<CoreMethodResponse?> _invokeMethod(
+    String method,
+    CoreMethodCall call,
+  ) async {
     final data = await methodChannel.invokeMethod<String>(
-      'invokeMethod',
+      method,
       json.encode(call),
     );
     if (data == null) {
@@ -65,6 +82,13 @@ class Service {
     }
     final dataJson = await data.commonToJSON<dynamic>();
     return CoreMethodResponse.fromJson(dataJson);
+  }
+
+  Future<bool> isNetworkExtensionCoreActive() async {
+    return await methodChannel.invokeMethod<bool>(
+          'isNetworkExtensionCoreActive',
+        ) ??
+        false;
   }
 
   Future<bool> start() async {
@@ -91,6 +115,10 @@ class Service {
     return await methodChannel.invokeMethod<bool>('shutdown') ?? true;
   }
 
+  Future<String> getAppGroupDir() async {
+    return await methodChannel.invokeMethod<String>('getAppGroupDir') ?? '';
+  }
+
   Future<DateTime?> getRunTime() async {
     final ms = await methodChannel.invokeMethod<int>('getRunTime') ?? 0;
     if (ms == 0) {
@@ -112,4 +140,4 @@ class Service {
   }
 }
 
-Service? get service => system.isAndroid ? Service() : null;
+Service? get service => system.isAndroid || system.isIOS ? Service() : null;

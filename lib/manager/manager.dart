@@ -3,6 +3,7 @@ export 'app_manager.dart';
 export 'back_manager.dart';
 export 'connectivity_manager.dart';
 export 'core_manager.dart';
+export 'mobile_manager.dart';
 export 'proxy_manager.dart';
 export 'status_manager.dart';
 export 'theme_manager.dart';

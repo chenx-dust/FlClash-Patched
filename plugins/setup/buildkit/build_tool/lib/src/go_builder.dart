@@ -23,19 +23,61 @@ String _resolveGoLdflags(Target target, BuildConfig config) {
 }
 
 String _resolveCc(Target target) {
-  final ndk = Environment.androidNdk;
-  final prebuiltDir = Directory(
-    p.join(ndk, 'toolchains', 'llvm', 'prebuilt'),
-  );
-  final entries = prebuiltDir
-      .listSync()
-      .where((e) => !p.basename(e.path).startsWith('.'))
-      .toList();
-  if (entries.isEmpty) {
-    throw BuildException('No NDK prebuilt toolchain found in $prebuiltDir');
+  switch (target.goos) {
+    case 'ios':
+      final result = Process.runSync('xcrun', [
+        '--sdk',
+        'iphoneos',
+        '--find',
+        'clang',
+      ]);
+      if (result.exitCode != 0) {
+        throw BuildException('Failed to locate iOS clang: ${result.stderr}');
+      }
+      return (result.stdout as String).trim();
+    case 'android':
+      final ndk = Environment.androidNdk;
+      final prebuiltDir = Directory(
+        p.join(ndk, 'toolchains', 'llvm', 'prebuilt'),
+      );
+      final entries = prebuiltDir
+          .listSync()
+          .where((e) => !p.basename(e.path).startsWith('.'))
+          .toList();
+      if (entries.isEmpty) {
+        throw BuildException('No NDK prebuilt toolchain found in $prebuiltDir');
+      }
+      return p.join(entries.first.path, 'bin', target.ndkCcName);
+    default:
+      throw BuildException('Unsupported CGO target: ${target.goos}');
   }
-  return p.join(entries.first.path, 'bin', target.ndkCcName);
 }
+
+String _resolveIosSdkPath() {
+  final result = Process.runSync('xcrun', [
+    '--sdk',
+    'iphoneos',
+    '--show-sdk-path',
+  ]);
+  if (result.exitCode != 0) {
+    throw BuildException('Failed to locate iOS SDK: ${result.stderr}');
+  }
+  return (result.stdout as String).trim();
+}
+
+String resolveIosCgoFlags({
+  required String sdkPath,
+  required String arch,
+  String baseFlags = '',
+}) =>
+    [
+      baseFlags.trim(),
+      '-isysroot',
+      sdkPath,
+      '-miphoneos-version-min=14.0',
+      '-arch',
+      arch,
+    ].where((value) => value.isNotEmpty).join(' ');
 
 class GoBuilder {
   final String rootDir;
@@ -55,19 +97,21 @@ class GoBuilder {
 
   Future<BuildExecution> build(Target target, {bool force = false}) async {
     // Desktop: output directly to libclash/{platform}/
-    // Android: output to libclash/android/{abi}/
+    // Android/iOS: output to libclash/{platform}/{abi}/
     final outDir = target.isLib
         ? p.join(_outputPath, target.platformDir, target.abi!)
         : p.join(_outputPath, target.platformDir);
     ensureDir(outDir);
 
     final fileName = target.isLib
-        ? '${config.libName}${target.dynamicLibExtension}'
+        ? '${config.libName}${target.lowMemory ? '_lowmem' : ''}'
+            '${target.dynamicLibExtension}'
         : '${config.coreName}${target.executableExtension}';
     final outFile = p.join(outDir, fileName);
 
+    final variantKey = target.lowMemory ? '-lowmem' : '';
     return cache.run(
-      key: '${target.platformDir}-${target.goarch}-core',
+      key: '${target.platformDir}-${target.goarch}$variantKey-core',
       fingerprint: () => _calculateFingerprint(target),
       primaryOutput: outFile,
       force: force,
@@ -75,11 +119,12 @@ class GoBuilder {
       build: () async {
         final env = _buildEnvironment(target);
         final args = _buildArguments(target, outFile: outFile);
+        final buildMode = _buildMode(target);
 
         _log.info(kDoubleSeparator);
         _log.info(
           'Building Go core: $target '
-          '${target.isLib ? "(CGO, c-shared)" : "(standalone)"}',
+          '(${buildMode == null ? 'standalone' : 'CGO, $buildMode'})',
         );
         _log.info(kSeparator);
 
@@ -91,7 +136,7 @@ class GoBuilder {
         );
 
         final outputs = <String>[outFile];
-        if (target.isLib && target.abi != null) {
+        if (target.isLib && target.goos == 'android' && target.abi != null) {
           outputs.addAll(
             await _adjustAndroidOutput(
               outDir: p.join(_outputPath, target.platformDir),
@@ -120,28 +165,56 @@ class GoBuilder {
   }
 
   Map<String, String> _buildEnvironment(Target target) {
-    final env = <String, String>{
-      'GOOS': target.goos,
-      'GOARCH': target.goarch,
-    };
+    final env = <String, String>{'GOOS': target.goos, 'GOARCH': target.goarch};
     if (target.isLib) {
       env
         ..['CGO_ENABLED'] = '1'
         ..['CC'] = _resolveCc(target)
-        ..['CFLAGS'] = '-O3 -Werror';
+        ..['CGO_CFLAGS'] = '-O3 -Werror';
+      if (target.goos == 'ios') {
+        final sdkPath = _resolveIosSdkPath();
+        env
+          ..['CGO_CFLAGS'] = resolveIosCgoFlags(
+            sdkPath: sdkPath,
+            arch: target.goarch,
+            baseFlags: env['CGO_CFLAGS'] ?? '',
+          )
+          ..['CGO_LDFLAGS'] = resolveIosCgoFlags(
+            sdkPath: sdkPath,
+            arch: target.goarch,
+          );
+      }
     } else {
       env['CGO_ENABLED'] = '0';
     }
     return env;
   }
 
-  List<String> _buildArguments(Target target, {String? outFile}) => [
-        'build',
-        '-ldflags=${_resolveGoLdflags(target, config)}',
-        '-tags=${config.tags}',
-        if (target.isLib) '-buildmode=c-shared',
-        if (outFile != null) ...['-o', outFile],
-      ];
+  List<String> _buildArguments(Target target, {String? outFile}) {
+    final buildMode = _buildMode(target);
+    return [
+      'build',
+      '-ldflags=${_resolveGoLdflags(target, config)}',
+      '-tags=${_buildTags(target)}',
+      if (buildMode != null) '-buildmode=$buildMode',
+      if (outFile != null) ...['-o', outFile],
+    ];
+  }
+
+  String? _buildMode(Target target) {
+    if (!target.isLib) return null;
+    switch (target.goos) {
+      case 'android':
+        return 'c-shared';
+      case 'ios':
+        return 'c-archive';
+      default:
+        throw BuildException('Unsupported library target: ${target.goos}');
+    }
+  }
+
+  String _buildTags(Target target) =>
+      target.lowMemory ? '${config.tags} with_low_memory' : config.tags;
 
   Future<String> _calculateFingerprint(Target target) async {
     final env = _buildEnvironment(target);
@@ -153,6 +226,7 @@ class GoBuilder {
         'goarch': target.goarch,
         'abi': target.abi,
         'is_lib': target.isLib,
+        'low_memory': target.lowMemory,
         'flutter_platform': target.flutterPlatform,
       })
       ..addValue('config', config.toFingerprintMap())
@@ -194,7 +268,7 @@ class GoBuilder {
     final goEnvText = (goEnvResult.stdout as String).trim();
     builder.addValue('go_env', jsonDecode(goEnvText));
 
-    final inputs = _resolveGoInputs(env);
+    final inputs = _resolveGoInputs(env, target);
     final goEnv = jsonDecode(goEnvText) as Map<String, dynamic>;
     final goWork = goEnv['GOWORK'];
     if (goWork is String && goWork.isNotEmpty && goWork != 'off') {
@@ -208,24 +282,29 @@ class GoBuilder {
       final compiler = env['CC']!;
       final compilerVersion = runCommand(compiler, ['--version']);
       builder.addValue(
-        'android_compiler',
+        target.goos == 'ios' ? 'ios_compiler' : 'android_compiler',
         '${(compilerVersion.stdout as String).trim()}\n'
-            '${(compilerVersion.stderr as String).trim()}',
+        '${(compilerVersion.stderr as String).trim()}',
       );
-      final ndkProperties = p.join(Environment.androidNdk, 'source.properties');
-      if (File(ndkProperties).existsSync()) inputs.add(ndkProperties);
+      if (target.goos == 'android') {
+        final ndkProperties = p.join(
+          Environment.androidNdk,
+          'source.properties',
+        );
+        if (File(ndkProperties).existsSync()) inputs.add(ndkProperties);
+      }
     }
 
     builder.addFiles(inputs);
     return builder.finish();
   }
 
-  Set<String> _resolveGoInputs(Map<String, String> environment) {
+  Set<String> _resolveGoInputs(Map<String, String> environment, Target target) {
     const template =
         r'''{{range .GoFiles}}{{$.Dir}}/{{.}}{{"\n"}}{{end}}{{range .CgoFiles}}{{$.Dir}}/{{.}}{{"\n"}}{{end}}{{range .CFiles}}{{$.Dir}}/{{.}}{{"\n"}}{{end}}{{range .CXXFiles}}{{$.Dir}}/{{.}}{{"\n"}}{{end}}{{range .MFiles}}{{$.Dir}}/{{.}}{{"\n"}}{{end}}{{range .HFiles}}{{$.Dir}}/{{.}}{{"\n"}}{{end}}{{range .FFiles}}{{$.Dir}}/{{.}}{{"\n"}}{{end}}{{range .SFiles}}{{$.Dir}}/{{.}}{{"\n"}}{{end}}{{range .SwigFiles}}{{$.Dir}}/{{.}}{{"\n"}}{{end}}{{range .SwigCXXFiles}}{{$.Dir}}/{{.}}{{"\n"}}{{end}}{{range .SysoFiles}}{{$.Dir}}/{{.}}{{"\n"}}{{end}}{{range .EmbedFiles}}{{$.Dir}}/{{.}}{{"\n"}}{{end}}{{with .Module}}{{if .GoMod}}{{.GoMod}}{{"\n"}}{{end}}{{end}}''';
     final result = runCommand(
       'go',
-      ['list', '-deps', '-tags=${config.tags}', '-f', template, '.'],
+      ['list', '-deps', '-tags=${_buildTags(target)}', '-f', template, '.'],
       workingDirectory: _corePath,
       environment: environment,
     );
