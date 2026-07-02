@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/widgets/card.dart';
 import 'package:flutter/material.dart';
 import 'package:material_color_utilities/hct/hct.dart';
@@ -75,7 +76,7 @@ class _PaletteState extends State<Palette> {
               onToneSelected: _onToneSelected,
             ),
             const SizedBox(height: 16),
-            const InfoHeader(info: Info(label: '预览')),
+            InfoHeader(info: Info(label: context.appLocalizations.preview)),
             PrimaryColorBox(
               primaryColor: widget.controller.value,
               child: const _ColorSchemePreview(),
@@ -135,9 +136,9 @@ class _ChromaSlider extends StatelessWidget {
       ),
       child: Slider(
         padding: EdgeInsets.zero,
-        value: chroma.clamp(0, 150),
+        value: chroma.clamp(0, 10),
         min: 0,
-        max: 150,
+        max: 10,
         onChanged: onChanged,
       ),
     );
