@@ -8,6 +8,7 @@ import (
 	"strings"
 	"unsafe"
 
+	"github.com/metacubex/mihomo/dns"
 	"github.com/metacubex/mihomo/log"
 )
 
