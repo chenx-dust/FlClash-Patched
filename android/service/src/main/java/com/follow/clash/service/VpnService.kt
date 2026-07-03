@@ -61,18 +61,22 @@ class VpnService : SystemVpnService(), IBaseService,
         target: InetSocketAddress,
         uid: Int,
     ): String {
-        val nextUid = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            connectivity?.getConnectionOwnerUid(protocol, source, target) ?: -1
-        } else {
-            uid
+        return runCatching {
+            val nextUid = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                connectivity?.getConnectionOwnerUid(protocol, source, target) ?: -1
+            } else {
+                uid
+            }
+            if (nextUid == -1) {
+                return@runCatching ""
+            }
+            uidPageNameMap.getOrPut(nextUid) {
+                this.packageManager?.getPackagesForUid(nextUid)?.firstOrNull() ?: ""
+            }
+        }.getOrElse {
+            GlobalState.log("resolverProcess failed: $it")
+            ""
         }
-        if (nextUid == -1) {
-            return ""
-        }
-        if (!uidPageNameMap.containsKey(nextUid)) {
-            uidPageNameMap[nextUid] = this.packageManager?.getPackagesForUid(nextUid)?.first() ?: ""
-        }
-        return uidPageNameMap[nextUid] ?: ""
     }
 
     val VpnOptions.address
