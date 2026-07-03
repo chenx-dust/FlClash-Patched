@@ -585,5 +585,17 @@
   "generateFromPrivateKey": "Age 秘密鍵から生成",
   "ageKeyPairGeneratedSuccess": "X25519 キーペアを生成しました。安全に保管してください",
   "agePrivateKeyRequired": "先に正しい Age 秘密鍵を入力してください",
-  "generateSecret": "生成"
+  "generateSecret": "生成",
+  "includeAllNetworks": "すべてのネットワークを含む",
+  "includeAllNetworksDesc": "ローカルおよびセルラーサービスを含むすべてのネットワークトラフィックをトンネル経由にする",
+  "excludeLocalNetworks": "ローカルネットワークを除外",
+  "excludeLocalNetworksDesc": "ローカルネットワーク上のデバイスへの直接アクセスを許可する",
+  "excludeAPNs": "APNs を除外",
+  "excludeAPNsDesc": "Apple プッシュ通知トラフィックがトンネルをバイパスすることを許可する",
+  "excludeCellularServices": "セルラーサービスを除外",
+  "excludeCellularServicesDesc": "Wi-Fi 通話などのセルラーサービストラフィックがトンネルをバイパスすることを許可する",
+  "enforceRoutes": "ルートを強制",
+  "enforceRoutesDesc": "より具体的なルートが存在してもトラフィックをトンネル経由にする",
+  "excludeDeviceCommunication": "デバイス間通信を除外",
+  "excludeDeviceCommunicationDesc": "AirDrop や AirPlay などのデバイス間通信がトンネルをバイパスすることを許可する"
 }
