@@ -29,14 +29,30 @@ class Logs extends _$Logs with AutoDisposeNotifierMixin {
   }
 
   void add(Log value) {
+    addLogs([value]);
+  }
+
+  void addLogs(List<Log> values) {
     if (!ref.mounted) {
       return;
     }
-    final logLevel = ref.read(patchClashConfigProvider).logLevel;
-    if (!logLevel.allows(value.logLevel)) {
+    if (values.isEmpty) {
       return;
     }
-    this.value = state.copyWith()..add(value);
+    final logLevel = ref.read(patchClashConfigProvider).logLevel;
+    final newState = state.copyWith();
+    var hasNewLog = false;
+    for (final value in values) {
+      if (!logLevel.allows(value.logLevel)) {
+        continue;
+      }
+      newState.add(value);
+      hasNewLog = true;
+    }
+    if (!hasNewLog) {
+      return;
+    }
+    value = newState;
   }
 
   Future<bool> exportLogs() async {

@@ -276,8 +276,8 @@ class CoreController {
     _interface.resetTraffic();
   }
 
-  void startLog() {
-    _interface.startLog();
+  Future<List<Log>> startLog() async {
+    return _interface.startLog();
   }
 
   void stopLog() {
