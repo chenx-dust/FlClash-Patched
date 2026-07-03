@@ -225,12 +225,12 @@ class CoreController {
     _interface.resetTraffic();
   }
 
-  void startLog() {
-    _interface.startLog();
+  Future<List<Log>> startLogNotify() async {
+    return _interface.startLogNotify();
   }
 
-  void stopLog() {
-    _interface.stopLog();
+  void stopLogNotify() {
+    _interface.stopLogNotify();
   }
 
   Future<List<TrackerInfo>> startRequestNotify() async {
