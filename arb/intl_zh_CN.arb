@@ -585,5 +585,17 @@
   "generateFromPrivateKey": "从 Age 私钥生成",
   "ageKeyPairGeneratedSuccess": "已生成 X25519 密钥对，请妥善保存",
   "agePrivateKeyRequired": "请先输入正确的 Age 私钥",
-  "generateSecret": "生成"
+  "generateSecret": "生成",
+  "includeAllNetworks": "包含所有网络",
+  "includeAllNetworksDesc": "将所有网络流量路由到隧道，包括本地和蜂窝服务",
+  "excludeLocalNetworks": "排除本地网络",
+  "excludeLocalNetworksDesc": "允许直接访问本地网络上的设备",
+  "excludeAPNs": "排除 APNs",
+  "excludeAPNsDesc": "允许 Apple 推送通知流量绕过隧道",
+  "excludeCellularServices": "排除蜂窝服务",
+  "excludeCellularServicesDesc": "允许 Wi-Fi 通话等蜂窝服务流量绕过隧道",
+  "enforceRoutes": "强制路由",
+  "enforceRoutesDesc": "即使存在更具体的路由也确保流量经过隧道",
+  "excludeDeviceCommunication": "排除设备间通信",
+  "excludeDeviceCommunicationDesc": "允许 AirDrop、AirPlay 等设备间通信流量绕过隧道"
 }

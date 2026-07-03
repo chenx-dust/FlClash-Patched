@@ -342,6 +342,12 @@ private struct VpnOptions: Decodable {
   let bypassDomain: [String]
   let stack: String
   let routeAddress: [String]
+  let includeAllNetworks: Bool
+  let excludeLocalNetworks: Bool
+  let excludeAPNs: Bool
+  let excludeCellularServices: Bool
+  let enforceRoutes: Bool
+  let excludeDeviceCommunication: Bool
 
   private enum CodingKeys: String, CodingKey {
     case port
@@ -352,6 +358,12 @@ private struct VpnOptions: Decodable {
     case bypassDomain
     case stack
     case routeAddress
+    case includeAllNetworks
+    case excludeLocalNetworks
+    case excludeAPNs
+    case excludeCellularServices
+    case enforceRoutes
+    case excludeDeviceCommunication
   }
 
   init(from decoder: Decoder) throws {
@@ -364,6 +376,12 @@ private struct VpnOptions: Decodable {
     bypassDomain = try container.decodeIfPresent([String].self, forKey: .bypassDomain) ?? []
     stack = try container.decode(String.self, forKey: .stack)
     routeAddress = try container.decodeIfPresent([String].self, forKey: .routeAddress) ?? []
+    includeAllNetworks = try container.decodeIfPresent(Bool.self, forKey: .includeAllNetworks) ?? false
+    excludeLocalNetworks = try container.decodeIfPresent(Bool.self, forKey: .excludeLocalNetworks) ?? true
+    excludeAPNs = try container.decodeIfPresent(Bool.self, forKey: .excludeAPNs) ?? true
+    excludeCellularServices = try container.decodeIfPresent(Bool.self, forKey: .excludeCellularServices) ?? true
+    enforceRoutes = try container.decodeIfPresent(Bool.self, forKey: .enforceRoutes) ?? false
+    excludeDeviceCommunication = try container.decodeIfPresent(Bool.self, forKey: .excludeDeviceCommunication) ?? true
   }
 }
 
