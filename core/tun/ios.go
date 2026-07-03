@@ -27,10 +27,6 @@ func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
 
 	var prefix4 []netip.Prefix
 	var prefix6 []netip.Prefix
-	tunStack, ok := constant.StackTypeMapping[strings.ToLower(stack)]
-	if !ok {
-		tunStack = constant.TunSystem
-	}
 	for _, a := range strings.Split(address, ",") {
 		a = strings.TrimSpace(a)
 		if len(a) == 0 {
@@ -60,8 +56,8 @@ func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
 
 	options := LC.Tun{
 		Enable:              true,
-		Device:              "utun",
-		Stack:               tunStack,
+		Device:              "FlClash",
+		Stack:               constant.TunGvisor,
 		DNSHijack:           dnsHijack,
 		AutoRoute:           false,
 		AutoDetectInterface: false,
