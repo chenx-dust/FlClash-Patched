@@ -105,6 +105,9 @@ call_tun_interface_resolve_process_impl(void *tun_interface, const int protocol,
                                         const char *source,
                                         const char *target,
                                         const int uid) {
+    if (tun_interface == nullptr) {
+        return strdup("");
+    }
     ATTACH_JNI();
     const auto packageName = reinterpret_cast<jstring>(env->CallObjectMethod(
             static_cast<jobject>(tun_interface),
