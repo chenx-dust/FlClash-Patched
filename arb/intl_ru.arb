@@ -585,5 +585,17 @@
   "generateFromPrivateKey": "Создать из закрытого ключа Age",
   "ageKeyPairGeneratedSuccess": "Пара ключей X25519 создана, сохраните ее в надежном месте",
   "agePrivateKeyRequired": "Пожалуйста, сначала введите корректный закрытый ключ Age",
-  "generateSecret": "Создать"
+  "generateSecret": "Создать",
+  "includeAllNetworks": "Включить все сети",
+  "includeAllNetworksDesc": "Маршрутизировать весь сетевой трафик через туннель, включая локальные и сотовые сервисы",
+  "excludeLocalNetworks": "Исключить локальные сети",
+  "excludeLocalNetworksDesc": "Разрешить прямой доступ к устройствам в локальной сети",
+  "excludeAPNs": "Исключить APNs",
+  "excludeAPNsDesc": "Разрешить трафику Apple Push-уведомлений обходить туннель",
+  "excludeCellularServices": "Исключить сотовые сервисы",
+  "excludeCellularServicesDesc": "Разрешить трафику сотовых сервисов, таких как Wi-Fi вызовы, обходить туннель",
+  "enforceRoutes": "Принудительная маршрутизация",
+  "enforceRoutesDesc": "Направлять трафик через туннель, даже если существуют более конкретные маршруты",
+  "excludeDeviceCommunication": "Исключить межустройственную связь",
+  "excludeDeviceCommunicationDesc": "Разрешить трафику AirDrop, AirPlay и другой межустройственной связи обходить туннель"
 }
