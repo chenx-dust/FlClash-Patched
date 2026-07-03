@@ -16,6 +16,7 @@ final class IOSServiceChannel {
   private let eventQueueDirectoryName = "core-events"
   private let eventNotificationName = "\(Bundle.main.bundleIdentifier!).NECore.event"
   private let localizedDescription = "FlClash"
+  private let tunnelConnectTimeout: TimeInterval = 5
 
   private func log(_ message: String) {
     NSLog("[IOSServiceChannel] %@", message)
@@ -212,11 +213,6 @@ final class IOSServiceChannel {
       completion(true)
       return
     }
-    if isTerminalTunnelStatus(status) {
-      log("waitForTunnelConnected already terminal status=\(statusDescription(status))")
-      completion(false)
-      return
-    }
 
     var observer: NSObjectProtocol?
     var timeoutWork: DispatchWorkItem?
@@ -250,7 +246,7 @@ final class IOSServiceChannel {
       cleanup()
       completion(self?.isConnectedTunnelStatus(current) ?? false)
     }
-    DispatchQueue.main.asyncAfter(deadline: .now() + 8, execute: timeoutWork!)
+    DispatchQueue.main.asyncAfter(deadline: .now() + tunnelConnectTimeout, execute: timeoutWork!)
   }
 
   private func stopTunnel(result: @escaping FlutterResult) {
