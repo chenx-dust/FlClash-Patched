@@ -41,7 +41,7 @@ static os_log_t NECoreLogger(void) {
   static os_log_t logger;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    logger = os_log_create("com.follow.clash.DEVID.NECore", "Clash");
+    logger = os_log_create(NSBundle.mainBundle.bundleIdentifier.UTF8String, "Clash");
   });
   return logger;
 }
