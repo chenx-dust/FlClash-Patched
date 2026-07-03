@@ -1,5 +1,6 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -326,12 +327,160 @@ class RouteAddressItem extends ConsumerWidget {
   }
 }
 
-class NetworkListView extends StatelessWidget {
+class IncludeAllNetworksItem extends ConsumerWidget {
+  const IncludeAllNetworksItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
+    final includeAllNetworks = ref.watch(
+      vpnSettingProvider.select((state) => state.includeAllNetworks),
+    );
+    return ListItem.switchItem(
+      title: Text(appLocalizations.includeAllNetworks),
+      subtitle: Text(appLocalizations.includeAllNetworksDesc),
+      delegate: SwitchDelegate(
+        value: includeAllNetworks,
+        onChanged: (bool value) async {
+          ref
+              .read(vpnSettingProvider.notifier)
+              .update((state) => state.copyWith(includeAllNetworks: value));
+        },
+      ),
+    );
+  }
+}
+
+class ExcludeLocalNetworksItem extends ConsumerWidget {
+  const ExcludeLocalNetworksItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
+    final excludeLocalNetworks = ref.watch(
+      vpnSettingProvider.select((state) => state.excludeLocalNetworks),
+    );
+    return ListItem.switchItem(
+      title: Text(appLocalizations.excludeLocalNetworks),
+      subtitle: Text(appLocalizations.excludeLocalNetworksDesc),
+      delegate: SwitchDelegate(
+        value: excludeLocalNetworks,
+        onChanged: (bool value) async {
+          ref
+              .read(vpnSettingProvider.notifier)
+              .update((state) => state.copyWith(excludeLocalNetworks: value));
+        },
+      ),
+    );
+  }
+}
+
+class ExcludeAPNsItem extends ConsumerWidget {
+  const ExcludeAPNsItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
+    final excludeAPNs = ref.watch(
+      vpnSettingProvider.select((state) => state.excludeAPNs),
+    );
+    return ListItem.switchItem(
+      title: Text(appLocalizations.excludeAPNs),
+      subtitle: Text(appLocalizations.excludeAPNsDesc),
+      delegate: SwitchDelegate(
+        value: excludeAPNs,
+        onChanged: (bool value) async {
+          ref
+              .read(vpnSettingProvider.notifier)
+              .update((state) => state.copyWith(excludeAPNs: value));
+        },
+      ),
+    );
+  }
+}
+
+class ExcludeCellularServicesItem extends ConsumerWidget {
+  const ExcludeCellularServicesItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
+    final excludeCellularServices = ref.watch(
+      vpnSettingProvider.select((state) => state.excludeCellularServices),
+    );
+    return ListItem.switchItem(
+      title: Text(appLocalizations.excludeCellularServices),
+      subtitle: Text(appLocalizations.excludeCellularServicesDesc),
+      delegate: SwitchDelegate(
+        value: excludeCellularServices,
+        onChanged: (bool value) async {
+          ref
+              .read(vpnSettingProvider.notifier)
+              .update(
+                (state) => state.copyWith(excludeCellularServices: value),
+              );
+        },
+      ),
+    );
+  }
+}
+
+class EnforceRoutesItem extends ConsumerWidget {
+  const EnforceRoutesItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
+    final enforceRoutes = ref.watch(
+      vpnSettingProvider.select((state) => state.enforceRoutes),
+    );
+    return ListItem.switchItem(
+      title: Text(appLocalizations.enforceRoutes),
+      subtitle: Text(appLocalizations.enforceRoutesDesc),
+      delegate: SwitchDelegate(
+        value: enforceRoutes,
+        onChanged: (bool value) async {
+          ref
+              .read(vpnSettingProvider.notifier)
+              .update((state) => state.copyWith(enforceRoutes: value));
+        },
+      ),
+    );
+  }
+}
+
+class ExcludeDeviceCommunicationItem extends ConsumerWidget {
+  const ExcludeDeviceCommunicationItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
+    final excludeDeviceCommunication = ref.watch(
+      vpnSettingProvider.select((state) => state.excludeDeviceCommunication),
+    );
+    return ListItem.switchItem(
+      title: Text(appLocalizations.excludeDeviceCommunication),
+      subtitle: Text(appLocalizations.excludeDeviceCommunicationDesc),
+      delegate: SwitchDelegate(
+        value: excludeDeviceCommunication,
+        onChanged: (bool value) async {
+          ref.read(vpnSettingProvider.notifier).update(
+                (state) =>
+                    state.copyWith(excludeDeviceCommunication: value),
+              );
+        },
+      ),
+    );
+  }
+}
+
+class NetworkListView extends ConsumerWidget {
   const NetworkListView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final appLocalizations = context.appLocalizations;
+    final version = ref.watch(versionProvider);
     return generateListView([
       if (system.isAndroid) const VPNItem(),
       if (system.isMobile)
@@ -363,6 +512,20 @@ class NetworkListView extends StatelessWidget {
           ],
         ],
       ),
+      if (system.isIOS && version >= 14)
+        ...generateSection(
+          title: 'Network Extension',
+          items: [
+            const IncludeAllNetworksItem(),
+            const EnforceRoutesItem(),
+            const ExcludeLocalNetworksItem(),
+            if (version >= 16) ...[
+              const ExcludeAPNsItem(),
+              const ExcludeCellularServicesItem(),
+            ],
+            if (version >= 17) const ExcludeDeviceCommunicationItem(),
+          ],
+        ),
     ]);
   }
 }

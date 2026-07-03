@@ -4788,6 +4788,126 @@ class AppLocalizations {
   String get generateSecret {
     return Intl.message('Generate', name: 'generateSecret', desc: '', args: []);
   }
+
+  /// `Include All Networks`
+  String get includeAllNetworks {
+    return Intl.message(
+      'Include All Networks',
+      name: 'includeAllNetworks',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Route all network traffic through the tunnel, including local and cellular services`
+  String get includeAllNetworksDesc {
+    return Intl.message(
+      'Route all network traffic through the tunnel, including local and cellular services',
+      name: 'includeAllNetworksDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exclude Local Networks`
+  String get excludeLocalNetworks {
+    return Intl.message(
+      'Exclude Local Networks',
+      name: 'excludeLocalNetworks',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow direct access to devices on the local network`
+  String get excludeLocalNetworksDesc {
+    return Intl.message(
+      'Allow direct access to devices on the local network',
+      name: 'excludeLocalNetworksDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exclude APNs`
+  String get excludeAPNs {
+    return Intl.message(
+      'Exclude APNs',
+      name: 'excludeAPNs',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow Apple Push Notification traffic to bypass the tunnel`
+  String get excludeAPNsDesc {
+    return Intl.message(
+      'Allow Apple Push Notification traffic to bypass the tunnel',
+      name: 'excludeAPNsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exclude Cellular Services`
+  String get excludeCellularServices {
+    return Intl.message(
+      'Exclude Cellular Services',
+      name: 'excludeCellularServices',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow cellular service traffic such as Wi-Fi Calling to bypass the tunnel`
+  String get excludeCellularServicesDesc {
+    return Intl.message(
+      'Allow cellular service traffic such as Wi-Fi Calling to bypass the tunnel',
+      name: 'excludeCellularServicesDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enforce Routes`
+  String get enforceRoutes {
+    return Intl.message(
+      'Enforce Routes',
+      name: 'enforceRoutes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ensure traffic is routed through the tunnel even when more specific routes exist`
+  String get enforceRoutesDesc {
+    return Intl.message(
+      'Ensure traffic is routed through the tunnel even when more specific routes exist',
+      name: 'enforceRoutesDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exclude Device Communication`
+  String get excludeDeviceCommunication {
+    return Intl.message(
+      'Exclude Device Communication',
+      name: 'excludeDeviceCommunication',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow device-to-device traffic such as AirDrop and AirPlay to bypass the tunnel`
+  String get excludeDeviceCommunicationDesc {
+    return Intl.message(
+      'Allow device-to-device traffic such as AirDrop and AirPlay to bypass the tunnel',
+      name: 'excludeDeviceCommunicationDesc',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {
