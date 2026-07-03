@@ -15,11 +15,11 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
 
   static const _appCoreMethods = {
     CoreMethod.validateConfig,
-    CoreMethod.asyncTestDelay,
     CoreMethod.getConfig,
     CoreMethod.generateAgeKeyPair,
     CoreMethod.convertAgeSecretKeyToPublicKey,
     CoreMethod.deleteFile,
+    CoreMethod.updateGeoData,
   };
 
   Completer<bool> _connectedCompleter = Completer();
@@ -127,6 +127,12 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
     final stopped = await service?.stop() ?? false;
     _isNetworkExtensionCoreActive = false;
     commonPrint.log('[iOS] stop NECore result: $stopped');
+    if (_setupParams != null) {
+      await invokeMethod<String>(
+        method: CoreMethod.setupConfig,
+        arguments: _setupParams!.toJson(),
+      );
+    }
     return stopped;
   }
 
