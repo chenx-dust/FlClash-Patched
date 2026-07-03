@@ -286,7 +286,7 @@ enum ActionMethod {
   generateAgeKeyPair,
   convertAgeSecretKeyToPublicKey,
 
-  ///Android,
+  ///Mobile,
   setState,
   startTun,
   stopTun,
