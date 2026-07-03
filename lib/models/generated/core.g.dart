@@ -106,6 +106,13 @@ _VpnOptions _$VpnOptionsFromJson(Map<String, dynamic> json) => _VpnOptions(
           ?.map((e) => e as String)
           .toList() ??
       const [],
+  includeAllNetworks: json['includeAllNetworks'] as bool? ?? false,
+  excludeLocalNetworks: json['excludeLocalNetworks'] as bool? ?? true,
+  excludeAPNs: json['excludeAPNs'] as bool? ?? true,
+  excludeCellularServices: json['excludeCellularServices'] as bool? ?? true,
+  enforceRoutes: json['enforceRoutes'] as bool? ?? false,
+  excludeDeviceCommunication:
+      json['excludeDeviceCommunication'] as bool? ?? true,
 );
 
 Map<String, dynamic> _$VpnOptionsToJson(_VpnOptions instance) =>
@@ -121,6 +128,12 @@ Map<String, dynamic> _$VpnOptionsToJson(_VpnOptions instance) =>
       'bypassDomain': instance.bypassDomain,
       'stack': instance.stack,
       'routeAddress': instance.routeAddress,
+      'includeAllNetworks': instance.includeAllNetworks,
+      'excludeLocalNetworks': instance.excludeLocalNetworks,
+      'excludeAPNs': instance.excludeAPNs,
+      'excludeCellularServices': instance.excludeCellularServices,
+      'enforceRoutes': instance.enforceRoutes,
+      'excludeDeviceCommunication': instance.excludeDeviceCommunication,
     };
 
 _InitParams _$InitParamsFromJson(Map<String, dynamic> json) => _InitParams(

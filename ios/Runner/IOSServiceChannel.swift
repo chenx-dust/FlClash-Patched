@@ -138,42 +138,33 @@ final class IOSServiceChannel {
   }
 
   private func startTunnel(result: @escaping FlutterResult) {
-    startTunnelWithCompletion { isStarted in
-      result(isStarted)
-    }
-  }
-
-  private func startTunnelWithCompletion(completion: @escaping (Bool) -> Void) {
-    log("startTunnelWithCompletion begin")
-    startTunnelAfterLoadingManager(completion: completion)
-  }
-
-  private func startTunnelAfterLoadingManager(completion: @escaping (Bool) -> Void) {
+    log("startTunnel begin")
     loadManager { manager, error in
       guard let manager = manager else {
         self.log("startTunnel failed: manager missing")
-        completion(false)
+        result(false)
         return
       }
       if let error = error {
         self.log("startTunnel failed: \(error.localizedDescription)")
-        completion(false)
+        result(false)
         return
       }
 
       manager.isEnabled = true
+      self.applyNetworkExtensionOptions(to: manager)
       self.log("startTunnel save preferences")
       manager.saveToPreferences { error in
         if let error = error {
           self.log("startTunnel save preferences failed: \(error.localizedDescription)")
-          completion(false)
+          result(false)
           return
         }
         self.log("startTunnel reload preferences")
         manager.loadFromPreferences { error in
           if let error = error {
             self.log("startTunnel reload preferences failed: \(error.localizedDescription)")
-            completion(false)
+            result(false)
             return
           }
           do {
@@ -183,7 +174,7 @@ final class IOSServiceChannel {
               self.isTunnelStopExpected = false
               self.lastTunnelStatus = .connected
               self.saveRunTime()
-              completion(true)
+              result(true)
               return
             }
             self.isTunnelStopExpected = false
@@ -194,11 +185,11 @@ final class IOSServiceChannel {
               if connected {
                 self.saveRunTime()
               }
-              completion(connected)
+              result(connected)
             }
           } catch {
             self.log("startTunnel startVPNTunnel failed: \(error.localizedDescription)")
-            completion(false)
+            result(false)
           }
         }
       }
@@ -277,6 +268,42 @@ final class IOSServiceChannel {
     userDefaults.synchronize()
     log("syncState saved bytes=\(data.count)")
     result("")
+  }
+
+  private func loadNEOptions() -> NEOptions {
+    guard let userDefaults = UserDefaults(suiteName: appGroupIdentifier),
+          let data = userDefaults.data(forKey: sharedStateKey) else {
+      return NEOptions()
+    }
+    do {
+      let state = try JSONDecoder().decode(NESharedState.self, from: data)
+      return state.vpnOptions?.neOptions ?? NEOptions()
+    } catch {
+      log("loadNEOptions decode failed: \(error.localizedDescription)")
+      return NEOptions()
+    }
+  }
+
+  private func applyNetworkExtensionOptions(to manager: NETunnelProviderManager) {
+    let options = loadNEOptions()
+    guard let proto = manager.protocolConfiguration as? NETunnelProviderProtocol else {
+      return
+    }
+    if #available(iOS 14.0, *) {
+      proto.includeAllNetworks = options.includeAllNetworks
+    }
+    if #available(iOS 14.2, *) {
+      proto.excludeLocalNetworks = options.excludeLocalNetworks
+      proto.enforceRoutes = options.enforceRoutes
+    }
+    if #available(iOS 16.4, *) {
+      proto.excludeAPNs = options.excludeAPNs
+      proto.excludeCellularServices = options.excludeCellularServices
+    }
+    if #available(iOS 17.4, *) {
+      proto.excludeDeviceCommunication = options.excludeDeviceCommunication
+    }
+    log("applyNEOptions includeAll=\(options.includeAllNetworks) excludeLocal=\(options.excludeLocalNetworks) excludeAPNs=\(options.excludeAPNs) excludeCellular=\(options.excludeCellularServices) enforceRoutes=\(options.enforceRoutes) excludeDeviceComm=\(options.excludeDeviceCommunication)")
   }
 
   private func appGroupDir() -> String {
@@ -617,4 +644,37 @@ final class IOSServiceChannel {
     }
     return response
   }
+}
+
+private struct NESharedState: Decodable {
+  let vpnOptions: NEVpnOptionsPayload?
+}
+
+private struct NEVpnOptionsPayload: Decodable {
+  let includeAllNetworks: Bool?
+  let excludeLocalNetworks: Bool?
+  let excludeAPNs: Bool?
+  let excludeCellularServices: Bool?
+  let enforceRoutes: Bool?
+  let excludeDeviceCommunication: Bool?
+
+  var neOptions: NEOptions {
+    NEOptions(
+      includeAllNetworks: includeAllNetworks ?? false,
+      excludeLocalNetworks: excludeLocalNetworks ?? true,
+      excludeAPNs: excludeAPNs ?? true,
+      excludeCellularServices: excludeCellularServices ?? true,
+      enforceRoutes: enforceRoutes ?? false,
+      excludeDeviceCommunication: excludeDeviceCommunication ?? true
+    )
+  }
+}
+
+private struct NEOptions {
+  var includeAllNetworks: Bool = false
+  var excludeLocalNetworks: Bool = true
+  var excludeAPNs: Bool = true
+  var excludeCellularServices: Bool = true
+  var enforceRoutes: Bool = false
+  var excludeDeviceCommunication: Bool = true
 }
