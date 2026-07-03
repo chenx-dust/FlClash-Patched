@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import '../setup.dart' as setup;
@@ -9,6 +12,44 @@ void main() {
 
       expect(results['verbose'], isTrue);
       expect(results.rest, ['android']);
+    });
+
+    test('parses iOS bundle identifier override', () {
+      final results = setup.createSetupArgParser().parse([
+        'ios',
+        '--ios-bundle-id',
+        'com.example.flclash',
+      ]);
+
+      expect(results['ios-bundle-id'], 'com.example.flclash');
+      expect(results.rest, ['ios']);
+    });
+
+    test('writes generated iOS bundle config', () async {
+      final tempDir = await Directory.systemTemp.createTemp(
+        'flclash_setup_test_',
+      );
+      addTearDown(() async {
+        if (await tempDir.exists()) {
+          await tempDir.delete(recursive: true);
+        }
+      });
+
+      await setup.writeIOSGeneratedBundleConfig(
+        tempDir.path,
+        'com.example.flclash',
+      );
+
+      final configFile = File(
+        p.join(
+          tempDir.path,
+          'ios',
+          'Flutter',
+          'GeneratedBundleConfig.xcconfig',
+        ),
+      );
+      final content = await configFile.readAsString();
+      expect(content, contains('APP_BUNDLE_ID = com.example.flclash'));
     });
 
     test('omits verbose from flutter build args by default', () {
@@ -41,7 +82,7 @@ void main() {
 
       expect(args, [
         'dart-define-from-file=env.json',
-        'export-method=app-store',
+        'ipa-export-method=app-store',
       ]);
     });
 
@@ -54,7 +95,7 @@ void main() {
 
       expect(args, [
         'dart-define-from-file=env.json',
-        'export-options-plist=ios/ExportOptions.plist',
+        'ipa-export-options-plist=ios/ExportOptions.plist',
       ]);
     });
   });

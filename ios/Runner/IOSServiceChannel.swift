@@ -9,12 +9,12 @@ final class IOSServiceChannel {
   private var tunnelStatusObserver: NSObjectProtocol?
   private var lastTunnelStatus: NEVPNStatus?
   private var isTunnelStopExpected = false
-  private let providerBundleIdentifier = "com.follow.clash.DEVID.NECore"
-  private let appGroupIdentifier = "group.com.follow.clash.DEVID"
+  private let providerBundleIdentifier = "\(Bundle.main.bundleIdentifier!).NECore"
+  private let appGroupIdentifier = "group.\(Bundle.main.bundleIdentifier!)"
   private let sharedStateKey = "sharedState"
   private let runTimeKey = "runTime"
   private let eventQueueDirectoryName = "core-events"
-  private let eventNotificationName = "com.follow.clash.DEVID.NECore.event"
+  private let eventNotificationName = "\(Bundle.main.bundleIdentifier!).NECore.event"
   private let localizedDescription = "FlClash"
 
   private func log(_ message: String) {

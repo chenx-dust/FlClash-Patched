@@ -71,6 +71,7 @@ docs/
 /core/*.exe
 /assets/data/
 /plugins/rust_api/.claude/
+/ios/Flutter/GeneratedBundleConfig.xcconfig
 devtools_options.yaml
 
 # FVM Version Cache
