@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/core.dart';
 import 'package:fl_clash/enum/enum.dart';
@@ -44,16 +42,6 @@ class _CoreContainerState extends ConsumerState<CoreManager>
         ref.read(setupActionProvider.notifier).updateConfigDebounce();
       }
     });
-    ref.listenManual(appSettingProvider.select((state) => state.openLogs), (
-      prev,
-      next,
-    ) {
-      if (next) {
-        coreController.startLog();
-      } else {
-        coreController.stopLog();
-      }
-    }, fireImmediately: true);
   }
 
   @override
@@ -102,11 +90,10 @@ class _CoreContainerState extends ConsumerState<CoreManager>
 
   @override
   Future<void> onCrash(String message) async {
+    globalState.container.read(initProvider.notifier).value = false;
     globalState.container
-      .read(initProvider.notifier).value = false;
-    globalState.container
-      .read(setupActionProvider.notifier)
-      .updateStatus(false, isInit: !ref.read(initProvider));
+        .read(setupActionProvider.notifier)
+        .updateStatus(false, isInit: !ref.read(initProvider));
     if (ref.read(coreStatusProvider) != CoreStatus.connected) {
       return;
     }

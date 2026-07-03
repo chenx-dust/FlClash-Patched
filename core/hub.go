@@ -36,6 +36,14 @@ var (
 )
 
 var (
+	logNotifyMutex   sync.Mutex
+	logNotifyEnabled bool
+	logNotifyCache   [maxCachedLogNotify]StampedLogEvent
+	logNotifyStart   int
+	logNotifyLen     int
+)
+
+var (
 	requestNotifyMutex   sync.Mutex
 	requestNotifyEnabled bool
 	requestNotifyCache   [maxCachedRequestNotify]*statistic.TrackerInfo
@@ -43,7 +51,16 @@ var (
 	requestNotifyLen     int
 )
 
-const maxCachedRequestNotify = 100
+const (
+	maxCachedLogNotify     = 100
+	maxCachedRequestNotify = 100
+)
+
+type StampedLogEvent struct {
+	LogLevel log.LogLevel
+	Payload  string
+	Time     int64
+}
 
 func handleInitClash(params *InitParams) bool {
 	runLock.Lock()
@@ -378,31 +395,38 @@ func handleSuspend(suspended bool) bool {
 	return true
 }
 
-func handleStartLog() {
-	if logSubscriber != nil {
-		log.UnSubscribe(logSubscriber)
-		logSubscriber = nil
-	}
-	logSubscriber = log.Subscribe()
-	go func() {
-		for logData := range logSubscriber {
-			if logData.LogLevel < log.Level() {
-				continue
-			}
-			message := &Message{
-				Type: LogMessage,
-				Data: logData,
-			}
-			sendMessage(*message)
+func handleStartLogNotify() []StampedLogEvent {
+	logNotifyMutex.Lock()
+	defer logNotifyMutex.Unlock()
+	logs := make([]StampedLogEvent, logNotifyLen)
+	if logNotifyLen != 0 {
+		for i := 0; i < logNotifyLen; i++ {
+			index := (logNotifyStart + i) % maxCachedLogNotify
+			logs[i] = logNotifyCache[index]
 		}
-	}()
+	}
+	logNotifyStart = 0
+	logNotifyLen = 0
+	logNotifyEnabled = true
+
+	return logs
 }
 
-func handleStopLog() {
-	if logSubscriber != nil {
-		log.UnSubscribe(logSubscriber)
-		logSubscriber = nil
+func handleStopLogNotify() {
+	logNotifyMutex.Lock()
+	defer logNotifyMutex.Unlock()
+	logNotifyEnabled = false
+}
+
+func cacheLog(logData StampedLogEvent) {
+	if logNotifyLen < maxCachedLogNotify {
+		index := (logNotifyStart + logNotifyLen) % maxCachedLogNotify
+		logNotifyCache[index] = logData
+		logNotifyLen++
+		return
 	}
+	logNotifyCache[logNotifyStart] = logData
+	logNotifyStart = (logNotifyStart + 1) % maxCachedLogNotify
 }
 
 func handleStartRequestNotify() []*statistic.TrackerInfo {
@@ -508,6 +532,30 @@ func handleSetupConfig(params *SetupParams) string {
 }
 
 func init() {
+	logSubscriber = log.Subscribe()
+	go func() {
+		for logData := range logSubscriber {
+			if logData.LogLevel < log.Level() {
+				continue
+			}
+			stampedLog := StampedLogEvent{
+				LogLevel: logData.LogLevel,
+				Payload:  logData.Payload,
+				Time:     time.Now().UnixMilli(),
+			}
+			logNotifyMutex.Lock()
+			if !logNotifyEnabled {
+				cacheLog(stampedLog)
+				logNotifyMutex.Unlock()
+				continue
+			}
+			logNotifyMutex.Unlock()
+			sendMessage(Message{
+				Type: LogMessage,
+				Data: stampedLog,
+			})
+		}
+	}()
 	adapter.UrlTestHook = func(url string, name string, delay uint16) {
 		delayData := &Delay{
 			Url:  url,
