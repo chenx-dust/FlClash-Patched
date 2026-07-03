@@ -14,6 +14,8 @@ class NetworkDetection extends ConsumerStatefulWidget {
 }
 
 class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
+  bool _isIpVisible = true;
+
   String _countryCodeToEmoji(String countryCode) {
     final String code = countryCode.toUpperCase();
     if (code.length != 2) {
@@ -22,6 +24,26 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
     final int firstLetter = code.codeUnitAt(0) - 0x41 + 0x1F1E6;
     final int secondLetter = code.codeUnitAt(1) - 0x41 + 0x1F1E6;
     return String.fromCharCode(firstLetter) + String.fromCharCode(secondLetter);
+  }
+
+  String _getIpText(String ip) {
+    if (_isIpVisible) {
+      return ip;
+    }
+    if (ip.contains('.')) {
+      // IPv4
+      final parts = ip.split('.');
+      if (parts.length == 4) {
+        return '${parts[0]}.***.***.***';
+      }
+    } else if (ip.contains(':')) {
+      // IPv6
+      final parts = ip.split(':');
+      if (parts.length >= 2) {
+        return '${parts[0]}:${parts[1]}:****:****:****:****:****:****';
+      }
+    }
+    return '***.***.***.***';
   }
 
   @override
@@ -68,6 +90,29 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
                       ),
                     ),
                   ),
+                  const SizedBox(width: 2),
+                  AspectRatio(
+                    aspectRatio: 1,
+                    child: ExcludeFocus(
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        onPressed: ipInfo != null
+                            ? () {
+                                setState(() {
+                                  _isIpVisible = !_isIpVisible;
+                                });
+                              }
+                            : null,
+                        icon: Icon(
+                          size: 16.ap,
+                          _isIpVisible
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                          color: context.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -79,7 +124,7 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
                   child: ipInfo != null
                       ? TooltipText(
                           text: Text(
-                            ipInfo.ip,
+                            _getIpText(ipInfo.ip),
                             style: context.textTheme.bodyMedium?.toLight
                                 .adjustSize(1),
                             maxLines: 1,
