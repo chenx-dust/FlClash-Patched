@@ -169,6 +169,12 @@ abstract class VpnProps with _$VpnProps {
     @Default(false) bool dnsHijacking,
     @Default(true) bool suspendSupport,
     @Default(false) bool networkSpeedNotification,
+    @Default(false) bool includeAllNetworks,
+    @Default(true) bool excludeLocalNetworks,
+    @Default(true) bool excludeAPNs,
+    @Default(true) bool excludeCellularServices,
+    @Default(false) bool enforceRoutes,
+    @Default(true) bool excludeDeviceCommunication,
     @Default(defaultAccessControlProps) AccessControlProps accessControlProps,
   }) = _VpnProps;
 

@@ -638,6 +638,12 @@ SharedState sharedState(Ref ref) {
       allowBypass: vpnSetting.allowBypass,
       suspendSupport: vpnSetting.suspendSupport,
       bypassDomain: bypassDomain,
+      includeAllNetworks: vpnSetting.includeAllNetworks,
+      excludeLocalNetworks: vpnSetting.excludeLocalNetworks,
+      excludeAPNs: vpnSetting.excludeAPNs,
+      excludeCellularServices: vpnSetting.excludeCellularServices,
+      enforceRoutes: vpnSetting.enforceRoutes,
+      excludeDeviceCommunication: vpnSetting.excludeDeviceCommunication,
     ),
   );
 }

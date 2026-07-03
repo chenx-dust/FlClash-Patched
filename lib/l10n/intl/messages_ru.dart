@@ -386,13 +386,41 @@ class MessageLookup extends MessageLookupByLibrary {
     "editSsid": MessageLookupByLibrary.simpleMessage("Изменить SSID"),
     "emptyTip": m4,
     "en": MessageLookupByLibrary.simpleMessage("Английский"),
+    "enforceRoutes": MessageLookupByLibrary.simpleMessage(
+      "Принудительная маршрутизация",
+    ),
+    "enforceRoutesDesc": MessageLookupByLibrary.simpleMessage(
+      "Направлять трафик через туннель, даже если существуют более конкретные маршруты",
+    ),
     "entries": MessageLookupByLibrary.simpleMessage(" записей"),
     "entriesCount": m5,
     "exclude": MessageLookupByLibrary.simpleMessage(
       "Скрыть из последних задач",
     ),
+    "excludeAPNs": MessageLookupByLibrary.simpleMessage("Исключить APNs"),
+    "excludeAPNsDesc": MessageLookupByLibrary.simpleMessage(
+      "Разрешить трафику Apple Push-уведомлений обходить туннель",
+    ),
+    "excludeCellularServices": MessageLookupByLibrary.simpleMessage(
+      "Исключить сотовые сервисы",
+    ),
+    "excludeCellularServicesDesc": MessageLookupByLibrary.simpleMessage(
+      "Разрешить трафику сотовых сервисов, таких как Wi-Fi вызовы, обходить туннель",
+    ),
     "excludeDesc": MessageLookupByLibrary.simpleMessage(
       "Когда приложение находится в фоновом режиме, оно скрыто из последних задач",
+    ),
+    "excludeDeviceCommunication": MessageLookupByLibrary.simpleMessage(
+      "Исключить межустройственную связь",
+    ),
+    "excludeDeviceCommunicationDesc": MessageLookupByLibrary.simpleMessage(
+      "Разрешить трафику AirDrop, AirPlay и другой межустройственной связи обходить туннель",
+    ),
+    "excludeLocalNetworks": MessageLookupByLibrary.simpleMessage(
+      "Исключить локальные сети",
+    ),
+    "excludeLocalNetworksDesc": MessageLookupByLibrary.simpleMessage(
+      "Разрешить прямой доступ к устройствам в локальной сети",
     ),
     "excludeProxyFilter": MessageLookupByLibrary.simpleMessage(
       "Исключить фильтр прокси",
@@ -512,6 +540,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "importFile": MessageLookupByLibrary.simpleMessage("Импорт из файла"),
     "importFromURL": MessageLookupByLibrary.simpleMessage("Импорт из URL"),
     "importUrl": MessageLookupByLibrary.simpleMessage("Импорт по URL"),
+    "includeAllNetworks": MessageLookupByLibrary.simpleMessage(
+      "Включить все сети",
+    ),
+    "includeAllNetworksDesc": MessageLookupByLibrary.simpleMessage(
+      "Маршрутизировать весь сетевой трафик через туннель, включая локальные и сотовые сервисы",
+    ),
     "includeAllProxies": MessageLookupByLibrary.simpleMessage(
       "Включить все прокси",
     ),
