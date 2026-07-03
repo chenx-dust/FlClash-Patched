@@ -60,6 +60,12 @@ abstract class VpnOptions with _$VpnOptions {
     required List<String> bypassDomain,
     required String stack,
     @Default([]) List<String> routeAddress,
+    @Default(false) bool includeAllNetworks,
+    @Default(true) bool excludeLocalNetworks,
+    @Default(true) bool excludeAPNs,
+    @Default(true) bool excludeCellularServices,
+    @Default(false) bool enforceRoutes,
+    @Default(true) bool excludeDeviceCommunication,
   }) = _VpnOptions;
 
   factory VpnOptions.fromJson(Map<String, Object?> json) =>

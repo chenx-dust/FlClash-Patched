@@ -585,5 +585,17 @@
   "generateFromPrivateKey": "Generate from Age private key",
   "ageKeyPairGeneratedSuccess": "X25519 key pair generated, please keep it safe",
   "agePrivateKeyRequired": "Please enter a correct Age private key first",
-  "generateSecret": "Generate"
+  "generateSecret": "Generate",
+  "includeAllNetworks": "Include All Networks",
+  "includeAllNetworksDesc": "Route all network traffic through the tunnel, including local and cellular services",
+  "excludeLocalNetworks": "Exclude Local Networks",
+  "excludeLocalNetworksDesc": "Allow direct access to devices on the local network",
+  "excludeAPNs": "Exclude APNs",
+  "excludeAPNsDesc": "Allow Apple Push Notification traffic to bypass the tunnel",
+  "excludeCellularServices": "Exclude Cellular Services",
+  "excludeCellularServicesDesc": "Allow cellular service traffic such as Wi-Fi Calling to bypass the tunnel",
+  "enforceRoutes": "Enforce Routes",
+  "enforceRoutesDesc": "Ensure traffic is routed through the tunnel even when more specific routes exist",
+  "excludeDeviceCommunication": "Exclude Device Communication",
+  "excludeDeviceCommunicationDesc": "Allow device-to-device traffic such as AirDrop and AirPlay to bypass the tunnel"
 }

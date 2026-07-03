@@ -264,10 +264,32 @@ class MessageLookup extends MessageLookupByLibrary {
     "editSsid": MessageLookupByLibrary.simpleMessage("编辑 SSID"),
     "emptyTip": m4,
     "en": MessageLookupByLibrary.simpleMessage("英语"),
+    "enforceRoutes": MessageLookupByLibrary.simpleMessage("强制路由"),
+    "enforceRoutesDesc": MessageLookupByLibrary.simpleMessage(
+      "即使存在更具体的路由也确保流量经过隧道",
+    ),
     "entries": MessageLookupByLibrary.simpleMessage("个条目"),
     "entriesCount": m5,
     "exclude": MessageLookupByLibrary.simpleMessage("从最近任务中隐藏"),
+    "excludeAPNs": MessageLookupByLibrary.simpleMessage("排除 APNs"),
+    "excludeAPNsDesc": MessageLookupByLibrary.simpleMessage(
+      "允许 Apple 推送通知流量绕过隧道",
+    ),
+    "excludeCellularServices": MessageLookupByLibrary.simpleMessage("排除蜂窝服务"),
+    "excludeCellularServicesDesc": MessageLookupByLibrary.simpleMessage(
+      "允许 Wi-Fi 通话等蜂窝服务流量绕过隧道",
+    ),
     "excludeDesc": MessageLookupByLibrary.simpleMessage("应用在后台时,从最近任务中隐藏应用"),
+    "excludeDeviceCommunication": MessageLookupByLibrary.simpleMessage(
+      "排除设备间通信",
+    ),
+    "excludeDeviceCommunicationDesc": MessageLookupByLibrary.simpleMessage(
+      "允许 AirDrop、AirPlay 等设备间通信流量绕过隧道",
+    ),
+    "excludeLocalNetworks": MessageLookupByLibrary.simpleMessage("排除本地网络"),
+    "excludeLocalNetworksDesc": MessageLookupByLibrary.simpleMessage(
+      "允许直接访问本地网络上的设备",
+    ),
     "excludeProxyFilter": MessageLookupByLibrary.simpleMessage("排除节点过滤器"),
     "excludeSsids": MessageLookupByLibrary.simpleMessage("排除 SSIDs"),
     "excludeSsidsDesc": MessageLookupByLibrary.simpleMessage(
@@ -352,6 +374,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "importFile": MessageLookupByLibrary.simpleMessage("通过文件导入"),
     "importFromURL": MessageLookupByLibrary.simpleMessage("从 URL 导入"),
     "importUrl": MessageLookupByLibrary.simpleMessage("通过 URL 导入"),
+    "includeAllNetworks": MessageLookupByLibrary.simpleMessage("包含所有网络"),
+    "includeAllNetworksDesc": MessageLookupByLibrary.simpleMessage(
+      "将所有网络流量路由到隧道，包括本地和蜂窝服务",
+    ),
     "includeAllProxies": MessageLookupByLibrary.simpleMessage("包含所有代理"),
     "includeAllProxiesTip": MessageLookupByLibrary.simpleMessage(
       "引入不包含策略组的所有代理，可在下方额外添加策略组",
