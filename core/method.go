@@ -270,12 +270,11 @@ func handleMethodCall(call *MethodCall, response MethodResponse) {
 			response.success(value)
 		})
 		return
-	case startLogMethod:
-		handleStartLog()
-		response.success(true)
+	case startLogNotifyMethod:
+		response.success(handleStartLogNotify())
 		return
-	case stopLogMethod:
-		handleStopLog()
+	case stopLogNotifyMethod:
+		handleStopLogNotify()
 		response.success(true)
 		return
 	case startRequestNotifyMethod:

@@ -62,9 +62,9 @@ mixin CoreInterface {
 
   FutureOr<void> resetTraffic();
 
-  FutureOr<void> startLog();
+  FutureOr<List<Log>> startLogNotify();
 
-  FutureOr<void> stopLog();
+  FutureOr<void> stopLogNotify();
 
   FutureOr<List<TrackerInfo>> startRequestNotify();
 
@@ -363,13 +363,22 @@ abstract class CoreHandlerInterface with CoreInterface {
   }
 
   @override
-  FutureOr<void> startLog() {
-    _invokeMethod(method: CoreMethod.startLog);
+  Future<List<Log>> startLogNotify() async {
+    final res = await _invokeMethod<List<dynamic>>(
+      method: CoreMethod.startLogNotify,
+    );
+    if (res == null || res.isEmpty) {
+      return [];
+    }
+    return res
+        .whereType<Map>()
+        .map((item) => Log.fromJson(Map<String, Object?>.from(item)))
+        .toList();
   }
 
   @override
-  FutureOr<void> stopLog() {
-    _invokeMethod<bool>(method: CoreMethod.stopLog);
+  FutureOr<void> stopLogNotify() {
+    _invokeMethod<bool>(method: CoreMethod.stopLogNotify);
   }
 
   @override

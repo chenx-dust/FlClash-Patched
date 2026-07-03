@@ -124,14 +124,14 @@ _Log _$LogFromJson(Map<String, dynamic> json) => _Log(
       ) ??
       LogSource.app,
   payload: json['Payload'] as String? ?? '',
-  dateTime: _logDateTime(json['dateTime']),
+  timestamp: _logTimestamp(json['Time']),
 );
 
 Map<String, dynamic> _$LogToJson(_Log instance) => <String, dynamic>{
   'LogLevel': _$LogLevelEnumMap[instance.logLevel]!,
   'source': _$LogSourceEnumMap[instance.source]!,
   'Payload': instance.payload,
-  'dateTime': instance.dateTime,
+  'Time': instance.timestamp,
 };
 
 const _$LogLevelEnumMap = {
