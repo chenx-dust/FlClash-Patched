@@ -170,6 +170,13 @@ _VpnProps _$VpnPropsFromJson(Map<String, dynamic> json) => _VpnProps(
   dnsHijacking: json['dnsHijacking'] as bool? ?? false,
   suspendSupport: json['suspendSupport'] as bool? ?? true,
   networkSpeedNotification: json['networkSpeedNotification'] as bool? ?? false,
+  includeAllNetworks: json['includeAllNetworks'] as bool? ?? false,
+  excludeLocalNetworks: json['excludeLocalNetworks'] as bool? ?? true,
+  excludeAPNs: json['excludeAPNs'] as bool? ?? true,
+  excludeCellularServices: json['excludeCellularServices'] as bool? ?? true,
+  enforceRoutes: json['enforceRoutes'] as bool? ?? false,
+  excludeDeviceCommunication:
+      json['excludeDeviceCommunication'] as bool? ?? true,
   accessControlProps: json['accessControlProps'] == null
       ? defaultAccessControlProps
       : AccessControlProps.fromJson(
@@ -185,6 +192,12 @@ Map<String, dynamic> _$VpnPropsToJson(_VpnProps instance) => <String, dynamic>{
   'dnsHijacking': instance.dnsHijacking,
   'suspendSupport': instance.suspendSupport,
   'networkSpeedNotification': instance.networkSpeedNotification,
+  'includeAllNetworks': instance.includeAllNetworks,
+  'excludeLocalNetworks': instance.excludeLocalNetworks,
+  'excludeAPNs': instance.excludeAPNs,
+  'excludeCellularServices': instance.excludeCellularServices,
+  'enforceRoutes': instance.enforceRoutes,
+  'excludeDeviceCommunication': instance.excludeDeviceCommunication,
   'accessControlProps': instance.accessControlProps,
 };
 

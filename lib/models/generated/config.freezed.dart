@@ -915,7 +915,7 @@ as double?,
 /// @nodoc
 mixin _$VpnProps {
 
- bool get enable; bool get systemProxy; bool get ipv6; bool get allowBypass; bool get dnsHijacking; bool get suspendSupport; bool get networkSpeedNotification; AccessControlProps get accessControlProps;
+ bool get enable; bool get systemProxy; bool get ipv6; bool get allowBypass; bool get dnsHijacking; bool get suspendSupport; bool get networkSpeedNotification; bool get includeAllNetworks; bool get excludeLocalNetworks; bool get excludeAPNs; bool get excludeCellularServices; bool get enforceRoutes; bool get excludeDeviceCommunication; AccessControlProps get accessControlProps;
 /// Create a copy of VpnProps
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -928,16 +928,16 @@ $VpnPropsCopyWith<VpnProps> get copyWith => _$VpnPropsCopyWithImpl<VpnProps>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VpnProps&&(identical(other.enable, enable) || other.enable == enable)&&(identical(other.systemProxy, systemProxy) || other.systemProxy == systemProxy)&&(identical(other.ipv6, ipv6) || other.ipv6 == ipv6)&&(identical(other.allowBypass, allowBypass) || other.allowBypass == allowBypass)&&(identical(other.dnsHijacking, dnsHijacking) || other.dnsHijacking == dnsHijacking)&&(identical(other.suspendSupport, suspendSupport) || other.suspendSupport == suspendSupport)&&(identical(other.networkSpeedNotification, networkSpeedNotification) || other.networkSpeedNotification == networkSpeedNotification)&&(identical(other.accessControlProps, accessControlProps) || other.accessControlProps == accessControlProps));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VpnProps&&(identical(other.enable, enable) || other.enable == enable)&&(identical(other.systemProxy, systemProxy) || other.systemProxy == systemProxy)&&(identical(other.ipv6, ipv6) || other.ipv6 == ipv6)&&(identical(other.allowBypass, allowBypass) || other.allowBypass == allowBypass)&&(identical(other.dnsHijacking, dnsHijacking) || other.dnsHijacking == dnsHijacking)&&(identical(other.suspendSupport, suspendSupport) || other.suspendSupport == suspendSupport)&&(identical(other.networkSpeedNotification, networkSpeedNotification) || other.networkSpeedNotification == networkSpeedNotification)&&(identical(other.includeAllNetworks, includeAllNetworks) || other.includeAllNetworks == includeAllNetworks)&&(identical(other.excludeLocalNetworks, excludeLocalNetworks) || other.excludeLocalNetworks == excludeLocalNetworks)&&(identical(other.excludeAPNs, excludeAPNs) || other.excludeAPNs == excludeAPNs)&&(identical(other.excludeCellularServices, excludeCellularServices) || other.excludeCellularServices == excludeCellularServices)&&(identical(other.enforceRoutes, enforceRoutes) || other.enforceRoutes == enforceRoutes)&&(identical(other.excludeDeviceCommunication, excludeDeviceCommunication) || other.excludeDeviceCommunication == excludeDeviceCommunication)&&(identical(other.accessControlProps, accessControlProps) || other.accessControlProps == accessControlProps));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,enable,systemProxy,ipv6,allowBypass,dnsHijacking,suspendSupport,networkSpeedNotification,accessControlProps);
+int get hashCode => Object.hash(runtimeType,enable,systemProxy,ipv6,allowBypass,dnsHijacking,suspendSupport,networkSpeedNotification,includeAllNetworks,excludeLocalNetworks,excludeAPNs,excludeCellularServices,enforceRoutes,excludeDeviceCommunication,accessControlProps);
 
 @override
 String toString() {
-  return 'VpnProps(enable: $enable, systemProxy: $systemProxy, ipv6: $ipv6, allowBypass: $allowBypass, dnsHijacking: $dnsHijacking, suspendSupport: $suspendSupport, networkSpeedNotification: $networkSpeedNotification, accessControlProps: $accessControlProps)';
+  return 'VpnProps(enable: $enable, systemProxy: $systemProxy, ipv6: $ipv6, allowBypass: $allowBypass, dnsHijacking: $dnsHijacking, suspendSupport: $suspendSupport, networkSpeedNotification: $networkSpeedNotification, includeAllNetworks: $includeAllNetworks, excludeLocalNetworks: $excludeLocalNetworks, excludeAPNs: $excludeAPNs, excludeCellularServices: $excludeCellularServices, enforceRoutes: $enforceRoutes, excludeDeviceCommunication: $excludeDeviceCommunication, accessControlProps: $accessControlProps)';
 }
 
 
@@ -948,7 +948,7 @@ abstract mixin class $VpnPropsCopyWith<$Res>  {
   factory $VpnPropsCopyWith(VpnProps value, $Res Function(VpnProps) _then) = _$VpnPropsCopyWithImpl;
 @useResult
 $Res call({
- bool enable, bool systemProxy, bool ipv6, bool allowBypass, bool dnsHijacking, bool suspendSupport, bool networkSpeedNotification, AccessControlProps accessControlProps
+ bool enable, bool systemProxy, bool ipv6, bool allowBypass, bool dnsHijacking, bool suspendSupport, bool networkSpeedNotification, bool includeAllNetworks, bool excludeLocalNetworks, bool excludeAPNs, bool excludeCellularServices, bool enforceRoutes, bool excludeDeviceCommunication, AccessControlProps accessControlProps
 });
 
 
@@ -965,7 +965,7 @@ class _$VpnPropsCopyWithImpl<$Res>
 
 /// Create a copy of VpnProps
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? enable = null,Object? systemProxy = null,Object? ipv6 = null,Object? allowBypass = null,Object? dnsHijacking = null,Object? suspendSupport = null,Object? networkSpeedNotification = null,Object? accessControlProps = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? enable = null,Object? systemProxy = null,Object? ipv6 = null,Object? allowBypass = null,Object? dnsHijacking = null,Object? suspendSupport = null,Object? networkSpeedNotification = null,Object? includeAllNetworks = null,Object? excludeLocalNetworks = null,Object? excludeAPNs = null,Object? excludeCellularServices = null,Object? enforceRoutes = null,Object? excludeDeviceCommunication = null,Object? accessControlProps = null,}) {
   return _then(_self.copyWith(
 enable: null == enable ? _self.enable : enable // ignore: cast_nullable_to_non_nullable
 as bool,systemProxy: null == systemProxy ? _self.systemProxy : systemProxy // ignore: cast_nullable_to_non_nullable
@@ -974,6 +974,12 @@ as bool,allowBypass: null == allowBypass ? _self.allowBypass : allowBypass // ig
 as bool,dnsHijacking: null == dnsHijacking ? _self.dnsHijacking : dnsHijacking // ignore: cast_nullable_to_non_nullable
 as bool,suspendSupport: null == suspendSupport ? _self.suspendSupport : suspendSupport // ignore: cast_nullable_to_non_nullable
 as bool,networkSpeedNotification: null == networkSpeedNotification ? _self.networkSpeedNotification : networkSpeedNotification // ignore: cast_nullable_to_non_nullable
+as bool,includeAllNetworks: null == includeAllNetworks ? _self.includeAllNetworks : includeAllNetworks // ignore: cast_nullable_to_non_nullable
+as bool,excludeLocalNetworks: null == excludeLocalNetworks ? _self.excludeLocalNetworks : excludeLocalNetworks // ignore: cast_nullable_to_non_nullable
+as bool,excludeAPNs: null == excludeAPNs ? _self.excludeAPNs : excludeAPNs // ignore: cast_nullable_to_non_nullable
+as bool,excludeCellularServices: null == excludeCellularServices ? _self.excludeCellularServices : excludeCellularServices // ignore: cast_nullable_to_non_nullable
+as bool,enforceRoutes: null == enforceRoutes ? _self.enforceRoutes : enforceRoutes // ignore: cast_nullable_to_non_nullable
+as bool,excludeDeviceCommunication: null == excludeDeviceCommunication ? _self.excludeDeviceCommunication : excludeDeviceCommunication // ignore: cast_nullable_to_non_nullable
 as bool,accessControlProps: null == accessControlProps ? _self.accessControlProps : accessControlProps // ignore: cast_nullable_to_non_nullable
 as AccessControlProps,
   ));
@@ -1069,10 +1075,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool enable,  bool systemProxy,  bool ipv6,  bool allowBypass,  bool dnsHijacking,  bool suspendSupport,  bool networkSpeedNotification,  AccessControlProps accessControlProps)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool enable,  bool systemProxy,  bool ipv6,  bool allowBypass,  bool dnsHijacking,  bool suspendSupport,  bool networkSpeedNotification,  bool includeAllNetworks,  bool excludeLocalNetworks,  bool excludeAPNs,  bool excludeCellularServices,  bool enforceRoutes,  bool excludeDeviceCommunication,  AccessControlProps accessControlProps)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VpnProps() when $default != null:
-return $default(_that.enable,_that.systemProxy,_that.ipv6,_that.allowBypass,_that.dnsHijacking,_that.suspendSupport,_that.networkSpeedNotification,_that.accessControlProps);case _:
+return $default(_that.enable,_that.systemProxy,_that.ipv6,_that.allowBypass,_that.dnsHijacking,_that.suspendSupport,_that.networkSpeedNotification,_that.includeAllNetworks,_that.excludeLocalNetworks,_that.excludeAPNs,_that.excludeCellularServices,_that.enforceRoutes,_that.excludeDeviceCommunication,_that.accessControlProps);case _:
   return orElse();
 
 }
@@ -1090,10 +1096,10 @@ return $default(_that.enable,_that.systemProxy,_that.ipv6,_that.allowBypass,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool enable,  bool systemProxy,  bool ipv6,  bool allowBypass,  bool dnsHijacking,  bool suspendSupport,  bool networkSpeedNotification,  AccessControlProps accessControlProps)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool enable,  bool systemProxy,  bool ipv6,  bool allowBypass,  bool dnsHijacking,  bool suspendSupport,  bool networkSpeedNotification,  bool includeAllNetworks,  bool excludeLocalNetworks,  bool excludeAPNs,  bool excludeCellularServices,  bool enforceRoutes,  bool excludeDeviceCommunication,  AccessControlProps accessControlProps)  $default,) {final _that = this;
 switch (_that) {
 case _VpnProps():
-return $default(_that.enable,_that.systemProxy,_that.ipv6,_that.allowBypass,_that.dnsHijacking,_that.suspendSupport,_that.networkSpeedNotification,_that.accessControlProps);case _:
+return $default(_that.enable,_that.systemProxy,_that.ipv6,_that.allowBypass,_that.dnsHijacking,_that.suspendSupport,_that.networkSpeedNotification,_that.includeAllNetworks,_that.excludeLocalNetworks,_that.excludeAPNs,_that.excludeCellularServices,_that.enforceRoutes,_that.excludeDeviceCommunication,_that.accessControlProps);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1110,10 +1116,10 @@ return $default(_that.enable,_that.systemProxy,_that.ipv6,_that.allowBypass,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool enable,  bool systemProxy,  bool ipv6,  bool allowBypass,  bool dnsHijacking,  bool suspendSupport,  bool networkSpeedNotification,  AccessControlProps accessControlProps)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool enable,  bool systemProxy,  bool ipv6,  bool allowBypass,  bool dnsHijacking,  bool suspendSupport,  bool networkSpeedNotification,  bool includeAllNetworks,  bool excludeLocalNetworks,  bool excludeAPNs,  bool excludeCellularServices,  bool enforceRoutes,  bool excludeDeviceCommunication,  AccessControlProps accessControlProps)?  $default,) {final _that = this;
 switch (_that) {
 case _VpnProps() when $default != null:
-return $default(_that.enable,_that.systemProxy,_that.ipv6,_that.allowBypass,_that.dnsHijacking,_that.suspendSupport,_that.networkSpeedNotification,_that.accessControlProps);case _:
+return $default(_that.enable,_that.systemProxy,_that.ipv6,_that.allowBypass,_that.dnsHijacking,_that.suspendSupport,_that.networkSpeedNotification,_that.includeAllNetworks,_that.excludeLocalNetworks,_that.excludeAPNs,_that.excludeCellularServices,_that.enforceRoutes,_that.excludeDeviceCommunication,_that.accessControlProps);case _:
   return null;
 
 }
@@ -1125,7 +1131,7 @@ return $default(_that.enable,_that.systemProxy,_that.ipv6,_that.allowBypass,_tha
 @JsonSerializable()
 
 class _VpnProps implements VpnProps {
-  const _VpnProps({this.enable = true, this.systemProxy = true, this.ipv6 = false, this.allowBypass = true, this.dnsHijacking = false, this.suspendSupport = true, this.networkSpeedNotification = false, this.accessControlProps = defaultAccessControlProps});
+  const _VpnProps({this.enable = true, this.systemProxy = true, this.ipv6 = false, this.allowBypass = true, this.dnsHijacking = false, this.suspendSupport = true, this.networkSpeedNotification = false, this.includeAllNetworks = false, this.excludeLocalNetworks = true, this.excludeAPNs = true, this.excludeCellularServices = true, this.enforceRoutes = false, this.excludeDeviceCommunication = true, this.accessControlProps = defaultAccessControlProps});
   factory _VpnProps.fromJson(Map<String, dynamic> json) => _$VpnPropsFromJson(json);
 
 @override@JsonKey() final  bool enable;
@@ -1135,6 +1141,12 @@ class _VpnProps implements VpnProps {
 @override@JsonKey() final  bool dnsHijacking;
 @override@JsonKey() final  bool suspendSupport;
 @override@JsonKey() final  bool networkSpeedNotification;
+@override@JsonKey() final  bool includeAllNetworks;
+@override@JsonKey() final  bool excludeLocalNetworks;
+@override@JsonKey() final  bool excludeAPNs;
+@override@JsonKey() final  bool excludeCellularServices;
+@override@JsonKey() final  bool enforceRoutes;
+@override@JsonKey() final  bool excludeDeviceCommunication;
 @override@JsonKey() final  AccessControlProps accessControlProps;
 
 /// Create a copy of VpnProps
@@ -1150,16 +1162,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VpnProps&&(identical(other.enable, enable) || other.enable == enable)&&(identical(other.systemProxy, systemProxy) || other.systemProxy == systemProxy)&&(identical(other.ipv6, ipv6) || other.ipv6 == ipv6)&&(identical(other.allowBypass, allowBypass) || other.allowBypass == allowBypass)&&(identical(other.dnsHijacking, dnsHijacking) || other.dnsHijacking == dnsHijacking)&&(identical(other.suspendSupport, suspendSupport) || other.suspendSupport == suspendSupport)&&(identical(other.networkSpeedNotification, networkSpeedNotification) || other.networkSpeedNotification == networkSpeedNotification)&&(identical(other.accessControlProps, accessControlProps) || other.accessControlProps == accessControlProps));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VpnProps&&(identical(other.enable, enable) || other.enable == enable)&&(identical(other.systemProxy, systemProxy) || other.systemProxy == systemProxy)&&(identical(other.ipv6, ipv6) || other.ipv6 == ipv6)&&(identical(other.allowBypass, allowBypass) || other.allowBypass == allowBypass)&&(identical(other.dnsHijacking, dnsHijacking) || other.dnsHijacking == dnsHijacking)&&(identical(other.suspendSupport, suspendSupport) || other.suspendSupport == suspendSupport)&&(identical(other.networkSpeedNotification, networkSpeedNotification) || other.networkSpeedNotification == networkSpeedNotification)&&(identical(other.includeAllNetworks, includeAllNetworks) || other.includeAllNetworks == includeAllNetworks)&&(identical(other.excludeLocalNetworks, excludeLocalNetworks) || other.excludeLocalNetworks == excludeLocalNetworks)&&(identical(other.excludeAPNs, excludeAPNs) || other.excludeAPNs == excludeAPNs)&&(identical(other.excludeCellularServices, excludeCellularServices) || other.excludeCellularServices == excludeCellularServices)&&(identical(other.enforceRoutes, enforceRoutes) || other.enforceRoutes == enforceRoutes)&&(identical(other.excludeDeviceCommunication, excludeDeviceCommunication) || other.excludeDeviceCommunication == excludeDeviceCommunication)&&(identical(other.accessControlProps, accessControlProps) || other.accessControlProps == accessControlProps));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,enable,systemProxy,ipv6,allowBypass,dnsHijacking,suspendSupport,networkSpeedNotification,accessControlProps);
+int get hashCode => Object.hash(runtimeType,enable,systemProxy,ipv6,allowBypass,dnsHijacking,suspendSupport,networkSpeedNotification,includeAllNetworks,excludeLocalNetworks,excludeAPNs,excludeCellularServices,enforceRoutes,excludeDeviceCommunication,accessControlProps);
 
 @override
 String toString() {
-  return 'VpnProps(enable: $enable, systemProxy: $systemProxy, ipv6: $ipv6, allowBypass: $allowBypass, dnsHijacking: $dnsHijacking, suspendSupport: $suspendSupport, networkSpeedNotification: $networkSpeedNotification, accessControlProps: $accessControlProps)';
+  return 'VpnProps(enable: $enable, systemProxy: $systemProxy, ipv6: $ipv6, allowBypass: $allowBypass, dnsHijacking: $dnsHijacking, suspendSupport: $suspendSupport, networkSpeedNotification: $networkSpeedNotification, includeAllNetworks: $includeAllNetworks, excludeLocalNetworks: $excludeLocalNetworks, excludeAPNs: $excludeAPNs, excludeCellularServices: $excludeCellularServices, enforceRoutes: $enforceRoutes, excludeDeviceCommunication: $excludeDeviceCommunication, accessControlProps: $accessControlProps)';
 }
 
 
@@ -1170,7 +1182,7 @@ abstract mixin class _$VpnPropsCopyWith<$Res> implements $VpnPropsCopyWith<$Res>
   factory _$VpnPropsCopyWith(_VpnProps value, $Res Function(_VpnProps) _then) = __$VpnPropsCopyWithImpl;
 @override @useResult
 $Res call({
- bool enable, bool systemProxy, bool ipv6, bool allowBypass, bool dnsHijacking, bool suspendSupport, bool networkSpeedNotification, AccessControlProps accessControlProps
+ bool enable, bool systemProxy, bool ipv6, bool allowBypass, bool dnsHijacking, bool suspendSupport, bool networkSpeedNotification, bool includeAllNetworks, bool excludeLocalNetworks, bool excludeAPNs, bool excludeCellularServices, bool enforceRoutes, bool excludeDeviceCommunication, AccessControlProps accessControlProps
 });
 
 
@@ -1187,7 +1199,7 @@ class __$VpnPropsCopyWithImpl<$Res>
 
 /// Create a copy of VpnProps
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? enable = null,Object? systemProxy = null,Object? ipv6 = null,Object? allowBypass = null,Object? dnsHijacking = null,Object? suspendSupport = null,Object? networkSpeedNotification = null,Object? accessControlProps = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? enable = null,Object? systemProxy = null,Object? ipv6 = null,Object? allowBypass = null,Object? dnsHijacking = null,Object? suspendSupport = null,Object? networkSpeedNotification = null,Object? includeAllNetworks = null,Object? excludeLocalNetworks = null,Object? excludeAPNs = null,Object? excludeCellularServices = null,Object? enforceRoutes = null,Object? excludeDeviceCommunication = null,Object? accessControlProps = null,}) {
   return _then(_VpnProps(
 enable: null == enable ? _self.enable : enable // ignore: cast_nullable_to_non_nullable
 as bool,systemProxy: null == systemProxy ? _self.systemProxy : systemProxy // ignore: cast_nullable_to_non_nullable
@@ -1196,6 +1208,12 @@ as bool,allowBypass: null == allowBypass ? _self.allowBypass : allowBypass // ig
 as bool,dnsHijacking: null == dnsHijacking ? _self.dnsHijacking : dnsHijacking // ignore: cast_nullable_to_non_nullable
 as bool,suspendSupport: null == suspendSupport ? _self.suspendSupport : suspendSupport // ignore: cast_nullable_to_non_nullable
 as bool,networkSpeedNotification: null == networkSpeedNotification ? _self.networkSpeedNotification : networkSpeedNotification // ignore: cast_nullable_to_non_nullable
+as bool,includeAllNetworks: null == includeAllNetworks ? _self.includeAllNetworks : includeAllNetworks // ignore: cast_nullable_to_non_nullable
+as bool,excludeLocalNetworks: null == excludeLocalNetworks ? _self.excludeLocalNetworks : excludeLocalNetworks // ignore: cast_nullable_to_non_nullable
+as bool,excludeAPNs: null == excludeAPNs ? _self.excludeAPNs : excludeAPNs // ignore: cast_nullable_to_non_nullable
+as bool,excludeCellularServices: null == excludeCellularServices ? _self.excludeCellularServices : excludeCellularServices // ignore: cast_nullable_to_non_nullable
+as bool,enforceRoutes: null == enforceRoutes ? _self.enforceRoutes : enforceRoutes // ignore: cast_nullable_to_non_nullable
+as bool,excludeDeviceCommunication: null == excludeDeviceCommunication ? _self.excludeDeviceCommunication : excludeDeviceCommunication // ignore: cast_nullable_to_non_nullable
 as bool,accessControlProps: null == accessControlProps ? _self.accessControlProps : accessControlProps // ignore: cast_nullable_to_non_nullable
 as AccessControlProps,
   ));
