@@ -40,6 +40,14 @@ var (
 )
 
 var (
+	logNotifyMutex   sync.Mutex
+	logNotifyEnabled bool
+	logNotifyCache   [maxCachedLog]log.Event
+	logNotifyStart   int
+	logNotifyLen     int
+)
+
+var (
 	requestNotifyMutex   sync.Mutex
 	requestNotifyEnabled bool
 	requestNotifyCache   [maxCachedRequestNotify]*statistic.TrackerInfo
@@ -47,7 +55,10 @@ var (
 	requestNotifyLen     int
 )
 
-const maxCachedRequestNotify = 100
+const (
+	maxCachedLog           = 100
+	maxCachedRequestNotify = 100
+)
 
 func handleInitClash(paramsString string) bool {
 	runLock.Lock()
@@ -438,31 +449,38 @@ func handleSuspend(suspended bool) bool {
 	return true
 }
 
-func handleStartLog() {
-	if logSubscriber != nil {
-		log.UnSubscribe(logSubscriber)
-		logSubscriber = nil
-	}
-	logSubscriber = log.Subscribe()
-	go func() {
-		for logData := range logSubscriber {
-			if logData.LogLevel < log.Level() {
-				continue
-			}
-			message := &Message{
-				Type: LogMessage,
-				Data: logData,
-			}
-			sendMessage(*message)
+func handleStartLog() []log.Event {
+	logNotifyMutex.Lock()
+	defer logNotifyMutex.Unlock()
+	logs := make([]log.Event, logNotifyLen)
+	if logNotifyLen != 0 {
+		for i := 0; i < logNotifyLen; i++ {
+			index := (logNotifyStart + i) % maxCachedLog
+			logs[i] = logNotifyCache[index]
 		}
-	}()
+	}
+	logNotifyStart = 0
+	logNotifyLen = 0
+	logNotifyEnabled = true
+
+	return logs
 }
 
 func handleStopLog() {
-	if logSubscriber != nil {
-		log.UnSubscribe(logSubscriber)
-		logSubscriber = nil
+	logNotifyMutex.Lock()
+	defer logNotifyMutex.Unlock()
+	logNotifyEnabled = false
+}
+
+func cacheLog(logData log.Event) {
+	if logNotifyLen < maxCachedLog {
+		index := (logNotifyStart + logNotifyLen) % maxCachedLog
+		logNotifyCache[index] = logData
+		logNotifyLen++
+		return
 	}
+	logNotifyCache[logNotifyStart] = logData
+	logNotifyStart = (logNotifyStart + 1) % maxCachedLog
 }
 
 func handleStartRequestNotify() []*statistic.TrackerInfo {
@@ -588,6 +606,25 @@ func handleSetupConfig(bytes []byte) string {
 }
 
 func init() {
+	logSubscriber = log.Subscribe()
+	go func() {
+		for logData := range logSubscriber {
+			if logData.LogLevel < log.Level() {
+				continue
+			}
+			logNotifyMutex.Lock()
+			if !logNotifyEnabled {
+				cacheLog(logData)
+				logNotifyMutex.Unlock()
+				continue
+			}
+			logNotifyMutex.Unlock()
+			sendMessage(Message{
+				Type: LogMessage,
+				Data: logData,
+			})
+		}
+	}()
 	adapter.UrlTestHook = func(url string, name string, delay uint16) {
 		delayData := &Delay{
 			Url:  url,

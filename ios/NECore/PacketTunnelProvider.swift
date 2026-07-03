@@ -14,6 +14,9 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
   private let appGroupIdentifier = "group.\(PacketTunnelProvider.baseBundleId)"
   private let eventQueueDirectoryName = "core-events"
   private let eventNotificationName = "\(PacketTunnelProvider.extensionBundleId).event"
+  private let maxEventQueueFiles = 10
+  private var eventsSincePrune = 0
+  private var coreActive = true
   private let ipv4Address = "172.19.0.1"
   private let ipv4AddressPrefix = "172.19.0.1/30"
   private let ipv4SubnetMask = "255.255.255.252"
@@ -24,33 +27,29 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
   private let netAny = "0.0.0.0"
   private var suspendSupport = true
 
-  private func log(_ message: String) {
-    logger.notice("\(message, privacy: .public)")
-  }
-
   override func startTunnel(options: [String : NSObject]?, completionHandler: @escaping (Error?) -> Void) {
-    log("startTunnel begin")
+    logger.info("startTunnel begin")
     guard let vpnOptions = loadSharedState()?.vpnOptions else {
-      log("startTunnel failed: missing vpn options")
+      logger.error("startTunnel failed: missing vpn options")
       completionHandler(PacketTunnelProviderError.missingVpnOptions)
       return
     }
-    log("startTunnel options stack=\(vpnOptions.stack) ipv6=\(vpnOptions.ipv6) dnsHijacking=\(vpnOptions.dnsHijacking) systemProxy=\(vpnOptions.systemProxy) suspendSupport=\(vpnOptions.suspendSupport)")
+    logger.info("startTunnel options stack=\(vpnOptions.stack, privacy: .public) ipv6=\(vpnOptions.ipv6, privacy: .public) dnsHijacking=\(vpnOptions.dnsHijacking, privacy: .public) systemProxy=\(vpnOptions.systemProxy, privacy: .public) suspendSupport=\(vpnOptions.suspendSupport, privacy: .public)")
     suspendSupport = vpnOptions.suspendSupport
 
     setTunnelNetworkSettings(makeNetworkSettings(vpnOptions: vpnOptions)) { error in
       if let error = error {
-        self.log("setTunnelNetworkSettings failed: \(error.localizedDescription)")
+        self.logger.error("setTunnelNetworkSettings failed: \(error.localizedDescription, privacy: .public)")
         completionHandler(error)
         return
       }
-      self.log("setTunnelNetworkSettings completed")
+      self.logger.info("setTunnelNetworkSettings completed")
       guard let tunnelFileDescriptor = self.tunnelFileDescriptor else {
-        self.log("startTunnel failed: tunnel file descriptor missing")
+        self.logger.error("startTunnel failed: tunnel file descriptor missing")
         completionHandler(PacketTunnelProviderError.couldNotDetermineFileDescriptor)
         return
       }
-      self.log("startTunnel fileDescriptor=\(tunnelFileDescriptor)")
+      self.logger.debug("startTunnel fileDescriptor=\(tunnelFileDescriptor, privacy: .public)")
       self.installCoreEventListener()
       let started = NECoreBridge.startTun(
         withFileDescriptor: tunnelFileDescriptor,
@@ -58,46 +57,46 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         address: self.tunAddress(vpnOptions: vpnOptions),
         dns: self.tunDns(vpnOptions: vpnOptions)
       )
-      self.log("NECoreBridge.startTun result=\(started)")
+      self.logger.info("NECoreBridge.startTun result=\(started, privacy: .public)")
       completionHandler(started ? nil : PacketTunnelProviderError.couldNotStartCoreTun)
     }
   }
   
   override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
-    // Add code here to start the process of stopping the tunnel.
-    log("stopTunnel reason=\(reason.rawValue)")
+    logger.info("stopTunnel reason=\(reason.rawValue, privacy: .public)")
     NECoreBridge.setEventListener(nil)
     NECoreBridge.stopTun()
     completionHandler()
   }
   
   override func handleAppMessage(_ messageData: Data, completionHandler: ((Data?) -> Void)?) {
-    log("handleAppMessage bytes=\(messageData.count)")
+    logger.debug("handleAppMessage bytes=\(messageData.count, privacy: .public)")
+    coreActive = true
     guard let handler = completionHandler else {
-      log("handleAppMessage ignored: missing completion handler")
+      logger.warning("handleAppMessage ignored: missing completion handler")
       return
     }
 
     guard let action = String(data: messageData, encoding: .utf8) else {
-      log("handleAppMessage invalid action")
+      logger.warning("handleAppMessage invalid action")
       handler(actionResult(messageData: nil, message: "invalid action"))
       return
     }
 
     NECoreBridge.invokeAction(action) { response in
       guard let response = response, let data = response.data(using: .utf8) else {
-        self.log("handleAppMessage empty core response")
+        self.logger.warning("handleAppMessage empty core response")
         handler(self.actionResult(messageData: messageData, message: "empty core response"))
         return
       }
-      self.log("handleAppMessage response bytes=\(data.count)")
+      self.logger.debug("handleAppMessage response bytes=\(data.count, privacy: .public)")
       handler(data)
     }
   }
   
   override func sleep(completionHandler: @escaping () -> Void) {
     if suspendSupport {
-      log("sleep: suspending tunnel")
+      logger.info("sleep: suspending tunnel")
       NECoreBridge.setSuspended(true)
     }
     completionHandler()
@@ -105,7 +104,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
   override func wake() {
     if suspendSupport {
-      log("wake: resuming tunnel")
+      logger.info("wake: resuming tunnel")
       NECoreBridge.setSuspended(false)
     }
   }
@@ -178,8 +177,12 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
   }
 
   private func enqueueCoreEvent(_ event: String) {
+    guard coreActive else {
+      logger.warning("enqueueCoreEvent skip: core is not active")
+      return
+    }
     guard let directory = eventQueueDirectory() else {
-      log("enqueueCoreEvent failed: missing event queue directory")
+      logger.error("enqueueCoreEvent failed: missing event queue directory")
       return
     }
     do {
@@ -192,9 +195,53 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         "\(timestamp)-\(UUID().uuidString).json"
       )
       try event.write(to: fileURL, atomically: true, encoding: .utf8)
+      eventsSincePrune += 1
+      if eventsSincePrune >= maxEventQueueFiles {
+        eventsSincePrune = 0
+        pruneCoreEventQueue(in: directory)
+      }
       notifyCoreEventAvailable()
     } catch {
-      log("enqueueCoreEvent failed: \(error.localizedDescription)")
+      logger.error("enqueueCoreEvent failed: \(error.localizedDescription, privacy: .public)")
+    }
+  }
+
+  private func pruneCoreEventQueue(in directory: URL) {
+    var files = coreEventFiles(in: directory)
+    var overflowCount = files.count - maxEventQueueFiles
+    if overflowCount > 0 {
+      coreActive = false
+      logger.warning("pruneCoreEventQueue: overflow count=\(overflowCount, privacy: .public), set coreActive=false")
+    }
+
+    while overflowCount > 0 && !files.isEmpty {
+      removeOldestCoreEventFile(&files)
+      overflowCount -= 1
+    }
+  }
+
+  private func coreEventFiles(in directory: URL) -> [URL] {
+    guard let fileURLs = try? FileManager.default.contentsOfDirectory(
+      at: directory,
+      includingPropertiesForKeys: [.isRegularFileKey]
+    ) else {
+      return []
+    }
+    return fileURLs.filter { fileURL in
+      (try? fileURL.resourceValues(forKeys: [.isRegularFileKey]))?.isRegularFile == true
+    }.sorted { lhs, rhs in
+      lhs.lastPathComponent < rhs.lastPathComponent
+    }
+  }
+
+  private func removeOldestCoreEventFile(
+    _ files: inout [URL]
+  ) {
+    let fileURL = files.removeFirst()
+    do {
+      try FileManager.default.removeItem(at: fileURL)
+    } catch {
+      logger.warning("pruneCoreEventQueue failed: \(error.localizedDescription, privacy: .public)")
     }
   }
 
@@ -266,7 +313,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
       settings.proxySettings = proxySettings
     }
 
-    log("makeNetworkSettings settings=\(settings)")
+    logger.debug("makeNetworkSettings settings=\(settings, privacy: .public)")
 
     return settings
   }

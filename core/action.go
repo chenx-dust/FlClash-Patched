@@ -193,8 +193,7 @@ func handleAction(action *Action, result ActionResult) {
 		})
 		return
 	case startLogMethod:
-		handleStartLog()
-		result.success(true)
+		result.success(handleStartLog())
 		return
 	case stopLogMethod:
 		handleStopLog()
