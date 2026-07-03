@@ -118,6 +118,9 @@ call_tun_interface_resolve_process_impl(void *tun_interface, const int protocol,
             new_string(source),
             new_string(target),
             uid));
+    if (packageName == nullptr || jni_catch_exception(env)) {
+        return strdup("");
+    }
     return get_string(packageName);
 }
 
