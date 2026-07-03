@@ -336,17 +336,15 @@ class IncludeAllNetworksItem extends ConsumerWidget {
     final includeAllNetworks = ref.watch(
       vpnSettingProvider.select((state) => state.includeAllNetworks),
     );
-    return ListItem.switchItem(
+    return ListItem.toggle(
       title: Text(appLocalizations.includeAllNetworks),
       subtitle: Text(appLocalizations.includeAllNetworksDesc),
-      delegate: SwitchDelegate(
-        value: includeAllNetworks,
-        onChanged: (bool value) async {
-          ref
-              .read(vpnSettingProvider.notifier)
-              .update((state) => state.copyWith(includeAllNetworks: value));
-        },
-      ),
+      value: includeAllNetworks,
+      onChanged: (bool value) async {
+        ref
+            .read(vpnSettingProvider.notifier)
+            .update((state) => state.copyWith(includeAllNetworks: value));
+      },
     );
   }
 }
@@ -360,17 +358,15 @@ class ExcludeLocalNetworksItem extends ConsumerWidget {
     final excludeLocalNetworks = ref.watch(
       vpnSettingProvider.select((state) => state.excludeLocalNetworks),
     );
-    return ListItem.switchItem(
+    return ListItem.toggle(
       title: Text(appLocalizations.excludeLocalNetworks),
       subtitle: Text(appLocalizations.excludeLocalNetworksDesc),
-      delegate: SwitchDelegate(
-        value: excludeLocalNetworks,
-        onChanged: (bool value) async {
-          ref
-              .read(vpnSettingProvider.notifier)
-              .update((state) => state.copyWith(excludeLocalNetworks: value));
-        },
-      ),
+      value: excludeLocalNetworks,
+      onChanged: (bool value) async {
+        ref
+            .read(vpnSettingProvider.notifier)
+            .update((state) => state.copyWith(excludeLocalNetworks: value));
+      },
     );
   }
 }
@@ -384,17 +380,15 @@ class ExcludeAPNsItem extends ConsumerWidget {
     final excludeAPNs = ref.watch(
       vpnSettingProvider.select((state) => state.excludeAPNs),
     );
-    return ListItem.switchItem(
+    return ListItem.toggle(
       title: Text(appLocalizations.excludeAPNs),
       subtitle: Text(appLocalizations.excludeAPNsDesc),
-      delegate: SwitchDelegate(
-        value: excludeAPNs,
-        onChanged: (bool value) async {
-          ref
-              .read(vpnSettingProvider.notifier)
-              .update((state) => state.copyWith(excludeAPNs: value));
-        },
-      ),
+      value: excludeAPNs,
+      onChanged: (bool value) async {
+        ref
+            .read(vpnSettingProvider.notifier)
+            .update((state) => state.copyWith(excludeAPNs: value));
+      },
     );
   }
 }
@@ -408,19 +402,17 @@ class ExcludeCellularServicesItem extends ConsumerWidget {
     final excludeCellularServices = ref.watch(
       vpnSettingProvider.select((state) => state.excludeCellularServices),
     );
-    return ListItem.switchItem(
+    return ListItem.toggle(
       title: Text(appLocalizations.excludeCellularServices),
       subtitle: Text(appLocalizations.excludeCellularServicesDesc),
-      delegate: SwitchDelegate(
-        value: excludeCellularServices,
-        onChanged: (bool value) async {
-          ref
-              .read(vpnSettingProvider.notifier)
-              .update(
-                (state) => state.copyWith(excludeCellularServices: value),
-              );
-        },
-      ),
+      value: excludeCellularServices,
+      onChanged: (bool value) async {
+        ref
+            .read(vpnSettingProvider.notifier)
+            .update(
+              (state) => state.copyWith(excludeCellularServices: value),
+            );
+      },
     );
   }
 }
@@ -434,17 +426,15 @@ class EnforceRoutesItem extends ConsumerWidget {
     final enforceRoutes = ref.watch(
       vpnSettingProvider.select((state) => state.enforceRoutes),
     );
-    return ListItem.switchItem(
+    return ListItem.toggle(
       title: Text(appLocalizations.enforceRoutes),
       subtitle: Text(appLocalizations.enforceRoutesDesc),
-      delegate: SwitchDelegate(
-        value: enforceRoutes,
-        onChanged: (bool value) async {
-          ref
-              .read(vpnSettingProvider.notifier)
-              .update((state) => state.copyWith(enforceRoutes: value));
-        },
-      ),
+      value: enforceRoutes,
+      onChanged: (bool value) async {
+        ref
+            .read(vpnSettingProvider.notifier)
+            .update((state) => state.copyWith(enforceRoutes: value));
+      },
     );
   }
 }
@@ -458,18 +448,16 @@ class ExcludeDeviceCommunicationItem extends ConsumerWidget {
     final excludeDeviceCommunication = ref.watch(
       vpnSettingProvider.select((state) => state.excludeDeviceCommunication),
     );
-    return ListItem.switchItem(
+    return ListItem.toggle(
       title: Text(appLocalizations.excludeDeviceCommunication),
       subtitle: Text(appLocalizations.excludeDeviceCommunicationDesc),
-      delegate: SwitchDelegate(
-        value: excludeDeviceCommunication,
-        onChanged: (bool value) async {
-          ref.read(vpnSettingProvider.notifier).update(
-                (state) =>
-                    state.copyWith(excludeDeviceCommunication: value),
-              );
-        },
-      ),
+      value: excludeDeviceCommunication,
+      onChanged: (bool value) async {
+        ref.read(vpnSettingProvider.notifier).update(
+              (state) =>
+                  state.copyWith(excludeDeviceCommunication: value),
+            );
+      },
     );
   }
 }
