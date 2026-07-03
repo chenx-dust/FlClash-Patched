@@ -18,7 +18,6 @@ import (
 	"syscall"
 	"unsafe"
 
-	"github.com/metacubex/mihomo/common/lowmemory"
 	"github.com/metacubex/mihomo/component/dialer"
 	"github.com/metacubex/mihomo/component/process"
 	"github.com/metacubex/mihomo/constant"
@@ -150,11 +149,6 @@ func handleStartTun(callback unsafe.Pointer, fd int, stack, address, dns string)
 		tunHandler.start(fd, stack, address, dns)
 	}
 	return
-}
-
-//export setLowMemoryMode
-func setLowMemoryMode(enabled bool) {
-	lowmemory.SetEnabled(enabled)
 }
 
 func (response MethodResponse) send() {
