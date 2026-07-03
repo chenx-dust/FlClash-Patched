@@ -1,3 +1,5 @@
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
 #include "Generated.xcconfig"
-#include "../BundleConfig.xcconfig"
+
+APP_BUNDLE_ID = com.follow.clash
+#include? "GeneratedBundleConfig.xcconfig"
