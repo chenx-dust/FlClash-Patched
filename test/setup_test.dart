@@ -96,7 +96,7 @@ void main() {
 
       expect(args, [
         'dart-define-from-file=env.json',
-        'ipa-export-method=app-store',
+        'export-method=app-store',
       ]);
     });
 
@@ -109,7 +109,7 @@ void main() {
 
       expect(args, [
         'dart-define-from-file=env.json',
-        'ipa-export-options-plist=ios/ExportOptions.plist',
+        'export-options-plist=ios/ExportOptions.plist',
       ]);
     });
   });
