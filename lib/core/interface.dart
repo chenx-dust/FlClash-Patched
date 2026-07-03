@@ -61,7 +61,7 @@ mixin CoreInterface {
 
   FutureOr<void> resetTraffic();
 
-  FutureOr<void> startLog();
+  FutureOr<List<Log>> startLog();
 
   FutureOr<void> stopLog();
 
@@ -341,8 +341,15 @@ abstract class CoreHandlerInterface with CoreInterface {
   }
 
   @override
-  FutureOr<void> startLog() {
-    _invoke(method: ActionMethod.startLog);
+  Future<List<Log>> startLog() async {
+    final res = await _invoke<List<dynamic>>(method: ActionMethod.startLog);
+    if (res == null || res.isEmpty) {
+      return [];
+    }
+    return res
+        .whereType<Map>()
+        .map((item) => Log.fromJson(Map<String, Object?>.from(item)))
+        .toList();
   }
 
   @override

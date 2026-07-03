@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
@@ -20,10 +23,13 @@ class _LogsViewState extends ConsumerState<LogsView> {
   late ScrollController _scrollController;
 
   List<Log> _logs = [];
+  bool _logListening = false;
 
   @override
   void initState() {
     super.initState();
+    globalState.isBackground.addListener(_syncListening);
+    _syncListening();
     _logs = ref.read(logsProvider).list;
     _scrollController = ScrollController(initialScrollOffset: double.maxFinite);
     _logsStateNotifier.value = _logsStateNotifier.value.copyWith(logs: _logs);
@@ -89,9 +95,47 @@ class _LogsViewState extends ConsumerState<LogsView> {
 
   @override
   void dispose() {
+    globalState.isBackground.removeListener(_syncListening);
+    _stopListening();
     _logsStateNotifier.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _syncListening() {
+    if (globalState.isBackground.value) {
+      _stopListening();
+    } else {
+      _startListening();
+    }
+  }
+
+  void _startListening() {
+    if (_logListening) {
+      return;
+    }
+    commonPrint.log('start listening logs', logLevel: LogLevel.debug);
+    _logListening = true;
+    unawaited(
+      coreController.startLog().then((logs) {
+        if (!mounted || !_logListening) {
+          return;
+        }
+        final coreLogs = logs
+            .map((log) => log.copyWith(source: LogSource.core))
+            .toList();
+        ref.read(logsProvider.notifier).addLogs(coreLogs);
+      }),
+    );
+  }
+
+  void _stopListening() {
+    if (!_logListening) {
+      return;
+    }
+    commonPrint.log('stop listening logs', logLevel: LogLevel.debug);
+    _logListening = false;
+    coreController.stopLog();
   }
 
   Future<void> _handleExport() async {
