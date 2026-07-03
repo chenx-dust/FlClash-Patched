@@ -2,6 +2,8 @@
 
 #ifdef LIBCLASH
 
+#include <cstring>
+
 #include "jni_helper.h"
 #include "libclash.h"
 #include "bride.h"
