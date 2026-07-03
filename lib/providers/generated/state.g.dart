@@ -3021,7 +3021,7 @@ abstract class _$AccessControlState extends $Notifier<AccessControlProps> {
   AccessControlProps build();
   @$mustCallSuper
   @override
-  WhenComplete runBuild() {
+  void runBuild() {
     final ref = this.ref as $Ref<AccessControlProps, AccessControlProps>;
     final element =
         ref.element
@@ -3031,7 +3031,7 @@ abstract class _$AccessControlState extends $Notifier<AccessControlProps> {
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    element.handleCreate(ref, build);
   }
 }
 
@@ -3074,7 +3074,7 @@ abstract class _$ProxyGroupProvider extends $Notifier<ProxyGroup> {
   ProxyGroup build();
   @$mustCallSuper
   @override
-  WhenComplete runBuild() {
+  void runBuild() {
     final ref = this.ref as $Ref<ProxyGroup, ProxyGroup>;
     final element =
         ref.element
@@ -3084,7 +3084,7 @@ abstract class _$ProxyGroupProvider extends $Notifier<ProxyGroup> {
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    element.handleCreate(ref, build);
   }
 }
 
@@ -3125,7 +3125,7 @@ abstract class _$RuleProvider extends $Notifier<Rule> {
   Rule build();
   @$mustCallSuper
   @override
-  WhenComplete runBuild() {
+  void runBuild() {
     final ref = this.ref as $Ref<Rule, Rule>;
     final element =
         ref.element
@@ -3135,7 +3135,7 @@ abstract class _$RuleProvider extends $Notifier<Rule> {
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    element.handleCreate(ref, build);
   }
 }
 
