@@ -16,17 +16,13 @@ class _NetworkSpeedState extends State<NetworkSpeed> {
   List<Point> initPoints = const [Point(0, 0), Point(1, 0)];
 
   List<Point> _getPoints(List<Traffic> traffics) {
-    final List<Point> trafficPoints = traffics
-        .toList()
-        .asMap()
-        .map(
-          (index, e) => MapEntry(
-            index,
-            Point((index + initPoints.length).toDouble(), e.speed.toDouble()),
-          ),
-        )
-        .values
-        .toList();
+    const maxLength = 30;
+    final paddingCount = maxLength - traffics.length;
+    final List<Point> trafficPoints = List.generate(maxLength, (index) {
+      final speed =
+          index < paddingCount ? 0.0 : traffics[index - paddingCount].speed.toDouble();
+      return Point((index + initPoints.length).toDouble(), speed);
+    });
 
     return [...initPoints, ...trafficPoints];
   }
