@@ -1,6 +1,7 @@
 import Flutter
 import Foundation
 import NetworkExtension
+import WidgetKit
 
 final class IOSServiceChannel {
   private static var instance: IOSServiceChannel?
@@ -9,7 +10,8 @@ final class IOSServiceChannel {
   private var tunnelStatusObserver: NSObjectProtocol?
   private var lastTunnelStatus: NEVPNStatus?
   private var isTunnelStopExpected = false
-  private let providerBundleIdentifier = "\(Bundle.main.bundleIdentifier!).NECore"
+  private let neCoreIdentifier = "\(Bundle.main.bundleIdentifier!).NECore"
+  private let widgetIdentifier = "\(Bundle.main.bundleIdentifier!).Widget"
   private let appGroupIdentifier = "group.\(Bundle.main.bundleIdentifier!)"
   private let sharedStateKey = "sharedState"
   private let runTimeKey = "runTime"
@@ -111,7 +113,7 @@ final class IOSServiceChannel {
         guard let proto = manager.protocolConfiguration as? NETunnelProviderProtocol else {
           return false
         }
-        return proto.providerBundleIdentifier == self.providerBundleIdentifier
+        return proto.providerBundleIdentifier == self.neCoreIdentifier
       }) {
         self.log("loadManager found existing manager status=\(self.statusDescription(manager.connection.status))")
         completion(manager, nil)
@@ -127,7 +129,7 @@ final class IOSServiceChannel {
       self.log("loadManager create manager")
       let manager = NETunnelProviderManager()
       let proto = NETunnelProviderProtocol()
-      proto.providerBundleIdentifier = self.providerBundleIdentifier
+      proto.providerBundleIdentifier = self.neCoreIdentifier
       proto.serverAddress = self.localizedDescription
       manager.protocolConfiguration = proto
       manager.localizedDescription = self.localizedDescription
@@ -519,10 +521,18 @@ final class IOSServiceChannel {
   private func saveRunTime() {
     let ms = Int(Date().timeIntervalSince1970 * 1000)
     UserDefaults(suiteName: appGroupIdentifier)?.set(ms, forKey: runTimeKey)
+    reloadControlWidget()
   }
 
   private func clearRunTime() {
     UserDefaults(suiteName: appGroupIdentifier)?.removeObject(forKey: runTimeKey)
+    reloadControlWidget()
+  }
+
+  private func reloadControlWidget() {
+    if #available(iOS 18.0, *) {
+      ControlCenter.shared.reloadControls(ofKind: widgetIdentifier)
+    }
   }
 
   private func canSendProviderMessage(status: NEVPNStatus) -> Bool {
