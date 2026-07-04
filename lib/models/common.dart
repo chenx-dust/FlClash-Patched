@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
@@ -578,10 +579,45 @@ extension ScriptsExt on List<Script> {
   }
 }
 
+Future<String> getScriptRemoteUrlPath(int id) {
+  return appPath.getScriptPath('$id.url.json');
+}
+
 extension ScriptExt on Script {
   String get fileName => '$id.js';
 
   Future<String> get path async => appPath.getScriptPath(id.toString());
+
+  Future<String> get remoteUrlPath async => getScriptRemoteUrlPath(id);
+
+  Future<String?> get remoteUrl async {
+    final file = File(await remoteUrlPath);
+    if (!await file.exists()) {
+      return null;
+    }
+    try {
+      final data = json.decode(await file.readAsString());
+      if (data is Map) {
+        return data['url'] as String?;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  Future<void> saveRemoteUrl(String url) async {
+    final file = File(await remoteUrlPath);
+    if (!await file.exists()) {
+      await file.create(recursive: true);
+    }
+    await file.writeAsString(json.encode({'url': url}));
+  }
+
+  Future<void> clearRemoteUrl() async {
+    final file = File(await remoteUrlPath);
+    await file.safeDelete();
+  }
+
+  String get updatingKey => 'script_$id';
 
   Future<String?> get content async {
     final file = File(await path);
