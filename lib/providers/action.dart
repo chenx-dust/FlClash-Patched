@@ -350,7 +350,7 @@ class SetupAction extends _$SetupAction {
       );
       return res.a;
     } catch (e) {
-      globalState.showNotifier(e.toString());
+      globalState.showNotifier(e.toString(), allowCopy: true);
     }
     return '';
   }
@@ -514,7 +514,7 @@ class CoreAction extends _$CoreAction {
     final String message = result[0];
     if (message.isNotEmpty) {
       ref.read(coreStatusProvider.notifier).value = CoreStatus.disconnected;
-      globalState.showNotifier(message);
+      globalState.showNotifier(message, allowCopy: true);
       return;
     }
     ref.read(coreStatusProvider.notifier).value = CoreStatus.connected;

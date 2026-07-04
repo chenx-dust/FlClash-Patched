@@ -89,14 +89,6 @@ class _AgeKeyGeneratorDialogState extends State<AgeKeyGeneratorDialog> {
     }
   }
 
-  Future<void> _copyToClipboard(String text) async {
-    if (text.isEmpty) return;
-    await Clipboard.setData(ClipboardData(text: text));
-    if (mounted) {
-      context.showNotifier(context.appLocalizations.copySuccess);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
@@ -128,7 +120,7 @@ class _AgeKeyGeneratorDialogState extends State<AgeKeyGeneratorDialog> {
               labelText: appLocalizations.agePrivateKeyLabel,
               suffixIcon: IconButton(
                 icon: const Icon(Icons.copy),
-                onPressed: () => _copyToClipboard(_privateKeyController.text),
+                onPressed: () => copyText(context, _privateKeyController.text),
               ),
             ),
             onChanged: (_) {
@@ -156,7 +148,7 @@ class _AgeKeyGeneratorDialogState extends State<AgeKeyGeneratorDialog> {
                   : null,
               suffixIcon: IconButton(
                 icon: const Icon(Icons.copy),
-                onPressed: () => _copyToClipboard(_publicKeyController.text),
+                onPressed: () => copyText(context, _publicKeyController.text),
               ),
             ),
           ),
