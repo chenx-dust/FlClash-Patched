@@ -2,6 +2,7 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/core.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
+import 'package:fl_clash/plugins/app.dart';
 import 'package:fl_clash/plugins/service.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,15 @@ class _MobileManagerState extends ConsumerState<MobileManager>
   @override
   void initState() {
     super.initState();
+    if (system.isAndroid) {
+      // hidden from recents
+      ref.listenManual(appSettingProvider.select((state) => state.hidden), (
+        prev,
+        next,
+      ) {
+        app?.updateExcludeFromRecents(next);
+      }, fireImmediately: true);
+    }
     ref.listenManual(sharedStateProvider, (prev, next) {
       if (prev != next) {
         debouncer.call(FunctionTag.saveSharedFile, () async {
