@@ -65,7 +65,7 @@ class _CoreContainerState extends ConsumerState<CoreManager>
     final coreLog = log.copyWith(source: LogSource.core);
     ref.read(logsProvider.notifier).add(coreLog);
     if (log.logLevel == LogLevel.error) {
-      globalState.showNotifier(log.payload);
+      globalState.showNotifier(log.payload, allowCopy: true);
     }
     super.onLog(log);
   }
@@ -99,7 +99,7 @@ class _CoreContainerState extends ConsumerState<CoreManager>
     }
     ref.read(coreStatusProvider.notifier).value = CoreStatus.disconnected;
     if (WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed) {
-      context.showNotifier(message);
+      context.showNotifier(message, allowCopy: true);
     }
     await coreController.shutdown(false);
     super.onCrash(message);
@@ -119,7 +119,7 @@ class _CoreContainerState extends ConsumerState<CoreManager>
     }
     ref.read(isUpdatingProvider(key).notifier).value = updating;
     if (!updating && error != null && error.isNotEmpty) {
-      globalState.showNotifier(error);
+      globalState.showNotifier(error, allowCopy: true);
     }
     super.onGeoUpdate(geoType, updating, skipped, error);
   }

@@ -30,10 +30,11 @@ extension BuildContextExtension on BuildContext {
     }
   }
 
-  void showNotifier(String text, {MessageActionState? actionState}) {
+  void showNotifier(String text, {MessageActionState? actionState, bool allowCopy = false}) {
     return findAncestorStateOfType<StatusManagerState>()?.message(
       text,
       actionState: actionState,
+      allowCopy: allowCopy,
     );
   }
 
