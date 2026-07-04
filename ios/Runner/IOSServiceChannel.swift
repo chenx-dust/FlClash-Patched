@@ -1,15 +1,20 @@
 import Flutter
 import Foundation
 import NetworkExtension
+import WidgetKit
 
 final class IOSServiceChannel {
   private static var instance: IOSServiceChannel?
 
   private let channel: FlutterMethodChannel
+  private let tileChannel: FlutterMethodChannel
   private var tunnelStatusObserver: NSObjectProtocol?
+  private var appActiveObserver: NSObjectProtocol?
   private var lastTunnelStatus: NEVPNStatus?
   private var isTunnelStopExpected = false
-  private let providerBundleIdentifier = "\(Bundle.main.bundleIdentifier!).NECore"
+  private var isTunnelStartExpected = false
+  private let neCoreIdentifier = "\(Bundle.main.bundleIdentifier!).NECore"
+  private let widgetIdentifier = "\(Bundle.main.bundleIdentifier!).Widget"
   private let appGroupIdentifier = "group.\(Bundle.main.bundleIdentifier!)"
   private let sharedStateKey = "sharedState"
   private let runTimeKey = "runTime"
@@ -31,10 +36,15 @@ final class IOSServiceChannel {
       name: "com.follow.clash/service",
       binaryMessenger: messenger
     )
+    tileChannel = FlutterMethodChannel(
+      name: "com.follow.clash/tile",
+      binaryMessenger: messenger
+    )
     channel.setMethodCallHandler(handle)
     installAppCoreEventListener()
     registerCoreEventObserver()
     registerTunnelStatusObserver()
+    registerAppActiveObserver()
     drainCoreEventQueue()
   }
 
@@ -47,6 +57,9 @@ final class IOSServiceChannel {
     )
     if let tunnelStatusObserver = tunnelStatusObserver {
       NotificationCenter.default.removeObserver(tunnelStatusObserver)
+    }
+    if let appActiveObserver = appActiveObserver {
+      NotificationCenter.default.removeObserver(appActiveObserver)
     }
   }
 
@@ -112,7 +125,7 @@ final class IOSServiceChannel {
         guard let proto = manager.protocolConfiguration as? NETunnelProviderProtocol else {
           return false
         }
-        return proto.providerBundleIdentifier == self.providerBundleIdentifier
+        return proto.providerBundleIdentifier == self.neCoreIdentifier
       }) {
         self.log("loadManager found existing manager status=\(self.statusDescription(manager.connection.status))")
         completion(manager, nil)
@@ -128,7 +141,7 @@ final class IOSServiceChannel {
       self.log("loadManager create manager")
       let manager = NETunnelProviderManager()
       let proto = NETunnelProviderProtocol()
-      proto.providerBundleIdentifier = self.providerBundleIdentifier
+      proto.providerBundleIdentifier = self.neCoreIdentifier
       proto.serverAddress = self.localizedDescription
       manager.protocolConfiguration = proto
       manager.localizedDescription = self.localizedDescription
@@ -178,6 +191,7 @@ final class IOSServiceChannel {
               return
             }
             self.isTunnelStopExpected = false
+            self.isTunnelStartExpected = true
             try manager.connection.startVPNTunnel()
             self.log("startTunnel startVPNTunnel requested")
             self.waitForTunnelConnected(manager: manager) { connected in
@@ -401,6 +415,16 @@ final class IOSServiceChannel {
     }
   }
 
+  private func registerAppActiveObserver() {
+    appActiveObserver = NotificationCenter.default.addObserver(
+      forName: UIApplication.didBecomeActiveNotification,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      self?.handleTunnelStatusDidChange()
+    }
+  }
+
   private func handleTunnelStatusDidChange() {
     loadManager(createIfNeeded: false) { manager, _ in
       DispatchQueue.main.async {
@@ -413,11 +437,17 @@ final class IOSServiceChannel {
   }
 
   private func handleTunnelStatus(_ status: NEVPNStatus) {
+    reloadControlWidget()
+
     let previousStatus = lastTunnelStatus
     lastTunnelStatus = status
-    log("tunnel status changed \(statusDescription(previousStatus ?? .invalid)) -> \(statusDescription(status)) expectedStop=\(isTunnelStopExpected)")
+    log("tunnel status changed \(statusDescription(previousStatus ?? .invalid)) -> \(statusDescription(status)) expectedStart=\(isTunnelStartExpected) expectedStop=\(isTunnelStopExpected)")
 
     if isConnectedTunnelStatus(status) {
+      if !isTunnelStartExpected {
+        notifyExternalStart()
+      }
+      isTunnelStartExpected = false
       isTunnelStopExpected = false
       return
     }
@@ -428,21 +458,30 @@ final class IOSServiceChannel {
 
     if isTunnelStopExpected {
       isTunnelStopExpected = false
+      isTunnelStartExpected = false
       return
     }
 
     guard let previousStatus,
           isActiveTunnelStatus(previousStatus) else {
+      isTunnelStartExpected = false
       return
     }
     isTunnelStopExpected = false
-    notifyTunnelCrashed(status: status)
+    isTunnelStartExpected = false
+    notifyExternalStop()
   }
 
-  private func notifyTunnelCrashed(status: NEVPNStatus) {
-    let message = "network extension disconnected: \(statusDescription(status))"
-    log("notifyTunnelCrashed \(message)")
-    channel.invokeMethod("crash", arguments: message)
+  private func notifyExternalStart() {
+    log("notifyExternalStart: tunnel started externally")
+    saveRunTime()
+    tileChannel.invokeMethod("start", arguments: nil)
+  }
+
+  private func notifyExternalStop() {
+    log("notifyExternalStop: tunnel stopped externally")
+    clearRunTime()
+    tileChannel.invokeMethod("stop", arguments: nil)
   }
 
   private func sendProviderMessage(_ data: Data, result: @escaping FlutterResult) {
@@ -548,6 +587,12 @@ final class IOSServiceChannel {
 
   private func clearRunTime() {
     UserDefaults(suiteName: appGroupIdentifier)?.removeObject(forKey: runTimeKey)
+  }
+
+  private func reloadControlWidget() {
+    if #available(iOS 18.0, *) {
+      ControlCenter.shared.reloadControls(ofKind: widgetIdentifier)
+    }
   }
 
   private func canSendProviderMessage(status: NEVPNStatus) -> Bool {
