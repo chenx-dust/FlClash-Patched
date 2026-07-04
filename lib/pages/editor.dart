@@ -24,6 +24,8 @@ class EditorPage extends ConsumerStatefulWidget {
   final List<Language> languages;
   final bool supportRemoteDownload;
   final bool titleEditable;
+  final void Function(String url)? onRemoteDownload;
+  final VoidCallback? onLocalImport;
   final Function(BuildContext context, String title, String content)? onSave;
   final Future<bool> Function(
     BuildContext context,
@@ -39,6 +41,8 @@ class EditorPage extends ConsumerStatefulWidget {
     this.titleEditable = false,
     this.onSave,
     this.onPop,
+    this.onRemoteDownload,
+    this.onLocalImport,
     this.supportRemoteDownload = false,
     this.languages = const [Language.yaml],
   });
@@ -141,6 +145,7 @@ class _EditorPageState extends ConsumerState<EditorPage> {
     }
     final res = utf8.decode(await file.readBytes());
     _controller.text = res;
+    widget.onLocalImport?.call();
   }
 
   Future<void> _handleImportFormUrl() async {
@@ -166,7 +171,15 @@ class _EditorPageState extends ConsumerState<EditorPage> {
       return;
     }
     final res = await request.getTextResponseForUrl(url);
-    _controller.text = res.data ?? '';
+    final content = res.data;
+    if (content == null) {
+      globalState.showNotifier(
+        appLocalizations.nullTip(appLocalizations.content),
+      );
+      return;
+    }
+    _controller.text = content;
+    widget.onRemoteDownload?.call(url);
   }
 
   @override
