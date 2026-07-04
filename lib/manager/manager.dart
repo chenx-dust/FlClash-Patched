@@ -1,4 +1,3 @@
-export 'android_manager.dart';
 export 'app_manager.dart';
 export 'back_manager.dart';
 export 'connectivity_manager.dart';

@@ -16,7 +16,7 @@ class CoreController {
 
   CoreController._internal() {
     if (system.isAndroid) {
-      _interface = coreLib!;
+      _interface = coreAndroid!;
     } else if (system.isIOS) {
       _interface = coreIOS!;
     } else if (system.isDesktop) {
