@@ -8,12 +8,12 @@ import 'package:fl_clash/state.dart';
 import 'interface.dart';
 import 'method.dart';
 
-class CoreLib extends CoreHandlerInterface {
-  static CoreLib? _instance;
+class CoreAndroid extends CoreHandlerInterface {
+  static CoreAndroid? _instance;
 
   Completer<bool> _connectedCompleter = Completer();
 
-  CoreLib._internal();
+  CoreAndroid._internal();
 
   @override
   Future<String> preload() async {
@@ -31,8 +31,8 @@ class CoreLib extends CoreHandlerInterface {
     return syncRes ?? '';
   }
 
-  factory CoreLib() {
-    _instance ??= CoreLib._internal();
+  factory CoreAndroid() {
+    _instance ??= CoreAndroid._internal();
     return _instance!;
   }
 
@@ -86,4 +86,4 @@ class CoreLib extends CoreHandlerInterface {
   Completer get completer => _connectedCompleter;
 }
 
-CoreLib? get coreLib => system.isAndroid ? CoreLib() : null;
+CoreAndroid? get coreAndroid => system.isAndroid ? CoreAndroid() : null;
