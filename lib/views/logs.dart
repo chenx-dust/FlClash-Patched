@@ -8,6 +8,7 @@ import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
@@ -350,22 +351,32 @@ class LogItem extends StatelessWidget {
     final appLocalizations = context.appLocalizations;
     final sourceLabel = log.source.name.toUpperCase();
     final levelLabel = log.logLevel.name.toUpperCase();
-    return ListItem(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      onTap: () {
-        copyText(context, log.payload);
-      },
-      title: Text(
-        log.payload,
-        style: context.textTheme.bodyMedium?.copyWith(
-          color: log.logLevel.color(context),
-        ),
+    return CommonPopupBox(
+      popup:  CommonPopupMenu(
+        items: [
+          PopupMenuItemData(
+            icon: Icons.copy,
+            label: appLocalizations.copy,
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: log.payload));
+            },
+          ),
+        ],
       ),
-      subtitle: Column(
-        children: [
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      targetBuilder: (open) => Builder(
+        builder: (context) => ListItem(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          onLongPress: () {
+            copyText(context, log.payload);
+          },
+          onSecondaryTapDown: (_) => open(targetContext: context),
+          title: Text(
+            log.payload,
+            style: context.textTheme.bodyMedium?.copyWith(
+              color: log.logLevel.color(context),
+            ),
+          ),
+          subtitle: Column(
             children: [
               const SizedBox(height: 8),
               Row(
@@ -389,7 +400,7 @@ class LogItem extends StatelessWidget {
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
