@@ -1208,7 +1208,7 @@ $MetadataCopyWith<$Res> get metadata {
 /// @nodoc
 mixin _$Log {
 
-@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info) LogLevel get logLevel;@JsonKey(unknownEnumValue: LogSource.app) LogSource get source;@JsonKey(name: 'Payload') String get payload;@JsonKey(fromJson: _logDateTime) String get dateTime;
+@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info) LogLevel get logLevel;@JsonKey(unknownEnumValue: LogSource.app) LogSource get source;@JsonKey(name: 'Payload') String get payload;@JsonKey(name: 'Time', fromJson: _logTimestamp) int get timestamp;
 /// Create a copy of Log
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1221,16 +1221,16 @@ $LogCopyWith<Log> get copyWith => _$LogCopyWithImpl<Log>(this as Log, _$identity
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Log&&(identical(other.logLevel, logLevel) || other.logLevel == logLevel)&&(identical(other.source, source) || other.source == source)&&(identical(other.payload, payload) || other.payload == payload)&&(identical(other.dateTime, dateTime) || other.dateTime == dateTime));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Log&&(identical(other.logLevel, logLevel) || other.logLevel == logLevel)&&(identical(other.source, source) || other.source == source)&&(identical(other.payload, payload) || other.payload == payload)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,logLevel,source,payload,dateTime);
+int get hashCode => Object.hash(runtimeType,logLevel,source,payload,timestamp);
 
 @override
 String toString() {
-  return 'Log(logLevel: $logLevel, source: $source, payload: $payload, dateTime: $dateTime)';
+  return 'Log(logLevel: $logLevel, source: $source, payload: $payload, timestamp: $timestamp)';
 }
 
 
@@ -1241,7 +1241,7 @@ abstract mixin class $LogCopyWith<$Res>  {
   factory $LogCopyWith(Log value, $Res Function(Log) _then) = _$LogCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info) LogLevel logLevel,@JsonKey(unknownEnumValue: LogSource.app) LogSource source,@JsonKey(name: 'Payload') String payload,@JsonKey(fromJson: _logDateTime) String dateTime
+@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info) LogLevel logLevel,@JsonKey(unknownEnumValue: LogSource.app) LogSource source,@JsonKey(name: 'Payload') String payload,@JsonKey(name: 'Time', fromJson: _logTimestamp) int timestamp
 });
 
 
@@ -1258,13 +1258,13 @@ class _$LogCopyWithImpl<$Res>
 
 /// Create a copy of Log
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? logLevel = null,Object? source = null,Object? payload = null,Object? dateTime = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? logLevel = null,Object? source = null,Object? payload = null,Object? timestamp = null,}) {
   return _then(_self.copyWith(
 logLevel: null == logLevel ? _self.logLevel : logLevel // ignore: cast_nullable_to_non_nullable
 as LogLevel,source: null == source ? _self.source : source // ignore: cast_nullable_to_non_nullable
 as LogSource,payload: null == payload ? _self.payload : payload // ignore: cast_nullable_to_non_nullable
-as String,dateTime: null == dateTime ? _self.dateTime : dateTime // ignore: cast_nullable_to_non_nullable
-as String,
+as String,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
@@ -1349,10 +1349,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info)  LogLevel logLevel, @JsonKey(unknownEnumValue: LogSource.app)  LogSource source, @JsonKey(name: 'Payload')  String payload, @JsonKey(fromJson: _logDateTime)  String dateTime)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info)  LogLevel logLevel, @JsonKey(unknownEnumValue: LogSource.app)  LogSource source, @JsonKey(name: 'Payload')  String payload, @JsonKey(name: 'Time', fromJson: _logTimestamp)  int timestamp)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Log() when $default != null:
-return $default(_that.logLevel,_that.source,_that.payload,_that.dateTime);case _:
+return $default(_that.logLevel,_that.source,_that.payload,_that.timestamp);case _:
   return orElse();
 
 }
@@ -1370,10 +1370,10 @@ return $default(_that.logLevel,_that.source,_that.payload,_that.dateTime);case _
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info)  LogLevel logLevel, @JsonKey(unknownEnumValue: LogSource.app)  LogSource source, @JsonKey(name: 'Payload')  String payload, @JsonKey(fromJson: _logDateTime)  String dateTime)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info)  LogLevel logLevel, @JsonKey(unknownEnumValue: LogSource.app)  LogSource source, @JsonKey(name: 'Payload')  String payload, @JsonKey(name: 'Time', fromJson: _logTimestamp)  int timestamp)  $default,) {final _that = this;
 switch (_that) {
 case _Log():
-return $default(_that.logLevel,_that.source,_that.payload,_that.dateTime);case _:
+return $default(_that.logLevel,_that.source,_that.payload,_that.timestamp);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1390,10 +1390,10 @@ return $default(_that.logLevel,_that.source,_that.payload,_that.dateTime);case _
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info)  LogLevel logLevel, @JsonKey(unknownEnumValue: LogSource.app)  LogSource source, @JsonKey(name: 'Payload')  String payload, @JsonKey(fromJson: _logDateTime)  String dateTime)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info)  LogLevel logLevel, @JsonKey(unknownEnumValue: LogSource.app)  LogSource source, @JsonKey(name: 'Payload')  String payload, @JsonKey(name: 'Time', fromJson: _logTimestamp)  int timestamp)?  $default,) {final _that = this;
 switch (_that) {
 case _Log() when $default != null:
-return $default(_that.logLevel,_that.source,_that.payload,_that.dateTime);case _:
+return $default(_that.logLevel,_that.source,_that.payload,_that.timestamp);case _:
   return null;
 
 }
@@ -1405,13 +1405,13 @@ return $default(_that.logLevel,_that.source,_that.payload,_that.dateTime);case _
 @JsonSerializable()
 
 class _Log implements Log {
-  const _Log({@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info) this.logLevel = LogLevel.info, @JsonKey(unknownEnumValue: LogSource.app) this.source = LogSource.app, @JsonKey(name: 'Payload') this.payload = '', @JsonKey(fromJson: _logDateTime) required this.dateTime});
+  const _Log({@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info) this.logLevel = LogLevel.info, @JsonKey(unknownEnumValue: LogSource.app) this.source = LogSource.app, @JsonKey(name: 'Payload') this.payload = '', @JsonKey(name: 'Time', fromJson: _logTimestamp) required this.timestamp});
   factory _Log.fromJson(Map<String, dynamic> json) => _$LogFromJson(json);
 
 @override@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info) final  LogLevel logLevel;
 @override@JsonKey(unknownEnumValue: LogSource.app) final  LogSource source;
 @override@JsonKey(name: 'Payload') final  String payload;
-@override@JsonKey(fromJson: _logDateTime) final  String dateTime;
+@override@JsonKey(name: 'Time', fromJson: _logTimestamp) final  int timestamp;
 
 /// Create a copy of Log
 /// with the given fields replaced by the non-null parameter values.
@@ -1426,16 +1426,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Log&&(identical(other.logLevel, logLevel) || other.logLevel == logLevel)&&(identical(other.source, source) || other.source == source)&&(identical(other.payload, payload) || other.payload == payload)&&(identical(other.dateTime, dateTime) || other.dateTime == dateTime));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Log&&(identical(other.logLevel, logLevel) || other.logLevel == logLevel)&&(identical(other.source, source) || other.source == source)&&(identical(other.payload, payload) || other.payload == payload)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,logLevel,source,payload,dateTime);
+int get hashCode => Object.hash(runtimeType,logLevel,source,payload,timestamp);
 
 @override
 String toString() {
-  return 'Log(logLevel: $logLevel, source: $source, payload: $payload, dateTime: $dateTime)';
+  return 'Log(logLevel: $logLevel, source: $source, payload: $payload, timestamp: $timestamp)';
 }
 
 
@@ -1446,7 +1446,7 @@ abstract mixin class _$LogCopyWith<$Res> implements $LogCopyWith<$Res> {
   factory _$LogCopyWith(_Log value, $Res Function(_Log) _then) = __$LogCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info) LogLevel logLevel,@JsonKey(unknownEnumValue: LogSource.app) LogSource source,@JsonKey(name: 'Payload') String payload,@JsonKey(fromJson: _logDateTime) String dateTime
+@JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info) LogLevel logLevel,@JsonKey(unknownEnumValue: LogSource.app) LogSource source,@JsonKey(name: 'Payload') String payload,@JsonKey(name: 'Time', fromJson: _logTimestamp) int timestamp
 });
 
 
@@ -1463,13 +1463,13 @@ class __$LogCopyWithImpl<$Res>
 
 /// Create a copy of Log
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? logLevel = null,Object? source = null,Object? payload = null,Object? dateTime = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? logLevel = null,Object? source = null,Object? payload = null,Object? timestamp = null,}) {
   return _then(_Log(
 logLevel: null == logLevel ? _self.logLevel : logLevel // ignore: cast_nullable_to_non_nullable
 as LogLevel,source: null == source ? _self.source : source // ignore: cast_nullable_to_non_nullable
 as LogSource,payload: null == payload ? _self.payload : payload // ignore: cast_nullable_to_non_nullable
-as String,dateTime: null == dateTime ? _self.dateTime : dateTime // ignore: cast_nullable_to_non_nullable
-as String,
+as String,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

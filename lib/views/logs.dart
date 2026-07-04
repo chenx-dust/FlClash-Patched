@@ -214,7 +214,12 @@ class _LogsViewState extends ConsumerState<LogsView> {
             );
           }
           final items = logs
-              .map<Widget>((log) => LogItem(key: Key(log.dateTime), log: log))
+              .map<Widget>(
+                (log) => LogItem(
+                  key: Key(log.timestamp.toString()),
+                  log: log,
+                ),
+              )
               .separated(const Divider(height: 0))
               .toList();
           return Align(
@@ -386,7 +391,7 @@ class LogItem extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    log.dateTime,
+                    DateTime.fromMillisecondsSinceEpoch(log.timestamp).toLocal().showFull,
                     style: context.textTheme.bodySmall?.copyWith(
                       color: context.colorScheme.onSurface.opacity80,
                     ),

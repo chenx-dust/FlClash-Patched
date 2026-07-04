@@ -38,7 +38,7 @@ var (
 var (
 	logNotifyMutex   sync.Mutex
 	logNotifyEnabled bool
-	logNotifyCache   [maxCachedLogNotify]log.Event
+	logNotifyCache   [maxCachedLogNotify]StampedLogEvent
 	logNotifyStart   int
 	logNotifyLen     int
 )
@@ -55,6 +55,12 @@ const (
 	maxCachedLogNotify     = 100
 	maxCachedRequestNotify = 100
 )
+
+type StampedLogEvent struct {
+	LogLevel log.LogLevel
+	Payload  string
+	Time     int64
+}
 
 func handleInitClash(params *InitParams) bool {
 	runLock.Lock()
@@ -389,10 +395,10 @@ func handleSuspend(suspended bool) bool {
 	return true
 }
 
-func handleStartLogNotify() []log.Event {
+func handleStartLogNotify() []StampedLogEvent {
 	logNotifyMutex.Lock()
 	defer logNotifyMutex.Unlock()
-	logs := make([]log.Event, logNotifyLen)
+	logs := make([]StampedLogEvent, logNotifyLen)
 	if logNotifyLen != 0 {
 		for i := 0; i < logNotifyLen; i++ {
 			index := (logNotifyStart + i) % maxCachedLogNotify
@@ -412,7 +418,7 @@ func handleStopLogNotify() {
 	logNotifyEnabled = false
 }
 
-func cacheLog(logData log.Event) {
+func cacheLog(logData StampedLogEvent) {
 	if logNotifyLen < maxCachedLogNotify {
 		index := (logNotifyStart + logNotifyLen) % maxCachedLogNotify
 		logNotifyCache[index] = logData
@@ -532,16 +538,21 @@ func init() {
 			if logData.LogLevel < log.Level() {
 				continue
 			}
+			stampedLog := StampedLogEvent{
+				LogLevel: logData.LogLevel,
+				Payload:  logData.Payload,
+				Time:     time.Now().UnixMilli(),
+			}
 			logNotifyMutex.Lock()
 			if !logNotifyEnabled {
-				cacheLog(logData)
+				cacheLog(stampedLog)
 				logNotifyMutex.Unlock()
 				continue
 			}
 			logNotifyMutex.Unlock()
 			sendMessage(Message{
 				Type: LogMessage,
-				Data: logData,
+				Data: stampedLog,
 			})
 		}
 	}()
