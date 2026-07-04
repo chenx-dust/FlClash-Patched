@@ -5,7 +5,7 @@ BUILDKIT := plugins/setup/buildkit/run_build_tool.sh
 ARCH_ARG := $(if $(ARCH),--arch $(ARCH),)
 TARGET_PLATFORM_ARG := $(if $(TARGET_PLATFORM),--target-platform $(TARGET_PLATFORM),)
 
-.PHONY: help submodules core core-macos core-linux core-windows core-android
+.PHONY: help submodules core core-macos core-linux core-windows core-android core-ios
 
 help:
 	@echo 'make core                         # build macOS core by default'
@@ -13,6 +13,7 @@ help:
 	@echo 'make core-macos ARCH=arm64'
 	@echo 'make core-android ARCH=arm64'
 	@echo 'make core-android TARGET_PLATFORM=android-arm64'
+	@echo 'make core-ios                     # build iOS core (arm64, macOS host only)'
 
 submodules:
 	git submodule update --init --recursive
@@ -31,3 +32,6 @@ core-windows:
 
 core-android:
 	$(MAKE) core PLATFORM=android
+
+core-ios:
+	$(MAKE) core PLATFORM=ios
