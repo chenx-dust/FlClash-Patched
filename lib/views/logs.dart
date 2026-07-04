@@ -216,7 +216,7 @@ class _LogsViewState extends ConsumerState<LogsView> {
           final items = logs
               .map<Widget>(
                 (log) => LogItem(
-                  key: Key(log.dateTime),
+                  key: Key(log.timestamp.toString()),
                   log: log,
                 ),
               )
@@ -391,7 +391,7 @@ class LogItem extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    log.dateTime,
+                    DateTime.fromMillisecondsSinceEpoch(log.timestamp).toLocal().showFull,
                     style: context.textTheme.bodySmall?.copyWith(
                       color: context.colorScheme.onSurface.opacity80,
                     ),
