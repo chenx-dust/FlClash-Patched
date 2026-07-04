@@ -177,7 +177,7 @@ class GlobalState {
     } catch (e, s) {
       commonPrint.log('$title ===> $e, $s', logLevel: LogLevel.warning);
       if (silence) {
-        showNotifier(e.toString());
+        showNotifier(e.toString(), allowCopy: true);
       } else {
         showMessage(
           title: title ?? currentAppLocalizations.tip,
@@ -299,11 +299,11 @@ class GlobalState {
     );
   }
 
-  void showNotifier(String text, {MessageActionState? actionState}) {
+  void showNotifier(String text, {MessageActionState? actionState, bool allowCopy = false}) {
     if (text.isEmpty) {
       return;
     }
-    navigatorKey.currentContext?.showNotifier(text, actionState: actionState);
+    navigatorKey.currentContext?.showNotifier(text, actionState: actionState, allowCopy: allowCopy);
   }
 
   Future<void> openUrl(String url) async {
