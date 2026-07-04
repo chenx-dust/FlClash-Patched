@@ -1870,7 +1870,7 @@ $ConfigCopyWith<$Res> get config {
 /// @nodoc
 mixin _$CommonMessage {
 
- String get id; String get text; Duration get duration; MessageActionState? get actionState;
+ String get id; String get text; Duration get duration; MessageActionState? get actionState; bool get allowCopy;
 /// Create a copy of CommonMessage
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1881,16 +1881,16 @@ $CommonMessageCopyWith<CommonMessage> get copyWith => _$CommonMessageCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CommonMessage&&(identical(other.id, id) || other.id == id)&&(identical(other.text, text) || other.text == text)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.actionState, actionState) || other.actionState == actionState));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CommonMessage&&(identical(other.id, id) || other.id == id)&&(identical(other.text, text) || other.text == text)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.actionState, actionState) || other.actionState == actionState)&&(identical(other.allowCopy, allowCopy) || other.allowCopy == allowCopy));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,text,duration,actionState);
+int get hashCode => Object.hash(runtimeType,id,text,duration,actionState,allowCopy);
 
 @override
 String toString() {
-  return 'CommonMessage(id: $id, text: $text, duration: $duration, actionState: $actionState)';
+  return 'CommonMessage(id: $id, text: $text, duration: $duration, actionState: $actionState, allowCopy: $allowCopy)';
 }
 
 
@@ -1901,7 +1901,7 @@ abstract mixin class $CommonMessageCopyWith<$Res>  {
   factory $CommonMessageCopyWith(CommonMessage value, $Res Function(CommonMessage) _then) = _$CommonMessageCopyWithImpl;
 @useResult
 $Res call({
- String id, String text, Duration duration, MessageActionState? actionState
+ String id, String text, Duration duration, MessageActionState? actionState, bool allowCopy
 });
 
 
@@ -1918,13 +1918,14 @@ class _$CommonMessageCopyWithImpl<$Res>
 
 /// Create a copy of CommonMessage
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? text = null,Object? duration = null,Object? actionState = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? text = null,Object? duration = null,Object? actionState = freezed,Object? allowCopy = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
 as String,duration: null == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
 as Duration,actionState: freezed == actionState ? _self.actionState : actionState // ignore: cast_nullable_to_non_nullable
-as MessageActionState?,
+as MessageActionState?,allowCopy: null == allowCopy ? _self.allowCopy : allowCopy // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 /// Create a copy of CommonMessage
@@ -2021,10 +2022,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String text,  Duration duration,  MessageActionState? actionState)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String text,  Duration duration,  MessageActionState? actionState,  bool allowCopy)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CommonMessage() when $default != null:
-return $default(_that.id,_that.text,_that.duration,_that.actionState);case _:
+return $default(_that.id,_that.text,_that.duration,_that.actionState,_that.allowCopy);case _:
   return orElse();
 
 }
@@ -2042,10 +2043,10 @@ return $default(_that.id,_that.text,_that.duration,_that.actionState);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String text,  Duration duration,  MessageActionState? actionState)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String text,  Duration duration,  MessageActionState? actionState,  bool allowCopy)  $default,) {final _that = this;
 switch (_that) {
 case _CommonMessage():
-return $default(_that.id,_that.text,_that.duration,_that.actionState);case _:
+return $default(_that.id,_that.text,_that.duration,_that.actionState,_that.allowCopy);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -2062,10 +2063,10 @@ return $default(_that.id,_that.text,_that.duration,_that.actionState);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String text,  Duration duration,  MessageActionState? actionState)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String text,  Duration duration,  MessageActionState? actionState,  bool allowCopy)?  $default,) {final _that = this;
 switch (_that) {
 case _CommonMessage() when $default != null:
-return $default(_that.id,_that.text,_that.duration,_that.actionState);case _:
+return $default(_that.id,_that.text,_that.duration,_that.actionState,_that.allowCopy);case _:
   return null;
 
 }
@@ -2077,13 +2078,14 @@ return $default(_that.id,_that.text,_that.duration,_that.actionState);case _:
 
 
 class _CommonMessage implements CommonMessage {
-  const _CommonMessage({required this.id, required this.text, this.duration = const Duration(seconds: 3), this.actionState});
+  const _CommonMessage({required this.id, required this.text, this.duration = const Duration(seconds: 3), this.actionState, this.allowCopy = false});
   
 
 @override final  String id;
 @override final  String text;
 @override@JsonKey() final  Duration duration;
 @override final  MessageActionState? actionState;
+@override@JsonKey() final  bool allowCopy;
 
 /// Create a copy of CommonMessage
 /// with the given fields replaced by the non-null parameter values.
@@ -2095,16 +2097,16 @@ _$CommonMessageCopyWith<_CommonMessage> get copyWith => __$CommonMessageCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CommonMessage&&(identical(other.id, id) || other.id == id)&&(identical(other.text, text) || other.text == text)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.actionState, actionState) || other.actionState == actionState));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CommonMessage&&(identical(other.id, id) || other.id == id)&&(identical(other.text, text) || other.text == text)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.actionState, actionState) || other.actionState == actionState)&&(identical(other.allowCopy, allowCopy) || other.allowCopy == allowCopy));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,text,duration,actionState);
+int get hashCode => Object.hash(runtimeType,id,text,duration,actionState,allowCopy);
 
 @override
 String toString() {
-  return 'CommonMessage(id: $id, text: $text, duration: $duration, actionState: $actionState)';
+  return 'CommonMessage(id: $id, text: $text, duration: $duration, actionState: $actionState, allowCopy: $allowCopy)';
 }
 
 
@@ -2115,7 +2117,7 @@ abstract mixin class _$CommonMessageCopyWith<$Res> implements $CommonMessageCopy
   factory _$CommonMessageCopyWith(_CommonMessage value, $Res Function(_CommonMessage) _then) = __$CommonMessageCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String text, Duration duration, MessageActionState? actionState
+ String id, String text, Duration duration, MessageActionState? actionState, bool allowCopy
 });
 
 
@@ -2132,13 +2134,14 @@ class __$CommonMessageCopyWithImpl<$Res>
 
 /// Create a copy of CommonMessage
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? text = null,Object? duration = null,Object? actionState = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? text = null,Object? duration = null,Object? actionState = freezed,Object? allowCopy = null,}) {
   return _then(_CommonMessage(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
 as String,duration: null == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
 as Duration,actionState: freezed == actionState ? _self.actionState : actionState // ignore: cast_nullable_to_non_nullable
-as MessageActionState?,
+as MessageActionState?,allowCopy: null == allowCopy ? _self.allowCopy : allowCopy // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
