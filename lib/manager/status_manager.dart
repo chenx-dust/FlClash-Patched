@@ -38,11 +38,12 @@ class StatusManagerState extends State<StatusManager> {
     super.dispose();
   }
 
-  void message(String text, {MessageActionState? actionState}) {
+  void message(String text, {MessageActionState? actionState, bool allowCopy = true}) {
     final commonMessage = CommonMessage(
       id: utils.uuidV4,
       text: text,
       actionState: actionState,
+      allowCopy: allowCopy,
     );
     commonPrint.log('message: $text');
     _showMessage(commonMessage);
@@ -176,7 +177,7 @@ class StatusManagerState extends State<StatusManager> {
                                                 ),
                                                 if (showCloseButton)
                                                   const SizedBox(width: 4),
-                                              ] else if (showCloseButton) ...[
+                                              ] else if (showCloseButton && message.allowCopy) ...[
                                                 IconButton(
                                                   style: IconButton.styleFrom(
                                                     fixedSize:
