@@ -106,7 +106,7 @@ class ApplicationState extends ConsumerState<Application> {
       );
     } else if (system.isMobile) {
       return MobileManager(
-        child: system.isAndroid ? TileManager(child: child) : child,
+        child: TileManager(child: child),
       );
     } else {
       return child;
