@@ -433,6 +433,13 @@ _PatchClashConfig _$PatchClashConfigFromJson(Map<String, dynamic> json) =>
       geodataLoader:
           $enumDecodeNullable(_$GeodataLoaderEnumMap, json['geodata-loader']) ??
           GeodataLoader.memconservative,
+      geositeMatcher:
+          $enumDecodeNullable(
+            _$GeositeMatcherEnumMap,
+            json['geosite-matcher'],
+            unknownValue: GeositeMatcher.succinct,
+          ) ??
+          GeositeMatcher.succinct,
       globalUa: json['global-ua'] as String?,
       externalController:
           $enumDecodeNullable(
@@ -468,6 +475,7 @@ Map<String, dynamic> _$PatchClashConfigToJson(_PatchClashConfig instance) =>
       'dns': instance.dns,
       'geox-url': _geoXUrlToJson(instance.geoXUrl),
       'geodata-loader': _$GeodataLoaderEnumMap[instance.geodataLoader]!,
+      'geosite-matcher': _$GeositeMatcherEnumMap[instance.geositeMatcher]!,
       'global-ua': instance.globalUa,
       'external-controller':
           _$ExternalControllerStatusEnumMap[instance.externalController]!,
@@ -498,6 +506,11 @@ const _$FindProcessModeEnumMap = {
 const _$GeodataLoaderEnumMap = {
   GeodataLoader.standard: 'standard',
   GeodataLoader.memconservative: 'memconservative',
+};
+
+const _$GeositeMatcherEnumMap = {
+  GeositeMatcher.succinct: 'succinct',
+  GeositeMatcher.mph: 'mph',
 };
 
 const _$ExternalControllerStatusEnumMap = {
