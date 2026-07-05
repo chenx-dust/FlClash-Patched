@@ -74,6 +74,9 @@ func handleInitClash(params *InitParams) bool {
 	constant.Path.ASN()
 	constant.Path.GeoIP()
 	constant.Path.GeoSite()
+	if features.IOS && !features.WithLowMemory {
+		constant.SetSaveMatcherCache(true)
+	}
 	isInit.Store(true)
 	return true
 }
@@ -103,7 +106,7 @@ func handleGetIsInit() bool {
 func handleForceGC() {
 	log.Infoln("[APP] request force GC")
 	runtime.GC()
-	if features.Android {
+	if features.Android || features.IOS {
 		debug.FreeOSMemory()
 	}
 }
@@ -550,6 +553,7 @@ func init() {
 				Payload:  logData.Payload,
 				Time:     time.Now().UnixMilli(),
 			}
+			writeSystemLog(logData.LogLevel.String(), logData.Payload)
 			logNotifyMutex.Lock()
 			if !logNotifyEnabled {
 				cacheLog(stampedLog)
