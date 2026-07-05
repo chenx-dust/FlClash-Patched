@@ -5,7 +5,7 @@ import SwiftUI
 import WidgetKit
 
 struct WidgetControl: ControlWidget {
-    static let kind = "\(Bundle.main.bundleIdentifier!).Widget"
+    static let kind = Bundle.main.bundleIdentifier!
 
     var body: some ControlWidgetConfiguration {
         StaticControlConfiguration(
@@ -44,7 +44,8 @@ extension WidgetControl {
 struct ToggleVPNIntent: SetValueIntent {
     static let title: LocalizedStringResource = "Toggle FlClash VPN"
 
-    private static let appGroupIdentifier = "group.\(Bundle.main.bundleIdentifier!)"
+    private static let appBundleId = String(Bundle.main.bundleIdentifier!.dropLast(".NECore".count))
+    private static let appGroupIdentifier = "group.\(appBundleId)"
     private static let runTimeKey = "runTime"
 
     @Parameter(title: "VPN is running")
