@@ -171,10 +171,10 @@ final class IOSServiceChannel {
           }
           do {
             self.log("startTunnel startVPNTunnel currentStatus=\(self.statusDescription(manager.connection.status))")
-            if manager.connection.status == .connected {
+            if self.isActiveTunnelStatus(manager.connection.status) {
               self.log("startTunnel already connected")
               self.isTunnelStopExpected = false
-              self.lastTunnelStatus = .connected
+              self.lastTunnelStatus = manager.connection.status
               self.saveRunTime()
               result(true)
               return
@@ -561,14 +561,7 @@ final class IOSServiceChannel {
   }
 
   private func canSendProviderMessage(status: NEVPNStatus) -> Bool {
-    switch status {
-    case .connected, .reasserting:
-      return true
-    case .connecting, .disconnecting, .disconnected, .invalid:
-      return false
-    @unknown default:
-      return false
-    }
+    return isConnectedTunnelStatus(status)
   }
 
   private func isActiveTunnelStatus(_ status: NEVPNStatus) -> Bool {

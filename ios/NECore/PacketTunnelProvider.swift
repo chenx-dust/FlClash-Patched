@@ -29,7 +29,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
   override func startTunnel(options: [String : NSObject]?, completionHandler: @escaping (Error?) -> Void) {
     logger.info("startTunnel begin")
-    guard let vpnOptions = loadSharedState()?.vpnOptions else {
+    guard let sharedState = loadSharedState(), let vpnOptions = sharedState.vpnOptions else {
       logger.error("startTunnel failed: missing vpn options")
       completionHandler(PacketTunnelProviderError.missingVpnOptions)
       return
@@ -51,14 +51,25 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
       }
       self.logger.debug("startTunnel fileDescriptor=\(tunnelFileDescriptor, privacy: .public)")
       self.installCoreEventListener()
-      let started = NECoreBridge.startTun(
-        withFileDescriptor: tunnelFileDescriptor,
-        stack: vpnOptions.stack,
-        address: self.tunAddress(vpnOptions: vpnOptions),
-        dns: self.tunDns(vpnOptions: vpnOptions)
-      )
-      self.logger.info("NECoreBridge.startTun result=\(started, privacy: .public)")
-      completionHandler(started ? nil : PacketTunnelProviderError.couldNotStartCoreTun)
+      let initParams = self.makeInitParams()
+      let setupParams = sharedState.setupParamsRaw ?? "{}"
+      self.logger.info("quickSetup initParams=\(initParams, privacy: .public)")
+      NECoreBridge.quickSetup(withInitParams: initParams, setupParams: setupParams) { result in
+        if let result = result, !result.isEmpty {
+          self.logger.error("quickSetup failed: \(result, privacy: .public)")
+          completionHandler(PacketTunnelProviderError.couldNotStartCoreTun)
+          return
+        }
+        self.logger.info("quickSetup completed")
+        let started = NECoreBridge.startTun(
+          withFileDescriptor: tunnelFileDescriptor,
+          stack: vpnOptions.stack,
+          address: self.tunAddress(vpnOptions: vpnOptions),
+          dns: self.tunDns(vpnOptions: vpnOptions)
+        )
+        self.logger.info("NECoreBridge.startTun result=\(started, privacy: .public)")
+        completionHandler(started ? nil : PacketTunnelProviderError.couldNotStartCoreTun)
+      }
     }
   }
   
@@ -176,11 +187,26 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     return nil
   }
 
+  private func makeInitParams() -> String {
+    let homeDir = FileManager.default.containerURL(
+      forSecurityApplicationGroupIdentifier: appGroupIdentifier
+    )?.path ?? ""
+    return "{\"home-dir\":\"\(homeDir)\",\"version\":0}"
+  }
+
   private func loadSharedState() -> SharedState? {
     guard let data = UserDefaults(suiteName: appGroupIdentifier)?.data(forKey: sharedStateKey) else {
       return nil
     }
-    return try? JSONDecoder().decode(SharedState.self, from: data)
+    guard var state = try? JSONDecoder().decode(SharedState.self, from: data) else {
+      return nil
+    }
+    if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+       let setupParams = json["setupParams"] {
+      let setupData = try? JSONSerialization.data(withJSONObject: setupParams)
+      state.setupParamsRaw = setupData.flatMap { String(data: $0, encoding: .utf8) }
+    }
+    return state
   }
 
   private func installCoreEventListener() {
@@ -378,6 +404,11 @@ private enum PacketTunnelProviderError: LocalizedError {
 
 private struct SharedState: Decodable {
   let vpnOptions: VpnOptions?
+  var setupParamsRaw: String?
+
+  private enum CodingKeys: String, CodingKey {
+    case vpnOptions
+  }
 }
 
 private struct VpnOptions: Decodable {
