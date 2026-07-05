@@ -546,9 +546,7 @@ abstract class PatchClashConfig with _$PatchClashConfig {
     @Default(0) @JsonKey(name: 'port') int port,
     @Default(0) @JsonKey(name: 'redir-port') int redirPort,
     @Default(0) @JsonKey(name: 'tproxy-port') int tproxyPort,
-    @Default(Mode.rule)
-    @JsonKey(unknownEnumValue: Mode.rule)
-    Mode mode,
+    @Default(Mode.rule) @JsonKey(unknownEnumValue: Mode.rule) Mode mode,
     @Default(false) @JsonKey(name: 'allow-lan') bool allowLan,
     @Default(LogLevel.error)
     @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error)
@@ -580,6 +578,9 @@ abstract class PatchClashConfig with _$PatchClashConfig {
       unknownEnumValue: GeodataLoader.memconservative,
     )
     GeodataLoader geodataLoader,
+    @Default(GeositeMatcher.succinct)
+    @JsonKey(name: 'geosite-matcher', unknownEnumValue: GeositeMatcher.succinct)
+    GeositeMatcher geositeMatcher,
     @JsonKey(name: 'global-ua') String? globalUa,
     @Default(ExternalControllerStatus.close)
     @JsonKey(

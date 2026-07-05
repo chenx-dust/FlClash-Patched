@@ -1309,6 +1309,26 @@ class AppLocalizations {
     );
   }
 
+  /// `High Performance Geo Matcher`
+  String get geositeMatcher {
+    return Intl.message(
+      'High Performance Geo Matcher',
+      name: 'geositeMatcher',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enabling will use the minimal perfect hash algorithm for matching`
+  String get geositeMatcherDesc {
+    return Intl.message(
+      'Enabling will use the minimal perfect hash algorithm for matching',
+      name: 'geositeMatcherDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Requests`
   String get requests {
     return Intl.message('Requests', name: 'requests', desc: '', args: []);
