@@ -163,6 +163,8 @@
   "tcpConcurrentDesc": "开启后允许 TCP 并发",
   "geodataLoader": "Geo 低内存模式",
   "geodataLoaderDesc": "开启将使用 Geo 低内存加载器",
+  "geositeMatcher": "高性能 Geo 匹配器",
+  "geositeMatcherDesc": "开启将使用最小完美哈希算法进行匹配",
   "requests": "请求",
   "requestsDesc": "查看最近请求记录",
   "findProcessMode": "查找进程",

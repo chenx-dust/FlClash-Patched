@@ -163,6 +163,8 @@
   "tcpConcurrentDesc": "Enabling it will allow TCP concurrency",
   "geodataLoader": "Geo Low Memory Mode",
   "geodataLoaderDesc": "Enabling will use the Geo low memory loader",
+  "geositeMatcher": "High Performance Geo Matcher",
+  "geositeMatcherDesc": "Enabling will use the minimal perfect hash algorithm for matching",
   "requests": "Requests",
   "requestsDesc": "View recently request records",
   "findProcessMode": "Find Process",
