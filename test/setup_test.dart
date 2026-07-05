@@ -38,6 +38,7 @@ void main() {
       await setup.writeIOSGeneratedBundleConfig(
         tempDir.path,
         'com.example.flclash',
+        'ABCDE12345',
       );
 
       final configFile = File(
@@ -50,6 +51,7 @@ void main() {
       );
       final content = await configFile.readAsString();
       expect(content, contains('APP_BUNDLE_ID = com.example.flclash'));
+      expect(content, contains('DEVELOPMENT_TEAM = ABCDE12345'));
     });
 
     test('omits verbose from flutter build args by default', () {
