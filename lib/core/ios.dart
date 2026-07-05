@@ -14,6 +14,7 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
   static CoreIOS? _instance;
 
   static const _appCoreMethods = {
+    ActionMethod.initClash,
     ActionMethod.getIsInit,
     ActionMethod.validateConfig,
     ActionMethod.getConfig,

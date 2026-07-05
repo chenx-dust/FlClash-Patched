@@ -1,7 +1,6 @@
 import Flutter
 import Foundation
 import NetworkExtension
-import WidgetKit
 
 final class IOSServiceChannel {
   private static var instance: IOSServiceChannel?
@@ -436,8 +435,6 @@ final class IOSServiceChannel {
   }
 
   private func handleTunnelStatus(_ status: NEVPNStatus) {
-    reloadControlWidget()
-
     let previousStatus = lastTunnelStatus
     lastTunnelStatus = status
     log("tunnel status changed \(statusDescription(previousStatus ?? .invalid)) -> \(statusDescription(status)) expectedStart=\(isTunnelStartExpected) expectedStop=\(isTunnelStopExpected)")
@@ -562,12 +559,6 @@ final class IOSServiceChannel {
 
   private func clearRunTime() {
     UserDefaults(suiteName: appGroupIdentifier)?.removeObject(forKey: runTimeKey)
-  }
-
-  private func reloadControlWidget() {
-    if #available(iOS 18.0, *) {
-      ControlCenter.shared.reloadControls(ofKind: widgetIdentifier)
-    }
   }
 
   private func canSendProviderMessage(status: NEVPNStatus) -> Bool {
