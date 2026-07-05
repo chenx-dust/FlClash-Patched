@@ -64,12 +64,14 @@ static os_log_type_t IOSCoreLogType(const char *level) {
 }
 
 static void IOSCoreSystemLog(const char *level, const char *message) {
+  if (message == NULL) {
+    return;
+  }
   os_log_with_type(
       IOSCoreLogger(),
       IOSCoreLogType(level),
-      "[%{public}s] %{public}s",
-      level == NULL ? "unknown" : level,
-      message == NULL ? "" : message);
+      "%{public}s",
+      message);
 }
 
 @implementation IOSCoreBridge
