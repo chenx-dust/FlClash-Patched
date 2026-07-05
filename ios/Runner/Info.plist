@@ -92,5 +92,16 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
+	<key>UIApplicationShortcutItems</key>
+	<array>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>toggle</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Toggle</string>
+			<key>UIApplicationShortcutItemIconType</key>
+			<string>UIApplicationShortcutIconTypeShuffle</string>
+		</dict>
+	</array>
 </dict>
 </plist>
