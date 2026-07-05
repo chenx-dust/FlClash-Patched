@@ -220,7 +220,8 @@ func updateConfig(params *UpdateParams) {
 		general.IPv6 = *params.IPv6
 		resolver.DisableIPv6 = !general.IPv6
 	}
-	if params.ExternalController != nil {
+	if params.ExternalController != nil &&
+		(!features.IOS || features.WithLowMemory) { // only necore start external controller
 		currentConfig.Controller.ExternalController = *params.ExternalController
 		route.ReCreateServer(&route.Config{
 			Addr: currentConfig.Controller.ExternalController,
@@ -272,7 +273,7 @@ func applyConfig(params *SetupParams) error {
 	hub.ApplyConfig(currentConfig)
 	patchSelectGroup(params.SelectedMap)
 	updateListeners()
-	if updater.GeoAutoUpdate() {
+	if !features.WithLowMemory && updater.GeoAutoUpdate() {
 		updater.RegisterGeoUpdater()
 	}
 	return err
