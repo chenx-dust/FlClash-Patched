@@ -476,6 +476,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Enabling will use the Geo low memory loader",
     ),
     "geoipCode": MessageLookupByLibrary.simpleMessage("GeoIP code"),
+    "geositeMatcher": MessageLookupByLibrary.simpleMessage(
+      "High Performance Geo Matcher",
+    ),
+    "geositeMatcherDesc": MessageLookupByLibrary.simpleMessage(
+      "Enabling will use the minimal perfect hash algorithm for matching",
+    ),
     "global": MessageLookupByLibrary.simpleMessage("Global"),
     "go": MessageLookupByLibrary.simpleMessage("Go"),
     "goDownload": MessageLookupByLibrary.simpleMessage("Go to download"),

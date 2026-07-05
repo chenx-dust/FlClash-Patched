@@ -387,6 +387,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "有効化すると Geo 低メモリローダーを使用",
     ),
     "geoipCode": MessageLookupByLibrary.simpleMessage("GeoIP コード"),
+    "geositeMatcher": MessageLookupByLibrary.simpleMessage("高性能 Geo マッチャー"),
+    "geositeMatcherDesc": MessageLookupByLibrary.simpleMessage(
+      "有効化すると最小完全ハッシュアルゴリズムで照合",
+    ),
     "global": MessageLookupByLibrary.simpleMessage("グローバル"),
     "go": MessageLookupByLibrary.simpleMessage("移動"),
     "goDownload": MessageLookupByLibrary.simpleMessage("ダウンロードへ"),

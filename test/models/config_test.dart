@@ -265,6 +265,7 @@ void main() {
       expect(config.mode, Mode.rule);
       expect(config.externalController, ExternalControllerStatus.close);
       expect(config.geodataLoader, GeodataLoader.memconservative);
+      expect(config.geositeMatcher, GeositeMatcher.succinct);
     });
 
     test('custom values survive round-trip', () {
@@ -275,6 +276,7 @@ void main() {
         logLevel: LogLevel.debug,
         externalController: ExternalControllerStatus.open,
         geodataLoader: GeodataLoader.memconservative,
+        geositeMatcher: GeositeMatcher.mph,
       );
 
       final restored = roundTrip(
@@ -288,6 +290,7 @@ void main() {
       expect(restored.logLevel, LogLevel.debug);
       expect(restored.externalController, ExternalControllerStatus.open);
       expect(restored.geodataLoader, GeodataLoader.memconservative);
+      expect(restored.geositeMatcher, GeositeMatcher.mph);
     });
   });
 
