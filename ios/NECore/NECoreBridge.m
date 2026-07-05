@@ -63,12 +63,14 @@ static os_log_type_t NECoreLogType(const char *level) {
 }
 
 static void NECoreSystemLog(const char *level, const char *message) {
+  if (message == NULL) {
+    return;
+  }
   os_log_with_type(
       NECoreLogger(),
       NECoreLogType(level),
-      "[%{public}s] %{public}s",
-      level == NULL ? "unknown" : level,
-      message == NULL ? "" : message);
+      "%{public}s",
+      message);
 }
 
 @implementation NECoreBridge
@@ -100,6 +102,17 @@ static void NECoreSystemLog(const char *level, const char *message) {
   }
   NECoreResultHandler retainedListener = [listener copy];
   setEventListener((void *)CFBridgingRetain(retainedListener));
+}
+
++ (void)quickSetupWithInitParams:(NSString *)initParams
+                     setupParams:(NSString *)setupParams
+                          result:(NECoreResultHandler)result {
+  [self initializeBridge];
+  NECoreResultHandler retainedResult = [result copy];
+  quickSetup(
+      (void *)CFBridgingRetain(retainedResult),
+      strdup(initParams.UTF8String),
+      strdup(setupParams.UTF8String));
 }
 
 + (BOOL)startTunWithFileDescriptor:(int)fileDescriptor
