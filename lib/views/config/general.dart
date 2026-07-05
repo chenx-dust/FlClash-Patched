@@ -628,6 +628,39 @@ class GeodataLoaderItem extends ConsumerWidget {
   }
 }
 
+class GeositeMatcherItem extends ConsumerWidget {
+  const GeositeMatcherItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
+    final isMph = ref.watch(
+      patchClashConfigProvider.select(
+        (state) => state.geositeMatcher == GeositeMatcher.mph,
+      ),
+    );
+    return ListItem.switchItem(
+      leading: const Icon(Icons.travel_explore),
+      title: Text(appLocalizations.geositeMatcher),
+      subtitle: Text(appLocalizations.geositeMatcherDesc),
+      delegate: SwitchDelegate(
+        value: isMph,
+        onChanged: (bool value) async {
+          ref
+              .read(patchClashConfigProvider.notifier)
+              .update(
+                (state) => state.copyWith(
+                  geositeMatcher: value
+                      ? GeositeMatcher.mph
+                      : GeositeMatcher.succinct,
+                ),
+              );
+        },
+      ),
+    );
+  }
+}
+
 class ExternalControllerItem extends ConsumerWidget {
   const ExternalControllerItem({super.key});
 
@@ -675,6 +708,7 @@ final generalItems = <Widget>[
   const FindProcessItem(),
   const TcpConcurrentItem(),
   const GeodataLoaderItem(),
+  if (!system.isIOS) const GeositeMatcherItem(),
   const ExternalControllerItem(),
 ].separated(const Divider(height: 0)).toList();
 

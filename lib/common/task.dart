@@ -141,6 +141,11 @@ Future<VM2<String, String>> _makeRealProfileTask(
   rawConfig['tun']['route-address'] = realPatchConfig.tun.routeAddress;
   rawConfig['tun']['auto-route'] = realPatchConfig.tun.autoRoute;
   rawConfig['geodata-loader'] = realPatchConfig.geodataLoader.name;
+  if (system.isIOS) {
+    rawConfig['geosite-matcher'] = GeositeMatcher.succinct.name;
+  } else {
+    rawConfig['geosite-matcher'] = realPatchConfig.geositeMatcher.name;
+  }
   if (rawConfig['sniffer']?['sniff'] != null) {
     for (final value in (rawConfig['sniffer']?['sniff'] as Map).values) {
       if (value['ports'] != null && value['ports'] is List) {
