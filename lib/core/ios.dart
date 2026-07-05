@@ -14,6 +14,7 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
   static CoreIOS? _instance;
 
   static const _appCoreMethods = {
+    ActionMethod.getIsInit,
     ActionMethod.validateConfig,
     ActionMethod.getConfig,
     ActionMethod.generateAgeKeyPair,
@@ -23,8 +24,6 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
   };
 
   Completer<bool> _connectedCompleter = Completer();
-  InitParams? _initParams;
-  SetupParams? _setupParams;
   bool _isNetworkExtensionCoreActive = false;
 
   CoreIOS._internal() {
@@ -62,32 +61,20 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
   }
 
   @override
-  Future<bool> get isInit async {
-    final id = '${ActionMethod.getIsInit.name}#${utils.id}';
-    final action = Action(id: id, method: ActionMethod.getIsInit, data: null);
-    final result = await service?.invokeAppCore(action);
-    if (result == null) return false;
-    return parasResult<bool>(result);
-  }
-
-  @override
-  Future<bool> init(InitParams params) async {
-    _initParams = params;
-    final id = '${ActionMethod.initClash.name}#${utils.id}';
-    final action = Action(
-      id: id,
-      method: ActionMethod.initClash,
-      data: json.encode(params),
-    );
-    final result = await service?.invokeAppCore(action);
-    if (result == null) return false;
-    return parasResult<bool>(result);
-  }
-
-  @override
   Future<String> setupConfig(SetupParams setupParams) async {
-    _setupParams = setupParams;
-    return super.setupConfig(setupParams);
+    final id = '${ActionMethod.setupConfig.name}#${utils.id}';
+    final action = Action(id: id, method: ActionMethod.setupConfig, data: json.encode(setupParams));
+    final appResult = await service?.invokeAppCore(action);
+    if (appResult == null) return 'failed to setup config in app core';
+    final appResultStr = await parasResult<String>(appResult);
+    if (!_isNetworkExtensionCoreActive || appResultStr.isNotEmpty) {
+      return appResultStr;
+    }
+
+    final neResult = await service?.invokeNetworkExtensionCore(action);
+    if (neResult == null) return 'failed to setup config in network extension core';
+    final neResultStr = await parasResult<String>(neResult);
+    return neResultStr;
   }
 
   @override
@@ -108,40 +95,26 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
   @override
   Future<bool> startListener() async {
     if (_isNetworkExtensionCoreActive) {
-      commonPrint.log('[iOS] NECore already active: ensure listener is running');
-      return await invoke<bool>(
-            method: ActionMethod.startListener,
-            data: null,
-          ) ??
-          false;
+      commonPrint.log('[iOS] NECore already active: skip redundant startListener');
+      return true;
     }
-    commonPrint.log('[iOS] start VPN: stop app core listener before NECore');
-    await super.stopListener();
-    final started = await service?.start() ?? false;
-    commonPrint.log('[iOS] start NECore result: $started');
-    if (!started) {
-      _isNetworkExtensionCoreActive = false;
+    final syncRes = await service?.syncState(globalState.container.read(sharedStateProvider));
+    if (syncRes?.isEmpty != true) {
+      commonPrint.log('[iOS] sync shared state failed: $syncRes');
       return false;
     }
-    _isNetworkExtensionCoreActive = true;
-    final setup = await _setupNetworkExtensionCore();
-    commonPrint.log('[iOS] setup NECore result: $setup');
-    return setup;
+    final started = await service?.start() ?? false;
+    commonPrint.log('[iOS] start NECore result: $started');
+    _isNetworkExtensionCoreActive = started;
+    return started;
   }
 
   @override
   Future<bool> stopListener() async {
-    commonPrint.log('[iOS] stop VPN: stop app core listener and NECore');
-    await super.stopListener();
+    commonPrint.log('[iOS] stop VPN: stop NECore listener');
     final stopped = await service?.stop() ?? false;
     _isNetworkExtensionCoreActive = false;
     commonPrint.log('[iOS] stop NECore result: $stopped');
-    if (_setupParams != null) {
-      await invoke<String>(
-        method: ActionMethod.setupConfig,
-        data: json.encode(_setupParams),
-      );
-    }
     return stopped;
   }
 
@@ -176,39 +149,6 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
   @override
   void onServiceCrash(String message) {
     _isNetworkExtensionCoreActive = false;
-  }
-
-  Future<bool> _setupNetworkExtensionCore() async {
-    final initParams = _initParams;
-    if (initParams == null) {
-      commonPrint.log('[iOS] setup NECore failed: missing init params');
-      return false;
-    }
-    final initialized = await invoke<bool>(
-      method: ActionMethod.initClash,
-      data: json.encode(initParams),
-    );
-    if (initialized != true) {
-      commonPrint.log('[iOS] init NECore failed: $initialized');
-      return false;
-    }
-
-    final setupParams = _setupParams;
-    if (setupParams == null) {
-      commonPrint.log('[iOS] setup NECore skipped: missing setup params');
-      return true;
-    }
-    final message = await invoke<String>(
-      method: ActionMethod.setupConfig,
-      data: json.encode(setupParams),
-    );
-    if (message != null &&
-        message.isNotEmpty &&
-        !message.endsWith('is empty')) {
-      commonPrint.log('[iOS] setup NECore failed: $message');
-      return false;
-    }
-    return true;
   }
 }
 
