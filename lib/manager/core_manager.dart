@@ -90,10 +90,6 @@ class _CoreContainerState extends ConsumerState<CoreManager>
 
   @override
   Future<void> onCrash(String message) async {
-    globalState.container.read(initProvider.notifier).value = false;
-    globalState.container
-        .read(setupActionProvider.notifier)
-        .updateStatus(false, isInit: !ref.read(initProvider));
     if (ref.read(coreStatusProvider) != CoreStatus.connected) {
       return;
     }
