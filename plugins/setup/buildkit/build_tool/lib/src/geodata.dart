@@ -26,7 +26,11 @@ Future<void> ensureGeoData({required String rootDir}) async {
     final file = File(p.join(dataDir.path, entry.key));
     if (file.existsSync()) {
       _log.fine('GeoData exists: ${entry.key}');
-      continue;
+      if (file.lastModifiedSync().isBefore(DateTime.now().subtract(const Duration(days: 1)))) {
+        _log.info('GeoData is outdated: ${entry.key}');
+      } else {
+        continue;
+      }
     }
     await _downloadGeoData(url: entry.value, file: file);
   }
