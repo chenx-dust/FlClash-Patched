@@ -286,6 +286,16 @@ final generalItems = <Widget>[
           : GeodataLoader.standard,
     ),
   ),
+  if (!system.isIOS)
+    _clashToggle(
+      icon: Icons.travel_explore,
+      title: (l) => l.geositeMatcher,
+      subtitle: (l) => l.geositeMatcherDesc,
+      select: (state) => state.geositeMatcher == GeositeMatcher.mph,
+      update: (state, value) => state.copyWith(
+        geositeMatcher: value ? GeositeMatcher.mph : GeositeMatcher.succinct,
+      ),
+    ),
   _clashToggle(
     icon: Icons.api_outlined,
     title: (l) => l.externalController,

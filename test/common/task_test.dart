@@ -269,6 +269,26 @@ void main() {
     },
   );
 
+  test('makeRealProfileTask applies the selected geosite matcher', () async {
+    final result = await makeRealProfileTask(
+      const MakeRealProfileState(
+        profilesPath: '/profiles',
+        profileId: 12,
+        rawConfig: {},
+        realPatchConfig: PatchClashConfig(geositeMatcher: GeositeMatcher.mph),
+        overrideDns: false,
+        appendSystemDns: false,
+        proxyGroups: [],
+        rules: [],
+        addedRules: [],
+        defaultUA: 'FlClash-Test',
+      ),
+    );
+    final config = loadYaml(result.yaml) as YamlMap;
+
+    expect(config['geosite-matcher'], GeositeMatcher.mph.name);
+  });
+
   test('makeRealProfileTask overrides DNS and explicit custom data', () async {
     final result = await makeRealProfileTask(
       const MakeRealProfileState(

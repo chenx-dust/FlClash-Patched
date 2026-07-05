@@ -175,6 +175,9 @@ Future<({String yaml, String md5})> _makeRealProfileTask(
   rawConfig['tun']['route-address'] = realPatchConfig.tun.routeAddress;
   rawConfig['tun']['auto-route'] = realPatchConfig.tun.autoRoute;
   rawConfig['geodata-loader'] = realPatchConfig.geodataLoader.name;
+  rawConfig['geosite-matcher'] = system.isIOS
+      ? GeositeMatcher.succinct.name
+      : realPatchConfig.geositeMatcher.name;
   rawConfig['geo-auto-update'] = realPatchConfig.geoAutoUpdate;
   rawConfig['geo-update-interval'] = realPatchConfig.geoUpdateInterval;
   if (rawConfig['sniffer']?['sniff'] != null) {
