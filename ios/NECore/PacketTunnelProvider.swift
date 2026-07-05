@@ -1,4 +1,5 @@
 import NetworkExtension
+import WidgetKit
 import Darwin
 import os
 
@@ -12,6 +13,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
   )
   private let sharedStateKey = "sharedState"
   private let appGroupIdentifier = "group.\(PacketTunnelProvider.baseBundleId)"
+  private let widgetIdentifier = "\(PacketTunnelProvider.baseBundleId).Widget"
   private let eventQueueDirectoryName = "core-events"
   private let eventNotificationName = "\(PacketTunnelProvider.extensionBundleId).event"
   private let maxEventQueueFiles = 10
@@ -29,6 +31,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
   override func startTunnel(options: [String : NSObject]?, completionHandler: @escaping (Error?) -> Void) {
     logger.info("startTunnel begin")
+    reloadControlWidget()
     guard let sharedState = loadSharedState(), let vpnOptions = sharedState.vpnOptions else {
       logger.error("startTunnel failed: missing vpn options")
       completionHandler(PacketTunnelProviderError.missingVpnOptions)
@@ -75,6 +78,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
   
   override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
     logger.info("stopTunnel reason=\(reason.rawValue, privacy: .public)")
+    reloadControlWidget()
     NECoreBridge.setEventListener(nil)
     NECoreBridge.stopTun()
     completionHandler()
@@ -366,6 +370,12 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
       (mask >> 8) & 0xff,
       mask & 0xff,
     ].map { String($0) }.joined(separator: ".")
+  }
+
+  private func reloadControlWidget() {
+    if #available(iOS 18.0, *) {
+      ControlCenter.shared.reloadControls(ofKind: widgetIdentifier)
+    }
   }
 }
 
