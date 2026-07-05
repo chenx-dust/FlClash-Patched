@@ -18,13 +18,15 @@ struct WidgetControl: ControlWidget {
                 action: ToggleVPNIntent()
             ) { isRunning in
                 Label(
-                    isRunning ? "Connected" : "Disconnected",
-                    systemImage: isRunning ? "lock.shield.fill" : "lock.shield"
+                    isRunning
+                        ? String(localized: "connected")
+                        : String(localized: "disconnected"),
+                    image: "FlClash"
                 )
             }
         }
         .displayName("FlClash")
-        .description("Toggle VPN connection.")
+        .description(LocalizedStringResource("toggleVPNDescription"))
     }
 }
 
@@ -42,13 +44,13 @@ extension WidgetControl {
 }
 
 struct ToggleVPNIntent: SetValueIntent {
-    static let title: LocalizedStringResource = "Toggle FlClash VPN"
+    static let title: LocalizedStringResource = "toggleVPNTitle"
 
     private static let appBundleId = String(Bundle.main.bundleIdentifier!.dropLast(".NECore".count))
     private static let appGroupIdentifier = "group.\(appBundleId)"
     private static let runTimeKey = "runTime"
 
-    @Parameter(title: "VPN is running")
+    @Parameter(title: "vpnIsRunning")
     var value: Bool
 
     func perform() async throws -> some IntentResult {
