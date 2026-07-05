@@ -22,6 +22,9 @@ struct sockaddr_ctl {
 
 + (void)invokeAction:(NSString *)action result:(NECoreResultHandler)result;
 + (void)setEventListener:(NECoreResultHandler _Nullable)listener;
++ (void)quickSetupWithInitParams:(NSString *)initParams
+                     setupParams:(NSString *)setupParams
+                          result:(NECoreResultHandler)result;
 + (BOOL)startTunWithFileDescriptor:(int)fileDescriptor
                               stack:(NSString *)stack
                             address:(NSString *)address
