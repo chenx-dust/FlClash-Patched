@@ -163,6 +163,8 @@
   "tcpConcurrentDesc": "TCP 並列処理を許可",
   "geodataLoader": "Geo 低メモリモード",
   "geodataLoaderDesc": "有効化すると Geo 低メモリローダーを使用",
+  "geositeMatcher": "高性能 Geo マッチャー",
+  "geositeMatcherDesc": "有効化すると最小完全ハッシュアルゴリズムで照合",
   "requests": "リクエスト",
   "requestsDesc": "最近のリクエスト記録を表示",
   "findProcessMode": "プロセス検出",

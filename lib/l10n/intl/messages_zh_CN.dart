@@ -345,6 +345,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "开启将使用 Geo 低内存加载器",
     ),
     "geoipCode": MessageLookupByLibrary.simpleMessage("GeoIP 代码"),
+    "geositeMatcher": MessageLookupByLibrary.simpleMessage("高性能 Geo 匹配器"),
+    "geositeMatcherDesc": MessageLookupByLibrary.simpleMessage(
+      "开启将使用最小完美哈希算法进行匹配",
+    ),
     "global": MessageLookupByLibrary.simpleMessage("全局"),
     "go": MessageLookupByLibrary.simpleMessage("前往"),
     "goDownload": MessageLookupByLibrary.simpleMessage("前往下载"),

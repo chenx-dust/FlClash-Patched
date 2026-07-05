@@ -497,6 +497,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Включение будет использовать загрузчик геоданных с низким потреблением памяти",
     ),
     "geoipCode": MessageLookupByLibrary.simpleMessage("Код GeoIP"),
+    "geositeMatcher": MessageLookupByLibrary.simpleMessage(
+      "Высокопроизводительный Geo-сопоставитель",
+    ),
+    "geositeMatcherDesc": MessageLookupByLibrary.simpleMessage(
+      "При включении для сопоставления используется алгоритм минимального совершенного хеша",
+    ),
     "global": MessageLookupByLibrary.simpleMessage("Глобальный"),
     "go": MessageLookupByLibrary.simpleMessage("Перейти"),
     "goDownload": MessageLookupByLibrary.simpleMessage("Перейти к загрузке"),
