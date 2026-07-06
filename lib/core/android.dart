@@ -74,7 +74,16 @@ class CoreAndroid extends CoreHandlerInterface {
     final id = '${method.name}#${utils.id}';
     final result = await service
         ?.invokeAction(Action(id: id, method: method, data: data))
-        .withTimeout(onTimeout: () => null);
+        .withTimeout(
+          timeout: timeout,
+          onTimeout: () {
+            commonPrint.log(
+              'Invoke action timeout: $method',
+              logLevel: LogLevel.error,
+            );
+            return null;
+          },
+        );
     if (result == null) {
       return null;
     }
