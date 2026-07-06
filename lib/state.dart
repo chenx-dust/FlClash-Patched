@@ -114,7 +114,7 @@ class GlobalState {
     final appStateOverrides = buildAppStateOverrides(appState);
     packageInfo = await PackageInfo.fromPlatform();
     final configMap = await preferences.getConfigMap();
-    var config = await migration.migrationIfNeeded(
+    final config = await migration.migrationIfNeeded(
       configMap,
       sync: (data) async {
         final newConfigMap = data.configMap;
