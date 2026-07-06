@@ -73,6 +73,15 @@ func handleAction(action *Action, result ActionResult) {
 		}
 		result.success(handleValidateConfig(&params))
 		return
+	case decryptAgeConfigMethod:
+		paramsString := action.Data.(string)
+		var params DecryptAgeConfigParams
+		err := json.Unmarshal([]byte(paramsString), &params)
+		if err != nil {
+			params.Data = paramsString
+		}
+		result.success(handleDecryptAgeConfig(&params))
+		return
 	case updateConfigMethod:
 		data := []byte(action.Data.(string))
 		result.success(handleUpdateConfig(data))

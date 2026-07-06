@@ -17,6 +17,11 @@ type ValidateConfigParams struct {
 	AgeSecretKey string `json:"age-secret-key"`
 }
 
+type DecryptAgeConfigParams struct {
+	Data         string `json:"data"`
+	AgeSecretKey string `json:"age-secret-key"`
+}
+
 type GetConfigParams struct {
 	Path         string `json:"path"`
 	AgeSecretKey string `json:"age-secret-key"`
@@ -122,6 +127,7 @@ const (
 	deleteFile                           Method = "deleteFile"
 	generateAgeKeyPairMethod             Method = "generateAgeKeyPair"
 	convertAgeSecretKeyToPublicKeyMethod Method = "convertAgeSecretKeyToPublicKey"
+	decryptAgeConfigMethod               Method = "decryptAgeConfig"
 )
 
 type Method string

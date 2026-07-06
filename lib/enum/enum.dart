@@ -285,6 +285,7 @@ enum ActionMethod {
   deleteFile,
   generateAgeKeyPair,
   convertAgeSecretKeyToPublicKey,
+  decryptAgeConfig,
 
   ///Mobile,
   setState,

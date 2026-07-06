@@ -145,6 +145,17 @@ func handleValidateConfig(params *ValidateConfigParams) string {
 	return ""
 }
 
+func handleDecryptAgeConfig(params *DecryptAgeConfigParams) string {
+	ageMutex.Lock()
+	defer ageMutex.Unlock()
+
+	decrypted, err := age.DecryptBytes([]byte(params.Data), params.AgeSecretKey)
+	if err != nil {
+		return ""
+	}
+	return string(decrypted)
+}
+
 func handleGetProxies() ProxiesData {
 	runLock.Lock()
 	defer runLock.Unlock()

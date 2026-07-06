@@ -332,6 +332,7 @@ const _$ActionMethodEnumMap = {
   ActionMethod.deleteFile: 'deleteFile',
   ActionMethod.generateAgeKeyPair: 'generateAgeKeyPair',
   ActionMethod.convertAgeSecretKeyToPublicKey: 'convertAgeSecretKeyToPublicKey',
+  ActionMethod.decryptAgeConfig: 'decryptAgeConfig',
   ActionMethod.setState: 'setState',
   ActionMethod.startTun: 'startTun',
   ActionMethod.stopTun: 'stopTun',
