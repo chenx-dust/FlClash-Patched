@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/state.dart';
@@ -29,19 +27,14 @@ class _MemoryInfoState extends State<MemoryInfo> {
   }
 
   Future<void> _updateMemory() async {
-    final rss = ProcessInfo.currentRss;
-    if (coreController.isCompleted) {
-      final memory = await coreController.getMemory();
-      if (!mounted) {
-        return;
-      }
-      _memoryStateNotifier.value = memory + rss;
+    if (!coreController.isCompleted) {
       return;
     }
+    final memory = await coreController.getMemory();
     if (!mounted) {
       return;
     }
-    _memoryStateNotifier.value = rss;
+    _memoryStateNotifier.value = memory;
   }
 
   @override
