@@ -72,19 +72,21 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
             .updateGroupsDebounce();
       }
     });
-    ref.listenManual(suspendProvider, (prev, next) {
-      final isStart = ref.read(isStartProvider);
-      if (prev != next && isStart) {
-        debouncer.call(FunctionTag.suspend, () async {
-          if (next == true) {
-            await coreController.stopListener();
-          } else {
-            await coreController.startListener();
-          }
-          ref.read(checkIpNumProvider.notifier).add();
-        });
-      }
-    });
+    if (!system.isIOS) {
+      ref.listenManual(suspendProvider, (prev, next) {
+        final isStart = ref.read(isStartProvider);
+        if (prev != next && isStart) {
+          debouncer.call(FunctionTag.suspend, () async {
+            if (next == true) {
+              await coreController.stopListener();
+            } else {
+              await coreController.startListener();
+            }
+            ref.read(checkIpNumProvider.notifier).add();
+          });
+        }
+      });
+    }
     if (system.isMacOS) {
       ref.listenManual(autoSetSystemDnsStateProvider, (prev, next) async {
         if (prev == next) {

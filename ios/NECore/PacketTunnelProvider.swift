@@ -81,7 +81,28 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     reloadControlWidget()
     NECoreBridge.setEventListener(nil)
     NECoreBridge.stopTun()
-    completionHandler()
+    guard reason == .userInitiated else {
+      completionHandler()
+      return
+    }
+    NETunnelProviderManager.loadAllFromPreferences() { managers, error in
+      if let error {
+        self.logger.error("stopTunnel loadAllFromPreferences error=\(error.localizedDescription, privacy: .public)")
+        completionHandler()
+        return
+      }
+      guard let manager = managers?.first else {
+        completionHandler()
+        return
+      }
+      manager.isOnDemandEnabled = false
+      manager.saveToPreferences() { error in
+        if let error {
+          self.logger.error("stopTunnel saveToPreferences error=\(error.localizedDescription, privacy: .public)")
+        }
+        completionHandler()
+      }
+    }
   }
   
   override func handleAppMessage(_ messageData: Data, completionHandler: ((Data?) -> Void)?) {
