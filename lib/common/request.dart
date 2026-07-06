@@ -42,12 +42,32 @@ class Request {
         if (e.type == DioExceptionType.unknown) {
           throw currentAppLocalizations.unknownNetworkError;
         } else if (e.type == DioExceptionType.badResponse) {
-          throw currentAppLocalizations.networkException;
+          final response = e.response;
+          final statusCode = response?.statusCode ?? 0;
+          final body = _extractResponseBody(response);
+          final detail = body.isNotEmpty
+              ? '[$statusCode]\n$body'
+              : '[$statusCode]';
+          throw '${currentAppLocalizations.networkException} $detail';
         }
         rethrow;
       }
       throw currentAppLocalizations.unknownNetworkError;
     }
+  }
+
+  String _extractResponseBody(Response? response) {
+    if (response == null) return '';
+    final data = response.data;
+    if (data == null) return '';
+    if (data is Uint8List) {
+      try {
+        return utf8.decode(data).trim();
+      } catch (_) {
+        return '';
+      }
+    }
+    return data.toString().trim();
   }
 
   Future<Response<String>> getTextResponseForUrl(String url) async {
