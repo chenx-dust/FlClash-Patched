@@ -18,10 +18,12 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
     CoreMethod.getIsInit,
     CoreMethod.validateConfig,
     CoreMethod.getConfig,
+    CoreMethod.decryptAgeConfig,
     CoreMethod.generateAgeKeyPair,
     CoreMethod.convertAgeSecretKeyToPublicKey,
     CoreMethod.deleteFile,
     CoreMethod.updateGeoData,
+    CoreMethod.getCountryCode,
   };
 
   Completer<bool> _connectedCompleter = Completer();
