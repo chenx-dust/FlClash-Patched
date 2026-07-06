@@ -632,6 +632,57 @@ abstract class _$ExcludeSSIDs extends $Notifier<List<String>> {
   }
 }
 
+@ProviderFor(AlwaysOn)
+final alwaysOnProvider = AlwaysOnProvider._();
+
+final class AlwaysOnProvider extends $NotifierProvider<AlwaysOn, bool> {
+  AlwaysOnProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'alwaysOnProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$alwaysOnHash();
+
+  @$internal
+  @override
+  AlwaysOn create() => AlwaysOn();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$alwaysOnHash() => r'f7280497065f60238d7f34c8a61ffac87641681b';
+
+abstract class _$AlwaysOn extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(_config)
 final configProvider = _ConfigProvider._();
 
@@ -670,4 +721,4 @@ final class _ConfigProvider extends $FunctionalProvider<Config, Config, Config>
   }
 }
 
-String _$_configHash() => r'7f29da1e31a3393fb36ab43c21f0d1b38223afec';
+String _$_configHash() => r'f3ce474160446d07d8267523aabab3eb7906ad28';

@@ -135,6 +135,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "allowLan": MessageLookupByLibrary.simpleMessage("LAN を許可"),
     "allowLanDesc": MessageLookupByLibrary.simpleMessage("LAN 経由でのプロキシアクセスを許可"),
+    "alwaysOn": MessageLookupByLibrary.simpleMessage("常時接続"),
+    "alwaysOnDesc": MessageLookupByLibrary.simpleMessage(
+      "あらゆるネットワーク環境でVPN接続を維持",
+    ),
     "app": MessageLookupByLibrary.simpleMessage("アプリ"),
     "appAccessControl": MessageLookupByLibrary.simpleMessage("アプリアクセス制御"),
     "appendSystemDns": MessageLookupByLibrary.simpleMessage("システム DNS を追加"),
