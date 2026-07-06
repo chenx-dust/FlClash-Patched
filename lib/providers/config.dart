@@ -105,6 +105,14 @@ class ExcludeSSIDs extends _$ExcludeSSIDs with AutoDisposeNotifierMixin {
   }
 }
 
+@riverpod
+class AlwaysOn extends _$AlwaysOn with AutoDisposeNotifierMixin {
+  @override
+  bool build() {
+    return false;
+  }
+}
+
 @Riverpod(name: 'configProvider')
 Config _config(Ref ref) {
   final appSettingProps = ref.watch(appSettingProvider);
@@ -119,6 +127,7 @@ Config _config(Ref ref) {
   final proxiesStyleProps = ref.watch(proxiesStyleSettingProvider);
   final patchClashConfig = ref.watch(patchClashConfigProvider);
   final excludeSSIDs = ref.watch(excludeSSIDsProvider);
+  final alwaysOn = ref.watch(alwaysOnProvider);
   return Config(
     appSettingProps: appSettingProps,
     windowProps: windowProps,
@@ -132,6 +141,7 @@ Config _config(Ref ref) {
     proxiesStyleProps: proxiesStyleProps,
     patchClashConfig: patchClashConfig,
     excludeSSIDs: excludeSSIDs,
+    alwaysOn: alwaysOn,
   );
 }
 
@@ -155,5 +165,6 @@ List<Override> buildConfigOverrides(Config config) {
       (_, _) => config.patchClashConfig,
     ),
     excludeSSIDsProvider.overrideWithBuild((_, _) => config.excludeSSIDs),
+    alwaysOnProvider.overrideWithBuild((_, _) => config.alwaysOn),
   ];
 }
