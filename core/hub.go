@@ -36,7 +36,6 @@ var (
 	isInit            = false
 	externalProviders = map[string]cp.Provider{}
 	logSubscriber     observable.Subscription[log.Event]
-	ageMutex          sync.Mutex
 )
 
 var (
@@ -125,16 +124,8 @@ func handleShutdown() bool {
 	return true
 }
 
-func handleValidateConfig(params *ValidateConfigParams) string {
-	ageMutex.Lock()
-	defer ageMutex.Unlock()
-
-	if params.AgeSecretKey != "" {
-		age.SetGlobalSecretKeys(params.AgeSecretKey)
-		defer age.SetGlobalSecretKeys()
-	}
-
-	buf, err := readFile(params.Path)
+func handleValidateConfig(path string) string {
+	buf, err := readFile(path)
 	if err != nil {
 		return err.Error()
 	}
@@ -146,9 +137,6 @@ func handleValidateConfig(params *ValidateConfigParams) string {
 }
 
 func handleDecryptAgeConfig(params *DecryptAgeConfigParams) string {
-	ageMutex.Lock()
-	defer ageMutex.Unlock()
-
 	decrypted, err := age.DecryptBytes([]byte(params.Data), params.AgeSecretKey)
 	if err != nil {
 		return ""
@@ -548,16 +536,8 @@ func handleGetMemory(fn func(value string)) {
 	}()
 }
 
-func handleGetConfig(params *GetConfigParams) (*config.RawConfig, error) {
-	ageMutex.Lock()
-	defer ageMutex.Unlock()
-
-	if params.AgeSecretKey != "" {
-		age.SetGlobalSecretKeys(params.AgeSecretKey)
-		defer age.SetGlobalSecretKeys()
-	}
-
-	bytes, err := readFile(params.Path)
+func handleGetConfig(path string) (*config.RawConfig, error) {
+	bytes, err := readFile(path)
 	if err != nil {
 		return nil, err
 	}

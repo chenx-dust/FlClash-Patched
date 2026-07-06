@@ -234,10 +234,7 @@ extension ProfileExtension on Profile {
     final path = await appPath.tempFilePath;
     final tempFile = File(path);
     await tempFile.safeWriteAsString(content);
-    final message = await coreController.validateConfig(
-      path,
-      ageSecretKey: ageSecretKey,
-    );
+    final message = await coreController.validateConfig(path);
     if (message.isNotEmpty) {
       throw message;
     }
