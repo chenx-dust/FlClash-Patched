@@ -154,11 +154,8 @@ List<String> createFlutterBuildArgs({
   return flutterBuildArgs;
 }
 
-Map<String, String> createBuildEnvironment(String env, {String? iosBundleId}) {
-  return {
-    'APP_ENV': env,
-    if (iosBundleId != null) 'IOS_BUNDLE_ID': iosBundleId,
-  };
+Map<String, String> createBuildEnvironment(String env) {
+  return {'APP_ENV': env};
 }
 
 String _getTargets(String platform, String arch, String? customTargets) {
@@ -192,11 +189,13 @@ Future<int> _package(
   required bool verbose,
 }) async {
   final file = File(p.join(rootDir, 'env.json'));
-  await file.writeAsString(
-    jsonEncode(createBuildEnvironment(env, iosBundleId: iosBundleId)),
-  );
+  await file.writeAsString(jsonEncode(createBuildEnvironment(env)));
   if (platform == 'ios') {
-    await writeIOSGeneratedBundleConfig(rootDir, iosBundleId, iosDevelopmentTeam);
+    await writeIOSGeneratedBundleConfig(
+      rootDir,
+      iosBundleId,
+      iosDevelopmentTeam,
+    );
   }
 
   final flutterBuildArgs = createFlutterBuildArgs(
