@@ -14,6 +14,7 @@ import (
 	"github.com/metacubex/mihomo/adapter/outboundgroup"
 	"github.com/metacubex/mihomo/common/observable"
 	"github.com/metacubex/mihomo/common/utils"
+	"github.com/metacubex/mihomo/component/age"
 	"github.com/metacubex/mihomo/component/mmdb"
 	"github.com/metacubex/mihomo/component/resolver"
 	"github.com/metacubex/mihomo/component/updater"
@@ -481,7 +482,9 @@ func handleGetCountryCode(ip string, fn func(value string)) {
 
 func handleGetMemory(fn func(value uint64)) {
 	go func() {
-		fn(statistic.DefaultManager.Memory())
+		var memStats runtime.MemStats
+		runtime.ReadMemStats(&memStats)
+		fn(memStats.StackInuse + memStats.HeapInuse)
 	}()
 }
 
