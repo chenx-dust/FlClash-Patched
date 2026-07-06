@@ -65,13 +65,8 @@ func handleAction(action *Action, result ActionResult) {
 		result.success(handleShutdown())
 		return
 	case validateConfigMethod:
-		paramsString := action.Data.(string)
-		var params ValidateConfigParams
-		err := json.Unmarshal([]byte(paramsString), &params)
-		if err != nil {
-			params.Path = paramsString
-		}
-		result.success(handleValidateConfig(&params))
+		path := action.Data.(string)
+		result.success(handleValidateConfig(path))
 		return
 	case decryptAgeConfigMethod:
 		paramsString := action.Data.(string)
@@ -127,14 +122,8 @@ func handleAction(action *Action, result ActionResult) {
 		result.success(handleResetConnections())
 		return
 	case getConfigMethod:
-		paramsString := action.Data.(string)
-		var params GetConfigParams
-		err := json.Unmarshal([]byte(paramsString), &params)
-		if err != nil {
-			result.error(err)
-			return
-		}
-		config, err := handleGetConfig(&params)
+		path := action.Data.(string)
+		config, err := handleGetConfig(path)
 		if err != nil {
 			result.error(err)
 			return

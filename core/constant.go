@@ -12,18 +12,8 @@ import (
 	"github.com/metacubex/mihomo/tunnel"
 )
 
-type ValidateConfigParams struct {
-	Path         string `json:"path"`
-	AgeSecretKey string `json:"age-secret-key"`
-}
-
 type DecryptAgeConfigParams struct {
 	Data         string `json:"data"`
-	AgeSecretKey string `json:"age-secret-key"`
-}
-
-type GetConfigParams struct {
-	Path         string `json:"path"`
 	AgeSecretKey string `json:"age-secret-key"`
 }
 

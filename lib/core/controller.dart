@@ -88,25 +88,16 @@ class CoreController {
     return _interface.decryptAgeConfig(data, ageSecretKey);
   }
 
-  Future<String> validateConfig(String path, {String? ageSecretKey}) async {
-    final res = await _interface.validateConfig(
-      path,
-      ageSecretKey: ageSecretKey,
-    );
+  Future<String> validateConfig(String path) async {
+    final res = await _interface.validateConfig(path);
     return res;
   }
 
-  Future<String> validateConfigWithData(
-    String data, {
-    String? ageSecretKey,
-  }) async {
+  Future<String> validateConfigWithData(String data) async {
     final path = await appPath.tempFilePath;
     final file = File(path);
     await file.safeWriteAsString(data);
-    final res = await _interface.validateConfig(
-      path,
-      ageSecretKey: ageSecretKey,
-    );
+    final res = await _interface.validateConfig(path);
     await File(path).safeDelete();
     return res;
   }
@@ -226,12 +217,9 @@ class CoreController {
     return Delay.fromJson(json.decode(data));
   }
 
-  Future<Map<String, dynamic>> getConfig(int id, {String? ageSecretKey}) async {
+  Future<Map<String, dynamic>> getConfig(int id) async {
     final profilePath = await appPath.getProfilePath(id.toString());
-    final res = await _interface.getConfig(
-      profilePath,
-      ageSecretKey: ageSecretKey,
-    );
+    final res = await _interface.getConfig(profilePath);
     if (res.isSuccess) {
       final data = Map<String, dynamic>.from(res.data);
       data['rules'] = data['rule'];

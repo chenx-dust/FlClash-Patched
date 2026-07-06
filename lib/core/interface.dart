@@ -16,11 +16,11 @@ mixin CoreInterface {
 
   Future<bool> forceGc();
 
-  Future<String> validateConfig(String path, {String? ageSecretKey});
+  Future<String> validateConfig(String path);
 
   Future<String> decryptAgeConfig(String data, String ageSecretKey);
 
-  Future<Result> getConfig(String path, {String? ageSecretKey});
+  Future<Result> getConfig(String path);
 
   Future<Map<String, String>> generateAgeKeyPair();
 
@@ -153,14 +153,10 @@ abstract class CoreHandlerInterface with CoreInterface {
   }
 
   @override
-  Future<String> validateConfig(String path, {String? ageSecretKey}) async {
-    final params = {
-      'path': path,
-      'age-secret-key': ageSecretKey ?? '',
-    };
+  Future<String> validateConfig(String path) async {
     return await _invoke<String>(
           method: ActionMethod.validateConfig,
-          data: json.encode(params),
+          data: path,
         ) ??
         '';
   }
@@ -188,14 +184,10 @@ abstract class CoreHandlerInterface with CoreInterface {
   }
 
   @override
-  Future<Result> getConfig(String path, {String? ageSecretKey}) async {
-    final params = {
-      'path': path,
-      'age-secret-key': ageSecretKey ?? '',
-    };
+  Future<Result> getConfig(String path) async {
     final res = await _invoke(
       method: ActionMethod.getConfig,
-      data: json.encode(params),
+      data: path,
     );
     return res ?? Result.success({});
   }

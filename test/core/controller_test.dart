@@ -91,26 +91,10 @@ void main() {
 
   group('config methods', () {
     test('validateConfig delegates to interface', () async {
-      when(
-        () => mock.validateConfig('/path', ageSecretKey: null),
-      ).thenAnswer((_) async => 'ok');
+      when(() => mock.validateConfig('/path')).thenAnswer((_) async => 'ok');
       final result = await controller.validateConfig('/path');
       expect(result, 'ok');
-      verify(() => mock.validateConfig('/path', ageSecretKey: null)).called(1);
-    });
-
-    test('validateConfig delegates age secret key to interface', () async {
-      when(
-        () => mock.validateConfig('/path', ageSecretKey: 'AGE-SECRET-KEY-1'),
-      ).thenAnswer((_) async => 'ok');
-      final result = await controller.validateConfig(
-        '/path',
-        ageSecretKey: 'AGE-SECRET-KEY-1',
-      );
-      expect(result, 'ok');
-      verify(
-        () => mock.validateConfig('/path', ageSecretKey: 'AGE-SECRET-KEY-1'),
-      ).called(1);
+      verify(() => mock.validateConfig('/path')).called(1);
     });
 
     test('updateConfig delegates to interface', () async {

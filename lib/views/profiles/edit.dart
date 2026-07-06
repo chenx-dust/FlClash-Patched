@@ -123,10 +123,7 @@ class EditProfileViewState extends State<EditProfileView> {
 
   Future<void> _handleSaveEdit(BuildContext context, String data) async {
     final message = await globalState.safeRun<String>(() async {
-      final message = await coreController.validateConfigWithData(
-        data,
-        ageSecretKey: _ageSecretKey,
-      );
+      final message = await coreController.validateConfigWithData(data);
       return message;
     }, silence: false);
     if (message?.isNotEmpty == true) {
