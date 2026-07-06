@@ -41,46 +41,81 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
     if (_connectedCompleter.isCompleted) {
       return 'core is connected';
     }
-    commonPrint.log('[iOS] preload app core');
     final res = await service?.init();
     if (res?.isEmpty != true) {
-      commonPrint.log('[iOS] init app core failed: $res');
+      commonPrint.log('Init app core failed: $res');
       return res ?? '';
     }
     final syncRes = await service?.syncState(
       globalState.container.read(sharedStateProvider),
     );
     if (syncRes?.isEmpty != true) {
-      commonPrint.log('[iOS] sync shared state failed: $syncRes');
+      commonPrint.log('Sync shared state failed: $syncRes');
       return syncRes ?? '';
     }
     _isNetworkExtensionCoreActive =
         await service?.isNetworkExtensionCoreActive() ?? false;
-    commonPrint.log('[iOS] app core ready without starting NECore');
     _connectedCompleter.complete(true);
     return '';
   }
 
   @override
   Future<String> setupConfig(SetupParams setupParams) async {
-    final id = '${ActionMethod.setupConfig.name}#${utils.id}';
-    final action = Action(id: id, method: ActionMethod.setupConfig, data: json.encode(setupParams));
-    final appResult = await service?.invokeAppCore(action);
+    _preManualInvoke();
+    final appResult = await _invoke<String>(
+      useNetworkExtensionCore: false,
+      method: ActionMethod.setupConfig,
+      data: json.encode(setupParams),
+    );
     if (appResult == null) return 'failed to setup config in app core';
-    final appResultStr = await parasResult<String>(appResult);
-    if (!_isNetworkExtensionCoreActive || appResultStr.isNotEmpty) {
-      return appResultStr;
+    if (!_isNetworkExtensionCoreActive || appResult.isNotEmpty) {
+      return appResult;
     }
 
-    final neResult = await service?.invokeNetworkExtensionCore(action);
-    if (neResult == null) return 'failed to setup config in network extension core';
-    final neResultStr = await parasResult<String>(neResult);
-    return neResultStr;
+    final neResult = await _invoke<String>(
+      useNetworkExtensionCore: true,
+      method: ActionMethod.setupConfig,
+      data: json.encode(setupParams),
+    );
+    if (neResult == null) {
+      return 'failed to setup config in network extension core';
+    }
+    return neResult;
+  }
+
+  @override
+  Future<String> updateConfig(UpdateParams updateParams) async {
+    _preManualInvoke();
+    final appResult = await _invoke<String>(
+      useNetworkExtensionCore: false,
+      method: ActionMethod.updateConfig,
+      data: json.encode(
+        updateParams.copyWith(
+          externalController: _isNetworkExtensionCoreActive
+              ? ExternalControllerStatus.close
+              : updateParams.externalController,
+        ),
+      ),
+    );
+    if (appResult == null) return 'failed to update config in app core';
+    if (!_isNetworkExtensionCoreActive || appResult.isNotEmpty) {
+      return appResult;
+    }
+
+    final neResult = await _invoke<String>(
+      useNetworkExtensionCore: true,
+      method: ActionMethod.updateConfig,
+      data: json.encode(updateParams.copyWith(geoAutoUpdate: false)),
+    );
+    if (neResult == null) {
+      return 'failed to update config in network extension core';
+    }
+    return neResult;
   }
 
   @override
   FutureOr<bool> destroy() async {
-    return shutdown(false);
+    return true;
   }
 
   @override
@@ -88,7 +123,6 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
     if (!_connectedCompleter.isCompleted) {
       return false;
     }
-    commonPrint.log('[iOS] shutdown NECore');
     _connectedCompleter = Completer();
     return service?.shutdown() ?? true;
   }
@@ -96,27 +130,72 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
   @override
   Future<bool> startListener() async {
     if (_isNetworkExtensionCoreActive) {
-      commonPrint.log('[iOS] NECore already active: skip redundant startListener');
+      commonPrint.log('NECore already active: skip redundant startListener');
       return true;
     }
-    final syncRes = await service?.syncState(globalState.container.read(sharedStateProvider));
+    final syncRes = await service?.syncState(
+      globalState.container.read(sharedStateProvider),
+    );
     if (syncRes?.isEmpty != true) {
-      commonPrint.log('[iOS] sync shared state failed: $syncRes');
+      commonPrint.log(
+        'Sync shared state failed: $syncRes',
+        logLevel: LogLevel.error,
+      );
       return false;
     }
     final started = await service?.start() ?? false;
-    commonPrint.log('[iOS] start NECore result: $started');
     _isNetworkExtensionCoreActive = started;
+    if (started) {
+      final updateRes = await updateConfig(
+        globalState.container.read(updateParamsProvider),
+      );
+      if (updateRes.isNotEmpty) {
+        commonPrint.log(
+          'Update config failed after startListener: $updateRes',
+          logLevel: LogLevel.error,
+        );
+      }
+    }
     return started;
   }
 
   @override
   Future<bool> stopListener() async {
-    commonPrint.log('[iOS] stop VPN: stop NECore listener');
     final stopped = await service?.stop() ?? false;
     _isNetworkExtensionCoreActive = false;
-    commonPrint.log('[iOS] stop NECore result: $stopped');
     return stopped;
+  }
+
+  Future<T?> _invoke<T>({
+    required bool useNetworkExtensionCore,
+    required ActionMethod method,
+    dynamic data,
+    Duration? timeout,
+  }) async {
+    final id = '${method.name}#${utils.id}';
+    final action = Action(id: id, method: method, data: data);
+    commonPrint.log(
+      'Invoke ${method.name} in '
+      '${useNetworkExtensionCore ? 'NECore' : 'app core'}',
+      logLevel: LogLevel.debug,
+    );
+    final invokeFuture = useNetworkExtensionCore
+        ? service?.invokeNetworkExtensionCore(action)
+        : service?.invokeAppCore(action);
+    final result = await invokeFuture?.withTimeout(
+      timeout: timeout,
+      onTimeout: () {
+        commonPrint.log(
+          'Invoke action timeout: $method',
+          logLevel: LogLevel.error,
+        );
+        return null;
+      },
+    );
+    if (result == null) {
+      return null;
+    }
+    return parasResult<T>(result);
   }
 
   @override
@@ -125,23 +204,14 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
     dynamic data,
     Duration? timeout,
   }) async {
-    final id = '${method.name}#${utils.id}';
-    final action = Action(id: id, method: method, data: data);
     final useNetworkExtensionCore =
         _isNetworkExtensionCoreActive && !_appCoreMethods.contains(method);
-    commonPrint.log(
-      '[iOS] route ${method.name} to '
-      '${useNetworkExtensionCore ? 'NECore' : 'app core'}',
-      logLevel: LogLevel.debug,
+    return _invoke(
+      useNetworkExtensionCore: useNetworkExtensionCore,
+      method: method,
+      data: data,
+      timeout: timeout,
     );
-    final invokeFuture = useNetworkExtensionCore
-        ? service?.invokeNetworkExtensionCore(action)
-        : service?.invokeAppCore(action);
-    final result = await invokeFuture?.withTimeout(onTimeout: () => null);
-    if (result == null) {
-      return null;
-    }
-    return parasResult<T>(result);
   }
 
   @override
@@ -150,6 +220,14 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
   @override
   void onServiceCrash(String message) {
     _isNetworkExtensionCoreActive = false;
+  }
+
+  Future<void> _preManualInvoke() async {
+    try {
+      await completer.future.timeout(const Duration(seconds: 10));
+    } catch (e) {
+      commonPrint.log('Invoke pre timeout $e', logLevel: LogLevel.error);
+    }
   }
 }
 
