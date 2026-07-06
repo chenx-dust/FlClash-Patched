@@ -220,8 +220,7 @@ func updateConfig(params *UpdateParams) {
 		general.IPv6 = *params.IPv6
 		resolver.DisableIPv6 = !general.IPv6
 	}
-	if params.ExternalController != nil &&
-		(!features.IOS || features.WithLowMemory) { // only necore start external controller
+	if params.ExternalController != nil {
 		currentConfig.Controller.ExternalController = *params.ExternalController
 		route.ReCreateServer(&route.Config{
 			Addr: currentConfig.Controller.ExternalController,
