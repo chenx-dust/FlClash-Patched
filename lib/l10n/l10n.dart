@@ -4549,6 +4549,21 @@ class AppLocalizations {
     );
   }
 
+  /// `Always On`
+  String get alwaysOn {
+    return Intl.message('Always On', name: 'alwaysOn', desc: '', args: []);
+  }
+
+  /// `Keep VPN connected under any network conditions`
+  String get alwaysOnDesc {
+    return Intl.message(
+      'Keep VPN connected under any network conditions',
+      name: 'alwaysOnDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `On Demand`
   String get onDemand {
     return Intl.message('On Demand', name: 'onDemand', desc: '', args: []);

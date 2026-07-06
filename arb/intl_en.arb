@@ -558,6 +558,8 @@
   "excludeSsids": "Exclude SSIDs",
   "excludeSsidsDesc": "When connected to an excluded SSID Wi-Fi, the app running state will be automatically switched.",
   "ssidsEmpty": "SSIDs is empty",
+  "alwaysOn": "Always On",
+  "alwaysOnDesc": "Keep VPN connected under any network conditions",
   "onDemand": "On Demand",
   "onDemandDesc": "Configure the program running state for specific scenarios",
   "locationPermissionDeniedMessage": "Location permission was denied, so the current Wi-Fi name cannot be obtained. Please open location permission manually in system settings.",
