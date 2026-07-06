@@ -192,7 +192,6 @@ Future<int> _package(
     jsonEncode({
       'APP_ENV': env,
       'CORE_SHA256': ?coreSha256,
-      'IOS_BUNDLE_ID': ?iosBundleId,
     }),
   );
   if (platform == 'ios') {
