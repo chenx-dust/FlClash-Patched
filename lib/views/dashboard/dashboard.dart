@@ -61,7 +61,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
   List<Widget> _buildActions(bool isEdit) {
     final appLocalizations = context.appLocalizations;
     return [
-      if (!isEdit && coreLib == null)
+      if (!isEdit && coreAndroid == null && coreIOS == null)
         Consumer(
           builder: (_, ref, _) {
             final coreStatus = ref.watch(coreStatusProvider);

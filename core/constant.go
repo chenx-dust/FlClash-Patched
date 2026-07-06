@@ -117,6 +117,7 @@ const (
 	clearEffectMethod                    CoreMethod = "clearEffect"
 	generateAgeKeyPairMethod             CoreMethod = "generateAgeKeyPair"
 	convertAgeSecretKeyToPublicKeyMethod CoreMethod = "convertAgeSecretKeyToPublicKey"
+	decryptAgeConfigMethod               CoreMethod = "decryptAgeConfig"
 )
 
 type CoreMethod string

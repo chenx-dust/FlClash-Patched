@@ -581,24 +581,22 @@ class GeositeMatcherItem extends ConsumerWidget {
         (state) => state.geositeMatcher == GeositeMatcher.mph,
       ),
     );
-    return ListItem.switchItem(
+    return ListItem.toggle(
       leading: const Icon(Icons.travel_explore),
       title: Text(appLocalizations.geositeMatcher),
       subtitle: Text(appLocalizations.geositeMatcherDesc),
-      delegate: SwitchDelegate(
-        value: isMph,
-        onChanged: (bool value) async {
-          ref
-              .read(patchClashConfigProvider.notifier)
-              .update(
-                (state) => state.copyWith(
-                  geositeMatcher: value
-                      ? GeositeMatcher.mph
-                      : GeositeMatcher.succinct,
-                ),
-              );
-        },
-      ),
+      value: isMph,
+      onChanged: (bool value) async {
+        ref
+            .read(patchClashConfigProvider.notifier)
+            .update(
+              (state) => state.copyWith(
+                geositeMatcher: value
+                    ? GeositeMatcher.mph
+                    : GeositeMatcher.succinct,
+              ),
+            );
+      },
     );
   }
 }
