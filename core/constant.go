@@ -12,6 +12,11 @@ import (
 	"github.com/metacubex/mihomo/tunnel"
 )
 
+type DecryptAgeConfigParams struct {
+	Data         string `json:"data"`
+	AgeSecretKey string `json:"age-secret-key"`
+}
+
 type InitParams struct {
 	HomeDir string `json:"home-dir"`
 	Version int    `json:"version"`
