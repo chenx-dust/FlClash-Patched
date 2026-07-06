@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path_provider_foundation/path_provider_foundation.dart';
@@ -58,8 +59,9 @@ class AppPath {
 
   Future<String> _getIOSAppGroupPath() async {
     try {
+      final PackageInfo packageInfo = await PackageInfo.fromPlatform();
       return await PathProviderFoundation().getContainerPath(
-            appGroupIdentifier: appGroupIdentifier,
+            appGroupIdentifier: 'group.${packageInfo.packageName}',
           ) ??
           '';
     } catch (_) {
