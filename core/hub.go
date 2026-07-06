@@ -122,6 +122,9 @@ func handleShutdown() bool {
 
 func handleValidateConfig(path string) string {
 	buf, err := readFile(path)
+	if err != nil {
+		return err.Error()
+	}
 	_, err = config.UnmarshalRawConfig(buf)
 	if err != nil {
 		return err.Error()
@@ -130,9 +133,6 @@ func handleValidateConfig(path string) string {
 }
 
 func handleDecryptAgeConfig(params *DecryptAgeConfigParams) string {
-	ageMutex.Lock()
-	defer ageMutex.Unlock()
-
 	decrypted, err := age.DecryptBytes([]byte(params.Data), params.AgeSecretKey)
 	if err != nil {
 		return ""
