@@ -117,6 +117,7 @@ const (
 	deleteFileMethod                     CoreMethod = "deleteFile"
 	generateAgeKeyPairMethod             CoreMethod = "generateAgeKeyPair"
 	convertAgeSecretKeyToPublicKeyMethod CoreMethod = "convertAgeSecretKeyToPublicKey"
+	decryptAgeConfigMethod               CoreMethod = "decryptAgeConfig"
 )
 
 type CoreMethod string
