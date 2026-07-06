@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -220,9 +221,19 @@ extension ProfileExtension on Profile {
   }
 
   Future<Profile> saveFile(Uint8List bytes) async {
+    String content = utf8.decode(bytes);
+    final key = ageSecretKey;
+    if (key != null && key.isNotEmpty) {
+      try {
+        final decrypted = await coreController.decryptAgeConfig(content, key);
+        if (decrypted.isNotEmpty) {
+          content = decrypted;
+        }
+      } catch (_) {}
+    }
     final path = await appPath.tempFilePath;
     final tempFile = File(path);
-    await tempFile.safeWriteAsBytes(bytes);
+    await tempFile.safeWriteAsString(content);
     final message = await coreController.validateConfig(
       path,
       ageSecretKey: ageSecretKey,
@@ -233,19 +244,6 @@ extension ProfileExtension on Profile {
     final mFile = await file;
     await tempFile.copy(mFile.path);
     await tempFile.safeDelete();
-    return copyWith(lastUpdateDate: DateTime.now());
-  }
-
-  Future<Profile> saveFileWithPath(String path) async {
-    final message = await coreController.validateConfig(
-      path,
-      ageSecretKey: ageSecretKey,
-    );
-    if (message.isNotEmpty) {
-      throw message;
-    }
-    final mFile = await file;
-    await File(path).copy(mFile.path);
     return copyWith(lastUpdateDate: DateTime.now());
   }
 }

@@ -84,6 +84,10 @@ class CoreController {
 
   FutureOr<bool> get isInit => _interface.isInit;
 
+  Future<String> decryptAgeConfig(String data, String ageSecretKey) async {
+    return _interface.decryptAgeConfig(data, ageSecretKey);
+  }
+
   Future<String> validateConfig(String path, {String? ageSecretKey}) async {
     final res = await _interface.validateConfig(
       path,

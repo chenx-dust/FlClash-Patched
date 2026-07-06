@@ -18,6 +18,8 @@ mixin CoreInterface {
 
   Future<String> validateConfig(String path, {String? ageSecretKey});
 
+  Future<String> decryptAgeConfig(String data, String ageSecretKey);
+
   Future<Result> getConfig(String path, {String? ageSecretKey});
 
   Future<Map<String, String>> generateAgeKeyPair();
@@ -158,6 +160,19 @@ abstract class CoreHandlerInterface with CoreInterface {
     };
     return await _invoke<String>(
           method: ActionMethod.validateConfig,
+          data: json.encode(params),
+        ) ??
+        '';
+  }
+
+  @override
+  Future<String> decryptAgeConfig(String data, String ageSecretKey) async {
+    final params = {
+      'data': data,
+      'age-secret-key': ageSecretKey,
+    };
+    return await _invoke<String>(
+          method: ActionMethod.decryptAgeConfig,
           data: json.encode(params),
         ) ??
         '';
