@@ -19,12 +19,6 @@ public enum NEHelper {
     return managers.first
   }
 
-  public static func loadManager(completionHandler: @escaping @Sendable (NETunnelProviderManager?, (any Error)?) -> Void) {
-    NETunnelProviderManager.loadAllFromPreferences() { managers, error in
-      completionHandler(managers?.first, error)
-    }
-  }
-
   public static func isRunning(_ status: NEVPNStatus) -> Bool {
     [.connecting, .connected, .reasserting].contains(status)
   }
@@ -34,6 +28,9 @@ public enum NEHelper {
       return
     }
     manager.isEnabled = true
+    if let rules = manager.onDemandRules, !rules.isEmpty {
+      manager.isOnDemandEnabled = true
+    }
     try await manager.saveToPreferences()
     try await manager.loadFromPreferences()
     try manager.connection.startVPNTunnel()
