@@ -8,7 +8,20 @@
 
 [![Downloads](https://img.shields.io/github/downloads/chenx-dust/FlClash-Patched/total?style=flat-square&logo=github)](https://github.com/chenx-dust/FlClash-Patched/releases/)[![Last Version](https://img.shields.io/github/release/chenx-dust/FlClash-Patched/all.svg?style=flat-square)](https://github.com/chenx-dust/FlClash-Patched/releases/)[![License](https://img.shields.io/github/license/chenx-dust/FlClash-Patched?style=flat-square)](LICENSE)
 
-A fork of [FlClash](https://github.com/chen08209/FlClash), with several bug fixes, power efficiency improvements and new features.
+A soft fork of [FlClash](https://github.com/chen08209/FlClash), with several bug fixes, power efficiency improvements and new features.
+
+### Features
+
+- Support iOS platform (requires an Apple Developer account)
+- Optimized experience on Linux (Pacman package distribution, fixed RPM dependencies, WM_CLASS issues)
+- Fixed bugs from upstream (startup time, window positioning, notifications)
+- Energy efficiency optimizations (improved Android Doze, unified UI timer suspend)
+- UI optimizations (proxy selection, log and connection filtering/sorting)
+- New features (Age-Key encryption support, Windows high-priority startup)
+
+For more information, please check the details in [Applied Patches (#1)](https://github.com/chenx-dust/FlClash-Patched/issues/1)
+
+## Original Introduction
 
 A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.
 
