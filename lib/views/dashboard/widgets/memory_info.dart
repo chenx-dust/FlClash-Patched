@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/state.dart';
@@ -97,9 +95,5 @@ class _MemoryInfoState extends State<MemoryInfo> {
 }
 
 Future<num> _readMemory() async {
-  final rss = ProcessInfo.currentRss;
-  if (system.isDesktop && coreController.isCompleted) {
-    return await coreController.getMemory() + rss;
-  }
-  return rss;
+  return coreController.getMemory();
 }
