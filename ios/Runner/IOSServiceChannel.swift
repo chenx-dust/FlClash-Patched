@@ -5,6 +5,7 @@ import NetworkExtension
 final class IOSServiceChannel {
   private static var instance: IOSServiceChannel?
 
+  private let packageName = "com.follow.clash"
   private let channel: FlutterMethodChannel
   private let tileChannel: FlutterMethodChannel
   private var tunnelStatusObserver: NSObjectProtocol?
@@ -32,11 +33,11 @@ final class IOSServiceChannel {
 
   private init(messenger: FlutterBinaryMessenger) {
     channel = FlutterMethodChannel(
-      name: "com.follow.clash/service",
+      name: "\(packageName)/service",
       binaryMessenger: messenger
     )
     tileChannel = FlutterMethodChannel(
-      name: "com.follow.clash/tile",
+      name: "\(packageName)/tile",
       binaryMessenger: messenger
     )
     channel.setMethodCallHandler(handle)
