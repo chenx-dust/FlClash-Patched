@@ -228,7 +228,7 @@ final class ProxyStateProvider
   }
 }
 
-String _$proxyStateHash() => r'ff57f0e84743f19545d9604e71ba7b554c58e24c';
+String _$proxyStateHash() => r'bdf2c2d99394cde2d2ddfbe607b5b2e29474403e';
 
 @ProviderFor(trayState)
 final trayStateProvider = TrayStateProvider._();
@@ -2131,7 +2131,7 @@ final class SharedStateProvider
   }
 }
 
-String _$sharedStateHash() => r'77fd61eb230e50b76e62a2b7e9ba184d060869d6';
+String _$sharedStateHash() => r'0c85ff5489e077384ca88ee730e6a7bd756ccdcc';
 
 @ProviderFor(overlayTopOffset)
 final overlayTopOffsetProvider = OverlayTopOffsetProvider._();
@@ -2383,7 +2383,7 @@ final class ClashConfigProvider
   }
 }
 
-String _$clashConfigHash() => r'7afe6395a06f705d8c2c21ea239e2b8df3b979f1';
+String _$clashConfigHash() => r'f7da0ec3a29379f6192c1206d2cd7535b45fab5e';
 
 final class ClashConfigFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ClashConfig>, int> {

@@ -280,25 +280,38 @@ final class IOSServiceChannel {
     userDefaults.set(data, forKey: sharedStateKey)
     userDefaults.synchronize()
     log("syncState saved bytes=\(data.count)")
+    reloadOnDemandRules()
     result("")
   }
 
-  private func loadNEOptions() -> NEOptions {
+  private func reloadOnDemandRules() {
+    loadManager(createIfNeeded: false) { manager, _ in
+      guard let manager = manager else { return }
+      self.applyNetworkExtensionOptions(to: manager)
+      manager.saveToPreferences { error in
+        if let error = error {
+          self.log("reloadOnDemandRules save failed: \(error.localizedDescription)")
+        }
+      }
+    }
+  }
+
+  private func loadSharedState() -> NESharedState? {
     guard let userDefaults = UserDefaults(suiteName: appGroupIdentifier),
           let data = userDefaults.data(forKey: sharedStateKey) else {
-      return NEOptions()
+      return nil
     }
     do {
-      let state = try JSONDecoder().decode(NESharedState.self, from: data)
-      return state.vpnOptions?.neOptions ?? NEOptions()
+      return try JSONDecoder().decode(NESharedState.self, from: data)
     } catch {
-      log("loadNEOptions decode failed: \(error.localizedDescription)")
-      return NEOptions()
+      log("loadSharedState decode failed: \(error.localizedDescription)")
+      return nil
     }
   }
 
   private func applyNetworkExtensionOptions(to manager: NETunnelProviderManager) {
-    let options = loadNEOptions()
+    let sharedState = loadSharedState()
+    let options = sharedState?.vpnOptions?.neOptions ?? NEOptions()
     guard let proto = manager.protocolConfiguration as? NETunnelProviderProtocol else {
       return
     }
@@ -317,6 +330,31 @@ final class IOSServiceChannel {
       proto.excludeDeviceCommunication = options.excludeDeviceCommunication
     }
     log("applyNEOptions includeAll=\(options.includeAllNetworks) excludeLocal=\(options.excludeLocalNetworks) excludeAPNs=\(options.excludeAPNs) excludeCellular=\(options.excludeCellularServices) enforceRoutes=\(options.enforceRoutes) excludeDeviceComm=\(options.excludeDeviceCommunication)")
+
+    let excludeSSIDs = sharedState?.excludeSSIDs ?? []
+    let alwaysOn = sharedState?.alwaysOn ?? false
+    var rules: [NEOnDemandRule] = []
+    
+    if !excludeSSIDs.isEmpty {
+      let disconnectRule = NEOnDemandRuleDisconnect()
+      disconnectRule.ssidMatch = excludeSSIDs
+      disconnectRule.interfaceTypeMatch = .wiFi
+      rules.append(disconnectRule)
+    }
+
+    if alwaysOn {
+      let connectWifi = NEOnDemandRuleConnect()
+      connectWifi.interfaceTypeMatch = .wiFi
+      rules.append(connectWifi)
+
+      let connectCellular = NEOnDemandRuleConnect()
+      connectCellular.interfaceTypeMatch = .cellular
+      rules.append(connectCellular)
+    }
+
+    manager.onDemandRules = rules.isEmpty ? nil : rules
+    manager.isOnDemandEnabled = !rules.isEmpty
+    log("applyOnDemandRules excludeSSIDs=\(excludeSSIDs) enabled=\(manager.isOnDemandEnabled)")
   }
 
   private func appGroupDir() -> String {
@@ -661,6 +699,8 @@ final class IOSServiceChannel {
 
 private struct NESharedState: Decodable {
   let vpnOptions: NEVpnOptionsPayload?
+  let excludeSSIDs: [String]?
+  let alwaysOn: Bool?
 }
 
 private struct NEVpnOptionsPayload: Decodable {

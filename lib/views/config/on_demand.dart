@@ -181,10 +181,31 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
         (state) => state == WifiSsidPermission.granted,
       ),
     );
+    final alwaysOn = ref.watch(alwaysOnProvider);
     final selectedItems = ref.watch(itemsProvider(key));
     return CommonScaffold(
       body: CustomScrollView(
         slivers: [
+          if (system.isIOS)
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverToBoxAdapter(
+                child: generateSectionV3(
+                  items: [
+                    ListItem.switchItem(
+                      title: Text(appLocalizations.alwaysOn),
+                      subtitle: Text(appLocalizations.alwaysOnDesc),
+                      delegate: SwitchDelegate(
+                        value: alwaysOn,
+                        onChanged: (value) {
+                          ref.read(alwaysOnProvider.notifier).value = value;
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverToBoxAdapter(

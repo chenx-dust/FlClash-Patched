@@ -558,6 +558,8 @@
   "excludeSsids": "排除 SSIDs",
   "excludeSsidsDesc": "连接到被排除 SSID 的 WIFI 时，将会自动切换应用运行状态",
   "ssidsEmpty": "SSIDs 为空",
+  "alwaysOn": "始终连接",
+  "alwaysOnDesc": "在任何网络环境下保持 VPN 连接",
   "onDemand": "按需运行",
   "onDemandDesc": "配置程序特定场景运行状态",
   "locationPermissionDeniedMessage": "位置权限已被拒绝，无法获取当前 Wi-Fi 名称。请前往系统设置手动开启位置权限。",
