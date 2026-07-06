@@ -124,6 +124,13 @@ func handleMethodCall(call *MethodCall, response MethodResponse) {
 		}
 		response.success(handleValidateConfig(path))
 		return
+	case decryptAgeConfigMethod:
+		params := DecryptAgeConfigParams{}
+		if !decodeMethodArguments(call, response, &params) {
+			return
+		}
+		response.success(handleDecryptAgeConfig(&params))
+		return
 	case updateConfigMethod:
 		params := UpdateParams{}
 		if !decodeMethodArguments(call, response, &params) {
