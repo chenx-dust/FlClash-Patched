@@ -103,7 +103,7 @@ UpdateParams updateParams(Ref ref) {
 
 @riverpod
 ProxyState proxyState(Ref ref) {
-  final suspend = ref.watch(suspendProvider);
+  final suspend = system.isIOS ? false : ref.watch(suspendProvider);
   final isStart = ref.watch(runTimeProvider.select((state) => state != null));
   final vm2 = ref.watch(
     networkSettingProvider.select(
@@ -618,6 +618,8 @@ SharedState sharedState(Ref ref) {
   final testUrl = appSettingVM3.b;
   final stack = clashConfigVM2.a;
   final port = clashConfigVM2.b;
+  final excludeSSIDs = ref.watch(excludeSSIDsProvider);
+  final alwaysOn = ref.watch(alwaysOnProvider);
   return SharedState(
     currentProfileName: currentProfileName,
     onlyStatisticsProxy: onlyStatisticsProxy,
@@ -626,6 +628,8 @@ SharedState sharedState(Ref ref) {
     connectedText: currentAppLocalizations.connected,
     stopTip: currentAppLocalizations.stopVpn,
     startTip: currentAppLocalizations.startVpn,
+    excludeSSIDs: excludeSSIDs,
+    alwaysOn: alwaysOn,
     setupParams: SetupParams(selectedMap: selectedMap, testUrl: testUrl),
     vpnOptions: VpnOptions(
       enable: vpnSetting.enable,
