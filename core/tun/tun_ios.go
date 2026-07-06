@@ -65,6 +65,11 @@ func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
 		Inet6Address:        prefix6,
 		MTU:                 9000,
 		FileDescriptor:      tunFd,
+		LoopbackAddress: []netip.Addr{
+			netip.MustParseAddr("10.7.0.1"),
+		},
+		RecvMsgX: true,
+		SendMsgX: true,
 	}
 
 	listener, err := sing_tun.New(options, tunnel.Tunnel)
