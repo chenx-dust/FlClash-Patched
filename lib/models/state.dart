@@ -315,6 +315,8 @@ abstract class SharedState with _$SharedState {
     required String connectedText,
     required bool onlyStatisticsProxy,
     required bool networkSpeedNotification,
+    @Default(false) bool alwaysOn,
+    @Default([]) List<String> excludeSSIDs,
   }) = _SharedState;
 
   factory SharedState.fromJson(Map<String, Object?> json) =>
