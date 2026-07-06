@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/plugins/service.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
@@ -75,7 +76,16 @@ class CoreAndroid extends CoreHandlerInterface {
         ?.invokeMethod(
           CoreMethodCall(id: id, method: method, arguments: arguments),
         )
-        .withTimeout(timeout: timeout, onTimeout: () => null);
+        .withTimeout(
+          timeout: timeout,
+          onTimeout: () {
+            commonPrint.log(
+              'Invoke action timeout: $method',
+              logLevel: LogLevel.error,
+            );
+            return null;
+          },
+        );
     if (response == null) {
       return null;
     }
