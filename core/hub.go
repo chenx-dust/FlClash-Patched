@@ -484,7 +484,7 @@ func handleGetMemory(fn func(value uint64)) {
 	go func() {
 		var memStats runtime.MemStats
 		runtime.ReadMemStats(&memStats)
-		fn(memStats.StackInuse + memStats.HeapInuse)
+		fn(memStats.StackInuse + memStats.HeapInuse + memStats.HeapIdle - memStats.HeapReleased)
 	}()
 }
 
