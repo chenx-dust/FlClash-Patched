@@ -88,7 +88,7 @@ class PreferH3Item extends ConsumerWidget {
       patchClashConfigProvider.select((state) => state.dns.preferH3),
     );
     return ListItem.toggle(
-      title: const Text('PreferH3'),
+      title: Text(appLocalizations.preferH3),
       subtitle: Text(appLocalizations.preferH3Desc),
       value: preferH3,
       onChanged: (bool value) async {
