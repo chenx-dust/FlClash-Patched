@@ -214,6 +214,11 @@ Future<VM2<String, String>> _makeRealProfileTask(
       rawConfig['dns']['nameserver-policy'][entry.key] =
           entry.value.splitByMultipleSeparators;
     }
+    rawConfig['dns']['proxy-server-nameserver-policy'] = {};
+    for (final entry in dns.proxyServerNameserverPolicy.entries) {
+      rawConfig['dns']['proxy-server-nameserver-policy'][entry.key] =
+          entry.value.splitByMultipleSeparators;
+    }
   }
   if (appendSystemDns) {
     final List<String> nameserver = List<String>.from(

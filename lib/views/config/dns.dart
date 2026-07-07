@@ -428,6 +428,43 @@ class ProxyServerNameserverItem extends ConsumerWidget {
   }
 }
 
+class ProxyServerNameserverPolicyItem extends ConsumerWidget {
+  const ProxyServerNameserverPolicyItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
+    final proxyServerNameserverPolicy = ref.watch(
+      patchClashConfigProvider.select(
+        (state) => state.dns.proxyServerNameserverPolicy,
+      ),
+    );
+    return ListItem.open(
+      title: Text(appLocalizations.proxyNameserverPolicy),
+      subtitle: Text(appLocalizations.proxyNameserverPolicyDesc),
+      delegate: OpenDelegate(
+        blur: false,
+        widget: MapInputPage(
+          title: appLocalizations.proxyNameserverPolicy,
+          map: proxyServerNameserverPolicy,
+          keyMaxLength: TextInputLimits.domain,
+          valueMaxLength: TextInputLimits.dnsServer,
+          titleBuilder: (item) => Text(item.key),
+          subtitleBuilder: (item) => Text(item.value),
+        ),
+        onChanged: (value) {
+          ref
+              .read(patchClashConfigProvider.notifier)
+              .update(
+                (state) =>
+                    state.copyWith.dns(proxyServerNameserverPolicy: value),
+              );
+        },
+      ),
+    );
+  }
+}
+
 class FallbackItem extends ConsumerWidget {
   const FallbackItem({super.key});
 
@@ -651,6 +688,7 @@ class DnsOptions extends StatelessWidget {
           const NameserverPolicyItem(),
           const NameserverItem(),
           const FallbackItem(),
+          const ProxyServerNameserverPolicyItem(),
           const ProxyServerNameserverItem(),
         ],
       ),
