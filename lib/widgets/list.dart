@@ -768,8 +768,8 @@ class DecorationListItem extends StatelessWidget {
       ItemPosition.startAndEnd,
     ].contains(position);
     final borderRadius = BorderRadius.vertical(
-      top: isStart ? const Radius.circular(24) : Radius.zero,
-      bottom: isEnd ? const Radius.circular(24) : Radius.zero,
+      top: isStart ? const Radius.circular(16) : Radius.zero,
+      bottom: isEnd ? const Radius.circular(16) : Radius.zero,
     );
     return CommonCard(
       shape: proxyDecorator == true
