@@ -450,8 +450,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "externalFetch": MessageLookupByLibrary.simpleMessage("Внешнее получение"),
     "externalLink": MessageLookupByLibrary.simpleMessage("Внешняя ссылка"),
-    "fakeipFilter": MessageLookupByLibrary.simpleMessage("Фильтр Fakeip"),
-    "fakeipRange": MessageLookupByLibrary.simpleMessage("Диапазон Fakeip"),
+    "fakeipFilter": MessageLookupByLibrary.simpleMessage("Фильтр FakeIP"),
+    "fakeipRange": MessageLookupByLibrary.simpleMessage("Диапазон FakeIP"),
     "fallback": MessageLookupByLibrary.simpleMessage("Резервный"),
     "fallbackDesc": MessageLookupByLibrary.simpleMessage(
       "Обычно используется оффшорный DNS",
@@ -789,6 +789,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "predictiveBack": MessageLookupByLibrary.simpleMessage(
       "Предиктивный возврат",
     ),
+    "preferH3": MessageLookupByLibrary.simpleMessage("Предпочитать HTTP/3"),
     "preferH3Desc": MessageLookupByLibrary.simpleMessage(
       "Приоритетное использование HTTP/3 для DOH",
     ),
