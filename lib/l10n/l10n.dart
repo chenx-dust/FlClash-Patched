@@ -1989,6 +1989,26 @@ class AppLocalizations {
     );
   }
 
+  /// `Proxy Nameserver Policy`
+  String get proxyNameserverPolicy {
+    return Intl.message(
+      'Proxy Nameserver Policy',
+      name: 'proxyNameserverPolicy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Specify the nameserver policy for proxy nodes`
+  String get proxyNameserverPolicyDesc {
+    return Intl.message(
+      'Specify the nameserver policy for proxy nodes',
+      name: 'proxyNameserverPolicyDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Fallback`
   String get fallback {
     return Intl.message('Fallback', name: 'fallback', desc: '', args: []);

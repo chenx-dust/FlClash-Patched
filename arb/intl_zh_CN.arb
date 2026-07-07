@@ -254,6 +254,8 @@
   "nameserverPolicyDesc": "指定对应域名服务器策略",
   "proxyNameserver": "代理域名服务器",
   "proxyNameserverDesc": "用于解析代理节点的域名",
+  "proxyNameserverPolicy": "代理域名服务器策略",
+  "proxyNameserverPolicyDesc": "指定代理节点的域名服务器策略",
   "fallback": "备用",
   "fallbackDesc": "一般情况下使用境外 DNS",
   "fallbackFilter": "备用过滤",
