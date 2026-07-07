@@ -532,7 +532,8 @@ func handleGetMemory(fn func(value string)) {
 	go func() {
 		var memStats runtime.MemStats
 		runtime.ReadMemStats(&memStats)
-		fn(strconv.FormatUint(memStats.StackInuse+memStats.HeapInuse, 10))
+		memory := memStats.StackInuse + memStats.HeapInuse + memStats.HeapIdle - memStats.HeapReleased
+		fn(strconv.FormatUint(memory, 10))
 	}()
 }
 
