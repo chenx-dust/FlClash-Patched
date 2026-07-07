@@ -254,6 +254,8 @@
   "nameserverPolicyDesc": "Указать соответствующую политику сервера имен",
   "proxyNameserver": "Прокси-сервер имен",
   "proxyNameserverDesc": "Домен для разрешения прокси-узлов",
+  "proxyNameserverPolicy": "Политика прокси-сервера имен",
+  "proxyNameserverPolicyDesc": "Указать политику сервера имен для прокси-узлов",
   "fallback": "Резервный",
   "fallbackDesc": "Обычно используется оффшорный DNS",
   "fallbackFilter": "Фильтр резервного DNS",

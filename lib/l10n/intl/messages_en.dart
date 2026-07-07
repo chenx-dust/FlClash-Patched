@@ -805,6 +805,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxyNameserverDesc": MessageLookupByLibrary.simpleMessage(
       "Domain for resolving proxy nodes",
     ),
+    "proxyNameserverPolicy": MessageLookupByLibrary.simpleMessage(
+      "Proxy Nameserver Policy",
+    ),
+    "proxyNameserverPolicyDesc": MessageLookupByLibrary.simpleMessage(
+      "Specify the nameserver policy for proxy nodes",
+    ),
     "proxyPort": MessageLookupByLibrary.simpleMessage("Proxy port"),
     "proxyProviderDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
       "Detected selected proxy providers are abnormal",

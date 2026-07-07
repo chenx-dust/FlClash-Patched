@@ -254,6 +254,8 @@
   "nameserverPolicyDesc": "Specify the corresponding nameserver policy",
   "proxyNameserver": "Proxy Nameserver",
   "proxyNameserverDesc": "Domain for resolving proxy nodes",
+  "proxyNameserverPolicy": "Proxy Nameserver Policy",
+  "proxyNameserverPolicyDesc": "Specify the nameserver policy for proxy nodes",
   "fallback": "Fallback",
   "fallbackDesc": "Generally use offshore DNS",
   "fallbackFilter": "Fallback filter",
