@@ -746,6 +746,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Please enter an integer greater than 0",
     ),
     "predictiveBack": MessageLookupByLibrary.simpleMessage("Predictive Back"),
+    "preferH3": MessageLookupByLibrary.simpleMessage("Prefer HTTP/3"),
     "preferH3Desc": MessageLookupByLibrary.simpleMessage(
       "Prioritize the use of DOH\'s http/3",
     ),
