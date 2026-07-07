@@ -1839,6 +1839,11 @@ class AppLocalizations {
     );
   }
 
+  /// `Prefer HTTP/3`
+  String get preferH3 {
+    return Intl.message('Prefer HTTP/3', name: 'preferH3', desc: '', args: []);
+  }
+
   /// `Prioritize the use of DOH's http/3`
   String get preferH3Desc {
     return Intl.message(
