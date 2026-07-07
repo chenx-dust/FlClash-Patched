@@ -650,6 +650,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxyNameserverDesc": MessageLookupByLibrary.simpleMessage(
       "プロキシノード解決用ドメイン",
     ),
+    "proxyNameserverPolicy": MessageLookupByLibrary.simpleMessage(
+      "プロキシネームサーバーポリシー",
+    ),
+    "proxyNameserverPolicyDesc": MessageLookupByLibrary.simpleMessage(
+      "プロキシノードのネームサーバーポリシーを指定",
+    ),
     "proxyPort": MessageLookupByLibrary.simpleMessage("プロキシポート"),
     "proxyProviderDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
       "選択されたプロキシプロバイダーに異常があることを検出しました",
