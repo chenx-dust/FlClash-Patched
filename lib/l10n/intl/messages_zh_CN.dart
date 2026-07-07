@@ -572,6 +572,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxyGroupNameEmpty": MessageLookupByLibrary.simpleMessage("策略组名称不能为空"),
     "proxyNameserver": MessageLookupByLibrary.simpleMessage("代理域名服务器"),
     "proxyNameserverDesc": MessageLookupByLibrary.simpleMessage("用于解析代理节点的域名"),
+    "proxyNameserverPolicy": MessageLookupByLibrary.simpleMessage("代理域名服务器策略"),
+    "proxyNameserverPolicyDesc": MessageLookupByLibrary.simpleMessage(
+      "指定代理节点的域名服务器策略",
+    ),
     "proxyPort": MessageLookupByLibrary.simpleMessage("代理端口"),
     "proxyProviderDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
       "检测到选中的代理集存在异常",
