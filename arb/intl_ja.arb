@@ -254,6 +254,8 @@
   "nameserverPolicyDesc": "対応するネームサーバーポリシーを指定",
   "proxyNameserver": "プロキシネームサーバー",
   "proxyNameserverDesc": "プロキシノード解決用ドメイン",
+  "proxyNameserverPolicy": "プロキシネームサーバーポリシー",
+  "proxyNameserverPolicyDesc": "プロキシノードのネームサーバーポリシーを指定",
   "fallback": "フォールバック",
   "fallbackDesc": "通常はオフショア DNS を使用",
   "fallbackFilter": "フォールバックフィルター",
