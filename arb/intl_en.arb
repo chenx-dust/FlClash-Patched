@@ -237,6 +237,7 @@
   "overrideDnsDesc": "Turning it on will override the DNS options in the profile",
   "status": "Status",
   "statusDesc": "System DNS will be used when turned off",
+  "preferH3": "Prefer HTTP/3",
   "preferH3Desc": "Prioritize the use of DOH's http/3",
   "respectRules": "Respect Rules",
   "respectRulesDesc": "DNS connection following rules, need to configure proxy-server-nameserver",
