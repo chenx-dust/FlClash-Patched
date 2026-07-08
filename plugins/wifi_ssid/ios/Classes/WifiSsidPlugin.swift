@@ -45,7 +45,10 @@ public class WifiSsidPlugin: NSObject, FlutterPlugin, CLLocationManagerDelegate 
             result(permission.rawValue)
             return
         }
-
+        if pendingPermissionResult != nil {
+            result(permission.rawValue)
+            return
+        }
         pendingPermissionResult = result
         locationManager.requestWhenInUseAuthorization()
     }

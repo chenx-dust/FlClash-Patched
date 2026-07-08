@@ -48,7 +48,16 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
     final res = await wifiSsidManager.requestPermission();
     globalState.container.read(locationPermissionsProvider.notifier).value =
         res;
-    if (!mounted && res != WifiSsidPermission.permanentlyDenied) {
+    if (!mounted) {
+      return;
+    }
+    if (res == WifiSsidPermission.granted) {
+      final ssid = await wifiSsidManager.getSsid();
+      globalState.container.read(currentSSIDProvider.notifier).value = ssid;
+      return;
+    }
+    if (res == WifiSsidPermission.permanentlyDenied) {
+      _handlePermanentlyDeniedLocationPermission();
       return;
     }
     final needGo = await globalState.showMessage(
@@ -76,9 +85,8 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
     final appLocalizations = context.appLocalizations;
     final newSSID = await globalState.showCommonDialog<String>(
       child: InputDialog(
-        title: ssid == null
-            ? appLocalizations.addSsid
-            : appLocalizations.editSsid,
+        title:
+            ssid == null ? appLocalizations.addSsid : appLocalizations.editSsid,
         value: ssid ?? '',
         maxLength: 32,
         validator: (value) {
@@ -244,8 +252,8 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
                                     style: FilledButton.styleFrom(
                                       backgroundColor:
                                           batteryOptimizationDisable
-                                          ? null
-                                          : context.colorScheme.error,
+                                              ? null
+                                              : context.colorScheme.error,
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 12,
                                       ),

@@ -9,6 +9,8 @@ public class WifiSsidPlugin: NSObject, FlutterPlugin, CLLocationManagerDelegate 
 
     private let locationManager = CLLocationManager()
     private var pendingPermissionResult: FlutterResult?
+    private let ssidQueue = DispatchQueue(label: "com.follow.clash.wifi-ssid", qos: .utility)
+    private let ssidTimeout: TimeInterval = 2.0
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(
@@ -46,12 +48,16 @@ public class WifiSsidPlugin: NSObject, FlutterPlugin, CLLocationManagerDelegate 
 
     private func requestPermission(result: @escaping FlutterResult) {
         let status = locationManager.authorizationStatus
-        if status == .authorizedAlways {
+        if isAuthorized(status) {
             result(0) // granted
             return
         }
-        if status == .denied {
+        if status == .denied || status == .restricted {
             result(2) // permanentlyDenied
+            return
+        }
+        if pendingPermissionResult != nil {
+            result(mapAuthStatus(status).rawValue)
             return
         }
         pendingPermissionResult = result
@@ -65,13 +71,25 @@ public class WifiSsidPlugin: NSObject, FlutterPlugin, CLLocationManagerDelegate 
     }
 
     private func mapAuthStatus(_ status: CLAuthorizationStatus) -> WifiSsidPermission {
-        switch status {
-        case .authorizedAlways:
+        if isAuthorized(status) {
             return .granted
+        }
+        switch status {
         case .denied, .restricted:
             return .permanentlyDenied
         default:
             return .denied
+        }
+    }
+
+    private func isAuthorized(_ status: CLAuthorizationStatus) -> Bool {
+        switch status {
+        case .authorizedAlways:
+            return true
+        case .authorizedWhenInUse:
+            return true
+        default:
+            return false
         }
     }
 
@@ -84,14 +102,36 @@ public class WifiSsidPlugin: NSObject, FlutterPlugin, CLLocationManagerDelegate 
     // MARK: - SSID
 
     private func getSsid(result: @escaping FlutterResult) {
-        if #available(macOS 10.10, *) {
-            if let interface = CWWiFiClient.shared().interface() {
-                result(interface.ssid())
-            } else {
-                result(nil)
-            }
-        } else {
+        guard isAuthorized(locationManager.authorizationStatus) else {
             result(nil)
+            return
+        }
+
+        guard #available(macOS 10.10, *) else {
+            result(nil)
+            return
+        }
+
+        var didComplete = false
+        let lock = NSLock()
+
+        func complete(_ value: String?) {
+            lock.lock()
+            defer { lock.unlock() }
+            guard !didComplete else { return }
+            didComplete = true
+            DispatchQueue.main.async {
+                result(value)
+            }
+        }
+
+        ssidQueue.async {
+            let ssid = CWWiFiClient.shared().interface()?.ssid()
+            complete(ssid)
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + ssidTimeout) {
+            complete(nil)
         }
     }
 }

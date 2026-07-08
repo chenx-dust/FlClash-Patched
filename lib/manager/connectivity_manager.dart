@@ -24,16 +24,14 @@ class ConnectivityManager extends StatefulWidget {
 
 class _ConnectivityManagerState extends State<ConnectivityManager> {
   late StreamSubscription subscription;
+  int _ssidRefreshVersion = 0;
 
   @override
   void initState() {
     super.initState();
     subscription = Connectivity().onConnectivityChanged.listen((results) {
       if (results.contains(ConnectivityResult.wifi)) {
-        WifiSsidManager.instance.getSsid().then((ssid) {
-          globalState.container.read(currentSSIDProvider.notifier).value = ssid;
-          commonPrint.log('Wi-fi SSID: $ssid ', logLevel: LogLevel.info);
-        });
+        _updateCurrentSsid();
       } else {
         globalState.container.read(currentSSIDProvider.notifier).value = null;
       }
@@ -43,8 +41,33 @@ class _ConnectivityManagerState extends State<ConnectivityManager> {
     });
   }
 
+  Future<void> _updateCurrentSsid() async {
+    final version = ++_ssidRefreshVersion;
+    final permission = await WifiSsidManager.instance.checkPermission();
+    if (!mounted || version != _ssidRefreshVersion) {
+      return;
+    }
+    globalState.container.read(locationPermissionsProvider.notifier).value =
+        permission;
+    if (permission != WifiSsidPermission.granted) {
+      globalState.container.read(currentSSIDProvider.notifier).value = null;
+      commonPrint.log(
+        'Wi-fi SSID skipped: location permission is $permission',
+        logLevel: LogLevel.info,
+      );
+      return;
+    }
+    final ssid = await WifiSsidManager.instance.getSsid();
+    if (!mounted || version != _ssidRefreshVersion) {
+      return;
+    }
+    globalState.container.read(currentSSIDProvider.notifier).value = ssid;
+    commonPrint.log('Wi-fi SSID: $ssid ', logLevel: LogLevel.info);
+  }
+
   @override
   void dispose() {
+    _ssidRefreshVersion++;
     subscription.cancel();
     super.dispose();
   }
