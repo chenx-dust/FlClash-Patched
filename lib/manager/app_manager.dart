@@ -72,6 +72,19 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
             .updateGroupsDebounce();
       }
     });
+    ref.listenManual(
+      groupsProvider.select(
+        (groups) => {
+          for (final group in groups)
+            if (group.type.isComputedSelected) group.name: group.realNow,
+        },
+      ),
+      (prev, next) {
+        if (prev != null && prev != next) {
+          ref.read(checkIpNumProvider.notifier).add();
+        }
+      },
+    );
     if (!system.isIOS) {
       ref.listenManual(suspendProvider, (prev, next) {
         final isStart = ref.read(isStartProvider);
