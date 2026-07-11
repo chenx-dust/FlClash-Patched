@@ -89,13 +89,14 @@ class CommonCard extends StatelessWidget {
     this.onPressed,
     this.selectWidget,
     this.radius,
-    required this.child,
     this.padding,
     this.enterAnimated = false,
     this.info,
     this.onLongPress,
     this.shape,
     this.isError = false,
+    this.focusNode,
+    required this.child,
   }) : isSelected = isSelected ?? false;
 
   final bool enterAnimated;
@@ -110,6 +111,7 @@ class CommonCard extends StatelessWidget {
   final CommonCardType type;
   final double? radius;
   final OutlinedBorder? shape;
+  final FocusNode? focusNode;
 
   BorderSide _buildBorderSide(BuildContext context, Set<WidgetState> states) {
     final colorScheme = context.colorScheme;
@@ -224,6 +226,7 @@ class CommonCard extends StatelessWidget {
 
     final card = switch (type == CommonCardType.filled) {
       true => FilledButton(
+        focusNode: focusNode,
         onLongPress: onLongPress,
         clipBehavior: Clip.antiAlias,
         style:
@@ -251,6 +254,7 @@ class CommonCard extends StatelessWidget {
         child: childWidget,
       ),
       false => OutlinedButton(
+        focusNode: focusNode,
         onLongPress: onLongPress,
         clipBehavior: Clip.antiAlias,
         style:
