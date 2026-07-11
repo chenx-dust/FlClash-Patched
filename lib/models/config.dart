@@ -252,6 +252,7 @@ abstract class ThemeProps with _$ThemeProps {
     @JsonKey(unknownEnumValue: DynamicSchemeVariant.content)
     DynamicSchemeVariant schemeVariant,
     @Default(false) bool pureBlack,
+    @Default(true) bool monochromeTrayIcon,
     @Default(true) bool predictiveBack,
     @Default(TextScale()) TextScale textScale,
   }) = _ThemeProps;
