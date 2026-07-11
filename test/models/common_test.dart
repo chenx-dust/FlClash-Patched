@@ -56,6 +56,17 @@ void main() {
   });
 
   group('TrackerInfoExt', () {
+    final previous = TrackerInfo(
+      id: 'connection',
+      upload: 100,
+      download: 200,
+      start: DateTime(2026),
+      metadata: const Metadata(),
+      chains: const ['Proxy'],
+      rule: 'DIRECT',
+      rulePayload: '',
+    );
+
     test('builds destination description and process text', () {
       final trackerInfo = TrackerInfo(
         id: '1',
@@ -76,6 +87,49 @@ void main() {
       expect(trackerInfo.desc, 'tcp://example.com/1.1.1.1:443');
       expect(trackerInfo.progressText, 'Browser(501)');
     });
+
+    test('calculates upload and download speed from elapsed time', () {
+      final current = previous.copyWith(upload: 1124, download: 2248);
+
+      final result = current.withCalculatedSpeed(
+        previous: previous,
+        elapsed: const Duration(seconds: 2),
+      );
+
+      expect(result.uploadSpeed, 512);
+      expect(result.downloadSpeed, 1024);
+    });
+
+    test('clamps reset traffic counters to zero speed', () {
+      final current = previous.copyWith(upload: 50, download: 100);
+
+      final result = current.withCalculatedSpeed(
+        previous: previous,
+        elapsed: const Duration(seconds: 1),
+      );
+
+      expect(result.uploadSpeed, 0);
+      expect(result.downloadSpeed, 0);
+    });
+
+    test('does not calculate speed without a valid matching sample', () {
+      final current = previous.copyWith(id: 'new-connection');
+
+      expect(
+        current.withCalculatedSpeed(
+          previous: previous,
+          elapsed: const Duration(seconds: 1),
+        ),
+        same(current),
+      );
+      expect(
+        previous.withCalculatedSpeed(
+          previous: previous,
+          elapsed: Duration.zero,
+        ),
+        same(previous),
+      );
+    });
   });
 
   group('TrafficExt', () {
@@ -86,6 +140,7 @@ void main() {
       expect(traffic.desc, '1KB ↑ 2KB ↓');
       expect(traffic.trayTitle, '1 KB/s\n2 KB/s');
       expect(traffic.speed, 3072);
+      expect(traffic.speedDesc, '1KB/s ↑ 2KB/s ↓');
     });
   });
 
