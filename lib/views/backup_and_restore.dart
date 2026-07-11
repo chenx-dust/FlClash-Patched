@@ -279,15 +279,13 @@ class _BackupAndRestoreState extends ConsumerState<BackupAndRestore>
             ListItem.input(
               title: Text(appLocalizations.file),
               subtitle: Text(dav.fileName),
-              delegate: InputDelegate(
-                title: appLocalizations.file,
-                value: dav.fileName,
-                resetValue: defaultDavFileName,
-                maxLength: TextInputLimits.fileName,
-                onChanged: (value) {
-                  _handleChange(value, ref);
-                },
-              ),
+              dialogTitle: appLocalizations.file,
+              value: dav.fileName,
+              resetValue: defaultDavFileName,
+              maxLength: TextInputLimits.fileName,
+              onChanged: (value) {
+                _handleChange(value, ref);
+              },
             ),
             ListItem(
               onTap: () {

@@ -18,20 +18,20 @@ T roundTrip<T>(
 
 void main() {
   group('GeoResource JSON', () {
-    test('exposes lowercase GeoResource values', () {
-      expect(GeoResource.MMDB.value, 'mmdb');
-      expect(GeoResource.ASN.value, 'asn');
-      expect(GeoResource.GEOIP.value, 'geo-ip');
-      expect(GeoResource.GEOSITE.value, 'geo-site');
+    test('exposes mihomo raw config keys', () {
+      expect(GeoResource.MMDB.configKey, 'mmdb');
+      expect(GeoResource.ASN.configKey, 'asn');
+      expect(GeoResource.GEOIP.configKey, 'geoip');
+      expect(GeoResource.GEOSITE.configKey, 'geosite');
     });
 
-    test('parses current lowercase GeoResource keys from config JSON', () {
+    test('parses canonical GeoResource keys from config JSON', () {
       final config = PatchClashConfig.fromJson({
         'geox-url': {
           'mmdb': 'https://example.com/mmdb',
           'asn': 'https://example.com/asn.mmdb',
-          'geo-ip': 'https://example.com/geoip.dat',
-          'geo-site': 'https://example.com/geosite.dat',
+          'geoip': 'https://example.com/geoip.dat',
+          'geosite': 'https://example.com/geosite.dat',
         },
       });
 
@@ -43,11 +43,11 @@ void main() {
       });
     });
 
-    test('parses legacy GeoResource keys from config JSON', () {
+    test('parses hyphenated GeoResource keys from config JSON', () {
       final config = PatchClashConfig.fromJson({
         'geox-url': {
-          'geoip': 'https://example.com/legacy-geoip.dat',
-          'geosite': 'https://example.com/legacy-geosite.dat',
+          'geo-ip': 'https://example.com/legacy-geoip.dat',
+          'geo-site': 'https://example.com/legacy-geosite.dat',
         },
       });
 
@@ -66,7 +66,7 @@ void main() {
         geoXUrl: {GeoResource.GEOIP: 'https://example.com/geoip.dat'},
       ).toJson();
 
-      expect(json['geox-url'], {'geo-ip': 'https://example.com/geoip.dat'});
+      expect(json['geox-url'], {'geoip': 'https://example.com/geoip.dat'});
     });
 
     test('converts geoXUrl map to raw config map', () {
@@ -77,7 +77,7 @@ void main() {
 
       expect(geoXUrl.raw, {
         'mmdb': 'https://example.com/mmdb',
-        'geo-site': 'https://example.com/geosite.dat',
+        'geosite': 'https://example.com/geosite.dat',
       });
     });
 

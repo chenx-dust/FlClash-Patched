@@ -11,6 +11,16 @@ void main() {
       expect(results.rest, ['android']);
     });
 
+    test('accepts dev application environment', () {
+      final results = setup.createSetupArgParser().parse([
+        'android',
+        '--env',
+        'dev',
+      ]);
+
+      expect(results['env'], 'dev');
+    });
+
     test('omits verbose from flutter build args by default', () {
       final args = setup.createFlutterBuildArgs(
         platform: 'android',

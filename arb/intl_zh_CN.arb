@@ -318,6 +318,8 @@
   "messageTest": "消息测试",
   "messageTestTip": "这是一条消息。",
   "crashTest": "崩溃测试",
+  "crashDetected": "检测到崩溃",
+  "crashDetectedTip": "检测到应用上次运行发生崩溃。为避免重复崩溃，已清除当前配置选择，并跳过本次自动配置。",
   "clearData": "清除数据",
   "textScale": "文本缩放",
   "internet": "互联网",

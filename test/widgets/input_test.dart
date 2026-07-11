@@ -9,6 +9,68 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('ListItem.toggle toggles when tapping the row', (tester) async {
+    bool? changedValue;
+
+    await tester.pumpWidget(
+      _TestApp(
+        child: Scaffold(
+          body: ListItem.toggle(
+            title: const Text('Enabled'),
+            value: false,
+            onChanged: (value) {
+              changedValue = value;
+            },
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Enabled'));
+
+    expect(changedValue, isTrue);
+  });
+
+  testWidgets('ListItem.toggle is disabled without onChanged', (tester) async {
+    await tester.pumpWidget(
+      _TestApp(
+        child: Scaffold(
+          body: ListItem.toggle(title: const Text('Disabled'), value: false),
+        ),
+      ),
+    );
+
+    final tile = tester.widget<ListTile>(find.byType(ListTile));
+    final control = tester.widget<Switch>(find.byType(Switch));
+
+    expect(tile.onTap, isNull);
+    expect(control.onChanged, isNull);
+
+    await tester.tap(find.text('Disabled'));
+    await tester.pump();
+  });
+
+  testWidgets('ListItem.checkbox toggles when tapping the row', (tester) async {
+    bool? changedValue;
+
+    await tester.pumpWidget(
+      _TestApp(
+        child: Scaffold(
+          body: ListItem.checkbox(
+            title: const Text('Selected'),
+            onChanged: (value) {
+              changedValue = value;
+            },
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Selected'));
+
+    expect(changedValue, isTrue);
+  });
+
   testWidgets('ListItem.input limits dialog text by maxLength', (tester) async {
     String? changedValue;
 
@@ -21,14 +83,12 @@ void main() {
           child: Scaffold(
             body: ListItem.input(
               title: const Text('Port'),
-              delegate: InputDelegate(
-                title: 'Port',
-                value: '',
-                maxLength: 5,
-                onChanged: (value) {
-                  changedValue = value;
-                },
-              ),
+              dialogTitle: 'Port',
+              value: '',
+              maxLength: 5,
+              onChanged: (value) {
+                changedValue = value;
+              },
             ),
           ),
         ),

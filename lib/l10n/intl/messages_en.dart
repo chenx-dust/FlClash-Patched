@@ -272,6 +272,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "core": MessageLookupByLibrary.simpleMessage("Core"),
     "coreStatus": MessageLookupByLibrary.simpleMessage("Core status"),
     "country": MessageLookupByLibrary.simpleMessage("Country"),
+    "crashDetected": MessageLookupByLibrary.simpleMessage("Crash detected"),
+    "crashDetectedTip": MessageLookupByLibrary.simpleMessage(
+      "The app crashed during the previous run. To prevent repeated crashes, the current profile has been cleared and automatic configuration setup was skipped.",
+    ),
     "crashTest": MessageLookupByLibrary.simpleMessage("Crash test"),
     "crashlytics": MessageLookupByLibrary.simpleMessage("Crash Analysis"),
     "crashlyticsTip": MessageLookupByLibrary.simpleMessage(

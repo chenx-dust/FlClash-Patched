@@ -183,10 +183,6 @@ class SetupAction extends _$SetupAction {
   Future<void> updateStatus(bool isStart, {bool isInit = false}) async {
     if (isStart) {
       if (!isInit) {
-        final res = await ref
-            .read(coreActionProvider.notifier)
-            .tryStartCore(true);
-        if (res) return;
         if (!ref.read(initProvider)) return;
         await _handleStart();
         applyProfileDebounce(force: true, silence: true);
@@ -545,12 +541,6 @@ class CoreAction extends _$CoreAction {
     } else {
       await ref.read(setupActionProvider.notifier).applyProfile(force: true);
     }
-  }
-
-  Future<bool> tryStartCore([bool start = false]) async {
-    if (coreController.isCompleted) return false;
-    await restartCore(start);
-    return true;
   }
 
   void handleCoreDisconnected() {

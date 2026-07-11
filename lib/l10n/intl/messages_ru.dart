@@ -279,6 +279,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "core": MessageLookupByLibrary.simpleMessage("Ядро"),
     "coreStatus": MessageLookupByLibrary.simpleMessage("Основной статус"),
     "country": MessageLookupByLibrary.simpleMessage("Страна"),
+    "crashDetected": MessageLookupByLibrary.simpleMessage("Обнаружен сбой"),
+    "crashDetectedTip": MessageLookupByLibrary.simpleMessage(
+      "Во время предыдущего запуска произошёл сбой приложения. Чтобы предотвратить повторный сбой, текущий профиль был сброшен, а автоматическая настройка конфигурации пропущена.",
+    ),
     "crashTest": MessageLookupByLibrary.simpleMessage("Тест на сбои"),
     "crashlytics": MessageLookupByLibrary.simpleMessage("Анализ сбоев"),
     "crashlyticsTip": MessageLookupByLibrary.simpleMessage(

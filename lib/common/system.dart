@@ -41,6 +41,11 @@ class System {
     };
   }
 
+  Future<bool> didCrashOnPreviousExecution() async {
+    if (!isAndroid) return false;
+    return await app?.didCrashOnPreviousExecution() ?? false;
+  }
+
   Future<bool> checkIsAdmin() async {
     final corePath = appPath.corePath.replaceAll(' ', '\\\\ ');
     if (system.isWindows) {

@@ -33,6 +33,9 @@ make core-macos ARCH=arm64
 make core-android TARGET_PLATFORM=android-arm64
 ```
 
+Core builds use setup's input fingerprint cache. Pass `FORCE=1` to bypass it,
+for example `make core-macos ARCH=arm64 FORCE=1`.
+
 The Makefile wraps `plugins/setup/buildkit/run_build_tool.sh`; prefer the `make` entry points unless debugging the build tool itself.
 
 ## Flutter Development

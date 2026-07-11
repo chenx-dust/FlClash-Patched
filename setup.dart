@@ -75,7 +75,7 @@ ArgParser createSetupArgParser() {
     ..addOption(
       'env',
       defaultsTo: 'pre',
-      allowed: ['pre', 'stable'],
+      allowed: ['dev', 'pre', 'stable'],
       help: 'Application environment',
     )
     ..addOption(

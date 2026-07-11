@@ -21,7 +21,7 @@ Desktop core mode:
 Key Go core files:
 
 - `core/hub.go`: handler functions.
-- `core/action.go`: dispatch.
+- `core/method.go`: MethodChannel-style method-call dispatch and response envelopes.
 - `core/lib.go`: CGO exports.
 - `core/server.go`: socket server.
 
@@ -70,6 +70,10 @@ Each manager in `lib/manager/` handles a specific platform concern. Desktop-only
 ## Core Controller and Actions
 
 `lib/core/controller.dart` (`CoreController`) is a singleton facade over `CoreHandlerInterface`. Public methods delegate to the platform-specific interface, either Android FFI or desktop socket. It has an `@visibleForTesting` constructor and `resetInstance()` for test injection.
+
+The shared core protocol uses `CoreMethodCall(method, arguments)` in both directions and `CoreMethodResponse(result, error)` for replies. Desktop calls include an `id` for concurrent request correlation; Android carries the same JSON envelope through its service `MethodChannel` and JNI bridge.
+The envelope is the only JSON serialization layer: keep `arguments`, `result`, and event data as structured JSON values instead
+of embedding pre-encoded JSON strings. Plain domain strings, such as country codes or provider file contents, remain strings.
 
 Business logic lives in Riverpod notifier classes in `lib/providers/action.dart`:
 
@@ -121,25 +125,62 @@ Platform build hooks inside `flutter build` trigger `build_tool` automatically:
 
 - macOS: podspec script phase, `build_pod.sh`, `build_tool macos`.
 - Linux: CMake include, `buildkit/cmake/buildkit.cmake`, `build_tool linux`.
-- Windows: CMake include, `buildkit/cmake/buildkit.cmake`, `build_tool windows`. Debug passes `--dev` via `CMAKE_BUILD_TYPE`.
+- Windows: CMake include, `buildkit/cmake/buildkit.cmake`, `build_tool windows`. CMake forwards the active configuration through `BUILDKIT_CONFIGURATION`.
 - Android: Gradle include, `buildkit/gradle/plugin.gradle`, `build_tool android`.
+
+### Setup Build Harness Plugin
+
+`plugins/setup/` is a build-time Flutter plugin, not a runtime Dart or FFI API. Its plugin shape exists so Flutter's native
+build graphs can run the Go/Rust build harness before platform consumers need the generated artifacts. Application code
+must not import or call it.
+
+Responsibilities are deliberately split:
+
+- CocoaPods, Gradle, and CMake hooks schedule a lightweight check on every native build. They do not decide which Go or
+  Rust files are stale.
+- `buildkit/build_tool/` owns target resolution, input fingerprinting, compilation, output copying, and cache validation.
+- `core/` and `services/helper/` remain source owners; `libclash/` and Android `jniLibs`/header directories are generated
+  output locations.
+- `setup.dart` remains the release/package orchestrator. On Windows it runs the same build tool before Flutter compilation
+  because the core SHA must be available for `--dart-define`.
+
+Platform outputs remain explicit:
+
+- Android builds the Go core as `c-shared`, then copies `libclash.so` and generated headers into the `:core` Android module.
+- macOS and Linux build a standalone `FlClashCore` process used by the desktop socket integration.
+- Windows builds `FlClashCore.exe` plus the Rust `FlClashHelperService.exe` privileged helper.
+
+The hooks follow rust_api/Cargokit's phony-output scheduling pattern, but setup uses its own cache because it builds both a
+Go core and, on Windows, a separate Rust helper. Per-target records live under `.dart_tool/setup_build_cache/v1/`:
+
+- Go fingerprints cover the target-specific `go list -deps` inputs inside `core/` and `Clash.Meta`, module files, effective
+  build configuration, build-tool sources, target flags, Go environment/toolchain, and Android NDK compiler details.
+- Windows helper fingerprints cover its Rust sources and manifests, Cargo/Rust toolchains and flags, build mode, and the
+  release core SHA token.
+- A cache hit requires the fingerprint and every recorded output's path, size, and modification state to match. It exits
+  silently without Go/Cargo compilation, output copying, or Windows `taskkill`.
+- Cache records are written only after a successful build and protected by per-target process/file locks. Missing outputs,
+  changed inputs, cache-schema changes, or `--force` rebuild only the affected target.
+- `flutter clean` removes `.dart_tool`, so the next native build performs one full core rebuild. Manual builds can bypass
+  the cache with `make core-<platform> FORCE=1`.
+
+This differs from `rust_api`: rust_api is a runtime Flutter Rust Bridge integration whose Cargokit hooks produce its native
+FFI library, while setup is only the build and packaging bridge for FlClash's external core artifacts.
 
 Windows helper auth:
 
 - Release: Core SHA256 is embedded in both the Flutter app and the Rust helper. The app pings the helper and verifies the token matches.
 - Debug: The Rust helper skips token verification when built in debug mode, so `flutter run` works without the SHA256 flow.
 
-`plugins/setup/` is an FFI plugin that exists only as a build harness. It carries no Dart API, only platform build hooks that trigger Go compilation. Windows builds also compile a Rust helper in `services/helper/` through `RustBuilder`.
-
-Build configuration defaults live in `build_tool/lib/src/options.dart` and can be overridden via `build_config.yaml`.
+Build configuration defaults live in `build_tool/lib/src/options.dart` and can be overridden via a root `build_config.yaml`.
 
 Architecture detection is automatic. The `--description` flag passed to `flutter_distributor` adds arch suffixes to artifact names, such as `FlClash-0.8.93-macos-arm64.dmg`.
 
 ## Local Plugins
 
-- `setup`: build harness FFI plugin.
+- `setup`: build-time harness for Go core artifacts and the Windows Rust helper; no runtime Dart API.
 - `proxy`: system proxy configuration.
-- `rust_api`: Flutter Rust Bridge FFI plugin.
+- `rust_api`: runtime Flutter Rust Bridge FFI plugin built through Cargokit.
 - `tray_manager`: system tray fork/customization.
 - `wifi_ssid`: Wi-Fi SSID detection.
 - `window_ext`: window extensions.

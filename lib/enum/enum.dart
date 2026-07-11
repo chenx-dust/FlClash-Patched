@@ -219,50 +219,6 @@ enum FontFamily {
 
 enum RouteMode { bypassPrivate, config }
 
-enum ActionMethod {
-  message,
-  initClash,
-  getIsInit,
-  forceGc,
-  shutdown,
-  validateConfig,
-  updateConfig,
-  getConfig,
-  getProxies,
-  changeProxy,
-  getTraffic,
-  getTotalTraffic,
-  resetTraffic,
-  asyncTestDelay,
-  getConnections,
-  closeConnections,
-  resetConnections,
-  closeConnection,
-  getExternalProviders,
-  getExternalProvider,
-  updateGeoData,
-  updateExternalProvider,
-  sideLoadExternalProvider,
-  startLog,
-  stopLog,
-  startListener,
-  stopListener,
-  getCountryCode,
-  getMemory,
-  crash,
-  setupConfig,
-  deleteFile,
-
-  ///Android,
-  setState,
-  startTun,
-  stopTun,
-  getRunTime,
-  updateDns,
-  getAndroidVpnOptions,
-  getCurrentProfileName,
-}
-
 enum AuthorizeCode { none, success, error }
 
 enum WindowsHelperServiceStatus { none, presence, running }
@@ -336,9 +292,9 @@ enum GeoResource {
   MMDB,
   @JsonValue('asn')
   ASN,
-  @JsonValue('geo-ip')
+  @JsonValue('geoip')
   GEOIP,
-  @JsonValue('geo-site')
+  @JsonValue('geosite')
   GEOSITE;
 
   static GeoResource fromJson(String value) {
@@ -353,12 +309,12 @@ enum GeoResource {
 }
 
 extension GeoResourceExt on GeoResource {
-  String get value {
+  String get configKey {
     return switch (this) {
       GeoResource.MMDB => 'mmdb',
       GeoResource.ASN => 'asn',
-      GeoResource.GEOIP => 'geo-ip',
-      GeoResource.GEOSITE => 'geo-site',
+      GeoResource.GEOIP => 'geoip',
+      GeoResource.GEOSITE => 'geosite',
     };
   }
 
