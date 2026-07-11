@@ -27,6 +27,7 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
   TrackerInfoSortType? _sortType;
   bool _sortAscending = false;
   bool _hasDeferredUpdate = false;
+  DateTime? _lastUpdatedAt;
 
   bool get _isCurrentRoute {
     return ModalRoute.of(context)?.isCurrent ?? true;
@@ -218,9 +219,28 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
       _hasDeferredUpdate = true;
       return;
     }
+    final updatedAt = DateTime.now();
+    final previousUpdatedAt = _lastUpdatedAt;
+    final previousTrackerInfos = {
+      for (final trackerInfo in _connectionsStateNotifier.value.trackerInfos)
+        trackerInfo.id: trackerInfo,
+    };
+    final updatedTrackerInfos = previousUpdatedAt == null
+        ? trackerInfos
+        : trackerInfos.map((trackerInfo) {
+            final previous = previousTrackerInfos[trackerInfo.id];
+            if (previous == null) {
+              return trackerInfo;
+            }
+            return trackerInfo.withCalculatedSpeed(
+              previous: previous,
+              elapsed: updatedAt.difference(previousUpdatedAt),
+            );
+          }).toList();
     _hasDeferredUpdate = false;
+    _lastUpdatedAt = updatedAt;
     _connectionsStateNotifier.value = _connectionsStateNotifier.value.copyWith(
-      trackerInfos: trackerInfos,
+      trackerInfos: updatedTrackerInfos,
     );
   }
 
