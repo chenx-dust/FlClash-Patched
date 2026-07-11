@@ -31,8 +31,15 @@ class Tray {
     await trayManager.destroy();
   }
 
-  String getTryIcon({required bool isStart, required bool tunEnable}) {
-    if (system.isMacOS || !isStart) {
+  String getTryIcon({
+    required bool isStart,
+    required bool tunEnable,
+    bool monochrome = false,
+  }) {
+    if (monochrome && !system.isWindows) {
+      return 'assets/images/icon/flclash-symbolic.svg';
+    }
+    if (!isStart) {
       return 'assets/images/icon/status_1.$trayIconSuffix';
     }
     if (!tunEnable) {
@@ -44,12 +51,17 @@ class Tray {
   Future _updateSystemTray({
     required bool isStart,
     required bool tunEnable,
+    required bool monochrome,
   }) async {
     if (Platform.isLinux) {
       await trayManager.destroy();
     }
     await trayManager.setIcon(
-      getTryIcon(isStart: isStart, tunEnable: tunEnable),
+      getTryIcon(
+        isStart: isStart,
+        tunEnable: tunEnable,
+        monochrome: monochrome,
+      ),
       isTemplate: system.isMacOS,
     );
     if (!Platform.isLinux) {
@@ -68,6 +80,7 @@ class Tray {
       await _updateSystemTray(
         isStart: trayState.isStart,
         tunEnable: trayState.tunEnable,
+        monochrome: trayState.monochromeTrayIcon,
       );
     }
     final List<MenuItem> menuItems = [];
@@ -195,6 +208,7 @@ class Tray {
       await _updateSystemTray(
         isStart: trayState.isStart,
         tunEnable: trayState.tunEnable,
+        monochrome: trayState.monochromeTrayIcon,
       );
     }
     updateTrayTitle(showTrayTitle: trayState.showTrayTitle, traffic: traffic);
