@@ -323,7 +323,7 @@ void main() {
       expect(props.primaryColors, defaultPrimaryColors);
       expect(props.themeMode, ThemeMode.system);
       expect(props.pureBlack, false);
-      expect(props.monochromeTrayIcon, false);
+      expect(props.monochromeTrayIcon, true);
       expect(props.predictiveBack, true);
       expect(props.textScale.scale, 1.0);
     });
