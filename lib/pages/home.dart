@@ -221,6 +221,12 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
     final itemCount = ref.watch(
       currentNavigationItemsStateProvider.select((state) => state.value.length),
     );
+    final currentIndex = ref.watch(
+      currentPageLabelProvider.select(
+        (label) =>
+            widget.navigationItems.indexWhere((item) => item.label == label),
+      ),
+    );
     return PageView.builder(
       controller: _pageController,
       physics: const NeverScrollableScrollPhysics(),
@@ -235,7 +241,11 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
         return index == -1 ? null : index;
       },
       itemBuilder: (context, index) {
-        return widget.pageBuilder(context, index);
+        return ExcludeFocus(
+          key: ValueKey(widget.navigationItems[index].label),
+          excluding: index != currentIndex,
+          child: widget.pageBuilder(context, index),
+        );
       },
     );
   }

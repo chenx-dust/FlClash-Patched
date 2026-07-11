@@ -128,12 +128,14 @@ void main() {
   ) async {
     await pumpListLayout(tester);
 
+    // Tab 到 ListHeader 卡片
     for (var i = 0; i < 10 && !focusInHeaderCard(); i++) {
       await tester.sendKeyEvent(LogicalKeyboardKey.tab);
       await tester.pump();
     }
     expect(focusInHeaderCard(), isTrue, reason: 'ListHeader card is reachable');
 
+    // arrowRight 进入第一个 action
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
     await tester.pump();
     expect(
@@ -175,7 +177,9 @@ void main() {
     await tester.pump();
   });
 
-  testWidgets('the expand action retains focus while toggling', (tester) async {
+  testWidgets('header action focus survives expand and collapse', (
+    tester,
+  ) async {
     await pumpListLayout(tester, expanded: false);
 
     for (var i = 0; i < 10 && !focusInHeaderCard(); i++) {
@@ -189,6 +193,12 @@ void main() {
     expect(focusedHeaderActionIndex(), 0);
 
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+    expect(focusedHeaderActionIndex(), 0);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
     await tester.pump();
     expect(focusedHeaderActionIndex(), 2);
 

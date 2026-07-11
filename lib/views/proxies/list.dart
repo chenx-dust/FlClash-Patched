@@ -7,6 +7,7 @@ import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/providers/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'card.dart';
@@ -397,134 +398,145 @@ class _ListHeaderState extends State<ListHeader> {
 
   @override
   Widget build(BuildContext context) {
-    return CommonCard(
-      enterActionsOnRight: true,
-      enterAnimated: widget.enterAnimated,
-      key: widget.key,
-      radius: 18.ap,
-      type: CommonCardType.filled,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Flexible(
-              child: Row(
-                children: [
-                  _buildIcon(),
-                  Flexible(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        EmojiText(
-                          groupName,
-                          style: context.textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 4),
-                        Flexible(
-                          flex: 1,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                groupType,
-                                style: context.textTheme.labelMedium?.toLight,
-                              ),
-                              Flexible(
-                                flex: 1,
-                                child: Consumer(
-                                  builder: (_, ref, _) {
-                                    final proxyName = ref
-                                        .watch(
-                                          selectedProxyNameProvider(groupName),
-                                        )
-                                        .takeFirstValid([]);
-                                    return Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        if (proxyName.isNotEmpty) ...[
-                                          Flexible(
-                                            flex: 1,
-                                            child: EmojiText(
-                                              overflow: TextOverflow.ellipsis,
-                                              ' · $proxyName',
-                                              style: context
-                                                  .textTheme
-                                                  .labelMedium
-                                                  ?.toLight,
-                                            ),
-                                          ),
-                                        ],
-                                      ],
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Row(
+    return FocusEntryOnArrow(
+      directions: {LogicalKeyboardKey.arrowRight},
+      builder: (context, cardFocusNode, actionsFocusNode) {
+        return CommonCard(
+          focusNode: cardFocusNode,
+          enterAnimated: widget.enterAnimated,
+          key: widget.key,
+          radius: 18.ap,
+          type: CommonCardType.filled,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (isExpand) ...[
-                  IconButton(
-                    visualDensity: VisualDensity.compact,
-                    padding: const EdgeInsets.all(2),
-                    onPressed: () {
-                      widget.onScrollToSelected(groupName);
-                    },
-                    style: const ButtonStyle(
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                Flexible(
+                  child: Row(
+                    children: [
+                      _buildIcon(),
+                      Flexible(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            EmojiText(
+                              groupName,
+                              style: context.textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 4),
+                            Flexible(
+                              flex: 1,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    groupType,
+                                    style:
+                                        context.textTheme.labelMedium?.toLight,
+                                  ),
+                                  Flexible(
+                                    flex: 1,
+                                    child: Consumer(
+                                      builder: (_, ref, _) {
+                                        final proxyName = ref
+                                            .watch(
+                                              selectedProxyNameProvider(
+                                                groupName,
+                                              ),
+                                            )
+                                            .takeFirstValid([]);
+                                        return Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            if (proxyName.isNotEmpty) ...[
+                                              Flexible(
+                                                flex: 1,
+                                                child: EmojiText(
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  ' · $proxyName',
+                                                  style: context
+                                                      .textTheme
+                                                      .labelMedium
+                                                      ?.toLight,
+                                                ),
+                                              ),
+                                            ],
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
+                  children: [
+                    if (isExpand) ...[
+                      IconButton(
+                        focusNode: actionsFocusNode,
+                        visualDensity: VisualDensity.compact,
+                        padding: const EdgeInsets.all(2),
+                        onPressed: () {
+                          widget.onScrollToSelected(groupName);
+                        },
+                        style: const ButtonStyle(
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        iconSize: 19,
+                        icon: const Icon(Icons.adjust),
+                      ),
+                      const SizedBox(width: 2),
+                      IconButton(
+                        iconSize: 20,
+                        visualDensity: VisualDensity.compact,
+                        padding: const EdgeInsets.all(2),
+                        onPressed: _delayTest,
+                        style: const ButtonStyle(
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        icon: const Icon(Icons.network_ping),
+                      ),
+                      const SizedBox(width: 6),
+                    ] else
+                      const SizedBox(width: 6),
+                    IconButton.filledTonal(
+                      focusNode: isExpand ? null : actionsFocusNode,
+                      visualDensity: VisualDensity.compact,
+                      padding: const EdgeInsets.all(2),
+                      iconSize: 24,
+                      style: const ButtonStyle(
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      onPressed: () {
+                        _handleChange(groupName);
+                      },
+                      icon: CommonExpandIcon(expand: isExpand),
                     ),
-                    iconSize: 19,
-                    icon: const Icon(Icons.adjust),
-                  ),
-                  const SizedBox(width: 2),
-                  IconButton(
-                    iconSize: 20,
-                    visualDensity: VisualDensity.compact,
-                    padding: const EdgeInsets.all(2),
-                    onPressed: _delayTest,
-                    style: const ButtonStyle(
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    icon: const Icon(Icons.network_ping),
-                  ),
-                  const SizedBox(width: 6),
-                ] else
-                  const SizedBox(width: 6),
-                IconButton.filledTonal(
-                  visualDensity: VisualDensity.compact,
-                  padding: const EdgeInsets.all(2),
-                  iconSize: 24,
-                  style: const ButtonStyle(
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  onPressed: () {
-                    _handleChange(groupName);
-                  },
-                  icon: CommonExpandIcon(expand: isExpand),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
-      ),
-      onPressed: () {
-        _handleChange(groupName);
+          ),
+          onPressed: () {
+            _handleChange(groupName);
+          },
+        );
       },
     );
   }
