@@ -367,6 +367,7 @@ _ThemeProps _$ThemePropsFromJson(Map<String, dynamic> json) => _ThemeProps(
       ) ??
       DynamicSchemeVariant.content,
   pureBlack: json['pureBlack'] as bool? ?? false,
+  monochromeTrayIcon: json['monochromeTrayIcon'] as bool? ?? true,
   predictiveBack: json['predictiveBack'] as bool? ?? true,
   textScale: json['textScale'] == null
       ? const TextScale()
@@ -380,6 +381,7 @@ Map<String, dynamic> _$ThemePropsToJson(_ThemeProps instance) =>
       'themeMode': _$ThemeModeEnumMap[instance.themeMode]!,
       'schemeVariant': _$DynamicSchemeVariantEnumMap[instance.schemeVariant]!,
       'pureBlack': instance.pureBlack,
+      'monochromeTrayIcon': instance.monochromeTrayIcon,
       'predictiveBack': instance.predictiveBack,
       'textScale': instance.textScale,
     };

@@ -510,6 +510,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "mixedPort": MessageLookupByLibrary.simpleMessage("混合ポート"),
     "mode": MessageLookupByLibrary.simpleMessage("モード"),
     "monochromeScheme": MessageLookupByLibrary.simpleMessage("モノクローム"),
+    "monochromeTrayIcon": MessageLookupByLibrary.simpleMessage("モノクロのトレイアイコン"),
     "monthsAgo": m18,
     "more": MessageLookupByLibrary.simpleMessage("詳細"),
     "name": MessageLookupByLibrary.simpleMessage("名前"),
