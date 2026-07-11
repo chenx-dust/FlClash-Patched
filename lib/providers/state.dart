@@ -140,6 +140,9 @@ TrayState trayState(Ref ref) {
   final groups = ref.watch(currentGroupsStateProvider).value;
   final brightness = ref.watch(systemBrightnessProvider);
   final selectedMap = ref.watch(selectedMapProvider);
+  final monochromeTrayIcon = ref.watch(
+    themeSettingProvider.select((state) => state.monochromeTrayIcon),
+  );
 
   return TrayState(
     mode: clashConfigVm3.a,
@@ -153,6 +156,7 @@ TrayState trayState(Ref ref) {
     groups: groups,
     selectedMap: selectedMap,
     showTrayTitle: appSettingVm3.c,
+    monochromeTrayIcon: monochromeTrayIcon,
   );
 }
 

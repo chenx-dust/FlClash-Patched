@@ -198,6 +198,7 @@
   "onlyStatisticsProxy": "プロキシのみ統計",
   "onlyStatisticsProxyDesc": "有効化するとプロキシトラフィックのみ統計",
   "pureBlackMode": "純黒モード",
+  "monochromeTrayIcon": "モノクロのトレイアイコン",
   "predictiveBack": "予測型戻る",
   "keepAliveIntervalDesc": "TCP キープアライブ間隔",
   "entries": " エントリ",

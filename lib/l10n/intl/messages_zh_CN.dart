@@ -456,6 +456,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "mixedPort": MessageLookupByLibrary.simpleMessage("混合端口"),
     "mode": MessageLookupByLibrary.simpleMessage("模式"),
     "monochromeScheme": MessageLookupByLibrary.simpleMessage("单色"),
+    "monochromeTrayIcon": MessageLookupByLibrary.simpleMessage("单色托盘图标"),
     "monthsAgo": m18,
     "more": MessageLookupByLibrary.simpleMessage("更多"),
     "name": MessageLookupByLibrary.simpleMessage("名称"),
