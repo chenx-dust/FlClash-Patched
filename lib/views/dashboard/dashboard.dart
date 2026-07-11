@@ -135,7 +135,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
     if (currentState == null) {
       return;
     }
-    if (!mounted || currentState.snapshotChildren.isEmpty) {
+    if (!mounted || currentState.children.isEmpty) {
       return;
     }
     final transformCompleted = await currentState.isTransformCompleter;
@@ -145,25 +145,9 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
         !identical(key.currentState, currentState)) {
       return;
     }
-    final dashboardWidgets = _getDashboardWidgets(currentState);
-    if (dashboardWidgets == null) {
-      return;
-    }
-    _saveDashboardWidgets(dashboardWidgets);
-  }
-
-  List<DashboardWidget>? _getDashboardWidgets(SuperGridState? currentState) {
-    if (currentState == null) {
-      return null;
-    }
-    final children = currentState.snapshotChildren;
-    if (children.isEmpty) {
-      return null;
-    }
-    return children.map(DashboardWidget.getDashboardWidget).toList();
-  }
-
-  void _saveDashboardWidgets(List<DashboardWidget> dashboardWidgets) {
+    final dashboardWidgets = currentState.children
+        .map((item) => DashboardWidget.getDashboardWidget(item))
+        .toList();
     ref
         .read(appSettingProvider.notifier)
         .update((state) => state.copyWith(dashboardWidgets: dashboardWidgets));
@@ -210,16 +194,21 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                       _maxCrossAxisCount,
                     );
                     return isEdit
-                        ? BackLayerScope(
-                            onBack: _handleExitEdit,
-                            child: SuperGrid(
-                              key: key,
-                              crossAxisCount: columns,
-                              crossAxisSpacing: spacing,
-                              mainAxisSpacing: spacing,
-                              children: children,
-                              onUpdate: () {
-                                _handleSave();
+                        ? SystemBackBlock(
+                            child: CommonPopScope(
+                              child: SuperGrid(
+                                key: key,
+                                crossAxisCount: columns,
+                                crossAxisSpacing: spacing,
+                                mainAxisSpacing: spacing,
+                                children: children,
+                                onUpdate: () {
+                                  _handleSave();
+                                },
+                              ),
+                              onPop: (context) {
+                                _handleUpdateIsEdit();
+                                return false;
                               },
                             ),
                           )
