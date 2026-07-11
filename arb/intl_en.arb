@@ -198,6 +198,7 @@
   "onlyStatisticsProxy": "Only Statistics Proxy",
   "onlyStatisticsProxyDesc": "When turned on, only statistics proxy traffic",
   "pureBlackMode": "Pure Black Mode",
+  "monochromeTrayIcon": "Monochrome tray icon",
   "predictiveBack": "Predictive Back",
   "keepAliveIntervalDesc": "TCP Keep Alive Interval",
   "entries": " entries",

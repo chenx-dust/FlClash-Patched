@@ -637,6 +637,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "mixedPort": MessageLookupByLibrary.simpleMessage("Mixed port"),
     "mode": MessageLookupByLibrary.simpleMessage("Mode"),
     "monochromeScheme": MessageLookupByLibrary.simpleMessage("Monochrome"),
+    "monochromeTrayIcon": MessageLookupByLibrary.simpleMessage(
+      "Monochrome tray icon",
+    ),
     "monthsAgo": m18,
     "more": MessageLookupByLibrary.simpleMessage("More"),
     "name": MessageLookupByLibrary.simpleMessage("Name"),
