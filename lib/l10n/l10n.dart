@@ -1554,6 +1554,16 @@ class AppLocalizations {
     );
   }
 
+  /// `Monochrome tray icon`
+  String get monochromeTrayIcon {
+    return Intl.message(
+      'Monochrome tray icon',
+      name: 'monochromeTrayIcon',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Predictive Back`
   String get predictiveBack {
     return Intl.message(
