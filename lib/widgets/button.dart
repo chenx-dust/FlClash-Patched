@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'builder.dart';
 import 'card.dart';
+import 'focus.dart';
 
 class CommonFloatingActionButton extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -18,39 +19,42 @@ class CommonFloatingActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        floatingActionButtonTheme: Theme.of(context).floatingActionButtonTheme
-            .copyWith(
-              extendedIconLabelSpacing: 0,
-              extendedPadding: const EdgeInsets.all(16),
-            ),
-      ),
-      child: FloatingActionButtonExtendedBuilder(
-        builder: (isExtended) {
-          return FloatingActionButton.extended(
-            heroTag: null,
-            icon: icon,
-            onPressed: onPressed,
-            isExtended: true,
-            label: AnimatedSize(
-              alignment: Alignment.centerLeft,
-              duration: midDuration,
-              curve: Curves.easeOutBack,
-              child: AnimatedOpacity(
-                duration: midDuration,
-                opacity: isExtended ? 1.0 : 0.4,
-                curve: Curves.linear,
-                child: isExtended
-                    ? Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(label, softWrap: false),
-                      )
-                    : const SizedBox.shrink(),
+    return FocusTraversalOrder(
+      order: const PrimaryFocusOrder(),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          floatingActionButtonTheme: Theme.of(context).floatingActionButtonTheme
+              .copyWith(
+                extendedIconLabelSpacing: 0,
+                extendedPadding: const EdgeInsets.all(16),
               ),
-            ),
-          );
-        },
+        ),
+        child: FloatingActionButtonExtendedBuilder(
+          builder: (isExtended) {
+            return FloatingActionButton.extended(
+              heroTag: null,
+              icon: icon,
+              onPressed: onPressed,
+              isExtended: true,
+              label: AnimatedSize(
+                alignment: Alignment.centerLeft,
+                duration: midDuration,
+                curve: Curves.easeOutBack,
+                child: AnimatedOpacity(
+                  duration: midDuration,
+                  opacity: isExtended ? 1.0 : 0.4,
+                  curve: Curves.linear,
+                  child: isExtended
+                      ? Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(label, softWrap: false),
+                        )
+                      : const SizedBox.shrink(),
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

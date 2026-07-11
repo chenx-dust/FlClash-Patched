@@ -1,6 +1,7 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
+import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -194,67 +195,70 @@ class _StartButtonState extends ConsumerState<StartButton>
         ? _getSuspendedTextWidth(context, appLocalizations.suspended)
         : _getRunTimeTextWidth(context, hasThreeDigitHours: hasThreeDigitHours);
     return RepaintBoundary(
-      child: Theme(
-        data: theme.copyWith(
-          floatingActionButtonTheme: theme.floatingActionButtonTheme.copyWith(
-            sizeConstraints: const BoxConstraints(
-              minWidth: 56,
-              maxWidth: 220,
-              minHeight: _buttonHeight,
-              maxHeight: _buttonHeight,
+      child: FocusTraversalOrder(
+        order: const PrimaryFocusOrder(),
+        child: Theme(
+          data: theme.copyWith(
+            floatingActionButtonTheme: theme.floatingActionButtonTheme.copyWith(
+              sizeConstraints: const BoxConstraints(
+                minWidth: 56,
+                maxWidth: 220,
+                minHeight: _buttonHeight,
+                maxHeight: _buttonHeight,
+              ),
             ),
           ),
-        ),
-        child: FloatingActionButton(
-          clipBehavior: Clip.antiAlias,
-          materialTapTargetSize: MaterialTapTargetSize.padded,
-          heroTag: null,
-          onPressed: () {
-            handleSwitchStart();
-          },
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AnimatedBuilder(
-                animation: _animation,
-                builder: (_, child) {
-                  return Container(
-                    height: _buttonHeight,
-                    padding: EdgeInsets.only(
-                      left: 16,
-                      right: 16 - 8 * _animation.value,
-                    ),
-                    alignment: Alignment.centerLeft,
-                    child: child,
-                  );
-                },
-                child: AnimatedIcon(
-                  icon: AnimatedIcons.play_pause,
-                  progress: _animation,
+          child: FloatingActionButton(
+            clipBehavior: Clip.antiAlias,
+            materialTapTargetSize: MaterialTapTargetSize.padded,
+            heroTag: null,
+            onPressed: () {
+              handleSwitchStart();
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnimatedBuilder(
+                  animation: _animation,
+                  builder: (_, child) {
+                    return Container(
+                      height: _buttonHeight,
+                      padding: EdgeInsets.only(
+                        left: 16,
+                        right: 16 - 8 * _animation.value,
+                      ),
+                      alignment: Alignment.centerLeft,
+                      child: child,
+                    );
+                  },
+                  child: AnimatedIcon(
+                    icon: AnimatedIcons.play_pause,
+                    progress: _animation,
+                  ),
                 ),
-              ),
-              SizeTransition(
-                axis: Axis.horizontal,
-                alignment: Alignment.centerLeft,
-                sizeFactor: _animation,
-                child: AnimatedContainer(
-                  width: textWidth,
-                  duration: _widthAnimationDuration,
-                  curve: Curves.easeOut,
-                  child: suspend
-                      ? Text(
-                          appLocalizations.suspended,
-                          maxLines: 1,
-                          overflow: TextOverflow.visible,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(
-                                color: context.colorScheme.onPrimaryContainer,
-                              ),
-                        )
-                      : RunTimeText(timeStamp: _displayRunTime),
+                SizeTransition(
+                  axis: Axis.horizontal,
+                  alignment: Alignment.centerLeft,
+                  sizeFactor: _animation,
+                  child: AnimatedContainer(
+                    width: textWidth,
+                    duration: _widthAnimationDuration,
+                    curve: Curves.easeOut,
+                    child: suspend
+                        ? Text(
+                            appLocalizations.suspended,
+                            maxLines: 1,
+                            overflow: TextOverflow.visible,
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  color: context.colorScheme.onPrimaryContainer,
+                                ),
+                          )
+                        : RunTimeText(timeStamp: _displayRunTime),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
