@@ -32,5 +32,16 @@ void main() {
             : 'assets/images/icon/status_3.$suffix',
       );
     });
+
+    test('uses the symbolic icon in monochrome mode on Linux', () {
+      expect(
+        tray.getTryIcon(isStart: true, tunEnable: true, monochrome: true),
+        Platform.isLinux
+            ? 'assets/images/icon/flclash-symbolic.svg'
+            : Platform.isMacOS
+            ? 'assets/images/icon/status_1.$suffix'
+            : 'assets/images/icon/status_3.$suffix',
+      );
+    });
   });
 }
