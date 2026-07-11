@@ -126,6 +126,11 @@ bool _isTextFieldFocused() {
   return context?.findAncestorWidgetOfExactType<EditableText>() != null;
 }
 
+bool _isSwitchFocused() {
+  final context = FocusManager.instance.primaryFocus?.context;
+  return context?.findAncestorWidgetOfExactType<Switch>() != null;
+}
+
 void main() {
   late Directory tempDir;
 
@@ -140,7 +145,7 @@ void main() {
     } catch (_) {}
   });
 
-  testWidgets('tabbing into the edit page starts with the form', (
+  testWidgets('tabbing into the edit page focuses the Save FAB first', (
     tester,
   ) async {
     final outsideFocus = await pumpEditProfile(tester);
@@ -149,7 +154,81 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.pump();
 
-    expect(_isTextFieldFocused(), isTrue);
-    expect(_isFabFocused(), isFalse);
+    expect(
+      _isFabFocused(),
+      isTrue,
+      reason:
+          'the Save FAB should be the first focusable target in the edit page, '
+          'actual: ${FocusManager.instance.primaryFocus}',
+    );
+  });
+
+  testWidgets('tabbing reaches every form control after the Save FAB', (
+    tester,
+  ) async {
+    await pumpEditProfile(tester);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(_isFabFocused(), isTrue, reason: 'first tab reaches the Save FAB');
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(
+      _isTextFieldFocused(),
+      isTrue,
+      reason: 'tab 2 should reach the name field',
+    );
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(
+      _isTextFieldFocused(),
+      isTrue,
+      reason: 'tab 3 should reach the URL field',
+    );
+
+    // 4th and 5th tabs move past the text fields onto the auto-update toggle
+    // (the ListItem tile, then the Switch itself).
+    for (var i = 0; i < 2; i++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+    }
+    expect(
+      _isTextFieldFocused(),
+      isFalse,
+      reason:
+          'focus should have left the text fields and reached the toggle, '
+          'actual: ${FocusManager.instance.primaryFocus}',
+    );
+    expect(
+      _isSwitchFocused(),
+      isTrue,
+      reason: 'the auto-update Switch is reachable',
+    );
+  });
+
+  testWidgets('tabbing past the last control escapes to the enclosing scope', (
+    tester,
+  ) async {
+    final outsideFocus = await pumpEditProfile(tester);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(_isFabFocused(), isTrue);
+
+    var escaped = false;
+    for (var i = 0; i < 30 && !escaped; i++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+      escaped = FocusManager.instance.primaryFocus == outsideFocus;
+    }
+    expect(
+      escaped,
+      isTrue,
+      reason:
+          'tabbing past the last form control should escape to the enclosing '
+          'scope, actual: ${FocusManager.instance.primaryFocus}',
+    );
   });
 }
