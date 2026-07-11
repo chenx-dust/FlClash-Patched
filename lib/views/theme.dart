@@ -47,6 +47,8 @@ class ThemeView extends StatelessWidget {
           _PrimaryColorItem(),
           SliverToBoxAdapter(child: SizedBox(height: 16)),
           _PrueBlackItem(),
+          _MonochromeTrayIconItem(),
+          _PredictiveBackItem(),
           SliverToBoxAdapter(child: SizedBox(height: 16)),
           _TextScaleFactorItem(),
           SliverToBoxAdapter(child: SizedBox(height: 32)),
@@ -442,6 +444,74 @@ class _PrueBlackItem extends ConsumerWidget {
           ref
               .read(themeSettingProvider.notifier)
               .update((state) => state.copyWith(pureBlack: value));
+        },
+      ),
+    );
+  }
+}
+
+class _PredictiveBackItem extends ConsumerWidget {
+  const _PredictiveBackItem();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final supportsPredictiveBack = system.supportsPredictiveBack(
+      ref.watch(versionProvider),
+    );
+    if (!supportsPredictiveBack) {
+      return const SliverToBoxAdapter();
+    }
+    final appLocalizations = context.appLocalizations;
+    final predictiveBack = ref.watch(
+      themeSettingProvider.select((state) => state.predictiveBack),
+    );
+    return SliverToBoxAdapter(
+      child: ListItem.toggle(
+        leading: const Icon(Icons.swipe_right_alt),
+        horizontalTitleGap: 12,
+        title: Text(
+          appLocalizations.predictiveBack,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            color: context.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        value: predictiveBack,
+        onChanged: (value) {
+          ref
+              .read(themeSettingProvider.notifier)
+              .update((state) => state.copyWith(predictiveBack: value));
+        },
+      ),
+    );
+  }
+}
+
+class _MonochromeTrayIconItem extends ConsumerWidget {
+  const _MonochromeTrayIconItem();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (system.isMacOS) {
+      return const SliverToBoxAdapter();
+    }
+    final monochromeTrayIcon = ref.watch(
+      themeSettingProvider.select((state) => state.monochromeTrayIcon),
+    );
+    return SliverToBoxAdapter(
+      child: ListItem.toggle(
+        leading: const Icon(Icons.filter_b_and_w),
+        horizontalTitleGap: 12,
+        title: Text(
+          context.appLocalizations.monochromeTrayIcon,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            color: context.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        value: monochromeTrayIcon,
+        onChanged: (value) {
+          ref
+              .read(themeSettingProvider.notifier)
+              .update((state) => state.copyWith(monochromeTrayIcon: value));
         },
       ),
     );
