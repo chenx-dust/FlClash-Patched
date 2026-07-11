@@ -134,6 +134,31 @@ extension TrackerInfoExt on TrackerInfo {
     }
     return process.trim();
   }
+
+  bool get hasSpeed => uploadSpeed != null && downloadSpeed != null;
+
+  TrackerInfo withCalculatedSpeed({
+    required TrackerInfo previous,
+    required Duration elapsed,
+  }) {
+    if (id != previous.id || elapsed <= Duration.zero) {
+      return this;
+    }
+
+    int calculateSpeed(int current, int previous) {
+      final delta = current - previous;
+      if (delta <= 0) {
+        return 0;
+      }
+      return (delta * Duration.microsecondsPerSecond / elapsed.inMicroseconds)
+          .round();
+    }
+
+    return copyWith(
+      uploadSpeed: calculateSpeed(upload, previous.upload),
+      downloadSpeed: calculateSpeed(download, previous.download),
+    );
+  }
 }
 
 int _logTimestamp(dynamic value) {
@@ -317,6 +342,10 @@ extension TrafficExt on Traffic {
 
   String get desc {
     return '${up.traffic.show} ↑ ${down.traffic.show} ↓';
+  }
+
+  String get speedDesc {
+    return '${up.traffic.show}/s ↑ ${down.traffic.show}/s ↓';
   }
 
   String get trayTitle {

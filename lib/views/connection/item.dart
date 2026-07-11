@@ -40,7 +40,14 @@ class TrackerInfoItem extends ConsumerWidget {
         ? '${trackerInfo.progressText} · '
         : '';
     final traffic = Traffic(up: trackerInfo.upload, down: trackerInfo.download);
-    return '${trackerInfo.chains.last} · $progress${traffic.desc}';
+    final speed = trackerInfo.hasSpeed
+        ? Traffic(
+            up: trackerInfo.uploadSpeed!,
+            down: trackerInfo.downloadSpeed!,
+          )
+        : null;
+    final speedText = speed != null ? ' · ${speed.speedDesc}' : '';
+    return '${trackerInfo.chains.last} · $progress${traffic.desc}$speedText';
   }
 
   @override
