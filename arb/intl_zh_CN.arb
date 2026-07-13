@@ -147,6 +147,8 @@
   "search": "搜索",
   "filter": "筛选",
   "noFilterCondition": "暂无筛选条件",
+  "hideTimeout": "隐藏超时",
+  "hideTimeoutDesc": "延迟测试后隐藏不可用代理",
   "regexSearch": "正则搜索",
   "allowBypass": "允许应用绕过 VPN",
   "allowBypassDesc": "开启后部分应用可绕过 VPN",

@@ -251,16 +251,36 @@ ProfilesState profilesState(Ref ref) {
 @riverpod
 GroupsState filterGroupsState(Ref ref, String query) {
   final currentGroups = ref.watch(currentGroupsStateProvider);
-  if (query.isEmpty) {
+  final hideTimeout = ref.watch(
+    proxiesStyleSettingProvider.select((state) => state.hideTimeout),
+  );
+  if (query.isEmpty && !hideTimeout) {
     return currentGroups;
   }
   final useRegex = ref.watch(searchUseRegexProvider(QueryTag.proxies));
   final matcher = SearchMatcher(query, useRegex: useRegex);
+  final delayMap = hideTimeout ? ref.watch(delayDataSourceProvider) : null;
+  final selectedMap = hideTimeout ? ref.watch(selectedMapProvider) : null;
+  final defaultTestUrl = hideTimeout ? ref.watch(realTestUrlProvider()) : '';
   final groups = currentGroups.value
       .map((group) {
+        final testUrl = group.testUrl.takeFirstValid([defaultTestUrl]);
         return group.copyWith(
           all: group.all
-              .where((proxy) => matcher.hasMatch(proxy.name))
+              .where((proxy) => query.isEmpty || matcher.hasMatch(proxy.name))
+              .where((proxy) {
+                if (!hideTimeout) {
+                  return true;
+                }
+                final delayState = computeProxyDelayState(
+                  proxyName: proxy.name,
+                  testUrl: testUrl,
+                  groups: currentGroups.value,
+                  selectedMap: selectedMap!,
+                  delayMap: delayMap!,
+                );
+                return delayState.delay != -1;
+              })
               .toList(),
         );
       })

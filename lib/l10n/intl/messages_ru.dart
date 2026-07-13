@@ -518,6 +518,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "header": MessageLookupByLibrary.simpleMessage("Заголовок"),
     "hideFromList": MessageLookupByLibrary.simpleMessage("Скрыть из списка"),
+    "hideTimeout": MessageLookupByLibrary.simpleMessage("Скрывать таймауты"),
+    "hideTimeoutDesc": MessageLookupByLibrary.simpleMessage(
+      "Скрывать недоступные прокси после проверки задержки",
+    ),
     "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage(
       "Автозапуск с высоким приоритетом",
     ),

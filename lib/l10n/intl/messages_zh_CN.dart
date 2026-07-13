@@ -358,6 +358,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "hasCacheChange": MessageLookupByLibrary.simpleMessage("是否缓存修改"),
     "header": MessageLookupByLibrary.simpleMessage("标题"),
     "hideFromList": MessageLookupByLibrary.simpleMessage("从列表中隐藏"),
+    "hideTimeout": MessageLookupByLibrary.simpleMessage("隐藏超时"),
+    "hideTimeoutDesc": MessageLookupByLibrary.simpleMessage("延迟测试后隐藏不可用代理"),
     "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage("高优先级自启动"),
     "highPriorityAutoLaunchDesc": MessageLookupByLibrary.simpleMessage(
       "使用 Windows 计划任务更早启动",

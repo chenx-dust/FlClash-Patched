@@ -147,6 +147,8 @@
   "search": "Search",
   "filter": "Filter",
   "noFilterCondition": "No filter conditions",
+  "hideTimeout": "Hide Timeout",
+  "hideTimeoutDesc": "Hide unavailable proxies after delay tests",
   "regexSearch": "Regex search",
   "allowBypass": "Allow Applications to Bypass VPN",
   "allowBypassDesc": "Some apps can bypass VPN when turned on",

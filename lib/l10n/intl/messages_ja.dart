@@ -402,6 +402,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "hasCacheChange": MessageLookupByLibrary.simpleMessage("変更をキャッシュしますか？"),
     "header": MessageLookupByLibrary.simpleMessage("ヘッダー"),
     "hideFromList": MessageLookupByLibrary.simpleMessage("リストから隠す"),
+    "hideTimeout": MessageLookupByLibrary.simpleMessage("タイムアウトを非表示"),
+    "hideTimeoutDesc": MessageLookupByLibrary.simpleMessage(
+      "遅延テスト後に利用できないプロキシを非表示",
+    ),
     "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage("高優先度自動起動"),
     "highPriorityAutoLaunchDesc": MessageLookupByLibrary.simpleMessage(
       "Windows タスクスケジューラでより早く起動します",

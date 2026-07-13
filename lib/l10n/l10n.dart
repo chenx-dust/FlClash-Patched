@@ -1169,6 +1169,26 @@ class AppLocalizations {
     );
   }
 
+  /// `Hide Timeout`
+  String get hideTimeout {
+    return Intl.message(
+      'Hide Timeout',
+      name: 'hideTimeout',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hide unavailable proxies after delay tests`
+  String get hideTimeoutDesc {
+    return Intl.message(
+      'Hide unavailable proxies after delay tests',
+      name: 'hideTimeoutDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Regex search`
   String get regexSearch {
     return Intl.message(

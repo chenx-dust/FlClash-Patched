@@ -497,6 +497,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "header": MessageLookupByLibrary.simpleMessage("Header"),
     "hideFromList": MessageLookupByLibrary.simpleMessage("Hide from list"),
+    "hideTimeout": MessageLookupByLibrary.simpleMessage("Hide Timeout"),
+    "hideTimeoutDesc": MessageLookupByLibrary.simpleMessage(
+      "Hide unavailable proxies after delay tests",
+    ),
     "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage(
       "High Priority Auto Launch",
     ),

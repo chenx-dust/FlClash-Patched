@@ -222,6 +222,7 @@ abstract class ProxiesStyleProps with _$ProxiesStyleProps {
     @Default(ProxyCardType.standard)
     @JsonKey(unknownEnumValue: ProxyCardType.standard)
     ProxyCardType cardType,
+    @Default(false) bool hideTimeout,
   }) = _ProxiesStyleProps;
 
   factory ProxiesStyleProps.fromJson(Map<String, Object?>? json) => json == null

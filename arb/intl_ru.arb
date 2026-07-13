@@ -147,6 +147,8 @@
   "search": "Поиск",
   "filter": "Фильтр",
   "noFilterCondition": "Нет условий фильтрации",
+  "hideTimeout": "Скрывать таймауты",
+  "hideTimeoutDesc": "Скрывать недоступные прокси после проверки задержки",
   "regexSearch": "Поиск по regex",
   "allowBypass": "Разрешить приложениям обходить VPN",
   "allowBypassDesc": "Некоторые приложения могут обходить VPN при включении",

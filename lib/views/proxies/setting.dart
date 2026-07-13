@@ -349,6 +349,35 @@ class ProxiesSetting extends StatelessWidget {
     );
   }
 
+  List<Widget> _buildFilterSetting(BuildContext context) {
+    return generateSection(
+      title: context.appLocalizations.filter,
+      items: [
+        Consumer(
+          builder: (_, ref, _) {
+            final hideTimeout = ref.watch(
+              proxiesStyleSettingProvider.select((state) => state.hideTimeout),
+            );
+            return ListItem.switchItem(
+              title: Text(context.appLocalizations.hideTimeout),
+              subtitle: Text(context.appLocalizations.hideTimeoutDesc),
+              delegate: SwitchDelegate(
+                value: hideTimeout,
+                onChanged: (value) {
+                  ref.read(proxiesStyleSettingProvider.notifier).update((
+                    state,
+                  ) {
+                    return state.copyWith(hideTimeout: value);
+                  });
+                },
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -359,6 +388,7 @@ class ProxiesSetting extends StatelessWidget {
         children: [
           ..._buildStyleSetting(context),
           ..._buildSortSetting(context),
+          ..._buildFilterSetting(context),
           ..._buildLayoutSetting(context),
           ..._buildSizeSetting(context),
           Consumer(

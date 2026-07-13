@@ -285,6 +285,7 @@ _ProxiesStyleProps _$ProxiesStylePropsFromJson(Map<String, dynamic> json) =>
             unknownValue: ProxyCardType.standard,
           ) ??
           ProxyCardType.standard,
+      hideTimeout: json['hideTimeout'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$ProxiesStylePropsToJson(
@@ -297,6 +298,7 @@ Map<String, dynamic> _$ProxiesStylePropsToJson(
   'iconStyle': _$ProxiesIconStyleEnumMap[instance.iconStyle]!,
   'iconSource': _$ProxiesIconSourceEnumMap[instance.iconSource]!,
   'cardType': _$ProxyCardTypeEnumMap[instance.cardType]!,
+  'hideTimeout': instance.hideTimeout,
 };
 
 const _$ProxiesTypeEnumMap = {ProxiesType.tab: 'tab', ProxiesType.list: 'list'};

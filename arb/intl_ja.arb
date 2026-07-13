@@ -147,6 +147,8 @@
   "search": "検索",
   "filter": "フィルター",
   "noFilterCondition": "フィルター条件なし",
+  "hideTimeout": "タイムアウトを非表示",
+  "hideTimeoutDesc": "遅延テスト後に利用できないプロキシを非表示",
   "regexSearch": "正規表現検索",
   "allowBypass": "アプリが VPN をバイパスすることを許可",
   "allowBypassDesc": "有効化すると一部アプリが VPN をバイパス",
