@@ -72,6 +72,14 @@ IDI_APP_ICON            ICON                    "resources\\app_icon.ico"
 #define VERSION_AS_STRING "1.0.0"
 #endif
 
+#ifdef _DEBUG
+#define APP_INTERNAL_NAME "clash.debug"
+#define APP_PRODUCT_NAME "clash.debug"
+#else
+#define APP_INTERNAL_NAME "clash"
+#define APP_PRODUCT_NAME "clash"
+#endif
+
 VS_VERSION_INFO VERSIONINFO
  FILEVERSION VERSION_AS_NUMBER
  PRODUCTVERSION VERSION_AS_NUMBER
@@ -92,10 +100,10 @@ BEGIN
             VALUE "CompanyName", "com.follow" "\0"
             VALUE "FileDescription", "FlClash" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "clash" "\0"
+            VALUE "InternalName", APP_INTERNAL_NAME "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 com.follow. All rights reserved." "\0"
             VALUE "OriginalFilename", "FlClash.exe" "\0"
-            VALUE "ProductName", "clash" "\0"
+            VALUE "ProductName", APP_PRODUCT_NAME "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
