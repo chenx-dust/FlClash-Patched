@@ -315,7 +315,7 @@ class _AddOrEditRuleNestedSheetState
     if (state != null && state.canPop()) {
       state.pop();
     } else {
-      _handleExit();
+      await _handleExit();
     }
   }
 
@@ -339,7 +339,7 @@ class _AddOrEditRuleNestedSheetState
         : context.colorScheme.surface;
     return CommonPopScope(
       onPop: (_) async {
-        _handlePop();
+        await _handlePop();
         return false;
       },
       child: sheetProvider!.copyWith(
