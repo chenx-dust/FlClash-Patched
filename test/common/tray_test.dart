@@ -32,5 +32,28 @@ void main() {
             : 'assets/images/icon/status_3.$suffix',
       );
     });
+
+    test('uses the symbolic icon only on supported desktop platforms', () {
+      final linuxTray = AppTray.forPlatform(isMacOS: false, isWindows: false);
+      final windowsTray = AppTray.forPlatform(isMacOS: false, isWindows: true);
+      final macOSTray = AppTray.forPlatform(isMacOS: true, isWindows: false);
+
+      expect(
+        linuxTray.getTrayIcon(isStart: true, tunEnable: true, monochrome: true),
+        'assets/images/icon/flclash-symbolic.svg',
+      );
+      expect(
+        windowsTray.getTrayIcon(
+          isStart: true,
+          tunEnable: true,
+          monochrome: true,
+        ),
+        'assets/images/icon/status_3.ico',
+      );
+      expect(
+        macOSTray.getTrayIcon(isStart: true, tunEnable: true, monochrome: true),
+        'assets/images/icon/status_1.png',
+      );
+    });
   });
 }

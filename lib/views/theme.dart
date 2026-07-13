@@ -44,6 +44,7 @@ class ThemeView extends StatelessWidget {
           _PrimaryColorItem(),
           SliverToBoxAdapter(child: SizedBox(height: 16)),
           _PrueBlackItem(),
+          _MonochromeTrayIconItem(),
           SliverToBoxAdapter(child: SizedBox(height: 16)),
           _TextScaleFactorItem(),
           SliverToBoxAdapter(child: SizedBox(height: 32)),
@@ -509,6 +510,38 @@ class _PrueBlackItem extends ConsumerWidget {
           ref
               .read(themeSettingProvider.notifier)
               .update((state) => state.copyWith(pureBlack: value));
+        },
+      ),
+    );
+  }
+}
+
+class _MonochromeTrayIconItem extends ConsumerWidget {
+  const _MonochromeTrayIconItem();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (!system.isLinux) {
+      return const SliverToBoxAdapter();
+    }
+    final monochromeTrayIcon = ref.watch(
+      themeSettingProvider.select((state) => state.monochromeTrayIcon),
+    );
+    return SliverToBoxAdapter(
+      child: ListItem.toggle(
+        leading: const Icon(Icons.filter_b_and_w),
+        horizontalTitleGap: 12,
+        title: Text(
+          context.appLocalizations.monochromeTrayIcon,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            color: context.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        value: monochromeTrayIcon,
+        onChanged: (value) {
+          ref
+              .read(themeSettingProvider.notifier)
+              .update((state) => state.copyWith(monochromeTrayIcon: value));
         },
       ),
     );

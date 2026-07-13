@@ -694,14 +694,14 @@ class AppLocalizations {
     );
   }
 
-  /// `Theme mode`
+  /// `Theme Mode`
   String get themeMode {
-    return Intl.message('Theme mode', name: 'themeMode', desc: '', args: []);
+    return Intl.message('Theme Mode', name: 'themeMode', desc: '', args: []);
   }
 
-  /// `Theme color`
+  /// `Theme Color`
   String get themeColor {
-    return Intl.message('Theme color', name: 'themeColor', desc: '', args: []);
+    return Intl.message('Theme Color', name: 'themeColor', desc: '', args: []);
   }
 
   /// `Preview`
@@ -1084,10 +1084,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Go to download`
+  /// `Go to Download`
   String get goDownload {
     return Intl.message(
-      'Go to download',
+      'Go to Download',
       name: 'goDownload',
       desc: '',
       args: [],
@@ -1489,6 +1489,16 @@ class AppLocalizations {
     return Intl.message(
       'Pure Black Mode',
       name: 'pureBlackMode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Monochrome Tray Icon`
+  String get monochromeTrayIcon {
+    return Intl.message(
+      'Monochrome Tray Icon',
+      name: 'monochromeTrayIcon',
       desc: '',
       args: [],
     );
@@ -3259,10 +3269,10 @@ class AppLocalizations {
     return Intl.message('Just now', name: 'justNow', desc: '', args: []);
   }
 
-  /// `Don't remind again`
+  /// `Don't Remind Again`
   String get noLongerRemind {
     return Intl.message(
-      'Don\'t remind again',
+      'Don\'t Remind Again',
       name: 'noLongerRemind',
       desc: '',
       args: [],

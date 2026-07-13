@@ -202,6 +202,9 @@ void main() {
           ),
         );
     container
+        .read(themeSettingProvider.notifier)
+        .update((state) => state.copyWith(monochromeTrayIcon: false));
+    container
         .read(patchClashConfigProvider.notifier)
         .update(
           (state) => state.copyWith(
@@ -228,6 +231,7 @@ void main() {
     expect(tray.port, 8899);
     expect(tray.tunEnable, isTrue);
     expect(tray.isStart, isTrue);
+    expect(tray.monochromeTrayIcon, isFalse);
 
     final vpn = container.read(vpnStateProvider);
     expect(vpn.stack, container.read(patchClashConfigProvider).tun.stack);

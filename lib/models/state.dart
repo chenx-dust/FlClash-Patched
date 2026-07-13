@@ -112,6 +112,7 @@ abstract class TrayState with _$TrayState {
     required List<Group> groups,
     required Map<String, String> selectedMap,
     required bool showTrayTitle,
+    @Default(true) bool monochromeTrayIcon,
   }) = _TrayState;
 }
 

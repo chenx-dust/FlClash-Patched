@@ -43,7 +43,14 @@ class AppTray implements TrayPort {
     return isWindows ? 'ico' : 'png';
   }
 
-  String getTrayIcon({required bool isStart, required bool tunEnable}) {
+  String getTrayIcon({
+    required bool isStart,
+    required bool tunEnable,
+    bool monochrome = false,
+  }) {
+    if (monochrome && !isMacOS && !isWindows) {
+      return 'assets/images/icon/flclash-symbolic.svg';
+    }
     if (isMacOS || !isStart) {
       return 'assets/images/icon/status_1.$trayIconSuffix';
     }
@@ -74,6 +81,7 @@ class AppTray implements TrayPort {
           getTrayIcon(
             isStart: trayState.isStart,
             tunEnable: trayState.tunEnable,
+            monochrome: trayState.monochromeTrayIcon,
           ),
           isTemplate: isMacOS,
         ),
