@@ -120,6 +120,7 @@
   "project": "プロジェクト",
   "core": "コア",
   "tabAnimation": "タブアニメーション",
+  "swipeToSwitchPage": "スワイプでページ切り替え",
   "desc": "ClashMeta ベースのマルチプラットフォームプロキシクライアント。シンプルで使いやすく、オープンソースで広告なし。",
   "startVpn": "VPN を開始中...",
   "stopVpn": "VPN を停止中...",

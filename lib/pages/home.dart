@@ -262,6 +262,8 @@ class _HomePageView extends ConsumerStatefulWidget {
 
 class _HomePageViewState extends ConsumerState<_HomePageView> {
   late PageController _pageController;
+  int _programmaticPageChangeCount = 0;
+  bool _isUpdatingPageLabelFromView = false;
 
   @override
   void initState() {
@@ -270,7 +272,9 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
     ref.listenManual(currentPageLabelProvider, (prev, next) {
       if (prev != next) {
         _closePopupMenus(prev);
-        _toPage(next);
+        if (!_isUpdatingPageLabelFromView) {
+          _toPage(next);
+        }
       }
     });
   }
@@ -302,14 +306,37 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
       return;
     }
     final isAnimateToPage = ref.read(appSettingProvider).isAnimateToPage;
-    if (isAnimateToPage && !ignoreAnimateTo) {
-      await _pageController.animateToPage(
-        index,
-        duration: midDuration,
-        curve: Curves.easeOutCubic,
-      );
-    } else {
-      _pageController.jumpToPage(index);
+    _programmaticPageChangeCount++;
+    try {
+      if (isAnimateToPage && !ignoreAnimateTo) {
+        await _pageController.animateToPage(
+          index,
+          duration: midDuration,
+          curve: Curves.easeOutCubic,
+        );
+      } else {
+        _pageController.jumpToPage(index);
+      }
+    } finally {
+      _programmaticPageChangeCount--;
+    }
+  }
+
+  void _handlePageChanged(int index) {
+    if (_programmaticPageChangeCount > 0 ||
+        index < 0 ||
+        index >= widget.navigationItems.length) {
+      return;
+    }
+    final pageLabel = widget.navigationItems[index].label;
+    if (pageLabel == ref.read(currentPageLabelProvider)) {
+      return;
+    }
+    _isUpdatingPageLabelFromView = true;
+    try {
+      ref.read(currentPageLabelProvider.notifier).toPage(pageLabel);
+    } finally {
+      _isUpdatingPageLabelFromView = false;
     }
   }
 
@@ -341,6 +368,9 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
       currentNavigationItemsStateProvider.select((state) => state.value.length),
     );
     final isMobile = ref.read(isMobileViewProvider);
+    final isSwipeToPage = ref.watch(
+      appSettingProvider.select((state) => state.isSwipeToPage),
+    );
     final pageLabel = ref.watch(currentPageLabelProvider);
     final pageIndex = widget.navigationItems.indexWhere(
       (item) => item.label == pageLabel,
@@ -348,7 +378,10 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
     return PageView.builder(
       scrollDirection: isMobile ? Axis.horizontal : Axis.vertical,
       controller: _pageController,
-      physics: const NeverScrollableScrollPhysics(),
+      physics: isMobile && isSwipeToPage
+          ? null
+          : const NeverScrollableScrollPhysics(),
+      onPageChanged: isMobile && isSwipeToPage ? _handlePageChanged : null,
       itemCount: itemCount,
       findChildIndexCallback: (key) {
         if (key is! ValueKey<PageLabel>) {

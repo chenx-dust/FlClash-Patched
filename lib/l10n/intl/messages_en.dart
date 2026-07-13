@@ -1078,6 +1078,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Suspend the core while the device is idle to reduce battery usage",
     ),
     "suspended": MessageLookupByLibrary.simpleMessage("Suspended..."),
+    "swipeToSwitchPage": MessageLookupByLibrary.simpleMessage(
+      "Swipe to Switch Pages",
+    ),
     "sync": MessageLookupByLibrary.simpleMessage("Sync"),
     "system": MessageLookupByLibrary.simpleMessage("System"),
     "systemApp": MessageLookupByLibrary.simpleMessage("System app"),
