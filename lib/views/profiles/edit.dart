@@ -167,7 +167,7 @@ class EditProfileViewState extends State<EditProfileView> {
           message: TextSpan(text: context.appLocalizations.hasCacheChange),
         );
         if (res == true && context.mounted) {
-          _handleSaveEdit(context, content);
+          await _handleSaveEdit(context, content);
         } else {
           return true;
         }
@@ -386,11 +386,11 @@ class EditProfileViewState extends State<EditProfileView> {
     ];
     return CommonPopScope(
       canPop: _fileData == null,
-      onPop: (context) {
+      onPop: (context) async {
         if (_fileData == null) {
           return true;
         }
-        _handleBack();
+        await _handleBack();
         return false;
       },
       child: FloatLayout(

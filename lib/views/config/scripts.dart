@@ -246,7 +246,7 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
       message: TextSpan(text: appLocalizations.saveChanges),
     );
     if (res == true && mounted) {
-      _handleEditorSave(context, title, content, script: script);
+      await _handleEditorSave(context, title, content, script: script);
     } else {
       return true;
     }
