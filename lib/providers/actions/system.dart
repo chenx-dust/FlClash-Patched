@@ -101,14 +101,7 @@ class SystemAction extends _$SystemAction {
   }
 
   Future<void> updateTray() async {
-    tray?.update(
-      trayState: ref.read(trayStateProvider),
-      traffic: ref.read(
-        trafficsProvider.select(
-          (state) => state.list.safeLast(const Traffic()),
-        ),
-      ),
-    );
+    tray?.update(trayState: ref.read(trayStateProvider));
   }
 
   Future<void> updateLocalIp() async {

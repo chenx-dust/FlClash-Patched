@@ -138,14 +138,6 @@ abstract class TrayState with _$TrayState {
 }
 
 @freezed
-abstract class TrayTitleState with _$TrayTitleState {
-  const factory TrayTitleState({
-    required Traffic traffic,
-    required bool showTrayTitle,
-  }) = _TrayTitleState;
-}
-
-@freezed
 abstract class NavigationState with _$NavigationState {
   const factory NavigationState({
     required PageLabel pageLabel,

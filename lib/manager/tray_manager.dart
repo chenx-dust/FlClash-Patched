@@ -24,16 +24,6 @@ class _TrayContainerState extends ConsumerState<TrayManager> with TrayListener {
         ref.read(systemActionProvider.notifier).updateTray();
       }
     });
-    if (system.isMacOS) {
-      ref.listenManual(trayTitleStateProvider, (prev, next) {
-        if (prev != next) {
-          tray?.updateTrayTitle(
-            showTrayTitle: next.showTrayTitle,
-            traffic: next.traffic,
-          );
-        }
-      });
-    }
   }
 
   @override
@@ -43,8 +33,7 @@ class _TrayContainerState extends ConsumerState<TrayManager> with TrayListener {
 
   @override
   void onTrayIconRightMouseDown() {
-    // ignore: deprecated_member_use
-    trayManager.popUpContextMenu(bringAppToFront: true);
+    trayManager.popUpContextMenu();
   }
 
   @override
@@ -55,7 +44,11 @@ class _TrayContainerState extends ConsumerState<TrayManager> with TrayListener {
 
   @override
   void onTrayIconMouseDown() {
-    window?.show();
+    if (system.isMacOS) {
+      trayManager.popUpContextMenu();
+    } else {
+      window?.show();
+    }
   }
 
   @override
