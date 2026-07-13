@@ -469,7 +469,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "global": MessageLookupByLibrary.simpleMessage("Глобальный"),
     "go": MessageLookupByLibrary.simpleMessage("Перейти"),
-    "goDownload": MessageLookupByLibrary.simpleMessage("Перейти к загрузке"),
+    "goDownload": MessageLookupByLibrary.simpleMessage("Перейти к Загрузке"),
     "goToConfigureScript": MessageLookupByLibrary.simpleMessage(
       "Перейти к настройке скрипта",
     ),
@@ -625,7 +625,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "mode": MessageLookupByLibrary.simpleMessage("Режим"),
     "monochromeScheme": MessageLookupByLibrary.simpleMessage("Монохром"),
     "monochromeTrayIcon": MessageLookupByLibrary.simpleMessage(
-      "Монохромный значок в трее",
+      "Монохромный Значок в Трее",
     ),
     "monthsAgo": m18,
     "more": MessageLookupByLibrary.simpleMessage("Еще"),
@@ -663,7 +663,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "noHotKey": MessageLookupByLibrary.simpleMessage("Нет горячей клавиши"),
     "noInfo": MessageLookupByLibrary.simpleMessage("Нет информации"),
     "noLongerRemind": MessageLookupByLibrary.simpleMessage(
-      "Больше не напоминать",
+      "Больше Не Напоминать",
     ),
     "noNetwork": MessageLookupByLibrary.simpleMessage("Нет сети"),
     "noNetworkApp": MessageLookupByLibrary.simpleMessage("Приложение без сети"),
@@ -1104,11 +1104,11 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "textScale": MessageLookupByLibrary.simpleMessage("Масштабирование текста"),
     "theme": MessageLookupByLibrary.simpleMessage("Тема"),
-    "themeColor": MessageLookupByLibrary.simpleMessage("Цвет темы"),
+    "themeColor": MessageLookupByLibrary.simpleMessage("Цвет Темы"),
     "themeDesc": MessageLookupByLibrary.simpleMessage(
       "Установить темный режим, настроить цвет",
     ),
-    "themeMode": MessageLookupByLibrary.simpleMessage("Режим темы"),
+    "themeMode": MessageLookupByLibrary.simpleMessage("Режим Темы"),
     "tight": MessageLookupByLibrary.simpleMessage("Плотный"),
     "time": MessageLookupByLibrary.simpleMessage("Время"),
     "timeout": MessageLookupByLibrary.simpleMessage("Таймаут"),
