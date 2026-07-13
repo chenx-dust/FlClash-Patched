@@ -24,6 +24,7 @@ void main() {
       expect(value.highPriorityAutoLaunch, false);
       expect(value.closeConnections, true);
       expect(value.isAnimateToPage, true);
+      expect(value.isSwipeToPage, true);
       expect(value.foregroundTickerInterval, defaultForegroundTickerInterval);
       expect(value.foregroundTickerIdleWhenUnfocused, true);
       expect(
