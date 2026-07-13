@@ -488,7 +488,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "global": MessageLookupByLibrary.simpleMessage("Global"),
     "go": MessageLookupByLibrary.simpleMessage("Go"),
-    "goDownload": MessageLookupByLibrary.simpleMessage("Go to download"),
+    "goDownload": MessageLookupByLibrary.simpleMessage("Go to Download"),
     "goToConfigureScript": MessageLookupByLibrary.simpleMessage(
       "Go to configure script",
     ),
@@ -638,7 +638,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "mode": MessageLookupByLibrary.simpleMessage("Mode"),
     "monochromeScheme": MessageLookupByLibrary.simpleMessage("Monochrome"),
     "monochromeTrayIcon": MessageLookupByLibrary.simpleMessage(
-      "Monochrome tray icon",
+      "Monochrome Tray Icon",
     ),
     "monthsAgo": m18,
     "more": MessageLookupByLibrary.simpleMessage("More"),
@@ -679,7 +679,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "noHotKey": MessageLookupByLibrary.simpleMessage("No HotKey"),
     "noInfo": MessageLookupByLibrary.simpleMessage("No info"),
     "noLongerRemind": MessageLookupByLibrary.simpleMessage(
-      "Don\'t remind again",
+      "Don\'t Remind Again",
     ),
     "noNetwork": MessageLookupByLibrary.simpleMessage("No network"),
     "noNetworkApp": MessageLookupByLibrary.simpleMessage("No network app"),
@@ -1100,11 +1100,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "testWhenUsed": MessageLookupByLibrary.simpleMessage("Test when used"),
     "textScale": MessageLookupByLibrary.simpleMessage("Text Scaling"),
     "theme": MessageLookupByLibrary.simpleMessage("Theme"),
-    "themeColor": MessageLookupByLibrary.simpleMessage("Theme color"),
+    "themeColor": MessageLookupByLibrary.simpleMessage("Theme Color"),
     "themeDesc": MessageLookupByLibrary.simpleMessage(
       "Set dark mode, adjust the color",
     ),
-    "themeMode": MessageLookupByLibrary.simpleMessage("Theme mode"),
+    "themeMode": MessageLookupByLibrary.simpleMessage("Theme Mode"),
     "tight": MessageLookupByLibrary.simpleMessage("Tight"),
     "time": MessageLookupByLibrary.simpleMessage("Time"),
     "timeout": MessageLookupByLibrary.simpleMessage("Timeout"),
