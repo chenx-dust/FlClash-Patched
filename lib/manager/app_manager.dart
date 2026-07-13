@@ -183,8 +183,13 @@ class AppEnvManager extends StatelessWidget {
 
 class AppSidebarContainer extends ConsumerWidget {
   final Widget child;
+  final ValueChanged<PageLabel> onDestinationSelected;
 
-  const AppSidebarContainer({super.key, required this.child});
+  const AppSidebarContainer({
+    super.key,
+    required this.child,
+    required this.onDestinationSelected,
+  });
 
   // Widget _buildLoading() {
   //   return Consumer(
@@ -224,12 +229,6 @@ class AppSidebarContainer extends ConsumerWidget {
           ref.read(viewSizeProvider.select((state) => state.width)) -
           contentWidth;
     });
-  }
-
-  void _handleToPage(PageLabel pageLabel) {
-    globalState.container
-        .read(currentPageLabelProvider.notifier)
-        .toPage(pageLabel);
   }
 
   @override
@@ -284,7 +283,9 @@ class AppSidebarContainer extends ConsumerWidget {
                                 )
                                 .toList(),
                             onDestinationSelected: (index) {
-                              _handleToPage(navigationItems[index].label);
+                              onDestinationSelected(
+                                navigationItems[index].label,
+                              );
                             },
                             extended: false,
                             selectedIndex: currentIndex,
