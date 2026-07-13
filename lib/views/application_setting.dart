@@ -236,6 +236,28 @@ class AnimateTabItem extends ConsumerWidget {
   }
 }
 
+class SwipeToPageItem extends ConsumerWidget {
+  const SwipeToPageItem({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appLocalizations = context.appLocalizations;
+    final isSwipeToPage = ref.watch(
+      appSettingProvider.select((state) => state.isSwipeToPage),
+    );
+    return ListItem.toggle(
+      title: Text(appLocalizations.swipeToSwitchPage),
+      subtitle: Text(appLocalizations.tabAnimationDesc),
+      value: isSwipeToPage,
+      onChanged: (value) {
+        ref
+            .read(appSettingProvider.notifier)
+            .update((state) => state.copyWith(isSwipeToPage: value));
+      },
+    );
+  }
+}
+
 class OpenLogsItem extends ConsumerWidget {
   const OpenLogsItem({super.key});
 
@@ -360,8 +382,8 @@ class _ForegroundTickerIntervalDialogState
   void _handleReset() {
     setState(() {
       _intervalController.text = defaultForegroundTickerInterval.toString();
-      _idleIntervalController.text =
-          defaultForegroundTickerIdleInterval.toString();
+      _idleIntervalController.text = defaultForegroundTickerIdleInterval
+          .toString();
       _idleWhenUnfocused = true;
     });
   }
@@ -431,9 +453,7 @@ class _ForegroundTickerIntervalDialogState
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(appLocalizations.uiUpdateIdleWhenUnfocused),
-              subtitle: Text(
-                appLocalizations.uiUpdateIdleWhenUnfocusedDesc,
-              ),
+              subtitle: Text(appLocalizations.uiUpdateIdleWhenUnfocusedDesc),
               value: _idleWhenUnfocused,
               onChanged: (value) {
                 setState(() {
@@ -488,6 +508,7 @@ class ApplicationSettingView extends ConsumerWidget {
       const AutoRunItem(),
       if (system.isAndroid) ...[const HiddenItem()],
       const AnimateTabItem(),
+      const SwipeToPageItem(),
       const OpenLogsItem(),
       const ForegroundTickerIntervalItem(),
       const CloseConnectionsItem(),

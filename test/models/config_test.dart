@@ -105,6 +105,7 @@ void main() {
       expect(restored.openLogs, false);
       expect(restored.closeConnections, true);
       expect(restored.isAnimateToPage, true);
+      expect(restored.isSwipeToPage, true);
       expect(restored.autoCheckUpdate, true);
       expect(restored.showLabel, false);
       expect(restored.minimizeOnExit, true);
@@ -129,6 +130,7 @@ void main() {
         autoLaunch: true,
         highPriorityAutoLaunch: true,
         closeConnections: false,
+        isSwipeToPage: false,
         testUrl: 'https://custom.test',
         customUserAgent: 'CustomUA/1.0',
         foregroundTickerInterval: 3,
@@ -144,6 +146,7 @@ void main() {
       expect(restored.autoLaunch, true);
       expect(restored.highPriorityAutoLaunch, true);
       expect(restored.closeConnections, false);
+      expect(restored.isSwipeToPage, false);
       expect(restored.testUrl, 'https://custom.test');
       expect(restored.customUserAgent, 'CustomUA/1.0');
       expect(restored.foregroundTickerInterval, 3);
