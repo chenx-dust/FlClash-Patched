@@ -561,27 +561,23 @@ class _TextScaleFactorItem extends ConsumerWidget {
               spacing: 32,
               children: [
                 Expanded(
-                  child: DisabledMask(
-                    status: !textScale.enable,
-                    child: ActivateBox(
-                      active: textScale.enable,
-                      child: SliderTheme(
-                        data: SliderDefaultsM3(context),
-                        child: Slider(
-                          padding: EdgeInsets.zero,
-                          min: minTextScale,
-                          max: maxTextScale,
-                          value: textScale.scale,
-                          onChanged: (value) {
-                            ref
-                                .read(themeSettingProvider.notifier)
-                                .update(
-                                  (state) =>
-                                      state.copyWith.textScale(scale: value),
-                                );
-                          },
-                        ),
-                      ),
+                  child: SliderTheme(
+                    data: SliderDefaultsM3(context),
+                    child: Slider(
+                      padding: EdgeInsets.zero,
+                      min: minTextScale,
+                      max: maxTextScale,
+                      value: textScale.scale,
+                      onChanged: textScale.enable
+                          ? (value) {
+                              ref
+                                  .read(themeSettingProvider.notifier)
+                                  .update(
+                                    (state) =>
+                                        state.copyWith.textScale(scale: value),
+                                  );
+                            }
+                          : null,
                     ),
                   ),
                 ),
