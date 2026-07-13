@@ -553,40 +553,57 @@ class _TextScaleFactorItem extends ConsumerWidget {
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              mainAxisSize: MainAxisSize.max,
-              spacing: 32,
-              children: [
-                Expanded(
-                  child: SliderTheme(
-                    data: SliderDefaultsM3(context),
-                    child: Slider(
-                      padding: EdgeInsets.zero,
-                      min: minTextScale,
-                      max: maxTextScale,
-                      value: textScale.scale,
-                      onChanged: textScale.enable
-                          ? (value) {
-                              ref
-                                  .read(themeSettingProvider.notifier)
-                                  .update(
-                                    (state) =>
-                                        state.copyWith.textScale(scale: value),
-                                  );
-                            }
-                          : null,
+          AnimatedSwitcher(
+            duration: animateDuration,
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeInCubic,
+            transitionBuilder: (child, animation) {
+              return SizeTransition(
+                sizeFactor: animation,
+                axisAlignment: -1,
+                child: FadeTransition(opacity: animation, child: child),
+              );
+            },
+            child: textScale.enable
+                ? Padding(
+                    key: const ValueKey(true),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.max,
+                      spacing: 32,
+                      children: [
+                        Expanded(
+                          child: SliderTheme(
+                            data: SliderDefaultsM3(context),
+                            child: Slider(
+                              padding: EdgeInsets.zero,
+                              min: minTextScale,
+                              max: maxTextScale,
+                              value: textScale.scale,
+                              onChanged: (value) {
+                                ref
+                                    .read(themeSettingProvider.notifier)
+                                    .update(
+                                      (state) => state.copyWith.textScale(
+                                        scale: value,
+                                      ),
+                                    );
+                              },
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 4),
+                          child: Text(
+                            process,
+                            style: context.textTheme.titleMedium,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 4),
-                  child: Text(process, style: context.textTheme.titleMedium),
-                ),
-              ],
-            ),
+                  )
+                : const SizedBox(key: ValueKey(false)),
           ),
         ],
       ),
