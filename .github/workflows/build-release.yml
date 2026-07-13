@@ -83,62 +83,62 @@ jobs:
         shell: pwsh
         run: |
           $iss = @'
-[Setup]
-AppId=728B3532-C74B-4870-9068-BE70FE12A3E6
-AppVersion=0.8.98
-AppName=FlClash
-AppPublisher=chen08209
-AppPublisherURL=https://github.com/chen08209/FlClash
-AppSupportURL=https://github.com/chen08209/FlClash
-AppUpdatesURL=https://github.com/chen08209/FlClash
-DefaultDirName={autopf}\FlClash
-DisableProgramGroupPage=yes
-OutputDir=dist
-OutputBaseFilename=FlClash-windows-x64-setup
-Compression=lzma
-SolidCompression=yes
-SetupIconFile=windows\runner\resources\app_icon.ico
-WizardStyle=modern
-PrivilegesRequired=admin
-ArchitecturesAllowed=x64
-ArchitecturesInstallIn64BitMode=x64
+          [Setup]
+          AppId=728B3532-C74B-4870-9068-BE70FE12A3E6
+          AppVersion=0.8.98
+          AppName=FlClash
+          AppPublisher=chen08209
+          AppPublisherURL=https://github.com/chen08209/FlClash
+          AppSupportURL=https://github.com/chen08209/FlClash
+          AppUpdatesURL=https://github.com/chen08209/FlClash
+          DefaultDirName={autopf}\FlClash
+          DisableProgramGroupPage=yes
+          OutputDir=dist
+          OutputBaseFilename=FlClash-windows-x64-setup
+          Compression=lzma
+          SolidCompression=yes
+          SetupIconFile=windows\runner\resources\app_icon.ico
+          WizardStyle=modern
+          PrivilegesRequired=admin
+          ArchitecturesAllowed=x64
+          ArchitecturesInstallIn64BitMode=x64
 
-[Code]
-procedure KillProcesses;
-var
-  Processes: TArrayOfString;
-  i: Integer;
-  ResultCode: Integer;
-begin
-  Processes := ['FlClash.exe', 'FlClashCore.exe', 'FlClashHelperService.exe'];
-  for i := 0 to GetArrayLength(Processes)-1 do
-  begin
-    Exec('taskkill', '/f /im ' + Processes[i], '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  end;
-end;
+          [Code]
+          procedure KillProcesses;
+          var
+            Processes: TArrayOfString;
+            i: Integer;
+            ResultCode: Integer;
+          begin
+            Processes := ['FlClash.exe', 'FlClashCore.exe', 'FlClashHelperService.exe'];
+            for i := 0 to GetArrayLength(Processes)-1 do
+            begin
+              Exec('taskkill', '/f /im ' + Processes[i], '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+            end;
+          end;
 
-function InitializeSetup(): Boolean;
-begin
-  KillProcesses;
-  Result := True;
-end;
+          function InitializeSetup(): Boolean;
+          begin
+            KillProcesses;
+            Result := True;
+          end;
 
-[Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"
+          [Languages]
+          Name: "english"; MessagesFile: "compiler:Default.isl"
 
-[Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+          [Tasks]
+          Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
-[Files]
-Source: "build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+          [Files]
+          Source: "build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
-[Icons]
-Name: "{autoprograms}\FlClash"; Filename: "{app}\FlClash.exe"
-Name: "{autodesktop}\FlClash"; Filename: "{app}\FlClash.exe"; Tasks: desktopicon
+          [Icons]
+          Name: "{autoprograms}\FlClash"; Filename: "{app}\FlClash.exe"
+          Name: "{autodesktop}\FlClash"; Filename: "{app}\FlClash.exe"; Tasks: desktopicon
 
-[Run]
-Filename: "{app}\FlClash.exe"; Description: "{cm:LaunchProgram,FlClash}"; Flags: runascurrentuser nowait postinstall skipifsilent
-'@
+          [Run]
+          Filename: "{app}\FlClash.exe"; Description: "{cm:LaunchProgram,FlClash}"; Flags: runascurrentuser nowait postinstall skipifsilent
+          '@
           $iss | Set-Content -Path "build\windows\x64\runner\Release\FlClash-installer.iss" -Encoding UTF8
 
       - name: Build Windows installer
