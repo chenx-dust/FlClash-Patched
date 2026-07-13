@@ -11,19 +11,39 @@ import 'package:intl/intl.dart';
 
 typedef OnSelected = void Function(int index);
 
-class HomePage extends StatelessWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
-  void _handleToPage(PageLabel pageLabel) {
-    globalState.container
-        .read(currentPageLabelProvider.notifier)
-        .toPage(pageLabel);
+  @override
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage> {
+  final Map<PageLabel, GlobalKey<_HomeNavigationViewState>> _navigatorKeys = {};
+  bool _isSwitchingPage = false;
+
+  Future<void> _handleToPage(PageLabel pageLabel) async {
+    final currentPageLabel = ref.read(currentPageLabelProvider);
+    if (_isSwitchingPage || pageLabel == currentPageLabel) {
+      return;
+    }
+    _isSwitchingPage = true;
+    try {
+      final navigatorState = _navigatorKeys[currentPageLabel]?.currentState;
+      if (navigatorState != null && !await navigatorState.popToRoot()) {
+        return;
+      }
+      ref.read(currentPageLabelProvider.notifier).toPage(pageLabel);
+    } finally {
+      _isSwitchingPage = false;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return HomeBackScopeContainer(
       child: AppSidebarContainer(
+        onDestinationSelected: _handleToPage,
         child: Material(
           color: context.colorScheme.surface,
           child: Consumer(
@@ -87,19 +107,14 @@ class HomePage extends StatelessWidget {
                   navigationItems: navigationItems,
                   pageBuilder: (_, index) {
                     final navigationItem = navigationItems[index];
-                    final navigationView = navigationItem.builder(context);
-                    final view = KeepScope(
-                      keep: navigationItem.keep,
-                      child: isMobile
-                          ? navigationView
-                          : Navigator(
-                              pages: [MaterialPage(child: navigationView)],
-                              onDidRemovePage: (_) {},
-                              routeDirectionalTraversalEdgeBehavior:
-                                  TraversalEdgeBehavior.parentScope,
-                            ),
+                    return _HomeNavigationView(
+                      key: _navigatorKeys.putIfAbsent(
+                        navigationItem.label,
+                        GlobalKey<_HomeNavigationViewState>.new,
+                      ),
+                      navigationItem: navigationItem,
+                      isMobile: isMobile,
                     );
-                    return view;
                   },
                 );
               },
@@ -108,6 +123,127 @@ class HomePage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _HomeNavigationView extends StatefulWidget {
+  final NavigationItem navigationItem;
+  final bool isMobile;
+
+  const _HomeNavigationView({
+    super.key,
+    required this.navigationItem,
+    required this.isMobile,
+  });
+
+  @override
+  State<_HomeNavigationView> createState() => _HomeNavigationViewState();
+}
+
+class _HomeNavigationViewState extends State<_HomeNavigationView> {
+  final HomeNavigatorObserver _navigatorObserver = HomeNavigatorObserver();
+
+  Future<bool> popToRoot() => _navigatorObserver.popToRoot();
+
+  @override
+  Widget build(BuildContext context) {
+    final navigationView = widget.navigationItem.builder(context);
+    return KeepScope(
+      keep: widget.navigationItem.keep,
+      child: widget.isMobile
+          ? navigationView
+          : NotificationListener<CommonPopScopeAttemptNotification>(
+              onNotification: _navigatorObserver.onPopScopeAttempt,
+              child: Navigator(
+                observers: [_navigatorObserver],
+                pages: [MaterialPage(child: navigationView)],
+                onDidRemovePage: (_) {},
+                routeDirectionalTraversalEdgeBehavior:
+                    TraversalEdgeBehavior.parentScope,
+              ),
+            ),
+    );
+  }
+}
+
+class HomeNavigatorObserver extends NavigatorObserver {
+  NavigatorState? _trackedNavigator;
+  final List<Route<dynamic>> _routes = [];
+  List<Future<void>>? _pendingPopAttempts;
+
+  bool onPopScopeAttempt(CommonPopScopeAttemptNotification notification) {
+    _pendingPopAttempts?.add(notification.completion);
+    return false;
+  }
+
+  void _track(Route<dynamic> route) {
+    if (_trackedNavigator == route.navigator) {
+      return;
+    }
+    _trackedNavigator = route.navigator;
+    _routes.clear();
+  }
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    _track(route);
+    _routes.add(route);
+    super.didPush(route, previousRoute);
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    _routes.remove(route);
+    super.didPop(route, previousRoute);
+  }
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    _routes.remove(route);
+    super.didRemove(route, previousRoute);
+  }
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    if (oldRoute != null) {
+      final index = _routes.indexOf(oldRoute);
+      if (index != -1) {
+        if (newRoute == null) {
+          _routes.removeAt(index);
+        } else {
+          _track(newRoute);
+          _routes[index] = newRoute;
+        }
+      }
+    }
+    super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
+  }
+
+  Future<bool> popToRoot() async {
+    final currentNavigator = navigator;
+    if (currentNavigator == null) {
+      return true;
+    }
+    while (_routes.length > 1 && currentNavigator.canPop()) {
+      final route = _routes.last;
+      final popAttempts = <Future<void>>[];
+      _pendingPopAttempts = popAttempts;
+      try {
+        await currentNavigator.maybePop();
+      } finally {
+        _pendingPopAttempts = null;
+      }
+      if (_routes.contains(route)) {
+        if (popAttempts.isEmpty) {
+          return false;
+        }
+        await Future.wait(popAttempts);
+        if (_routes.contains(route)) {
+          return false;
+        }
+      }
+    }
+    return _routes.length <= 1;
   }
 }
 
@@ -214,8 +350,18 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
       controller: _pageController,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: itemCount,
+      findChildIndexCallback: (key) {
+        if (key is! ValueKey<PageLabel>) {
+          return null;
+        }
+        final index = widget.navigationItems.indexWhere(
+          (item) => item.label == key.value,
+        );
+        return index == -1 ? null : index;
+      },
       itemBuilder: (context, index) {
         return ExcludeFocus(
+          key: ValueKey(widget.navigationItems[index].label),
           excluding: pageIndex != -1 && index != pageIndex,
           child: widget.pageBuilder(context, index),
         );
