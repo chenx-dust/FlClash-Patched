@@ -885,6 +885,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "デバイスがアイドル状態の間、バッテリー消費を抑えるためコアを一時停止します",
     ),
     "suspended": MessageLookupByLibrary.simpleMessage("一時停止中..."),
+    "swipeToSwitchPage": MessageLookupByLibrary.simpleMessage("スワイプでページ切り替え"),
     "sync": MessageLookupByLibrary.simpleMessage("同期"),
     "system": MessageLookupByLibrary.simpleMessage("システム"),
     "systemApp": MessageLookupByLibrary.simpleMessage("システムアプリ"),

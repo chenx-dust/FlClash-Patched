@@ -767,6 +767,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "设备空闲时挂起核心以降低耗电",
     ),
     "suspended": MessageLookupByLibrary.simpleMessage("挂起中..."),
+    "swipeToSwitchPage": MessageLookupByLibrary.simpleMessage("滑动切页"),
     "sync": MessageLookupByLibrary.simpleMessage("同步"),
     "system": MessageLookupByLibrary.simpleMessage("系统"),
     "systemApp": MessageLookupByLibrary.simpleMessage("系统应用"),
