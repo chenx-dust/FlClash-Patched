@@ -959,6 +959,16 @@ class AppLocalizations {
     );
   }
 
+  /// `Swipe to Switch Pages`
+  String get swipeToSwitchPage {
+    return Intl.message(
+      'Swipe to Switch Pages',
+      name: 'swipeToSwitchPage',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.`
   String get desc {
     return Intl.message(

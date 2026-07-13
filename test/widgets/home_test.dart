@@ -1,8 +1,12 @@
 import 'dart:async';
 
+import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/pages/home.dart';
+import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/widgets/pop_scope.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -103,6 +107,99 @@ void main() {
     expect(find.text('root'), findsOneWidget);
     expect(find.text('saving details'), findsNothing);
   });
+
+  testWidgets('mobile swipe updates the page and navigation indicator', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_buildMobileHome());
+
+    final pageView = find.byType(PageView);
+    final pageWidth = tester.getSize(pageView).width;
+    await tester.drag(pageView, Offset(-pageWidth * 0.8, 0));
+    await tester.pumpAndSettle();
+
+    final context = tester.element(find.byType(HomePage));
+    final container = ProviderScope.containerOf(context);
+    final navigationBar = tester.widget<NavigationBar>(
+      find.byType(NavigationBar),
+    );
+
+    expect(container.read(currentPageLabelProvider), PageLabel.profiles);
+    expect(navigationBar.selectedIndex, 1);
+    expect(find.text('page-profiles'), findsOneWidget);
+  });
+
+  testWidgets('mobile navigation animation ignores intermediate pages', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_buildMobileHome());
+
+    await tester.tap(find.text(PageLabel.tools.name));
+    await tester.pumpAndSettle();
+
+    final context = tester.element(find.byType(HomePage));
+    final container = ProviderScope.containerOf(context);
+    final navigationBar = tester.widget<NavigationBar>(
+      find.byType(NavigationBar),
+    );
+
+    expect(container.read(currentPageLabelProvider), PageLabel.tools);
+    expect(navigationBar.selectedIndex, 2);
+    expect(find.text('page-tools'), findsOneWidget);
+  });
+
+  testWidgets('mobile swipe can be disabled in app settings', (tester) async {
+    await tester.pumpWidget(_buildMobileHome());
+
+    final context = tester.element(find.byType(HomePage));
+    final container = ProviderScope.containerOf(context);
+    container
+        .read(appSettingProvider.notifier)
+        .update((state) => state.copyWith(isSwipeToPage: false));
+    await tester.pump();
+
+    final pageView = find.byType(PageView);
+    final pageWidth = tester.getSize(pageView).width;
+    await tester.drag(pageView, Offset(-pageWidth * 0.8, 0));
+    await tester.pumpAndSettle();
+
+    final navigationBar = tester.widget<NavigationBar>(
+      find.byType(NavigationBar),
+    );
+    expect(container.read(currentPageLabelProvider), PageLabel.dashboard);
+    expect(navigationBar.selectedIndex, 0);
+    expect(find.text('page-dashboard'), findsOneWidget);
+  });
+}
+
+Widget _buildMobileHome() {
+  final navigationItems = [
+    _navigationItem(PageLabel.dashboard),
+    _navigationItem(PageLabel.profiles),
+    _navigationItem(PageLabel.tools),
+  ];
+  return ProviderScope(
+    overrides: [
+      viewSizeProvider.overrideWithBuild((_, _) => const Size(400, 800)),
+      currentNavigationItemsStateProvider.overrideWith(
+        (_) => NavigationItemsState(value: navigationItems),
+      ),
+    ],
+    child: const MaterialApp(home: HomePage()),
+  );
+}
+
+NavigationItem _navigationItem(PageLabel label) {
+  return NavigationItem(
+    icon: Icon(switch (label) {
+      PageLabel.dashboard => Icons.home,
+      PageLabel.profiles => Icons.folder,
+      PageLabel.tools => Icons.construction,
+      _ => Icons.circle,
+    }),
+    label: label,
+    builder: (_) => Center(child: Text('page-${label.name}')),
+  );
 }
 
 class _TestApp extends StatelessWidget {
