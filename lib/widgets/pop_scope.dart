@@ -5,6 +5,12 @@ import 'package:fl_clash/state.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+class CommonPopScopeAttemptNotification extends Notification {
+  final Future<void> completion;
+
+  const CommonPopScopeAttemptNotification(this.completion);
+}
+
 class CommonPopScope extends StatelessWidget {
   final Widget child;
   final bool? canPop;
@@ -19,27 +25,30 @@ class CommonPopScope extends StatelessWidget {
     this.onPopSuccess,
   });
 
+  Future<void> _handlePop(BuildContext context) async {
+    final res = await onPop!(context);
+    if (!context.mounted || !res) {
+      return;
+    }
+    Navigator.of(context).pop();
+    if (onPopSuccess != null) {
+      await onPopSuccess!();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: canPop ?? onPop == null,
       onPopInvokedWithResult: onPop == null
           ? null
-          : (didPop, _) async {
+          : (didPop, _) {
               if (didPop) {
                 return;
               }
-              final res = await onPop!(context);
-              if (!context.mounted) {
-                return;
-              }
-              if (!res) {
-                return;
-              }
-              Navigator.of(context).pop();
-              if (onPopSuccess != null) {
-                await onPopSuccess!();
-              }
+              CommonPopScopeAttemptNotification(
+                _handlePop(context),
+              ).dispatch(context);
             },
       child: child,
     );
