@@ -6,7 +6,7 @@ on:
       - 'v*'
 env:
   IS_STABLE: ${{ !contains(github.ref, 'pre') }}
-  FLUTTER_VERSION: '3.44.4'
+  FLUTTER_VERSION: '3.44.6'
 
 jobs:
   test:
