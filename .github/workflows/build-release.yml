@@ -1,0 +1,164 @@
+name: Build Release Artifacts
+
+on:
+  push:
+    branches:
+      - feature/hide-timeout-proxies
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to create or update
+        required: true
+        default: hide-timeout-proxies
+        type: string
+      create_release:
+        description: Create GitHub release and upload assets
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  android:
+    name: Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.7'
+          channel: stable
+          cache: true
+
+      - name: Configure build env
+        run: |
+          echo '{"APP_ENV":"stable","CORE_SHA256":""}' > env.json
+
+      - name: Build Android APKs
+        run: flutter build apk --release --split-per-abi --dart-define-from-file env.json
+
+      - name: Upload Android APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apks
+          path: build/app/outputs/flutter-apk/*-release.apk
+
+      - name: Upload APKs to release
+        if: ${{ inputs.create_release }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          name: FlClash ${{ inputs.tag }}
+          files: build/app/outputs/flutter-apk/*-release.apk
+
+  windows:
+    name: Windows Installer
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.7'
+          channel: stable
+          cache: true
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.x'
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y --no-progress
+
+      - name: Build Windows app
+        shell: pwsh
+        run: |
+          dart run setup.dart windows --targets zip --env stable
+
+      - name: Create Inno installer script
+        shell: pwsh
+        run: |
+          $iss = @'
+[Setup]
+AppId=728B3532-C74B-4870-9068-BE70FE12A3E6
+AppVersion=0.8.98
+AppName=FlClash
+AppPublisher=chen08209
+AppPublisherURL=https://github.com/chen08209/FlClash
+AppSupportURL=https://github.com/chen08209/FlClash
+AppUpdatesURL=https://github.com/chen08209/FlClash
+DefaultDirName={autopf}\FlClash
+DisableProgramGroupPage=yes
+OutputDir=dist
+OutputBaseFilename=FlClash-windows-x64-setup
+Compression=lzma
+SolidCompression=yes
+SetupIconFile=windows\runner\resources\app_icon.ico
+WizardStyle=modern
+PrivilegesRequired=admin
+ArchitecturesAllowed=x64
+ArchitecturesInstallIn64BitMode=x64
+
+[Code]
+procedure KillProcesses;
+var
+  Processes: TArrayOfString;
+  i: Integer;
+  ResultCode: Integer;
+begin
+  Processes := ['FlClash.exe', 'FlClashCore.exe', 'FlClashHelperService.exe'];
+  for i := 0 to GetArrayLength(Processes)-1 do
+  begin
+    Exec('taskkill', '/f /im ' + Processes[i], '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  end;
+end;
+
+function InitializeSetup(): Boolean;
+begin
+  KillProcesses;
+  Result := True;
+end;
+
+[Languages]
+Name: "english"; MessagesFile: "compiler:Default.isl"
+
+[Tasks]
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+
+[Files]
+Source: "build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+
+[Icons]
+Name: "{autoprograms}\FlClash"; Filename: "{app}\FlClash.exe"
+Name: "{autodesktop}\FlClash"; Filename: "{app}\FlClash.exe"; Tasks: desktopicon
+
+[Run]
+Filename: "{app}\FlClash.exe"; Description: "{cm:LaunchProgram,FlClash}"; Flags: runascurrentuser nowait postinstall skipifsilent
+'@
+          $iss | Set-Content -Path "build\windows\x64\runner\Release\FlClash-installer.iss" -Encoding UTF8
+
+      - name: Build Windows installer
+        shell: pwsh
+        run: iscc "build\windows\x64\runner\Release\FlClash-installer.iss"
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-artifacts
+          path: |
+            dist/*.zip
+            dist/FlClash-windows-x64-setup.exe
+
+      - name: Upload Windows artifacts to release
+        if: ${{ inputs.create_release }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          name: FlClash ${{ inputs.tag }}
+          files: |
+            dist/*.zip
+            dist/FlClash-windows-x64-setup.exe
