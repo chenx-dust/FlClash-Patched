@@ -1,8 +1,15 @@
 import Flutter
-import UIKit
 import Shared
+import UIKit
 
 class SceneDelegate: FlutterSceneDelegate {
+  @available(iOS 26.0, *)
+  override func preferredWindowingControlStyle(
+    for windowScene: UIWindowScene
+  ) -> UIWindowScene.WindowingControlStyle {
+    return .minimal
+  }
+
   override func scene(
     _ scene: UIScene,
     willConnectTo session: UISceneSession,
