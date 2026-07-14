@@ -380,6 +380,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "iconStyle": MessageLookupByLibrary.simpleMessage("图标样式"),
     "iconUrl": MessageLookupByLibrary.simpleMessage("图标链接"),
     "ignoreBatteryOptimization": MessageLookupByLibrary.simpleMessage("忽略电池优化"),
+    "ignoreCertificateErrors": MessageLookupByLibrary.simpleMessage("忽略证书验证"),
+    "ignoreCertificateErrorsDesc": MessageLookupByLibrary.simpleMessage(
+      "允许使用无效证书的 HTTPS 连接，这会降低安全性",
+    ),
     "import": MessageLookupByLibrary.simpleMessage("导入"),
     "importFile": MessageLookupByLibrary.simpleMessage("通过文件导入"),
     "importFromURL": MessageLookupByLibrary.simpleMessage("从 URL 导入"),

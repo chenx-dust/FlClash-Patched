@@ -23,6 +23,8 @@ _AppSettingProps _$AppSettingPropsFromJson(Map<String, dynamic> json) =>
       isAnimateToPage: json['isAnimateToPage'] as bool? ?? true,
       isSwipeToPage: json['isSwipeToPage'] as bool? ?? true,
       autoCheckUpdate: json['autoCheckUpdate'] as bool? ?? true,
+      ignoreCertificateErrors:
+          json['ignoreCertificateErrors'] as bool? ?? false,
       showLabel: json['showLabel'] as bool? ?? false,
       disclaimerAccepted: json['disclaimerAccepted'] as bool? ?? false,
       minimizeOnExit: json['minimizeOnExit'] as bool? ?? true,
@@ -64,6 +66,7 @@ Map<String, dynamic> _$AppSettingPropsToJson(_AppSettingProps instance) =>
       'isAnimateToPage': instance.isAnimateToPage,
       'isSwipeToPage': instance.isSwipeToPage,
       'autoCheckUpdate': instance.autoCheckUpdate,
+      'ignoreCertificateErrors': instance.ignoreCertificateErrors,
       'showLabel': instance.showLabel,
       'disclaimerAccepted': instance.disclaimerAccepted,
       'minimizeOnExit': instance.minimizeOnExit,
