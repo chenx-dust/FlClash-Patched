@@ -79,6 +79,7 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default(true) bool isAnimateToPage,
     @Default(true) bool isSwipeToPage,
     @Default(true) bool autoCheckUpdate,
+    @Default(false) bool ignoreCertificateErrors,
     @Default(false) bool showLabel,
     @Default(false) bool disclaimerAccepted,
     @Default(true) bool minimizeOnExit,
