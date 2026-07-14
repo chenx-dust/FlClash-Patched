@@ -611,5 +611,7 @@
   "enforceRoutes": "Enforce Routes",
   "enforceRoutesDesc": "Ensure traffic is routed through the tunnel even when more specific routes exist",
   "excludeDeviceCommunication": "Exclude Device Communication",
-  "excludeDeviceCommunicationDesc": "Allow device-to-device traffic such as AirDrop and AirPlay to bypass the tunnel"
+  "excludeDeviceCommunicationDesc": "Allow device-to-device traffic such as AirDrop and AirPlay to bypass the tunnel",
+  "hideUnavailable": "Hide Timeout",
+  "showUnavailable": "Show Timeout"
 }
