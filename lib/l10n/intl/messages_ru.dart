@@ -527,6 +527,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "header": MessageLookupByLibrary.simpleMessage("Заголовок"),
     "hideFromList": MessageLookupByLibrary.simpleMessage("Скрыть из списка"),
+    "hideUnavailable": MessageLookupByLibrary.simpleMessage("Скрыть таймаут"),
     "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage(
       "Автозапуск с высоким приоритетом",
     ),
@@ -1103,6 +1104,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectedCountTitle": m23,
     "settings": MessageLookupByLibrary.simpleMessage("Настройки"),
     "show": MessageLookupByLibrary.simpleMessage("Показать"),
+    "showUnavailable": MessageLookupByLibrary.simpleMessage("Показать таймаут"),
     "shrink": MessageLookupByLibrary.simpleMessage("Сжать"),
     "silentLaunch": MessageLookupByLibrary.simpleMessage("Тихий запуск"),
     "silentLaunchDesc": MessageLookupByLibrary.simpleMessage(
