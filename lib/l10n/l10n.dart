@@ -5033,6 +5033,26 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `Hide Timeout`
+  String get hideUnavailable {
+    return Intl.message(
+      'Hide Timeout',
+      name: 'hideUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Show Timeout`
+  String get showUnavailable {
+    return Intl.message(
+      'Show Timeout',
+      name: 'showUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {
