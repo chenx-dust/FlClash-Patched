@@ -302,6 +302,30 @@ class AutoCheckUpdateItem extends ConsumerWidget {
   }
 }
 
+class IgnoreCertificateErrorsItem extends ConsumerWidget {
+  const IgnoreCertificateErrorsItem({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appLocalizations = context.appLocalizations;
+    final ignoreCertificateErrors = ref.watch(
+      appSettingProvider.select((state) => state.ignoreCertificateErrors),
+    );
+    return ListItem.toggle(
+      title: Text(appLocalizations.ignoreCertificateErrors),
+      subtitle: Text(appLocalizations.ignoreCertificateErrorsDesc),
+      value: ignoreCertificateErrors,
+      onChanged: (bool value) {
+        ref
+            .read(appSettingProvider.notifier)
+            .update(
+              (state) => state.copyWith(ignoreCertificateErrors: value),
+            );
+      },
+    );
+  }
+}
+
 class ForegroundTickerIntervalItem extends ConsumerWidget {
   const ForegroundTickerIntervalItem({super.key});
 
@@ -514,6 +538,7 @@ class ApplicationSettingView extends ConsumerWidget {
       const CloseConnectionsItem(),
       const UsageItem(),
       if (system.isAndroid) const NetworkSpeedNotificationItem(),
+      const IgnoreCertificateErrorsItem(),
       const AutoCheckUpdateItem(),
     ];
     return BaseScaffold(

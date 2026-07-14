@@ -57,6 +57,8 @@
   "logcatDesc": "Отключение скроет запись логов",
   "autoCheckUpdate": "Автопроверка обновлений",
   "autoCheckUpdateDesc": "Автоматически проверять обновления при запуске приложения",
+  "ignoreCertificateErrors": "Игнорировать проверку сертификатов",
+  "ignoreCertificateErrorsDesc": "Разрешить HTTPS-соединения с недействительными сертификатами. Это снижает безопасность",
   "uiUpdateInterval": "Интервал обновления информации UI",
   "uiUpdateIntervalDesc": "{interval} · бездействие {idleInterval}",
   "uiUpdateIdleWhenUnfocused": "Бездействие без фокуса",
