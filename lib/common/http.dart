@@ -6,6 +6,12 @@ import 'package:fl_clash/state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class FlClashHttpOverrides extends HttpOverrides {
+  static bool handleBadCertificate(X509Certificate _, String _, int _) {
+    return globalState.container
+        .read(appSettingProvider)
+        .ignoreCertificateErrors;
+  }
+
   static String handleFindProxy(Uri url) {
     if ([localhost].contains(url.host)) {
       return 'DIRECT';
@@ -24,7 +30,7 @@ class FlClashHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     final client = super.createHttpClient(context);
-    client.badCertificateCallback = (_, _, _) => true;
+    client.badCertificateCallback = handleBadCertificate;
     client.findProxy = handleFindProxy;
     return client;
   }
