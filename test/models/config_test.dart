@@ -266,7 +266,8 @@ void main() {
       expect(config.mixedPort, defaultMixedPort);
       expect(config.allowLan, false);
       expect(config.mode, Mode.rule);
-      expect(config.externalController, ExternalControllerStatus.close);
+      expect(config.externalController, '');
+      expect(config.secret, '');
       expect(config.geodataLoader, GeodataLoader.memconservative);
       expect(config.geositeMatcher, GeositeMatcher.succinct);
     });
@@ -277,7 +278,8 @@ void main() {
         allowLan: true,
         mode: Mode.rule,
         logLevel: LogLevel.debug,
-        externalController: ExternalControllerStatus.open,
+        externalController: '0.0.0.0:9091',
+        secret: 'test-secret',
         geodataLoader: GeodataLoader.memconservative,
         geositeMatcher: GeositeMatcher.mph,
       );
@@ -291,7 +293,8 @@ void main() {
       expect(restored.allowLan, true);
       expect(restored.mode, Mode.rule);
       expect(restored.logLevel, LogLevel.debug);
-      expect(restored.externalController, ExternalControllerStatus.open);
+      expect(restored.externalController, '0.0.0.0:9091');
+      expect(restored.secret, 'test-secret');
       expect(restored.geodataLoader, GeodataLoader.memconservative);
       expect(restored.geositeMatcher, GeositeMatcher.mph);
     });

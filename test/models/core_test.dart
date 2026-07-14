@@ -38,7 +38,8 @@ void main() {
         'log-level': 'info',
         'ipv6': false,
         'tcp-concurrent': false,
-        'external-controller': '',
+        'external-controller': '0.0.0.0:9091',
+        'secret': 'test-secret',
         'unified-delay': false,
       };
       final params = UpdateParams.fromJson(json);
@@ -46,6 +47,8 @@ void main() {
       expect(params.allowLan, true);
       expect(params.mode, Mode.rule);
       expect(params.logLevel, LogLevel.info);
+      expect(params.externalController, '0.0.0.0:9091');
+      expect(params.secret, 'test-secret');
     });
   });
 
