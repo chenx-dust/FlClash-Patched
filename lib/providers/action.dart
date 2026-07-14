@@ -990,6 +990,10 @@ class GeoResourceAction extends _$GeoResourceAction {
   @override
   void build() {}
 
+  Future<void> updateAllGeoResources() async {
+    await Future.wait(GeoResource.values.map(updateGeoResource));
+  }
+
   Future<void> updateGeoResource(GeoResource geoResource) async {
     await coreController.updateGeoData(geoResource.name);
   }

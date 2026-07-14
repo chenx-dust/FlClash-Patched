@@ -21,6 +21,30 @@ class ResourcesView extends StatelessWidget {
     final appLocalizations = context.appLocalizations;
     return CommonScaffold(
       title: context.appLocalizations.resources,
+      actions: [
+        Consumer(
+          builder: (_, ref, _) {
+            final isUpdating = [
+              for (final geoResource in geoResources)
+                ref.watch(isUpdatingProvider(geoResource.updatingKey)),
+            ].any((value) => value);
+            return IconButton(
+              tooltip: appLocalizations.sync,
+              onPressed: isUpdating
+                  ? null
+                  : () async {
+                      await globalState.safeRun<void>(
+                        ref
+                            .read(geoResourceActionProvider.notifier)
+                            .updateAllGeoResources,
+                        silence: false,
+                      );
+                    },
+              icon: const Icon(Icons.sync),
+            );
+          },
+        ),
+      ],
       body: Consumer(
         builder: (_, ref, _) {
           final vm2 = ref.watch(
@@ -170,6 +194,29 @@ class _GeoResourceListItemState extends ConsumerState<_GeoResourceListItem> {
     );
     return ListItem(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      tileTitleAlignment: ListTileTitleAlignment.top,
+      onTap: url == null
+          ? null
+          : () {
+              _updateUrl(url);
+            },
+      trailing: SizedBox(
+        height: 40,
+        width: 40,
+        child: FadeThroughBox(
+          child: isUpdating
+              ? const Padding(
+                  key: ValueKey('loading'),
+                  padding: EdgeInsets.all(8),
+                  child: CircularProgressIndicator(),
+                )
+              : IconButton(
+                  tooltip: appLocalizations.sync,
+                  onPressed: _handleUpdateGeoDataItem,
+                  icon: const Icon(Icons.sync),
+                ),
+        ),
+      ),
       title: Text(widget.type.name),
       subtitle: url == null
           ? const SizedBox()
@@ -194,45 +241,6 @@ class _GeoResourceListItemState extends ConsumerState<_GeoResourceListItem> {
                 ),
                 const SizedBox(height: 4),
                 Text(url, style: context.textTheme.bodyMedium?.toLight),
-                const SizedBox(height: 12),
-                Wrap(
-                  runSpacing: 6,
-                  spacing: 12,
-                  runAlignment: WrapAlignment.center,
-                  children: [
-                    CommonChip(
-                      avatar: const Icon(Icons.edit),
-                      label: appLocalizations.edit,
-                      onPressed: () {
-                        _updateUrl(url);
-                      },
-                    ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          child: isUpdating
-                              ? const SizedBox(
-                                  height: 30,
-                                  width: 30,
-                                  child: Padding(
-                                    padding: EdgeInsets.all(2),
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                )
-                              : CommonChip(
-                                  avatar: const Icon(Icons.sync),
-                                  label: appLocalizations.sync,
-                                  onPressed: () {
-                                    _handleUpdateGeoDataItem();
-                                  },
-                                ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
               ],
             ),
     );
