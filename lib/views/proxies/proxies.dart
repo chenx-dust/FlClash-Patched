@@ -28,6 +28,9 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
 
   List<Widget> _buildActions(BuildContext context) {
     final appLocalizations = context.appLocalizations;
+    final hideUnavailable = ref
+        .watch(proxiesStyleSettingProvider)
+        .hideUnavailable;
     return [
       if (_isTab)
         IconButton(
@@ -64,6 +67,19 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
                     );
                   },
                 );
+              },
+            ),
+            PopupMenuItemData(
+              icon: hideUnavailable
+                  ? Icons.filter_alt_off_outlined
+                  : Icons.filter_alt_outlined,
+              label: hideUnavailable
+                  ? appLocalizations.showUnavailable
+                  : appLocalizations.hideUnavailable,
+              onPressed: () {
+                final current = ref.read(proxiesStyleSettingProvider);
+                ref.read(proxiesStyleSettingProvider.notifier).value = current
+                    .copyWith(hideUnavailable: !current.hideUnavailable);
               },
             ),
             if (_hasProviders)

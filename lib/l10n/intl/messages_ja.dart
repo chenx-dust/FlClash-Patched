@@ -409,6 +409,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hasCacheChange": MessageLookupByLibrary.simpleMessage("変更をキャッシュしますか？"),
     "header": MessageLookupByLibrary.simpleMessage("ヘッダー"),
     "hideFromList": MessageLookupByLibrary.simpleMessage("リストから隠す"),
+    "hideUnavailable": MessageLookupByLibrary.simpleMessage("タイムアウト非表示"),
     "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage("高優先度自動起動"),
     "highPriorityAutoLaunchDesc": MessageLookupByLibrary.simpleMessage(
       "Windows タスクスケジューラでより早く起動します",
@@ -857,6 +858,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectedCountTitle": m23,
     "settings": MessageLookupByLibrary.simpleMessage("設定"),
     "show": MessageLookupByLibrary.simpleMessage("表示"),
+    "showUnavailable": MessageLookupByLibrary.simpleMessage("タイムアウト表示"),
     "shrink": MessageLookupByLibrary.simpleMessage("縮小"),
     "silentLaunch": MessageLookupByLibrary.simpleMessage("バックグラウンド起動"),
     "silentLaunchDesc": MessageLookupByLibrary.simpleMessage("バックグラウンドで起動"),
