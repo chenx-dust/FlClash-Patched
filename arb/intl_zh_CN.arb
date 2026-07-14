@@ -57,6 +57,8 @@
   "logcatDesc": "禁用将会隐藏日志入口",
   "autoCheckUpdate": "自动检查更新",
   "autoCheckUpdateDesc": "应用启动时自动检查更新",
+  "ignoreCertificateErrors": "忽略证书验证",
+  "ignoreCertificateErrorsDesc": "允许使用无效证书的 HTTPS 连接，这会降低安全性",
   "uiUpdateInterval": "UI 信息更新周期",
   "uiUpdateIntervalDesc": "{interval} · 怠速 {idleInterval}",
   "uiUpdateIdleWhenUnfocused": "失焦时怠速",

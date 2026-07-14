@@ -432,6 +432,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "ignoreBatteryOptimization": MessageLookupByLibrary.simpleMessage(
       "バッテリー最適化を無視",
     ),
+    "ignoreCertificateErrors": MessageLookupByLibrary.simpleMessage(
+      "証明書の検証を無視",
+    ),
+    "ignoreCertificateErrorsDesc": MessageLookupByLibrary.simpleMessage(
+      "無効な証明書を使用する HTTPS 接続を許可します。セキュリティが低下します",
+    ),
     "import": MessageLookupByLibrary.simpleMessage("インポート"),
     "importFile": MessageLookupByLibrary.simpleMessage("ファイルからインポート"),
     "importFromURL": MessageLookupByLibrary.simpleMessage("URL からインポート"),

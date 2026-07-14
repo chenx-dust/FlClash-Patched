@@ -57,6 +57,8 @@
   "logcatDesc": "Disabling will hide the log entry",
   "autoCheckUpdate": "Auto Check Updates",
   "autoCheckUpdateDesc": "Auto check for updates when the app starts",
+  "ignoreCertificateErrors": "Ignore Certificate Validation",
+  "ignoreCertificateErrorsDesc": "Allow HTTPS connections with invalid certificates. This reduces security",
   "uiUpdateInterval": "UI Info Update Interval",
   "uiUpdateIntervalDesc": "{interval} · Idle {idleInterval}",
   "uiUpdateIdleWhenUnfocused": "Idle When Unfocused",

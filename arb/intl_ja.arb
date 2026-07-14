@@ -57,6 +57,8 @@
   "logcatDesc": "無効化するとログエントリを非表示",
   "autoCheckUpdate": "自動更新チェック",
   "autoCheckUpdateDesc": "起動時に更新を自動チェック",
+  "ignoreCertificateErrors": "証明書の検証を無視",
+  "ignoreCertificateErrorsDesc": "無効な証明書を使用する HTTPS 接続を許可します。セキュリティが低下します",
   "uiUpdateInterval": "UI 情報の更新間隔",
   "uiUpdateIntervalDesc": "{interval} · アイドル {idleInterval}",
   "uiUpdateIdleWhenUnfocused": "フォーカス喪失時にアイドル",
