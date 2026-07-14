@@ -32,11 +32,8 @@ abstract class UpdateParams with _$UpdateParams {
     required LogLevel logLevel,
     required bool ipv6,
     @JsonKey(name: 'tcp-concurrent') required bool tcpConcurrent,
-    @JsonKey(
-      name: 'external-controller',
-      unknownEnumValue: ExternalControllerStatus.close,
-    )
-    required ExternalControllerStatus externalController,
+    @JsonKey(name: 'external-controller') required String externalController,
+    required String secret,
     @JsonKey(name: 'unified-delay') required bool unifiedDelay,
     @Default(false) @JsonKey(name: 'geo-auto-update') bool geoAutoUpdate,
     @Default(24) @JsonKey(name: 'geo-update-interval') int geoUpdateInterval,

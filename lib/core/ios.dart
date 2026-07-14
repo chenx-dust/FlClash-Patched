@@ -94,7 +94,7 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
       data: json.encode(
         updateParams.copyWith(
           externalController: _isNetworkExtensionCoreActive
-              ? ExternalControllerStatus.close
+              ? ''
               : updateParams.externalController,
         ),
       ),

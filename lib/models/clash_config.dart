@@ -585,12 +585,10 @@ abstract class PatchClashConfig with _$PatchClashConfig {
     @JsonKey(name: 'geosite-matcher', unknownEnumValue: GeositeMatcher.succinct)
     GeositeMatcher geositeMatcher,
     @JsonKey(name: 'global-ua') String? globalUa,
-    @Default(ExternalControllerStatus.close)
-    @JsonKey(
-      name: 'external-controller',
-      unknownEnumValue: ExternalControllerStatus.close,
-    )
-    ExternalControllerStatus externalController,
+    @Default('')
+    @JsonKey(name: 'external-controller')
+    String externalController,
+    @Default('') String secret,
     @Default({}) Map<String, String> hosts,
     @Default(false) @JsonKey(name: 'geo-auto-update') bool geoAutoUpdate,
     @Default(24) @JsonKey(name: 'geo-update-interval') int geoUpdateInterval,
