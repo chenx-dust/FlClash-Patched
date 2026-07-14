@@ -162,17 +162,6 @@ TrayState trayState(Ref ref) {
 }
 
 @riverpod
-TrayTitleState trayTitleState(Ref ref) {
-  final showTrayTitle = ref.watch(
-    appSettingProvider.select((state) => state.showTrayTitle),
-  );
-  final traffic = ref.watch(
-    trafficsProvider.select((state) => state.list.safeLast(const Traffic())),
-  );
-  return TrayTitleState(showTrayTitle: showTrayTitle, traffic: traffic);
-}
-
-@riverpod
 VpnState vpnState(Ref ref) {
   final vpnProps = ref.watch(vpnSettingProvider);
   final stack = ref.watch(

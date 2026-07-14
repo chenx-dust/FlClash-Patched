@@ -271,47 +271,6 @@ final class TrayStateProvider
 
 String _$trayStateHash() => r'06c1e3845c1c0e2bc6212f2a7a97985f4143c3a2';
 
-@ProviderFor(trayTitleState)
-final trayTitleStateProvider = TrayTitleStateProvider._();
-
-final class TrayTitleStateProvider
-    extends $FunctionalProvider<TrayTitleState, TrayTitleState, TrayTitleState>
-    with $Provider<TrayTitleState> {
-  TrayTitleStateProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'trayTitleStateProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$trayTitleStateHash();
-
-  @$internal
-  @override
-  $ProviderElement<TrayTitleState> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  TrayTitleState create(Ref ref) {
-    return trayTitleState(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(TrayTitleState value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<TrayTitleState>(value),
-    );
-  }
-}
-
-String _$trayTitleStateHash() => r'aacf3779c879f7f1144484a80043679020bf8424';
-
 @ProviderFor(vpnState)
 final vpnStateProvider = VpnStateProvider._();
 

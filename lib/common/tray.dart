@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
@@ -10,11 +12,15 @@ import 'package:tray_manager/tray_manager.dart';
 
 import 'app_localizations.dart';
 import 'constant.dart';
+import 'print.dart';
 import 'system.dart';
 import 'window.dart';
 
 class Tray {
   static Tray? _instance;
+
+  Timer? _trafficTimer;
+  bool _isUpdatingTraffic = false;
 
   Tray._internal();
 
@@ -28,6 +34,8 @@ class Tray {
   }
 
   Future<void> destroy() async {
+    _trafficTimer?.cancel();
+    _trafficTimer = null;
     await trayManager.destroy();
   }
 
@@ -72,10 +80,7 @@ class Tray {
     }
   }
 
-  Future<void> update({
-    required TrayState trayState,
-    required Traffic traffic,
-  }) async {
+  Future<void> update({required TrayState trayState}) async {
     if (system.isMobile) {
       return;
     }
@@ -214,20 +219,51 @@ class Tray {
         monochrome: trayState.monochromeTrayIcon,
       );
     }
-    updateTrayTitle(showTrayTitle: trayState.showTrayTitle, traffic: traffic);
+    await updateTrayTitle(
+      showTrayTitle: trayState.showTrayTitle,
+      isStart: trayState.isStart,
+    );
   }
 
   Future<void> updateTrayTitle({
     required bool showTrayTitle,
-    required Traffic traffic,
+    required bool isStart,
   }) async {
     if (!system.isMacOS) {
       return;
     }
-    if (!showTrayTitle) {
+    if (!showTrayTitle || !isStart) {
+      _trafficTimer?.cancel();
+      _trafficTimer = null;
       await trayManager.setTitle('');
-    } else {
-      await trayManager.setTitle(traffic.trayTitle);
+      return;
+    }
+    _trafficTimer ??= Timer.periodic(const Duration(seconds: 1), (_) {
+      unawaited(_updateTraffic());
+    });
+    await _updateTraffic();
+  }
+
+  Future<void> _updateTraffic() async {
+    if (_trafficTimer == null || _isUpdatingTraffic) {
+      return;
+    }
+    _isUpdatingTraffic = true;
+    try {
+      final onlyStatisticsProxy = globalState.container
+          .read(appSettingProvider)
+          .onlyStatisticsProxy;
+      final traffic = await coreController.getTraffic(onlyStatisticsProxy);
+      if (_trafficTimer != null) {
+        await trayManager.setTitle(traffic.trayTitle);
+      }
+    } catch (e) {
+      commonPrint.log(
+        'update tray traffic error: $e',
+        logLevel: LogLevel.error,
+      );
+    } finally {
+      _isUpdatingTraffic = false;
     }
   }
 
