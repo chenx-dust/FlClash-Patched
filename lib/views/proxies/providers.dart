@@ -254,7 +254,6 @@ class ProviderItem extends StatelessWidget {
                   SubscriptionInfoView(
                     subscriptionInfo: provider.subscriptionInfo,
                   ),
-                const SizedBox(height: 4),
               ],
             ),
           ),
