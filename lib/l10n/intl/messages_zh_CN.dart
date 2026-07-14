@@ -361,6 +361,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hasCacheChange": MessageLookupByLibrary.simpleMessage("是否缓存修改"),
     "header": MessageLookupByLibrary.simpleMessage("标题"),
     "hideFromList": MessageLookupByLibrary.simpleMessage("从列表中隐藏"),
+    "hideUnavailable": MessageLookupByLibrary.simpleMessage("隐藏超时"),
     "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage("高优先级自启动"),
     "highPriorityAutoLaunchDesc": MessageLookupByLibrary.simpleMessage(
       "使用 Windows 计划任务更早启动",
@@ -737,6 +738,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectedCountTitle": m23,
     "settings": MessageLookupByLibrary.simpleMessage("设置"),
     "show": MessageLookupByLibrary.simpleMessage("显示"),
+    "showUnavailable": MessageLookupByLibrary.simpleMessage("显示超时"),
     "shrink": MessageLookupByLibrary.simpleMessage("紧凑"),
     "silentLaunch": MessageLookupByLibrary.simpleMessage("静默启动"),
     "silentLaunchDesc": MessageLookupByLibrary.simpleMessage("后台启动"),

@@ -611,5 +611,7 @@
   "enforceRoutes": "Принудительная маршрутизация",
   "enforceRoutesDesc": "Направлять трафик через туннель, даже если существуют более конкретные маршруты",
   "excludeDeviceCommunication": "Исключить межустройственную связь",
-  "excludeDeviceCommunicationDesc": "Разрешить трафику AirDrop, AirPlay и другой межустройственной связи обходить туннель"
+  "excludeDeviceCommunicationDesc": "Разрешить трафику AirDrop, AirPlay и другой межустройственной связи обходить туннель",
+  "hideUnavailable": "Скрыть таймаут",
+  "showUnavailable": "Показать таймаут"
 }
