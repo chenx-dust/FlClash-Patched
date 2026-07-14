@@ -36,7 +36,10 @@ class Tray {
     required bool tunEnable,
     bool monochrome = false,
   }) {
-    if (monochrome && !system.isWindows) {
+    if (system.isMacOS) {
+      return 'assets/images/icon/status_1.$trayIconSuffix';
+    }
+    if (monochrome && system.isLinux) {
       return 'assets/images/icon/flclash-symbolic.svg';
     }
     if (!isStart) {
