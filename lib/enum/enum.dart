@@ -193,17 +193,6 @@ enum DnsMode {
   hosts,
 }
 
-enum ExternalControllerStatus {
-  @JsonValue('')
-  close(''),
-  @JsonValue('127.0.0.1:9090')
-  open('127.0.0.1:9090');
-
-  final String value;
-
-  const ExternalControllerStatus(this.value);
-}
-
 enum KeyboardModifier {
   alt([PhysicalKeyboardKey.altLeft, PhysicalKeyboardKey.altRight]),
   capsLock([PhysicalKeyboardKey.capsLock]),
