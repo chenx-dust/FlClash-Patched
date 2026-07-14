@@ -494,6 +494,26 @@ class AppLocalizations {
     );
   }
 
+  /// `Ignore Certificate Validation`
+  String get ignoreCertificateErrors {
+    return Intl.message(
+      'Ignore Certificate Validation',
+      name: 'ignoreCertificateErrors',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow HTTPS connections with invalid certificates. This reduces security`
+  String get ignoreCertificateErrorsDesc {
+    return Intl.message(
+      'Allow HTTPS connections with invalid certificates. This reduces security',
+      name: 'ignoreCertificateErrorsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `UI Info Update Interval`
   String get uiUpdateInterval {
     return Intl.message(
