@@ -611,5 +611,7 @@
   "enforceRoutes": "ルートを強制",
   "enforceRoutesDesc": "より具体的なルートが存在してもトラフィックをトンネル経由にする",
   "excludeDeviceCommunication": "デバイス間通信を除外",
-  "excludeDeviceCommunicationDesc": "AirDrop や AirPlay などのデバイス間通信がトンネルをバイパスすることを許可する"
+  "excludeDeviceCommunicationDesc": "AirDrop や AirPlay などのデバイス間通信がトンネルをバイパスすることを許可する",
+  "hideUnavailable": "タイムアウト非表示",
+  "showUnavailable": "タイムアウト表示"
 }
