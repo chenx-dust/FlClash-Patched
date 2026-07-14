@@ -134,6 +134,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "有効化すると一部アプリが VPN をバイパス",
     ),
     "allowLan": MessageLookupByLibrary.simpleMessage("LAN を許可"),
+    "allowLanAccess": MessageLookupByLibrary.simpleMessage("LAN アクセスを許可"),
+    "allowLanAccessDesc": MessageLookupByLibrary.simpleMessage(
+      "LAN から外部コントローラーへのアクセスを許可",
+    ),
     "allowLanDesc": MessageLookupByLibrary.simpleMessage("LAN 経由でのプロキシアクセスを許可"),
     "alwaysOn": MessageLookupByLibrary.simpleMessage("常時接続"),
     "alwaysOnDesc": MessageLookupByLibrary.simpleMessage(
@@ -298,6 +302,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "editSsid": MessageLookupByLibrary.simpleMessage("SSID を編集"),
     "emptyTip": m4,
     "en": MessageLookupByLibrary.simpleMessage("英語"),
+    "enableExternalController": MessageLookupByLibrary.simpleMessage(
+      "外部コントローラーを有効にする",
+    ),
     "enforceRoutes": MessageLookupByLibrary.simpleMessage("ルートを強制"),
     "enforceRoutesDesc": MessageLookupByLibrary.simpleMessage(
       "より具体的なルートが存在してもトラフィックをトンネル経由にする",
@@ -346,7 +353,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "expressiveScheme": MessageLookupByLibrary.simpleMessage("エクスプレッシブ"),
     "externalController": MessageLookupByLibrary.simpleMessage("外部コントローラー"),
     "externalControllerDesc": MessageLookupByLibrary.simpleMessage(
-      "有効化すると Clash コアをポート 9090 で制御可能",
+      "Clash コアへの外部アクセスを設定",
     ),
     "externalFetch": MessageLookupByLibrary.simpleMessage("外部取得"),
     "externalLink": MessageLookupByLibrary.simpleMessage("外部リンク"),
@@ -471,6 +478,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "light": MessageLookupByLibrary.simpleMessage("ライト"),
     "list": MessageLookupByLibrary.simpleMessage("リスト"),
     "listen": MessageLookupByLibrary.simpleMessage("リスン"),
+    "listeningPort": MessageLookupByLibrary.simpleMessage("リスニングポート"),
     "loadTest": MessageLookupByLibrary.simpleMessage("読み込みテスト"),
     "loading": MessageLookupByLibrary.simpleMessage("読み込み中..."),
     "local": MessageLookupByLibrary.simpleMessage("ローカル"),
@@ -677,6 +685,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "quickFill": MessageLookupByLibrary.simpleMessage("クイック入力"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("レインボー"),
+    "random": MessageLookupByLibrary.simpleMessage("ランダム"),
     "redirPort": MessageLookupByLibrary.simpleMessage("Redir ポート"),
     "redo": MessageLookupByLibrary.simpleMessage("やり直す"),
     "regexSearch": MessageLookupByLibrary.simpleMessage("正規表現検索"),
