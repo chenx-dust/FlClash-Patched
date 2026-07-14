@@ -1219,14 +1219,59 @@ class AppLocalizations {
     );
   }
 
-  /// `Once enabled, the Clash kernel can be controlled on port 9090`
+  /// `Configure external access to the Clash core`
   String get externalControllerDesc {
     return Intl.message(
-      'Once enabled, the Clash kernel can be controlled on port 9090',
+      'Configure external access to the Clash core',
       name: 'externalControllerDesc',
       desc: '',
       args: [],
     );
+  }
+
+  /// `Enable External Controller`
+  String get enableExternalController {
+    return Intl.message(
+      'Enable External Controller',
+      name: 'enableExternalController',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow LAN Access`
+  String get allowLanAccess {
+    return Intl.message(
+      'Allow LAN Access',
+      name: 'allowLanAccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow access to the external controller from the LAN`
+  String get allowLanAccessDesc {
+    return Intl.message(
+      'Allow access to the external controller from the LAN',
+      name: 'allowLanAccessDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Listening Port`
+  String get listeningPort {
+    return Intl.message(
+      'Listening Port',
+      name: 'listeningPort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Random`
+  String get random {
+    return Intl.message('Random', name: 'random', desc: '', args: []);
   }
 
   /// `When turned on it will be able to receive IPv6 traffic`
