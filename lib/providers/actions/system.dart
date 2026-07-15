@@ -101,7 +101,15 @@ class SystemAction extends _$SystemAction {
   }
 
   Future<void> updateTray() async {
-    tray?.update(trayState: ref.read(trayStateProvider));
+    final currentTray = tray;
+    if (currentTray == null) {
+      return;
+    }
+    try {
+      await currentTray.update(trayState: ref.read(trayStateProvider));
+    } catch (e) {
+      commonPrint.log('update tray error: $e', logLevel: LogLevel.error);
+    }
   }
 
   Future<void> updateLocalIp() async {
