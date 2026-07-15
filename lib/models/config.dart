@@ -88,7 +88,6 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default(RestoreStrategy.compatible)
     @JsonKey(unknownEnumValue: RestoreStrategy.compatible)
     RestoreStrategy restoreStrategy,
-    @Default(true) bool showTrayTitle,
     @Default('') String customUserAgent,
     @Default(defaultForegroundTickerInterval) int foregroundTickerInterval,
     @Default(true) bool foregroundTickerIdleWhenUnfocused,
