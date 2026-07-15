@@ -136,7 +136,7 @@ abstract class TrayState with _$TrayState {
     required Brightness? brightness,
     required List<Group> groups,
     required Map<String, String> selectedMap,
-    required bool showTrayTitle,
+    required bool showNetworkSpeed,
     required bool monochromeTrayIcon,
   }) = _TrayState;
 }

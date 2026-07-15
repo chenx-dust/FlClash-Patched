@@ -133,12 +133,21 @@ TrayState trayState(Ref ref) {
       (state) => VM3(state.mode, state.mixedPort, state.tun.enable),
     ),
   );
-  final appSettingVm3 = ref.watch(
-    appSettingProvider.select(
-      (state) => VM3(state.autoLaunch, state.locale, state.showTrayTitle),
+  final appSettingVm2 = ref.watch(
+    appSettingProvider.select((state) => VM2(state.autoLaunch, state.locale)),
+  );
+  final showNetworkSpeed = ref.watch(
+    vpnSettingProvider.select((state) => state.networkSpeedNotification),
+  );
+  final currentGroups = ref.watch(currentGroupsStateProvider).value;
+  final groupNowMap = ref.watch(
+    groupsProvider.select(
+      (groups) => {for (final group in groups) group.name: group.now},
     ),
   );
-  final groups = ref.watch(currentGroupsStateProvider).value;
+  final groups = currentGroups
+      .map((group) => group.copyWith(now: groupNowMap[group.name]))
+      .toList();
   final brightness = ref.watch(systemBrightnessProvider);
   final selectedMap = ref.watch(selectedMapProvider);
   final monochromeTrayIcon = ref.watch(
@@ -148,15 +157,15 @@ TrayState trayState(Ref ref) {
   return TrayState(
     mode: clashConfigVm3.a,
     port: clashConfigVm3.b,
-    autoLaunch: appSettingVm3.a,
+    autoLaunch: appSettingVm2.a,
     systemProxy: systemProxy,
     tunEnable: clashConfigVm3.c,
     isStart: isStart,
-    locale: appSettingVm3.b,
+    locale: appSettingVm2.b,
     brightness: brightness,
     groups: groups,
     selectedMap: selectedMap,
-    showTrayTitle: appSettingVm3.c,
+    showNetworkSpeed: showNetworkSpeed,
     monochromeTrayIcon: monochromeTrayIcon,
   );
 }
@@ -248,7 +257,9 @@ GroupsState filterGroupsState(Ref ref, String query) {
     return currentGroups;
   }
   final useRegex = ref.watch(searchUseRegexProvider(QueryTag.proxies));
-  final matcher = query.isNotEmpty ? SearchMatcher(query, useRegex: useRegex) : null;
+  final matcher = query.isNotEmpty
+      ? SearchMatcher(query, useRegex: useRegex)
+      : null;
   final delayMap = hideUnavailable ? ref.watch(delayDataSourceProvider) : null;
   final defaultTestUrl = hideUnavailable
       ? ref.watch(appSettingProvider.select((state) => state.testUrl))

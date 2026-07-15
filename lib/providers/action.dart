@@ -28,12 +28,6 @@ class CommonAction extends _$CommonAction {
         .updateStatus(!ref.read(isStartProvider));
   }
 
-  void updateSpeedStatistics() {
-    ref
-        .read(appSettingProvider.notifier)
-        .update((state) => state.copyWith(showTrayTitle: !state.showTrayTitle));
-  }
-
   void updateMode() {
     ref.read(patchClashConfigProvider.notifier).update((state) {
       final index = Mode.values.indexWhere((item) => item == state.mode);
@@ -61,8 +55,8 @@ class CommonAction extends _$CommonAction {
     try {
       final traffic = await coreController.getTraffic(onlyStatisticsProxy);
       ref.read(trafficsProvider.notifier).addTraffic(traffic);
-      ref.read(totalTrafficProvider.notifier).value =
-          await coreController.getTotalTraffic(onlyStatisticsProxy);
+      ref.read(totalTrafficProvider.notifier).value = await coreController
+          .getTotalTraffic(onlyStatisticsProxy);
     } catch (e) {
       commonPrint.log('update traffic error: $e', logLevel: LogLevel.error);
     }
@@ -634,9 +628,15 @@ class SystemAction extends _$SystemAction {
   }
 
   Future<void> updateTray() async {
-    tray?.update(
-      trayState: ref.read(trayStateProvider),
-    );
+    final currentTray = tray;
+    if (currentTray == null) {
+      return;
+    }
+    try {
+      await currentTray.update(trayState: ref.read(trayStateProvider));
+    } catch (e) {
+      commonPrint.log('update tray error: $e', logLevel: LogLevel.error);
+    }
   }
 
   Future<void> updateLocalIp() async {
@@ -780,6 +780,85 @@ class ProxiesAction extends _$ProxiesAction {
 
   void setDelay(Delay delay) {
     ref.read(delayDataSourceProvider.notifier).setDelay(delay);
+  }
+
+  Future<void> testProxyDelay(
+    Proxy proxy,
+    String? testUrl, {
+    FutureOr<void> Function()? onDelayChanged,
+  }) async {
+    final groups = ref.read(groupsProvider);
+    final selectedMap = ref.read(
+      currentProfileProvider.select((state) => state?.selectedMap ?? {}),
+    );
+    final proxyState = computeRealSelectedProxyState(
+      proxy.name,
+      groups: groups,
+      selectedMap: selectedMap,
+    );
+    final currentTestUrl = proxyState.testUrl.takeFirstValid([
+      ref.read(realTestUrlProvider(testUrl)),
+    ]);
+    if (proxyState.proxyName.isEmpty) {
+      return;
+    }
+    setDelay(Delay(url: currentTestUrl, name: proxyState.proxyName, value: 0));
+    await onDelayChanged?.call();
+    late final Delay delay;
+    try {
+      delay = await coreController.getDelay(
+        currentTestUrl,
+        proxyState.proxyName,
+      );
+    } catch (_) {
+      final currentDelay = ref.read(
+        delayDataSourceProvider.select(
+          (delayMap) => delayMap[currentTestUrl]?[proxyState.proxyName],
+        ),
+      );
+      if (currentDelay == 0) {
+        setDelay(
+          Delay(url: currentTestUrl, name: proxyState.proxyName, value: -1),
+        );
+      }
+      await onDelayChanged?.call();
+      rethrow;
+    }
+    final currentDelay = ref.read(
+      delayDataSourceProvider.select(
+        (delayMap) => delayMap[currentTestUrl]?[proxyState.proxyName],
+      ),
+    );
+    if (currentDelay == 0) {
+      setDelay(delay);
+    }
+    await onDelayChanged?.call();
+  }
+
+  Future<void> testProxyDelays(
+    List<Proxy> proxies,
+    String? testUrl, {
+    Duration batchTimeout = const Duration(seconds: 1),
+    FutureOr<void> Function(Proxy proxy)? onDelayChanged,
+  }) async {
+    final proxyBatches = proxies.batch(100);
+    for (final proxyBatch in proxyBatches) {
+      final delayFutures = proxyBatch.map<Future<void>>((proxy) async {
+        await testProxyDelay(
+          proxy,
+          testUrl,
+          onDelayChanged: onDelayChanged == null
+              ? null
+              : () => onDelayChanged(proxy),
+        );
+      }).toList();
+      try {
+        await Future.wait(delayFutures).timeout(batchTimeout);
+      } catch (e) {
+        commonPrint.log('delayTest batch error: $e');
+      }
+    }
+    ref.read(sortNumProvider.notifier).add();
   }
 
   Future<void> changeProxy({
