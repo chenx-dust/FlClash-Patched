@@ -144,20 +144,20 @@ class AppLocalizations {
     );
   }
 
-  /// `Speed in Notification`
+  /// `Show real-time network speed`
   String get networkSpeedNotification {
     return Intl.message(
-      'Speed in Notification',
+      'Show real-time network speed',
       name: 'networkSpeedNotification',
       desc: '',
       args: [],
     );
   }
 
-  /// `Show current speed in the notification bar; may slightly increase battery usage`
+  /// `Show real-time network speed in the system status area; may slightly increase power usage`
   String get networkSpeedNotificationDesc {
     return Intl.message(
-      'Show current speed in the notification bar; may slightly increase battery usage',
+      'Show real-time network speed in the system status area; may slightly increase power usage',
       name: 'networkSpeedNotificationDesc',
       desc: '',
       args: [],
@@ -3467,16 +3467,6 @@ class AppLocalizations {
   /// `Restart`
   String get restart {
     return Intl.message('Restart', name: 'restart', desc: '', args: []);
-  }
-
-  /// `Speed statistics`
-  String get speedStatistics {
-    return Intl.message(
-      'Speed statistics',
-      name: 'speedStatistics',
-      desc: '',
-      args: [],
-    );
   }
 
   /// `The current page has changes. Are you sure you want to reset?`
