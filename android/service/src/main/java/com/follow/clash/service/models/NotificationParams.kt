@@ -5,21 +5,19 @@ import android.os.Parcelable
 
 data class NotificationParams(
     val title: String = "FlClash",
-    val stopText: String = "STOP",
-    val connectedText: String = "Connected",
     val onlyStatisticsProxy: Boolean = false,
     val networkSpeedNotification: Boolean = false,
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         title = parcel.readString() ?: "FlClash",
-        stopText = parcel.readString() ?: "STOP",
         onlyStatisticsProxy = parcel.readByte() != 0.toByte(),
+        networkSpeedNotification = parcel.readByte() != 0.toByte(),
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(title)
-        parcel.writeString(stopText)
         parcel.writeByte(if (onlyStatisticsProxy) 1.toByte() else 0.toByte())
+        parcel.writeByte(if (networkSpeedNotification) 1.toByte() else 0.toByte())
     }
 
     override fun describeContents(): Int {

@@ -601,7 +601,6 @@ VM3<bool, int, ProxiesSortType> needUpdateGroups(Ref ref) {
 
 @riverpod
 SharedState sharedState(Ref ref) {
-  ref.watch((appSettingProvider).select((state) => state.locale));
   final currentProfileVM2 = ref.watch(
     currentProfileProvider.select(
       (state) => VM2(state?.label ?? '', state?.selectedMap ?? {}),
@@ -633,10 +632,6 @@ SharedState sharedState(Ref ref) {
     currentProfileName: currentProfileName,
     onlyStatisticsProxy: onlyStatisticsProxy,
     networkSpeedNotification: vpnSetting.networkSpeedNotification,
-    stopText: currentAppLocalizations.stop,
-    connectedText: currentAppLocalizations.connected,
-    stopTip: currentAppLocalizations.stopVpn,
-    startTip: currentAppLocalizations.startVpn,
     excludeSSIDs: excludeSSIDs,
     alwaysOn: alwaysOn,
     setupParams: SetupParams(selectedMap: selectedMap, testUrl: testUrl),

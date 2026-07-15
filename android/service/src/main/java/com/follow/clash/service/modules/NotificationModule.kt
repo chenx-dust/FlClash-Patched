@@ -40,12 +40,16 @@ data class ExtendedNotificationParams(
     val contentText: String,
 )
 
-val NotificationParams.extended: ExtendedNotificationParams
-    get() = ExtendedNotificationParams(
+fun NotificationParams.extended(service: Service): ExtendedNotificationParams =
+    ExtendedNotificationParams(
         title,
-        stopText,
+        service.getString(R.string.stop),
         onlyStatisticsProxy,
-        if (networkSpeedNotification) Core.getSpeedTrafficText(onlyStatisticsProxy) else connectedText
+        if (networkSpeedNotification) {
+            Core.getSpeedTrafficText(onlyStatisticsProxy)
+        } else {
+            service.getString(R.string.connected)
+        },
     )
 
 class NotificationModule(private val service: Service) : Module() {
@@ -68,9 +72,9 @@ class NotificationModule(private val service: Service) : Module() {
                 when {
                     params == null || !screenOn -> emptyFlow()
                     params.networkSpeedNotification -> tickerFlow(1000, 0).map {
-                        params.extended
+                        params.extended(service)
                     }
-                    else -> flowOf(params.extended)
+                    else -> flowOf(params.extended(service))
                 }
             }.distinctUntilChanged()
                 .collect { params ->
