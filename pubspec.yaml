@@ -31,7 +31,8 @@ dependencies:
       ref: main
   json_annotation: ^4.11.0
   file_picker: ^12.0.0-beta.7
-  mobile_scanner: ^7.3.0
+  # 7.2.1 fails to configure its Kotlin extension with Android Gradle Plugin 9.
+  mobile_scanner: 7.2.0
   app_links: ^7.1.2
   win32_registry: ^3.0.3
   tray_manager:
