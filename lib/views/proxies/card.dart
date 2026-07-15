@@ -57,13 +57,17 @@ class ProxyCard extends StatelessWidget {
                   )
                 : GestureDetector(
                     onTap: _handleTestCurrentDelay,
-                    child: Text(
-                      delay > 0 ? '$delay ms' : 'Timeout',
-                      style: context.textTheme.labelSmall?.copyWith(
-                        overflow: TextOverflow.ellipsis,
-                        color: utils.getDelayColor(delay),
-                      ),
-                    ),
+                    child: delay == null
+                        ? Icon(Icons.bolt, size: measure.labelSmallHeight)
+                        : Text(
+                            delay > 0
+                                ? '$delay ms'
+                                : context.appLocalizations.timeout,
+                            style: context.textTheme.labelSmall?.copyWith(
+                              overflow: TextOverflow.ellipsis,
+                              color: utils.getDelayColor(delay),
+                            ),
+                          ),
                   ),
           );
         },

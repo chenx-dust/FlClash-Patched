@@ -81,8 +81,9 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default(true) bool minimizeOnExit,
     @Default(false) bool hidden,
     @Default(false) bool developerMode,
-    @Default(RestoreStrategy.compatible) RestoreStrategy restoreStrategy,
-    @Default(true) bool showTrayTitle,
+    @Default(RestoreStrategy.compatible)
+    @JsonKey(unknownEnumValue: RestoreStrategy.compatible)
+    RestoreStrategy restoreStrategy,
     @Default('') String customUserAgent,
   }) = _AppSettingProps;
 
