@@ -1,5 +1,3 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/core/core.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
@@ -55,52 +53,15 @@ void updateCurrentUnfoldSet(Set<String> value) {
 }
 
 Future<void> proxyDelayTest(Proxy proxy, [String? testUrl]) async {
-  final ref = globalState.container;
-  final groups = getGroups();
-  final selectedMap = ref.read(
-    currentProfileProvider.select((state) => state?.selectedMap ?? {}),
-  );
-  final state = computeRealSelectedProxyState(
-    proxy.name,
-    groups: groups,
-    selectedMap: selectedMap,
-  );
-  final currentTestUrl = state.testUrl.takeFirstValid([
-    ref.read(realTestUrlProvider(testUrl)),
-  ]);
-  if (state.proxyName.isEmpty) {
-    return;
-  }
-  final proxiesAction = ref.read(proxiesActionProvider.notifier);
-  proxiesAction.setDelay(
-    Delay(url: currentTestUrl, name: state.proxyName, value: 0),
-  );
-  final delay = await coreController.getDelay(currentTestUrl, state.proxyName);
-  final currentDelay = ref.read(
-    delayDataSourceProvider.select(
-      (delayMap) => delayMap[currentTestUrl]?[state.proxyName],
-    ),
-  );
-  if (currentDelay != 0) {
-    return;
-  }
-  proxiesAction.setDelay(delay);
+  await globalState.container
+      .read(proxiesActionProvider.notifier)
+      .testProxyDelay(proxy, testUrl);
 }
 
 Future<void> delayTest(List<Proxy> proxies, [String? testUrl]) async {
-  final delayProxies = proxies.map<Future>((proxy) async {
-    await proxyDelayTest(proxy, testUrl);
-  }).toList();
-
-  final batchesDelayProxies = delayProxies.batch(100);
-  for (final batchDelayProxies in batchesDelayProxies) {
-    try {
-      await Future.wait(batchDelayProxies).timeout(const Duration(seconds: 1));
-    } catch (e) {
-      commonPrint.log('delayTest batch error: $e');
-    }
-  }
-  globalState.container.read(sortNumProvider.notifier).add();
+  await globalState.container
+      .read(proxiesActionProvider.notifier)
+      .testProxyDelays(proxies, testUrl);
 }
 
 double getScrollToSelectedOffset({

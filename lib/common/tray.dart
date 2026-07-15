@@ -6,6 +6,7 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:tray_manager/tray_manager.dart';
@@ -16,11 +17,50 @@ import 'print.dart';
 import 'system.dart';
 import 'window.dart';
 
+@visibleForTesting
+({String? label, TrayMenuItemSublabelStyle style}) getTrayDelayPresentation(
+  int? delay, {
+  required String loadingLabel,
+  required String timeoutLabel,
+}) {
+  if (delay == null) {
+    return (label: null, style: TrayMenuItemSublabelStyle.badge);
+  }
+  if (delay == 0) {
+    return (label: loadingLabel, style: TrayMenuItemSublabelStyle.muted);
+  }
+  if (delay < 0) {
+    return (label: timeoutLabel, style: TrayMenuItemSublabelStyle.destructive);
+  }
+  return (label: '$delay ms', style: TrayMenuItemSublabelStyle.badge);
+}
+
+@visibleForTesting
+String? getTrayGroupSelectionLabel(
+  Group group,
+  Map<String, String> selectedMap,
+) {
+  final selectedProxyName = group.getCurrentSelectedName(
+    selectedMap[group.name] ?? '',
+  );
+  return selectedProxyName.isEmpty ? null : selectedProxyName;
+}
+
+String _trayDelayTestKey(String groupName) {
+  return 'delay-test:${Uri.encodeComponent(groupName)}';
+}
+
+String _trayProxyDelayKey(String groupName, String proxyName) {
+  return 'delay:${Uri.encodeComponent(groupName)}:'
+      '${Uri.encodeComponent(proxyName)}';
+}
+
 class Tray {
   static Tray? _instance;
 
   Timer? _trafficTimer;
   bool _isUpdatingTraffic = false;
+  final Set<String> _testingGroups = {};
 
   Tray._internal();
 
@@ -39,15 +79,16 @@ class Tray {
     await trayManager.destroy();
   }
 
-  String getTryIcon({
+  String getTrayIcon({
     required bool isStart,
     required bool tunEnable,
     bool monochrome = false,
   }) {
-    if (system.isMacOS) {
-      return 'assets/images/icon/status_1.$trayIconSuffix';
+    final useSymbolicIcon = (monochrome && !system.isWindows) || system.isMacOS;
+    if (!isStart && useSymbolicIcon) {
+      return 'assets/images/icon/flclash-disabled-symbolic.svg';
     }
-    if (monochrome && system.isLinux) {
+    if (useSymbolicIcon) {
       return 'assets/images/icon/flclash-symbolic.svg';
     }
     if (!isStart) {
@@ -68,7 +109,7 @@ class Tray {
       await trayManager.destroy();
     }
     await trayManager.setIcon(
-      getTryIcon(
+      getTrayIcon(
         isStart: isStart,
         tunEnable: tunEnable,
         monochrome: monochrome,
@@ -104,24 +145,13 @@ class Tray {
       },
     );
     menuItems.add(showMenuItem);
-    final startMenuItem = MenuItem.checkbox(
+    final startMenuItem = MenuItem(
       label: trayState.isStart ? appLocalizations.stop : appLocalizations.start,
       onClick: (_) async {
         commonAction.updateStart();
       },
-      checked: trayState.isStart,
     );
     menuItems.add(startMenuItem);
-    if (system.isMacOS) {
-      final speedStatistics = MenuItem.checkbox(
-        label: appLocalizations.speedStatistics,
-        onClick: (_) async {
-          commonAction.updateSpeedStatistics();
-        },
-        checked: trayState.showTrayTitle,
-      );
-      menuItems.add(speedStatistics);
-    }
     menuItems.add(MenuItem.separator());
     for (final mode in Mode.values) {
       menuItems.add(
@@ -137,13 +167,38 @@ class Tray {
     menuItems.add(MenuItem.separator());
     if (system.isMacOS) {
       for (final group in trayState.groups) {
-        final List<MenuItem> subMenuItems = [];
+        final isTesting = _testingGroups.contains(group.name);
+        final selectedProxyName = group.getCurrentSelectedName(
+          trayState.selectedMap[group.name] ?? '',
+        );
+        final List<MenuItem> subMenuItems = [
+          TrayMenuItem(
+            key: _trayDelayTestKey(group.name),
+            label: appLocalizations.delayTest,
+            disabled: isTesting,
+            keepsMenuOpen: true,
+            onClick: (_) {
+              unawaited(_testGroupDelay(group));
+            },
+          ),
+          MenuItem.separator(),
+        ];
         for (final proxy in group.all) {
+          final delay = ref.read(
+            delayProvider(proxyName: proxy.name, testUrl: group.testUrl),
+          );
+          final presentation = getTrayDelayPresentation(
+            delay,
+            loadingLabel: '...',
+            timeoutLabel: appLocalizations.timeout,
+          );
           subMenuItems.add(
-            MenuItem.checkbox(
+            TrayMenuItem.checkbox(
+              key: _trayProxyDelayKey(group.name, proxy.name),
               label: proxy.name,
-              checked:
-                  ref.read(selectedProxyNameProvider(group.name)) == proxy.name,
+              sublabel: presentation.label,
+              sublabelStyle: presentation.style,
+              checked: selectedProxyName == proxy.name,
               onClick: (_) {
                 ref
                     .read(profilesActionProvider.notifier)
@@ -156,8 +211,10 @@ class Tray {
           );
         }
         menuItems.add(
-          MenuItem.submenu(
+          TrayMenuItem.submenu(
             label: group.name,
+            sublabel: getTrayGroupSelectionLabel(group, trayState.selectedMap),
+            sublabelStyle: TrayMenuItemSublabelStyle.secondary,
             submenu: Menu(items: subMenuItems),
           ),
         );
@@ -219,20 +276,65 @@ class Tray {
         monochrome: trayState.monochromeTrayIcon,
       );
     }
-    await updateTrayTitle(
-      showTrayTitle: trayState.showTrayTitle,
-      isStart: trayState.isStart,
+  }
+
+  Future<void> _testGroupDelay(Group group) async {
+    if (!_testingGroups.add(group.name)) {
+      return;
+    }
+    final ref = globalState.container;
+    await trayManager.updateMenuItem(
+      key: _trayDelayTestKey(group.name),
+      disabled: true,
+    );
+    try {
+      await ref
+          .read(proxiesActionProvider.notifier)
+          .testProxyDelays(
+            group.all,
+            group.testUrl,
+            onDelayChanged: (proxy) {
+              return _updateProxyDelayMenuItem(group, proxy);
+            },
+          );
+    } finally {
+      _testingGroups.remove(group.name);
+      await trayManager.updateMenuItem(
+        key: _trayDelayTestKey(group.name),
+        disabled: false,
+      );
+    }
+  }
+
+  Future<void> _updateProxyDelayMenuItem(Group group, Proxy proxy) async {
+    final ref = globalState.container;
+    final delay = ref.read(
+      delayProvider(proxyName: proxy.name, testUrl: group.testUrl),
+    );
+    final presentation = getTrayDelayPresentation(
+      delay,
+      loadingLabel: '...',
+      timeoutLabel: currentAppLocalizations.timeout,
+    );
+    final label = presentation.label;
+    if (label == null) {
+      return;
+    }
+    await trayManager.updateMenuItem(
+      key: _trayProxyDelayKey(group.name, proxy.name),
+      sublabel: label,
+      sublabelStyle: presentation.style,
     );
   }
 
   Future<void> updateTrayTitle({
-    required bool showTrayTitle,
+    required bool showNetworkSpeed,
     required bool isStart,
   }) async {
     if (!system.isMacOS) {
       return;
     }
-    if (!showTrayTitle || !isStart) {
+    if (!showNetworkSpeed || !isStart) {
       _trafficTimer?.cancel();
       _trafficTimer = null;
       await trayManager.setTitle('');
