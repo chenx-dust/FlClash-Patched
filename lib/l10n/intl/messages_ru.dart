@@ -715,10 +715,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "networkSpeed": MessageLookupByLibrary.simpleMessage("Скорость сети"),
     "networkSpeedNotification": MessageLookupByLibrary.simpleMessage(
-      "Скорость в уведомлении",
+      "Показывать скорость сети в реальном времени",
     ),
     "networkSpeedNotificationDesc": MessageLookupByLibrary.simpleMessage(
-      "Показывать текущую скорость в панели уведомлений; может немного увеличить расход батареи",
+      "Показывать скорость сети в реальном времени в области состояния системы; энергопотребление может немного увеличиться",
     ),
     "networkType": MessageLookupByLibrary.simpleMessage("Тип сети"),
     "neutralScheme": MessageLookupByLibrary.simpleMessage("Нейтральные"),
@@ -1123,9 +1123,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "sourceIp": MessageLookupByLibrary.simpleMessage("Исходный IP"),
     "specialProxy": MessageLookupByLibrary.simpleMessage("Специальный прокси"),
     "specialRules": MessageLookupByLibrary.simpleMessage("Специальные правила"),
-    "speedStatistics": MessageLookupByLibrary.simpleMessage(
-      "Статистика скорости",
-    ),
     "splitStrategy": MessageLookupByLibrary.simpleMessage(
       "Стратегия разделения",
     ),

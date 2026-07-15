@@ -25,7 +25,9 @@ class CoreController {
   }
 
   @visibleForTesting
-  CoreController.test(this._interface);
+  CoreController.test(this._interface) {
+    _instance = this;
+  }
 
   @visibleForTesting
   static void resetInstance() {
@@ -84,7 +86,7 @@ class CoreController {
   FutureOr<bool> get isInit => _interface.isInit;
 
   Future<String> decryptAgeConfig(String data, String ageSecretKey) async {
-    final res =  _interface.decryptAgeConfig(data, ageSecretKey);
+    final res = _interface.decryptAgeConfig(data, ageSecretKey);
     return res;
   }
 
@@ -273,4 +275,4 @@ class CoreController {
   }
 }
 
-final coreController = CoreController();
+CoreController get coreController => CoreController();

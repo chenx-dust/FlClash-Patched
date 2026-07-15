@@ -12,12 +12,6 @@ class CommonAction extends _$CommonAction {
         .setRunning(running, initialize: running && !ref.read(initProvider));
   }
 
-  void updateSpeedStatistics() {
-    ref
-        .read(appSettingProvider.notifier)
-        .update((state) => state.copyWith(showTrayTitle: !state.showTrayTitle));
-  }
-
   void updateMode() {
     ref.read(patchClashConfigProvider.notifier).update((state) {
       final index = Mode.values.indexWhere((item) => item == state.mode);
@@ -34,8 +28,8 @@ class CommonAction extends _$CommonAction {
     try {
       final traffic = await coreController.getTraffic(onlyStatisticsProxy);
       ref.read(trafficsProvider.notifier).addTraffic(traffic);
-      ref.read(totalTrafficProvider.notifier).value =
-          await coreController.getTotalTraffic(onlyStatisticsProxy);
+      ref.read(totalTrafficProvider.notifier).value = await coreController
+          .getTotalTraffic(onlyStatisticsProxy);
     } catch (e) {
       commonPrint.log('update traffic error: $e', logLevel: LogLevel.error);
     }

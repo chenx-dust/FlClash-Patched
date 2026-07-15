@@ -318,9 +318,7 @@ class IgnoreCertificateErrorsItem extends ConsumerWidget {
       onChanged: (bool value) {
         ref
             .read(appSettingProvider.notifier)
-            .update(
-              (state) => state.copyWith(ignoreCertificateErrors: value),
-            );
+            .update((state) => state.copyWith(ignoreCertificateErrors: value));
       },
     );
   }
@@ -537,7 +535,8 @@ class ApplicationSettingView extends ConsumerWidget {
       const ForegroundTickerIntervalItem(),
       const CloseConnectionsItem(),
       const UsageItem(),
-      if (system.isAndroid) const NetworkSpeedNotificationItem(),
+      if (system.isAndroid || system.isMacOS)
+        const NetworkSpeedNotificationItem(),
       const IgnoreCertificateErrorsItem(),
       const AutoCheckUpdateItem(),
     ];
