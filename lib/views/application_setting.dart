@@ -537,7 +537,8 @@ class ApplicationSettingView extends ConsumerWidget {
       const ForegroundTickerIntervalItem(),
       const CloseConnectionsItem(),
       const UsageItem(),
-      if (system.isAndroid) const NetworkSpeedNotificationItem(),
+      if (system.isAndroid || system.isMacOS)
+        const NetworkSpeedNotificationItem(),
       const IgnoreCertificateErrorsItem(),
       const AutoCheckUpdateItem(),
     ];

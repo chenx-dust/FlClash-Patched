@@ -136,7 +136,7 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
                         )
                       : isLoading == false && ipInfo == null
                       ? Text(
-                          'Timeout',
+                          appLocalizations.timeout,
                           style: context.textTheme.bodyMedium
                               ?.copyWith(color: Colors.red)
                               .adjustSize(1),
