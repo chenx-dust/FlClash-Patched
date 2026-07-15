@@ -12,12 +12,6 @@ class CommonAction extends _$CommonAction {
         .setRunning(running, initialize: running && !ref.read(initProvider));
   }
 
-  void updateSpeedStatistics() {
-    ref
-        .read(appSettingProvider.notifier)
-        .update((state) => state.copyWith(showTrayTitle: !state.showTrayTitle));
-  }
-
   void updateMode() {
     ref.read(patchClashConfigProvider.notifier).update((state) {
       final index = Mode.values.indexWhere((item) => item == state.mode);
