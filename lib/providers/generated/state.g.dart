@@ -269,7 +269,7 @@ final class TrayStateProvider
   }
 }
 
-String _$trayStateHash() => r'06c1e3845c1c0e2bc6212f2a7a97985f4143c3a2';
+String _$trayStateHash() => r'bf8165e7ca36857c8405792f811027adcbf87a6d';
 
 @ProviderFor(vpnState)
 final vpnStateProvider = VpnStateProvider._();
@@ -2980,7 +2980,7 @@ abstract class _$AccessControlState extends $Notifier<AccessControlProps> {
   AccessControlProps build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AccessControlProps, AccessControlProps>;
     final element =
         ref.element
@@ -2990,7 +2990,7 @@ abstract class _$AccessControlState extends $Notifier<AccessControlProps> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -3033,7 +3033,7 @@ abstract class _$ProxyGroupProvider extends $Notifier<ProxyGroup> {
   ProxyGroup build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<ProxyGroup, ProxyGroup>;
     final element =
         ref.element
@@ -3043,7 +3043,7 @@ abstract class _$ProxyGroupProvider extends $Notifier<ProxyGroup> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -3084,7 +3084,7 @@ abstract class _$RuleProvider extends $Notifier<Rule> {
   Rule build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<Rule, Rule>;
     final element =
         ref.element
@@ -3094,7 +3094,7 @@ abstract class _$RuleProvider extends $Notifier<Rule> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 

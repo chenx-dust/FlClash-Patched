@@ -37,7 +37,6 @@ _AppSettingProps _$AppSettingPropsFromJson(Map<String, dynamic> json) =>
             unknownValue: RestoreStrategy.compatible,
           ) ??
           RestoreStrategy.compatible,
-      showTrayTitle: json['showTrayTitle'] as bool? ?? true,
       customUserAgent: json['customUserAgent'] as String? ?? '',
       foregroundTickerInterval:
           (json['foregroundTickerInterval'] as num?)?.toInt() ??
@@ -73,7 +72,6 @@ Map<String, dynamic> _$AppSettingPropsToJson(_AppSettingProps instance) =>
       'hidden': instance.hidden,
       'developerMode': instance.developerMode,
       'restoreStrategy': _$RestoreStrategyEnumMap[instance.restoreStrategy]!,
-      'showTrayTitle': instance.showTrayTitle,
       'customUserAgent': instance.customUserAgent,
       'foregroundTickerInterval': instance.foregroundTickerInterval,
       'foregroundTickerIdleWhenUnfocused':
