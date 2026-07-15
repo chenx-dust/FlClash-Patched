@@ -60,6 +60,7 @@ void main() {
   group('CoreController singleton', () {
     test('test constructor injects mock interface', () {
       expect(controller, isA<CoreController>());
+      expect(CoreController(), same(controller));
     });
 
     test('resetInstance allows fresh construction', () {

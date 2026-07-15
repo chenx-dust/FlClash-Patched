@@ -26,7 +26,9 @@ class CoreController {
   }
 
   @visibleForTesting
-  CoreController.test(this._interface);
+  CoreController.test(this._interface) {
+    _instance = this;
+  }
 
   @visibleForTesting
   static void resetInstance() {
@@ -309,4 +311,4 @@ class CoreController {
   }
 }
 
-final coreController = CoreController();
+CoreController get coreController => CoreController();
