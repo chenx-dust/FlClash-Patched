@@ -72,6 +72,88 @@ class ProxiesAction extends _$ProxiesAction {
     ref.read(delayDataSourceProvider.notifier).setDelay(delay);
   }
 
+  Future<void> testProxyDelay(
+    Proxy proxy,
+    String? testUrl, {
+    FutureOr<void> Function()? onDelayChanged,
+  }) async {
+    final groups = ref.read(groupsProvider);
+    final selectedMap = ref.read(
+      currentProfileProvider.select((state) => state?.selectedMap ?? {}),
+    );
+    final proxyState = computeRealSelectedProxyState(
+      proxy.name,
+      groups: groups,
+      selectedMap: selectedMap,
+    );
+    final currentTestUrl = proxyState.testUrl.takeFirstValid([
+      ref.read(realTestUrlProvider(testUrl)),
+    ]);
+    if (proxyState.proxyName.isEmpty) {
+      return;
+    }
+    setDelay(Delay(url: currentTestUrl, name: proxyState.proxyName, value: 0));
+    await onDelayChanged?.call();
+    late final Delay delay;
+    try {
+      delay = await coreController.getDelay(
+        currentTestUrl,
+        proxyState.proxyName,
+      );
+    } catch (error) {
+      commonPrint.log(
+        'Delay test failed for ${proxyState.proxyName}: $error',
+        logLevel: LogLevel.error,
+      );
+      final currentDelay = ref.read(
+        delayDataSourceProvider.select(
+          (delayMap) => delayMap[currentTestUrl]?[proxyState.proxyName],
+        ),
+      );
+      if (currentDelay == 0) {
+        setDelay(
+          Delay(url: currentTestUrl, name: proxyState.proxyName, value: -1),
+        );
+      }
+      await onDelayChanged?.call();
+      rethrow;
+    }
+    final currentDelay = ref.read(
+      delayDataSourceProvider.select(
+        (delayMap) => delayMap[currentTestUrl]?[proxyState.proxyName],
+      ),
+    );
+    if (currentDelay == 0) {
+      setDelay(delay);
+    }
+    await onDelayChanged?.call();
+  }
+
+  Future<void> testProxyDelays(
+    List<Proxy> proxies,
+    String? testUrl, {
+    Duration batchTimeout = const Duration(seconds: 1),
+    FutureOr<void> Function(Proxy proxy)? onDelayChanged,
+  }) async {
+    final batches = proxies.batch(100);
+    for (final batch in batches) {
+      await Future.wait(
+        batch.map((proxy) async {
+          try {
+            await testProxyDelay(
+              proxy,
+              testUrl,
+              onDelayChanged: () => onDelayChanged?.call(proxy),
+            ).timeout(batchTimeout);
+          } catch (error) {
+            commonPrint.log('delayTest batch error: $error');
+          }
+        }),
+      );
+    }
+    ref.read(sortNumProvider.notifier).add();
+  }
+
   Future<void> changeProxy({
     required String groupName,
     required String proxyName,
