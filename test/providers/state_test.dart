@@ -1,3 +1,6 @@
+import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/models/models.dart';
+import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/providers/state.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -33,5 +36,59 @@ void main() {
       container.read(updateParamsProvider).externalController,
       '0.0.0.0:9191',
     );
+  });
+
+  test('tray traffic state reuses the network speed setting', () async {
+    final container = ProviderContainer(
+      overrides: [selectedMapProvider.overrideWithValue(const {})],
+    );
+    addTearDown(container.dispose);
+    final states = <({bool showNetworkSpeed, bool isStart})>[];
+    final subscription = container.listen(
+      trayStateProvider.select(
+        (state) =>
+            (showNetworkSpeed: state.showNetworkSpeed, isStart: state.isStart),
+      ),
+      (prev, next) => states.add(next),
+      fireImmediately: true,
+    );
+    addTearDown(subscription.close);
+
+    container.read(runTimeProvider.notifier).update((_) => 0);
+    await container.pump();
+    container
+        .read(vpnSettingProvider.notifier)
+        .update((state) => state.copyWith(networkSpeedNotification: true));
+    await container.pump();
+
+    expect(states, [
+      (showNetworkSpeed: false, isStart: false),
+      (showNetworkSpeed: false, isStart: true),
+      (showNetworkSpeed: true, isStart: true),
+    ]);
+  });
+
+  test('tray groups retain the current selection used by the proxies view', () {
+    final container = ProviderContainer(
+      overrides: [selectedMapProvider.overrideWithValue(const {})],
+    );
+    addTearDown(container.dispose);
+    const group = Group(
+      name: 'Proxy',
+      type: GroupType.Selector,
+      now: 'Default',
+      hidden: false,
+    );
+
+    container.read(groupsProvider.notifier).update((_) => [group]);
+
+    expect(container.read(currentGroupsStateProvider).value.single.now, '');
+    expect(container.read(trayStateProvider).groups.single.now, 'Default');
+
+    container
+        .read(groupsProvider.notifier)
+        .update((_) => [group.copyWith(now: 'Updated')]);
+
+    expect(container.read(trayStateProvider).groups.single.now, 'Updated');
   });
 }
