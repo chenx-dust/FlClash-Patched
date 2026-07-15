@@ -60,6 +60,7 @@ jobs:
           - platform: linux
             os: ubuntu-22.04-arm
             arch: arm64
+      fail-fast: false
 
     steps:
       - name: Setup rust
