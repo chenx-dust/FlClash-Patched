@@ -90,7 +90,9 @@ object ServiceState {
             flutterEngine == null
         }
         if (shouldStopInBackground) {
-            GlobalState.application.showToast(sharedState.stopTip)
+            GlobalState.application.showToast(
+                GlobalState.application.getString(R.string.stop_vpn),
+            )
             launchStop()
         }
     }
@@ -133,8 +135,6 @@ object ServiceState {
         ServiceConfig.updateNotificationParams(
             NotificationParams(
                 title = sharedState.currentProfileName,
-                stopText = sharedState.stopText,
-                connectedText = sharedState.connectedText,
                 onlyStatisticsProxy = sharedState.onlyStatisticsProxy,
                 networkSpeedNotification = sharedState.networkSpeedNotification,
             ),
@@ -143,7 +143,9 @@ object ServiceState {
 
     private fun setupAndStart() {
         applySharedState()
-        GlobalState.application.showToast(sharedState.startTip)
+        GlobalState.application.showToast(
+            GlobalState.application.getString(R.string.start_vpn),
+        )
         val initParams = Gson().toJson(
             mapOf(
                 "home-dir" to GlobalState.application.filesDir.path,

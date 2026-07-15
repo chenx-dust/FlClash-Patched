@@ -34,14 +34,14 @@ private data class ExtendedNotificationParams(
     val contentText: String,
 )
 
-private val NotificationParams.extended: ExtendedNotificationParams
-    get() = ExtendedNotificationParams(
+private fun NotificationParams.extended(service: Service) =
+    ExtendedNotificationParams(
         title,
-        stopText,
+        service.getString(R.string.stop),
         if (networkSpeedNotification) {
             Core.getSpeedTrafficText(onlyStatisticsProxy)
         } else {
-            connectedText
+            service.getString(R.string.connected)
         },
     )
 
@@ -50,7 +50,7 @@ internal class NotificationModule(
     private val scope: CoroutineScope,
 ) : ServiceModule {
     override fun start() {
-        val initialParams = ServiceConfig.notificationParams.value.extended
+        val initialParams = ServiceConfig.notificationParams.value.extended(service)
         update(initialParams)
         scope.launch {
             var displayedParams = initialParams
@@ -72,7 +72,7 @@ internal class NotificationModule(
                 if (!screenOn) return@collectLatest
 
                 if (!params.networkSpeedNotification) {
-                    val nextParams = params.extended
+                    val nextParams = params.extended(service)
                     if (nextParams != displayedParams) {
                         update(nextParams)
                         displayedParams = nextParams
@@ -82,7 +82,7 @@ internal class NotificationModule(
 
                 while (true) {
                     delay(1_000)
-                    val nextParams = params.extended
+                    val nextParams = params.extended(service)
                     if (nextParams != displayedParams) {
                         update(nextParams)
                         displayedParams = nextParams
