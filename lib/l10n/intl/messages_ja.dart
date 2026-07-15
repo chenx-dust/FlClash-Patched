@@ -543,10 +543,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "networkSpeed": MessageLookupByLibrary.simpleMessage("ネットワーク速度"),
     "networkSpeedNotification": MessageLookupByLibrary.simpleMessage(
-      "通知に速度を表示",
+      "リアルタイムのネットワーク速度を表示",
     ),
     "networkSpeedNotificationDesc": MessageLookupByLibrary.simpleMessage(
-      "通知バーに現在の速度を表示します。バッテリー消費が少し増える場合があります",
+      "システムのステータス領域にリアルタイムのネットワーク速度を表示します。消費電力がわずかに増える場合があります",
     ),
     "networkType": MessageLookupByLibrary.simpleMessage("ネットワーク種別"),
     "neutralScheme": MessageLookupByLibrary.simpleMessage("ニュートラル"),
@@ -875,7 +875,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "sourceIp": MessageLookupByLibrary.simpleMessage("送信元 IP"),
     "specialProxy": MessageLookupByLibrary.simpleMessage("特殊プロキシ"),
     "specialRules": MessageLookupByLibrary.simpleMessage("特殊ルール"),
-    "speedStatistics": MessageLookupByLibrary.simpleMessage("速度統計"),
     "splitStrategy": MessageLookupByLibrary.simpleMessage("分流戦略"),
     "splitStrategyNotEmpty": MessageLookupByLibrary.simpleMessage(
       "分流戦略は空にできません",
