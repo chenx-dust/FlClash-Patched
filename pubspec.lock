@@ -1581,7 +1581,7 @@ packages:
     description:
       path: "packages/tray_manager"
       ref: main
-      resolved-ref: "18439bc6408ff56e2b8f2117d9cfd3d115ba3003"
+      resolved-ref: "610a1f98063fa3534ffeaac9819d1e07ff16b823"
       url: "https://github.com/chenx-dust/tray_manager.git"
     source: git
     version: "0.5.3"

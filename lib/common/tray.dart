@@ -13,9 +13,77 @@ import 'package:tray_manager/tray_manager.dart';
 
 import 'app_localizations.dart';
 import 'constant.dart';
+import 'keyboard.dart';
 import 'print.dart';
 import 'system.dart';
 import 'window.dart';
+
+typedef TrayMenuShortcut = ({
+  String keyEquivalent,
+  Set<TrayMenuItemModifier> modifiers,
+});
+
+final Map<PhysicalKeyboardKey, String> _macOSSpecialKeyEquivalents = {
+  PhysicalKeyboardKey.enter: '\r',
+  PhysicalKeyboardKey.escape: '\u001B',
+  PhysicalKeyboardKey.backspace: '\u0008',
+  PhysicalKeyboardKey.tab: '\t',
+  PhysicalKeyboardKey.space: ' ',
+  PhysicalKeyboardKey.quote: "'",
+  PhysicalKeyboardKey.arrowUp: '\uF700',
+  PhysicalKeyboardKey.arrowDown: '\uF701',
+  PhysicalKeyboardKey.arrowLeft: '\uF702',
+  PhysicalKeyboardKey.arrowRight: '\uF703',
+  PhysicalKeyboardKey.f1: '\uF704',
+  PhysicalKeyboardKey.f2: '\uF705',
+  PhysicalKeyboardKey.f3: '\uF706',
+  PhysicalKeyboardKey.f4: '\uF707',
+  PhysicalKeyboardKey.f5: '\uF708',
+  PhysicalKeyboardKey.f6: '\uF709',
+  PhysicalKeyboardKey.f7: '\uF70A',
+  PhysicalKeyboardKey.f8: '\uF70B',
+  PhysicalKeyboardKey.f9: '\uF70C',
+  PhysicalKeyboardKey.f10: '\uF70D',
+  PhysicalKeyboardKey.f11: '\uF70E',
+  PhysicalKeyboardKey.f12: '\uF70F',
+  PhysicalKeyboardKey.insert: '\uF727',
+  PhysicalKeyboardKey.delete: '\uF728',
+  PhysicalKeyboardKey.home: '\uF729',
+  PhysicalKeyboardKey.end: '\uF72B',
+  PhysicalKeyboardKey.pageUp: '\uF72C',
+  PhysicalKeyboardKey.pageDown: '\uF72D',
+};
+
+TrayMenuItemModifier _getTrayMenuItemModifier(KeyboardModifier modifier) {
+  return switch (modifier) {
+    KeyboardModifier.alt => TrayMenuItemModifier.option,
+    KeyboardModifier.capsLock => TrayMenuItemModifier.capsLock,
+    KeyboardModifier.control => TrayMenuItemModifier.control,
+    KeyboardModifier.fn => TrayMenuItemModifier.function,
+    KeyboardModifier.meta => TrayMenuItemModifier.command,
+    KeyboardModifier.shift => TrayMenuItemModifier.shift,
+  };
+}
+
+@visibleForTesting
+TrayMenuShortcut? getTrayMenuShortcut(HotKeyAction hotKeyAction) {
+  final key = hotKeyAction.key;
+  if (key == null || hotKeyAction.modifiers.isEmpty) {
+    return null;
+  }
+  final physicalKey = PhysicalKeyboardKey(key);
+  final label = physicalKey.label;
+  final keyEquivalent =
+      _macOSSpecialKeyEquivalents[physicalKey] ??
+      (label.length == 1 ? label.toLowerCase() : null);
+  if (keyEquivalent == null) {
+    return null;
+  }
+  return (
+    keyEquivalent: keyEquivalent,
+    modifiers: hotKeyAction.modifiers.map(_getTrayMenuItemModifier).toSet(),
+  );
+}
 
 @visibleForTesting
 ({String? label, TrayMenuItemSublabelStyle style}) getTrayDelayPresentation(
@@ -76,7 +144,9 @@ class Tray {
   Future<void> destroy() async {
     _trafficTimer?.cancel();
     _trafficTimer = null;
-    await trayManager.destroy();
+    if (!system.isMacOS) {
+      await trayManager.destroy();
+    }
   }
 
   String getTrayIcon({
@@ -138,25 +208,52 @@ class Tray {
     final systemAction = ref.read(systemActionProvider.notifier);
     final setupAction = ref.read(setupActionProvider.notifier);
     final appLocalizations = currentAppLocalizations;
-    final showMenuItem = MenuItem(
+
+    TrayMenuShortcut? shortcutFor(HotAction action) {
+      if (!system.isMacOS) {
+        return null;
+      }
+      return getTrayMenuShortcut(ref.read(getHotKeyActionProvider(action)));
+    }
+
+    final viewShortcut = shortcutFor(HotAction.view);
+    final showMenuItem = TrayMenuItem(
       label: appLocalizations.show,
+      usesCustomView: false,
+      keyEquivalent: viewShortcut?.keyEquivalent,
+      keyEquivalentModifiers:
+          viewShortcut?.modifiers ?? const <TrayMenuItemModifier>{},
       onClick: (_) {
         window?.show();
       },
     );
     menuItems.add(showMenuItem);
-    final startMenuItem = MenuItem(
+    final startShortcut = shortcutFor(HotAction.start);
+    final startMenuItem = TrayMenuItem(
       label: trayState.isStart ? appLocalizations.stop : appLocalizations.start,
+      usesCustomView: false,
+      keyEquivalent: startShortcut?.keyEquivalent,
+      keyEquivalentModifiers:
+          startShortcut?.modifiers ?? const <TrayMenuItemModifier>{},
       onClick: (_) async {
         commonAction.updateStart();
       },
     );
     menuItems.add(startMenuItem);
     menuItems.add(MenuItem.separator());
+    final nextMode =
+        Mode.values[(trayState.mode.index + 1) % Mode.values.length];
     for (final mode in Mode.values) {
+      final modeShortcut = mode == nextMode
+          ? shortcutFor(HotAction.mode)
+          : null;
       menuItems.add(
-        MenuItem.checkbox(
+        TrayMenuItem.checkbox(
           label: Intl.message(mode.name),
+          usesCustomView: false,
+          keyEquivalent: modeShortcut?.keyEquivalent,
+          keyEquivalentModifiers:
+              modeShortcut?.modifiers ?? const <TrayMenuItemModifier>{},
           onClick: (_) {
             setupAction.changeMode(mode);
           },
@@ -224,18 +321,28 @@ class Tray {
       }
     }
     if (trayState.isStart) {
+      final tunShortcut = shortcutFor(HotAction.tun);
       menuItems.add(
-        MenuItem.checkbox(
+        TrayMenuItem.checkbox(
           label: appLocalizations.tun,
+          usesCustomView: false,
+          keyEquivalent: tunShortcut?.keyEquivalent,
+          keyEquivalentModifiers:
+              tunShortcut?.modifiers ?? const <TrayMenuItemModifier>{},
           onClick: (_) {
             systemAction.updateTun();
           },
           checked: trayState.tunEnable,
         ),
       );
+      final proxyShortcut = shortcutFor(HotAction.proxy);
       menuItems.add(
-        MenuItem.checkbox(
+        TrayMenuItem.checkbox(
           label: appLocalizations.systemProxy,
+          usesCustomView: false,
+          keyEquivalent: proxyShortcut?.keyEquivalent,
+          keyEquivalentModifiers:
+              proxyShortcut?.modifiers ?? const <TrayMenuItemModifier>{},
           onClick: (_) {
             systemAction.updateSystemProxy();
           },

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:fl_clash/common/tray.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
+import 'package:flutter/services.dart';
 import 'package:test/test.dart';
 import 'package:tray_manager/tray_manager.dart';
 
@@ -83,6 +84,53 @@ void main() {
       expect(timeout.style, TrayMenuItemSublabelStyle.destructive);
       expect(success.label, '42 ms');
       expect(success.style, TrayMenuItemSublabelStyle.badge);
+    });
+  });
+
+  group('getTrayMenuShortcut', () {
+    test('maps printable keys and macOS modifiers', () {
+      final shortcut = getTrayMenuShortcut(
+        HotKeyAction(
+          action: HotAction.start,
+          key: PhysicalKeyboardKey.keyS.usbHidUsage,
+          modifiers: const {KeyboardModifier.meta, KeyboardModifier.shift},
+        ),
+      );
+
+      expect(shortcut?.keyEquivalent, 's');
+      expect(shortcut?.modifiers, {
+        TrayMenuItemModifier.command,
+        TrayMenuItemModifier.shift,
+      });
+    });
+
+    test('maps AppKit special key equivalents', () {
+      final shortcut = getTrayMenuShortcut(
+        HotKeyAction(
+          action: HotAction.view,
+          key: PhysicalKeyboardKey.arrowUp.usbHidUsage,
+          modifiers: const {KeyboardModifier.control},
+        ),
+      );
+
+      expect(shortcut?.keyEquivalent, '\uF700');
+      expect(shortcut?.modifiers, {TrayMenuItemModifier.control});
+    });
+
+    test('ignores incomplete hotkeys', () {
+      expect(
+        getTrayMenuShortcut(const HotKeyAction(action: HotAction.start)),
+        isNull,
+      );
+      expect(
+        getTrayMenuShortcut(
+          HotKeyAction(
+            action: HotAction.start,
+            key: PhysicalKeyboardKey.keyS.usbHidUsage,
+          ),
+        ),
+        isNull,
+      );
     });
   });
 
