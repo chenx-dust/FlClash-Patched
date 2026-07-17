@@ -548,6 +548,9 @@ class CoreAction extends _$CoreAction {
 
 @Riverpod(keepAlive: true)
 class SystemAction extends _$SystemAction {
+  Future<void>? _exitFuture;
+  Future<void>? _exitSaveFuture;
+
   @override
   void build() {}
 
@@ -562,19 +565,26 @@ class SystemAction extends _$SystemAction {
     return ref.read(packagesProvider);
   }
 
-  Future<void> handleExit([bool needSave = false]) async {
+  Future<void> handleExit([bool needSave = false]) {
+    if (needSave) {
+      _exitSaveFuture ??= preferences.saveConfig(ref.read(configProvider));
+    }
+    return _exitFuture ??= _handleExit();
+  }
+
+  Future<void> _handleExit() async {
     Future.delayed(const Duration(seconds: 3), () {
       system.exit();
     });
     try {
+      await window?.hide();
       await Future.wait([
-        if (needSave) preferences.saveConfig(ref.read(configProvider)),
         if (macOS != null) macOS!.updateDns(true),
         if (proxy != null) proxy!.stopProxy(),
         if (tray != null) tray!.destroy(),
       ]);
-      await window?.close();
       await coreController.destroy();
+      await _exitSaveFuture;
       commonPrint.log('exit');
     } finally {
       system.exit();
