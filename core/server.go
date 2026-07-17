@@ -5,6 +5,7 @@ package main
 import (
 	"encoding/binary"
 	"encoding/json"
+	"fmt"
 	"io"
 	"sync"
 )
@@ -13,6 +14,8 @@ var (
 	conn   io.ReadWriteCloser
 	connMu sync.Mutex
 )
+
+const maxIPCFrameSize = 64 * 1024 * 1024
 
 func (response MethodResponse) send() {
 	data, err := response.JSON()
@@ -37,11 +40,29 @@ func sendMessageBatch(messages []Message) {
 }
 
 func writeFrame(w io.Writer, data []byte) error {
-	frame := make([]byte, 4+len(data))
-	binary.LittleEndian.PutUint32(frame, uint32(len(data)))
-	copy(frame[4:], data)
-	_, err := w.Write(frame)
-	return err
+	if len(data) > maxIPCFrameSize {
+		return fmt.Errorf("IPC frame exceeds %d bytes", maxIPCFrameSize)
+	}
+	lenBuf := [4]byte{}
+	binary.LittleEndian.PutUint32(lenBuf[:], uint32(len(data)))
+	if err := writeAll(w, lenBuf[:]); err != nil {
+		return err
+	}
+	return writeAll(w, data)
+}
+
+func writeAll(w io.Writer, data []byte) error {
+	for len(data) > 0 {
+		n, err := w.Write(data)
+		if err != nil {
+			return err
+		}
+		if n == 0 {
+			return io.ErrShortWrite
+		}
+		data = data[n:]
+	}
+	return nil
 }
 
 func readFrame(r io.Reader) ([]byte, error) {
@@ -50,7 +71,10 @@ func readFrame(r io.Reader) ([]byte, error) {
 		return nil, err
 	}
 	length := binary.LittleEndian.Uint32(lenBuf)
-	data := make([]byte, length)
+	if length > maxIPCFrameSize {
+		return nil, fmt.Errorf("IPC frame exceeds %d bytes", maxIPCFrameSize)
+	}
+	data := make([]byte, int(length))
 	if _, err := io.ReadFull(r, data); err != nil {
 		return nil, err
 	}

@@ -10,9 +10,6 @@ crate-type = ["cdylib", "staticlib"]
 flutter_rust_bridge = "=2.12.0"
 interprocess = "2"
 
-[target.'cfg(unix)'.dependencies]
-libc = "0.2"
-
 [profile.release]
 opt-level = "s"
 lto = true
