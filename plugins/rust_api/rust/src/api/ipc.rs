@@ -505,3 +505,17 @@ mod tests {
         assert!(frame_reader.payload.is_empty());
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn stopping_an_already_stopped_server_succeeds() {
+        RUNNING.store(false, Ordering::SeqCst);
+        CONNECTED.store(true, Ordering::SeqCst);
+
+        assert_eq!(stop_ipc_server(), Ok(()));
+        assert!(!CONNECTED.load(Ordering::SeqCst));
+    }
+}
