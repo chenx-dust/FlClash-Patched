@@ -42,7 +42,10 @@ class System {
       'macos' => (deviceInfo as MacOsDeviceInfo).majorVersion,
       'android' => (deviceInfo as AndroidDeviceInfo).version.sdkInt,
       'windows' => (deviceInfo as WindowsDeviceInfo).majorVersion,
-      'ios' => int.parse((deviceInfo as IosDeviceInfo).systemVersion.split('.').firstOrNull ?? '0'),
+      'ios' => int.parse(
+        (deviceInfo as IosDeviceInfo).systemVersion.split('.').firstOrNull ??
+            '0',
+      ),
       String() => 0,
     };
   }
@@ -50,7 +53,7 @@ class System {
   bool supportsPredictiveBack(int version) => isAndroid && version >= 33;
 
   Future<bool> checkIsAdmin() async {
-    final corePath = appPath.corePath.replaceAll(' ', '\\\\ ');
+    final corePath = appPath.corePath;
     if (system.isWindows) {
       return request.pingHelper();
     } else if (system.isMacOS) {
@@ -99,8 +102,24 @@ class System {
         return AuthorizeCode.error;
       }
       return AuthorizeCode.success;
-    } else if (Platform.isLinux) {
-      final shell = Platform.environment['SHELL'] ?? 'bash';
+    }
+    if (Platform.isLinux) {
+      const shell = 'chown root:root -- "\$1" && chmod +sx -- "\$1"';
+      final arguments = ['/bin/sh', '-c', shell, 'sh', appPath.corePath];
+      try {
+        final result = await Process.run('pkexec', arguments);
+        switch (result.exitCode) {
+          case 0:
+            return AuthorizeCode.success;
+          case 127: // Unavailable
+            break;
+          default:
+            return AuthorizeCode.error;
+        }
+      } catch (_) {
+        // Fall back when polkit cannot complete the authorization request.
+      }
+
       final password = await globalState.showCommonDialog<String>(
         child: InputDialog(
           obscureText: true,
@@ -112,17 +131,27 @@ class System {
       if (password == null || password.isEmpty) {
         return AuthorizeCode.error;
       }
-      final escapedPassword = _shellEscape(password);
-      final escapedCorePath = _shellEscape(appPath.corePath);
-      final arguments = [
-        '-c',
-        'echo $escapedPassword | sudo -S chown root:root $escapedCorePath && echo $escapedPassword | sudo -S chmod +sx $escapedCorePath',
-      ];
-      final result = await Process.run(shell, arguments);
-      if (result.exitCode != 0) {
+
+      try {
+        final process = await Process.start('sudo', [
+          '-S',
+          '-p',
+          '',
+          '--',
+          ...arguments,
+        ]);
+        final outputDone = Future.wait([
+          process.stdout.drain<void>(),
+          process.stderr.drain<void>(),
+        ]);
+        process.stdin.writeln(password);
+        await process.stdin.close();
+        final exitCode = await process.exitCode;
+        await outputDone;
+        return exitCode == 0 ? AuthorizeCode.success : AuthorizeCode.error;
+      } catch (_) {
         return AuthorizeCode.error;
       }
-      return AuthorizeCode.success;
     }
     return AuthorizeCode.error;
   }
@@ -324,14 +353,7 @@ class Windows {
     await File(
       taskPath,
     ).writeAsBytes(taskXml.encodeUtf16LeWithBom, flush: true);
-    final commandLine = [
-      '/Create',
-      '/TN',
-      appName,
-      '/XML',
-      taskPath,
-      '/F',
-    ];
+    final commandLine = ['/Create', '/TN', appName, '/XML', taskPath, '/F'];
     final result = await Process.run('schtasks.exe', commandLine);
     if (result.exitCode == 0) {
       return true;
