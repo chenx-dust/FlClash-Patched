@@ -14,21 +14,26 @@ var (
 	connMu sync.Mutex
 )
 
-func (result ActionResult) send() {
-	data, err := result.Json()
+func (response MethodResponse) send() {
+	data, err := response.JSON()
 	if err != nil {
-		logError("ActionResult marshal error: method=%s id=%s err=%v", result.Method, result.Id, err)
+		logError("MethodResponse marshal error: id=%s err=%v", response.ID, err)
 		return
 	}
 	send(data)
 }
 
 func sendMessageBatch(messages []Message) {
-	result := ActionResult{
-		Method: messageMethod,
-		Data:   messages,
+	call := MethodCall{
+		Method:    messageMethod,
+		Arguments: mustMarshalJSON(messages),
 	}
-	result.send()
+	data, err := json.Marshal(call)
+	if err != nil {
+		logError("MethodCall marshal error: method=%s err=%v", call.Method, err)
+		return
+	}
+	send(data)
 }
 
 func writeFrame(w io.Writer, data []byte) error {
@@ -83,24 +88,23 @@ func startServer(arg string) {
 			}
 			return
 		}
-		var action = &Action{}
+		call := &MethodCall{}
 
-		err = json.Unmarshal(data, action)
+		err = json.Unmarshal(data, call)
 
 		if err != nil {
 			logError("server unmarshal error: %v (data: %q)", err, data)
 			continue
 		}
 
-		result := ActionResult{
-			Id:     action.Id,
-			Method: action.Method,
+		response := MethodResponse{
+			ID: call.ID,
 		}
 
-		go handleAction(action, result)
+		go handleMethodCall(call, response)
 	}
 }
 
-func nextHandle(action *Action, result ActionResult) bool {
+func handlePlatformMethodCall(call *MethodCall, response MethodResponse) bool {
 	return false
 }

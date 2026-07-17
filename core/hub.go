@@ -463,30 +463,31 @@ func handleUpdateConfig(params *UpdateParams) string {
 	return ""
 }
 
-func handleDelFile(path string, result ActionResult) {
+func handleDeleteFile(path string, response MethodResponse) {
 	go func() {
 		fileInfo, err := os.Stat(path)
 		if err != nil {
 			if !os.IsNotExist(err) {
-				result.success(err.Error())
+				response.success(err.Error())
+				return
 			}
-			result.success("")
+			response.success("")
 			return
 		}
 		if fileInfo.IsDir() {
 			err = os.RemoveAll(path)
 			if err != nil {
-				result.success(err.Error())
+				response.success(err.Error())
 				return
 			}
 		} else {
 			err = os.Remove(path)
 			if err != nil {
-				result.success(err.Error())
+				response.success(err.Error())
 				return
 			}
 		}
-		result.success("")
+		response.success("")
 	}()
 }
 

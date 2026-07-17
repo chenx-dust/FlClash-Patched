@@ -23,6 +23,10 @@ Generated directories are excluded from analysis:
 
 ## Testing Rules
 
+The `core/` directory is excluded from automated test coverage. Do not add `*_test.go` files, coverage instrumentation,
+or coverage collection for code under `core/`. Verify core protocol behavior through shared Dart contract tests under
+`test/core/` and native platform build checks instead.
+
 Use `CoreController.test(mock)` to inject a mocked `CoreHandlerInterface`. Call `CoreController.resetInstance()` in `tearDown` to clean up the singleton between tests.
 
 Register fallback values for freezed params used with `any()` matchers.

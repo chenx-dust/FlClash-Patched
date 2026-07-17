@@ -46,8 +46,8 @@ object ServiceController {
         binding = null
     }
 
-    fun invokeAction(data: String, callback: ((String) -> Unit)?): Result<Unit> = runCatching {
-        Core.invokeAction(data) { result ->
+    fun invokeMethod(data: String, callback: ((String) -> Unit)?): Result<Unit> = runCatching {
+        Core.invokeMethod(data) { result ->
             callback?.invoke(result.orEmpty())
         }
     }

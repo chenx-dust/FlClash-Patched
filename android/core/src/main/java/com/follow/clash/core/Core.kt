@@ -65,16 +65,16 @@ object Core {
         suspended: Boolean,
     )
 
-    private external fun invokeAction(
+    private external fun invokeMethod(
         data: String,
         cb: InvokeInterface,
     )
 
-    fun invokeAction(
+    fun invokeMethod(
         data: String,
         cb: (result: String?) -> Unit,
     ) {
-        invokeAction(
+        invokeMethod(
             data,
             object : InvokeInterface {
                 override fun onResult(result: String?) {

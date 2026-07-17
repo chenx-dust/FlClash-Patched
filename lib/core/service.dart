@@ -3,11 +3,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/core/core.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/core.dart';
 
+import 'event.dart';
 import 'interface.dart';
+import 'method.dart';
 import 'transport.dart';
 
 class CoreService extends CoreHandlerInterface {
@@ -17,7 +18,7 @@ class CoreService extends CoreHandlerInterface {
 
   Completer<bool> _shutdownCompleter = Completer();
 
-  final Map<String, Completer> _callbackCompleterMap = {};
+  final Map<String, Completer<Object?>> _responseCompleters = {};
 
   Process? _process;
 
@@ -33,18 +34,37 @@ class CoreService extends CoreHandlerInterface {
     _initServer();
   }
 
-  Future<void> handleResult(ActionResult result) async {
-    final completer = _callbackCompleterMap.remove(result.id);
-    final data = await parasResult(result);
-    if (result.id?.isEmpty == true) {
-      for (final event in coreEventsFromData(result.data)) {
-        coreEventManager.sendEvent(event);
-      }
-    }
-    if (completer?.isCompleted == true) {
+  void _handleMethodCall(CoreMethodCall call) {
+    if (call.method != CoreMethod.message) {
+      commonPrint.log(
+        'Unknown core callback method: ${call.method.name}',
+        logLevel: LogLevel.warning,
+      );
       return;
     }
-    completer?.complete(data);
+    for (final event in coreEventsFromData(call.arguments)) {
+      coreEventManager.sendEvent(event);
+    }
+  }
+
+  void _handleResponse(CoreMethodResponse response) {
+    final id = response.id;
+    final completer = id == null ? null : _responseCompleters.remove(id);
+    if (completer == null || completer.isCompleted) {
+      return;
+    }
+    final error = response.error;
+    if (error != null) {
+      completer.completeError(
+        CoreMethodException(
+          code: error.code,
+          message: error.message,
+          details: error.details,
+        ),
+      );
+      return;
+    }
+    completer.complete(response.result);
   }
 
   Future<void> _initServer() async {
@@ -63,8 +83,14 @@ class CoreService extends CoreHandlerInterface {
         .listen(
           (data) async {
             try {
-              final dataJson = await data.trim().commonToJSON<dynamic>();
-              handleResult(ActionResult.fromJson(dataJson));
+              final json = await data
+                  .trim()
+                  .commonToJSON<Map<String, Object?>>();
+              if (json.containsKey('method')) {
+                _handleMethodCall(CoreMethodCall.fromJson(json));
+              } else {
+                _handleResponse(CoreMethodResponse.fromJson(json));
+              }
             } catch (e) {
               commonPrint.log(
                 'Failed to parse transport data: $e',
@@ -148,9 +174,10 @@ class CoreService extends CoreHandlerInterface {
   }
 
   void _clearCompleter() {
-    for (final completer in _callbackCompleterMap.values) {
+    for (final completer in _responseCompleters.values) {
       completer.safeCompleter(null);
     }
+    _responseCompleters.clear();
   }
 
   @override
@@ -160,24 +187,27 @@ class CoreService extends CoreHandlerInterface {
   }
 
   @override
-  Future<T?> invoke<T>({
-    required ActionMethod method,
-    dynamic data,
+  Future<T?> invokeMethod<T>({
+    required CoreMethod method,
+    Object? arguments,
     Duration? timeout,
   }) async {
-    final id = nextActionId;
-    _callbackCompleterMap[id] = Completer<T?>();
-    sendMessage(json.encode(Action(id: id, method: method, data: data)));
-    return (_callbackCompleterMap[id] as Completer<T?>).future.withTimeout(
+    final id = nextMethodCallId;
+    final completer = Completer<Object?>();
+    _responseCompleters[id] = completer;
+    await sendMessage(
+      json.encode(CoreMethodCall(id: id, method: method, arguments: arguments)),
+    );
+    final result = await completer.future.withTimeout(
       timeout: timeout,
       onLast: () {
-        final completer = _callbackCompleterMap[id];
-        completer?.safeCompleter(null);
-        _callbackCompleterMap.remove(id);
+        final pendingResponse = _responseCompleters.remove(id);
+        pendingResponse?.safeCompleter(null);
       },
       tag: id,
       onTimeout: () => null,
     );
+    return result as T?;
   }
 
   @override

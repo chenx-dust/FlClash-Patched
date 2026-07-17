@@ -4,6 +4,7 @@ import 'dart:isolate';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/event.dart';
+import 'package:fl_clash/core/method.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -33,8 +34,10 @@ class Service {
       switch (call.method) {
         case 'event':
           final data = call.arguments as String? ?? '';
-          final result = ActionResult.fromJson(json.decode(data));
-          for (final event in coreEventsFromData(result.data)) {
+          final methodCall = CoreMethodCall.fromJson(
+            Map<String, Object?>.from(json.decode(data) as Map),
+          );
+          for (final event in coreEventsFromData(methodCall.arguments)) {
             for (final listener in _listeners) {
               listener.onServiceEvent(event);
             }
@@ -52,16 +55,16 @@ class Service {
     });
   }
 
-  Future<ActionResult?> invokeAction(Action action) async {
+  Future<CoreMethodResponse?> invokeMethod(CoreMethodCall call) async {
     final data = await methodChannel.invokeMethod<String>(
-      'invokeAction',
-      json.encode(action),
+      'invokeMethod',
+      json.encode(call),
     );
     if (data == null) {
       return null;
     }
     final dataJson = await data.commonToJSON<dynamic>();
-    return ActionResult.fromJson(dataJson);
+    return CoreMethodResponse.fromJson(dataJson);
   }
 
   Future<bool> start() async {

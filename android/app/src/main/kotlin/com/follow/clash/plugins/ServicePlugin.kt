@@ -37,7 +37,7 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
         when (call.method) {
             "init" -> initialize(result)
             "shutdown" -> shutdown(result)
-            "invokeAction" -> invokeAction(call, result)
+            "invokeMethod" -> invokeMethod(call, result)
             "getRunTime" -> getRunTime(result)
             "syncState" -> syncState(call, result)
             "start" -> start(result)
@@ -60,14 +60,14 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
         }
     }
 
-    private fun invokeAction(call: MethodCall, result: MethodChannel.Result) {
+    private fun invokeMethod(call: MethodCall, result: MethodChannel.Result) {
         val data = call.arguments as? String
         if (data == null) {
-            result.error("INVALID_ARGUMENT", "Action payload must be a string", null)
+            result.error("INVALID_ARGUMENT", "Method call payload must be a string", null)
             return
         }
         scope.launch {
-            ServiceController.invokeAction(data) { response ->
+            ServiceController.invokeMethod(data) { response ->
                 result.success(response)
             }.onFailure { error ->
                 result.error("CORE_ERROR", error.message, null)

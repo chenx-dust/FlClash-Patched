@@ -1,8 +1,8 @@
 {
-  "action": {
+  "methodCall": {
     "id": "updateConfig#contract",
     "method": "updateConfig",
-    "data": {
+    "arguments": {
       "mixed-port": 7890,
       "allow-lan": true,
       "ipv6": false,
@@ -10,10 +10,9 @@
       "geo-update-interval": 24
     }
   },
-  "eventResult": {
-    "id": "",
+  "eventCall": {
     "method": "message",
-    "data": [
+    "arguments": [
       {
         "type": "loaded",
         "data": "provider-a"
@@ -26,7 +25,19 @@
           "value": 42
         }
       }
-    ],
-    "code": 0
+    ]
+  },
+  "successResponse": {
+    "id": "updateConfig#contract",
+    "result": ""
+  },
+  "errorResponse": {
+    "id": "getConfig#contract",
+    "result": null,
+    "error": {
+      "code": "core_error",
+      "message": "config not found",
+      "details": null
+    }
   }
 }

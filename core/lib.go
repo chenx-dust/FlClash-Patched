@@ -159,46 +159,44 @@ func handleUpdateDns(value string) {
 	}()
 }
 
-func (result ActionResult) send() {
-	data, err := result.Json()
+func (response MethodResponse) send() {
+	data, err := response.JSON()
 	if err != nil {
 		return
 	}
-	invokeResult(result.callback, string(data))
-	if result.Method != messageMethod {
-		releaseObject(result.callback)
-	}
+	invokeResult(response.callback, string(data))
+	releaseObject(response.callback)
 }
 
-func nextHandle(action *Action, result ActionResult) bool {
-	switch action.Method {
+func handlePlatformMethodCall(call *MethodCall, response MethodResponse) bool {
+	switch call.Method {
 	case updateDnsMethod:
 		value := ""
-		if !decodeActionData(action, result, &value) {
+		if !decodeMethodArguments(call, response, &value) {
 			return true
 		}
 		handleUpdateDns(value)
-		result.success(true)
+		response.success(true)
 		return true
 	}
 	return false
 }
 
-//export invokeAction
-func invokeAction(callback unsafe.Pointer, paramsChar *C.char) {
+//export invokeMethod
+func invokeMethod(callback unsafe.Pointer, paramsChar *C.char) {
 	params := takeCString(paramsChar)
-	var action = &Action{}
-	err := json.Unmarshal([]byte(params), action)
+	call := &MethodCall{}
+	err := json.Unmarshal([]byte(params), call)
 	if err != nil {
-		invokeResult(callback, err.Error())
+		response := MethodResponse{callback: callback}
+		response.failure("invalid_method_call", err.Error(), nil)
 		return
 	}
-	result := ActionResult{
-		Id:       action.Id,
-		Method:   action.Method,
+	response := MethodResponse{
+		ID:       call.ID,
 		callback: callback,
 	}
-	go handleAction(action, result)
+	go handleMethodCall(call, response)
 }
 
 //export startTUN
@@ -256,12 +254,15 @@ func sendMessageBatch(messages []Message) {
 	if eventListener == nil {
 		return
 	}
-	result := ActionResult{
-		Method:   messageMethod,
-		callback: eventListener,
-		Data:     messages,
+	call := MethodCall{
+		Method:    messageMethod,
+		Arguments: mustMarshalJSON(messages),
 	}
-	result.send()
+	data, err := json.Marshal(call)
+	if err != nil {
+		return
+	}
+	invokeResult(eventListener, string(data))
 }
 
 //export stopTun
