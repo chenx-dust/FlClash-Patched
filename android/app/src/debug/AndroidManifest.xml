@@ -5,7 +5,7 @@
         android:label="FlClash Debug"
         tools:replace="android:label">
         <service
-            android:name=".QuickSettingsTileService"
+            android:name=".TileService"
             android:label="FlClash Debug"
             tools:replace="android:label" />
     </application>

@@ -89,7 +89,7 @@
         </activity>
 
         <service
-            android:name=".QuickSettingsTileService"
+            android:name=".TileService"
             android:exported="true"
             android:icon="@drawable/ic"
             android:label="@string/app_name"
