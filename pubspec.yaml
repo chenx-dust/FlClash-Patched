@@ -17,7 +17,7 @@ dependencies:
   shared_preferences: ^2.5.3
   window_manager:
     git:
-      url: https://github.com/chen08209/window_manager
+      url: https://github.com/chenx-dust/window_manager.git
       ref: main
       path: packages/window_manager
   dynamic_color: ^1.8.1
