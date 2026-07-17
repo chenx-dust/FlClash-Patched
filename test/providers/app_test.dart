@@ -409,7 +409,86 @@ void main() {
         expect(container.read(networkDetectionProvider).isLoading, false);
       },
     );
+
+    test(
+      'deduplicates automatic checks while stopped but allows forced checks',
+      () async {
+        final adapter = _CountingIpAdapter();
+        request.dio.httpClientAdapter = adapter;
+        final container = ProviderContainer(
+          overrides: [
+            initProvider.overrideWithBuild((_, _) => true),
+            runTimeProvider.overrideWithBuild((_, _) => null),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        final notifier = container.read(networkDetectionProvider.notifier);
+        notifier.startCheck();
+        await _waitForIp(container, '1.1.1.1');
+
+        notifier.startCheck();
+        await Future.delayed(commonDuration + const Duration(milliseconds: 50));
+
+        expect(adapter.checkCount, 1);
+        expect(container.read(networkDetectionProvider).ipInfo?.ip, '1.1.1.1');
+
+        notifier.startCheck(force: true);
+        await _waitForIp(container, '2.2.2.2');
+
+        expect(adapter.checkCount, 2);
+      },
+    );
   });
+}
+
+Future<void> _waitForIp(ProviderContainer container, String ip) async {
+  if (container.read(networkDetectionProvider).ipInfo?.ip == ip) {
+    return;
+  }
+  final completer = Completer<void>();
+  final subscription = container.listen(networkDetectionProvider, (_, next) {
+    if (!completer.isCompleted && next.ipInfo?.ip == ip) {
+      completer.complete();
+    }
+  });
+  try {
+    await completer.future.timeout(const Duration(seconds: 2));
+  } finally {
+    subscription.close();
+  }
+}
+
+class _CountingIpAdapter implements HttpClientAdapter {
+  static const _sourceCount = 7;
+
+  int _requestCount = 0;
+
+  int get checkCount => (_requestCount / _sourceCount).ceil();
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) {
+    _requestCount++;
+    final batch = ((_requestCount - 1) ~/ _sourceCount) + 1;
+    final ip = '$batch.$batch.$batch.$batch';
+    return Future.value(
+      ResponseBody.fromString(
+        '{"ip":"$ip","query":"$ip","country":"US",'
+        '"country_code":"US","countryCode":"US","cc":"US"}',
+        200,
+        headers: {
+          Headers.contentTypeHeader: ['application/json'],
+        },
+      ),
+    );
+  }
+
+  @override
+  void close({bool force = false}) {}
 }
 
 class _DelayedCancelIpAdapter implements HttpClientAdapter {

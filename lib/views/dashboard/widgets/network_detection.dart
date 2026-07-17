@@ -63,7 +63,9 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
       height: getWidgetHeight(1),
       child: CommonCard(
         onPressed: isLoading != true
-            ? () => ref.read(networkDetectionProvider.notifier).startCheck()
+            ? () => ref
+                  .read(networkDetectionProvider.notifier)
+                  .startCheck(force: true)
             : null,
         onLongPress: () => copyText(context, ipInfo?.ip),
         child: Column(
