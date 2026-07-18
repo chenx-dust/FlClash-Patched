@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/core/interface.dart';
@@ -101,7 +100,7 @@ void main() {
           now: 'Node A',
           testUrl: 'https://group.test',
         );
-        final response = Completer<String>();
+        final response = Completer<Delay>();
         when(
           () => coreHandler.asyncTestDelay('https://group.test', 'Node A'),
         ).thenAnswer((_) => response.future);
@@ -131,11 +130,7 @@ void main() {
         expect(observedDelays, [0]);
 
         response.complete(
-          jsonEncode({
-            'name': 'Node A',
-            'url': 'https://group.test',
-            'value': 42,
-          }),
+          const Delay(url: 'https://group.test', name: 'Node A', value: 42),
         );
         await testFuture;
 
@@ -154,7 +149,7 @@ void main() {
 
     test('publishes a result already stored by the core event', () async {
       const proxy = Proxy(name: 'Node A', type: 'Shadowsocks');
-      final response = Completer<String>();
+      final response = Completer<Delay>();
       when(
         () => coreHandler.asyncTestDelay('https://default.test', 'Node A'),
       ).thenAnswer((_) => response.future);
@@ -180,11 +175,7 @@ void main() {
             const Delay(url: 'https://default.test', name: 'Node A', value: 41),
           );
       response.complete(
-        jsonEncode({
-          'name': 'Node A',
-          'url': 'https://default.test',
-          'value': 42,
-        }),
+        const Delay(url: 'https://default.test', name: 'Node A', value: 42),
       );
       await testFuture;
 
@@ -200,8 +191,8 @@ void main() {
     test('publishes each result without waiting for slower proxies', () async {
       const fastProxy = Proxy(name: 'Fast', type: 'Shadowsocks');
       const slowProxy = Proxy(name: 'Slow', type: 'Shadowsocks');
-      final fastResponse = Completer<String>();
-      final slowResponse = Completer<String>();
+      final fastResponse = Completer<Delay>();
+      final slowResponse = Completer<Delay>();
       final fastResultPublished = Completer<void>();
       when(
         () => coreHandler.asyncTestDelay('https://default.test', 'Fast'),
@@ -231,11 +222,7 @@ void main() {
           );
 
       fastResponse.complete(
-        jsonEncode({
-          'name': fastProxy.name,
-          'url': 'https://default.test',
-          'value': 42,
-        }),
+        const Delay(url: 'https://default.test', name: 'Fast', value: 42),
       );
       await fastResultPublished.future;
 
@@ -253,11 +240,7 @@ void main() {
       );
 
       slowResponse.complete(
-        jsonEncode({
-          'name': slowProxy.name,
-          'url': 'https://default.test',
-          'value': 84,
-        }),
+        const Delay(url: 'https://default.test', name: 'Slow', value: 84),
       );
       await groupTestFuture;
     });
