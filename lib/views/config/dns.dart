@@ -412,25 +412,23 @@ class ProxyServerNameserverPolicyItem extends ConsumerWidget {
     return ListItem.open(
       title: Text(appLocalizations.proxyNameserverPolicy),
       subtitle: Text(appLocalizations.proxyNameserverPolicyDesc),
-      delegate: OpenDelegate(
-        blur: false,
-        widget: MapInputPage(
-          title: appLocalizations.proxyNameserverPolicy,
-          map: proxyServerNameserverPolicy,
-          keyMaxLength: TextInputLimits.domain,
-          valueMaxLength: TextInputLimits.dnsServer,
-          titleBuilder: (item) => Text(item.key),
-          subtitleBuilder: (item) => Text(item.value),
-        ),
-        onChanged: (value) {
-          ref
-              .read(patchClashConfigProvider.notifier)
-              .update(
-                (state) =>
-                    state.copyWith.dns(proxyServerNameserverPolicy: value),
-              );
-        },
+      blur: false,
+      widget: MapInputPage(
+        title: appLocalizations.proxyNameserverPolicy,
+        map: proxyServerNameserverPolicy,
+        keyMaxLength: TextInputLimits.domain,
+        valueMaxLength: TextInputLimits.dnsServer,
+        titleBuilder: (item) => Text(item.key),
+        subtitleBuilder: (item) => Text(item.value),
       ),
+      onChanged: (value) {
+        ref
+            .read(patchClashConfigProvider.notifier)
+            .update(
+              (state) =>
+                  state.copyWith.dns(proxyServerNameserverPolicy: value),
+            );
+      },
     );
   }
 }
