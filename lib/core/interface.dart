@@ -17,11 +17,11 @@ mixin CoreInterface {
 
   Future<bool> forceGc();
 
-  Future<String> validateConfig(String path);
+  Future<String> validateConfig(String data);
 
   Future<String> decryptAgeConfig(String data, String ageSecretKey);
 
-  Future<Map<String, dynamic>> getConfig(String path);
+  Future<Map<String, dynamic>> getProfileConfig(int profileId);
 
   Future<Map<String, String>> generateAgeKeyPair();
 
@@ -78,7 +78,7 @@ mixin CoreInterface {
 
   FutureOr<bool> closeConnection(String id);
 
-  FutureOr<String> deleteFile(String path);
+  FutureOr<String> deleteManagedPath(DeleteManagedPathParams params);
 
   FutureOr<bool> closeConnections();
 
@@ -158,10 +158,10 @@ abstract class CoreHandlerInterface with CoreInterface {
   }
 
   @override
-  Future<String> validateConfig(String path) async {
+  Future<String> validateConfig(String data) async {
     return await _invokeMethod<String>(
           method: CoreMethod.validateConfig,
-          arguments: path,
+          arguments: data,
         ) ??
         '';
   }
@@ -185,10 +185,10 @@ abstract class CoreHandlerInterface with CoreInterface {
   }
 
   @override
-  Future<Map<String, dynamic>> getConfig(String path) async {
+  Future<Map<String, dynamic>> getProfileConfig(int profileId) async {
     final result = await _invokeMethod<Map<String, dynamic>>(
-      method: CoreMethod.getConfig,
-      arguments: path,
+      method: CoreMethod.getProfileConfig,
+      arguments: profileId,
     );
     if (result == null) {
       throw const CoreMethodException(
@@ -360,10 +360,10 @@ abstract class CoreHandlerInterface with CoreInterface {
   }
 
   @override
-  Future<String> deleteFile(String path) async {
+  Future<String> deleteManagedPath(DeleteManagedPathParams params) async {
     return await _invokeMethod<String>(
-          method: CoreMethod.deleteFile,
-          arguments: path,
+          method: CoreMethod.deleteManagedPath,
+          arguments: params.toJson(),
         ) ??
         '';
   }

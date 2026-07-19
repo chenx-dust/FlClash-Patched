@@ -118,11 +118,11 @@ func handleMethodCall(call *MethodCall, response MethodResponse) {
 		response.success(handleShutdown())
 		return
 	case validateConfigMethod:
-		path := ""
-		if !decodeMethodArguments(call, response, &path) {
+		data := ""
+		if !decodeMethodArguments(call, response, &data) {
 			return
 		}
-		response.success(handleValidateConfig(path))
+		response.success(handleValidateConfig(data))
 		return
 	case decryptAgeConfigMethod:
 		params := DecryptAgeConfigParams{}
@@ -193,12 +193,12 @@ func handleMethodCall(call *MethodCall, response MethodResponse) {
 	case resetConnectionsMethod:
 		response.success(handleResetConnections())
 		return
-	case getConfigMethod:
-		path := ""
-		if !decodeMethodArguments(call, response, &path) {
+	case getProfileConfigMethod:
+		profileID := int64(0)
+		if !decodeMethodArguments(call, response, &profileID) {
 			return
 		}
-		config, err := handleGetConfig(path)
+		config, err := handleGetProfileConfig(profileID)
 		if err != nil {
 			response.failure("core_error", err.Error(), nil)
 			return
@@ -311,12 +311,12 @@ func handleMethodCall(call *MethodCall, response MethodResponse) {
 			response.success(value)
 		})
 		return
-	case deleteFileMethod:
-		path := ""
-		if !decodeMethodArguments(call, response, &path) {
+	case deleteManagedPathMethod:
+		params := DeleteManagedPathParams{}
+		if !decodeMethodArguments(call, response, &params) {
 			return
 		}
-		handleDeleteFile(path, response)
+		response.success(handleDeleteManagedPath(&params))
 		return
 	default:
 		if !handlePlatformMethodCall(call, response) {

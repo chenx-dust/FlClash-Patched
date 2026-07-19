@@ -1209,6 +1209,272 @@ as int,
 
 
 /// @nodoc
+mixin _$DeleteManagedPathParams {
+
+ ManagedPathScope get scope;@JsonKey(name: 'relative-path') String get relativePath;
+/// Create a copy of DeleteManagedPathParams
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$DeleteManagedPathParamsCopyWith<DeleteManagedPathParams> get copyWith => _$DeleteManagedPathParamsCopyWithImpl<DeleteManagedPathParams>(this as DeleteManagedPathParams, _$identity);
+
+  /// Serializes this DeleteManagedPathParams to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeleteManagedPathParams&&(identical(other.scope, scope) || other.scope == scope)&&(identical(other.relativePath, relativePath) || other.relativePath == relativePath));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,scope,relativePath);
+
+@override
+String toString() {
+  return 'DeleteManagedPathParams(scope: $scope, relativePath: $relativePath)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $DeleteManagedPathParamsCopyWith<$Res>  {
+  factory $DeleteManagedPathParamsCopyWith(DeleteManagedPathParams value, $Res Function(DeleteManagedPathParams) _then) = _$DeleteManagedPathParamsCopyWithImpl;
+@useResult
+$Res call({
+ ManagedPathScope scope,@JsonKey(name: 'relative-path') String relativePath
+});
+
+
+
+
+}
+/// @nodoc
+class _$DeleteManagedPathParamsCopyWithImpl<$Res>
+    implements $DeleteManagedPathParamsCopyWith<$Res> {
+  _$DeleteManagedPathParamsCopyWithImpl(this._self, this._then);
+
+  final DeleteManagedPathParams _self;
+  final $Res Function(DeleteManagedPathParams) _then;
+
+/// Create a copy of DeleteManagedPathParams
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? scope = null,Object? relativePath = null,}) {
+  return _then(_self.copyWith(
+scope: null == scope ? _self.scope : scope // ignore: cast_nullable_to_non_nullable
+as ManagedPathScope,relativePath: null == relativePath ? _self.relativePath : relativePath // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [DeleteManagedPathParams].
+extension DeleteManagedPathParamsPatterns on DeleteManagedPathParams {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _DeleteManagedPathParams value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _DeleteManagedPathParams() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _DeleteManagedPathParams value)  $default,){
+final _that = this;
+switch (_that) {
+case _DeleteManagedPathParams():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _DeleteManagedPathParams value)?  $default,){
+final _that = this;
+switch (_that) {
+case _DeleteManagedPathParams() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ManagedPathScope scope, @JsonKey(name: 'relative-path')  String relativePath)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _DeleteManagedPathParams() when $default != null:
+return $default(_that.scope,_that.relativePath);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ManagedPathScope scope, @JsonKey(name: 'relative-path')  String relativePath)  $default,) {final _that = this;
+switch (_that) {
+case _DeleteManagedPathParams():
+return $default(_that.scope,_that.relativePath);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ManagedPathScope scope, @JsonKey(name: 'relative-path')  String relativePath)?  $default,) {final _that = this;
+switch (_that) {
+case _DeleteManagedPathParams() when $default != null:
+return $default(_that.scope,_that.relativePath);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _DeleteManagedPathParams implements DeleteManagedPathParams {
+  const _DeleteManagedPathParams({required this.scope, @JsonKey(name: 'relative-path') required this.relativePath});
+  factory _DeleteManagedPathParams.fromJson(Map<String, dynamic> json) => _$DeleteManagedPathParamsFromJson(json);
+
+@override final  ManagedPathScope scope;
+@override@JsonKey(name: 'relative-path') final  String relativePath;
+
+/// Create a copy of DeleteManagedPathParams
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$DeleteManagedPathParamsCopyWith<_DeleteManagedPathParams> get copyWith => __$DeleteManagedPathParamsCopyWithImpl<_DeleteManagedPathParams>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$DeleteManagedPathParamsToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeleteManagedPathParams&&(identical(other.scope, scope) || other.scope == scope)&&(identical(other.relativePath, relativePath) || other.relativePath == relativePath));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,scope,relativePath);
+
+@override
+String toString() {
+  return 'DeleteManagedPathParams(scope: $scope, relativePath: $relativePath)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$DeleteManagedPathParamsCopyWith<$Res> implements $DeleteManagedPathParamsCopyWith<$Res> {
+  factory _$DeleteManagedPathParamsCopyWith(_DeleteManagedPathParams value, $Res Function(_DeleteManagedPathParams) _then) = __$DeleteManagedPathParamsCopyWithImpl;
+@override @useResult
+$Res call({
+ ManagedPathScope scope,@JsonKey(name: 'relative-path') String relativePath
+});
+
+
+
+
+}
+/// @nodoc
+class __$DeleteManagedPathParamsCopyWithImpl<$Res>
+    implements _$DeleteManagedPathParamsCopyWith<$Res> {
+  __$DeleteManagedPathParamsCopyWithImpl(this._self, this._then);
+
+  final _DeleteManagedPathParams _self;
+  final $Res Function(_DeleteManagedPathParams) _then;
+
+/// Create a copy of DeleteManagedPathParams
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? scope = null,Object? relativePath = null,}) {
+  return _then(_DeleteManagedPathParams(
+scope: null == scope ? _self.scope : scope // ignore: cast_nullable_to_non_nullable
+as ManagedPathScope,relativePath: null == relativePath ? _self.relativePath : relativePath // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
 mixin _$ChangeProxyParams {
 
 @JsonKey(name: 'group-name') String get groupName;@JsonKey(name: 'proxy-name') String get proxyName;
