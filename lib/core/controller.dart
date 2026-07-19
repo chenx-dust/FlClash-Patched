@@ -86,17 +86,8 @@ class CoreController {
     return res;
   }
 
-  Future<String> validateConfig(String path) async {
-    final res = await _interface.validateConfig(path);
-    return res;
-  }
-
-  Future<String> validateConfigWithData(String data) async {
-    final path = await appPath.tempFilePath;
-    final file = File(path);
-    await file.safeWriteAsString(data);
-    final res = await _interface.validateConfig(path);
-    await File(path).safeDelete();
+  Future<String> validateConfig(String data) async {
+    final res = await _interface.validateConfig(data);
     return res;
   }
 
@@ -197,9 +188,8 @@ class CoreController {
   }
 
   Future<Map<String, dynamic>> getConfig(int id) async {
-    final profilePath = await appPath.getProfilePath(id.toString());
     final data = Map<String, dynamic>.from(
-      await _interface.getConfig(profilePath),
+      await _interface.getProfileConfig(id),
     );
     data['rules'] = data['rule'];
     data.remove('rule');
@@ -248,6 +238,10 @@ class CoreController {
 
   Future<String> clearEffect(int profileId) async {
     return _interface.clearEffect(profileId);
+  }
+
+  Future<String> deleteManagedPath(DeleteManagedPathParams params) async {
+    return _interface.deleteManagedPath(params);
   }
 
   Future<Map<String, String>> generateAgeKeyPair() {
