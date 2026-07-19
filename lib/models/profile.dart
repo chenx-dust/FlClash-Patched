@@ -231,13 +231,13 @@ extension ProfileExtension on Profile {
         }
       } catch (_) {}
     }
-    final path = await appPath.tempFilePath;
-    final tempFile = File(path);
-    await tempFile.safeWriteAsString(content);
-    final message = await coreController.validateConfig(path);
+    final message = await coreController.validateConfig(content);
     if (message.isNotEmpty) {
       throw message;
     }
+    final path = await appPath.tempFilePath;
+    final tempFile = File(path);
+    await tempFile.safeWriteAsString(content);
     final mFile = await file;
     await tempFile.copy(mFile.path);
     await tempFile.safeDelete();

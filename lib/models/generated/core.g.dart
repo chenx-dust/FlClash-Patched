@@ -139,6 +139,26 @@ Map<String, dynamic> _$InitParamsToJson(_InitParams instance) =>
       'version': instance.version,
     };
 
+_DeleteManagedPathParams _$DeleteManagedPathParamsFromJson(
+  Map<String, dynamic> json,
+) => _DeleteManagedPathParams(
+  scope: $enumDecode(_$ManagedPathScopeEnumMap, json['scope']),
+  relativePath: json['relative-path'] as String,
+);
+
+Map<String, dynamic> _$DeleteManagedPathParamsToJson(
+  _DeleteManagedPathParams instance,
+) => <String, dynamic>{
+  'scope': _$ManagedPathScopeEnumMap[instance.scope]!,
+  'relative-path': instance.relativePath,
+};
+
+const _$ManagedPathScopeEnumMap = {
+  ManagedPathScope.profiles: 'profiles',
+  ManagedPathScope.providers: 'providers',
+  ManagedPathScope.scripts: 'scripts',
+};
+
 _ChangeProxyParams _$ChangeProxyParamsFromJson(Map<String, dynamic> json) =>
     _ChangeProxyParams(
       groupName: json['group-name'] as String,

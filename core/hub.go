@@ -3,10 +3,14 @@ package main
 import (
 	"cmp"
 	"context"
+	"fmt"
+	"io"
 	"net"
 	"os"
+	"path/filepath"
 	"runtime"
 	"runtime/debug"
+	"strconv"
 	"sync"
 	"time"
 
@@ -117,12 +121,8 @@ func handleShutdown() bool {
 	return true
 }
 
-func handleValidateConfig(path string) string {
-	buf, err := readFile(path)
-	if err != nil {
-		return err.Error()
-	}
-	_, err = config.UnmarshalRawConfig(buf)
+func handleValidateConfig(data string) string {
+	_, err := config.UnmarshalRawConfig([]byte(data))
 	if err != nil {
 		return err.Error()
 	}
@@ -488,8 +488,111 @@ func handleGetMemory(fn func(value uint64)) {
 	}()
 }
 
-func handleGetConfig(path string) (*config.RawConfig, error) {
-	bytes, err := readFile(path)
+func managedPathComponents(scope ManagedPathScope) ([]string, error) {
+	switch scope {
+	case profilesPathScope:
+		return []string{"profiles"}, nil
+	case providersPathScope:
+		return []string{"profiles", "providers"}, nil
+	case scriptsPathScope:
+		return []string{"scripts"}, nil
+	default:
+		return nil, fmt.Errorf("invalid managed path scope: %s", scope)
+	}
+}
+
+func resolveManagedPath(relativePath string) (string, error) {
+	if relativePath == "" || relativePath == "." || !filepath.IsLocal(relativePath) {
+		return "", fmt.Errorf("invalid managed relative path: %s", relativePath)
+	}
+
+	cleanPath := filepath.Clean(relativePath)
+	if cleanPath == "." || !filepath.IsLocal(cleanPath) {
+		return "", fmt.Errorf("invalid managed relative path: %s", relativePath)
+	}
+	return cleanPath, nil
+}
+
+func openManagedRoot(scope ManagedPathScope) (*os.Root, error) {
+	components, err := managedPathComponents(scope)
+	if err != nil {
+		return nil, err
+	}
+
+	root, err := os.OpenRoot(constant.Path.HomeDir())
+	if err != nil {
+		return nil, err
+	}
+	for _, component := range components {
+		// Open each fixed scope component from its verified parent. Comparing the
+		// opened directory with a no-follow lookup rejects symlink/reparse roots
+		// and detects replacements that race with OpenRoot.
+		nextRoot, err := root.OpenRoot(component)
+		if err != nil {
+			_ = root.Close()
+			return nil, err
+		}
+		openedInfo, err := nextRoot.Stat(".")
+		if err != nil {
+			_ = nextRoot.Close()
+			_ = root.Close()
+			return nil, err
+		}
+		pathInfo, err := root.Lstat(component)
+		if err != nil {
+			_ = nextRoot.Close()
+			_ = root.Close()
+			return nil, err
+		}
+		if !pathInfo.IsDir() || pathInfo.Mode()&os.ModeSymlink != 0 || !os.SameFile(openedInfo, pathInfo) {
+			_ = nextRoot.Close()
+			_ = root.Close()
+			return nil, fmt.Errorf("managed path scope is not a stable directory: %s", scope)
+		}
+		_ = root.Close()
+		root = nextRoot
+	}
+	return root, nil
+}
+
+func readManagedConfig(root *os.Root, path string) ([]byte, error) {
+	file, err := root.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	fileInfo, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
+	if !fileInfo.Mode().IsRegular() {
+		return nil, fmt.Errorf("config is not a regular file")
+	}
+	data, err := io.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func handleGetProfileConfig(profileID int64) (*config.RawConfig, error) {
+	if !isInit {
+		return nil, fmt.Errorf("not initialized")
+	}
+	if profileID <= 0 {
+		return nil, fmt.Errorf("invalid profile id: %d", profileID)
+	}
+	path, err := resolveManagedPath(strconv.FormatInt(profileID, 10) + ".yaml")
+	if err != nil {
+		return nil, err
+	}
+	root, err := openManagedRoot(profilesPathScope)
+	if err != nil {
+		return nil, err
+	}
+	defer root.Close()
+	bytes, err := readManagedConfig(root, path)
 	if err != nil {
 		return nil, err
 	}
@@ -509,32 +612,27 @@ func handleUpdateConfig(params *UpdateParams) string {
 	return ""
 }
 
-func handleDeleteFile(path string, response MethodResponse) {
-	go func() {
-		fileInfo, err := os.Stat(path)
-		if err != nil {
-			if !os.IsNotExist(err) {
-				response.success(err.Error())
-				return
-			}
-			response.success("")
-			return
+func handleDeleteManagedPath(params *DeleteManagedPathParams) string {
+	if !isInit {
+		return "not initialized"
+	}
+	path, err := resolveManagedPath(params.RelativePath)
+	if err != nil {
+		return err.Error()
+	}
+	root, err := openManagedRoot(params.Scope)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return ""
 		}
-		if fileInfo.IsDir() {
-			err = os.RemoveAll(path)
-			if err != nil {
-				response.success(err.Error())
-				return
-			}
-		} else {
-			err = os.Remove(path)
-			if err != nil {
-				response.success(err.Error())
-				return
-			}
-		}
-		response.success("")
-	}()
+		return err.Error()
+	}
+	defer root.Close()
+	err = root.RemoveAll(path)
+	if err != nil {
+		return err.Error()
+	}
+	return ""
 }
 
 func handleSetupConfig(params *SetupParams) string {

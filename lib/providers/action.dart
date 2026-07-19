@@ -12,6 +12,7 @@ import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as p;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -672,9 +673,9 @@ class StoreAction extends _$StoreAction {
     );
     final pathsToDelete = await shakingProfileTask(VM2(profileIds, scriptIds));
     if (pathsToDelete.isNotEmpty) {
-      final deleteFutures = pathsToDelete.map((path) async {
+      final deleteFutures = pathsToDelete.map((params) async {
         try {
-          final res = await coreController.deleteFile(path);
+          final res = await coreController.deleteManagedPath(params);
           if (res.isNotEmpty) throw res;
         } catch (e) {
           rethrow;
@@ -696,8 +697,13 @@ class StoreAction extends _$StoreAction {
     await database.close();
     await File(await appPath.databasePath).safeDelete(recursive: true);
     final homeDir = Directory(await appPath.profilesPath);
-    await for (final file in homeDir.list(recursive: true)) {
-      await coreController.deleteFile(file.path);
+    await for (final entity in homeDir.list(followLinks: false)) {
+      await coreController.deleteManagedPath(
+        DeleteManagedPathParams(
+          scope: ManagedPathScope.profiles,
+          relativePath: p.relative(entity.path, from: homeDir.path),
+        ),
+      );
     }
     await preferences.clearPreferences();
     ref.read(systemActionProvider.notifier).handleExit(false);
@@ -1047,15 +1053,17 @@ class ProfilesAction extends _$ProfilesAction {
 
   Future<void> clearEffect(int profileId) async {
     final profilePath = await appPath.getProfilePath(profileId.toString());
-    final providersDirPath = await appPath.getProvidersDirPath(
-      profileId.toString(),
-    );
     final profileFile = File(profilePath);
     final isExists = await profileFile.exists();
     if (isExists) {
       await profileFile.safeDelete(recursive: true);
     }
-    await coreController.deleteFile(providersDirPath);
+    await coreController.deleteManagedPath(
+      DeleteManagedPathParams(
+        scope: ManagedPathScope.providers,
+        relativePath: profileId.toString(),
+      ),
+    );
   }
 }
 

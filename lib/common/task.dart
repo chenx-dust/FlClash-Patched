@@ -282,16 +282,16 @@ Future<VM2<String, String>> _makeRealProfileTask(
   return VM2(yaml, yaml.toMd5());
 }
 
-Future<List<String>> shakingProfileTask(
+Future<List<DeleteManagedPathParams>> shakingProfileTask(
   VM2<Iterable<int>, Iterable<int>> data,
 ) async {
   return compute<
     VM3<Iterable<int>, Iterable<int>, RootIsolateToken>,
-    List<String>
+    List<DeleteManagedPathParams>
   >(_shakingProfileTask, VM3(data.a, data.b, RootIsolateToken.instance!));
 }
 
-Future<List<String>> _shakingProfileTask(
+Future<List<DeleteManagedPathParams>> _shakingProfileTask(
   VM3<Iterable<int>, Iterable<int>, RootIsolateToken> data,
 ) async {
   final profileIds = data.a;
@@ -301,10 +301,11 @@ Future<List<String>> _shakingProfileTask(
   final profilesDir = Directory(await appPath.profilesPath);
   final scriptsDir = Directory(await appPath.scriptsDirPath);
   final providersDir = Directory(await appPath.getProvidersRootPath());
-  final List<String> targets = [];
+  final List<DeleteManagedPathParams> targets = [];
   void scanDirectory(
     Directory dir,
     Iterable<int> baseNames, {
+    required ManagedPathScope scope,
     bool skipProvidersFolder = false,
   }) {
     if (!dir.existsSync()) return;
@@ -314,7 +315,12 @@ Future<List<String>> _shakingProfileTask(
       if (entity is File) {
         final id = basenameWithoutExtension(entity.path);
         if (!baseNames.contains(int.tryParse(id))) {
-          targets.add(entity.path);
+          targets.add(
+            DeleteManagedPathParams(
+              scope: scope,
+              relativePath: relative(entity.path, from: dir.path),
+            ),
+          );
         }
       } else if (skipProvidersFolder && entity is Directory) {
         if (basename(entity.path) == 'providers') {
@@ -324,9 +330,14 @@ Future<List<String>> _shakingProfileTask(
     }
   }
 
-  scanDirectory(profilesDir, profileIds, skipProvidersFolder: true);
-  scanDirectory(providersDir, profileIds);
-  scanDirectory(scriptsDir, scriptIds);
+  scanDirectory(
+    profilesDir,
+    profileIds,
+    scope: ManagedPathScope.profiles,
+    skipProvidersFolder: true,
+  );
+  scanDirectory(providersDir, profileIds, scope: ManagedPathScope.providers);
+  scanDirectory(scriptsDir, scriptIds, scope: ManagedPathScope.scripts);
   return targets;
 }
 

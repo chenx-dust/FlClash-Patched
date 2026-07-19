@@ -22,6 +22,19 @@ type InitParams struct {
 	Version int    `json:"version"`
 }
 
+type ManagedPathScope string
+
+const (
+	profilesPathScope  ManagedPathScope = "profiles"
+	providersPathScope ManagedPathScope = "providers"
+	scriptsPathScope   ManagedPathScope = "scripts"
+)
+
+type DeleteManagedPathParams struct {
+	Scope        ManagedPathScope `json:"scope"`
+	RelativePath string           `json:"relative-path"`
+}
+
 type SetupParams struct {
 	SelectedMap map[string]string `json:"selected-map"`
 	TestURL     string            `json:"test-url"`
@@ -118,8 +131,8 @@ const (
 	updateDnsMethod                      CoreMethod = "updateDns"
 	crashMethod                          CoreMethod = "crash"
 	setupConfigMethod                    CoreMethod = "setupConfig"
-	getConfigMethod                      CoreMethod = "getConfig"
-	deleteFileMethod                     CoreMethod = "deleteFile"
+	getProfileConfigMethod               CoreMethod = "getProfileConfig"
+	deleteManagedPathMethod              CoreMethod = "deleteManagedPath"
 	generateAgeKeyPairMethod             CoreMethod = "generateAgeKeyPair"
 	convertAgeSecretKeyToPublicKeyMethod CoreMethod = "convertAgeSecretKeyToPublicKey"
 	decryptAgeConfigMethod               CoreMethod = "decryptAgeConfig"
