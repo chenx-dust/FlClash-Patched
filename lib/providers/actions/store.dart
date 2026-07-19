@@ -15,9 +15,13 @@ class StoreAction extends _$StoreAction {
       ),
     );
     final pathsToDelete = await shakingProfileTask(VM2(profileIds, scriptIds));
-    await Future.wait(
-      pathsToDelete.map((path) => File(path).safeDelete(recursive: true)),
-    );
+    if (pathsToDelete.isNotEmpty) {
+      final deleteFutures = pathsToDelete.map((params) async {
+        final error = await coreController.deleteManagedPath(params);
+        if (error.isNotEmpty) throw error;
+      });
+      await Future.wait(deleteFutures);
+    }
   }
 
   void savePreferencesDebounce() {
@@ -35,7 +39,7 @@ class StoreAction extends _$StoreAction {
     if (await providersDir.exists()) {
       await for (final entity in providersDir.list(followLinks: false)) {
         if (entity is! Directory) continue;
-        final profileId = int.tryParse(basename(entity.path));
+        final profileId = int.tryParse(p.basename(entity.path));
         if (profileId != null && profileId > 0) {
           profileIds.add(profileId);
         }
@@ -51,7 +55,17 @@ class StoreAction extends _$StoreAction {
     commonPrint.log('clear preferences');
     await database.close();
     await File(await appPath.databasePath).safeDelete(recursive: true);
-    await Directory(await appPath.profilesPath).safeDelete(recursive: true);
+    final homeDir = Directory(await appPath.profilesPath);
+    if (await homeDir.exists()) {
+      await for (final entity in homeDir.list(followLinks: false)) {
+        await coreController.deleteManagedPath(
+          DeleteManagedPathParams(
+            scope: ManagedPathScope.profiles,
+            relativePath: p.relative(entity.path, from: homeDir.path),
+          ),
+        );
+      }
+    }
     await preferences.clearPreferences();
     ref.read(systemActionProvider.notifier).handleExit(false);
   }
