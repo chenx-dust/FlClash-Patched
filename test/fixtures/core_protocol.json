@@ -39,7 +39,7 @@
     }
   },
   "errorResponse": {
-    "id": "getConfig#contract",
+    "id": "getProfileConfig#contract",
     "result": null,
     "error": {
       "code": "core_error",
