@@ -65,7 +65,7 @@ class _RecordingCoreHandler extends CoreHandlerInterface {
         'vehicle-type': 'HTTP',
         'update-at': '2024-01-01T00:00:00.000Z',
       },
-      CoreMethod.getConfig => {
+      CoreMethod.getProfileConfig => {
         'mode': 'rule',
         'rule': ['MATCH,DIRECT'],
       },
@@ -94,11 +94,11 @@ class _FailingConfigCoreHandler extends _RecordingCoreHandler {
     Object? arguments,
     Duration? timeout,
   }) async {
-    if (method == CoreMethod.getConfig) {
+    if (method == CoreMethod.getProfileConfig) {
       throw const CoreMethodException(
         code: 'core_error',
         message: 'config not found',
-        details: {'path': '/missing.yaml'},
+        details: {'profile-id': 404},
       );
     }
     return super.invokeMethod(
@@ -116,7 +116,7 @@ class _EmptyConfigCoreHandler extends _RecordingCoreHandler {
     Object? arguments,
     Duration? timeout,
   }) async {
-    if (method == CoreMethod.getConfig) {
+    if (method == CoreMethod.getProfileConfig) {
       return null;
     }
     return super.invokeMethod(
@@ -158,6 +158,14 @@ void main() {
     await handler.sideLoadExternalProvider(providerName: 'provider', data: 'x');
     await handler.asyncTestDelay('https://example.com', 'DIRECT');
     await handler.convertAgeSecretKeyToPublicKey('AGE-SECRET-KEY-1');
+    await handler.validateConfig('mode: rule');
+    await handler.getProfileConfig(7);
+    await handler.deleteManagedPath(
+      const DeleteManagedPathParams(
+        scope: ManagedPathScope.providers,
+        relativePath: '7',
+      ),
+    );
 
     for (final method in [
       CoreMethod.initClash,
@@ -165,6 +173,7 @@ void main() {
       CoreMethod.changeProxy,
       CoreMethod.sideLoadExternalProvider,
       CoreMethod.asyncTestDelay,
+      CoreMethod.deleteManagedPath,
     ]) {
       expect(handler.calls[method], isA<Map>());
     }
@@ -172,6 +181,12 @@ void main() {
       handler.calls[CoreMethod.convertAgeSecretKeyToPublicKey],
       'AGE-SECRET-KEY-1',
     );
+    expect(handler.calls[CoreMethod.validateConfig], 'mode: rule');
+    expect(handler.calls[CoreMethod.getProfileConfig], 7);
+    expect(handler.calls[CoreMethod.deleteManagedPath], {
+      'scope': 'providers',
+      'relative-path': '7',
+    });
   });
 
   test('event contract accepts batches and legacy single events', () async {
@@ -211,7 +226,7 @@ void main() {
       (await handler.getExternalProvider('provider-1'))?.name,
       'provider-1',
     );
-    expect(await handler.getConfig('/config.yaml'), {
+    expect(await handler.getProfileConfig(7), {
       'mode': 'rule',
       'rule': ['MATCH,DIRECT'],
     });
@@ -226,26 +241,24 @@ void main() {
     expect(await handler.getMemory(), 2048);
   });
 
-  test('getConfig preserves structured core errors', () async {
+  test('getProfileConfig preserves structured core errors', () async {
     final handler = _FailingConfigCoreHandler();
 
     await expectLater(
-      handler.getConfig('/missing.yaml'),
+      handler.getProfileConfig(404),
       throwsA(
         isA<CoreMethodException>()
             .having((error) => error.code, 'code', 'core_error')
-            .having((error) => error.details, 'details', {
-              'path': '/missing.yaml',
-            }),
+            .having((error) => error.details, 'details', {'profile-id': 404}),
       ),
     );
   });
 
-  test('getConfig rejects empty transport results', () async {
+  test('getProfileConfig rejects empty transport results', () async {
     final handler = _EmptyConfigCoreHandler();
 
     await expectLater(
-      handler.getConfig('/config.yaml'),
+      handler.getProfileConfig(7),
       throwsA(
         isA<CoreMethodException>().having(
           (error) => error.code,
