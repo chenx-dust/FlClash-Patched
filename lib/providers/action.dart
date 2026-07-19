@@ -12,7 +12,7 @@ import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path/path.dart' show basename;
+import 'package:path/path.dart' as p;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -742,9 +742,17 @@ class StoreAction extends _$StoreAction {
       ),
     );
     final pathsToDelete = await shakingProfileTask(VM2(profileIds, scriptIds));
-    await Future.wait(
-      pathsToDelete.map((path) => File(path).safeDelete(recursive: true)),
-    );
+    if (pathsToDelete.isNotEmpty) {
+      final deleteFutures = pathsToDelete.map((params) async {
+        try {
+          final res = await coreController.deleteManagedPath(params);
+          if (res.isNotEmpty) throw res;
+        } catch (e) {
+          rethrow;
+        }
+      });
+      await Future.wait(deleteFutures);
+    }
   }
 
   void savePreferencesDebounce() {
@@ -762,7 +770,7 @@ class StoreAction extends _$StoreAction {
     if (await providersDir.exists()) {
       await for (final entity in providersDir.list(followLinks: false)) {
         if (entity is! Directory) continue;
-        final profileId = int.tryParse(basename(entity.path));
+        final profileId = int.tryParse(p.basename(entity.path));
         if (profileId != null && profileId > 0) {
           profileIds.add(profileId);
         }
@@ -778,7 +786,17 @@ class StoreAction extends _$StoreAction {
     commonPrint.log('clear preferences');
     await database.close();
     await File(await appPath.databasePath).safeDelete(recursive: true);
-    await Directory(await appPath.profilesPath).safeDelete(recursive: true);
+    final homeDir = Directory(await appPath.profilesPath);
+    if (await homeDir.exists()) {
+      await for (final entity in homeDir.list(followLinks: false)) {
+        await coreController.deleteManagedPath(
+          DeleteManagedPathParams(
+            scope: ManagedPathScope.profiles,
+            relativePath: p.relative(entity.path, from: homeDir.path),
+          ),
+        );
+      }
+    }
     await preferences.clearPreferences();
     ref.read(systemActionProvider.notifier).handleExit(false);
   }
@@ -1130,7 +1148,12 @@ class ProfilesAction extends _$ProfilesAction {
     if (isExists) {
       await profileFile.safeDelete(recursive: true);
     }
-    final error = await coreController.clearEffect(profileId);
+    final error = await coreController.deleteManagedPath(
+      DeleteManagedPathParams(
+        scope: ManagedPathScope.providers,
+        relativePath: profileId.toString(),
+      ),
+    );
     if (error.isNotEmpty) {
       commonPrint.log(error, logLevel: LogLevel.warning);
     }
