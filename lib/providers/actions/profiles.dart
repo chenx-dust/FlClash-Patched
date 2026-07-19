@@ -143,7 +143,12 @@ class ProfilesAction extends _$ProfilesAction {
     if (isExists) {
       await profileFile.safeDelete(recursive: true);
     }
-    final error = await coreController.clearEffect(profileId);
+    final error = await coreController.deleteManagedPath(
+      DeleteManagedPathParams(
+        scope: ManagedPathScope.providers,
+        relativePath: profileId.toString(),
+      ),
+    );
     if (error.isNotEmpty) {
       commonPrint.log(error, logLevel: LogLevel.warning);
     }

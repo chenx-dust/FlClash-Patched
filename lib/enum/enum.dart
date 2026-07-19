@@ -139,6 +139,8 @@ enum ResultType {
 
 enum CoreEventType { log, delay, request, loaded, crash, geoUpdate }
 
+enum ManagedPathScope { profiles, providers, scripts }
+
 enum InvokeMessageType { protect, process }
 
 enum FindProcessMode { always, off }
