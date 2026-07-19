@@ -102,11 +102,27 @@ void main() {
   });
 
   group('config methods', () {
-    test('validateConfig delegates to interface', () async {
-      when(() => mock.validateConfig('/path')).thenAnswer((_) async => 'ok');
-      final result = await controller.validateConfig('/path');
+    test('validateConfig delegates config data to interface', () async {
+      const data = 'mode: rule';
+      when(() => mock.validateConfig(data)).thenAnswer((_) async => 'ok');
+      final result = await controller.validateConfig(data);
       expect(result, 'ok');
-      verify(() => mock.validateConfig('/path')).called(1);
+      verify(() => mock.validateConfig(data)).called(1);
+    });
+
+    test('getConfig delegates profile id and normalizes rules', () async {
+      when(() => mock.getProfileConfig(7)).thenAnswer(
+        (_) async => {
+          'mode': 'rule',
+          'rule': ['MATCH,DIRECT'],
+        },
+      );
+
+      final result = await controller.getConfig(7);
+
+      expect(result['rules'], ['MATCH,DIRECT']);
+      expect(result, isNot(contains('rule')));
+      verify(() => mock.getProfileConfig(7)).called(1);
     });
 
     test('updateConfig delegates to interface', () async {
@@ -295,6 +311,20 @@ void main() {
       when(() => mock.clearEffect(42)).thenAnswer((_) async => 'ok');
       final result = await controller.clearEffect(42);
       expect(result, 'ok');
+      verify(() => mock.clearEffect(42)).called(1);
+    });
+
+    test('deleteManagedPath delegates scoped relative path', () async {
+      const params = DeleteManagedPathParams(
+        scope: ManagedPathScope.providers,
+        relativePath: '7',
+      );
+      when(() => mock.deleteManagedPath(params)).thenAnswer((_) async => 'ok');
+
+      final result = await controller.deleteManagedPath(params);
+
+      expect(result, 'ok');
+      verify(() => mock.deleteManagedPath(params)).called(1);
     });
   });
 }
