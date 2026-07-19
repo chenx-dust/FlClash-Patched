@@ -17,11 +17,11 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
     CoreMethod.initClash,
     CoreMethod.getIsInit,
     CoreMethod.validateConfig,
-    CoreMethod.getConfig,
+    CoreMethod.getProfileConfig,
     CoreMethod.decryptAgeConfig,
     CoreMethod.generateAgeKeyPair,
     CoreMethod.convertAgeSecretKeyToPublicKey,
-    CoreMethod.deleteFile,
+    CoreMethod.deleteManagedPath,
     CoreMethod.updateGeoData,
     CoreMethod.getCountryCode,
   };
