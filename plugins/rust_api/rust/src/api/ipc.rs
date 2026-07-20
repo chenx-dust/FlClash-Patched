@@ -4,7 +4,7 @@ use flutter_rust_bridge::frb;
 use interprocess::local_socket::prelude::*;
 use interprocess::local_socket::{GenericFilePath, ListenerNonblockingMode, ListenerOptions};
 use std::io::{self, Read, Write};
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::mpsc::{self, SyncSender, TrySendError};
 use std::sync::{Arc, Mutex};
 use std::thread;
@@ -16,6 +16,9 @@ use std::fs::{DirBuilder, Permissions};
 use std::os::unix::fs::{DirBuilderExt, FileTypeExt, MetadataExt, PermissionsExt};
 #[cfg(unix)]
 use std::path::{Path, PathBuf};
+
+#[cfg(target_os = "macos")]
+use std::os::fd::AsRawFd;
 
 #[cfg(windows)]
 use std::os::windows::io::{AsHandle, AsRawHandle};
@@ -30,6 +33,7 @@ macro_rules! ipc_debug {
 }
 
 static RUNNING: AtomicBool = AtomicBool::new(false);
+static EXPECTED_CORE_PID: AtomicU64 = AtomicU64::new(0);
 static LIFECYCLE: Mutex<()> = Mutex::new(());
 
 struct ServerState {
@@ -71,6 +75,97 @@ fn make_frame(ty: u8, payload: &[u8]) -> Vec<u8> {
     frame.push(ty);
     frame.extend_from_slice(payload);
     frame
+}
+
+#[derive(Debug, PartialEq, Eq)]
+struct PeerIdentity {
+    pid: u64,
+    euid: u32,
+}
+
+#[cfg(target_os = "macos")]
+fn macos_peer_pid(stream: &LocalSocketStream) -> io::Result<u64> {
+    let LocalSocketStream::UdSocket(stream) = stream;
+    let mut pid: libc::pid_t = 0;
+    let mut length = std::mem::size_of_val(&pid) as libc::socklen_t;
+    let result = unsafe {
+        libc::getsockopt(
+            stream.inner().as_raw_fd(),
+            libc::SOL_LOCAL,
+            libc::LOCAL_PEERPID,
+            std::ptr::from_mut(&mut pid).cast(),
+            &mut length,
+        )
+    };
+    if result != 0 {
+        return Err(io::Error::last_os_error());
+    }
+    if length as usize != std::mem::size_of_val(&pid) || pid <= 0 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "Unix IPC peer returned an invalid process ID",
+        ));
+    }
+    Ok(pid as u64)
+}
+
+#[cfg(unix)]
+fn peer_identity(stream: &LocalSocketStream) -> io::Result<PeerIdentity> {
+    let credentials = stream.peer_creds()?;
+    let euid = credentials.euid().ok_or_else(|| {
+        io::Error::new(
+            io::ErrorKind::Unsupported,
+            "Unix IPC peer user ID is unavailable",
+        )
+    })?;
+    #[cfg(target_os = "macos")]
+    let pid = macos_peer_pid(stream)?;
+    #[cfg(not(target_os = "macos"))]
+    let pid = credentials.pid().ok_or_else(|| {
+        io::Error::new(
+            io::ErrorKind::Unsupported,
+            "Unix IPC peer process ID is unavailable",
+        )
+    })? as u64;
+    Ok(PeerIdentity { pid, euid })
+}
+
+fn validate_peer_identity(
+    identity: &PeerIdentity,
+    expected_pid: u64,
+    expected_euid: u32,
+) -> io::Result<()> {
+    if identity.pid != expected_pid || identity.euid != expected_euid {
+        return Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            format!(
+                "IPC peer identity mismatch: expected pid={expected_pid}, uid={expected_euid}; got pid={}, uid={}",
+                identity.pid, identity.euid,
+            ),
+        ));
+    }
+    Ok(())
+}
+
+#[cfg(unix)]
+fn wait_for_authorized_peer(stream: &LocalSocketStream) -> io::Result<()> {
+    let identity = peer_identity(stream)?;
+    while server_active() {
+        let expected_pid = EXPECTED_CORE_PID.load(Ordering::SeqCst);
+        if expected_pid != 0 {
+            return validate_peer_identity(&identity, expected_pid, unsafe { libc::geteuid() });
+        }
+        thread::sleep(IO_POLL_INTERVAL);
+    }
+    Err(io::Error::new(
+        io::ErrorKind::Interrupted,
+        "IPC server stopped before peer authorization",
+    ))
+}
+
+#[cfg(windows)]
+fn wait_for_authorized_peer(_stream: &LocalSocketStream) -> io::Result<()> {
+    Ok(())
 }
 
 #[cfg(unix)]
@@ -305,6 +400,7 @@ fn server_active() -> bool {
 
 fn stop_server_thread() -> Result<(), String> {
     RUNNING.store(false, Ordering::SeqCst);
+    EXPECTED_CORE_PID.store(0, Ordering::SeqCst);
     let handle = {
         let mut state = STATE.lock().map_err(|e| format!("Lock poisoned: {e}"))?;
         state.tx = None;
@@ -316,6 +412,20 @@ fn stop_server_thread() -> Result<(), String> {
             .map_err(|_| "IPC server thread panicked".to_owned())?;
     }
     Ok(())
+}
+
+#[frb]
+pub fn set_expected_core_pid(pid: u32) -> Result<(), String> {
+    if pid == 0 {
+        return Err("Expected core process ID must be positive".into());
+    }
+    EXPECTED_CORE_PID.store(u64::from(pid), Ordering::SeqCst);
+    Ok(())
+}
+
+#[frb]
+pub fn clear_expected_core_pid() {
+    EXPECTED_CORE_PID.store(0, Ordering::SeqCst);
 }
 
 #[frb]
@@ -593,6 +703,13 @@ fn io_loop(name: String, sink: StreamSink<Vec<u8>, SseCodec>) {
             }
         };
 
+        if let Err(e) = wait_for_authorized_peer(&stream) {
+            if e.kind() != io::ErrorKind::Interrupted && server_active() {
+                ipc_debug!("[IPC] rejected unauthorized peer: {e}");
+            }
+            continue;
+        }
+
         // Unix streams use nonblocking reads directly. On Windows, `Accept` mode
         // deliberately restores an accepted named pipe to blocking mode. Keep it
         // that way and poll with PeekNamedPipe before reading: mixing PIPE_NOWAIT
@@ -821,6 +938,28 @@ mod lifecycle_tests {
         assert_eq!(stop_ipc_server(), Ok(()));
         assert!(STATE.lock().unwrap().tx.is_none());
     }
+
+    #[test]
+    fn peer_identity_requires_expected_process_and_user() {
+        let identity = PeerIdentity {
+            pid: 1234,
+            euid: 501,
+        };
+
+        assert!(validate_peer_identity(&identity, 1234, 501).is_ok());
+        assert_eq!(
+            validate_peer_identity(&identity, 4321, 501)
+                .unwrap_err()
+                .kind(),
+            io::ErrorKind::PermissionDenied,
+        );
+        assert_eq!(
+            validate_peer_identity(&identity, 1234, 502)
+                .unwrap_err()
+                .kind(),
+            io::ErrorKind::PermissionDenied,
+        );
+    }
 }
 
 #[cfg(all(test, unix))]
@@ -835,7 +974,7 @@ mod unix_security_tests {
             .as_nanos()
             ^ u128::from(std::process::id());
         let token_hex = format!("{token:032x}");
-        let runtime_token = format!("{}A", &token_hex[..21]);
+        let runtime_token = format!("{}A", &token_hex[token_hex.len() - 21..]);
         format!("/tmp/flclash-{runtime_token}/ipc-AAAAAAAAAAAAAAAAAAAAAA.sock")
     }
 
@@ -859,6 +998,30 @@ mod unix_security_tests {
         assert_eq!(socket_metadata.uid(), unsafe { libc::geteuid() });
         assert_eq!(socket_metadata.mode() & 0o777, 0o600);
 
+        drop(listener);
+        cleanup_socket(&socket_path).unwrap();
+    }
+
+    #[test]
+    fn kernel_reports_current_process_as_unix_peer() {
+        let socket_path = test_socket_path();
+        prepare_socket(&socket_path).unwrap();
+        let fs_name = socket_path.clone().to_fs_name::<GenericFilePath>().unwrap();
+        let listener = ListenerOptions::new()
+            .name(fs_name.clone())
+            .create_sync()
+            .unwrap();
+        secure_socket_permissions(&socket_path).unwrap();
+
+        let client = LocalSocketStream::connect(fs_name).unwrap();
+        let server = listener.accept().unwrap();
+        let identity = peer_identity(&server).unwrap();
+
+        assert_eq!(identity.pid, u64::from(std::process::id()));
+        assert_eq!(identity.euid, unsafe { libc::geteuid() });
+
+        drop(client);
+        drop(server);
         drop(listener);
         cleanup_socket(&socket_path).unwrap();
     }

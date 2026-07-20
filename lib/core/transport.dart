@@ -17,6 +17,8 @@ const _typeError = 0x04;
 typedef IpcServerStarter = Stream<Uint8List> Function(String address);
 typedef IpcMessageSender = Future<void> Function(List<int> data);
 typedef IpcServerStopper = Future<void> Function();
+typedef IpcPeerAuthorizer = Future<void> Function(int pid);
+typedef IpcPeerAuthorizationClearer = Future<void> Function();
 
 class IPCCoreTransport {
   final String address;
@@ -24,6 +26,8 @@ class IPCCoreTransport {
   final IpcServerStarter _startServer;
   final IpcMessageSender _sendMessage;
   final IpcServerStopper _stopServer;
+  final IpcPeerAuthorizer _authorizePeer;
+  final IpcPeerAuthorizationClearer _clearPeerAuthorization;
 
   final StreamController<Uint8List> _dataController =
       StreamController<Uint8List>.broadcast();
@@ -42,9 +46,14 @@ class IPCCoreTransport {
     IpcServerStarter? startServer,
     IpcMessageSender? sendMessage,
     IpcServerStopper? stopServer,
+    IpcPeerAuthorizer? authorizePeer,
+    IpcPeerAuthorizationClearer? clearPeerAuthorization,
   }) : _startServer = startServer ?? _restartIpcServer,
        _sendMessage = sendMessage ?? _sendIpcMessage,
-       _stopServer = stopServer ?? stopIpcServer;
+       _stopServer = stopServer ?? stopIpcServer,
+       _authorizePeer = authorizePeer ?? _setExpectedCorePid,
+       _clearPeerAuthorization =
+           clearPeerAuthorization ?? _clearExpectedCorePid;
 
   static Stream<Uint8List> _restartIpcServer(String address) {
     return restartIpcServer(name: address);
@@ -52,6 +61,14 @@ class IPCCoreTransport {
 
   static Future<void> _sendIpcMessage(List<int> data) {
     return sendIpcMessage(data: data);
+  }
+
+  static Future<void> _setExpectedCorePid(int pid) {
+    return setExpectedCorePid(pid: pid);
+  }
+
+  static Future<void> _clearExpectedCorePid() {
+    return clearExpectedCorePid();
   }
 
   Completer<void> get connectionCompleter => _completer;
@@ -155,6 +172,14 @@ class IPCCoreTransport {
 
   Future<void> send(String message) {
     return _sendMessage(utf8.encode(message));
+  }
+
+  Future<void> authorizePeer(int pid) {
+    return _authorizePeer(pid);
+  }
+
+  Future<void> clearPeerAuthorization() {
+    return _clearPeerAuthorization();
   }
 
   void disconnected() {
