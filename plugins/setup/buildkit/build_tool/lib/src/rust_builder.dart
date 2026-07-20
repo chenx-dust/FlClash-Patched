@@ -39,7 +39,10 @@ class RustBuilder {
     if (release) {
       args.addAll(['--release', '--features', 'windows-service']);
     }
-    final env = {'TOKEN': token};
+    final env = {
+      'TOKEN': token,
+      'CORE_EXECUTABLE_NAME': '${config.coreName}${target.executableExtension}',
+    };
 
     final srcPath = p.join(
       _helperPath,
