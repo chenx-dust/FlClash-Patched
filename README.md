@@ -12,7 +12,8 @@ A soft fork of [FlClash](https://github.com/chen08209/FlClash), with several bug
 
 ### Features
 
-- Support iOS platform (requires an Apple Developer account)
+- Enhanced security (privileged behavior boundary restrictions, IPC security enhancements)
+- Support iOS platform (requires an Apple Developer account to build)
 - Optimized experience on Linux (Pacman package distribution, fixed RPM dependencies, WM_CLASS issues)
 - Fixed bugs from upstream (startup time, window positioning, notifications)
 - Energy efficiency optimizations (improved Android Doze, unified UI timer suspend)
