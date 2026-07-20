@@ -136,6 +136,7 @@ class CoreService extends CoreHandlerInterface {
     if (_process != null) {
       await shutdown(false);
     }
+    await _transport.clearPeerAuthorization();
     final nextConnection = _transport.waitForNextConnection();
     if (system.isWindows && await system.checkIsAdmin()) {
       final isSuccess = await request.startCoreByHelper();
@@ -151,7 +152,10 @@ class CoreService extends CoreHandlerInterface {
     }
     try {
       _process = await Process.start(appPath.corePath, [_transport.address]);
+      await _transport.authorizePeer(_process!.pid);
     } catch (e) {
+      _process?.kill();
+      _process = null;
       commonPrint.log(
         'Failed to start core process: $e',
         logLevel: LogLevel.error,
@@ -196,6 +200,7 @@ class CoreService extends CoreHandlerInterface {
   @override
   Future<bool> shutdown(bool isUser) async {
     _shutdownCompleter = Completer();
+    await _transport.clearPeerAuthorization();
     if (system.isWindows) {
       await request.stopCoreByHelper();
     }
