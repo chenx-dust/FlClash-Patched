@@ -23,7 +23,10 @@ class RustBuilder {
     if (release) {
       args.addAll(['--release', '--features', 'windows-service']);
     }
-    final env = {'TOKEN': token};
+    final env = {
+      'TOKEN': token,
+      'CORE_EXECUTABLE_NAME': '${config.coreName}${target.executableExtension}',
+    };
 
     _log.info(kDoubleSeparator);
     _log.info('Building Rust helper: $target');

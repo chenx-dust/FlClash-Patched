@@ -1,11 +1,100 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:fl_clash/common/common.dart';
+import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path_provider_foundation/path_provider_foundation.dart';
+
+const _unixSocketPathMaxBytes = 100;
+const _unixFallbackRuntimeRoot = '/tmp';
+
+String _secureRandomToken(int byteLength) {
+  final random = Random.secure();
+  final bytes = List.generate(byteLength, (_) => random.nextInt(256));
+  return base64UrlEncode(bytes).replaceAll('=', '');
+}
+
+String _trimUnixTrailingSeparators(String path) {
+  var normalized = path;
+  while (normalized.length > 1 && normalized.endsWith('/')) {
+    normalized = normalized.substring(0, normalized.length - 1);
+  }
+  return normalized;
+}
+
+String _joinUnixPath(String root, String name) {
+  final normalizedRoot = _trimUnixTrailingSeparators(root);
+  return normalizedRoot == '/' ? '/$name' : '$normalizedRoot/$name';
+}
+
+bool _isUsableUnixRuntimeRoot(String? path) {
+  if (path == null || !path.startsWith('/')) {
+    return false;
+  }
+  final normalizedPath = _trimUnixTrailingSeparators(path);
+  return normalizedPath != '/' && normalizedPath != _unixFallbackRuntimeRoot;
+}
+
+@visibleForTesting
+({String runtimeDirectory, String socketPath}) resolveUnixSocketPaths({
+  required bool isLinux,
+  required bool isMacOS,
+  required Map<String, String> environment,
+  required String systemTemp,
+  required String runtimeToken,
+  required String socketToken,
+  int maxSocketPathBytes = _unixSocketPathMaxBytes,
+}) {
+  String? preferredRuntimeDirectory;
+  if (isLinux) {
+    final xdgRuntimeDirectory = environment['XDG_RUNTIME_DIR'];
+    if (_isUsableUnixRuntimeRoot(xdgRuntimeDirectory)) {
+      preferredRuntimeDirectory = _joinUnixPath(
+        xdgRuntimeDirectory!,
+        'flclash',
+      );
+    }
+  } else if (isMacOS && _isUsableUnixRuntimeRoot(systemTemp)) {
+    preferredRuntimeDirectory = _joinUnixPath(systemTemp, 'flclash');
+  }
+
+  if (preferredRuntimeDirectory != null) {
+    final preferredSocketPath = _joinUnixPath(
+      preferredRuntimeDirectory,
+      'ipc-$socketToken.sock',
+    );
+    if (utf8.encode(preferredSocketPath).length <= maxSocketPathBytes) {
+      return (
+        runtimeDirectory: preferredRuntimeDirectory,
+        socketPath: preferredSocketPath,
+      );
+    }
+  }
+
+  final fallbackRuntimeDirectory =
+      '$_unixFallbackRuntimeRoot/flclash-$runtimeToken';
+  return (
+    runtimeDirectory: fallbackRuntimeDirectory,
+    socketPath: '$fallbackRuntimeDirectory/ipc-$socketToken.sock',
+  );
+}
+
+final _unixSocketPaths = resolveUnixSocketPaths(
+  isLinux: Platform.isLinux,
+  isMacOS: Platform.isMacOS,
+  environment: Platform.environment,
+  systemTemp: Directory.systemTemp.path,
+  runtimeToken: _secureRandomToken(16),
+  socketToken: _secureRandomToken(16),
+);
+final unixSocketRuntimeDirectory = _unixSocketPaths.runtimeDirectory;
+final unixSocketPath = _unixSocketPaths.socketPath;
+final windowsPipeName = '\\\\.\\pipe\\FlClashCore_${_secureRandomToken(16)}';
 
 class AppPath {
   static AppPath? _instance;
