@@ -4,6 +4,7 @@ use sha2::{Digest, Sha256};
 use std::collections::VecDeque;
 use std::fs::File;
 use std::io::{BufRead, Error, Read};
+use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::sync::{Arc, Mutex};
 use std::{io, thread};
@@ -15,11 +16,30 @@ const LISTEN_PORT: u16 = 47890;
 const CORE_PIPE_NAME: &str = r"\\.\pipe\FlClashCore";
 const ACCESS_TOKEN_HEADER: &str = "x-flclash-token";
 const DEBUG_ACCESS_TOKEN: &str = "flclash-debug";
+const CORE_EXECUTABLE_NAME: &str = match option_env!("CORE_EXECUTABLE_NAME") {
+    Some(name) => name,
+    None => "FlClashCore.exe",
+};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
-pub struct StartParams {
-    pub path: String,
+pub struct StartParams {}
+
+fn core_path_from_helper_path(helper_path: &Path) -> Result<PathBuf, Error> {
+    let helper_dir = helper_path
+        .parent()
+        .filter(|path| !path.as_os_str().is_empty())
+        .ok_or_else(|| {
+            Error::new(
+                io::ErrorKind::InvalidData,
+                "helper executable has no parent directory",
+            )
+        })?;
+    Ok(helper_dir.join(CORE_EXECUTABLE_NAME))
+}
+
+fn core_path() -> Result<PathBuf, Error> {
+    core_path_from_helper_path(&std::env::current_exe()?)
 }
 
 fn access_token() -> &'static str {
@@ -35,7 +55,7 @@ struct Unauthorized;
 
 impl Reject for Unauthorized {}
 
-fn sha256_file(path: &str) -> Result<String, Error> {
+fn sha256_file(path: &Path) -> Result<String, Error> {
     let mut file = File::open(path)?;
     let mut hasher = Sha256::new();
     let mut buffer = [0; 4096];
@@ -56,16 +76,20 @@ static LOGS: Lazy<Arc<Mutex<VecDeque<String>>>> =
 static PROCESS: Lazy<Arc<Mutex<Option<std::process::Child>>>> =
     Lazy::new(|| Arc::new(Mutex::new(None)));
 
-fn start(start_params: StartParams) -> impl Reply {
+fn start(_start_params: StartParams) -> impl Reply {
+    let core_path = match core_path() {
+        Ok(path) => path,
+        Err(error) => return error.to_string(),
+    };
     if !cfg!(debug_assertions) {
-        let sha256 = sha256_file(start_params.path.as_str()).unwrap_or("".to_string());
+        let sha256 = sha256_file(&core_path).unwrap_or_default();
         if sha256 != env!("TOKEN") {
             return format!("The SHA256 hash of the program requesting execution is: {}. The helper program only allows execution of applications with the SHA256 hash: {}.", sha256,  env!("TOKEN"),);
         }
     }
     stop();
     let mut process = PROCESS.lock().unwrap();
-    match Command::new(&start_params.path)
+    match Command::new(&core_path)
         .stderr(Stdio::piped())
         .arg(CORE_PIPE_NAME)
         .spawn()
@@ -236,5 +260,27 @@ mod tests {
     #[test]
     fn core_pipe_name_is_fixed() {
         assert_eq!(CORE_PIPE_NAME, r"\\.\pipe\FlClashCore");
+    }
+
+    #[test]
+    fn core_path_is_sibling_of_helper() {
+        let helper_path = PathBuf::from("install").join("FlClashHelperService.exe");
+
+        assert_eq!(
+            core_path_from_helper_path(&helper_path).unwrap(),
+            PathBuf::from("install").join(CORE_EXECUTABLE_NAME),
+        );
+    }
+
+    #[test]
+    fn core_path_rejects_missing_parent() {
+        assert!(core_path_from_helper_path(Path::new("FlClashHelperService.exe")).is_err());
+    }
+
+    #[test]
+    fn start_params_reject_caller_supplied_fields() {
+        let params = r#"{"path":"C:\\attacker.exe","arg":"pipe"}"#;
+
+        assert!(serde_json::from_str::<StartParams>(params).is_err());
     }
 }

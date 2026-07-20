@@ -186,7 +186,7 @@ class Request {
       final response = await dio
           .post(
             'http://$localhost:$helperPort/start',
-            data: json.encode({'path': appPath.corePath}),
+            data: json.encode({}),
             options: options,
           )
           .timeout(const Duration(milliseconds: 2000));
