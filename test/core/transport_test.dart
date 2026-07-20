@@ -30,6 +30,8 @@ void main() {
     late List<List<int>> sentMessages;
     late Object? sendError;
     late int stopCount;
+    late List<int> authorizedPids;
+    late int clearAuthorizationCount;
     late bool transportClosed;
     late IPCCoreTransport transport;
 
@@ -38,6 +40,8 @@ void main() {
       sentMessages = [];
       sendError = null;
       stopCount = 0;
+      authorizedPids = [];
+      clearAuthorizationCount = 0;
       transportClosed = false;
       transport = IPCCoreTransport(
         address: 'test-address',
@@ -50,6 +54,8 @@ void main() {
           sentMessages.add(data);
         },
         stopServer: () async => stopCount++,
+        authorizePeer: (pid) async => authorizedPids.add(pid),
+        clearPeerAuthorization: () async => clearAuthorizationCount++,
       );
     });
 
@@ -74,6 +80,18 @@ void main() {
       await transport.close();
       transportClosed = true;
       expect(stopCount, 1);
+    });
+
+    test('forwards core process authorization changes', () async {
+      final initFuture = transport.init();
+      events.add(_frame(0x00));
+      await initFuture;
+
+      await transport.authorizePeer(1234);
+      await transport.clearPeerAuthorization();
+
+      expect(authorizedPids, [1234]);
+      expect(clearAuthorizationCount, 1);
     });
 
     test('propagates startup error frames', () async {
