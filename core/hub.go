@@ -428,7 +428,9 @@ func handleGetCountryCode(ip string, fn func(value string)) {
 
 func handleGetMemory(fn func(value uint64)) {
 	go func() {
-		fn(statistic.DefaultManager.Memory())
+		var memStats runtime.MemStats
+		runtime.ReadMemStats(&memStats)
+		fn(memStats.StackInuse + memStats.HeapInuse + memStats.HeapIdle - memStats.HeapReleased)
 	}()
 }
 
