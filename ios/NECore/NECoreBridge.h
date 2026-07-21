@@ -28,7 +28,8 @@ struct sockaddr_ctl {
 + (BOOL)startTunWithFileDescriptor:(int)fileDescriptor
                               stack:(NSString *)stack
                             address:(NSString *)address
-                                dns:(NSString *)dns;
+                                dns:(NSString *)dns
+                                mtu:(int)mtu;
 + (void)stopTun;
 + (void)setSuspended:(BOOL)suspended;
 

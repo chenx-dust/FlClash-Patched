@@ -297,6 +297,8 @@
   "onlyConfig": "Только конфигурация",
   "onlyEmoji": "Только Emoji",
   "stackMode": "Режим стека",
+  "mtu": "MTU",
+  "mtuRangeTip": "MTU должен быть целым числом от 1 до 65535",
   "network": "Сеть",
   "networkDesc": "Изменение настроек, связанных с сетью",
   "bypassDomain": "Обход домена",
