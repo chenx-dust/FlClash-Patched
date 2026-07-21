@@ -187,6 +187,43 @@ class TunStackItem extends ConsumerWidget {
   }
 }
 
+class TunMtuItem extends ConsumerWidget {
+  const TunMtuItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
+    final mtu = ref.watch(
+      patchClashConfigProvider.select((state) => state.tun.mtu),
+    );
+    return ListItem.input(
+      title: Text(appLocalizations.mtu),
+      subtitle: Text('$mtu'),
+      dialogTitle: appLocalizations.mtu,
+      value: '$mtu',
+      resetValue: '$defaultTunMtu',
+      maxLength: TextInputLimits.number,
+      keyboardType: TextInputType.number,
+      validator: (value) {
+        final parsed = int.tryParse(value ?? '');
+        if (parsed == null || parsed < 1 || parsed > 65535) {
+          return appLocalizations.mtuRangeTip;
+        }
+        return null;
+      },
+      onChanged: (value) {
+        final parsed = int.tryParse(value ?? '');
+        if (parsed == null) {
+          return;
+        }
+        ref
+            .read(patchClashConfigProvider.notifier)
+            .update((state) => state.copyWith.tun(mtu: parsed));
+      },
+    );
+  }
+}
+
 class DozeSuspendItem extends ConsumerWidget {
   const DozeSuspendItem({super.key});
 
@@ -301,8 +338,9 @@ class NetworkListView extends StatelessWidget {
         items: [
           if (system.isDesktop) const TUNItem(),
           if (system.isMacOS) const AutoSetSystemDnsItem(),
-          const TunStackItem(),
-          if (!system.isDesktop) ...[
+          if (!system.isIOS) const TunStackItem(),
+          const TunMtuItem(),
+          if (system.isMobile) ...[
             const RouteModeItem(),
             const RouteAddressItem(),
           ],

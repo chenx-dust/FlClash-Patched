@@ -173,6 +173,7 @@ SharedState sharedState(Ref ref) {
         stack: state.tun.stack.name,
         mixedPort: state.mixedPort,
         routeAddress: state.tun.resolveRouteAddress(networkSetting.routeMode),
+        mtu: state.tun.mtu,
       ),
     ),
   );
@@ -203,6 +204,7 @@ SharedState sharedState(Ref ref) {
       dozeSuspend: vpnSetting.dozeSuspend,
       bypassDomain: networkSetting.bypassDomain,
       routeAddress: clashConfig.routeAddress,
+      mtu: clashConfig.mtu,
     ),
   );
 }

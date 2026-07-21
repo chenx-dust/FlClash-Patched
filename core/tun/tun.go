@@ -19,7 +19,7 @@ import (
 // Start takes ownership of fd. sing_tun.New closes what it was handed once
 // its Listener exists, so closing the same fd number twice can hit an
 // unrelated descriptor; fd is duped before New so each side closes its own copy.
-func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
+func Start(fd int, stack string, address, dns string, mtu uint32) *sing_tun.Listener {
 	var prefix4 []netip.Prefix
 	var prefix6 []netip.Prefix
 	tunStack, ok := constant.StackTypeMapping[strings.ToLower(stack)]
@@ -76,7 +76,7 @@ func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
 		AutoDetectInterface: false,
 		Inet4Address:        prefix4,
 		Inet6Address:        prefix6,
-		MTU:                 9000,
+		MTU:                 mtu,
 		FileDescriptor:      dupFd,
 	}
 
