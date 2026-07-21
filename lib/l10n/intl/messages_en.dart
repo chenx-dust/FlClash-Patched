@@ -678,6 +678,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "networkException": MessageLookupByLibrary.simpleMessage(
       "Network exception, please check your connection and try again",
     ),
+    "networkExtension": MessageLookupByLibrary.simpleMessage(
+      "Network Extension",
+    ),
     "networkSpeed": MessageLookupByLibrary.simpleMessage("Network speed"),
     "networkSpeedNotification": MessageLookupByLibrary.simpleMessage(
       "Show real-time network speed",
