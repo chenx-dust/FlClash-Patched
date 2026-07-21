@@ -169,11 +169,14 @@ fn validate_peer_identity(
     expected_euid: u32,
 ) -> io::Result<()> {
     validate_peer_pid(identity.pid, expected_pid)?;
-    if identity.euid != expected_euid {
+    // The desktop core normally inherits the app user's EUID. TUN mode uses a
+    // setuid-root core on Unix, so the same process may legitimately connect
+    // with EUID 0. The exact spawned PID is still required above.
+    if identity.euid != expected_euid && identity.euid != 0 {
         return Err(io::Error::new(
             io::ErrorKind::PermissionDenied,
             format!(
-                "IPC peer user mismatch: actual={}, expected={expected_euid}",
+                "IPC peer user mismatch: actual={}, expected={expected_euid} or root",
                 identity.euid,
             ),
         ));
@@ -970,7 +973,7 @@ mod lifecycle_tests {
     }
 
     #[test]
-    fn peer_identity_requires_expected_process_and_user() {
+    fn peer_identity_requires_expected_process_and_authorized_user() {
         let identity = PeerIdentity {
             pid: 1234,
             euid: 501,
@@ -985,6 +988,19 @@ mod lifecycle_tests {
         );
         assert_eq!(
             validate_peer_identity(&identity, 1234, 502)
+                .unwrap_err()
+                .kind(),
+            io::ErrorKind::PermissionDenied,
+        );
+    }
+
+    #[test]
+    fn peer_identity_allows_spawned_setuid_root_core() {
+        let identity = PeerIdentity { pid: 1234, euid: 0 };
+
+        assert!(validate_peer_identity(&identity, 1234, 501).is_ok());
+        assert_eq!(
+            validate_peer_identity(&identity, 4321, 501)
                 .unwrap_err()
                 .kind(),
             io::ErrorKind::PermissionDenied,
