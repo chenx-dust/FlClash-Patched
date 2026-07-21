@@ -6,9 +6,9 @@
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `cleanup_socket`, `ensure_private_preferred_runtime_root`, `ensure_private_runtime_dir`, `finish_server`, `has_secure_token_name`, `io_loop`, `is_current_gen`, `is_nonblocking_idle`, `is_preferred_runtime_dir`, `is_usable_preferred_runtime_root`, `join_server`, `macos_peer_pid`, `make_frame`, `peer_identity`, `poll`, `preferred_unix_runtime_root`, `prepare_socket`, `report_error`, `reset`, `secure_socket_permissions`, `server_active`, `stop_server_thread`, `take_server_handle`, `unix_runtime_dir`, `validate_frame_len`, `validate_peer_identity`, `wait_for_authorized_peer`, `write_all_interruptible`, `write_frame`
-// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `FrameReader`, `PeerIdentity`, `ServerState`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `eq`, `fmt`
+// These functions are ignored because they are not marked as `pub`: `available_read_len`, `cleanup_socket`, `finish_server`, `io_loop`, `is_current_gen`, `is_nonblocking_idle`, `join_server`, `make_frame`, `poll`, `prepare_socket`, `report_error`, `reset`, `secure_socket_permissions`, `server_active`, `stop_server_thread`, `take_server_handle`, `validate_client_pid`, `validate_frame_len`, `validate_peer_identity`, `wait_for_authorized_peer`, `windows_pipe_available_bytes`, `write_all_interruptible`, `write_frame`
+// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `FrameReader`, `PeerIdentity`, `ServerState`, `WindowsPipeReader`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_receiver_is_total_eq`, `eq`, `fmt`, `read`
 // These functions are ignored (category: IgnoreBecauseOwnerTyShouldIgnore): `default`
 
 Future<void> setExpectedCorePid({required int pid}) =>

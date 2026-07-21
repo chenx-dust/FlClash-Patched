@@ -8,7 +8,7 @@ use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::mpsc::{self, SyncSender, TrySendError};
 use std::sync::{Arc, Mutex};
 use std::thread;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 #[cfg(unix)]
 use std::fs::{DirBuilder, Permissions};
@@ -58,6 +58,7 @@ const MAX_FRAME_SIZE: usize = 64 * 1024 * 1024;
 const MAX_PENDING_MESSAGES: usize = 8;
 const IO_POLL_INTERVAL: Duration = Duration::from_millis(20);
 const ACCEPT_POLL_INTERVAL: Duration = Duration::from_millis(50);
+const PEER_AUTH_TIMEOUT: Duration = Duration::from_secs(10);
 
 #[cfg(unix)]
 const UNIX_FALLBACK_RUNTIME_ROOT: &str = "/tmp";
@@ -77,6 +78,38 @@ fn make_frame(ty: u8, payload: &[u8]) -> Vec<u8> {
     frame.push(ty);
     frame.extend_from_slice(payload);
     frame
+}
+
+fn wait_for_expected_core_pid(generation: u64) -> io::Result<u64> {
+    let deadline = Instant::now() + PEER_AUTH_TIMEOUT;
+    loop {
+        let expected_pid = EXPECTED_CORE_PID.load(Ordering::SeqCst);
+        if expected_pid != 0 {
+            return Ok(expected_pid);
+        }
+        if !server_active(generation) {
+            return Err(io::Error::new(
+                io::ErrorKind::Interrupted,
+                "IPC server stopped before peer authorization",
+            ));
+        }
+        if Instant::now() >= deadline {
+            return Err(io::Error::new(
+                io::ErrorKind::TimedOut,
+                "timed out awaiting the expected core PID",
+            ));
+        }
+        thread::sleep(IO_POLL_INTERVAL);
+    }
+}
+
+fn validate_peer_pid(actual_pid: u64, expected_pid: u64) -> io::Result<()> {
+    (actual_pid == expected_pid).then_some(()).ok_or_else(|| {
+        io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            format!("IPC peer PID mismatch: actual={actual_pid}, expected={expected_pid}"),
+        )
+    })
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -137,12 +170,13 @@ fn validate_peer_identity(
     expected_pid: u64,
     expected_euid: u32,
 ) -> io::Result<()> {
-    if identity.pid != expected_pid || identity.euid != expected_euid {
+    validate_peer_pid(identity.pid, expected_pid)?;
+    if identity.euid != expected_euid {
         return Err(io::Error::new(
             io::ErrorKind::PermissionDenied,
             format!(
-                "IPC peer identity mismatch: expected pid={expected_pid}, uid={expected_euid}; got pid={}, uid={}",
-                identity.pid, identity.euid,
+                "IPC peer user mismatch: actual={}, expected={expected_euid}",
+                identity.euid,
             ),
         ));
     }
@@ -152,22 +186,18 @@ fn validate_peer_identity(
 #[cfg(unix)]
 fn wait_for_authorized_peer(stream: &LocalSocketStream, generation: u64) -> io::Result<()> {
     let identity = peer_identity(stream)?;
-    while server_active(generation) {
-        let expected_pid = EXPECTED_CORE_PID.load(Ordering::SeqCst);
-        if expected_pid != 0 {
-            return validate_peer_identity(&identity, expected_pid, unsafe { libc::geteuid() });
-        }
-        thread::sleep(IO_POLL_INTERVAL);
-    }
-    Err(io::Error::new(
-        io::ErrorKind::Interrupted,
-        "IPC server stopped before peer authorization",
-    ))
+    let expected_pid = wait_for_expected_core_pid(generation)?;
+    validate_peer_identity(&identity, expected_pid, unsafe { libc::geteuid() })
 }
 
 #[cfg(windows)]
-fn wait_for_authorized_peer(_stream: &LocalSocketStream, _generation: u64) -> io::Result<()> {
-    Ok(())
+fn wait_for_authorized_peer(stream: &LocalSocketStream, generation: u64) -> io::Result<()> {
+    let actual_pid = stream
+        .peer_creds()?
+        .pid()
+        .ok_or_else(|| io::Error::new(io::ErrorKind::Unsupported, "IPC peer PID is unavailable"))?;
+    let expected_pid = wait_for_expected_core_pid(generation)?;
+    validate_peer_pid(u64::from(actual_pid), expected_pid)
 }
 
 #[cfg(unix)]
@@ -979,6 +1009,15 @@ mod lifecycle_tests {
             validate_peer_identity(&identity, 1234, 502)
                 .unwrap_err()
                 .kind(),
+            io::ErrorKind::PermissionDenied,
+        );
+    }
+
+    #[test]
+    fn peer_pid_must_match_the_spawned_core() {
+        assert!(validate_peer_pid(42, 42).is_ok());
+        assert_eq!(
+            validate_peer_pid(7, 42).unwrap_err().kind(),
             io::ErrorKind::PermissionDenied,
         );
     }

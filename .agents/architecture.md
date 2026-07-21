@@ -13,7 +13,7 @@ Android lib mode:
 Desktop core mode:
 
 - Go core runs as a separate process with `CGO_ENABLED=0`.
-- Flutter communicates via JSON over socket, using a Unix socket on macOS/Linux and TCP on Windows.
+- Flutter communicates via framed JSON over a Unix socket on macOS/Linux and a named pipe on Windows.
 - Dart-side implementation: `lib/core/service.dart` (`CoreService`).
 
 `lib/core/controller.dart` (`CoreController`) selects the implementation based on platform. `lib/core/interface.dart` defines the shared `CoreHandlerInterface`.
@@ -130,8 +130,14 @@ Platform build hooks inside `flutter build` trigger `build_tool` automatically:
 
 Windows helper auth:
 
-- Release: Core SHA256 is embedded in both the Flutter app and the Rust helper. The app pings the helper and verifies the token matches.
-- Debug: The Rust helper skips token verification when built in debug mode, so `flutter run` works without the SHA256 flow.
+- The helper exposes a local named-pipe RPC endpoint instead of a loopback HTTP port. Its pipe uses an explicit Windows
+  DACL and rejects remote clients.
+- The helper verifies that the named-pipe client PID belongs to the sibling `FlClash.exe`; the app verifies that the
+  server PID belongs to the sibling `FlClashHelperService.exe`.
+- Release builds additionally verify the sibling core SHA256 before launch. Debug builds skip the SHA256 check so
+  `flutter run` works without the release token flow.
+- The helper returns the spawned core PID. The Flutter IPC server accepts a Windows core connection only when its peer
+  PID matches that value (or the PID returned by direct `Process.start`).
 
 `plugins/setup/` is an FFI plugin that exists only as a build harness. It carries no Dart API, only platform build hooks that trigger Go compilation. Windows builds also compile a Rust helper in `services/helper/` through `RustBuilder`.
 
