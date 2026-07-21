@@ -139,14 +139,16 @@ class CoreService extends CoreHandlerInterface {
     await _transport.clearPeerAuthorization();
     final nextConnection = _transport.waitForNextConnection();
     if (system.isWindows && await system.checkIsAdmin()) {
-      final processId = await request.startCoreByHelper(_transport.address);
-      if (processId == null) {
+      final corePid = await request.startCoreByHelper(_transport.address);
+      if (corePid == null) {
         throw StateError('Helper failed to start the core process');
       }
+      await _transport.authorizePeer(corePid);
       try {
-        await _waitForCoreConnection(nextConnection, processId);
+        await _waitForCoreConnection(nextConnection, corePid);
       } catch (_) {
         await request.stopCoreByHelper();
+        await _transport.clearPeerAuthorization();
         rethrow;
       }
       return;
@@ -176,6 +178,7 @@ class CoreService extends CoreHandlerInterface {
     } catch (_) {
       _process?.kill();
       _process = null;
+      await _transport.clearPeerAuthorization();
       rethrow;
     }
   }

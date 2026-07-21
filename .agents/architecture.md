@@ -13,8 +13,8 @@ Android lib mode:
 Desktop core mode:
 
 - Go core runs as a separate process with `CGO_ENABLED=0`.
-- Flutter communicates through the `rust_api` local IPC server, using a Unix
-  domain socket on macOS/Linux and a named pipe on Windows.
+- Flutter communicates through the `rust_api` local IPC server using framed JSON,
+  with a Unix domain socket on macOS/Linux and a named pipe on Windows.
 - Dart-side implementation: `lib/core/service.dart` (`CoreService`).
 
 `lib/core/controller.dart` (`CoreController`) selects the implementation based on platform. `lib/core/interface.dart` defines the shared `CoreHandlerInterface`.
@@ -170,18 +170,18 @@ FFI library, while setup is only the build and packaging bridge for FlClash's ex
 
 Windows helper integrity/version check:
 
-- The build tool constructs the Core first, calculates its SHA256, and always
-  builds the Rust Helper with release hardening and that expected hash.
-- Flutter does not embed or send the Core SHA256. Debug, Profile, and Release
-  builds use the same Helper protocol and may use TUN through the same flow.
-- Ping is loopback-only and requires no request token. The Helper verifies the
-  fixed `FlClashCore.exe` beside it against its embedded SHA256 before reporting
-  readiness, and repeats the verification before every launch.
-- Flutter creates a named pipe with a 128-bit random suffix and passes only that
-  address to the helper. The helper validates the address namespace, returns the
-  spawned Core PID, and Flutter matches it against the named-pipe peer PID.
-- The Helper path and protocol version allow Flutter to replace stale service
-  registrations, while the Helper-owned Core check detects mismatched builds.
+- The helper exposes a local named-pipe RPC endpoint instead of a loopback HTTP port. Its pipe uses an explicit Windows
+  DACL and rejects remote clients.
+- The helper verifies that the named-pipe client PID belongs to the sibling `FlClash.exe`; the app verifies that the
+  server PID belongs to the sibling `FlClashHelperService.exe`.
+- Release builds open the fixed sibling Core executable without write/delete sharing, verify its embedded SHA256, and
+  keep the handle open through process creation. The ping token is for build/version matching, not third-party
+  code-signing attestation.
+- Debug/Profile keeps the requested TUN setting visible, but Dart does not contact the helper and the helper refuses
+  privileged Core startup.
+- The helper returns the spawned core PID. The Flutter IPC server accepts a Windows core connection only when its peer
+  PID matches that value (or the PID returned by direct `Process.start`).
+- Core pipe names contain a cryptographically random token and are validated before the helper launches the core.
 
 Build configuration defaults live in `build_tool/lib/src/options.dart` and can be overridden via a root `build_config.yaml`.
 
@@ -218,11 +218,6 @@ The helper owns its Windows Service Control Manager lifecycle through two elevat
 The Dart layer only launches the helper's `install` command through `ShellExecuteW`; it does not compose `sc.exe`,
 `taskkill`, or `cmd.exe` command lines.
 
-In every Flutter build mode it opens the fixed Core executable beside the Helper
-without write/delete sharing, validates it against the SHA256 embedded only in
-the Helper, and keeps that handle open through process creation. `/ping`
-self-validates the Core before reporting readiness; `/start`, `/stop`, and
-`/logs` remain loopback-only without request-token validation. The Helper accepts
-only FlClash's random Core named-pipe namespace, returns the spawned PID, and
-reports its executable path and protocol version from ping so stale
-registrations are replaced.
+It authenticates the app through the helper named pipe, validates the randomized
+Core named-pipe address, opens and verifies the fixed sibling Core executable in
+release builds, and returns the spawned Core PID for peer authorization.

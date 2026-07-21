@@ -1,41 +1,110 @@
+use interprocess::local_socket::prelude::*;
+use interprocess::local_socket::{GenericFilePath, ListenerOptions};
+#[cfg(windows)]
+use interprocess::os::windows::{
+    local_socket::ListenerOptionsExt, security_descriptor::SecurityDescriptor,
+};
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use std::collections::VecDeque;
 use std::fs::{File, OpenOptions};
 #[cfg(not(all(feature = "windows-service", target_os = "windows")))]
 use std::future::pending;
 use std::future::Future;
-use std::io::{BufRead, Error, Read};
+use std::io::{self, Error, Read, Write};
 #[cfg(windows)]
 use std::os::windows::fs::OpenOptionsExt;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
-use std::sync::{Arc, Mutex};
-use std::{io, thread};
-use warp::http::StatusCode;
-use warp::{Filter, Rejection, Reply};
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    Arc, Mutex,
+};
+use std::thread;
+use std::time::Duration;
 #[cfg(windows)]
-use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
+use widestring::U16CString;
+#[cfg(windows)]
+use windows_sys::Win32::{
+    Foundation::CloseHandle,
+    Storage::FileSystem::FILE_SHARE_READ,
+    System::Threading::{
+        OpenProcess, QueryFullProcessImageNameW, PROCESS_QUERY_LIMITED_INFORMATION,
+    },
+};
 
-const LISTEN_PORT: u16 = 47890;
-const CORE_PIPE_PREFIX: &str = r"\\.\pipe\FlClashCore_";
-const PROTOCOL_VERSION_HEADER: &str = "x-flclash-helper-protocol";
-const PROTOCOL_VERSION: &str = "4";
-const EXPECTED_CORE_SHA256: &str = env!("CORE_SHA256");
+const HELPER_PIPE_NAME: &str = r"\\.\pipe\FlClashHelper-v1";
+const MAX_HELPER_REQUEST_SIZE: usize = 4 * 1024;
+const MAX_HELPER_RESPONSE_SIZE: usize = 64 * 1024;
+const IPC_TOKEN_BASE64_URL_LENGTH: usize = 22;
+const CORE_EXECUTABLE_NAME: &str = env!("CORE_NAME");
+const APP_EXECUTABLE_NAME: &str = "FlClash.exe";
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
-#[serde(deny_unknown_fields)]
-pub struct StartParams {
-    pub address: String,
+#[derive(Debug, Deserialize)]
+#[serde(tag = "method", rename_all = "snake_case", deny_unknown_fields)]
+enum HelperRequest {
+    Ping,
+    Start { arg: String },
+    Stop,
+}
+
+#[derive(Debug, Serialize)]
+struct HelperResponse {
+    ok: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    token: Option<&'static str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    core_pid: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    error: Option<String>,
+}
+
+impl HelperResponse {
+    fn success() -> Self {
+        Self {
+            ok: true,
+            token: None,
+            core_pid: None,
+            error: None,
+        }
+    }
+
+    fn failure(error: impl ToString) -> Self {
+        Self {
+            ok: false,
+            token: None,
+            core_pid: None,
+            error: Some(error.to_string()),
+        }
+    }
+}
+
+fn core_path_from_helper_path(helper_path: &Path) -> Result<PathBuf, Error> {
+    let helper_dir = helper_path
+        .parent()
+        .filter(|path| !path.as_os_str().is_empty())
+        .ok_or_else(|| {
+            Error::new(
+                io::ErrorKind::InvalidData,
+                "helper executable has no parent directory",
+            )
+        })?;
+    Ok(helper_dir.join(CORE_EXECUTABLE_NAME))
 }
 
 fn core_path() -> Result<PathBuf, Error> {
+    core_path_from_helper_path(&std::env::current_exe()?)
+}
+
+fn app_path() -> Result<PathBuf, Error> {
     let helper_path = std::env::current_exe()?;
-    let directory = helper_path
-        .parent()
-        .ok_or_else(|| Error::other("helper executable has no parent directory"))?;
-    Ok(directory.join(env!("CORE_NAME")))
+    let helper_dir = helper_path.parent().ok_or_else(|| {
+        Error::new(
+            io::ErrorKind::InvalidData,
+            "helper executable has no parent directory",
+        )
+    })?;
+    Ok(helper_dir.join(APP_EXECUTABLE_NAME))
 }
 
 fn open_core(path: &Path) -> Result<File, Error> {
@@ -61,157 +130,227 @@ fn sha256_file(file: &mut File) -> Result<String, Error> {
     Ok(format!("{:x}", hasher.finalize()))
 }
 
-fn open_verified_core(path: &Path, expected_sha256: &str) -> Result<File, Error> {
-    if expected_sha256.is_empty() {
-        return Err(Error::other("expected Core SHA256 is empty"));
-    }
-    let mut core_file = open_core(path)?;
-    if sha256_file(&mut core_file)? != expected_sha256 {
-        return Err(Error::other("Core executable SHA256 mismatch"));
-    }
-    Ok(core_file)
-}
-
-fn open_fixed_verified_core() -> Result<(PathBuf, File), Error> {
-    let path = core_path()?;
-    let file = open_verified_core(&path, EXPECTED_CORE_SHA256)?;
-    Ok((path, file))
-}
-
-fn is_allowed_core_pipe(address: &str) -> bool {
-    let Some(suffix) = address.strip_prefix(CORE_PIPE_PREFIX) else {
-        return false;
-    };
-    suffix.len() == 32 && suffix.bytes().all(|value| value.is_ascii_hexdigit())
-}
-
-static LOGS: Lazy<Arc<Mutex<VecDeque<String>>>> =
-    Lazy::new(|| Arc::new(Mutex::new(VecDeque::with_capacity(100))));
 static PROCESS: Lazy<Arc<Mutex<Option<std::process::Child>>>> =
     Lazy::new(|| Arc::new(Mutex::new(None)));
 
-fn start(start_params: StartParams) -> impl Reply {
-    if !is_allowed_core_pipe(&start_params.address) {
-        return "invalid Core pipe address".to_string();
+fn has_secure_token(token: &str) -> bool {
+    let bytes = token.as_bytes();
+    bytes.len() == IPC_TOKEN_BASE64_URL_LENGTH
+        && bytes[..IPC_TOKEN_BASE64_URL_LENGTH - 1]
+            .iter()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(*byte, b'-' | b'_'))
+        && matches!(
+            bytes[IPC_TOKEN_BASE64_URL_LENGTH - 1],
+            b'A' | b'Q' | b'g' | b'w'
+        )
+}
+
+fn is_valid_core_pipe_name(arg: &str) -> bool {
+    const PREFIX: &str = r"\\.\pipe\FlClashCore_";
+    arg.strip_prefix(PREFIX).is_some_and(has_secure_token)
+}
+
+fn start(arg: &str) -> Result<u32, String> {
+    if cfg!(debug_assertions) {
+        return Err("privileged Core startup is disabled in debug builds".to_string());
     }
-
-    let (core_path, _core_file) = match open_fixed_verified_core() {
-        Ok(core) => core,
-        Err(error) => return error.to_string(),
+    if !is_valid_core_pipe_name(arg) {
+        return Err("invalid core pipe name".to_string());
+    }
+    let core_path = match core_path() {
+        Ok(path) => path,
+        Err(error) => return Err(error.to_string()),
     };
-
-    stop_core();
+    let mut core_file = open_core(&core_path).map_err(|error| error.to_string())?;
+    let sha256 = sha256_file(&mut core_file).map_err(|error| error.to_string())?;
+    if sha256 != env!("TOKEN") {
+        return Err(format!(
+            "Core SHA256 mismatch: actual={sha256}, expected={}",
+            env!("TOKEN"),
+        ));
+    }
+    stop();
     let mut process = PROCESS.lock().unwrap();
     match Command::new(&core_path)
         .current_dir(core_path.parent().unwrap())
-        .stderr(Stdio::piped())
-        .arg(&start_params.address)
+        .stderr(Stdio::null())
+        .arg(arg)
         .spawn()
     {
         Ok(child) => {
-            let process_id = child.id();
+            let core_pid = child.id();
             *process = Some(child);
-            if let Some(ref mut child) = *process {
-                let stderr = child.stderr.take().unwrap();
-                let reader = io::BufReader::new(stderr);
-                thread::spawn(move || {
-                    for line in reader.lines() {
-                        match line {
-                            Ok(output) => {
-                                log_message(output);
-                            }
-                            Err(_) => {
-                                break;
-                            }
-                        }
-                    }
-                });
-            }
-            process_id.to_string()
+            Ok(core_pid)
         }
-        Err(e) => {
-            log_message(e.to_string());
-            e.to_string()
-        }
+        Err(e) => Err(e.to_string()),
     }
 }
 
-fn stop_core() -> String {
+fn stop() {
     let mut process = PROCESS.lock().unwrap();
     if let Some(mut child) = process.take() {
         let _ = child.kill();
         let _ = child.wait();
     }
     *process = None;
-    String::new()
 }
 
-fn log_message(message: String) {
-    let mut log_buffer = LOGS.lock().unwrap();
-    if log_buffer.len() == 100 {
-        log_buffer.pop_front();
+fn read_frame(reader: &mut impl Read, limit: usize) -> io::Result<Vec<u8>> {
+    let mut length = [0_u8; 4];
+    reader.read_exact(&mut length)?;
+    let length = u32::from_le_bytes(length) as usize;
+    if length > limit {
+        return Err(Error::new(
+            io::ErrorKind::InvalidData,
+            "helper IPC frame is too large",
+        ));
     }
-    log_buffer.push_back(format!("{}\n", message));
+    let mut data = vec![0_u8; length];
+    reader.read_exact(&mut data)?;
+    Ok(data)
 }
 
-fn get_logs() -> impl Reply {
-    let log_buffer = LOGS.lock().unwrap();
-    let value = log_buffer
-        .iter()
-        .cloned()
-        .collect::<Vec<String>>()
-        .join("\n");
-    warp::reply::with_header(
-        warp::reply::with_header(value, "Content-Type", "text/plain; charset=utf-8"),
-        "Cache-Control",
-        "no-store",
-    )
+fn write_frame(writer: &mut impl Write, data: &[u8], limit: usize) -> io::Result<()> {
+    if data.len() > limit {
+        return Err(Error::new(
+            io::ErrorKind::InvalidData,
+            "helper IPC frame is too large",
+        ));
+    }
+    let length = u32::try_from(data.len()).map_err(|_| {
+        Error::new(
+            io::ErrorKind::InvalidData,
+            "helper IPC frame length overflow",
+        )
+    })?;
+    writer.write_all(&length.to_le_bytes())?;
+    writer.write_all(data)
 }
 
-fn ping_response(result: Result<PathBuf, Error>) -> warp::reply::Response {
-    let (value, status) = match result {
-        Ok(path) => (path.to_string_lossy().into_owned(), StatusCode::OK),
-        Err(error) => (error.to_string(), StatusCode::CONFLICT),
+fn handle_request(request: HelperRequest) -> HelperResponse {
+    match request {
+        HelperRequest::Ping => HelperResponse {
+            token: Some(env!("TOKEN")),
+            ..HelperResponse::success()
+        },
+        HelperRequest::Start { arg } => match start(&arg) {
+            Ok(core_pid) => HelperResponse {
+                core_pid: Some(core_pid),
+                ..HelperResponse::success()
+            },
+            Err(error) => HelperResponse::failure(error),
+        },
+        HelperRequest::Stop => {
+            stop();
+            HelperResponse::success()
+        }
+    }
+}
+
+#[cfg(windows)]
+fn process_image_path(pid: u32) -> io::Result<PathBuf> {
+    let process = unsafe { OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, pid) };
+    if process.is_null() {
+        return Err(Error::last_os_error());
+    }
+    let mut buffer = vec![0_u16; 32_768];
+    let mut length = u32::try_from(buffer.len()).unwrap();
+    let result =
+        unsafe { QueryFullProcessImageNameW(process, 0, buffer.as_mut_ptr(), &mut length) };
+    let error = if result == 0 {
+        Some(Error::last_os_error())
+    } else {
+        None
     };
-    warp::reply::with_header(
-        warp::reply::with_status(value, status),
-        PROTOCOL_VERSION_HEADER,
-        PROTOCOL_VERSION,
-    )
-    .into_response()
-}
-
-fn ping() -> warp::reply::Response {
-    let result = open_fixed_verified_core().and_then(|_| std::env::current_exe());
-    if let Err(error) = &result {
-        log_message(format!("Helper ping failed: {error}"));
+    unsafe {
+        CloseHandle(process);
     }
-    ping_response(result)
+    if let Some(error) = error {
+        return Err(error);
+    }
+    buffer.truncate(length as usize);
+    Ok(PathBuf::from(String::from_utf16_lossy(&buffer)))
 }
 
-fn routes() -> impl Filter<Extract = (impl Reply,), Error = Rejection> + Clone {
-    let api_ping = warp::get()
-        .and(warp::path("ping"))
-        .and(warp::path::end())
-        .map(ping);
+#[cfg(windows)]
+fn authenticate_client(stream: &interprocess::local_socket::Stream) -> io::Result<()> {
+    let pid = stream
+        .peer_creds()?
+        .pid()
+        .ok_or_else(|| Error::new(io::ErrorKind::PermissionDenied, "client PID is unavailable"))?;
+    let actual_path = std::fs::canonicalize(process_image_path(pid)?)?;
+    let expected_path = std::fs::canonicalize(app_path()?)?;
+    if actual_path != expected_path {
+        return Err(Error::new(
+            io::ErrorKind::PermissionDenied,
+            format!(
+                "helper client executable mismatch: actual={}, expected={}",
+                actual_path.display(),
+                expected_path.display(),
+            ),
+        ));
+    }
+    Ok(())
+}
 
-    let api_start = warp::post()
-        .and(warp::path("start"))
-        .and(warp::path::end())
-        .and(warp::body::json())
-        .map(start);
+#[cfg(windows)]
+fn create_named_pipe_listener() -> anyhow::Result<interprocess::local_socket::Listener> {
+    let pipe_name = HELPER_PIPE_NAME.to_fs_name::<GenericFilePath>()?;
+    let sddl = U16CString::from_str("D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GRGW;;;AU)")?;
+    let security_descriptor = SecurityDescriptor::deserialize(&sddl)?;
+    Ok(ListenerOptions::new()
+        .name(pipe_name)
+        .nonblocking(interprocess::local_socket::ListenerNonblockingMode::Accept)
+        .security_descriptor(security_descriptor)
+        .create_sync()?)
+}
 
-    let api_stop = warp::post()
-        .and(warp::path("stop"))
-        .and(warp::path::end())
-        .map(stop_core);
+#[cfg(not(windows))]
+fn create_named_pipe_listener() -> anyhow::Result<interprocess::local_socket::Listener> {
+    anyhow::bail!("the FlClash helper service is only supported on Windows")
+}
 
-    let api_logs = warp::get()
-        .and(warp::path("logs"))
-        .and(warp::path::end())
-        .map(get_logs);
+#[cfg(windows)]
+fn run_named_pipe_service(
+    listener: interprocess::local_socket::Listener,
+    stopping: Arc<AtomicBool>,
+) -> anyhow::Result<()> {
+    while !stopping.load(Ordering::Acquire) {
+        let mut stream = match listener.accept() {
+            Ok(stream) => stream,
+            Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
+                thread::sleep(Duration::from_millis(20));
+                continue;
+            }
+            Err(error) => return Err(error.into()),
+        };
+        if authenticate_client(&stream).is_err() {
+            continue;
+        }
+        let response = match read_frame(&mut stream, MAX_HELPER_REQUEST_SIZE).and_then(|data| {
+            serde_json::from_slice::<HelperRequest>(&data)
+                .map_err(|error| Error::new(io::ErrorKind::InvalidData, error))
+        }) {
+            Ok(request) => handle_request(request),
+            Err(error) => HelperResponse::failure(error),
+        };
+        let started_core = response.core_pid.is_some();
+        let write_result = serde_json::to_vec(&response)
+            .map_err(Error::other)
+            .and_then(|data| write_frame(&mut stream, &data, MAX_HELPER_RESPONSE_SIZE));
+        if write_result.is_err() && started_core {
+            stop();
+        }
+    }
+    Ok(())
+}
 
-    api_ping.or(api_start).or(api_stop).or(api_logs)
+#[cfg(not(windows))]
+fn run_named_pipe_service(
+    _listener: interprocess::local_socket::Listener,
+    _stopping: Arc<AtomicBool>,
+) -> anyhow::Result<()> {
+    anyhow::bail!("the FlClash helper service is only supported on Windows")
 }
 
 #[cfg(not(all(feature = "windows-service", target_os = "windows")))]
@@ -224,160 +363,86 @@ where
     F: Future<Output = ()> + Send + 'static,
     S: FnOnce() -> anyhow::Result<()>,
 {
-    if EXPECTED_CORE_SHA256.is_empty() {
-        anyhow::bail!("expected Core SHA256 is empty");
+    let listener = create_named_pipe_listener()?;
+    let stopping = Arc::new(AtomicBool::new(false));
+    let server_stopping = Arc::clone(&stopping);
+    let mut server =
+        tokio::task::spawn_blocking(move || run_named_pipe_service(listener, server_stopping));
+
+    if let Err(error) = on_started() {
+        stopping.store(true, Ordering::Release);
+        let _ = server.await;
+        return Err(error);
     }
 
-    let (_, server) = warp::serve(routes())
-        .try_bind_with_graceful_shutdown(([127, 0, 0, 1], LISTEN_PORT), shutdown)
-        .map_err(|error| anyhow::anyhow!("bind helper server: {error}"))?;
-    on_started()?;
-    server.await;
-    stop_core();
-
+    tokio::select! {
+        result = &mut server => result??,
+        () = shutdown => {
+            stopping.store(true, Ordering::Release);
+            server.await??;
+        }
+    }
+    stop();
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::io::Write;
 
-    #[tokio::test]
-    async fn ping_returns_running_helper_path_for_verified_core() {
-        let response = ping_response(Ok(PathBuf::from("FlClashHelperService.exe")));
+    #[test]
+    fn core_path_is_sibling_of_helper() {
+        let helper_path = PathBuf::from("install").join("FlClashHelperService.exe");
 
-        assert_eq!(response.status(), StatusCode::OK);
         assert_eq!(
-            response.headers().get(PROTOCOL_VERSION_HEADER).unwrap(),
-            PROTOCOL_VERSION
+            core_path_from_helper_path(&helper_path).unwrap(),
+            PathBuf::from("install").join(CORE_EXECUTABLE_NAME),
         );
-        assert_eq!(
-            warp::hyper::body::to_bytes(response.into_body())
-                .await
-                .unwrap(),
-            "FlClashHelperService.exe"
-        );
-    }
-
-    #[tokio::test]
-    async fn ping_rejects_unverified_core() {
-        let response = ping_response(Err(Error::other("Core executable SHA256 mismatch")));
-
-        assert_eq!(response.status(), StatusCode::CONFLICT);
-        assert_eq!(
-            response.headers().get(PROTOCOL_VERSION_HEADER).unwrap(),
-            PROTOCOL_VERSION
-        );
-        assert_eq!(
-            warp::hyper::body::to_bytes(response.into_body())
-                .await
-                .unwrap(),
-            "Core executable SHA256 mismatch"
-        );
-    }
-
-    #[tokio::test]
-    async fn ping_is_available_without_authentication() {
-        let response = warp::test::request()
-            .method("GET")
-            .path("/ping")
-            .reply(&routes())
-            .await;
-
-        assert!(response.status() == StatusCode::OK || response.status() == StatusCode::CONFLICT);
-        assert_eq!(
-            response.headers().get(PROTOCOL_VERSION_HEADER).unwrap(),
-            PROTOCOL_VERSION
-        );
-    }
-
-    #[tokio::test]
-    async fn logs_are_available_without_authentication() {
-        let response = warp::test::request()
-            .method("GET")
-            .path("/logs")
-            .reply(&routes())
-            .await;
-
-        assert_eq!(response.status(), StatusCode::OK);
-        assert_eq!(
-            response.headers().get("content-type").unwrap(),
-            "text/plain; charset=utf-8"
-        );
-        assert_eq!(response.headers().get("cache-control").unwrap(), "no-store");
-    }
-
-    #[tokio::test]
-    async fn start_rejects_a_caller_supplied_core_argument() {
-        let response = warp::test::request()
-            .method("POST")
-            .path("/start")
-            .header("content-type", "application/json")
-            .body(
-                r#"{"address":"\\\\.\\pipe\\FlClashCore_0123456789abcdef0123456789abcdef","path":"attacker.exe"}"#,
-            )
-            .reply(&routes())
-            .await;
-
-        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
     }
 
     #[test]
-    fn verifies_core_sha256_in_all_build_modes() {
-        let path =
-            std::env::temp_dir().join(format!("flclash-helper-core-sha256-{}", std::process::id()));
-        let mut file = File::create(&path).unwrap();
-        file.write_all(b"test").unwrap();
-        drop(file);
+    fn core_path_rejects_missing_parent() {
+        assert!(core_path_from_helper_path(Path::new("FlClashHelperService.exe")).is_err());
+    }
 
-        assert!(open_verified_core(
-            &path,
-            "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
-        )
-        .is_ok());
+    #[test]
+    fn accepts_only_canonical_random_core_pipe_names() {
+        assert!(is_valid_core_pipe_name(
+            r"\\.\pipe\FlClashCore_AAAAAAAAAAAAAAAAAAAAAA",
+        ));
+        assert!(!is_valid_core_pipe_name(
+            r"\\.\pipe\FlClashCore_AAAAAAAAAAAAAAAAAAAAAB",
+        ));
+        assert!(!is_valid_core_pipe_name(r"\\.\pipe\attacker"));
+    }
+
+    #[test]
+    fn debug_build_refuses_privileged_core_startup() {
         assert_eq!(
-            open_verified_core(&path, "invalid")
+            start(r"\\.\pipe\FlClashCore_AAAAAAAAAAAAAAAAAAAAAA").unwrap_err(),
+            "privileged Core startup is disabled in debug builds",
+        );
+    }
+
+    #[test]
+    fn request_rejects_unknown_fields() {
+        let request = r#"{"method":"start","arg":"pipe","path":"attacker.exe"}"#;
+
+        assert!(serde_json::from_str::<HelperRequest>(request).is_err());
+    }
+
+    #[test]
+    fn request_frame_enforces_size_limit_before_allocation() {
+        let mut frame = ((MAX_HELPER_REQUEST_SIZE + 1) as u32)
+            .to_le_bytes()
+            .to_vec();
+        frame.extend_from_slice(b"ignored");
+
+        assert_eq!(
+            read_frame(&mut frame.as_slice(), MAX_HELPER_REQUEST_SIZE)
                 .unwrap_err()
-                .to_string(),
-            "Core executable SHA256 mismatch"
+                .kind(),
+            io::ErrorKind::InvalidData,
         );
-        std::fs::remove_file(path).unwrap();
-    }
-
-    #[tokio::test]
-    async fn stop_is_available_without_authentication() {
-        let response = warp::test::request()
-            .method("POST")
-            .path("/stop")
-            .reply(&routes())
-            .await;
-
-        assert_eq!(response.status(), StatusCode::OK);
-    }
-
-    #[test]
-    fn core_path_is_fixed_beside_the_helper() {
-        assert_eq!(
-            core_path().unwrap().file_name().unwrap(),
-            std::ffi::OsStr::new(env!("CORE_NAME"))
-        );
-    }
-
-    #[test]
-    fn only_accepts_random_core_pipe_namespace() {
-        assert!(is_allowed_core_pipe(
-            r"\\.\pipe\FlClashCore_0123456789abcdef0123456789abcdef"
-        ));
-        assert!(!is_allowed_core_pipe(r"\\.\pipe\FlClashCore"));
-        assert!(!is_allowed_core_pipe(
-            r"\\.\pipe\Other_0123456789abcdef0123456789abcdef"
-        ));
-        assert!(!is_allowed_core_pipe(
-            r"\\.\pipe\FlClashCore_0123456789abcdef"
-        ));
-        assert!(!is_allowed_core_pipe(
-            r"\\.\pipe\FlClashCore_0123456789abcdef0123456789abcdeg"
-        ));
     }
 }

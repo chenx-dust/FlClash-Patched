@@ -1,4 +1,3 @@
-import 'package:fl_clash/common/constant.dart';
 import 'package:fl_clash/common/path.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -90,12 +89,11 @@ void main() {
     );
   });
 
-  test('Windows pipe name uses a random 128-bit token', () {
+  test('Windows pipe name uses a 128-bit Base64URL token', () {
     const prefix = r'\\.\pipe\FlClashCore_';
+    final pipeToken = windowsPipeName.substring(prefix.length);
+
     expect(windowsPipeName, startsWith(prefix));
-    expect(
-      windowsPipeName.substring(prefix.length),
-      matches(RegExp(r'^[0-9a-f]{32}$')),
-    );
+    expect(pipeToken, matches(secureToken));
   });
 }
