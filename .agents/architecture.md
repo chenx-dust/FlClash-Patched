@@ -13,8 +13,8 @@ Android lib mode:
 Desktop core mode:
 
 - Go core runs as a separate process with `CGO_ENABLED=0`.
-- Flutter communicates through the `rust_api` local IPC server, using a Unix
-  domain socket on macOS/Linux and a named pipe on Windows.
+- Flutter communicates via framed JSON through the `rust_api` local IPC server,
+  using a Unix domain socket on macOS/Linux and a named pipe on Windows.
 - Dart-side implementation: `lib/core/service.dart` (`CoreService`).
 
 `lib/core/controller.dart` (`CoreController`) selects the implementation based on platform. `lib/core/interface.dart` defines the shared `CoreHandlerInterface`.
@@ -178,14 +178,18 @@ Windows helper integrity/version check:
   builds the Rust Helper with release hardening and that expected hash.
 - Flutter does not embed or send the Core SHA256. Debug, Profile, and Release
   builds use the same Helper protocol and may use TUN through the same flow.
-- Ping is loopback-only and requires no request token. The Helper verifies the
-  fixed `FlClashCore.exe` beside it against its embedded SHA256 before reporting
+- The Helper exposes a local named-pipe RPC endpoint with an explicit Windows
+  DACL and rejects remote clients. It verifies that the client PID belongs to
+  the sibling `FlClash.exe`; the app verifies that the server PID belongs to
+  the registered sibling `FlClashHelperService.exe`.
+- Ping requires no caller-supplied token. The Helper verifies the fixed
+  `FlClashCore.exe` beside it against its embedded SHA256 before reporting
   readiness, and repeats the verification before every launch.
 - Flutter creates a named pipe with a 128-bit random suffix and passes only that
   address to the helper. The helper validates the address namespace, returns the
   spawned Core PID, and Flutter matches it against the named-pipe peer PID.
-- The Helper path and protocol version allow Flutter to replace stale service
-  registrations, while the Helper-owned Core check detects mismatched builds.
+- The Helper-owned Core check detects mismatched builds, while service PID and
+  executable-path checks detect stale or substituted Helper registrations.
 
 Build configuration defaults live in `build_tool/lib/src/options.dart` and can be overridden via a root `build_config.yaml`.
 
