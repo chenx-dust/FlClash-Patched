@@ -468,6 +468,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "monochromeTrayIcon": MessageLookupByLibrary.simpleMessage("单色托盘图标"),
     "monthsAgo": m18,
     "more": MessageLookupByLibrary.simpleMessage("更多"),
+    "mtu": MessageLookupByLibrary.simpleMessage("MTU"),
+    "mtuRangeTip": MessageLookupByLibrary.simpleMessage(
+      "MTU 必须是 1 到 65535 之间的整数",
+    ),
     "name": MessageLookupByLibrary.simpleMessage("名称"),
     "nameserver": MessageLookupByLibrary.simpleMessage("域名服务器"),
     "nameserverDesc": MessageLookupByLibrary.simpleMessage("用于解析域名"),
