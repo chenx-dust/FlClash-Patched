@@ -121,7 +121,8 @@ class ApplicationState extends ConsumerState<Application> {
             commonPrint.log('connectivityChanged ${results.toString()}');
             ref.read(systemActionProvider.notifier).updateLocalIp();
             final hasVpn = results.contains(ConnectivityResult.vpn);
-            if (_preHasVpn == hasVpn) {
+            final isStart = ref.read(isStartProvider);
+            if (_preHasVpn == hasVpn && !isStart) {
               ref.read(checkIpNumProvider.notifier).add();
             }
             _preHasVpn = hasVpn;

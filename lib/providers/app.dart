@@ -398,7 +398,6 @@ class NetworkDetection extends _$NetworkDetection
     with AutoDisposeNotifierMixin {
   static const _timeoutDisplayDelay = Duration(seconds: 2);
 
-  bool? _preIsStart;
   CancelToken? _cancelToken;
   Timer? _timeoutTimer;
   int _checkVersion = 0;
@@ -422,15 +421,10 @@ class NetworkDetection extends _$NetworkDetection
     if (!isInit) {
       return;
     }
-    final isStart = ref.read(isStartProvider);
-    if (!isStart && _preIsStart == false && state.ipInfo != null) {
-      return;
-    }
     final cancelToken = CancelToken();
     final version = _resetCheckSession(cancelToken);
     commonPrint.log('checkIp start');
     state = state.copyWith(isLoading: true, ipInfo: null);
-    _preIsStart = isStart;
     final res = await request.checkIp(cancelToken: cancelToken);
     commonPrint.log('checkIp res: $res');
 
