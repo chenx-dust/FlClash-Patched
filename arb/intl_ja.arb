@@ -267,6 +267,8 @@
   "iconStyle": "アイコンスタイル",
   "onlyIcon": "アイコンのみ",
   "stackMode": "スタックモード",
+  "mtu": "MTU",
+  "mtuRangeTip": "MTU は 1 から 65535 までの整数である必要があります",
   "network": "ネットワーク",
   "networkDesc": "ネットワーク関連設定の変更",
   "bypassDomain": "バイパスドメイン",
