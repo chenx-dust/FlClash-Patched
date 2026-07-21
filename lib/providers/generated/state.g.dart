@@ -2090,7 +2090,7 @@ final class SharedStateProvider
   }
 }
 
-String _$sharedStateHash() => r'3d130a270380d6f04cadcd0f5c61ae794363679d';
+String _$sharedStateHash() => r'50b6322e1be40392243b9915c0fad1ca7bb7735e';
 
 @ProviderFor(overlayTopOffset)
 final overlayTopOffsetProvider = OverlayTopOffsetProvider._();

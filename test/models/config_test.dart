@@ -273,6 +273,7 @@ void main() {
       expect(config.secret, '');
       expect(config.geodataLoader, GeodataLoader.memconservative);
       expect(config.geositeMatcher, GeositeMatcher.succinct);
+      expect(config.tun.mtu, defaultTunMtu);
     });
 
     test('custom values survive round-trip', () {
@@ -283,6 +284,7 @@ void main() {
         logLevel: LogLevel.debug,
         externalController: '0.0.0.0:9091',
         secret: 'test-secret',
+        tun: Tun(mtu: 1500),
         geodataLoader: GeodataLoader.memconservative,
         geositeMatcher: GeositeMatcher.mph,
       );
@@ -298,6 +300,8 @@ void main() {
       expect(restored.logLevel, LogLevel.debug);
       expect(restored.externalController, '0.0.0.0:9091');
       expect(restored.secret, 'test-secret');
+      expect(restored.tun.mtu, 1500);
+      expect(restored.tun.toJson(), containsPair('mtu', 1500));
       expect(restored.geodataLoader, GeodataLoader.memconservative);
       expect(restored.geositeMatcher, GeositeMatcher.mph);
     });

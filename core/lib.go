@@ -38,13 +38,13 @@ type TunHandler struct {
 	limit *semaphore.Weighted
 }
 
-func (th *TunHandler) start(fd int, stack, address, dns string) {
+func (th *TunHandler) start(fd int, stack, address, dns string, mtu uint32) {
 	runLock.Lock()
 	defer runLock.Unlock()
 	_ = th.limit.Acquire(context.TODO(), 4)
 	defer th.limit.Release(4)
 	th.initHook()
-	tunListener := t.Start(fd, stack, address, dns)
+	tunListener := t.Start(fd, stack, address, dns, mtu)
 	if tunListener != nil {
 		log.Infoln("TUN address: %v", tunListener.Address())
 		th.listener = tunListener
@@ -140,7 +140,7 @@ func handleStopTun() {
 	}
 }
 
-func handleStartTun(callback unsafe.Pointer, fd int, stack, address, dns string) bool {
+func handleStartTun(callback unsafe.Pointer, fd int, stack, address, dns string, mtu int) bool {
 	handleStopTun()
 	tunLock.Lock()
 	defer tunLock.Unlock()
@@ -149,7 +149,7 @@ func handleStartTun(callback unsafe.Pointer, fd int, stack, address, dns string)
 			callback: callback,
 			limit:    semaphore.NewWeighted(4),
 		}
-		tunHandler.start(fd, stack, address, dns)
+		tunHandler.start(fd, stack, address, dns, uint32(mtu))
 		return tunHandler.listener != nil
 	}
 	return false
@@ -210,8 +210,8 @@ func invokeMethod(callback unsafe.Pointer, paramsChar *C.char) {
 }
 
 //export startTUN
-func startTUN(callback unsafe.Pointer, fd C.int, stackChar, addressChar, dnsChar *C.char) bool {
-	started := handleStartTun(callback, int(fd), takeCString(stackChar), takeCString(addressChar), takeCString(dnsChar))
+func startTUN(callback unsafe.Pointer, fd C.int, stackChar, addressChar, dnsChar *C.char, mtu C.int) bool {
+	started := handleStartTun(callback, int(fd), takeCString(stackChar), takeCString(addressChar), takeCString(dnsChar), int(mtu))
 	if !started {
 		return false
 	}

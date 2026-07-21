@@ -56,6 +56,7 @@ abstract class VpnOptions with _$VpnOptions {
     required bool suspendSupport,
     required List<String> bypassDomain,
     required String stack,
+    @Default(defaultTunMtu) int mtu,
     @Default([]) List<String> routeAddress,
     @Default(false) bool includeAllNetworks,
     @Default(true) bool excludeLocalNetworks,

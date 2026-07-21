@@ -297,6 +297,8 @@
   "onlyConfig": "Config Only",
   "onlyEmoji": "Emoji Only",
   "stackMode": "Stack Mode",
+  "mtu": "MTU",
+  "mtuRangeTip": "MTU must be an integer between 1 and 65535",
   "network": "Network",
   "networkDesc": "Modify network-related settings",
   "bypassDomain": "Bypass Domain",

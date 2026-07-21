@@ -297,6 +297,8 @@
   "onlyConfig": "仅配置",
   "onlyEmoji": "仅 Emoji",
   "stackMode": "栈模式",
+  "mtu": "MTU",
+  "mtuRangeTip": "MTU 必须是 1 到 65535 之间的整数",
   "network": "网络",
   "networkDesc": "修改网络相关设置",
   "bypassDomain": "排除域名",
