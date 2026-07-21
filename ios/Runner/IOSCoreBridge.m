@@ -11,6 +11,10 @@ static void IOSCoreReleaseObject(void *obj) {
   }
 }
 
+static void *IOSCoreRetainObject(void *obj) {
+  return obj == NULL ? NULL : (void *)CFRetain(obj);
+}
+
 static void IOSCoreFreeString(char *data) {
   free(data);
 }
@@ -30,11 +34,15 @@ static void IOSCoreResult(void *invokeInterface, const char *data) {
   if (invokeInterface == NULL) {
     return;
   }
-  IOSCoreResultHandler handler = (__bridge IOSCoreResultHandler)invokeInterface;
-  NSString *result = data == NULL ? nil : [NSString stringWithUTF8String:data];
-  dispatch_async(dispatch_get_main_queue(), ^{
-    handler(result);
-  });
+  @autoreleasepool {
+    IOSCoreResultHandler handler = (__bridge IOSCoreResultHandler)invokeInterface;
+    NSString *result = data == NULL ? nil : [[NSString alloc] initWithUTF8String:data];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      @autoreleasepool {
+        handler(result);
+      }
+    });
+  }
 }
 
 static os_log_t IOSCoreLogger(void) {
@@ -80,6 +88,7 @@ static void IOSCoreSystemLog(const char *level, const char *message) {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     release_object_func = &IOSCoreReleaseObject;
+    retain_object_func = &IOSCoreRetainObject;
     free_string_func = &IOSCoreFreeString;
     protect_func = &IOSCoreProtect;
     resolve_process_func = &IOSCoreResolveProcess;

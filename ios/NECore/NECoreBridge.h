@@ -2,7 +2,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^NECoreResultHandler)(NSString *_Nullable result);
+typedef void (^NECoreResultHandler)(NSData *_Nullable result);
 
 #define CTLIOCGINFO 0xc0644e03UL
 struct ctl_info {
@@ -20,10 +20,10 @@ struct sockaddr_ctl {
 
 @interface NECoreBridge : NSObject
 
-+ (void)invokeMethod:(NSString *)methodCall result:(NECoreResultHandler)result;
++ (void)invokeMethod:(NSData *)methodCall result:(NECoreResultHandler)result;
 + (void)setEventListener:(NECoreResultHandler _Nullable)listener;
 + (void)quickSetupWithInitParams:(NSString *)initParams
-                     setupParams:(NSString *)setupParams
+                     setupParams:(NSData *)setupParams
                           result:(NECoreResultHandler)result;
 + (BOOL)startTunWithFileDescriptor:(int)fileDescriptor
                               stack:(NSString *)stack
