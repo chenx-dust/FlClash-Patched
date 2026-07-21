@@ -143,10 +143,12 @@ class CoreService extends CoreHandlerInterface {
       if (processId == null) {
         throw StateError('Helper failed to start the core process');
       }
+      await _transport.authorizePeer(processId);
       try {
         await _waitForCoreConnection(nextConnection, processId);
       } catch (_) {
         await request.stopCoreByHelper();
+        await _transport.clearPeerAuthorization();
         rethrow;
       }
       return;
@@ -176,6 +178,7 @@ class CoreService extends CoreHandlerInterface {
     } catch (_) {
       _process?.kill();
       _process = null;
+      await _transport.clearPeerAuthorization();
       rethrow;
     }
   }
