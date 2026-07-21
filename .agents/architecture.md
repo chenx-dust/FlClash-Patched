@@ -13,8 +13,8 @@ Android lib mode:
 Desktop core mode:
 
 - Go core runs as a separate process with `CGO_ENABLED=0`.
-- Flutter communicates through the `rust_api` local IPC server, using a Unix
-  domain socket on macOS/Linux and a named pipe on Windows.
+- Flutter communicates through the `rust_api` local IPC server using framed JSON,
+  with a Unix domain socket on macOS/Linux and a named pipe on Windows.
 - Dart-side implementation: `lib/core/service.dart` (`CoreService`).
 
 `lib/core/controller.dart` (`CoreController`) selects the implementation based on platform. `lib/core/interface.dart` defines the shared `CoreHandlerInterface`.
@@ -170,15 +170,15 @@ FFI library, while setup is only the build and packaging bridge for FlClash's ex
 
 Windows helper integrity/version check:
 
-- Release: Core SHA256 is embedded in both the Flutter app and the Rust helper.
-  Every helper request must present that build token, and the helper verifies
-  the requested core executable's hash before launch.
-- Debug: the app and helper use a separate fixed development token, while the
-  executable hash check remains disabled so `flutter run` works.
-- The helper chooses the fixed Windows Core named pipe; callers cannot supply
-  an arbitrary IPC address. The token is local interface hardening and version
-  matching, not third-party code-signing attestation or isolation from a
-  determined process running as the same user.
+- The helper exposes a local named-pipe RPC endpoint instead of a loopback HTTP port. Its pipe uses an explicit Windows
+  DACL and rejects remote clients.
+- The helper verifies that the named-pipe client PID belongs to the sibling `FlClash.exe`; the app verifies that the
+  server PID belongs to the sibling `FlClashHelperService.exe`.
+- Release builds additionally verify the sibling core SHA256 before launch. Debug builds skip the SHA256 check so
+  `flutter run` works without the release token flow.
+- The helper returns the spawned core PID. The Flutter IPC server accepts a Windows core connection only when its peer
+  PID matches that value (or the PID returned by direct `Process.start`).
+- Core pipe names contain a cryptographically random token and are validated before the helper launches the core.
 
 Build configuration defaults live in `build_tool/lib/src/options.dart` and can be overridden via a root `build_config.yaml`.
 
@@ -203,5 +203,6 @@ cargo build --release --features windows-service
 ```
 
 It validates the requested core executable against the embedded SHA256 in
-release builds, requires the matching build token on every localhost request,
-and supplies the fixed Core named-pipe address itself.
+release builds, authenticates the app through the helper named pipe, validates
+the randomized Core named-pipe address, and returns the spawned Core PID for
+peer authorization.

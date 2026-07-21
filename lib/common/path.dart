@@ -94,6 +94,7 @@ final _unixSocketPaths = resolveUnixSocketPaths(
 );
 final unixSocketRuntimeDirectory = _unixSocketPaths.runtimeDirectory;
 final unixSocketPath = _unixSocketPaths.socketPath;
+final windowsPipeName = '\\\\.\\pipe\\FlClashCore_${_secureRandomToken(16)}';
 
 class AppPath {
   static AppPath? _instance;
