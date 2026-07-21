@@ -4,7 +4,13 @@ package main
 
 //#include "bride.h"
 import "C"
-import "unsafe"
+import (
+	"strings"
+	"unsafe"
+
+	"github.com/metacubex/mihomo/dns"
+	"github.com/metacubex/mihomo/log"
+)
 
 func protect(callback unsafe.Pointer, fd int) {
 	C.protect(callback, C.int(fd))
@@ -36,4 +42,15 @@ func retainObject(callback unsafe.Pointer) unsafe.Pointer {
 func takeCString(s *C.char) string {
 	defer C.free_string(s)
 	return C.GoString(s)
+}
+
+func handleUpdateDns(value string) {
+	go func() {
+		log.Infoln("[DNS] updateDns %s", value)
+		dns.UpdateSystemDNS(strings.Split(value, ","))
+		dns.FlushCacheWithDefaultResolver()
+	}()
+}
+
+func writeSystemLog(level, message string) {
 }
