@@ -17,6 +17,7 @@ final class IOSServiceChannel {
   private let widgetIdentifier = "\(Bundle.main.bundleIdentifier!).Widget"
   private let appGroupIdentifier = "group.\(Bundle.main.bundleIdentifier!)"
   private let sharedStateKey = "sharedState"
+  private let setupParamsKey = "setupParams"
   private let runTimeKey = "runTime"
   private let eventQueueDirectoryName = "core-events"
   private let eventNotificationName = "\(Bundle.main.bundleIdentifier!).NECore.event"
@@ -278,6 +279,13 @@ final class IOSServiceChannel {
       result("failed to sync shared state")
       return
     }
+    if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+       let setupParams = json[setupParamsKey],
+       !(setupParams is NSNull),
+       JSONSerialization.isValidJSONObject(setupParams),
+       let setupData = try? JSONSerialization.data(withJSONObject: setupParams) {
+      userDefaults.set(setupData, forKey: setupParamsKey)
+    }
     userDefaults.set(data, forKey: sharedStateKey)
     userDefaults.synchronize()
     log("syncState saved bytes=\(data.count)")
@@ -415,7 +423,9 @@ final class IOSServiceChannel {
     ) else {
       return
     }
-    for fileURL in files.sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
+    for fileURL in files
+      .filter({ $0.pathExtension == "json" })
+      .sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
       guard let event = try? String(contentsOf: fileURL, encoding: .utf8),
             !event.isEmpty else {
         try? FileManager.default.removeItem(at: fileURL)

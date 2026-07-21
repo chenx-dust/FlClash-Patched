@@ -601,6 +601,7 @@
   "ageKeyPairGeneratedSuccess": "X25519 key pair generated, please keep it safe",
   "agePrivateKeyRequired": "Please enter a correct Age private key first",
   "generateSecret": "Generate",
+  "networkExtension": "Network Extension",
   "includeAllNetworks": "Include All Networks",
   "includeAllNetworksDesc": "Route all network traffic through the tunnel, including local and cellular services",
   "excludeLocalNetworks": "Exclude Local Networks",
