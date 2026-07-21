@@ -692,6 +692,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "monthsAgo": m18,
     "more": MessageLookupByLibrary.simpleMessage("Еще"),
+    "mtu": MessageLookupByLibrary.simpleMessage("MTU"),
+    "mtuRangeTip": MessageLookupByLibrary.simpleMessage(
+      "MTU должен быть целым числом от 1 до 65535",
+    ),
     "name": MessageLookupByLibrary.simpleMessage("Имя"),
     "nameserver": MessageLookupByLibrary.simpleMessage("Сервер имен"),
     "nameserverDesc": MessageLookupByLibrary.simpleMessage(

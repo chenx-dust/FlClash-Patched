@@ -71,7 +71,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
           withFileDescriptor: tunnelFileDescriptor,
           stack: vpnOptions.stack,
           address: self.tunAddress(vpnOptions: vpnOptions),
-          dns: self.tunDns(vpnOptions: vpnOptions)
+          dns: self.tunDns(vpnOptions: vpnOptions),
+          mtu: Int32(vpnOptions.mtu)
         )
         self.logger.info("NECoreBridge.startTun result=\(started, privacy: .public)")
         completionHandler(started ? nil : PacketTunnelProviderError.couldNotStartCoreTun)
@@ -341,7 +342,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
   private func makeNetworkSettings(vpnOptions: VpnOptions) -> NEPacketTunnelNetworkSettings {
     let settings = NEPacketTunnelNetworkSettings(tunnelRemoteAddress: "127.0.0.1")
-    settings.mtu = NSNumber(value: 9000)
+    settings.mtu = NSNumber(value: vpnOptions.mtu)
 
     let ipv4Settings = NEIPv4Settings(addresses: [ipv4Address], subnetMasks: [ipv4SubnetMask])
     let ipv4Routes = vpnOptions.routeAddress.compactMap { route -> NEIPv4Route? in
@@ -464,6 +465,7 @@ private struct VpnOptions: Decodable {
   let suspendSupport: Bool
   let bypassDomain: [String]
   let stack: String
+  let mtu: Int
   let routeAddress: [String]
   let includeAllNetworks: Bool
   let excludeLocalNetworks: Bool
@@ -480,6 +482,7 @@ private struct VpnOptions: Decodable {
     case suspendSupport
     case bypassDomain
     case stack
+    case mtu
     case routeAddress
     case includeAllNetworks
     case excludeLocalNetworks
@@ -498,6 +501,7 @@ private struct VpnOptions: Decodable {
     suspendSupport = try container.decodeIfPresent(Bool.self, forKey: .suspendSupport) ?? true
     bypassDomain = try container.decodeIfPresent([String].self, forKey: .bypassDomain) ?? []
     stack = try container.decode(String.self, forKey: .stack)
+    mtu = try container.decodeIfPresent(Int.self, forKey: .mtu) ?? 9000
     routeAddress = try container.decodeIfPresent([String].self, forKey: .routeAddress) ?? []
     includeAllNetworks = try container.decodeIfPresent(Bool.self, forKey: .includeAllNetworks) ?? false
     excludeLocalNetworks = try container.decodeIfPresent(Bool.self, forKey: .excludeLocalNetworks) ?? true

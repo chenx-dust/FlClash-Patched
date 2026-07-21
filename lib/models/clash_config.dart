@@ -23,6 +23,7 @@ const defaultGeoXUrl = {
 
 const defaultMixedPort = 7890;
 const defaultKeepAliveInterval = 30;
+const defaultTunMtu = 9000;
 
 const defaultBypassPrivateRouteAddress = [
   '1.0.0.0/8',
@@ -218,6 +219,7 @@ abstract class Tun with _$Tun {
   const factory Tun({
     @Default(false) bool enable,
     @Default(appName) String device,
+    @Default(defaultTunMtu) int mtu,
     @JsonKey(name: 'auto-route') @Default(false) bool autoRoute,
     @Default(TunStack.mixed)
     @JsonKey(unknownEnumValue: TunStack.mixed)
