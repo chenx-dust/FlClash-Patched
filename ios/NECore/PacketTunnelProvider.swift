@@ -6,6 +6,7 @@ import os
 class PacketTunnelProvider: NEPacketTunnelProvider {
   private static let extensionBundleId = Bundle.main.bundleIdentifier!
   private static let baseBundleId = String(extensionBundleId.dropLast(".NECore".count))
+  private static let emptySetupParams = Data("{}".utf8)
 
   private let logger = Logger(
     subsystem: PacketTunnelProvider.extensionBundleId,
@@ -16,6 +17,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
   private let widgetIdentifier = "\(PacketTunnelProvider.baseBundleId).Widget"
   private let eventQueueDirectoryName = "core-events"
   private let eventNotificationName = "\(PacketTunnelProvider.extensionBundleId).event"
+  private let setupParamsKey = "setupParams"
   private let maxEventQueueFiles = 10
   private var eventsSincePrune = 0
   private var coreActive = true
@@ -55,11 +57,12 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
       self.logger.debug("startTunnel fileDescriptor=\(tunnelFileDescriptor, privacy: .public)")
       self.installCoreEventListener()
       let initParams = self.makeInitParams()
-      let setupParams = sharedState.setupParamsRaw ?? "{}"
+      let setupParams = self.loadSetupParams()
       self.logger.info("quickSetup initParams=\(initParams, privacy: .public)")
       NECoreBridge.quickSetup(withInitParams: initParams, setupParams: setupParams) { result in
         if let result = result, !result.isEmpty {
-          self.logger.error("quickSetup failed: \(result, privacy: .public)")
+          let message = String(data: result, encoding: .utf8) ?? "unknown core error"
+          self.logger.error("quickSetup failed: \(message, privacy: .public)")
           completionHandler(PacketTunnelProviderError.couldNotStartCoreTun)
           return
         }
@@ -113,18 +116,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
       return
     }
 
-    guard let methodCall = String(data: messageData, encoding: .utf8) else {
-      logger.warning("handleAppMessage invalid method call")
-      handler(methodErrorResponse(
-        messageData: nil,
-        code: "invalid_method_call",
-        message: "invalid method call"
-      ))
-      return
-    }
-
-    NECoreBridge.invokeMethod(methodCall) { response in
-      guard let response = response, let data = response.data(using: .utf8) else {
+    NECoreBridge.invokeMethod(messageData) { response in
+      guard let response = response else {
         self.logger.warning("handleAppMessage empty core response")
         handler(self.methodErrorResponse(
           messageData: messageData,
@@ -133,8 +126,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         ))
         return
       }
-      self.logger.debug("handleAppMessage response bytes=\(data.count, privacy: .public)")
-      handler(data)
+      self.logger.debug("handleAppMessage response bytes=\(response.count, privacy: .public)")
+      handler(response)
     }
   }
   
@@ -223,15 +216,26 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     guard let data = UserDefaults(suiteName: appGroupIdentifier)?.data(forKey: sharedStateKey) else {
       return nil
     }
-    guard var state = try? JSONDecoder().decode(SharedState.self, from: data) else {
-      return nil
+    return try? JSONDecoder().decode(SharedState.self, from: data)
+  }
+
+  private func loadSetupParams() -> Data {
+    guard let userDefaults = UserDefaults(suiteName: appGroupIdentifier) else {
+      return PacketTunnelProvider.emptySetupParams
     }
-    if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-       let setupParams = json["setupParams"] {
-      let setupData = try? JSONSerialization.data(withJSONObject: setupParams)
-      state.setupParamsRaw = setupData.flatMap { String(data: $0, encoding: .utf8) }
+    if let data = userDefaults.data(forKey: setupParamsKey) {
+      return data
     }
-    return state
+    guard let sharedStateData = userDefaults.data(forKey: sharedStateKey),
+          let json = try? JSONSerialization.jsonObject(with: sharedStateData) as? [String: Any],
+          let setupParams = json[setupParamsKey],
+          !(setupParams is NSNull),
+          JSONSerialization.isValidJSONObject(setupParams),
+          let data = try? JSONSerialization.data(withJSONObject: setupParams) else {
+      return PacketTunnelProvider.emptySetupParams
+    }
+    userDefaults.set(data, forKey: setupParamsKey)
+    return data
   }
 
   private func installCoreEventListener() {
@@ -243,7 +247,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     }
   }
 
-  private func enqueueCoreEvent(_ event: String) {
+  private func enqueueCoreEvent(_ event: Data) {
     guard coreActive else {
       logger.warning("enqueueCoreEvent skip: core is not active")
       return
@@ -258,10 +262,16 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         withIntermediateDirectories: true
       )
       let timestamp = UInt64(Date().timeIntervalSince1970 * 1_000_000)
-      let fileURL = directory.appendingPathComponent(
-        "\(timestamp)-\(UUID().uuidString).json"
-      )
-      try event.write(to: fileURL, atomically: true, encoding: .utf8)
+      let fileName = "\(timestamp)-\(UUID().uuidString)"
+      let fileURL = directory.appendingPathComponent("\(fileName).json")
+      let temporaryURL = directory.appendingPathComponent(".\(fileName).tmp")
+      do {
+        try event.write(to: temporaryURL)
+        try FileManager.default.moveItem(at: temporaryURL, to: fileURL)
+      } catch {
+        try? FileManager.default.removeItem(at: temporaryURL)
+        throw error
+      }
       eventsSincePrune += 1
       if eventsSincePrune >= maxEventQueueFiles {
         eventsSincePrune = 0
@@ -295,7 +305,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
       return []
     }
     return fileURLs.filter { fileURL in
-      (try? fileURL.resourceValues(forKeys: [.isRegularFileKey]))?.isRegularFile == true
+      fileURL.pathExtension == "json"
+        && (try? fileURL.resourceValues(forKeys: [.isRegularFileKey]))?.isRegularFile == true
     }.sorted { lhs, rhs in
       lhs.lastPathComponent < rhs.lastPathComponent
     }
@@ -344,6 +355,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     ipv4Settings.includedRoutes = ipv4Routes.isEmpty ? [.default()] : ipv4Routes
     settings.ipv4Settings = ipv4Settings
 
+    var ipv6RouteCount = 0
     if vpnOptions.ipv6 {
       let ipv6Settings = NEIPv6Settings(
         addresses: [ipv6Address],
@@ -359,6 +371,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
           networkPrefixLength: NSNumber(value: cidr.prefixLength)
         )
       }
+      ipv6RouteCount = ipv6Routes.count
       ipv6Settings.includedRoutes = ipv6Routes.isEmpty ? [.default()] : ipv6Routes
       settings.ipv6Settings = ipv6Settings
     }
@@ -380,7 +393,9 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
       settings.proxySettings = proxySettings
     }
 
-    logger.debug("makeNetworkSettings settings=\(settings, privacy: .public)")
+    logger.debug(
+      "makeNetworkSettings ipv4Routes=\(ipv4Routes.count, privacy: .public) ipv6Routes=\(ipv6RouteCount, privacy: .public)"
+    )
 
     return settings
   }
@@ -435,7 +450,6 @@ private enum PacketTunnelProviderError: LocalizedError {
 
 private struct SharedState: Decodable {
   let vpnOptions: VpnOptions?
-  var setupParamsRaw: String?
 
   private enum CodingKeys: String, CodingKey {
     case vpnOptions

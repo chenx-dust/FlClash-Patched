@@ -2,6 +2,8 @@
 
 void (*release_object_func)(void *obj);
 
+void *(*retain_object_func)(void *obj);
+
 void (*free_string_func)(char *data);
 
 void (*protect_func)(void *tun_interface, int fd);
@@ -22,6 +24,10 @@ char* resolve_process(void *tun_interface, int protocol, const char *source, con
 
 void release_object(void *obj) {
     release_object_func(obj);
+}
+
+void *retain_object(void *obj) {
+    return retain_object_func(obj);
 }
 
 void free_string(char *data) {
