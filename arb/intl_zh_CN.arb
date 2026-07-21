@@ -601,6 +601,7 @@
   "ageKeyPairGeneratedSuccess": "已生成 X25519 密钥对，请妥善保存",
   "agePrivateKeyRequired": "请先输入正确的 Age 私钥",
   "generateSecret": "生成",
+  "networkExtension": "网络扩展",
   "includeAllNetworks": "包含所有网络",
   "includeAllNetworksDesc": "将所有网络流量路由到隧道，包括本地和蜂窝服务",
   "excludeLocalNetworks": "排除本地网络",

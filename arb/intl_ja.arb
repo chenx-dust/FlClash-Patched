@@ -601,6 +601,7 @@
   "ageKeyPairGeneratedSuccess": "X25519 キーペアを生成しました。安全に保管してください",
   "agePrivateKeyRequired": "先に正しい Age 秘密鍵を入力してください",
   "generateSecret": "生成",
+  "networkExtension": "ネットワーク拡張",
   "includeAllNetworks": "すべてのネットワークを含む",
   "includeAllNetworksDesc": "ローカルおよびセルラーサービスを含むすべてのネットワークトラフィックをトンネル経由にする",
   "excludeLocalNetworks": "ローカルネットワークを除外",

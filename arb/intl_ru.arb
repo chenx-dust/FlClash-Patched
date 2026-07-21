@@ -601,6 +601,7 @@
   "ageKeyPairGeneratedSuccess": "Пара ключей X25519 создана, сохраните ее в надежном месте",
   "agePrivateKeyRequired": "Пожалуйста, сначала введите корректный закрытый ключ Age",
   "generateSecret": "Создать",
+  "networkExtension": "Сетевое расширение",
   "includeAllNetworks": "Включить все сети",
   "includeAllNetworksDesc": "Маршрутизировать весь сетевой трафик через туннель, включая локальные и сотовые сервисы",
   "excludeLocalNetworks": "Исключить локальные сети",
