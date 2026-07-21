@@ -713,6 +713,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "networkException": MessageLookupByLibrary.simpleMessage(
       "Ошибка сети, проверьте соединение и попробуйте еще раз",
     ),
+    "networkExtension": MessageLookupByLibrary.simpleMessage(
+      "Сетевое расширение",
+    ),
     "networkSpeed": MessageLookupByLibrary.simpleMessage("Скорость сети"),
     "networkSpeedNotification": MessageLookupByLibrary.simpleMessage(
       "Показывать скорость сети в реальном времени",

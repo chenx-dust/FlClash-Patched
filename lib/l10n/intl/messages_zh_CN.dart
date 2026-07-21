@@ -477,6 +477,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "networkDesc": MessageLookupByLibrary.simpleMessage("修改网络相关设置"),
     "networkDetection": MessageLookupByLibrary.simpleMessage("网络检测"),
     "networkException": MessageLookupByLibrary.simpleMessage("网络异常，请检查连接后重试"),
+    "networkExtension": MessageLookupByLibrary.simpleMessage("网络扩展"),
     "networkSpeed": MessageLookupByLibrary.simpleMessage("网络速度"),
     "networkSpeedNotification": MessageLookupByLibrary.simpleMessage("显示实时网速"),
     "networkSpeedNotificationDesc": MessageLookupByLibrary.simpleMessage(

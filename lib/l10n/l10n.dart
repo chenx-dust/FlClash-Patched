@@ -4924,6 +4924,16 @@ class AppLocalizations {
     return Intl.message('Generate', name: 'generateSecret', desc: '', args: []);
   }
 
+  /// `Network Extension`
+  String get networkExtension {
+    return Intl.message(
+      'Network Extension',
+      name: 'networkExtension',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Include All Networks`
   String get includeAllNetworks {
     return Intl.message(

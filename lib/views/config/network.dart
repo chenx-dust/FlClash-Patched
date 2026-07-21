@@ -500,9 +500,9 @@ class NetworkListView extends ConsumerWidget {
           ],
         ],
       ),
-      if (system.isIOS && version >= 14)
+      if (system.isIOS)
         ...generateSection(
-          title: 'Network Extension',
+          title: appLocalizations.networkExtension,
           items: [
             const IncludeAllNetworksItem(),
             const EnforceRoutesItem(),
