@@ -1,5 +1,7 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/models/clash_config.dart';
+import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -188,6 +190,44 @@ class TunStackItem extends ConsumerWidget {
   }
 }
 
+class TunMtuItem extends ConsumerWidget {
+  const TunMtuItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
+    final mtu = ref.watch(
+      patchClashConfigProvider.select((state) => state.tun.mtu),
+    );
+
+    return ListItem.input(
+      title: Text(appLocalizations.mtu),
+      subtitle: Text('$mtu'),
+      dialogTitle: appLocalizations.mtu,
+      value: '$mtu',
+      resetValue: '$defaultTunMtu',
+      maxLength: TextInputLimits.number,
+      keyboardType: TextInputType.number,
+      validator: (String? value) {
+        final intValue = int.tryParse(value ?? '');
+        if (intValue == null || intValue <= 0 || intValue > 65535) {
+          return appLocalizations.mtuRangeTip;
+        }
+        return null;
+      },
+      onChanged: (String? value) {
+        final mtu = int.tryParse(value ?? '');
+        if (mtu == null) {
+          return;
+        }
+        ref
+            .read(patchClashConfigProvider.notifier)
+            .update((state) => state.copyWith.tun(mtu: mtu));
+      },
+    );
+  }
+}
+
 class BypassDomainItem extends ConsumerWidget {
   const BypassDomainItem({super.key});
 
@@ -356,8 +396,9 @@ class NetworkListView extends StatelessWidget {
         items: [
           if (system.isDesktop) const TUNItem(),
           if (system.isMacOS) const AutoSetSystemDnsItem(),
-          const TunStackItem(),
-          if (!system.isDesktop) ...[
+          if (!system.isIOS) const TunStackItem(),
+          const TunMtuItem(),
+          if (system.isMobile) ...[
             const RouteModeItem(),
             const RouteAddressItem(),
           ],
