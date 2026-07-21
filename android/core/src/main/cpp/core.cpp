@@ -11,9 +11,9 @@
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_follow_clash_core_Core_startTun(JNIEnv *env, jobject thiz, jint fd, jobject cb,
-                                         jstring stack, jstring address, jstring dns) {
+                                         jstring stack, jstring address, jstring dns, jint mtu) {
     const auto interface = new_global(cb);
-    startTUN(interface, fd, get_string(stack), get_string(address), get_string(dns));
+    startTUN(interface, fd, get_string(stack), get_string(address), get_string(dns), mtu);
 }
 
 extern "C"
@@ -179,7 +179,7 @@ JNI_OnLoad(JavaVM *vm, void *) {
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_follow_clash_core_Core_startTun(JNIEnv *env, jobject thiz, jint fd, jobject cb,
-                                         jstring stack, jstring address, jstring dns) {
+                                         jstring stack, jstring address, jstring dns, jint mtu) {
 }
 
 extern "C"

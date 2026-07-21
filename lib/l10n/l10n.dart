@@ -2309,6 +2309,21 @@ class AppLocalizations {
     return Intl.message('Stack Mode', name: 'stackMode', desc: '', args: []);
   }
 
+  /// `MTU`
+  String get mtu {
+    return Intl.message('MTU', name: 'mtu', desc: '', args: []);
+  }
+
+  /// `MTU must be an integer between 1 and 65535`
+  String get mtuRangeTip {
+    return Intl.message(
+      'MTU must be an integer between 1 and 65535',
+      name: 'mtuRangeTip',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Network`
   String get network {
     return Intl.message('Network', name: 'network', desc: '', args: []);
