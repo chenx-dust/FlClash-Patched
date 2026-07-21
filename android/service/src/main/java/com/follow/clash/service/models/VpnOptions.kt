@@ -23,6 +23,7 @@ data class VpnOptions(
     val dozeSuspend: Boolean?,
     val bypassDomain: List<String>,
     val stack: String,
+    val mtu: Int?,
     val routeAddress: List<String>,
 )
 
