@@ -15,7 +15,7 @@ import (
 	"github.com/metacubex/mihomo/tunnel"
 )
 
-func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
+func Start(fd int, stack string, address, dns string, mtu uint32) *sing_tun.Listener {
 	if fd <= 0 {
 		return nil
 	}
@@ -63,7 +63,7 @@ func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
 		AutoDetectInterface: false,
 		Inet4Address:        prefix4,
 		Inet6Address:        prefix6,
-		MTU:                 9000,
+		MTU:                 mtu,
 		FileDescriptor:      tunFd,
 		LoopbackAddress: []netip.Addr{
 			netip.MustParseAddr("10.7.0.1"),

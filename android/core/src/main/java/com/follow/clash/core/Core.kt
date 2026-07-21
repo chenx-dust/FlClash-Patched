@@ -11,6 +11,7 @@ object Core {
         stack: String,
         address: String,
         dns: String,
+        mtu: Int,
     )
 
     external fun forceGC()
@@ -33,6 +34,7 @@ object Core {
         stack: String,
         address: String,
         dns: String,
+        mtu: Int,
     ) {
         startTun(
             fd,
@@ -58,6 +60,7 @@ object Core {
             stack,
             address,
             dns,
+            mtu,
         )
     }
 

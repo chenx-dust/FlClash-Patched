@@ -528,6 +528,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "monochromeTrayIcon": MessageLookupByLibrary.simpleMessage("モノクロのトレイアイコン"),
     "monthsAgo": m18,
     "more": MessageLookupByLibrary.simpleMessage("詳細"),
+    "mtu": MessageLookupByLibrary.simpleMessage("MTU"),
+    "mtuRangeTip": MessageLookupByLibrary.simpleMessage(
+      "MTU は 1 から 65535 までの整数である必要があります",
+    ),
     "name": MessageLookupByLibrary.simpleMessage("名前"),
     "nameserver": MessageLookupByLibrary.simpleMessage("ネームサーバー"),
     "nameserverDesc": MessageLookupByLibrary.simpleMessage("ドメイン解決用"),
