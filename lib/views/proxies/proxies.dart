@@ -44,10 +44,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
       CommonPopupBox(
         targetBuilder: (open) {
           return IconButton(
-            onPressed: () {
-              final isMobile = ref.read(isMobileViewProvider);
-              open(offset: Offset(0, isMobile ? 0 : 40));
-            },
+            onPressed: open,
             icon: const Icon(Icons.more_vert),
           );
         },
