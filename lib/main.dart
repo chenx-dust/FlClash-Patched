@@ -14,7 +14,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     if (system.isDesktop) {
-      await RustLib.init();
+      await initRustApi();
     }
     final version = await system.version;
     final container = await globalState.init(version);

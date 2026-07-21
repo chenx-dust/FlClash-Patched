@@ -122,14 +122,16 @@ class CoreService extends CoreHandlerInterface {
     }
     await _transport.clearPeerAuthorization();
     if (system.isWindows && await system.checkIsAdmin()) {
-      final isSuccess = await request.startCoreByHelper(_transport.address);
-      if (isSuccess) {
+      final corePid = await request.startCoreByHelper(_transport.address);
+      if (corePid != null) {
+        await _transport.authorizePeer(corePid);
         try {
           await _transport.connectionCompleter.future.timeout(
             const Duration(seconds: 10),
           );
         } on TimeoutException {
           await request.stopCoreByHelper();
+          await _transport.clearPeerAuthorization();
           rethrow;
         }
         return;
@@ -162,6 +164,7 @@ class CoreService extends CoreHandlerInterface {
     } on TimeoutException {
       _process?.kill();
       _process = null;
+      await _transport.clearPeerAuthorization();
       rethrow;
     }
   }
