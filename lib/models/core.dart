@@ -52,6 +52,7 @@ abstract class VpnOptions with _$VpnOptions {
     required bool dozeSuspend,
     required List<String> bypassDomain,
     required String stack,
+    @Default(defaultTunMtu) int mtu,
     @Default([]) List<String> routeAddress,
   }) = _VpnOptions;
 
