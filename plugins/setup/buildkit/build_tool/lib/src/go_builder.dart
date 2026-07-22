@@ -23,16 +23,36 @@ String _resolveGoLdflags(Target target, BuildConfig config) {
 }
 
 String _resolveCc(Target target) {
-  final ndk = Environment.androidNdk;
-  final prebuiltDir = Directory(p.join(ndk, 'toolchains', 'llvm', 'prebuilt'));
-  final entries = prebuiltDir
-      .listSync()
-      .where((e) => !p.basename(e.path).startsWith('.'))
-      .toList();
-  if (entries.isEmpty) {
-    throw BuildException('No NDK prebuilt toolchain found in $prebuiltDir');
+  switch (target.goos) {
+    case 'ios':
+      final result = Process.runSync('xcrun', [
+        '--sdk',
+        'iphoneos',
+        '--find',
+        'clang',
+      ]);
+      if (result.exitCode != 0) {
+        throw BuildException('Failed to locate iOS clang: ${result.stderr}');
+      }
+      return (result.stdout as String).trim();
+    case 'android':
+      final ndk = Environment.androidNdk;
+      final prebuiltDir = Directory(
+        p.join(ndk, 'toolchains', 'llvm', 'prebuilt'),
+      );
+      final entries = prebuiltDir
+          .listSync()
+          .where((e) => !p.basename(e.path).startsWith('.'))
+          .toList();
+      if (entries.isEmpty) {
+        throw BuildException('No NDK prebuilt toolchain found in $prebuiltDir');
+      }
+      final executable =
+          '${target.ndkCcName}${Platform.isWindows ? '.cmd' : ''}';
+      return p.join(entries.first.path, 'bin', executable);
+    default:
+      throw BuildException('Unsupported CGO target: ${target.goos}');
   }
-  return p.join(entries.first.path, 'bin', target.ndkCcName);
 }
 
 class GoBuilder {
@@ -131,12 +151,12 @@ class GoBuilder {
   }
 
   List<String> _buildArguments(Target target, {String? outFile}) => [
-    'build',
-    '-ldflags=${_resolveGoLdflags(target, config)}',
-    '-tags=${config.tags}',
-    if (target.isLib) '-buildmode=c-shared',
-    if (outFile != null) ...['-o', outFile],
-  ];
+        'build',
+        '-ldflags=${_resolveGoLdflags(target, config)}',
+        '-tags=${config.tags}',
+        if (target.isLib) '-buildmode=c-shared',
+        if (outFile != null) ...['-o', outFile],
+      ];
 
   Future<String> _calculateFingerprint(Target target) async {
     final env = _buildEnvironment(target);
