@@ -7,7 +7,6 @@ import 'package:path/path.dart' as p;
 import 'environment.dart';
 import 'error.dart';
 import 'build_cache.dart';
-import 'geodata.dart';
 import 'go_builder.dart';
 import 'logging.dart';
 import 'options.dart';
@@ -89,7 +88,6 @@ class BuildAndroidCommand extends BuildCommand {
     final archName = argResults?['arch'] as String?;
     final flutterTargetPlatforms = argResults?['target-platform'] as String?;
     final config = BuildConfig.load(rootDir: _rootDir);
-    await ensureGeoData(rootDir: _rootDir);
 
     final targets = Target.resolveAndroidTargets(
       archName: archName,
@@ -133,7 +131,6 @@ class BuildLinuxCommand extends BuildCommand {
   Future<void> runBuildCommand() async {
     final archName = argResults?['arch'] as String?;
     final config = BuildConfig.load(rootDir: _rootDir);
-    await ensureGeoData(rootDir: _rootDir);
 
     final arch = archName ?? await _hostGoArch();
     final targets =
@@ -181,7 +178,6 @@ class BuildWindowsCommand extends BuildCommand {
     final archName = argResults?['arch'] as String?;
     final debug = Environment.isDebug;
     final config = BuildConfig.load(rootDir: _rootDir);
-    await ensureGeoData(rootDir: _rootDir);
 
     final arch = archName ?? await _hostGoArch();
     final targets =
@@ -249,7 +245,6 @@ class BuildMacosCommand extends BuildCommand {
   Future<void> runBuildCommand() async {
     final archName = argResults?['arch'] as String?;
     final config = BuildConfig.load(rootDir: _rootDir);
-    await ensureGeoData(rootDir: _rootDir);
 
     final arch = archName ?? await _hostGoArch();
     final targets =
@@ -257,6 +252,52 @@ class BuildMacosCommand extends BuildCommand {
 
     if (targets.isEmpty) {
       throw BuildException('Invalid arch: $arch');
+    }
+
+    final cache = BuildCache(rootDir: _rootDir);
+    final notice = BuildNotice();
+    final builder = GoBuilder(
+      rootDir: _rootDir,
+      config: config,
+      cache: cache,
+      notice: notice,
+    );
+    final results = await builder.buildAll(targets, force: force);
+
+    if (results.any((result) => result.rebuilt)) {
+      _log.info(
+        'Build complete: ${results.map((result) => result.primaryOutput)}',
+      );
+    }
+  }
+}
+
+class BuildIosCommand extends BuildCommand {
+  BuildIosCommand() {
+    argParser.addOption(
+      'arch',
+      valueHelp: 'arm64',
+      help: 'Target architecture (default: arm64)',
+    );
+  }
+
+  @override
+  final name = 'ios';
+
+  @override
+  final description = 'Build iOS Go core (c-archive library)';
+
+  @override
+  Future<void> runBuildCommand() async {
+    final archName = (argResults?['arch'] as String?) ?? 'arm64';
+    final config = BuildConfig.load(rootDir: _rootDir);
+
+    final targets = Target.forPlatform(
+      'ios',
+    ).where((t) => t.goarch == archName).toList();
+
+    if (targets.isEmpty) {
+      throw BuildException('Invalid arch: $archName');
     }
 
     final cache = BuildCache(rootDir: _rootDir);

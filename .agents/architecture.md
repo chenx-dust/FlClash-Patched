@@ -246,9 +246,10 @@ Shared:
 
 `setup.dart` is the release build orchestrator:
 
-1. Writes `env.json` (`APP_ENV`).
-2. Activates `flutter_distributor` for packaging.
-3. Relies on the platform build hook to build the required Core artifacts before
+1. Downloads ignored GeoData files before Flutter assembles the asset bundle.
+2. Writes `env.json` (`APP_ENV`).
+3. Activates `flutter_distributor` for packaging.
+4. Relies on the platform build hook to build the required Core artifacts before
    the native application is linked.
 
 Go core building is handled by `build_tool`, a standalone Dart CLI in `plugins/setup/buildkit/build_tool/`.
