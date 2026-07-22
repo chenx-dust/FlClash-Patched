@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:path/path.dart' as p;
 
+import 'tool/geodata.dart';
+
 const _allTargets = <String, String>{
   'android': 'apk',
   'ios': 'ipa',
@@ -188,6 +190,8 @@ Future<int> _package(
   String? iosDevelopmentTeam,
   required bool verbose,
 }) async {
+  await ensureGeoData(rootDir: rootDir);
+
   final file = File(p.join(rootDir, 'env.json'));
   await file.writeAsString(jsonEncode(createBuildEnvironment(env)));
   if (platform == 'ios') {
