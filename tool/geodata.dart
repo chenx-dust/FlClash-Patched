@@ -1,11 +1,8 @@
 import 'dart:io';
 
-import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 
-final _log = Logger('geodata');
-
-const _geoDataFiles = {
+const geoDataSources = {
   'GeoIP.metadb':
       'https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.metadb',
   'ASN.mmdb':
@@ -16,18 +13,22 @@ const _geoDataFiles = {
       'https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat',
 };
 
-Future<void> ensureGeoData({required String rootDir}) async {
+Future<void> ensureGeoData({
+  required String rootDir,
+  Map<String, String> sources = geoDataSources,
+}) async {
   final dataDir = Directory(p.join(rootDir, 'assets', 'data'));
   if (!dataDir.existsSync()) {
     dataDir.createSync(recursive: true);
   }
 
-  for (final entry in _geoDataFiles.entries) {
+  for (final entry in sources.entries) {
     final file = File(p.join(dataDir.path, entry.key));
     if (file.existsSync()) {
-      _log.fine('GeoData exists: ${entry.key}');
-      if (file.lastModifiedSync().isBefore(DateTime.now().subtract(const Duration(days: 1)))) {
-        _log.info('GeoData is outdated: ${entry.key}');
+      if (file.lastModifiedSync().isBefore(
+        DateTime.now().subtract(const Duration(days: 1)),
+      )) {
+        stdout.writeln('GeoData is outdated: ${entry.key}');
       } else {
         continue;
       }
@@ -36,12 +37,9 @@ Future<void> ensureGeoData({required String rootDir}) async {
   }
 }
 
-Future<void> _downloadGeoData({
-  required String url,
-  required File file,
-}) async {
+Future<void> _downloadGeoData({required String url, required File file}) async {
   final tempFile = File('${file.path}.download');
-  _log.info('Downloading GeoData: ${p.basename(file.path)}');
+  stdout.writeln('Downloading GeoData: ${p.basename(file.path)}');
 
   final client = HttpClient();
   try {
