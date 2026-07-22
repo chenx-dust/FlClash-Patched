@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:path/path.dart' as p;
 
+import 'tool/geodata.dart';
+
 const _allTargets = <String, String>{
   'android': 'apk',
   'ios': 'ipa',
@@ -184,6 +186,8 @@ Future<int> _package(
   String? iosDevelopmentTeam,
   required bool verbose,
 }) async {
+  await ensureGeoData(rootDir: rootDir);
+
   final coreSha256 = platform == 'windows' ? await _buildGoCore(rootDir) : null;
 
   final file = File(p.join(rootDir, 'env.json'));

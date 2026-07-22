@@ -114,10 +114,11 @@ Shared:
 
 `setup.dart` is the release build orchestrator:
 
-1. On Windows, pre-builds Go core via `dart run build_tool windows` and reads `core_sha256.json`.
-2. Writes `env.json` (`APP_ENV`).
-3. Passes SHA256 as `--dart-define=CORE_SHA256=$val`, embedded at compile time for Windows.
-4. Activates `flutter_distributor` for packaging.
+1. Downloads ignored GeoData files before Flutter assembles the asset bundle.
+2. On Windows, pre-builds Go core via `dart run build_tool windows` and reads `core_sha256.json`.
+3. Writes `env.json` (`APP_ENV`).
+4. Passes SHA256 as `--dart-define=CORE_SHA256=$val`, embedded at compile time for Windows.
+5. Activates `flutter_distributor` for packaging.
 
 Go core building is handled by `build_tool`, a standalone Dart CLI in `plugins/setup/buildkit/build_tool/`.
 
