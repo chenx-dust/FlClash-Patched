@@ -28,9 +28,9 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
 
   List<Widget> _buildActions(BuildContext context) {
     final appLocalizations = context.appLocalizations;
-    final hideUnavailable = ref
-        .watch(proxiesStyleSettingProvider)
-        .hideUnavailable;
+    final proxiesStyle = ref.watch(proxiesStyleSettingProvider);
+    final hideUnavailable = proxiesStyle.hideUnavailable;
+    final showHiddenGroups = proxiesStyle.showHiddenGroups;
     return [
       if (_isTab)
         IconButton(
@@ -43,16 +43,13 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
       if (!_isTab) _buildListUnfoldButton(),
       CommonPopupBox(
         targetBuilder: (open) {
-          return IconButton(
-            onPressed: open,
-            icon: const Icon(Icons.more_vert),
-          );
+          return IconButton(onPressed: open, icon: const Icon(Icons.more_vert));
         },
         popup: CommonPopupMenu(
           items: [
             PopupMenuItemData(
               icon: Icons.tune,
-              label: appLocalizations.settings,
+              label: appLocalizations.styleSettings,
               onPressed: () {
                 showSheet(
                   context: context,
@@ -60,7 +57,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
                   builder: (_) {
                     return AdaptiveSheetScaffold(
                       body: const ProxiesSetting(),
-                      title: appLocalizations.settings,
+                      title: appLocalizations.styleSettings,
                     );
                   },
                 );
@@ -77,6 +74,19 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
                 final current = ref.read(proxiesStyleSettingProvider);
                 ref.read(proxiesStyleSettingProvider.notifier).value = current
                     .copyWith(hideUnavailable: !current.hideUnavailable);
+              },
+            ),
+            PopupMenuItemData(
+              icon: showHiddenGroups
+                  ? Icons.visibility_off_outlined
+                  : Icons.visibility_outlined,
+              label: showHiddenGroups
+                  ? appLocalizations.restoreHiddenGroups
+                  : appLocalizations.showHiddenGroups,
+              onPressed: () {
+                final current = ref.read(proxiesStyleSettingProvider);
+                ref.read(proxiesStyleSettingProvider.notifier).value = current
+                    .copyWith(showHiddenGroups: !current.showHiddenGroups);
               },
             ),
             if (_hasProviders)

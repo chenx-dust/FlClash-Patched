@@ -27,6 +27,7 @@
   "downloadSpeed": "Скорость скачивания",
   "nullProfileDesc": "Нет профиля, пожалуйста, добавьте профиль",
   "settings": "Настройки",
+  "styleSettings": "Настройки стиля",
   "language": "Язык",
   "defaultText": "По умолчанию",
   "more": "Еще",
@@ -618,5 +619,7 @@
   "excludeDeviceCommunication": "Исключить межустройственную связь",
   "excludeDeviceCommunicationDesc": "Разрешить трафику AirDrop, AirPlay и другой межустройственной связи обходить туннель",
   "hideUnavailable": "Скрыть таймаут",
-  "showUnavailable": "Показать таймаут"
+  "showUnavailable": "Показать таймаут",
+  "showHiddenGroups": "Показать скрытые группы",
+  "restoreHiddenGroups": "Снова скрывать группы"
 }

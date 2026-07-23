@@ -27,6 +27,7 @@
   "downloadSpeed": "下载速度",
   "nullProfileDesc": "没有配置文件,请先添加配置文件",
   "settings": "设置",
+  "styleSettings": "样式设置",
   "language": "语言",
   "defaultText": "默认",
   "more": "更多",
@@ -618,5 +619,7 @@
   "excludeDeviceCommunication": "排除设备间通信",
   "excludeDeviceCommunicationDesc": "允许 AirDrop、AirPlay 等设备间通信流量绕过隧道",
   "hideUnavailable": "隐藏超时",
-  "showUnavailable": "显示超时"
+  "showUnavailable": "显示超时",
+  "showHiddenGroups": "显示隐藏组",
+  "restoreHiddenGroups": "恢复隐藏组"
 }

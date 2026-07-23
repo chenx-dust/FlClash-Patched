@@ -91,4 +91,56 @@ void main() {
 
     expect(container.read(trayStateProvider).groups.single.now, 'Updated');
   });
+
+  test('hidden proxy groups can be force-shown and hidden again', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    const visibleGroup = Group(
+      name: 'Visible',
+      type: GroupType.Selector,
+      hidden: false,
+    );
+    const hiddenGroup = Group(
+      name: 'Hidden',
+      type: GroupType.Selector,
+      hidden: true,
+    );
+    const legacyGroup = Group(name: 'Legacy', type: GroupType.Selector);
+
+    container
+        .read(groupsProvider.notifier)
+        .update((_) => [visibleGroup, hiddenGroup, legacyGroup]);
+
+    expect(
+      container
+          .read(currentGroupsStateProvider)
+          .value
+          .map((group) => group.name),
+      ['Visible', 'Legacy'],
+    );
+
+    container
+        .read(proxiesStyleSettingProvider.notifier)
+        .update((state) => state.copyWith(showHiddenGroups: true));
+
+    expect(
+      container
+          .read(currentGroupsStateProvider)
+          .value
+          .map((group) => group.name),
+      ['Visible', 'Hidden', 'Legacy'],
+    );
+
+    container
+        .read(proxiesStyleSettingProvider.notifier)
+        .update((state) => state.copyWith(showHiddenGroups: false));
+
+    expect(
+      container
+          .read(currentGroupsStateProvider)
+          .value
+          .map((group) => group.name),
+      ['Visible', 'Legacy'],
+    );
+  });
 }
