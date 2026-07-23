@@ -27,6 +27,7 @@
   "downloadSpeed": "Download speed",
   "nullProfileDesc": "No profile, please add a profile",
   "settings": "Settings",
+  "styleSettings": "Style Settings",
   "language": "Language",
   "defaultText": "Default",
   "more": "More",
@@ -618,5 +619,7 @@
   "excludeDeviceCommunication": "Exclude Device Communication",
   "excludeDeviceCommunicationDesc": "Allow device-to-device traffic such as AirDrop and AirPlay to bypass the tunnel",
   "hideUnavailable": "Hide Timeout",
-  "showUnavailable": "Show Timeout"
+  "showUnavailable": "Show Timeout",
+  "showHiddenGroups": "Show Hidden Groups",
+  "restoreHiddenGroups": "Restore Group Hiding"
 }

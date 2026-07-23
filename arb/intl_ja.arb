@@ -27,6 +27,7 @@
   "downloadSpeed": "ダウンロード速度",
   "nullProfileDesc": "プロファイルがありません。追加してください",
   "settings": "設定",
+  "styleSettings": "スタイル設定",
   "language": "言語",
   "defaultText": "デフォルト",
   "more": "詳細",
@@ -618,5 +619,7 @@
   "excludeDeviceCommunication": "デバイス間通信を除外",
   "excludeDeviceCommunicationDesc": "AirDrop や AirPlay などのデバイス間通信がトンネルをバイパスすることを許可する",
   "hideUnavailable": "タイムアウト非表示",
-  "showUnavailable": "タイムアウト表示"
+  "showUnavailable": "タイムアウト表示",
+  "showHiddenGroups": "非表示グループを表示",
+  "restoreHiddenGroups": "グループを再び非表示"
 }
