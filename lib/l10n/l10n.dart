@@ -269,6 +269,16 @@ class AppLocalizations {
     return Intl.message('Settings', name: 'settings', desc: '', args: []);
   }
 
+  /// `Style Settings`
+  String get styleSettings {
+    return Intl.message(
+      'Style Settings',
+      name: 'styleSettings',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Language`
   String get language {
     return Intl.message('Language', name: 'language', desc: '', args: []);
@@ -5094,6 +5104,26 @@ class AppLocalizations {
     return Intl.message(
       'Show Timeout',
       name: 'showUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Show Hidden Groups`
+  String get showHiddenGroups {
+    return Intl.message(
+      'Show Hidden Groups',
+      name: 'showHiddenGroups',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Restore Group Hiding`
+  String get restoreHiddenGroups {
+    return Intl.message(
+      'Restore Group Hiding',
+      name: 'restoreHiddenGroups',
       desc: '',
       args: [],
     );

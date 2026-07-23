@@ -638,6 +638,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "restoreFromWebDAVDesc": MessageLookupByLibrary.simpleMessage(
       "通过 WebDAV 恢复数据",
     ),
+    "restoreHiddenGroups": MessageLookupByLibrary.simpleMessage("恢复隐藏组"),
     "restoreOnlyConfig": MessageLookupByLibrary.simpleMessage("仅恢复配置文件"),
     "restoreStrategy": MessageLookupByLibrary.simpleMessage("恢复策略"),
     "restoreStrategy_compatible": MessageLookupByLibrary.simpleMessage("兼容"),
@@ -748,6 +749,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectedCountTitle": m23,
     "settings": MessageLookupByLibrary.simpleMessage("设置"),
     "show": MessageLookupByLibrary.simpleMessage("显示"),
+    "showHiddenGroups": MessageLookupByLibrary.simpleMessage("显示隐藏组"),
     "showUnavailable": MessageLookupByLibrary.simpleMessage("显示超时"),
     "shrink": MessageLookupByLibrary.simpleMessage("紧凑"),
     "silentLaunch": MessageLookupByLibrary.simpleMessage("静默启动"),
@@ -774,6 +776,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "stop": MessageLookupByLibrary.simpleMessage("暂停"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("正在停止 VPN..."),
     "style": MessageLookupByLibrary.simpleMessage("风格"),
+    "styleSettings": MessageLookupByLibrary.simpleMessage("样式设置"),
     "subRule": MessageLookupByLibrary.simpleMessage("子规则"),
     "subRuleEmpty": MessageLookupByLibrary.simpleMessage("子规则为空"),
     "subRuleNotEmpty": MessageLookupByLibrary.simpleMessage("子规则不能为空"),
