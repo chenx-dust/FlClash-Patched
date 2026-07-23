@@ -416,7 +416,11 @@ fn cleanup_socket(path: &str) -> io::Result<()> {
         }
         match std::fs::remove_dir(runtime_dir) {
             Ok(()) => {}
-            Err(error) if error.kind() == io::ErrorKind::NotFound => {}
+            Err(error)
+                if matches!(
+                    error.kind(),
+                    io::ErrorKind::NotFound | io::ErrorKind::DirectoryNotEmpty
+                ) => {}
             Err(error) => return Err(error),
         }
     }
@@ -1115,6 +1119,29 @@ mod unix_security_tests {
         drop(server);
         drop(listener);
         cleanup_socket(&socket_path).unwrap();
+    }
+
+    #[test]
+    fn cleanup_preserves_non_empty_runtime_directory() {
+        let socket_path = test_socket_path();
+        prepare_socket(&socket_path).unwrap();
+        let runtime_dir = unix_runtime_dir(Path::new(&socket_path))
+            .unwrap()
+            .to_path_buf();
+        let sibling_path = runtime_dir.join("other-runtime-entry");
+        std::fs::write(&sibling_path, []).unwrap();
+
+        let fs_name = socket_path.clone().to_fs_name::<GenericFilePath>().unwrap();
+        let listener = ListenerOptions::new().name(fs_name).create_sync().unwrap();
+        drop(listener);
+
+        cleanup_socket(&socket_path).unwrap();
+
+        assert!(!Path::new(&socket_path).exists());
+        assert!(sibling_path.exists());
+
+        std::fs::remove_file(sibling_path).unwrap();
+        std::fs::remove_dir(runtime_dir).unwrap();
     }
 
     #[test]
