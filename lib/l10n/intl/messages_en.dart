@@ -37,7 +37,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m6(label) => "Current ${label} already exists";
 
-  static String m7(name) => "${name} skipped";
+  static String m7(name) => "${name} is already up to date";
 
   static String m8(name) => "${name} updated";
 

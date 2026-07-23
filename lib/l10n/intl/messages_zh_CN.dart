@@ -34,7 +34,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m6(label) => "${label}当前已存在";
 
-  static String m7(name) => "${name} 已跳过";
+  static String m7(name) => "${name} 已是最新版本";
 
   static String m8(name) => "${name} 已更新";
 

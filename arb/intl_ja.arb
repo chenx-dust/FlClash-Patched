@@ -549,7 +549,7 @@
   "hoursCount": "{count} 時間",
   "geoResources": "Geoリソース",
   "geoUpdating": "{name}を更新中...",
-  "geoSkipped": "{name} スキップ済み",
+  "geoSkipped": "{name} はすでに最新です",
   "geoUpdated": "{name} 更新済み",
   "secondsCount": "{count} 秒",
   "entriesCount": "{count} エントリ"

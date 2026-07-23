@@ -34,7 +34,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m6(label) => "現在の${label}は既に存在しています";
 
-  static String m7(name) => "${name} スキップ済み";
+  static String m7(name) => "${name} はすでに最新です";
 
   static String m8(name) => "${name} 更新済み";
 

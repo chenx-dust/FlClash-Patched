@@ -4474,10 +4474,10 @@ class AppLocalizations {
     );
   }
 
-  /// `{name} skipped`
+  /// `{name} is already up to date`
   String geoSkipped(Object name) {
     return Intl.message(
-      '$name skipped',
+      '$name is already up to date',
       name: 'geoSkipped',
       desc: '',
       args: [name],

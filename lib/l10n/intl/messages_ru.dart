@@ -36,7 +36,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m6(label) => "Текущий ${label} уже существует";
 
-  static String m7(name) => "${name} пропущено";
+  static String m7(name) => "Для ${name} уже установлена последняя версия";
 
   static String m8(name) => "${name} обновлено";
 

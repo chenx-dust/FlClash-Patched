@@ -549,7 +549,7 @@
   "hoursCount": "{count} часов",
   "geoResources": "Ресурсы Geo",
   "geoUpdating": "Обновление {name}...",
-  "geoSkipped": "{name} пропущено",
+  "geoSkipped": "Для {name} уже установлена последняя версия",
   "geoUpdated": "{name} обновлено",
   "secondsCount": "{count} секунд",
   "entriesCount": "{count} записей"

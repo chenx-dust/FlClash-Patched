@@ -549,7 +549,7 @@
   "hoursCount": "{count} hours",
   "geoResources": "Geo Resources",
   "geoUpdating": "Updating {name}...",
-  "geoSkipped": "{name} skipped",
+  "geoSkipped": "{name} is already up to date",
   "geoUpdated": "{name} updated",
   "secondsCount": "{count} seconds",
   "entriesCount": "{count} entries"
