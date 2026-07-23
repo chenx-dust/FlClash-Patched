@@ -169,9 +169,9 @@ class System {
   Future<void> exit() async {
     if (system.isMobile) {
       await SystemNavigator.pop();
+    } else {
+      window?.forceExit();
     }
-    await window?.close();
-    window?.forceExit();
   }
 }
 
