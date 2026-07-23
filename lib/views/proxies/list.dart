@@ -9,6 +9,7 @@ import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sliver_tools/sliver_tools.dart';
 
 import 'card.dart';
 import 'common.dart';
@@ -145,32 +146,34 @@ class ProxiesListViewState extends State<ProxiesListView> {
     _headerGroupNames = headerGroupNames;
   }
 
-  List<Widget> _buildItems(
-    WidgetRef ref, {
+  List<Widget> _buildSlivers({
     required List<Group> groups,
     required int columns,
     required Set<String> currentUnfoldSet,
     required ProxyCardType cardType,
     required ProxiesListHeaderStyle listHeaderStyle,
   }) {
-    final items = <Widget>[];
+    final slivers = <Widget>[];
     for (final group in groups) {
       final groupName = group.name;
       final isExpand = currentUnfoldSet.contains(groupName);
-      items.addAll([
-        SizedBox(
-          height: getListHeaderHeight(listHeaderStyle),
-          child: ListHeader(
-            onScrollToSelected: _scrollToGroupSelected,
-            listHeaderStyle: listHeaderStyle,
-            isExpand: isExpand,
-            group: group,
-            onChange: (String groupName) {
-              _handleChange(currentUnfoldSet, groupName, listHeaderStyle);
-            },
+      slivers.addAll([
+        SliverToBoxAdapter(
+          child: SizedBox(
+            height: getListHeaderHeight(listHeaderStyle),
+            child: ListHeader(
+              onScrollToSelected: _scrollToGroupSelected,
+              listHeaderStyle: listHeaderStyle,
+              isExpand: isExpand,
+              group: group,
+              onChange: (String groupName) {
+                _handleChange(currentUnfoldSet, groupName, listHeaderStyle);
+              },
+            ),
           ),
         ),
-        _ProxyGroupBody(
+        const SliverToBoxAdapter(child: SizedBox(height: _listGroupSpacing)),
+        _ProxyGroupSliver(
           key: ValueKey('$groupName.body'),
           group: group,
           isExpand: isExpand,
@@ -179,11 +182,10 @@ class ProxiesListViewState extends State<ProxiesListView> {
         ),
       ]);
     }
-    return items;
+    return slivers;
   }
 
-  Widget _buildHeader(
-    WidgetRef ref, {
+  Widget _buildHeader({
     required Group group,
     required Set<String> currentUnfoldSet,
     required ProxiesListHeaderStyle listHeaderStyle,
@@ -320,8 +322,7 @@ class ProxiesListViewState extends State<ProxiesListView> {
             label: appLocalizations.nullTip(appLocalizations.proxies),
           );
         }
-        final items = _buildItems(
-          ref,
+        final slivers = _buildSlivers(
           groups: state.groups,
           currentUnfoldSet: state.currentUnfoldSet,
           columns: state.columns,
@@ -344,14 +345,15 @@ class ProxiesListViewState extends State<ProxiesListView> {
               Positioned.fill(
                 child: ScrollConfiguration(
                   behavior: HiddenBarScrollBehavior(),
-                  child: ListView.builder(
+                  child: CustomScrollView(
                     key: proxiesListStoreKey,
-                    padding: const EdgeInsets.all(16),
                     controller: _controller,
-                    itemCount: items.length,
-                    itemBuilder: (_, index) {
-                      return items[index];
-                    },
+                    slivers: [
+                      SliverPadding(
+                        padding: const EdgeInsets.all(16),
+                        sliver: SliverMainAxisGroup(slivers: slivers),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -385,7 +387,6 @@ class ProxiesListViewState extends State<ProxiesListView> {
                                 bottom: 8,
                               ),
                               child: _buildHeader(
-                                ref,
                                 group: state.groups[index],
                                 currentUnfoldSet: state.currentUnfoldSet,
                                 listHeaderStyle: headerStyle,
@@ -406,13 +407,13 @@ class ProxiesListViewState extends State<ProxiesListView> {
   }
 }
 
-class _ProxyGroupBody extends StatefulWidget {
+class _ProxyGroupSliver extends StatelessWidget {
   final Group group;
   final bool isExpand;
   final int columns;
   final ProxyCardType cardType;
 
-  const _ProxyGroupBody({
+  const _ProxyGroupSliver({
     super.key,
     required this.group,
     required this.isExpand,
@@ -420,153 +421,56 @@ class _ProxyGroupBody extends StatefulWidget {
     required this.cardType,
   });
 
-  @override
-  State<_ProxyGroupBody> createState() => _ProxyGroupBodyState();
-}
+  int get _rowCount {
+    return (group.all.length / max(columns, 1)).ceil();
+  }
 
-class _ProxyGroupBodyState extends State<_ProxyGroupBody>
-    with TickerProviderStateMixin {
-  static const Duration _fadeDuration = Duration(milliseconds: 120);
-
-  late final AnimationController _resizeController;
-  late final AnimationController _fadeController;
-  late final Animation<double> _resizeAnimation;
-  late final Animation<double> _fadeAnimation;
-  late bool _showContent;
-
-  double get _contentHeight {
-    if (widget.group.all.isEmpty) {
+  double get _contentExtent {
+    if (_rowCount == 0) {
       return 0;
     }
-    final rowCount = (widget.group.all.length / max(widget.columns, 1)).ceil();
-    return rowCount * getItemHeight(widget.cardType) +
-        (rowCount - 1) * _listRowSpacing +
+    return _rowCount * getItemHeight(cardType) +
+        (_rowCount - 1) * _listRowSpacing +
         _listBodyBottomSpacing;
   }
 
   Duration get _animationDuration {
-    final milliseconds = 80 + _contentHeight * 0.25;
-    return Duration(milliseconds: min(milliseconds, 400).round());
+    final milliseconds = 80 + _contentExtent * 0.25;
+    return Duration(milliseconds: min(milliseconds, isExpand ? 150 : 250).round());
   }
 
-  void _updateAnimationDuration() {
-    _resizeController
-      ..duration = _animationDuration
-      ..reverseDuration = _animationDuration * 0.8;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _showContent = widget.isExpand;
-    _resizeController = AnimationController(
-      vsync: this,
-      duration: _animationDuration,
-      reverseDuration: _animationDuration * 0.8,
-      value: widget.isExpand ? 1 : 0,
-    );
-    _fadeController = AnimationController(
-      vsync: this,
-      duration: _fadeDuration,
-      value: widget.isExpand ? 1 : 0,
-    );
-    _resizeAnimation = CurvedAnimation(
-      parent: _resizeController,
-      curve: Curves.easeInOut,
-      reverseCurve: Curves.easeInOut,
-    );
-    _fadeAnimation = CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
-      reverseCurve: Curves.easeInOut,
-    );
-  }
-
-  @override
-  void didUpdateWidget(covariant _ProxyGroupBody oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.isExpand == widget.isExpand) {
-      return;
-    }
-    _updateAnimationDuration();
-    if (widget.isExpand) {
-      setState(() {
-        _showContent = true;
-      });
-      _resizeController.forward();
-      _fadeController.forward();
-      return;
-    }
-    _resizeController.reverse().whenCompleteOrCancel(() {
-      if (mounted && !widget.isExpand) {
-        setState(() {
-          _showContent = false;
-        });
-      }
-    });
-    _fadeController.reverse();
-  }
-
-  @override
-  void dispose() {
-    _resizeController.dispose();
-    _fadeController.dispose();
-    super.dispose();
-  }
-
-  Widget _buildRows() {
-    final group = widget.group;
+  Widget _buildGrid() {
     final groupName = group.name;
-    final chunks = group.all.chunks(widget.columns);
-    final rows = chunks
-        .map<Widget>((proxies) {
-          final children = proxies
-              .map<Widget>(
-                (proxy) => Flexible(
-                  child: SizedBox(
-                    height: getItemHeight(widget.cardType),
-                    child: ProxyCard(
-                      testUrl: group.testUrl,
-                      type: widget.cardType,
-                      groupType: group.type,
-                      key: ValueKey('$groupName.${proxy.name}'),
-                      proxy: proxy,
-                      groupName: groupName,
-                    ),
-                  ),
-                ),
-              )
-              .fill(
-                widget.columns,
-                filler: (_) => const Flexible(child: SizedBox()),
-              )
-              .separated(const SizedBox(width: _listRowSpacing));
-
-          return Row(children: children.toList());
-        })
-        .separated(const SizedBox(height: _listRowSpacing));
-
-    return Padding(
+    return SliverPadding(
       padding: const EdgeInsets.only(bottom: _listBodyBottomSpacing),
-      child: Column(mainAxisSize: MainAxisSize.min, children: rows.toList()),
+      sliver: SliverGrid(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: columns,
+          mainAxisSpacing: _listRowSpacing,
+          crossAxisSpacing: _listRowSpacing,
+          mainAxisExtent: getItemHeight(cardType),
+        ),
+        delegate: SliverChildBuilderDelegate((_, index) {
+          final proxy = group.all[index];
+          return ProxyCard(
+            testUrl: group.testUrl,
+            type: cardType,
+            groupType: group.type,
+            key: ValueKey('$groupName.${proxy.name}'),
+            proxy: proxy,
+            groupName: groupName,
+          );
+        }, childCount: isExpand ? group.all.length : 0),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const SizedBox(height: _listGroupSpacing),
-        SizeTransition(
-          sizeFactor: _resizeAnimation,
-          alignment: Alignment.topCenter,
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: _showContent ? _buildRows() : const SizedBox(),
-          ),
-        ),
-      ],
+    return SliverAnimatedPaintExtent(
+      duration: _animationDuration,
+      curve: Curves.easeInOut,
+      child: _buildGrid(),
     );
   }
 }
