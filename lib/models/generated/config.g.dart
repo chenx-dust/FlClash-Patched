@@ -290,6 +290,7 @@ _ProxiesStyleProps _$ProxiesStylePropsFromJson(Map<String, dynamic> json) =>
           ) ??
           ProxyCardType.standard,
       hideUnavailable: json['hideUnavailable'] as bool? ?? false,
+      showHiddenGroups: json['showHiddenGroups'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$ProxiesStylePropsToJson(
@@ -303,6 +304,7 @@ Map<String, dynamic> _$ProxiesStylePropsToJson(
   'iconSource': _$ProxiesIconSourceEnumMap[instance.iconSource]!,
   'cardType': _$ProxyCardTypeEnumMap[instance.cardType]!,
   'hideUnavailable': instance.hideUnavailable,
+  'showHiddenGroups': instance.showHiddenGroups,
 };
 
 const _$ProxiesTypeEnumMap = {ProxiesType.tab: 'tab', ProxiesType.list: 'list'};
