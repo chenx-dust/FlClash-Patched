@@ -734,6 +734,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "restoreFromWebDAVDesc": MessageLookupByLibrary.simpleMessage(
       "WebDAV を介してデータを復元する",
     ),
+    "restoreHiddenGroups": MessageLookupByLibrary.simpleMessage("グループを再び非表示"),
     "restoreOnlyConfig": MessageLookupByLibrary.simpleMessage("設定ファイルのみを復元する"),
     "restoreStrategy": MessageLookupByLibrary.simpleMessage("復元ストラテジー"),
     "restoreStrategy_compatible": MessageLookupByLibrary.simpleMessage("互換"),
@@ -870,6 +871,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectedCountTitle": m23,
     "settings": MessageLookupByLibrary.simpleMessage("設定"),
     "show": MessageLookupByLibrary.simpleMessage("表示"),
+    "showHiddenGroups": MessageLookupByLibrary.simpleMessage("非表示グループを表示"),
     "showUnavailable": MessageLookupByLibrary.simpleMessage("タイムアウト表示"),
     "shrink": MessageLookupByLibrary.simpleMessage("縮小"),
     "silentLaunch": MessageLookupByLibrary.simpleMessage("バックグラウンド起動"),
@@ -898,6 +900,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "stop": MessageLookupByLibrary.simpleMessage("停止"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("VPN を停止中..."),
     "style": MessageLookupByLibrary.simpleMessage("スタイル"),
+    "styleSettings": MessageLookupByLibrary.simpleMessage("スタイル設定"),
     "subRule": MessageLookupByLibrary.simpleMessage("サブルール"),
     "subRuleEmpty": MessageLookupByLibrary.simpleMessage("サブルールが空です"),
     "subRuleNotEmpty": MessageLookupByLibrary.simpleMessage("サブルールは空にできません"),

@@ -956,6 +956,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "restoreFromWebDAVDesc": MessageLookupByLibrary.simpleMessage(
       "Восстановить данные через WebDAV",
     ),
+    "restoreHiddenGroups": MessageLookupByLibrary.simpleMessage(
+      "Снова скрывать группы",
+    ),
     "restoreOnlyConfig": MessageLookupByLibrary.simpleMessage(
       "Восстановить только файлы конфигурации",
     ),
@@ -1118,6 +1121,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectedCountTitle": m23,
     "settings": MessageLookupByLibrary.simpleMessage("Настройки"),
     "show": MessageLookupByLibrary.simpleMessage("Показать"),
+    "showHiddenGroups": MessageLookupByLibrary.simpleMessage(
+      "Показать скрытые группы",
+    ),
     "showUnavailable": MessageLookupByLibrary.simpleMessage("Показать таймаут"),
     "shrink": MessageLookupByLibrary.simpleMessage("Сжать"),
     "silentLaunch": MessageLookupByLibrary.simpleMessage("Тихий запуск"),
@@ -1152,6 +1158,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "stop": MessageLookupByLibrary.simpleMessage("Стоп"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("Остановка VPN..."),
     "style": MessageLookupByLibrary.simpleMessage("Стиль"),
+    "styleSettings": MessageLookupByLibrary.simpleMessage("Настройки стиля"),
     "subRule": MessageLookupByLibrary.simpleMessage("Подправило"),
     "subRuleEmpty": MessageLookupByLibrary.simpleMessage("Подправило пусто"),
     "subRuleNotEmpty": MessageLookupByLibrary.simpleMessage(
