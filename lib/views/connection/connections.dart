@@ -263,9 +263,12 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
           ),
         );
       }
-      final items = connections
-          .map<Widget>(
-            (trackerInfo) => TrackerInfoItem(
+      return Expanded(
+        child: SuperListView.separated(
+          controller: _scrollController,
+          itemBuilder: (context, index) {
+            final trackerInfo = connections[index];
+            return TrackerInfoItem(
               key: Key(trackerInfo.id),
               trackerInfo: trackerInfo,
               onClickFilter: (type, value) {
@@ -285,16 +288,9 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
               detailTitle: appLocalizations.details(
                 appLocalizations.connection,
               ),
-            ),
-          )
-          .separated(const Divider(height: 0))
-          .toList();
-      return Expanded(
-        child: SuperListView.builder(
-          controller: _scrollController,
-          itemBuilder: (context, index) {
-            return items[index];
+            );
           },
+          separatorBuilder: (_, _) => const Divider(height: 0),
           itemCount: connections.length,
         ),
       );

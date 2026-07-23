@@ -213,15 +213,6 @@ class _LogsViewState extends ConsumerState<LogsView> {
               label: appLocalizations.nullTip(appLocalizations.logs),
             );
           }
-          final items = logs
-              .map<Widget>(
-                (log) => LogItem(
-                  key: Key(log.timestamp.toString()),
-                  log: log,
-                ),
-              )
-              .separated(const Divider(height: 0))
-              .toList();
           return Align(
             alignment: Alignment.topCenter,
             child: ScrollToEndBox(
@@ -235,15 +226,20 @@ class _LogsViewState extends ConsumerState<LogsView> {
               dataSource: logs,
               child: CommonScrollBar(
                 controller: _scrollController,
-                child: SuperListView.builder(
+                child: SuperListView.separated(
                   physics: const NextClampingScrollPhysics(),
                   reverse: true,
                   shrinkWrap: true,
                   controller: _scrollController,
                   itemBuilder: (_, index) {
-                    return items[index];
+                    final log = logs[index];
+                    return LogItem(
+                      key: Key(log.timestamp.toString()),
+                      log: log,
+                    );
                   },
-                  itemCount: items.length,
+                  separatorBuilder: (_, _) => const Divider(height: 0),
+                  itemCount: logs.length,
                 ),
               ),
             ),
