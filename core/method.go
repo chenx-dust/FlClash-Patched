@@ -311,6 +311,11 @@ func handleMethodCall(call *MethodCall, response MethodResponse) {
 			response.success(value)
 		})
 		return
+	case getGoroutineCountMethod:
+		handleGetGoroutineCount(func(value int) {
+			response.success(value)
+		})
+		return
 	case deleteManagedPathMethod:
 		params := DeleteManagedPathParams{}
 		if !decodeMethodArguments(call, response, &params) {

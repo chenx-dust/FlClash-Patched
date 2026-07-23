@@ -30,6 +30,7 @@ enum CoreMethod {
   stopListener,
   getCountryCode,
   getMemory,
+  getGoroutineCount,
   crash,
   setupConfig,
   deleteManagedPath,

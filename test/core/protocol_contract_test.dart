@@ -75,6 +75,7 @@ class _RecordingCoreHandler extends CoreHandlerInterface {
       },
       CoreMethod.convertAgeSecretKeyToPublicKey => 'age1public',
       CoreMethod.getMemory => 2048,
+      CoreMethod.getGoroutineCount => 42,
       _ => '',
     };
     return result as T;
@@ -239,6 +240,7 @@ void main() {
       'age1public',
     );
     expect(await handler.getMemory(), 2048);
+    expect(await handler.getGoroutineCount(), 42);
   });
 
   test('getProfileConfig preserves structured core errors', () async {

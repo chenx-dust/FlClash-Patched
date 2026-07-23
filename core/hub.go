@@ -488,6 +488,12 @@ func handleGetMemory(fn func(value uint64)) {
 	}()
 }
 
+func handleGetGoroutineCount(fn func(value int)) {
+	go func() {
+		fn(runtime.NumGoroutine())
+	}()
+}
+
 func managedPathComponents(scope ManagedPathScope) ([]string, error) {
 	switch scope {
 	case profilesPathScope:

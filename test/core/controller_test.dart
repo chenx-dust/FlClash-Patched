@@ -236,6 +236,12 @@ void main() {
       final result = await controller.getMemory();
       expect(result, 2048);
     });
+
+    test('getGoroutineCount delegates numeric count', () async {
+      when(() => mock.getGoroutineCount()).thenAnswer((_) async => 42);
+      final result = await controller.getGoroutineCount();
+      expect(result, 42);
+    });
   });
 
   group('misc methods', () {
