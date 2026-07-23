@@ -325,6 +325,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "go": MessageLookupByLibrary.simpleMessage("前往"),
     "goDownload": MessageLookupByLibrary.simpleMessage("前往下载"),
     "goToConfigureScript": MessageLookupByLibrary.simpleMessage("前往配置脚本"),
+    "goroutineInfo": MessageLookupByLibrary.simpleMessage("协程数"),
     "hasCacheChange": MessageLookupByLibrary.simpleMessage("是否缓存修改"),
     "hideFromList": MessageLookupByLibrary.simpleMessage("从列表中隐藏"),
     "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage("高优先级自启动"),
