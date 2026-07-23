@@ -363,6 +363,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "go": MessageLookupByLibrary.simpleMessage("移動"),
     "goDownload": MessageLookupByLibrary.simpleMessage("ダウンロードへ"),
     "goToConfigureScript": MessageLookupByLibrary.simpleMessage("スクリプト設定に移動"),
+    "goroutineInfo": MessageLookupByLibrary.simpleMessage("ゴルーチン数"),
     "hasCacheChange": MessageLookupByLibrary.simpleMessage("変更をキャッシュしますか？"),
     "hideFromList": MessageLookupByLibrary.simpleMessage("リストから隠す"),
     "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage("高優先度自動起動"),
