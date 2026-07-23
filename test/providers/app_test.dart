@@ -379,6 +379,25 @@ void main() {
       request.dio.httpClientAdapter = originalAdapter;
     });
 
+    test('keeps IP visibility in runtime state', () {
+      final notifier = container.read(networkDetectionProvider.notifier);
+
+      expect(container.read(networkDetectionProvider).isIpVisible, true);
+
+      notifier.toggleIpVisibility();
+
+      expect(container.read(networkDetectionProvider).isIpVisible, false);
+
+      notifier.update(
+        (state) => state.copyWith(
+          isLoading: false,
+          ipInfo: const IpInfo(ip: '1.1.1.1', countryCode: 'US'),
+        ),
+      );
+
+      expect(container.read(networkDetectionProvider).isIpVisible, false);
+    });
+
     test(
       'ignores a canceled stale check after a newer check succeeds',
       () async {

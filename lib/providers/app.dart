@@ -416,6 +416,10 @@ class NetworkDetection extends _$NetworkDetection
     }, duration: commonDuration);
   }
 
+  void toggleIpVisibility() {
+    state = state.copyWith(isIpVisible: !state.isIpVisible);
+  }
+
   Future<void> _checkIp() async {
     final isInit = ref.read(initProvider);
     if (!isInit) {
