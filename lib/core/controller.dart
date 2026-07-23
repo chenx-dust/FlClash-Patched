@@ -218,6 +218,10 @@ class CoreController {
     return _interface.getMemory();
   }
 
+  Future<int> getGoroutineCount() async {
+    return _interface.getGoroutineCount();
+  }
+
   void resetTraffic() {
     _interface.resetTraffic();
   }
