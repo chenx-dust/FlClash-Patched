@@ -2464,6 +2464,16 @@ class AppLocalizations {
     return Intl.message('Memory info', name: 'memoryInfo', desc: '', args: []);
   }
 
+  /// `Goroutines`
+  String get goroutineInfo {
+    return Intl.message(
+      'Goroutines',
+      name: 'goroutineInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Cancel`
   String get cancel {
     return Intl.message('Cancel', name: 'cancel', desc: '', args: []);
