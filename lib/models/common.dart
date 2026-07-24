@@ -221,15 +221,21 @@ const defaultDavFileName = 'backup.zip';
 
 @freezed
 abstract class DAVProps with _$DAVProps {
+  const DAVProps._();
+
   const factory DAVProps({
     required String uri,
     required String user,
-    required String password,
+    @JsonKey(includeToJson: false) @Default('') String password,
     @Default(defaultDavFileName) String fileName,
   }) = _DAVProps;
 
   factory DAVProps.fromJson(Map<String, Object?> json) =>
       _$DAVPropsFromJson(json);
+
+  @override
+  String toString() =>
+      'DAVProps(uri: $uri, user: $user, password: ***, fileName: $fileName)';
 }
 
 @freezed

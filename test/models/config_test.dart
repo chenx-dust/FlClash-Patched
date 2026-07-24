@@ -348,6 +348,39 @@ void main() {
   });
 
   group('Config composite serialization', () {
+    test('DAV password is read from legacy JSON but never serialized', () {
+      final props = DAVProps.fromJson({
+        'uri': 'https://dav.example.com',
+        'user': 'user',
+        'password': 'legacy-secret',
+        'fileName': 'backup.zip',
+      });
+
+      expect(props.password, 'legacy-secret');
+      expect(props.toJson(), {
+        'uri': 'https://dav.example.com',
+        'user': 'user',
+        'fileName': 'backup.zip',
+      });
+      expect(props.toString(), isNot(contains('legacy-secret')));
+    });
+
+    test('Config serialization does not contain the DAV password', () {
+      const config = Config(
+        themeProps: ThemeProps(),
+        davProps: DAVProps(
+          uri: 'https://dav.example.com',
+          user: 'user',
+          password: 'secret',
+        ),
+      );
+
+      final encoded = jsonEncode(config);
+
+      expect(encoded, isNot(contains('secret')));
+      expect(encoded, contains('dav.example.com'));
+    });
+
     test('default Config round-trip', () {
       const config = Config(themeProps: ThemeProps());
       final restored = roundTrip(() => config.toJson(), Config.fromJson);

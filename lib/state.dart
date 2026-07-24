@@ -98,20 +98,30 @@ class GlobalState {
       configMap,
       sync: (data) async {
         final newConfigMap = data.configMap;
-        final config = Config.realFromJson(newConfigMap);
-        await Future.wait([
-          database.restore(
-            data.profiles,
-            data.scripts,
-            data.rules,
-            data.links,
-            data.proxyGroups,
-          ),
-          preferences.saveConfig(config),
-        ]);
+        var config = Config.realFromJson(newConfigMap);
+        config = config.copyWith(
+          davProps: await davSecretStorage.resolve(config.davProps),
+        );
+        await database.restore(
+          data.profiles,
+          data.scripts,
+          data.rules,
+          data.links,
+          data.proxyGroups,
+        );
+        if (!await preferences.saveConfig(config)) {
+          throw StateError('Failed to save migrated preferences');
+        }
         return config;
       },
     );
+    final hadLegacyDavPassword = config.davProps?.password.isNotEmpty ?? false;
+    config = config.copyWith(
+      davProps: await davSecretStorage.resolve(config.davProps),
+    );
+    if (hadLegacyDavPassword && !await preferences.saveConfig(config)) {
+      throw StateError('Failed to remove the legacy WebDAV password');
+    }
     _didCrashOnPreviousExecution = await system.didCrashOnPreviousExecution();
     if (_didCrashOnPreviousExecution) {
       config = config.copyWith(currentProfileId: null);

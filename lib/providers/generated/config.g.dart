@@ -9,6 +9,53 @@ part of '../config.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(davSecretStorageService)
+final davSecretStorageServiceProvider = DavSecretStorageServiceProvider._();
+
+final class DavSecretStorageServiceProvider
+    extends
+        $FunctionalProvider<
+          DAVSecretStorage,
+          DAVSecretStorage,
+          DAVSecretStorage
+        >
+    with $Provider<DAVSecretStorage> {
+  DavSecretStorageServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'davSecretStorageServiceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$davSecretStorageServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<DAVSecretStorage> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  DAVSecretStorage create(Ref ref) {
+    return davSecretStorageService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(DAVSecretStorage value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<DAVSecretStorage>(value),
+    );
+  }
+}
+
+String _$davSecretStorageServiceHash() =>
+    r'6949e478e8bcee10e429d2bed76ecbbba6e47276';
+
 @ProviderFor(AppSetting)
 final appSettingProvider = AppSettingProvider._();
 
@@ -352,7 +399,7 @@ final class DavSettingProvider
   }
 }
 
-String _$davSettingHash() => r'5c85725b0d988c8f44ef6ba373953e551e09e857';
+String _$davSettingHash() => r'0f29983e8adc568f6c370556400af386a0f28153';
 
 abstract class _$DavSetting extends $Notifier<DAVProps?> {
   DAVProps? build();

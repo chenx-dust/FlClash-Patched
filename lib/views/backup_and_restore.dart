@@ -408,18 +408,39 @@ class _WebDAVFormDialogState extends ConsumerState<WebDAVFormDialog> {
     _passwordController = TextEditingController(text: widget.dav?.password);
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    ref.read(davSettingProvider.notifier).value = DAVProps(
-      uri: _uriController.text,
-      user: _userController.text,
-      password: _passwordController.text,
+    final saved = await globalState.loadingRun<bool>(
+      () async {
+        await ref
+            .read(davSettingProvider.notifier)
+            .set(
+              DAVProps(
+                uri: _uriController.text,
+                user: _userController.text,
+                password: _passwordController.text,
+                fileName: widget.dav?.fileName ?? defaultDavFileName,
+              ),
+            );
+        return true;
+      },
+      tag: LoadingTag.backup_restore,
+      title: currentAppLocalizations.save,
     );
+    if (saved != true || !mounted) return;
     Navigator.pop(context);
   }
 
-  void _delete() {
-    ref.read(davSettingProvider.notifier).value = null;
+  Future<void> _delete() async {
+    final deleted = await globalState.loadingRun<bool>(
+      () async {
+        await ref.read(davSettingProvider.notifier).set(null);
+        return true;
+      },
+      tag: LoadingTag.backup_restore,
+      title: currentAppLocalizations.delete,
+    );
+    if (deleted != true || !mounted) return;
     Navigator.pop(context);
   }
 

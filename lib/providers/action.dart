@@ -501,12 +501,12 @@ class BackupAction extends _$BackupAction {
       final configMap = migrationData.configMap;
       if (option == RestoreOption.onlyProfiles || configMap == null) return;
       final config = Config.fromJson(configMap);
+      await ref.read(davSettingProvider.notifier).restore(config.davProps);
       ref.read(patchClashConfigProvider.notifier).value =
           config.patchClashConfig;
       ref.read(appSettingProvider.notifier).value = config.appSettingProps;
       ref.read(currentProfileIdProvider.notifier).value =
           config.currentProfileId;
-      ref.read(davSettingProvider.notifier).value = config.davProps;
       ref.read(themeSettingProvider.notifier).value = config.themeProps;
       ref.read(windowSettingProvider.notifier).value = config.windowProps;
       ref.read(vpnSettingProvider.notifier).value = config.vpnProps;
@@ -723,7 +723,10 @@ class StoreAction extends _$StoreAction {
   }
 
   Future handleClear() async {
-    await preferences.clearPreferences();
+    await Future.wait([
+      preferences.clearPreferences(),
+      davSecretStorage.clear(),
+    ]);
     commonPrint.log('clear preferences');
     await database.close();
     await File(await appPath.databasePath).safeDelete(recursive: true);

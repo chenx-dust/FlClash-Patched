@@ -5,6 +5,27 @@ import 'package:fl_clash/providers/config.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:riverpod/riverpod.dart';
 
+class _MemorySecureStorage implements SecureStorageBackend {
+  final values = <String, String>{};
+  bool failWrites = false;
+
+  @override
+  Future<void> delete(String key) async {
+    values.remove(key);
+  }
+
+  @override
+  Future<String?> read(String key) async => values[key];
+
+  @override
+  Future<void> write(String key, String value) async {
+    if (failWrites) {
+      throw StateError('secure storage unavailable');
+    }
+    values[key] = value;
+  }
+}
+
 void main() {
   late ProviderContainer container;
 
@@ -111,16 +132,67 @@ void main() {
       expect(container.read(davSettingProvider), null);
     });
 
-    test('can update WebDAV settings', () {
+    test('persists WebDAV settings before updating state', () async {
+      final backend = _MemorySecureStorage();
+      final storage = DAVSecretStorage(backend);
+      container.dispose();
+      container = ProviderContainer(
+        overrides: [davSecretStorageServiceProvider.overrideWithValue(storage)],
+      );
       const davProps = DAVProps(
         uri: 'https://dav.example.com',
         user: 'user',
         password: 'password',
       );
 
-      container.read(davSettingProvider.notifier).update((_) => davProps);
+      await container.read(davSettingProvider.notifier).set(davProps);
 
       expect(container.read(davSettingProvider), davProps);
+      expect(backend.values, isNotEmpty);
+    });
+
+    test('keeps state unchanged when secure storage fails', () async {
+      final backend = _MemorySecureStorage()..failWrites = true;
+      final storage = DAVSecretStorage(backend);
+      container.dispose();
+      container = ProviderContainer(
+        overrides: [davSecretStorageServiceProvider.overrideWithValue(storage)],
+      );
+
+      await expectLater(
+        container
+            .read(davSettingProvider.notifier)
+            .set(
+              const DAVProps(
+                uri: 'https://dav.example.com',
+                user: 'user',
+                password: 'password',
+              ),
+            ),
+        throwsStateError,
+      );
+
+      expect(container.read(davSettingProvider), null);
+    });
+
+    test('restore clears credentials when DAV is absent', () async {
+      final backend = _MemorySecureStorage();
+      final storage = DAVSecretStorage(backend);
+      container.dispose();
+      container = ProviderContainer(
+        overrides: [davSecretStorageServiceProvider.overrideWithValue(storage)],
+      );
+      const davProps = DAVProps(
+        uri: 'https://dav.example.com',
+        user: 'user',
+        password: 'password',
+      );
+      await container.read(davSettingProvider.notifier).set(davProps);
+
+      await container.read(davSettingProvider.notifier).restore(null);
+
+      expect(container.read(davSettingProvider), null);
+      expect(backend.values, isEmpty);
     });
   });
 
