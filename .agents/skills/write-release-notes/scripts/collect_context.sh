@@ -11,7 +11,7 @@ release_ref=$2
 flclash_upstream_ref=${3:-upstream/dev}
 
 repo_root=$(git rev-parse --show-toplevel)
-core_dir="$repo_root/core/Clash.Meta"
+core_dir="$repo_root/core/mihomo"
 
 git -C "$repo_root" rev-parse --verify "${previous_ref}^{commit}" >/dev/null
 release_sha=$(git -C "$repo_root" rev-parse --verify "${release_ref}^{commit}")
@@ -56,11 +56,11 @@ flclash_base=$(git -C "$repo_root" merge-base "$flclash_upstream_ref" "$release_
 flclash_branch=${flclash_upstream_ref#*/}
 
 core_sha=$(
-  git -C "$repo_root" ls-tree "$release_ref" core/Clash.Meta |
+  git -C "$repo_root" ls-tree "$release_ref" core/mihomo |
     awk '$1 == "160000" { print $3 }'
 )
 if [[ -z "$core_sha" ]]; then
-  echo "Could not resolve core/Clash.Meta at $release_ref" >&2
+  echo "Could not resolve core/mihomo at $release_ref" >&2
   exit 1
 fi
 git -C "$core_dir" cat-file -e "${core_sha}^{commit}"
