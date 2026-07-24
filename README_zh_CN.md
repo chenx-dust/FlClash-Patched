@@ -4,13 +4,13 @@
 
 </div>
 
-## FlClash Patched
+# FlClash Patched
 
 [![Downloads](https://img.shields.io/github/downloads/chenx-dust/FlClash-Patched/total?style=flat-square&logo=github)](https://github.com/chenx-dust/FlClash-Patched/releases/)[![Last Version](https://img.shields.io/github/release/chenx-dust/FlClash-Patched/all.svg?style=flat-square)](https://github.com/chenx-dust/FlClash-Patched/releases/)[![License](https://img.shields.io/github/license/chenx-dust/FlClash-Patched?style=flat-square)](LICENSE)
 
 [FlClash](https://github.com/chen08209/FlClash) 的软分支版本，修复数个 bug，提升效能，增加功能。
 
-### 特性
+## 特性
 
 - 强化安全性（特权行为边界限制、IPC 安全性增强）
 - 支持 iOS 平台（需使用 Apple 开发者账号自行编译安装）
@@ -22,33 +22,23 @@
 
 更多信息请查看 [Applied Patches (#1)](https://github.com/chenx-dust/FlClash-Patched/issues/1)
 
-## 原介绍
+# 原介绍
 
-基于mihomo的多平台代理客户端，简单易用，开源无广告。
+基于 mihomo 的多平台代理客户端，简单易用，开源无广告。
 
-on Desktop:
-<p style="text-align: center;">
-    <img alt="desktop" src="snapshots/desktop.gif">
-</p>
-
-on Mobile:
-<p style="text-align: center;">
-    <img alt="mobile" src="snapshots/mobile.gif">
-</p>
-
-## Features
+## 特性
 
 ✈️ 多平台: Android, Windows, macOS and Linux
 
 💻 自适应多个屏幕尺寸,多种颜色主题可供选择
 
-💡 基本 Material You 设计, 类[Surfboard](https://github.com/getsurfboard/surfboard)用户界面
+💡 基于 Material You 设计，采用类似 [Surfboard](https://github.com/getsurfboard/surfboard) 的用户界面
 
-☁️ 支持通过WebDAV同步数据
+☁️ 支持通过 WebDAV 同步数据
 
-✨ 支持一键导入订阅, 深色模式
+✨ 支持一键导入订阅、深色模式
 
-## Use
+## 使用
 
 ### Linux
 
@@ -71,18 +61,11 @@ on Mobile:
     com.follow.clash.action.TOGGLE
    ```
 
-## Download
+## 下载
 
-<a href="https://chen08209.github.io/FlClash-fdroid-repo/repo?fingerprint=789D6D32668712EF7672F9E58DEEB15FBD6DCEEC5AE7A4371EA72F2AAE8A12FD"><img alt="Get it on F-Droid" src="snapshots/get-it-on-fdroid.svg" width="200px"/></a> <a href="https://github.com/chenx-dust/FlClash-Patched/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
+<a href="https://github.com/chenx-dust/FlClash-Patched/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
 
-### Homebrew
-
-```bash
-brew tap chen08209/tap
-brew install --cask flclash
-```
-
-## Build
+## 构建
 
 1. 更新 submodules
    ```bash
@@ -153,13 +136,3 @@ brew install --cask flclash
            ```bash
            dart setup.dart ios --ios-bundle-id com.example.flclash
            ```
-
-## Star
-
-支持开发者的最简单方式是点击页面顶部的星标（⭐）。
-
-<p style="text-align: center;">
-    <a href="https://api.star-history.com/svg?repos=chenx-dust/FlClash-Patched&Date">
-        <img alt="start" width=50% src="https://api.star-history.com/svg?repos=chenx-dust/FlClash-Patched&Date"/>
-    </a>
-</p>
