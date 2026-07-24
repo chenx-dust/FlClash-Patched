@@ -17,8 +17,7 @@ class _StartButtonState extends ConsumerState<StartButton>
   AnimationController? _controller;
   late Animation<double> _animation;
   bool isStart = false;
-  double? _cachedShortWidth;
-  double? _cachedLongWidth;
+  final List<double?> _cachedRunTimeTextWidths = [];
 
   @override
   void initState() {
@@ -77,10 +76,15 @@ class _StartButtonState extends ConsumerState<StartButton>
   }
 
   double _getRunTimeTextWidth(String text, BuildContext context) {
-    if (text.contains('d ')) {
-      return _cachedLongWidth ??= _measureTextWidth('00d 00:00:00', context);
+    final daySeparatorIndex = text.indexOf('d ');
+    final cacheIndex = daySeparatorIndex == -1 ? 0 : daySeparatorIndex;
+    if (_cachedRunTimeTextWidths.length <= cacheIndex) {
+      _cachedRunTimeTextWidths.length = cacheIndex + 1;
     }
-    return _cachedShortWidth ??= _measureTextWidth('00:00:00', context);
+    return _cachedRunTimeTextWidths[cacheIndex] ??= _measureTextWidth(
+      text,
+      context,
+    );
   }
 
   @override
