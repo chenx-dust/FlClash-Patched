@@ -54,6 +54,9 @@ jobs:
           - platform: macos
             os: macos-26
             arch: arm64
+          - platform: ios
+            os: macos-26
+            arch: arm64
           - platform: windows
             os: windows-11-arm
             arch: arm64
@@ -106,7 +109,7 @@ jobs:
           cache: true
 
       - name: Setup Xcode
-        if: startsWith(matrix.platform,'macos')
+        if: startsWith(matrix.os, 'macos')
         run: |
           sudo xcode-select -s /Applications/Xcode_26.3.app || sudo xcode-select -s /Applications/Xcode_26.2.app
           xcodebuild -version
@@ -125,7 +128,7 @@ jobs:
           flutter pub get
 
       - name: Setup
-        run: dart setup.dart ${{ matrix.platform }} ${{ env.IS_STABLE == 'true' && '--env stable' || '' }} -v
+        run: dart setup.dart ${{ matrix.platform }} ${{ env.IS_STABLE == 'true' && '--env stable' || '' }} ${{ matrix.platform == 'ios' && '--nosign' || '' }} -v
 
       - name: Upload
         uses: actions/upload-artifact@v7
