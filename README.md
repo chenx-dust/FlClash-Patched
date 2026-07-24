@@ -4,13 +4,13 @@
 
 </div>
 
-## FlClash Patched
+# FlClash Patched
 
 [![Downloads](https://img.shields.io/github/downloads/chenx-dust/FlClash-Patched/total?style=flat-square&logo=github)](https://github.com/chenx-dust/FlClash-Patched/releases/)[![Last Version](https://img.shields.io/github/release/chenx-dust/FlClash-Patched/all.svg?style=flat-square)](https://github.com/chenx-dust/FlClash-Patched/releases/)[![License](https://img.shields.io/github/license/chenx-dust/FlClash-Patched?style=flat-square)](LICENSE)
 
 A soft fork of [FlClash](https://github.com/chen08209/FlClash), with several bug fixes, power efficiency improvements and new features.
 
-### Features
+## Features
 
 - Enhanced security (privileged behavior boundary restrictions, IPC security enhancements)
 - Support iOS platform (requires an Apple Developer account to build)
@@ -22,23 +22,13 @@ A soft fork of [FlClash](https://github.com/chen08209/FlClash), with several bug
 
 For more information, please check the details in [Applied Patches (#1)](https://github.com/chenx-dust/FlClash-Patched/issues/1)
 
-## Original Introduction
+# Original Introduction
 
 A multi-platform proxy client based on mihomo, simple and easy to use, open-source and ad-free.
 
-on Desktop:
-<p style="text-align: center;">
-    <img alt="desktop" src="snapshots/desktop.gif">
-</p>
-
-on Mobile:
-<p style="text-align: center;">
-    <img alt="mobile" src="snapshots/mobile.gif">
-</p>
-
 ## Features
 
-✈️ Multi-platform: Android, Windows, macOS and Linux
+✈️ Multi-platform: Android, iOS, Windows, macOS and Linux
 
 💻 Adaptive multiple screen sizes, Multiple color themes available
 
@@ -73,14 +63,7 @@ Support the following actions
 
 ## Download
 
-<a href="https://chen08209.github.io/FlClash-fdroid-repo/repo?fingerprint=789D6D32668712EF7672F9E58DEEB15FBD6DCEEC5AE7A4371EA72F2AAE8A12FD"><img alt="Get it on F-Droid" src="snapshots/get-it-on-fdroid.svg" width="200px"/></a> <a href="https://github.com/chenx-dust/FlClash-Patched/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
-
-### Homebrew
-
-```bash
-brew tap chen08209/tap
-brew install --cask flclash
-```
+<a href="https://github.com/chenx-dust/FlClash-Patched/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
 
 ## Build
 
@@ -153,13 +136,3 @@ brew install --cask flclash
            ```bash
            dart setup.dart ios --ios-bundle-id com.example.flclash
            ```
-
-## Star
-
-The easiest way to support developers is to click on the star (⭐) at the top of the page.
-
-<p style="text-align: center;">
-    <a href="https://api.star-history.com/svg?repos=chenx-dust/FlClash-Patched&Date">
-        <img alt="start" width=50% src="https://api.star-history.com/svg?repos=chenx-dust/FlClash-Patched&Date"/>
-    </a>
-</p>
