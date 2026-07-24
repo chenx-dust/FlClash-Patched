@@ -2,7 +2,7 @@ module core
 
 go 1.25
 
-replace github.com/metacubex/mihomo => ./Clash.Meta
+replace github.com/metacubex/mihomo => ./mihomo
 
 require (
 	github.com/Microsoft/go-winio v0.6.2

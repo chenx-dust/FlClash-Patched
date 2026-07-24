@@ -61,7 +61,7 @@ Then use only the categories needed:
 
 - Report the FlClash remote branch and merge-base commit used by the release,
   normally `upstream/dev`.
-- Resolve the release's `core/Clash.Meta` submodule pointer internally, then
+- Resolve the release's `core/mihomo` submodule pointer internally, then
   report the nearest tagged mihomo upstream base. Use the tag and its commit
   when a tag exists; otherwise use the commit.
 - Prefer full commit links and tag links from the canonical upstream

@@ -154,7 +154,7 @@ Platform outputs remain explicit:
 The hooks follow rust_api/Cargokit's phony-output scheduling pattern, but setup uses its own cache because it builds both a
 Go core and, on Windows, a separate Rust helper. Per-target records live under `.dart_tool/setup_build_cache/v1/`:
 
-- Go fingerprints cover the target-specific `go list -deps` inputs inside `core/` and `Clash.Meta`, module files, effective
+- Go fingerprints cover the target-specific `go list -deps` inputs inside `core/` and `mihomo`, module files, effective
   build configuration, build-tool sources, target flags, Go environment/toolchain, and Android NDK compiler details.
 - Windows helper fingerprints cover its Rust sources and manifests, Cargo/Rust toolchains and flags, build mode, and the
   release core SHA token.

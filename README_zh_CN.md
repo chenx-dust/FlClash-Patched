@@ -24,7 +24,7 @@
 
 ## 原介绍
 
-基于ClashMeta的多平台代理客户端，简单易用，开源无广告。
+基于mihomo的多平台代理客户端，简单易用，开源无广告。
 
 on Desktop:
 <p style="text-align: center;">
