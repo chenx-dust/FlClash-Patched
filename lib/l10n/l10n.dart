@@ -934,10 +934,20 @@ class AppLocalizations {
     );
   }
 
-  /// `A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.`
+  /// `Swipe to Switch Pages`
+  String get swipeToSwitchPage {
+    return Intl.message(
+      'Swipe to Switch Pages',
+      name: 'swipeToSwitchPage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A multi-platform proxy client based on mihomo, simple and easy to use, open-source and ad-free.`
   String get desc {
     return Intl.message(
-      'A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.',
+      'A multi-platform proxy client based on mihomo, simple and easy to use, open-source and ad-free.',
       name: 'desc',
       desc: '',
       args: [],
