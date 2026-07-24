@@ -24,7 +24,7 @@ For more information, please check the details in [Applied Patches (#1)](https:/
 
 ## Original Introduction
 
-A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.
+A multi-platform proxy client based on mihomo, simple and easy to use, open-source and ad-free.
 
 on Desktop:
 <p style="text-align: center;">

@@ -2,7 +2,7 @@
 
 ## Building
 
-Update submodules first. The ClashMeta Go core lives in `core/Clash.Meta/`.
+Update submodules first. The mihomo Go core lives in `core/mihomo/`.
 
 ```bash
 git submodule update --init --recursive
