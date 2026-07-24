@@ -235,7 +235,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "deleteMultipTip": m1,
     "deleteTip": m2,
     "desc": MessageLookupByLibrary.simpleMessage(
-      "基于 ClashMeta 的多平台代理客户端，简单易用，开源无广告。",
+      "基于 mihomo 的多平台代理客户端，简单易用，开源无广告。",
     ),
     "destination": MessageLookupByLibrary.simpleMessage("目标地址"),
     "destinationGeoIP": MessageLookupByLibrary.simpleMessage("目标地理定位"),

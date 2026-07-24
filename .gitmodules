@@ -1,4 +1,4 @@
-[submodule "core/Clash.Meta"]
-	path = core/Clash.Meta
-	url = git@github.com:chenx-dust/Clash.Meta.git
+[submodule "core/mihomo"]
+	path = core/mihomo
+	url = git@github.com:chenx-dust/mihomo.git
 	branch = FlClash
