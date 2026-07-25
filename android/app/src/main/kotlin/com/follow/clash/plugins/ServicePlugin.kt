@@ -3,7 +3,6 @@ package com.follow.clash.plugins
 import com.follow.clash.ServiceController
 import com.follow.clash.ServiceState
 import com.follow.clash.common.Components
-import com.follow.clash.invokeMethodOnMainThread
 import com.follow.clash.models.SharedState
 import com.google.gson.Gson
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -29,7 +28,6 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
         scope.cancel()
-        ServiceController.setServiceDisconnectedListener(null)
         ServiceController.setEventListener(null)
     }
 
@@ -47,7 +45,6 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     }
 
     private fun initialize(result: MethodChannel.Result) {
-        ServiceController.setServiceDisconnectedListener(::onServiceDisconnected)
         ServiceController.setEventListener(::sendEvent)
             .onSuccess { result.success("") }
             .onFailure { error -> result.success(error.message.orEmpty()) }
@@ -113,10 +110,5 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
         scope.launch(Dispatchers.Main) {
             channel.invokeMethod("event", value)
         }
-    }
-
-    private fun onServiceDisconnected(message: String) {
-        ServiceState.handleServiceDisconnected()
-        channel.invokeMethodOnMainThread("crash", message)
     }
 }

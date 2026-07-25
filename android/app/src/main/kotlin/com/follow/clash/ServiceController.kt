@@ -32,12 +32,6 @@ object ServiceController {
     private var binding: ManagedServiceBinding? = null
     @Volatile
     private var runTimeMillis = 0L
-    @Volatile
-    private var serviceDisconnectedListener: ((String) -> Unit)? = null
-
-    fun setServiceDisconnectedListener(listener: ((String) -> Unit)?) {
-        serviceDisconnectedListener = listener
-    }
 
     suspend fun unbind() = lock.withLock {
         clearBinding()
@@ -121,17 +115,13 @@ object ServiceController {
         message: String,
     ) {
         GlobalState.launch {
-            val shouldNotify = lock.withLock {
+            lock.withLock {
                 if (binding !== disconnectedBinding) {
-                    return@withLock false
+                    return@withLock
                 }
                 GlobalState.log("Background service disconnected: $message")
                 clearBinding()
                 runTimeMillis = 0L
-                true
-            }
-            if (shouldNotify) {
-                serviceDisconnectedListener?.invoke(message)
             }
         }
     }

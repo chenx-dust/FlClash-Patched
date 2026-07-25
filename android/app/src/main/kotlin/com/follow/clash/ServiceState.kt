@@ -142,22 +142,6 @@ object ServiceState {
         applySharedState()
     }
 
-    fun handleServiceDisconnected() {
-        val request = createRequest(running = false)
-        GlobalState.launch {
-            transitionLock.withLock {
-                if (!isCurrent(request)) {
-                    return@withLock
-                }
-                runTimeMillis = 0L
-                mutableRunState.value = RunState.STOPPED
-            }
-            if (isCurrent(request)) {
-                tilePlugin?.handleStop()
-            }
-        }
-    }
-
     private suspend fun loadPreferencesAndStart() {
         sharedState = GlobalState.application.sharedState
         if (sharedState.setupParams == null || sharedState.vpnOptions == null) {
