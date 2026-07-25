@@ -46,6 +46,12 @@ void updateCurrentUnfoldSet(Set<String> value) {
       .updateCurrentUnfoldSet(value);
 }
 
+Future<void> resetProxySelection(String groupName) async {
+  await globalState.container
+      .read(proxiesActionProvider.notifier)
+      .resetProxySelection(groupName);
+}
+
 Future<void> proxyDelayTest(Proxy proxy, [String? testUrl]) async {
   await globalState.container
       .read(proxiesActionProvider.notifier)

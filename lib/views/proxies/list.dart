@@ -436,7 +436,9 @@ class _ProxyGroupSliver extends StatelessWidget {
 
   Duration get _animationDuration {
     final milliseconds = 80 + _contentExtent * 0.25;
-    return Duration(milliseconds: min(milliseconds, isExpand ? 150 : 250).round());
+    return Duration(
+      milliseconds: min(milliseconds, isExpand ? 150 : 250).round(),
+    );
   }
 
   Widget _buildGrid() {
@@ -805,6 +807,9 @@ class _ListHeaderState extends State<ListHeader> {
       ),
       onPressed: () {
         _handleChange(groupName);
+      },
+      onLongPress: () async {
+        await resetProxySelection(groupName);
       },
     );
   }
