@@ -373,13 +373,24 @@ class ProxiesListViewState extends State<ProxiesListView> {
                       if (index < 0 || state.groups.isEmpty) {
                         return Container();
                       }
+                      final surface = context.colorScheme.surface;
+                      final headerBackgroundHeight =
+                          16 + getListHeaderHeight(headerStyle) + 8;
+                      final fadeStart = 1 - 16.ap / headerBackgroundHeight;
                       return Stack(
                         children: [
                           Positioned(
                             top: -headerState.offset,
                             child: Container(
                               width: container.maxWidth,
-                              color: context.colorScheme.surface,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [surface, surface, surface.opacity60, surface.opacity0],
+                                  stops: [0, fadeStart, fadeStart, 1],
+                                ),
+                              ),
                               padding: const EdgeInsets.only(
                                 top: 16,
                                 left: 16,
@@ -435,16 +446,18 @@ class _ProxyGroupSliver extends StatelessWidget {
   }
 
   Duration get _animationDuration {
-    final milliseconds = 80 + _contentExtent * 0.25;
+    final milliseconds = 100 + _contentExtent * 0.25;
     return Duration(
-      milliseconds: min(milliseconds, isExpand ? 150 : 250).round(),
+      milliseconds: min(milliseconds, isExpand ? 120 : 250).round(),
     );
   }
 
   Widget _buildGrid() {
     final groupName = group.name;
     return SliverPadding(
-      padding: const EdgeInsets.only(bottom: _listBodyBottomSpacing),
+      padding:
+          EdgeInsets.only(bottom: isExpand ? _listGroupSpacing : 0) +
+          const EdgeInsets.symmetric(horizontal: _listRowSpacing / 2),
       sliver: SliverGrid(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: columns,
@@ -471,7 +484,7 @@ class _ProxyGroupSliver extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverAnimatedPaintExtent(
       duration: _animationDuration,
-      curve: Curves.easeInOut,
+      curve: Curves.easeInOutCubic,
       child: _buildGrid(),
     );
   }
