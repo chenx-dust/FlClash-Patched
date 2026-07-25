@@ -50,6 +50,8 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
 
     private var requestNotificationCallback: (() -> Unit)? = null
 
+    private var isRequestingNotificationPermission = false
+
     private val gson = Gson()
 
     private val packageResolver by lazy {
@@ -206,6 +208,7 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
     }
 
     fun requestNotificationPermission(callback: () -> Unit) {
+        requestNotificationCallback?.invoke()
         requestNotificationCallback = callback
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val permission = ContextCompat.checkSelfPermission(
@@ -216,6 +219,10 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
                 invokeRequestNotificationCallback()
                 return
             }
+            if (isRequestingNotificationPermission) {
+                return
+            }
+            isRequestingNotificationPermission = true
             activity?.let {
                 ActivityCompat.requestPermissions(
                     it,
@@ -229,6 +236,7 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
     }
 
     private fun invokeRequestNotificationCallback() {
+        isRequestingNotificationPermission = false
         requestNotificationCallback?.invoke()
         requestNotificationCallback = null
     }
@@ -270,6 +278,7 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
         scope.cancel()
         vpnPrepareCallback = null
         requestNotificationCallback = null
+        isRequestingNotificationPermission = false
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
@@ -295,6 +304,7 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
         activity = null
         vpnPrepareCallback = null
         requestNotificationCallback = null
+        isRequestingNotificationPermission = false
     }
 
     private fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {

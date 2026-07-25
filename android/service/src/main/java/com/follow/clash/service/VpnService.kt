@@ -26,14 +26,8 @@ class VpnService : SystemVpnService(), ManagedService {
     private val modules = ServiceModules(this)
     private val binder = LocalBinder()
 
-    override fun onCreate() {
-        super.onCreate()
-        notifyCreated()
-    }
-
     override fun onDestroy() {
         modules.stop()
-        notifyDestroyed()
         super.onDestroy()
     }
 
@@ -103,6 +97,11 @@ class VpnService : SystemVpnService(), ManagedService {
         } else {
             binder
         }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        notifyCreated()
+        return super.onStartCommand(intent, flags, startId)
+    }
 
     override fun onRevoke() {
         stop()

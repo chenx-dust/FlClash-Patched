@@ -11,11 +11,6 @@ class ProxyService : Service(), ManagedService {
     private val modules = ServiceModules(this)
     private val binder = LocalBinder()
 
-    override fun onCreate() {
-        super.onCreate()
-        notifyCreated()
-    }
-
     override fun onDestroy() {
         modules.stop()
         notifyDestroyed()
