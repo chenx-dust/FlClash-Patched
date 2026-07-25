@@ -37,10 +37,10 @@ void main() {
       expect(results.rest, ['ios']);
     });
 
-    test('parses no-sign iOS packaging mode', () {
-      final results = setup.createSetupArgParser().parse(['ios', '--nosign']);
+    test('parses unsigned iOS packaging mode', () {
+      final results = setup.createSetupArgParser().parse(['ios', '--no-codesign']);
 
-      expect(results['nosign'], isTrue);
+      expect(results['no-codesign'], isTrue);
       expect(results.rest, ['ios']);
     });
 
@@ -154,12 +154,12 @@ void main() {
         RegExp('<key>application-identifier</key>').allMatches(content),
         hasLength(1),
       );
-      expect(content, contains('UNKNOWN.com.example.flclash'));
+      expect(content, contains('UNKNOWN000.com.example.flclash'));
       expect(
         content,
         contains(
           '<key>com.apple.developer.team-identifier</key>\n'
-          '\t\t<string>UNKNOWN</string>',
+          '\t\t<string>UNKNOWN000</string>',
         ),
       );
       expect(content, isNot(contains('OLD.identifier')));
