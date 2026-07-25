@@ -28,6 +28,63 @@ class Debouncer {
   }
 }
 
+class SerialLatestTaskScheduler {
+  Future<void> _serialTail = Future<void>.value();
+  Future<void> Function()? _pendingLatestTask;
+  Completer<void>? _latestCompleter;
+  int _latestRevision = 0;
+
+  Future<T> run<T>(Future<T> Function() task) {
+    final completer = Completer<T>();
+    _serialTail = _serialTail.then((_) async {
+      try {
+        completer.complete(await task());
+      } catch (error, stackTrace) {
+        completer.completeError(error, stackTrace);
+      }
+    });
+    return completer.future;
+  }
+
+  Future<void> runLatest(Future<void> Function(bool Function() isLatest) task) {
+    final revision = ++_latestRevision;
+    _pendingLatestTask = () {
+      return run(() => task(() => revision == _latestRevision));
+    };
+    final latestCompleter = _latestCompleter;
+    if (latestCompleter != null) {
+      return latestCompleter.future;
+    }
+    final completer = Completer<void>();
+    _latestCompleter = completer;
+    unawaited(_drainLatest(completer));
+    return completer.future;
+  }
+
+  Future<void> _drainLatest(Completer<void> completer) async {
+    Object? lastError;
+    StackTrace? lastStackTrace;
+    while (_pendingLatestTask != null) {
+      final task = _pendingLatestTask!;
+      _pendingLatestTask = null;
+      try {
+        await task();
+        lastError = null;
+        lastStackTrace = null;
+      } catch (error, stackTrace) {
+        lastError = error;
+        lastStackTrace = stackTrace;
+      }
+    }
+    _latestCompleter = null;
+    if (lastError != null) {
+      completer.completeError(lastError, lastStackTrace!);
+      return;
+    }
+    completer.complete();
+  }
+}
+
 class Throttler {
   final Map<dynamic, Timer?> _operations = {};
 

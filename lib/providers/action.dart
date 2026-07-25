@@ -113,6 +113,7 @@ class CommonAction extends _$CommonAction {
 @Riverpod(keepAlive: true)
 class SetupAction extends _$SetupAction {
   Timer? _updateTimer;
+  final _setupTaskScheduler = SerialLatestTaskScheduler();
   DateTime? startTime;
 
   bool get isStart => startTime != null && startTime!.isBeforeNow;
@@ -131,7 +132,11 @@ class SetupAction extends _$SetupAction {
   void fullSetup() {
     if (!ref.read(initProvider)) return;
     ref.read(delayDataSourceProvider.notifier).value = {};
-    applyProfile(force: true);
+    unawaited(
+      _setupTaskScheduler.runLatest((isLatest) {
+        return _runSetup(force: true, isLatest: isLatest);
+      }),
+    );
     ref.read(logsProvider.notifier).value = FixedList(500);
     ref.read(requestsProvider.notifier).value = FixedList(500);
   }
@@ -263,11 +268,41 @@ class SetupAction extends _$SetupAction {
     bool silence = false,
     bool force = false,
     VoidCallback? preloadInvoke,
-  }) async {
-    await _setupConfig(
+  }) {
+    return _enqueueSetup(
       force: force,
       silence: silence,
       preloadInvoke: preloadInvoke,
+    );
+  }
+
+  Future<void> _enqueueSetup({
+    bool silence = false,
+    bool force = false,
+    VoidCallback? preloadInvoke,
+    bool Function()? isLatest,
+  }) {
+    return _setupTaskScheduler.run(() {
+      return _runSetup(
+        force: force,
+        silence: silence,
+        preloadInvoke: preloadInvoke,
+        isLatest: isLatest,
+      );
+    });
+  }
+
+  Future<void> _runSetup({
+    bool silence = false,
+    bool force = false,
+    VoidCallback? preloadInvoke,
+    bool Function()? isLatest,
+  }) {
+    return _setupConfig(
+      force: force,
+      silence: silence,
+      preloadInvoke: preloadInvoke,
+      isLatest: isLatest,
       onUpdated: () async {
         await ref.read(proxiesActionProvider.notifier).updateGroups();
         await ref.read(providersProvider.notifier).syncProviders();
@@ -366,10 +401,14 @@ class SetupAction extends _$SetupAction {
     bool force = false,
     bool silence = false,
     VoidCallback? preloadInvoke,
+    bool Function()? isLatest,
     FutureOr Function()? onUpdated,
   }) async {
+    bool isStale() => isLatest?.call() == false;
+    if (isStale()) return;
     var profile = ref.read(currentProfileProvider);
     final nextProfile = await profile?.checkAndUpdateAndCopy();
+    if (isStale()) return;
     if (nextProfile != null) {
       profile = nextProfile;
       ref.read(profilesProvider.notifier).put(nextProfile);
@@ -377,27 +416,32 @@ class SetupAction extends _$SetupAction {
     commonPrint.log('setup ===> ${profile?.id}');
     final patchConfig = ref.read(patchClashConfigProvider);
     final res = await _requestAdmin(patchConfig.tun.enable);
+    if (isStale()) return;
     if (res.isError) return;
     final realTunEnable = ref.read(realTunEnableProvider);
     final realPatchConfig = patchConfig.copyWith.tun(enable: realTunEnable);
     final setupState = await ref.read(setupStateProvider(profile?.id).future);
-    if (system.isAndroid) {
-      globalState.lastVpnState = ref.read(vpnStateProvider);
-      final sharedState = ref.read(sharedStateProvider);
-      preferences.saveShareState(sharedState);
-    }
+    if (isStale()) return;
     final vm2 = await getProfile(
       setupState: setupState,
       patchConfig: realPatchConfig,
     );
+    if (isStale()) return;
     final yamlString = vm2.a;
     final yamlMd5 = vm2.b;
     if (yamlMd5 == globalState.lastConfigMd5 && force == false) return;
+    if (system.isAndroid) {
+      globalState.lastVpnState = ref.read(vpnStateProvider);
+      final sharedState = ref.read(sharedStateProvider);
+      await preferences.saveShareState(sharedState);
+      if (isStale()) return;
+    }
     await globalState.loadingRun(
       () async {
         final configFilePath = await appPath.configFilePath;
+        if (isStale()) return;
         await File(configFilePath).safeWriteAsString(yamlString);
-        globalState.lastConfigMd5 = yamlMd5;
+        if (isStale()) return;
         final message = await coreController.setupConfig(
           setupState: setupState,
           params: _setupParams,
@@ -406,6 +450,8 @@ class SetupAction extends _$SetupAction {
         if (message.isNotEmpty && !message.endsWith('is empty')) {
           throw message;
         }
+        globalState.lastConfigMd5 = yamlMd5;
+        if (isStale()) return;
         ref.read(checkIpNumProvider.notifier).add();
         await onUpdated?.call();
       },
