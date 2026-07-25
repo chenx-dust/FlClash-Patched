@@ -981,7 +981,8 @@ class ProxiesAction extends _$ProxiesAction {
             await testProxyDelay(
               proxy,
               testUrl,
-            ).timeout(const Duration(seconds: 1));
+              onDelayChanged: () => onDelayChanged?.call(proxy),
+            ).timeout(batchTimeout);
           } catch (e) {
             commonPrint.log('delayTest batch error: $e');
           }
