@@ -59,7 +59,7 @@ class CommonAction extends _$CommonAction {
           children: [
             TextSpan(text: '\n', style: textTheme.bodyMedium),
             for (final submit in submits)
-              TextSpan(text: '- $submit \n', style: textTheme.bodyMedium),
+              TextSpan(text: '• $submit \n', style: textTheme.bodyMedium),
           ],
         ),
         confirmText: currentAppLocalizations.goDownload,
