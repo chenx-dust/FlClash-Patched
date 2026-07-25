@@ -10,7 +10,7 @@ part 'generated/app.freezed.dart';
 
 typedef DelayMap = Map<String, Map<String, int?>>;
 
-@freezed
+@Freezed(toStringOverride: false)
 abstract class AppState with _$AppState {
   const factory AppState({
     @Default(false) bool isInit,
@@ -27,6 +27,7 @@ abstract class AppState with _$AppState {
     int? runTime,
     @Default([]) List<ExternalProvider> providers,
     String? localIp,
+    @Default('') String davPassword,
     required FixedList<TrackerInfo> requests,
     required int version,
     required FixedList<Log> logs,

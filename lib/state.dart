@@ -22,6 +22,15 @@ import 'l10n/l10n.dart';
 import 'models/models.dart';
 import 'providers/providers.dart';
 
+String? _getLegacyDAVPassword(Map<String, Object?>? configMap) {
+  final dav = configMap?['davProps'] ?? configMap?['dav'];
+  if (dav is! Map) {
+    return null;
+  }
+  final password = dav['password'];
+  return password is String && password.isNotEmpty ? password : null;
+}
+
 class GlobalState {
   static GlobalState? _instance;
   final navigatorKey = GlobalKey<NavigatorState>();
@@ -81,27 +90,14 @@ class GlobalState {
   BuildContext get _context => navigatorKey.currentContext!;
 
   Future<ProviderContainer> _initData(int version) async {
-    final appState = AppState(
-      brightness: WidgetsBinding.instance.platformDispatcher.platformBrightness,
-      version: version,
-      viewSize: Size.zero,
-      requests: FixedList(maxLength),
-      logs: FixedList(maxLength),
-      traffics: FixedList(30),
-      totalTraffic: const Traffic(),
-      systemUiOverlayStyle: const SystemUiOverlayStyle(),
-    );
-    final appStateOverrides = buildAppStateOverrides(appState);
     packageInfo = await PackageInfo.fromPlatform();
     final configMap = await preferences.getConfigMap();
+    final legacyDavPassword = _getLegacyDAVPassword(configMap);
     var config = await migration.migrationIfNeeded(
       configMap,
       sync: (data) async {
         final newConfigMap = data.configMap;
-        var config = Config.realFromJson(newConfigMap);
-        config = config.copyWith(
-          davProps: await davSecretStorage.resolve(config.davProps),
-        );
+        final config = Config.realFromJson(newConfigMap);
         await database.restore(
           data.profiles,
           data.scripts,
@@ -115,18 +111,30 @@ class GlobalState {
         return config;
       },
     );
-    final hadLegacyDavPassword = config.davProps?.password.isNotEmpty ?? false;
-    config = config.copyWith(
-      davProps: await davSecretStorage.resolve(config.davProps),
-    );
-    if (hadLegacyDavPassword && !await preferences.saveConfig(config)) {
-      throw StateError('Failed to remove the legacy WebDAV password');
+    final davPassword = legacyDavPassword ?? await davSecretStorage.read();
+    if (legacyDavPassword != null) {
+      await davSecretStorage.save(legacyDavPassword);
+      if (!await preferences.saveConfig(config)) {
+        throw StateError('Failed to remove the legacy WebDAV password');
+      }
     }
     _didCrashOnPreviousExecution = await system.didCrashOnPreviousExecution();
     if (_didCrashOnPreviousExecution) {
       config = config.copyWith(currentProfileId: null);
       await preferences.saveConfig(config);
     }
+    final appState = AppState(
+      brightness: WidgetsBinding.instance.platformDispatcher.platformBrightness,
+      version: version,
+      viewSize: Size.zero,
+      requests: FixedList(maxLength),
+      logs: FixedList(maxLength),
+      traffics: FixedList(30),
+      totalTraffic: const Traffic(),
+      davPassword: davPassword,
+      systemUiOverlayStyle: const SystemUiOverlayStyle(),
+    );
+    final appStateOverrides = buildAppStateOverrides(appState);
     final configOverrides = buildConfigOverrides(config);
     container = ProviderContainer(
       overrides: [...appStateOverrides, ...configOverrides],

@@ -8,8 +8,8 @@ class DAVClient {
   late Client client;
   late String fileName;
 
-  DAVClient(DAVProps dav) {
-    client = newClient(dav.uri, user: dav.user, password: dav.password);
+  DAVClient(DAVProps dav, String password) {
+    client = newClient(dav.uri, user: dav.user, password: password);
     fileName = dav.fileName;
     client.setHeaders({'accept-charset': 'utf-8', 'Content-Type': 'text/xml'});
     client.setConnectTimeout(8000);

@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:fl_clash/models/models.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 const _davSecretKey = 'webdav_credentials';
@@ -38,48 +35,13 @@ class DAVSecretStorage {
 
   const DAVSecretStorage(this._storage);
 
-  Future<DAVProps?> resolve(DAVProps? props) async {
-    if (props == null) {
-      return null;
-    }
-    if (props.password.isNotEmpty) {
-      await save(props);
-      return props;
-    }
-    final value = await _storage.read(_davSecretKey);
-    if (value == null) {
-      return props;
-    }
-    try {
-      final secret = jsonDecode(value) as Map<String, dynamic>;
-      final matches =
-          secret['uri'] == props.uri &&
-          secret['user'] == props.user &&
-          secret['password'] is String;
-      if (!matches) {
-        await clear();
-        return props;
-      }
-      return props.copyWith(password: secret['password'] as String);
-    } catch (_) {
-      await clear();
-      return props;
-    }
-  }
+  Future<String> read() async => await _storage.read(_davSecretKey) ?? '';
 
-  Future<void> save(DAVProps? props) async {
-    if (props == null || props.password.isEmpty) {
-      await clear();
-      return;
+  Future<void> save(String password) {
+    if (password.isEmpty) {
+      return clear();
     }
-    await _storage.write(
-      _davSecretKey,
-      jsonEncode({
-        'uri': props.uri,
-        'user': props.user,
-        'password': props.password,
-      }),
-    );
+    return _storage.write(_davSecretKey, password);
   }
 
   Future<void> clear() => _storage.delete(_davSecretKey);

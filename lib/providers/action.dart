@@ -501,7 +501,7 @@ class BackupAction extends _$BackupAction {
       final configMap = migrationData.configMap;
       if (option == RestoreOption.onlyProfiles || configMap == null) return;
       final config = Config.fromJson(configMap);
-      await ref.read(davSettingProvider.notifier).restore(config.davProps);
+      ref.read(davSettingProvider.notifier).update((_) => config.davProps);
       ref.read(patchClashConfigProvider.notifier).value =
           config.patchClashConfig;
       ref.read(appSettingProvider.notifier).value = config.appSettingProps;

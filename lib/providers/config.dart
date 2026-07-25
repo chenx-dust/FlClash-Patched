@@ -4,9 +4,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/config.g.dart';
 
-@Riverpod(keepAlive: true)
-DAVSecretStorage davSecretStorageService(Ref ref) => davSecretStorage;
-
 @riverpod
 class AppSetting extends _$AppSetting with AutoDisposeNotifierMixin {
   @override
@@ -63,21 +60,6 @@ class DavSetting extends _$DavSetting with AutoDisposeNotifierMixin {
   @override
   DAVProps? build() {
     return null;
-  }
-
-  Future<void> set(DAVProps? props) async {
-    await ref.read(davSecretStorageServiceProvider).save(props);
-    value = props;
-  }
-
-  Future<void> restore(DAVProps? props) async {
-    final storage = ref.read(davSecretStorageServiceProvider);
-    if (props == null) {
-      await storage.clear();
-      value = null;
-      return;
-    }
-    value = await storage.resolve(props);
   }
 }
 

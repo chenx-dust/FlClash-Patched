@@ -30,14 +30,18 @@ class _BackupAndRestoreState extends ConsumerState<BackupAndRestore>
     with UniqueKeyStateMixin {
   final _isCompleter = ValueNotifier<bool?>(null);
   DAVProps? _lastProps;
+  String? _lastPassword;
   DAVClient? _client;
 
-  Future<void> _updateDAVClient(DAVProps? props) async {
-    _client = props == null ? null : DAVClient(props);
+  Future<void> _updateDAVClient(DAVProps? props, String password) async {
+    _client = props == null ? null : DAVClient(props, password);
     final rawProps = props?.copyWith(fileName: '');
     final rawLastProps = _lastProps?.copyWith(fileName: '');
+    final isSameCredentials =
+        rawProps == rawLastProps && password == _lastPassword;
     _lastProps = props;
-    if (rawProps == rawLastProps) {
+    _lastPassword = password;
+    if (isSameCredentials) {
       return;
     } else {
       _isCompleter.value == null;
@@ -200,8 +204,9 @@ class _BackupAndRestoreState extends ConsumerState<BackupAndRestore>
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     final dav = ref.watch(davSettingProvider);
+    final davPassword = ref.watch(davPasswordProvider);
     final isLoading = ref.watch(loadingProvider(LoadingTag.backup_restore));
-    _updateDAVClient(dav);
+    _updateDAVClient(dav, davPassword);
     return CommonScaffold(
       isLoading: isLoading,
       title: appLocalizations.backupAndRestore,
@@ -405,7 +410,9 @@ class _WebDAVFormDialogState extends ConsumerState<WebDAVFormDialog> {
     super.initState();
     _uriController = TextEditingController(text: widget.dav?.uri);
     _userController = TextEditingController(text: widget.dav?.user);
-    _passwordController = TextEditingController(text: widget.dav?.password);
+    _passwordController = TextEditingController(
+      text: ref.read(davPasswordProvider),
+    );
   }
 
   Future<void> _submit() async {
@@ -413,12 +420,14 @@ class _WebDAVFormDialogState extends ConsumerState<WebDAVFormDialog> {
     final saved = await globalState.loadingRun<bool>(
       () async {
         await ref
+            .read(davPasswordProvider.notifier)
+            .set(_passwordController.text);
+        ref
             .read(davSettingProvider.notifier)
-            .set(
-              DAVProps(
+            .update(
+              (_) => DAVProps(
                 uri: _uriController.text,
                 user: _userController.text,
-                password: _passwordController.text,
                 fileName: widget.dav?.fileName ?? defaultDavFileName,
               ),
             );
@@ -434,7 +443,8 @@ class _WebDAVFormDialogState extends ConsumerState<WebDAVFormDialog> {
   Future<void> _delete() async {
     final deleted = await globalState.loadingRun<bool>(
       () async {
-        await ref.read(davSettingProvider.notifier).set(null);
+        await ref.read(davPasswordProvider.notifier).set('');
+        ref.read(davSettingProvider.notifier).update((_) => null);
         return true;
       },
       tag: LoadingTag.backup_restore,

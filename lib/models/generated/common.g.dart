@@ -128,7 +128,6 @@ const _$LogLevelEnumMap = {
 _DAVProps _$DAVPropsFromJson(Map<String, dynamic> json) => _DAVProps(
   uri: json['uri'] as String,
   user: json['user'] as String,
-  password: json['password'] as String? ?? '',
   fileName: json['fileName'] as String? ?? defaultDavFileName,
 );
 
