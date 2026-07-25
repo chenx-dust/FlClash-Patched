@@ -234,11 +234,20 @@ class Utils {
 
   List<String> parseReleaseBody(String? body) {
     if (body == null) return [];
-    const pattern = r'- \s*(.*)';
-    final regex = RegExp(pattern);
-    return regex
-        .allMatches(body)
-        .map((match) => match.group(1) ?? '')
+    final lines = body.split(RegExp(r'\r?\n'));
+    final whatsChangedIndex = lines.indexWhere(
+      (line) => line.trim() == '## What\'s Changed',
+    );
+    final relevantLines = whatsChangedIndex == -1
+        ? lines
+        : lines
+              .skip(whatsChangedIndex + 1)
+              .takeWhile(
+                (line) => !RegExp(r'^##\s+').hasMatch(line.trimLeft()),
+              );
+    final bulletPattern = RegExp(r'^\s*-\s+(.*)$');
+    return relevantLines
+        .map((line) => bulletPattern.firstMatch(line)?.group(1) ?? '')
         .where((item) => item.isNotEmpty)
         .toList();
   }
