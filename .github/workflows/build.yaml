@@ -128,7 +128,7 @@ jobs:
           flutter pub get
 
       - name: Setup
-        run: dart setup.dart ${{ matrix.platform }} ${{ env.IS_STABLE == 'true' && '--env stable' || '' }} ${{ matrix.platform == 'ios' && '--nosign' || '' }} -v
+        run: dart setup.dart ${{ matrix.platform }} ${{ env.IS_STABLE == 'true' && '--env stable' || '' }} ${{ matrix.platform == 'ios' && '--no-codesign' || '' }} -v
 
       - name: Upload
         uses: actions/upload-artifact@v7
