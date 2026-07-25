@@ -93,6 +93,9 @@ class GlobalState {
     packageInfo = await PackageInfo.fromPlatform();
     final configMap = await preferences.getConfigMap();
     final legacyDavPassword = _getLegacyDAVPassword(configMap);
+    if (legacyDavPassword != null) {
+      await davSecretStorage.save(legacyDavPassword);
+    }
     var config = await migration.migrationIfNeeded(
       configMap,
       sync: (data) async {
@@ -113,7 +116,6 @@ class GlobalState {
     );
     final davPassword = legacyDavPassword ?? await davSecretStorage.read();
     if (legacyDavPassword != null) {
-      await davSecretStorage.save(legacyDavPassword);
       if (!await preferences.saveConfig(config)) {
         throw StateError('Failed to remove the legacy WebDAV password');
       }
