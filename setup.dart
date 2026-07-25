@@ -69,10 +69,10 @@ Future<void> main(List<String> args) async {
   final iosExportOptionsPlist = results['ipa-export-options-plist'] as String?;
   final iosBundleId = results['ios-bundle-id'] as String?;
   final iosDevelopmentTeam = results['ios-development-team'] as String?;
-  final iosNoSign = results['nosign'] as bool;
+  final iosNoSign = results['no-codesign'] as bool;
 
   if (iosNoSign && platform != 'ios') {
-    stderr.writeln('--nosign is only supported for iOS builds.');
+    stderr.writeln('--no-codesign is only supported for iOS builds.');
     exit(64);
   }
 
@@ -134,7 +134,7 @@ ArgParser createSetupArgParser() {
       help: 'Override iOS development team for CI builds',
     )
     ..addFlag(
-      'nosign',
+      'no-codesign',
       negatable: false,
       help: 'Build an IPA without Apple provisioning (iOS only)',
     )
@@ -385,7 +385,7 @@ Future<int> packageIOSNoSign({
     final outputDir = Directory(p.join(rootDir, 'dist'));
     await outputDir.create(recursive: true);
     final output = File(
-      p.join(outputDir.path, 'FlClash-$version-ios-arm64-nosign.ipa'),
+      p.join(outputDir.path, 'FlClash-$version-ios-arm64-unsigned.ipa'),
     );
     if (await output.exists()) {
       await output.delete();
@@ -464,7 +464,7 @@ String createIOSNoSignEntitlements({
   final normalizedTeamIdentifier = teamIdentifier?.trim();
   final resolvedTeamIdentifier =
       normalizedTeamIdentifier == null || normalizedTeamIdentifier.isEmpty
-      ? 'UNKNOWN'
+      ? 'UNKNOWN000'
       : normalizedTeamIdentifier;
   setString(
     'application-identifier',
