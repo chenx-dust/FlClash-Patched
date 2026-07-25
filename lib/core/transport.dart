@@ -29,7 +29,9 @@ class IPCCoreTransport {
       StreamController<Uint8List>.broadcast();
   StreamSubscription<Uint8List>? _subscription;
   Completer<void> _completer = Completer<void>();
+  Completer<void> _connectionSignal = Completer<void>();
   Completer<void> _readyCompleter = Completer<void>();
+  int _connectionGeneration = 0;
   bool _ready = false;
   bool _initialized = false;
   bool _closing = false;
@@ -57,6 +59,16 @@ class IPCCoreTransport {
   Completer<void> get connectionCompleter => _completer;
 
   Stream<Uint8List> get dataStream => _dataController.stream;
+
+  Future<void> waitForNextConnection() {
+    return _waitForConnectionAfter(_connectionGeneration);
+  }
+
+  Future<void> _waitForConnectionAfter(int connectionGeneration) async {
+    while (_connectionGeneration <= connectionGeneration) {
+      await _connectionSignal.future;
+    }
+  }
 
   Future<void> init() async {
     if (_initialized) {
@@ -100,13 +112,17 @@ class IPCCoreTransport {
         break;
       case _typeConnected:
         commonPrint.log('IPC Connected');
+        _connectionGeneration++;
+        final connectionSignal = _connectionSignal;
+        _connectionSignal = Completer<void>();
+        connectionSignal.complete();
         if (!_completer.isCompleted) {
           _completer.complete();
         }
         break;
       case _typeDisconnected:
         commonPrint.log('IPC Disconnected');
-        _completer = Completer<void>();
+        disconnected();
         if (!_closing) {
           onDisconnect?.call();
         }
@@ -148,7 +164,7 @@ class IPCCoreTransport {
       );
     }
     if (_ready && !_closing) {
-      _completer = Completer<void>();
+      disconnected();
       onDisconnect?.call();
     }
   }
@@ -158,7 +174,9 @@ class IPCCoreTransport {
   }
 
   void disconnected() {
-    _completer = Completer<void>();
+    if (_completer.isCompleted) {
+      _completer = Completer<void>();
+    }
   }
 
   Future<void> close() async {

@@ -61,7 +61,3 @@ async fn run_windows_service() -> anyhow::Result<()> {
 
     run_service().await
 }
-
-
-
-

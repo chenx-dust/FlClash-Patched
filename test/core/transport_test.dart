@@ -129,5 +129,47 @@ void main() {
       await pumpEventQueue();
       expect(disconnected, isTrue);
     });
+
+    test('waits for a fresh connection across a disconnection', () async {
+      final initFuture = transport.init();
+      events.add(_frame(0x00));
+      await initFuture;
+
+      events.add(_frame(0x01));
+      await transport.connectionCompleter.future;
+
+      var reconnected = false;
+      final nextConnection = transport.waitForNextConnection().then((_) {
+        reconnected = true;
+      });
+
+      await pumpEventQueue();
+      expect(reconnected, isFalse);
+
+      events.add(_frame(0x02));
+      await pumpEventQueue();
+      expect(reconnected, isFalse);
+
+      events.add(_frame(0x01));
+      await nextConnection;
+      expect(reconnected, isTrue);
+    });
+
+    test(
+      'does not abandon connection waiters on repeated disconnects',
+      () async {
+        final initFuture = transport.init();
+        events.add(_frame(0x00));
+        await initFuture;
+
+        final connection = transport.connectionCompleter.future;
+        transport.disconnected();
+        events.add(_frame(0x02));
+        await pumpEventQueue();
+
+        events.add(_frame(0x01));
+        await connection;
+      },
+    );
   });
 }

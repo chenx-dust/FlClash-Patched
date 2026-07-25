@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dynamic_color/dynamic_color.dart';
@@ -28,33 +29,32 @@ class BackupAndRestore extends ConsumerStatefulWidget {
 
 class _BackupAndRestoreState extends ConsumerState<BackupAndRestore>
     with UniqueKeyStateMixin {
-  final _isCompleter = ValueNotifier<bool?>(null);
-  DAVProps? _lastProps;
-  String? _lastPassword;
-  DAVClient? _client;
-
-  Future<void> _updateDAVClient(DAVProps? props, String password) async {
-    _client = props == null ? null : DAVClient(props, password);
-    final rawProps = props?.copyWith(fileName: '');
-    final rawLastProps = _lastProps?.copyWith(fileName: '');
-    final isSameCredentials =
-        rawProps == rawLastProps && password == _lastPassword;
-    _lastProps = props;
-    _lastPassword = password;
-    if (isSameCredentials) {
-      return;
-    } else {
-      _isCompleter.value == null;
-      final res = await _client?.ping() ?? false;
-      if (mounted) {
-        _isCompleter.value = res;
-      }
-    }
-  }
+  final _davConnection = DAVConnectionController();
 
   @override
   void initState() {
     super.initState();
+    ref.listenManual(davSettingProvider, (_, _) {
+      _updateDAVClient();
+    }, fireImmediately: true);
+    ref.listenManual(davPasswordProvider, (_, _) {
+      _updateDAVClient();
+    });
+  }
+
+  void _updateDAVClient() {
+    unawaited(
+      _davConnection.update(
+        ref.read(davSettingProvider),
+        ref.read(davPasswordProvider),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _davConnection.dispose();
+    super.dispose();
   }
 
   Future<void> _showAddWebDAV(DAVProps? dav) async {
@@ -67,13 +67,17 @@ class _BackupAndRestoreState extends ConsumerState<BackupAndRestore>
     final appLocalizations = context.appLocalizations;
     final res = await globalState.loadingRun<bool>(
       () async {
+        final client = _davConnection.client;
+        if (client == null) {
+          return false;
+        }
         final path = await globalState.container
             .read(backupActionProvider.notifier)
             .backup();
         if (path.isEmpty) {
           return false;
         }
-        return _client!.backup(path);
+        return client.backup(path);
       },
       tag: LoadingTag.backup_restore,
       title: appLocalizations.backup,
@@ -89,7 +93,11 @@ class _BackupAndRestoreState extends ConsumerState<BackupAndRestore>
     final appLocalizations = context.appLocalizations;
     final res = await globalState.loadingRun<bool>(
       () async {
-        await _client?.restore();
+        final client = _davConnection.client;
+        if (client == null) {
+          return false;
+        }
+        await client.restore();
         await globalState.container
             .read(backupActionProvider.notifier)
             .restore(option);
@@ -204,9 +212,7 @@ class _BackupAndRestoreState extends ConsumerState<BackupAndRestore>
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     final dav = ref.watch(davSettingProvider);
-    final davPassword = ref.watch(davPasswordProvider);
     final isLoading = ref.watch(loadingProvider(LoadingTag.backup_restore));
-    _updateDAVClient(dav, davPassword);
     return CommonScaffold(
       isLoading: isLoading,
       title: appLocalizations.backupAndRestore,
@@ -242,7 +248,7 @@ class _BackupAndRestoreState extends ConsumerState<BackupAndRestore>
                   children: [
                     Text(appLocalizations.connectivity),
                     ValueListenableBuilder(
-                      valueListenable: _isCompleter,
+                      valueListenable: _davConnection,
                       builder: (_, isCompleter, _) {
                         return Center(
                           child: FadeThroughBox(

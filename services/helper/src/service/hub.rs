@@ -7,15 +7,33 @@ use std::io::{BufRead, Error, Read};
 use std::process::{Command, Stdio};
 use std::sync::{Arc, Mutex};
 use std::{io, thread};
-use warp::{Filter, Reply};
+use warp::http::StatusCode;
+use warp::reject::Reject;
+use warp::{Filter, Rejection, Reply};
 
 const LISTEN_PORT: u16 = 47890;
+const CORE_PIPE_NAME: &str = r"\\.\pipe\FlClashCore";
+const ACCESS_TOKEN_HEADER: &str = "x-flclash-token";
+const DEBUG_ACCESS_TOKEN: &str = "flclash-debug";
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(deny_unknown_fields)]
 pub struct StartParams {
     pub path: String,
-    pub arg: String,
 }
+
+fn access_token() -> &'static str {
+    if cfg!(debug_assertions) {
+        DEBUG_ACCESS_TOKEN
+    } else {
+        env!("TOKEN")
+    }
+}
+
+#[derive(Debug)]
+struct Unauthorized;
+
+impl Reject for Unauthorized {}
 
 fn sha256_file(path: &str) -> Result<String, Error> {
     let mut file = File::open(path)?;
@@ -49,7 +67,7 @@ fn start(start_params: StartParams) -> impl Reply {
     let mut process = PROCESS.lock().unwrap();
     match Command::new(&start_params.path)
         .stderr(Stdio::piped())
-        .arg(&start_params.arg)
+        .arg(CORE_PIPE_NAME)
         .spawn()
     {
         Ok(child) => {
@@ -107,21 +125,116 @@ fn get_logs() -> impl Reply {
     warp::reply::with_header(value, "Content-Type", "text/plain")
 }
 
-pub async fn run_service() -> anyhow::Result<()> {
-    let api_ping = warp::get().and(warp::path("ping")).map(|| env!("TOKEN"));
+fn authenticated() -> impl Filter<Extract = ((),), Error = Rejection> + Clone {
+    warp::header::optional::<String>(ACCESS_TOKEN_HEADER).and_then(
+        |token: Option<String>| async move {
+            if token.as_deref() == Some(access_token()) {
+                Ok(())
+            } else {
+                Err(warp::reject::custom(Unauthorized))
+            }
+        },
+    )
+}
+
+async fn handle_rejection(rejection: Rejection) -> Result<impl Reply, Rejection> {
+    if rejection.find::<Unauthorized>().is_none() {
+        return Err(rejection);
+    }
+    Ok(warp::reply::with_status("", StatusCode::UNAUTHORIZED))
+}
+
+fn routes() -> impl Filter<Extract = (impl Reply,), Error = Rejection> + Clone {
+    let auth = authenticated();
+
+    let api_ping = warp::get()
+        .and(warp::path("ping"))
+        .and(warp::path::end())
+        .and(auth.clone())
+        .map(|()| "");
 
     let api_start = warp::post()
         .and(warp::path("start"))
+        .and(warp::path::end())
+        .and(auth.clone())
         .and(warp::body::json())
-        .map(|start_params: StartParams| start(start_params));
+        .map(|(), start_params: StartParams| start(start_params));
 
-    let api_stop = warp::post().and(warp::path("stop")).map(|| stop());
+    let api_stop = warp::post()
+        .and(warp::path("stop"))
+        .and(warp::path::end())
+        .and(auth.clone())
+        .map(|()| stop());
 
-    let api_logs = warp::get().and(warp::path("logs")).map(|| get_logs());
+    let api_logs = warp::get()
+        .and(warp::path("logs"))
+        .and(warp::path::end())
+        .and(auth)
+        .map(|()| get_logs());
 
-    warp::serve(api_ping.or(api_start).or(api_stop).or(api_logs))
+    api_ping
+        .or(api_start)
+        .or(api_stop)
+        .or(api_logs)
+        .recover(handle_rejection)
+}
+
+pub async fn run_service() -> anyhow::Result<()> {
+    if !cfg!(debug_assertions) && access_token().is_empty() {
+        anyhow::bail!("helper access token is empty");
+    }
+
+    warp::serve(routes())
         .run(([127, 0, 0, 1], LISTEN_PORT))
         .await;
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn helper_routes_require_access_token() {
+        let response = warp::test::request()
+            .method("GET")
+            .path("/ping")
+            .reply(&routes())
+            .await;
+
+        assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
+    }
+
+    #[tokio::test]
+    async fn ping_accepts_access_token_without_exposing_it() {
+        let response = warp::test::request()
+            .method("GET")
+            .path("/ping")
+            .header(ACCESS_TOKEN_HEADER, access_token())
+            .reply(&routes())
+            .await;
+
+        assert_eq!(response.status(), StatusCode::OK);
+        assert!(response.body().is_empty());
+    }
+
+    #[tokio::test]
+    async fn start_rejects_a_caller_supplied_core_argument() {
+        let response = warp::test::request()
+            .method("POST")
+            .path("/start")
+            .header(ACCESS_TOKEN_HEADER, access_token())
+            .header("content-type", "application/json")
+            .body(r#"{"path":"FlClashCore.exe","arg":"attacker-pipe"}"#)
+            .reply(&routes())
+            .await;
+
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    }
+
+    #[test]
+    fn core_pipe_name_is_fixed() {
+        assert_eq!(CORE_PIPE_NAME, r"\\.\pipe\FlClashCore");
+    }
 }

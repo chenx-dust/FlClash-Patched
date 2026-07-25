@@ -43,6 +43,7 @@ When testing freezed models with nested objects, always round-trip through `json
 
 Do not manually edit generated files under:
 
+- `lib/l10n/l10n.dart`
 - `lib/models/generated/`
 - `lib/providers/generated/`
 - `lib/database/generated/`

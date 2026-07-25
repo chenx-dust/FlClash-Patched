@@ -32,7 +32,7 @@ class GlobalState {
   Function? updateCurrentDelayDebounce;
   late Measure measure;
   late CommonTheme theme;
-  late Color accentColor;
+  Color accentColor = const Color(defaultPrimaryColor);
   late ProviderContainer container;
   bool needInitStatus = true;
   bool _didCrashOnPreviousExecution = false;
@@ -69,10 +69,13 @@ class GlobalState {
   Future<void> _initDynamicColor() async {
     try {
       corePalette = await DynamicColorPlugin.getCorePalette();
-      accentColor =
-          await DynamicColorPlugin.getAccentColor() ??
-          const Color(defaultPrimaryColor);
-    } catch (_) {}
+      accentColor = await DynamicColorPlugin.getAccentColor() ?? accentColor;
+    } catch (error) {
+      commonPrint.log(
+        'Failed to initialize dynamic color: $error',
+        logLevel: LogLevel.warning,
+      );
+    }
   }
 
   String get ua => container

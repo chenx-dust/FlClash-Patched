@@ -23,6 +23,7 @@ class CoreService extends CoreHandlerInterface {
   final Map<String, Completer<Object?>> _responseCompleters = {};
 
   Process? _process;
+  Future<void>? _startOperation;
 
   factory CoreService() {
     _instance ??= CoreService._internal();
@@ -115,18 +116,32 @@ class CoreService extends CoreHandlerInterface {
     );
   }
 
-  Future<void> start() async {
+  Future<void> start() {
+    final startOperation = _startOperation;
+    if (startOperation != null) {
+      return startOperation;
+    }
+    late final Future<void> operation;
+    operation = _start().whenComplete(() {
+      if (identical(_startOperation, operation)) {
+        _startOperation = null;
+      }
+    });
+    _startOperation = operation;
+    return operation;
+  }
+
+  Future<void> _start() async {
     await _serverInitialization;
     if (_process != null) {
       await shutdown(false);
     }
+    final nextConnection = _transport.waitForNextConnection();
     if (system.isWindows && await system.checkIsAdmin()) {
-      final isSuccess = await request.startCoreByHelper(_transport.address);
+      final isSuccess = await request.startCoreByHelper();
       if (isSuccess) {
         try {
-          await _transport.connectionCompleter.future.timeout(
-            const Duration(seconds: 10),
-          );
+          await nextConnection.timeout(const Duration(seconds: 10));
         } on TimeoutException {
           await request.stopCoreByHelper();
           rethrow;
@@ -152,9 +167,7 @@ class CoreService extends CoreHandlerInterface {
       }
     });
     try {
-      await _transport.connectionCompleter.future.timeout(
-        const Duration(seconds: 10),
-      );
+      await nextConnection.timeout(const Duration(seconds: 10));
     } on TimeoutException {
       _process?.kill();
       _process = null;

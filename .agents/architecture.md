@@ -13,7 +13,8 @@ Android lib mode:
 Desktop core mode:
 
 - Go core runs as a separate process with `CGO_ENABLED=0`.
-- Flutter communicates via JSON over socket, using a Unix socket on macOS/Linux and TCP on Windows.
+- Flutter communicates through the `rust_api` local IPC server, using a Unix
+  domain socket on macOS/Linux and a named pipe on Windows.
 - Dart-side implementation: `lib/core/service.dart` (`CoreService`).
 
 `lib/core/controller.dart` (`CoreController`) selects the implementation based on platform. `lib/core/interface.dart` defines the shared `CoreHandlerInterface`.
@@ -167,10 +168,17 @@ Go core and, on Windows, a separate Rust helper. Per-target records live under `
 This differs from `rust_api`: rust_api is a runtime Flutter Rust Bridge integration whose Cargokit hooks produce its native
 FFI library, while setup is only the build and packaging bridge for FlClash's external core artifacts.
 
-Windows helper auth:
+Windows helper integrity/version check:
 
-- Release: Core SHA256 is embedded in both the Flutter app and the Rust helper. The app pings the helper and verifies the token matches.
-- Debug: The Rust helper skips token verification when built in debug mode, so `flutter run` works without the SHA256 flow.
+- Release: Core SHA256 is embedded in both the Flutter app and the Rust helper.
+  Every helper request must present that build token, and the helper verifies
+  the requested core executable's hash before launch.
+- Debug: the app and helper use a separate fixed development token, while the
+  executable hash check remains disabled so `flutter run` works.
+- The helper chooses the fixed Windows Core named pipe; callers cannot supply
+  an arbitrary IPC address. The token is local interface hardening and version
+  matching, not third-party code-signing attestation or isolation from a
+  determined process running as the same user.
 
 Build configuration defaults live in `build_tool/lib/src/options.dart` and can be overridden via a root `build_config.yaml`.
 
@@ -194,4 +202,6 @@ Architecture detection is automatic. The `--description` flag passed to `flutter
 cargo build --release --features windows-service
 ```
 
-It uses token-based auth with the Flutter app.
+It validates the requested core executable against the embedded SHA256 in
+release builds, requires the matching build token on every localhost request,
+and supplies the fixed Core named-pipe address itself.

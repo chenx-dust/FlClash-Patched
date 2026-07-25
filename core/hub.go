@@ -24,11 +24,12 @@ import (
 	"os"
 	"runtime"
 	"runtime/debug"
+	"sync/atomic"
 	"time"
 )
 
 var (
-	isInit            = false
+	isInit            atomic.Bool
 	externalProviders = map[string]cp.Provider{}
 	logSubscriber     observable.Subscription[log.Event]
 )
@@ -38,8 +39,8 @@ func handleInitClash(params *InitParams) bool {
 	defer runLock.Unlock()
 	version = params.Version
 	constant.SetHomeDir(params.HomeDir)
-	isInit = true
-	return isInit
+	isInit.Store(true)
+	return true
 }
 
 func handleStartListener() bool {
@@ -61,7 +62,7 @@ func handleStopListener() bool {
 }
 
 func handleGetIsInit() bool {
-	return isInit
+	return isInit.Load()
 }
 
 func handleForceGC() {
@@ -76,7 +77,7 @@ func handleShutdown() bool {
 	stopListeners()
 	executor.Shutdown()
 	handleForceGC()
-	isInit = false
+	isInit.Store(false)
 	return true
 }
 
@@ -321,6 +322,8 @@ func handleUpdateGeoData(geoType string) {
 
 func handleUpdateExternalProvider(providerName string, fn func(value string)) {
 	go func() {
+		runLock.Lock()
+		defer runLock.Unlock()
 		externalProvider, exist := externalProviders[providerName]
 		if !exist {
 			fn("external provider is not exist")
@@ -363,13 +366,15 @@ func handleSuspend(suspended bool) bool {
 }
 
 func handleStartLog() {
+	runLock.Lock()
 	if logSubscriber != nil {
 		log.UnSubscribe(logSubscriber)
-		logSubscriber = nil
 	}
-	logSubscriber = log.Subscribe()
+	subscriber := log.Subscribe()
+	logSubscriber = subscriber
+	runLock.Unlock()
 	go func() {
-		for logData := range logSubscriber {
+		for logData := range subscriber {
 			if logData.LogLevel < log.Level() {
 				continue
 			}
@@ -383,6 +388,8 @@ func handleStartLog() {
 }
 
 func handleStopLog() {
+	runLock.Lock()
+	defer runLock.Unlock()
 	if logSubscriber != nil {
 		log.UnSubscribe(logSubscriber)
 		logSubscriber = nil
@@ -458,7 +465,7 @@ func handleDeleteFile(path string, response MethodResponse) {
 }
 
 func handleSetupConfig(params *SetupParams) string {
-	if !isInit {
+	if !isInit.Load() {
 		return "not initialized"
 	}
 	err := applyConfig(params)

@@ -145,30 +145,31 @@ class Request {
   }
 
   Future<bool> pingHelper() async {
-    if (kDebugMode) return true;
     try {
-      final response = await dio
-          .get(
-            'http://$localhost:$helperPort/ping',
-            options: Options(responseType: ResponseType.plain),
-          )
-          .timeout(const Duration(milliseconds: 2000));
-      if (response.statusCode != HttpStatus.ok) {
+      final options = _helperRequestOptions();
+      if (options == null) {
         return false;
       }
-      return (response.data as String) == globalState.coreSHA256;
+      final response = await dio
+          .get('http://$localhost:$helperPort/ping', options: options)
+          .timeout(const Duration(milliseconds: 2000));
+      return response.statusCode == HttpStatus.ok;
     } catch (_) {
       return false;
     }
   }
 
-  Future<bool> startCoreByHelper(String arg) async {
+  Future<bool> startCoreByHelper() async {
     try {
+      final options = _helperRequestOptions();
+      if (options == null) {
+        return false;
+      }
       final response = await dio
           .post(
             'http://$localhost:$helperPort/start',
-            data: json.encode({'path': appPath.corePath, 'arg': arg}),
-            options: Options(responseType: ResponseType.plain),
+            data: json.encode({'path': appPath.corePath}),
+            options: options,
           )
           .timeout(const Duration(milliseconds: 2000));
       if (response.statusCode != HttpStatus.ok) {
@@ -183,11 +184,12 @@ class Request {
 
   Future<bool> stopCoreByHelper() async {
     try {
+      final options = _helperRequestOptions();
+      if (options == null) {
+        return false;
+      }
       final response = await dio
-          .post(
-            'http://$localhost:$helperPort/stop',
-            options: Options(responseType: ResponseType.plain),
-          )
+          .post('http://$localhost:$helperPort/stop', options: options)
           .timeout(const Duration(milliseconds: 2000));
       if (response.statusCode != HttpStatus.ok) {
         return false;
@@ -197,6 +199,17 @@ class Request {
     } catch (_) {
       return false;
     }
+  }
+
+  Options? _helperRequestOptions() {
+    final token = kDebugMode ? helperDebugAccessToken : globalState.coreSHA256;
+    if (token.isEmpty) {
+      return null;
+    }
+    return Options(
+      responseType: ResponseType.plain,
+      headers: {helperAccessTokenHeader: token},
+    );
   }
 }
 
