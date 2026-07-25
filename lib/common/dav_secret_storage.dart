@@ -18,10 +18,7 @@ class PlatformSecureStorageBackend implements SecureStorageBackend {
 
   const PlatformSecureStorageBackend([
     this._storage = const FlutterSecureStorage(
-      mOptions: MacOsOptions(
-        // Data Protection Keychain requires a provisioned signing identity.
-        usesDataProtectionKeychain: false,
-      ),
+      mOptions: MacOsOptions(usesDataProtectionKeychain: false),
     ),
   ]);
 
