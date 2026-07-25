@@ -143,6 +143,9 @@ void main() {
               columns: 2,
             ),
           ),
+          currentProfileProvider.overrideWithValue(
+            globalContainer.read(currentProfileProvider),
+          ),
         ],
         child: const _TestApp(child: ProxiesListView()),
       ),
