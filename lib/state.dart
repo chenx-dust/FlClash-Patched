@@ -16,20 +16,12 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'common/common.dart';
+import 'common/migration.dart';
 import 'database/database.dart';
 import 'enum/enum.dart';
 import 'l10n/l10n.dart';
 import 'models/models.dart';
 import 'providers/providers.dart';
-
-String? _getLegacyDAVPassword(Map<String, Object?>? configMap) {
-  final dav = configMap?['davProps'] ?? configMap?['dav'];
-  if (dav is! Map) {
-    return null;
-  }
-  final password = dav['password'];
-  return password is String && password.isNotEmpty ? password : null;
-}
 
 class GlobalState {
   static GlobalState? _instance;
@@ -91,35 +83,8 @@ class GlobalState {
 
   Future<ProviderContainer> _initData(int version) async {
     packageInfo = await PackageInfo.fromPlatform();
-    final configMap = await preferences.getConfigMap();
-    final legacyDavPassword = _getLegacyDAVPassword(configMap);
-    if (legacyDavPassword != null) {
-      await davSecretStorage.save(legacyDavPassword);
-    }
-    var config = await migration.migrationIfNeeded(
-      configMap,
-      sync: (data) async {
-        final newConfigMap = data.configMap;
-        final config = Config.realFromJson(newConfigMap);
-        await database.restore(
-          data.profiles,
-          data.scripts,
-          data.rules,
-          data.links,
-          data.proxyGroups,
-        );
-        if (!await preferences.saveConfig(config)) {
-          throw StateError('Failed to save migrated preferences');
-        }
-        return config;
-      },
-    );
-    final davPassword = legacyDavPassword ?? await davSecretStorage.read();
-    if (legacyDavPassword != null) {
-      if (!await preferences.saveConfig(config)) {
-        throw StateError('Failed to remove the legacy WebDAV password');
-      }
-    }
+    var config = await migration.run();
+    final davPassword = await davSecretStorage.read();
     _didCrashOnPreviousExecution = await system.didCrashOnPreviousExecution();
     if (_didCrashOnPreviousExecution) {
       config = config.copyWith(currentProfileId: null);
