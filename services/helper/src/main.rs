@@ -6,7 +6,7 @@ use tokio::runtime::Runtime;
 mod service;
 
 #[cfg(all(feature = "windows-service", target_os = "windows"))]
-pub fn main() -> windows_service::Result<()> {
+pub fn main() -> anyhow::Result<()> {
     service::windows::main()
 }
 

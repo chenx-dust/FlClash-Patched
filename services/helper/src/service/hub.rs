@@ -3,6 +3,9 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::VecDeque;
 use std::fs::File;
+#[cfg(not(all(feature = "windows-service", target_os = "windows")))]
+use std::future::pending;
+use std::future::Future;
 use std::io::{BufRead, Error, Read};
 use std::process::{Command, Stdio};
 use std::sync::{Arc, Mutex};
@@ -63,7 +66,7 @@ fn start(start_params: StartParams) -> impl Reply {
             return format!("The SHA256 hash of the program requesting execution is: {}. The helper program only allows execution of applications with the SHA256 hash: {}.", sha256,  env!("TOKEN"),);
         }
     }
-    stop();
+    stop_core();
     let mut process = PROCESS.lock().unwrap();
     match Command::new(&start_params.path)
         .stderr(Stdio::piped())
@@ -97,14 +100,14 @@ fn start(start_params: StartParams) -> impl Reply {
     }
 }
 
-fn stop() -> impl Reply {
+fn stop_core() -> String {
     let mut process = PROCESS.lock().unwrap();
     if let Some(mut child) = process.take() {
         let _ = child.kill();
         let _ = child.wait();
     }
     *process = None;
-    "".to_string()
+    String::new()
 }
 
 fn log_message(message: String) {
@@ -151,7 +154,11 @@ fn routes() -> impl Filter<Extract = (impl Reply,), Error = Rejection> + Clone {
         .and(warp::path("ping"))
         .and(warp::path::end())
         .and(auth.clone())
-        .map(|()| "");
+        .map(|()| {
+            std::env::current_exe()
+                .map(|path| path.to_string_lossy().into_owned())
+                .unwrap_or_default()
+        });
 
     let api_start = warp::post()
         .and(warp::path("start"))
@@ -164,7 +171,7 @@ fn routes() -> impl Filter<Extract = (impl Reply,), Error = Rejection> + Clone {
         .and(warp::path("stop"))
         .and(warp::path::end())
         .and(auth.clone())
-        .map(|()| stop());
+        .map(|()| stop_core());
 
     let api_logs = warp::get()
         .and(warp::path("logs"))
@@ -179,14 +186,26 @@ fn routes() -> impl Filter<Extract = (impl Reply,), Error = Rejection> + Clone {
         .recover(handle_rejection)
 }
 
+#[cfg(not(all(feature = "windows-service", target_os = "windows")))]
 pub async fn run_service() -> anyhow::Result<()> {
+    run_service_until(pending(), || Ok(())).await
+}
+
+pub(super) async fn run_service_until<F, S>(shutdown: F, on_started: S) -> anyhow::Result<()>
+where
+    F: Future<Output = ()> + Send + 'static,
+    S: FnOnce() -> anyhow::Result<()>,
+{
     if !cfg!(debug_assertions) && access_token().is_empty() {
         anyhow::bail!("helper access token is empty");
     }
 
-    warp::serve(routes())
-        .run(([127, 0, 0, 1], LISTEN_PORT))
-        .await;
+    let (_, server) = warp::serve(routes())
+        .try_bind_with_graceful_shutdown(([127, 0, 0, 1], LISTEN_PORT), shutdown)
+        .map_err(|error| anyhow::anyhow!("bind helper server: {error}"))?;
+    on_started()?;
+    server.await;
+    stop_core();
 
     Ok(())
 }
@@ -207,7 +226,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn ping_accepts_access_token_without_exposing_it() {
+    async fn ping_returns_the_running_helper_path() {
         let response = warp::test::request()
             .method("GET")
             .path("/ping")
@@ -216,7 +235,13 @@ mod tests {
             .await;
 
         assert_eq!(response.status(), StatusCode::OK);
-        assert!(response.body().is_empty());
+        assert_eq!(
+            response.body(),
+            std::env::current_exe()
+                .unwrap()
+                .to_string_lossy()
+                .as_bytes()
+        );
     }
 
     #[tokio::test]

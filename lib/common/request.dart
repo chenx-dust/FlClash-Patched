@@ -10,6 +10,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:path/path.dart' as p;
 
 class Request {
   late final Dio dio;
@@ -153,7 +154,13 @@ class Request {
       final response = await dio
           .get('http://$localhost:$helperPort/ping', options: options)
           .timeout(const Duration(milliseconds: 2000));
-      return response.statusCode == HttpStatus.ok;
+      final helperPath = response.data;
+      if (response.statusCode != HttpStatus.ok || helperPath is! String) {
+        return false;
+      }
+      return p.Context(
+        style: p.Style.windows,
+      ).equals(helperPath.trim(), appPath.helperPath);
     } catch (_) {
       return false;
     }

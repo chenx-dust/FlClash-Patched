@@ -35,9 +35,9 @@ class RustBuilder {
     bool force = false,
     Future<void> Function()? beforeBuild,
   }) async {
-    final args = ['build'];
+    final args = ['build', '--features', 'windows-service'];
     if (release) {
-      args.addAll(['--release', '--features', 'windows-service']);
+      args.add('--release');
     }
     final env = {'TOKEN': token};
 

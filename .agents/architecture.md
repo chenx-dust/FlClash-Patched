@@ -202,6 +202,17 @@ Architecture detection is automatic. The `--description` flag passed to `flutter
 cargo build --release --features windows-service
 ```
 
+The helper owns its Windows Service Control Manager lifecycle through two elevated commands:
+
+- `FlClashHelperService.exe install` stops and removes any stale registration, creates the auto-start service for the
+  current executable path, starts it, and waits for the running state.
+- `FlClashHelperService.exe uninstall` stops the service, waits for shutdown, removes its registration, and is also used
+  by the Windows package uninstaller.
+
+The Dart layer only launches the helper's `install` command through `ShellExecuteW`; it does not compose `sc.exe`,
+`taskkill`, or `cmd.exe` command lines.
+
 It validates the requested core executable against the embedded SHA256 in
 release builds, requires the matching build token on every localhost request,
-and supplies the fixed Core named-pipe address itself.
+supplies the fixed Core named-pipe address itself, and reports its executable path from the authenticated health check so
+stale registrations are replaced.
