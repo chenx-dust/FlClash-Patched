@@ -216,23 +216,11 @@ class SetupAction extends _$SetupAction {
     debouncer.call(FunctionTag.updateConfig, () async {
       await globalState.safeRun(() async {
         final updateParams = ref.read(updateParamsProvider);
-        var enableTun = updateParams.tun.enable;
-        final authorization = await _authorizeTun(enableTun);
-        if (authorization == AuthorizeCode.error) {
-          enableTun = false;
-        } else if (authorization == AuthorizeCode.success) {
-          ref.read(realTunEnableProvider.notifier).value = true;
-          try {
-            await ref.read(coreActionProvider.notifier).restartCore();
-          } catch (_) {
-            ref.read(realTunEnableProvider.notifier).value = false;
-            rethrow;
-          }
-          return;
-        }
-        ref.read(realTunEnableProvider.notifier).value = enableTun;
+        final res = await _requestAdmin(updateParams.tun.enable);
+        if (res.isError) return;
+        final realTunEnable = ref.read(realTunEnableProvider);
         final message = await coreController.updateConfig(
-          updateParams.copyWith.tun(enable: enableTun),
+          updateParams.copyWith.tun(enable: realTunEnable),
         );
         ref.read(checkIpNumProvider.notifier).add();
         if (message.isNotEmpty) throw message;
@@ -383,10 +371,37 @@ class SetupAction extends _$SetupAction {
     return '';
   }
 
-  Future<AuthorizeCode> _authorizeTun(bool enableTun) async {
+  Future<Result<bool>> _requestAdmin(
+    bool enableTun, {
+    bool setupAfterRestart = true,
+  }) async {
     final realTunEnable = ref.read(realTunEnableProvider);
-    if (!enableTun || realTunEnable) return AuthorizeCode.none;
-    return system.authorizeCore();
+    if (enableTun != realTunEnable && realTunEnable == false) {
+      final code = await system.authorizeCore();
+      switch (code) {
+        case AuthorizeCode.success:
+          final coreAction = ref.read(coreActionProvider.notifier);
+          if (setupAfterRestart) {
+            ref.read(realTunEnableProvider.notifier).value = true;
+            try {
+              await coreAction.restartCore();
+            } catch (_) {
+              ref.read(realTunEnableProvider.notifier).value = false;
+              rethrow;
+            }
+            return Result.error('');
+          }
+          await coreAction._restartRuntime();
+          break;
+        case AuthorizeCode.none:
+          break;
+        case AuthorizeCode.error:
+          enableTun = false;
+          break;
+      }
+    }
+    ref.read(realTunEnableProvider.notifier).value = enableTun;
+    return Result.success(enableTun);
   }
 
   Future<void> _setupConfig({
@@ -403,15 +418,13 @@ class SetupAction extends _$SetupAction {
     }
     commonPrint.log('setup ===> ${profile?.realLabel}');
     final patchConfig = ref.read(patchClashConfigProvider);
-    var enableTun = patchConfig.tun.enable;
-    final authorization = await _authorizeTun(enableTun);
-    if (authorization == AuthorizeCode.success) {
-      await ref.read(coreActionProvider.notifier)._restartRuntime();
-    } else if (authorization == AuthorizeCode.error) {
-      enableTun = false;
-    }
-    ref.read(realTunEnableProvider.notifier).value = enableTun;
-    final realPatchConfig = patchConfig.copyWith.tun(enable: enableTun);
+    final res = await _requestAdmin(
+      patchConfig.tun.enable,
+      setupAfterRestart: false,
+    );
+    if (res.isError) return;
+    final realTunEnable = ref.read(realTunEnableProvider);
+    final realPatchConfig = patchConfig.copyWith.tun(enable: realTunEnable);
     final setupState = await ref.read(setupStateProvider(profile?.id).future);
     final vm2 = await getProfile(
       setupState: setupState,
@@ -538,25 +551,6 @@ class CoreAction extends _$CoreAction {
       return;
     }
     ref.read(coreStatusProvider.notifier).value = CoreStatus.connected;
-  }
-
-  Future<Result<bool>> requestAdmin(bool enableTun) async {
-    final realTunEnable = ref.read(realTunEnableProvider);
-    if (enableTun != realTunEnable && realTunEnable == false) {
-      final code = await system.authorizeCore();
-      switch (code) {
-        case AuthorizeCode.success:
-          await restartCore();
-          return Result.error('');
-        case AuthorizeCode.none:
-          break;
-        case AuthorizeCode.error:
-          enableTun = false;
-          break;
-      }
-    }
-    ref.read(realTunEnableProvider.notifier).value = enableTun;
-    return Result.success(enableTun);
   }
 
   Future<void> _restartRuntime() async {
