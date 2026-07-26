@@ -296,6 +296,13 @@ fn report_error(sink: &StreamSink<Vec<u8>, SseCodec>, message: impl AsRef<str>) 
     let _ = sink.add(make_frame(TYPE_ERROR, message.as_ref().as_bytes()));
 }
 
+fn is_expected_disconnect_error(error: &io::Error) -> bool {
+    matches!(
+        error.kind(),
+        io::ErrorKind::UnexpectedEof | io::ErrorKind::ConnectionReset | io::ErrorKind::BrokenPipe
+    )
+}
+
 fn finish_server(name: &str) {
     RUNNING.store(false, Ordering::SeqCst);
     if let Ok(mut state) = STATE.lock() {
@@ -410,14 +417,8 @@ fn io_loop(name: String, sink: StreamSink<Vec<u8>, SseCodec>) {
                 }
                 Ok(None) => thread::sleep(IO_POLL_INTERVAL),
                 Err(e) => {
-                    ipc_debug!("[IPC] read error: {e}, raw={:?}", e.raw_os_error());
-                    if !matches!(
-                        e.kind(),
-                        io::ErrorKind::UnexpectedEof
-                            | io::ErrorKind::ConnectionReset
-                            | io::ErrorKind::BrokenPipe
-                    ) && server_active()
-                    {
+                    if !is_expected_disconnect_error(&e) && server_active() {
+                        ipc_debug!("[IPC] read error: {e}, raw={:?}", e.raw_os_error());
                         report_error(&sink, format!("read error: {e}"));
                     }
                     break;
@@ -535,5 +536,19 @@ mod tests {
             normalize_windows_pipe_write(Err(error)).unwrap_err().kind(),
             io::ErrorKind::BrokenPipe,
         );
+    }
+
+    #[test]
+    fn expected_disconnect_errors_are_not_reported() {
+        for kind in [
+            io::ErrorKind::UnexpectedEof,
+            io::ErrorKind::ConnectionReset,
+            io::ErrorKind::BrokenPipe,
+        ] {
+            assert!(is_expected_disconnect_error(&io::Error::from(kind)));
+        }
+        assert!(!is_expected_disconnect_error(&io::Error::from(
+            io::ErrorKind::InvalidData,
+        )));
     }
 }
