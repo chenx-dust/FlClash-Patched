@@ -1,5 +1,7 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/common/theme.dart';
+import 'package:fl_clash/core/controller.dart';
+import 'package:fl_clash/core/interface.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/models/models.dart';
@@ -28,9 +30,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:smooth_sheets/smooth_sheets.dart';
 
+class _MockCoreHandlerInterface extends Mock implements CoreHandlerInterface {}
+
 void main() {
+  late _MockCoreHandlerInterface coreHandler;
+
+  setUp(() {
+    coreHandler = _MockCoreHandlerInterface();
+    CoreController.resetInstance();
+    CoreController.test(coreHandler);
+    when(
+      () => coreHandler.startRequestNotify(),
+    ).thenAnswer((_) async => <TrackerInfo>[]);
+    when(() => coreHandler.stopRequestNotify()).thenAnswer((_) async {});
+    when(() => coreHandler.startLogNotify()).thenAnswer((_) async => <Log>[]);
+    when(() => coreHandler.stopLogNotify()).thenAnswer((_) async {});
+  });
+
+  tearDown(CoreController.resetInstance);
+
   final cases = <String, Widget>{
     'dashboard': const DashboardView(),
     'proxies': const ProxiesView(),
@@ -59,7 +80,13 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
 
       final container = ProviderContainer(
-        overrides: [profilesProvider.overrideWith(_TestProfiles.new)],
+        overrides: [
+          profilesProvider.overrideWith(_TestProfiles.new),
+          if (entry.key == 'resources')
+            patchClashConfigProvider.overrideWithBuild(
+              (_, _) => const PatchClashConfig(geoXUrl: {}),
+            ),
+        ],
       );
       addTearDown(container.dispose);
       globalState.container = container;
@@ -92,8 +119,8 @@ void main() {
   final toolDestinations = <String, Type>{
     'Theme': ThemeView,
     'Backup and Restore': BackupAndRestore,
-    'Basic configuration': ConfigView,
-    'Advanced configuration': AdvancedConfigView,
+    'Basic Configuration': ConfigView,
+    'Advanced Configuration': AdvancedConfigView,
     'Application': ApplicationSettingView,
   };
 
@@ -199,7 +226,7 @@ void main() {
     );
     await tester.pump();
 
-    await tester.tap(find.text('DNS mode'));
+    await tester.tap(find.text('DNS Mode'));
     await tester.pumpAndSettle();
     expect(find.text('fakeIp'), findsWidgets);
 
@@ -231,11 +258,11 @@ void main() {
       ),
     );
     await tester.pump();
-    await tester.tap(find.text('Override Dns'));
+    await tester.tap(find.text('Override DNS'));
     await tester.pump();
     await tester.tap(find.text('Status'));
     await tester.pump();
-    await tester.tap(find.text('PreferH3'));
+    await tester.tap(find.text('Prefer HTTP/3'));
     await tester.pump();
     await tester.tap(find.text('IPv6'));
     await tester.pump();

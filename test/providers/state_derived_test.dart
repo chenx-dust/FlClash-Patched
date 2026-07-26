@@ -212,7 +212,7 @@ void main() {
     final proxy = container.read(proxyStateProvider);
     expect(proxy.isStart, isTrue);
     expect(proxy.systemProxy, isFalse);
-    expect(proxy.bassDomain, ['localhost']);
+    expect(proxy.bypassDomain, ['localhost']);
     expect(proxy.port, 8899);
     expect(container.read(isStartProvider), isTrue);
 
