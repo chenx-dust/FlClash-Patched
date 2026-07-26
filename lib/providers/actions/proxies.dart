@@ -74,7 +74,9 @@ class ProxiesAction extends _$ProxiesAction {
     };
     final selectedMap = Map<String, String>.fromEntries(
       currentProfile.selectedMap.entries.where(
-        (entry) => availableProxies[entry.key]?.contains(entry.value) == true,
+        (entry) =>
+            entry.value != compatibleProxyName &&
+            availableProxies[entry.key]?.contains(entry.value) == true,
       ),
     );
     if (selectedMap.length == currentProfile.selectedMap.length) return;

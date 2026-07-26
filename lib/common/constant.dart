@@ -56,6 +56,7 @@ const defaultExternalControllerPort = 9090;
 const maxMobileWidth = 600;
 const maxLaptopWidth = 840;
 const defaultTestUrl = 'https://www.gstatic.com/generate_204';
+const compatibleProxyName = 'COMPATIBLE';
 final commonFilter = ImageFilter.blur(
   sigmaX: 5,
   sigmaY: 5,
