@@ -175,11 +175,11 @@ Windows helper integrity/version check:
   DACL and rejects remote clients.
 - The helper verifies that the named-pipe client PID belongs to the sibling `FlClash.exe`; the app verifies that the
   server PID belongs to the sibling `FlClashHelperService.exe`.
-- Release builds open the fixed sibling Core executable without write/delete sharing, verify its embedded SHA256, and
-  keep the handle open through process creation. The ping token is for build/version matching, not third-party
-  code-signing attestation.
-- Debug/Profile keeps the requested TUN setting visible, but Dart does not contact the helper and the helper refuses
-  privileged Core startup.
+- The build tool always compiles the helper in release mode with the expected
+  Core SHA256, independently of the Flutter build mode.
+- The helper opens the fixed sibling Core executable without write/delete
+  sharing, verifies its embedded SHA256 during ping and before every launch, and
+  keeps the handle open through process creation.
 - The helper returns the spawned core PID. The Flutter IPC server accepts a Windows core connection only when its peer
   PID matches that value (or the PID returned by direct `Process.start`).
 - Core pipe names contain a cryptographically random token and are validated before the helper launches the core.
@@ -221,4 +221,5 @@ The Dart layer only launches the helper's `install` command through `ShellExecut
 
 It authenticates the app through the helper named pipe, validates the randomized
 Core named-pipe address, opens and verifies the fixed sibling Core executable in
-release builds, and returns the spawned Core PID for peer authorization.
+every Flutter build mode, and returns the spawned Core PID for peer
+authorization. Flutter does not embed or send the Core SHA256.

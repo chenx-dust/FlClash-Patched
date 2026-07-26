@@ -39,6 +39,8 @@ const MAX_HELPER_RESPONSE_SIZE: usize = 64 * 1024;
 const IPC_TOKEN_BASE64_URL_LENGTH: usize = 22;
 const CORE_EXECUTABLE_NAME: &str = env!("CORE_NAME");
 const APP_EXECUTABLE_NAME: &str = "FlClash.exe";
+const EXPECTED_CORE_SHA256: &str = env!("CORE_SHA256");
+const HELPER_READY_TOKEN: &str = "ready";
 
 #[derive(Debug, Deserialize)]
 #[serde(tag = "method", rename_all = "snake_case", deny_unknown_fields)]
@@ -130,6 +132,23 @@ fn sha256_file(file: &mut File) -> Result<String, Error> {
     Ok(format!("{:x}", hasher.finalize()))
 }
 
+fn open_verified_core(path: &Path, expected_sha256: &str) -> Result<File, Error> {
+    if expected_sha256.is_empty() {
+        return Err(Error::other("expected Core SHA256 is empty"));
+    }
+    let mut core_file = open_core(path)?;
+    if sha256_file(&mut core_file)? != expected_sha256 {
+        return Err(Error::other("Core executable SHA256 mismatch"));
+    }
+    Ok(core_file)
+}
+
+fn open_fixed_verified_core() -> Result<(PathBuf, File), Error> {
+    let path = core_path()?;
+    let file = open_verified_core(&path, EXPECTED_CORE_SHA256)?;
+    Ok((path, file))
+}
+
 static PROCESS: Lazy<Arc<Mutex<Option<std::process::Child>>>> =
     Lazy::new(|| Arc::new(Mutex::new(None)));
 
@@ -151,24 +170,13 @@ fn is_valid_core_pipe_name(arg: &str) -> bool {
 }
 
 fn start(arg: &str) -> Result<u32, String> {
-    if cfg!(debug_assertions) {
-        return Err("privileged Core startup is disabled in debug builds".to_string());
-    }
     if !is_valid_core_pipe_name(arg) {
         return Err("invalid core pipe name".to_string());
     }
-    let core_path = match core_path() {
-        Ok(path) => path,
+    let (core_path, _core_file) = match open_fixed_verified_core() {
+        Ok(core) => core,
         Err(error) => return Err(error.to_string()),
     };
-    let mut core_file = open_core(&core_path).map_err(|error| error.to_string())?;
-    let sha256 = sha256_file(&mut core_file).map_err(|error| error.to_string())?;
-    if sha256 != env!("TOKEN") {
-        return Err(format!(
-            "Core SHA256 mismatch: actual={sha256}, expected={}",
-            env!("TOKEN"),
-        ));
-    }
     stop();
     let mut process = PROCESS.lock().unwrap();
     match Command::new(&core_path)
@@ -229,9 +237,12 @@ fn write_frame(writer: &mut impl Write, data: &[u8], limit: usize) -> io::Result
 
 fn handle_request(request: HelperRequest) -> HelperResponse {
     match request {
-        HelperRequest::Ping => HelperResponse {
-            token: Some(env!("TOKEN")),
-            ..HelperResponse::success()
+        HelperRequest::Ping => match open_fixed_verified_core() {
+            Ok(_) => HelperResponse {
+                token: Some(HELPER_READY_TOKEN),
+                ..HelperResponse::success()
+            },
+            Err(error) => HelperResponse::failure(error),
         },
         HelperRequest::Start { arg } => match start(&arg) {
             Ok(core_pid) => HelperResponse {
@@ -417,11 +428,25 @@ mod tests {
     }
 
     #[test]
-    fn debug_build_refuses_privileged_core_startup() {
+    fn verifies_core_sha256_in_all_build_modes() {
+        let path =
+            std::env::temp_dir().join(format!("flclash-helper-core-sha256-{}", std::process::id()));
+        let mut file = File::create(&path).unwrap();
+        file.write_all(b"test").unwrap();
+        drop(file);
+
+        assert!(open_verified_core(
+            &path,
+            "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+        )
+        .is_ok());
         assert_eq!(
-            start(r"\\.\pipe\FlClashCore_AAAAAAAAAAAAAAAAAAAAAA").unwrap_err(),
-            "privileged Core startup is disabled in debug builds",
+            open_verified_core(&path, "invalid")
+                .unwrap_err()
+                .to_string(),
+            "Core executable SHA256 mismatch",
         );
+        std::fs::remove_file(path).unwrap();
     }
 
     #[test]
