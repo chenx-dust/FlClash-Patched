@@ -539,6 +539,107 @@ void main() {
       },
     );
 
+    test(
+      'deduplicates resolved proxy and URL across overlapping requests',
+      () async {
+        const directProxy = Proxy(name: 'Node A', type: 'Shadowsocks');
+        const groupProxy = Proxy(name: 'Automatic', type: 'URLTest');
+        const group = Group(
+          type: GroupType.URLTest,
+          name: 'Automatic',
+          now: 'Node A',
+          testUrl: 'https://default.test',
+        );
+        final response = Completer<Delay>();
+        when(
+          () => coreHandler.asyncTestDelay('https://default.test', 'Node A'),
+        ).thenAnswer((_) => response.future);
+        container.read(groupsProvider.notifier).value = [group];
+        final changedProxies = <Proxy>[];
+        final action = container.read(proxiesActionProvider.notifier);
+
+        final firstRequest = action.testProxyDelays(
+          [directProxy, groupProxy, directProxy],
+          'https://default.test',
+          uiTimeout: const Duration(seconds: 30),
+          onDelayChanged: changedProxies.add,
+        );
+        final overlappingRequest = action.testProxyDelays(
+          [groupProxy],
+          'https://default.test',
+          uiTimeout: const Duration(seconds: 30),
+          onDelayChanged: changedProxies.add,
+        );
+
+        verify(
+          () => coreHandler.asyncTestDelay('https://default.test', 'Node A'),
+        ).called(1);
+
+        response.complete(
+          const Delay(url: 'https://default.test', name: 'Node A', value: 42),
+        );
+        await Future.wait([firstRequest, overlappingRequest]);
+
+        expect(
+          container.read(
+            delayDataSourceProvider,
+          )['https://default.test']?['Node A'],
+          42,
+        );
+        expect(
+          changedProxies.where((proxy) => proxy == directProxy),
+          hasLength(4),
+        );
+        expect(
+          changedProxies.where((proxy) => proxy == groupProxy),
+          hasLength(4),
+        );
+      },
+    );
+
+    test('allows retry after a shared delay request fails', () async {
+      const proxy = Proxy(name: 'Node A', type: 'Shadowsocks');
+      var requestCount = 0;
+      when(
+        () => coreHandler.asyncTestDelay('https://default.test', 'Node A'),
+      ).thenAnswer((_) async {
+        requestCount++;
+        if (requestCount == 1) {
+          throw TimeoutException('delay test');
+        }
+        return const Delay(
+          url: 'https://default.test',
+          name: 'Node A',
+          value: 42,
+        );
+      });
+      final action = container.read(proxiesActionProvider.notifier);
+
+      await action.testProxyDelays(
+        [proxy, proxy],
+        'https://default.test',
+        uiTimeout: const Duration(seconds: 30),
+      );
+
+      expect(requestCount, 1);
+      expect(
+        container.read(
+          delayDataSourceProvider,
+        )['https://default.test']?['Node A'],
+        -1,
+      );
+
+      await action.testProxyDelay(proxy, 'https://default.test');
+
+      expect(requestCount, 2);
+      expect(
+        container.read(
+          delayDataSourceProvider,
+        )['https://default.test']?['Node A'],
+        42,
+      );
+    });
+
     test('publishes a result already stored by the core event', () async {
       const proxy = Proxy(name: 'Node A', type: 'Shadowsocks');
       final response = Completer<Delay>();
@@ -598,7 +699,7 @@ void main() {
           .testProxyDelays(
             [fastProxy, slowProxy],
             'https://default.test',
-            batchTimeout: const Duration(seconds: 30),
+            uiTimeout: const Duration(seconds: 30),
             onDelayChanged: (proxy) {
               final delay = container.read(
                 delayDataSourceProvider.select(
@@ -636,6 +737,77 @@ void main() {
       );
       await groupTestFuture;
     });
+
+    test(
+      'returns after the UI timeout while requests respect the concurrency limit',
+      () async {
+        final proxies = List.generate(
+          51,
+          (index) => Proxy(name: 'Node $index', type: 'Shadowsocks'),
+        );
+        final responses = {
+          for (final proxy in proxies) proxy.name: Completer<Delay>(),
+        };
+        final requestedNames = <String>[];
+        final firstBatchStarted = Completer<void>();
+        final secondBatchStarted = Completer<void>();
+        final lastResultPublished = Completer<void>();
+        when(
+          () => coreHandler.asyncTestDelay('https://default.test', any()),
+        ).thenAnswer((invocation) {
+          final proxyName = invocation.positionalArguments[1] as String;
+          requestedNames.add(proxyName);
+          if (requestedNames.length == 50) {
+            firstBatchStarted.complete();
+          }
+          if (proxyName == proxies.last.name) {
+            secondBatchStarted.complete();
+          }
+          return responses[proxyName]!.future;
+        });
+
+        final uiFuture = container
+            .read(proxiesActionProvider.notifier)
+            .testProxyDelays(
+              proxies,
+              'https://default.test',
+              uiTimeout: Duration.zero,
+              onDelayChanged: (proxy) {
+                final delay = container.read(
+                  delayDataSourceProvider.select(
+                    (delayMap) => delayMap['https://default.test']?[proxy.name],
+                  ),
+                );
+                if (proxy == proxies.last &&
+                    delay == 42 &&
+                    !lastResultPublished.isCompleted) {
+                  lastResultPublished.complete();
+                }
+              },
+            );
+
+        await firstBatchStarted.future;
+        await uiFuture;
+        expect(requestedNames, hasLength(50));
+        expect(requestedNames, isNot(contains(proxies.last.name)));
+
+        for (final proxy in proxies.take(50)) {
+          responses[proxy.name]!.complete(
+            Delay(url: 'https://default.test', name: proxy.name, value: 42),
+          );
+        }
+        await secondBatchStarted.future;
+
+        responses[proxies.last.name]!.complete(
+          Delay(
+            url: 'https://default.test',
+            name: proxies.last.name,
+            value: 42,
+          ),
+        );
+        await lastResultPublished.future;
+      },
+    );
 
     test('publishes timeout state for a failed delay request', () async {
       const proxy = Proxy(name: 'Node A', type: 'Shadowsocks');
