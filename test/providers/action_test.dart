@@ -179,7 +179,7 @@ class _TestProfiles extends Profiles {
   }
 
   @override
-  void del(int id) {
+  Future<void> del(int id) async {
     state = state.where((profile) => profile.id != id).toList();
   }
 

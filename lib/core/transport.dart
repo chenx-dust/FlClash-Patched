@@ -29,7 +29,7 @@ class IPCCoreTransport {
       StreamController<Uint8List>.broadcast();
   StreamSubscription<Uint8List>? _subscription;
   Completer<void> _completer = Completer<void>();
-  Completer<void> _connectionSignal = Completer<void>();
+  Completer<int?> _connectionSignal = Completer<int?>();
   Completer<void> _readyCompleter = Completer<void>();
   int _connectionGeneration = 0;
   bool _ready = false;
@@ -60,14 +60,16 @@ class IPCCoreTransport {
 
   Stream<Uint8List> get dataStream => _dataController.stream;
 
-  Future<void> waitForNextConnection() {
+  Future<int?> waitForNextConnection() {
     return _waitForConnectionAfter(_connectionGeneration);
   }
 
-  Future<void> _waitForConnectionAfter(int connectionGeneration) async {
+  Future<int?> _waitForConnectionAfter(int connectionGeneration) async {
+    int? processId;
     while (_connectionGeneration <= connectionGeneration) {
-      await _connectionSignal.future;
+      processId = await _connectionSignal.future;
     }
+    return processId;
   }
 
   Future<void> init() async {
@@ -111,11 +113,21 @@ class IPCCoreTransport {
         }
         break;
       case _typeConnected:
-        commonPrint.log('IPC Connected');
+        final processId = _decodeConnectedProcessId(payload);
+        if (payload.isNotEmpty && processId == null) {
+          _handleStreamError(
+            StateError('Invalid IPC connected frame'),
+            StackTrace.current,
+          );
+          return;
+        }
+        commonPrint.log(
+          'IPC Connected${processId == null ? '' : ': $processId'}',
+        );
         _connectionGeneration++;
         final connectionSignal = _connectionSignal;
-        _connectionSignal = Completer<void>();
-        connectionSignal.complete();
+        _connectionSignal = Completer<int?>();
+        connectionSignal.complete(processId);
         if (!_completer.isCompleted) {
           _completer.complete();
         }
@@ -155,6 +167,17 @@ class IPCCoreTransport {
     } else if (!_dataController.isClosed) {
       _dataController.addError(error, stackTrace);
     }
+  }
+
+  int? _decodeConnectedProcessId(Uint8List payload) {
+    if (payload.isEmpty) {
+      return null;
+    }
+    if (payload.length != Uint32List.bytesPerElement) {
+      return null;
+    }
+    final processId = ByteData.sublistView(payload).getUint32(0, Endian.little);
+    return processId == 0 ? null : processId;
   }
 
   void _handleStreamDone() {

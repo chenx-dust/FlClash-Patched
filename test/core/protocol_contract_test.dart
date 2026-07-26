@@ -152,6 +152,7 @@ void main() {
     );
     await handler.sideLoadExternalProvider(providerName: 'provider', data: 'x');
     await handler.asyncTestDelay('https://example.com', 'DIRECT');
+    await handler.clearEffect(42);
 
     for (final method in [
       CoreMethod.initClash,
@@ -162,6 +163,7 @@ void main() {
     ]) {
       expect(handler.calls[method], isA<Map>());
     }
+    expect(handler.calls[CoreMethod.clearEffect], 42);
   });
 
   test('event contract accepts batches and legacy single events', () async {

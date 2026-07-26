@@ -30,7 +30,7 @@ enum CoreMethod {
   getMemory,
   crash,
   setupConfig,
-  deleteFile,
+  clearEffect,
   updateDns,
 }
 

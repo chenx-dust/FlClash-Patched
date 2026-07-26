@@ -138,16 +138,17 @@ class CoreService extends CoreHandlerInterface {
     }
     final nextConnection = _transport.waitForNextConnection();
     if (system.isWindows && await system.checkIsAdmin()) {
-      final isSuccess = await request.startCoreByHelper();
-      if (isSuccess) {
-        try {
-          await nextConnection.timeout(const Duration(seconds: 10));
-        } on TimeoutException {
-          await request.stopCoreByHelper();
-          rethrow;
-        }
-        return;
+      final processId = await request.startCoreByHelper(_transport.address);
+      if (processId == null) {
+        throw StateError('Helper failed to start the core process');
       }
+      try {
+        await _waitForCoreConnection(nextConnection, processId);
+      } catch (_) {
+        await request.stopCoreByHelper();
+        rethrow;
+      }
+      return;
     }
     try {
       _process = await Process.start(appPath.corePath, [_transport.address]);
@@ -167,11 +168,26 @@ class CoreService extends CoreHandlerInterface {
       }
     });
     try {
-      await nextConnection.timeout(const Duration(seconds: 10));
-    } on TimeoutException {
+      await _waitForCoreConnection(nextConnection, _process!.pid);
+    } catch (_) {
       _process?.kill();
       _process = null;
       rethrow;
+    }
+  }
+
+  Future<void> _waitForCoreConnection(
+    Future<int?> nextConnection,
+    int expectedProcessId,
+  ) async {
+    final connectedProcessId = await nextConnection.timeout(
+      const Duration(seconds: 10),
+    );
+    if (system.isWindows && connectedProcessId != expectedProcessId) {
+      throw StateError(
+        'Unexpected core IPC process: expected $expectedProcessId, '
+        'connected ${connectedProcessId ?? 'unknown'}',
+      );
     }
   }
 

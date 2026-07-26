@@ -21,6 +21,11 @@ Generated directories are excluded from analysis:
 - `lib/**/generated/**`
 - `plugins/**`
 
+## Core API Safety
+
+- Do not expose direct filesystem deletion APIs through Core or helper IPC; use
+  a scope-specific cleanup API instead.
+
 ## Testing Rules
 
 The `core/` directory is excluded from automated test coverage. Do not add `*_test.go` files, coverage instrumentation,

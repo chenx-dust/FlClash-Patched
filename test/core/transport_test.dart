@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:fl_clash/common/constant.dart';
 import 'package:fl_clash/core/transport.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -9,7 +10,21 @@ Uint8List _frame(int type, [List<int> payload = const []]) {
   return Uint8List.fromList([type, ...payload]);
 }
 
+Uint8List _processIdPayload(int processId) {
+  return Uint8List(4)
+    ..buffer.asByteData().setUint32(0, processId, Endian.little);
+}
+
 void main() {
+  test('Windows Core pipe uses a 128-bit random suffix', () {
+    const prefix = r'\\.\pipe\FlClashCore_';
+    expect(windowsPipeName, startsWith(prefix));
+    expect(
+      windowsPipeName.substring(prefix.length),
+      matches(RegExp(r'^[0-9a-f]{32}$')),
+    );
+  });
+
   group('IPCCoreTransport', () {
     late StreamController<Uint8List> events;
     late List<List<int>> sentMessages;
@@ -139,8 +154,11 @@ void main() {
       await transport.connectionCompleter.future;
 
       var reconnected = false;
-      final nextConnection = transport.waitForNextConnection().then((_) {
+      final nextConnection = transport.waitForNextConnection().then((
+        processId,
+      ) {
         reconnected = true;
+        return processId;
       });
 
       await pumpEventQueue();
@@ -150,9 +168,20 @@ void main() {
       await pumpEventQueue();
       expect(reconnected, isFalse);
 
-      events.add(_frame(0x01));
-      await nextConnection;
+      events.add(_frame(0x01, _processIdPayload(4321)));
+      expect(await nextConnection, 4321);
       expect(reconnected, isTrue);
+    });
+
+    test('returns the connected client process ID', () async {
+      final initFuture = transport.init();
+      events.add(_frame(0x00));
+      await initFuture;
+
+      final nextConnection = transport.waitForNextConnection();
+      events.add(_frame(0x01, _processIdPayload(1234)));
+
+      expect(await nextConnection, 1234);
     });
 
     test(

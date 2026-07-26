@@ -171,14 +171,17 @@ FFI library, while setup is only the build and packaging bridge for FlClash's ex
 Windows helper integrity/version check:
 
 - Release: Core SHA256 is embedded in both the Flutter app and the Rust helper.
-  Every helper request must present that build token, and the helper verifies
-  the requested core executable's hash before launch.
-- Debug: the app and helper use a separate fixed development token, while the
-  executable hash check remains disabled so `flutter run` works.
-- The helper chooses the fixed Windows Core named pipe; callers cannot supply
-  an arbitrary IPC address. The token is local interface hardening and version
-  matching, not third-party code-signing attestation or isolation from a
-  determined process running as the same user.
+  The authenticated ping presents that build token, and the helper verifies the
+  fixed `FlClashCore.exe` beside the helper before every launch. The loopback-only
+  control and log routes do not require the token.
+- Debug/Profile: the requested TUN setting remains visible, but Dart silently
+  forces the effective TUN state off and does not contact the helper. The helper
+  also refuses privileged Core startup.
+- Flutter creates a named pipe with a 128-bit random suffix and passes only that
+  address to the helper. The helper validates the address namespace, returns the
+  spawned Core PID, and Flutter matches it against the named-pipe peer PID.
+- The ping token is for build/version matching, not third-party code-signing
+  attestation.
 
 Build configuration defaults live in `build_tool/lib/src/options.dart` and can be overridden via a root `build_config.yaml`.
 
@@ -212,7 +215,10 @@ The helper owns its Windows Service Control Manager lifecycle through two elevat
 The Dart layer only launches the helper's `install` command through `ShellExecuteW`; it does not compose `sc.exe`,
 `taskkill`, or `cmd.exe` command lines.
 
-It validates the requested core executable against the embedded SHA256 in
-release builds, requires the matching build token on every localhost request,
-supplies the fixed Core named-pipe address itself, and reports its executable path from the authenticated health check so
-stale registrations are replaced.
+In release builds it opens the fixed Core executable beside the helper without
+write/delete sharing, validates it against the embedded SHA256, and keeps that
+handle open through process creation. The authenticated ping requires the
+matching build token, while `/start`, `/stop`, and `/logs` remain loopback-only
+without token validation. The helper accepts only FlClash's random Core
+named-pipe namespace, returns the spawned PID, and reports its executable path
+and protocol version from ping so stale registrations are replaced.

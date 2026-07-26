@@ -259,9 +259,9 @@ void main() {
       verify(() => mock.forceGc()).called(1);
     });
 
-    test('deleteFile delegates', () async {
-      when(() => mock.deleteFile('/tmp/x')).thenAnswer((_) async => 'ok');
-      final result = await controller.deleteFile('/tmp/x');
+    test('clearEffect delegates', () async {
+      when(() => mock.clearEffect(42)).thenAnswer((_) async => 'ok');
+      final result = await controller.clearEffect(42);
       expect(result, 'ok');
     });
   });

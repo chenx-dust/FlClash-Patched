@@ -2,27 +2,34 @@ use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::VecDeque;
-use std::fs::File;
+use std::fs::{File, OpenOptions};
 #[cfg(not(all(feature = "windows-service", target_os = "windows")))]
 use std::future::pending;
 use std::future::Future;
 use std::io::{BufRead, Error, Read};
+#[cfg(windows)]
+use std::os::windows::fs::OpenOptionsExt;
+use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::sync::{Arc, Mutex};
 use std::{io, thread};
 use warp::http::StatusCode;
 use warp::reject::Reject;
 use warp::{Filter, Rejection, Reply};
+#[cfg(windows)]
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 
 const LISTEN_PORT: u16 = 47890;
-const CORE_PIPE_NAME: &str = r"\\.\pipe\FlClashCore";
+const CORE_PIPE_PREFIX: &str = r"\\.\pipe\FlClashCore_";
 const ACCESS_TOKEN_HEADER: &str = "x-flclash-token";
 const DEBUG_ACCESS_TOKEN: &str = "flclash-debug";
+const PROTOCOL_VERSION_HEADER: &str = "x-flclash-helper-protocol";
+const PROTOCOL_VERSION: &str = "3";
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct StartParams {
-    pub path: String,
+    pub address: String,
 }
 
 fn access_token() -> &'static str {
@@ -38,8 +45,23 @@ struct Unauthorized;
 
 impl Reject for Unauthorized {}
 
-fn sha256_file(path: &str) -> Result<String, Error> {
-    let mut file = File::open(path)?;
+fn core_path() -> Result<PathBuf, Error> {
+    let helper_path = std::env::current_exe()?;
+    let directory = helper_path
+        .parent()
+        .ok_or_else(|| Error::other("helper executable has no parent directory"))?;
+    Ok(directory.join(env!("CORE_NAME")))
+}
+
+fn open_core(path: &Path) -> Result<File, Error> {
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(windows)]
+    options.share_mode(FILE_SHARE_READ);
+    options.open(path)
+}
+
+fn sha256_file(file: &mut File) -> Result<String, Error> {
     let mut hasher = Sha256::new();
     let mut buffer = [0; 4096];
 
@@ -54,26 +76,52 @@ fn sha256_file(path: &str) -> Result<String, Error> {
     Ok(format!("{:x}", hasher.finalize()))
 }
 
+fn is_allowed_core_pipe(address: &str) -> bool {
+    let Some(suffix) = address.strip_prefix(CORE_PIPE_PREFIX) else {
+        return false;
+    };
+    suffix.len() == 32 && suffix.bytes().all(|value| value.is_ascii_hexdigit())
+}
+
 static LOGS: Lazy<Arc<Mutex<VecDeque<String>>>> =
     Lazy::new(|| Arc::new(Mutex::new(VecDeque::with_capacity(100))));
 static PROCESS: Lazy<Arc<Mutex<Option<std::process::Child>>>> =
     Lazy::new(|| Arc::new(Mutex::new(None)));
 
 fn start(start_params: StartParams) -> impl Reply {
-    if !cfg!(debug_assertions) {
-        let sha256 = sha256_file(start_params.path.as_str()).unwrap_or("".to_string());
-        if sha256 != env!("TOKEN") {
-            return format!("The SHA256 hash of the program requesting execution is: {}. The helper program only allows execution of applications with the SHA256 hash: {}.", sha256,  env!("TOKEN"),);
-        }
+    if cfg!(debug_assertions) {
+        return "privileged Core startup is disabled in debug builds".to_string();
     }
+    if !is_allowed_core_pipe(&start_params.address) {
+        return "invalid Core pipe address".to_string();
+    }
+
+    let core_path = match core_path() {
+        Ok(path) => path,
+        Err(error) => return error.to_string(),
+    };
+    let mut core_file = match open_core(&core_path) {
+        Ok(file) => file,
+        Err(error) => return error.to_string(),
+    };
+    let sha256 = match sha256_file(&mut core_file) {
+        Ok(sha256) => sha256,
+        Err(error) => return error.to_string(),
+    };
+    if sha256 != access_token() {
+        return "Core executable SHA256 mismatch".to_string();
+    }
+
     stop_core();
     let mut process = PROCESS.lock().unwrap();
-    match Command::new(&start_params.path)
+    match Command::new(&core_path)
+        .current_dir(core_path.parent().unwrap())
         .stderr(Stdio::piped())
-        .arg(CORE_PIPE_NAME)
+        .arg(&start_params.address)
         .spawn()
     {
         Ok(child) => {
+            let process_id = child.id();
             *process = Some(child);
             if let Some(ref mut child) = *process {
                 let stderr = child.stderr.take().unwrap();
@@ -91,7 +139,7 @@ fn start(start_params: StartParams) -> impl Reply {
                     }
                 });
             }
-            "".to_string()
+            process_id.to_string()
         }
         Err(e) => {
             log_message(e.to_string());
@@ -125,7 +173,11 @@ fn get_logs() -> impl Reply {
         .cloned()
         .collect::<Vec<String>>()
         .join("\n");
-    warp::reply::with_header(value, "Content-Type", "text/plain")
+    warp::reply::with_header(
+        warp::reply::with_header(value, "Content-Type", "text/plain; charset=utf-8"),
+        "Cache-Control",
+        "no-store",
+    )
 }
 
 fn authenticated() -> impl Filter<Extract = ((),), Error = Rejection> + Clone {
@@ -148,36 +200,32 @@ async fn handle_rejection(rejection: Rejection) -> Result<impl Reply, Rejection>
 }
 
 fn routes() -> impl Filter<Extract = (impl Reply,), Error = Rejection> + Clone {
-    let auth = authenticated();
-
     let api_ping = warp::get()
         .and(warp::path("ping"))
         .and(warp::path::end())
-        .and(auth.clone())
+        .and(authenticated())
         .map(|()| {
-            std::env::current_exe()
+            let path = std::env::current_exe()
                 .map(|path| path.to_string_lossy().into_owned())
-                .unwrap_or_default()
+                .unwrap_or_default();
+            warp::reply::with_header(path, PROTOCOL_VERSION_HEADER, PROTOCOL_VERSION)
         });
 
     let api_start = warp::post()
         .and(warp::path("start"))
         .and(warp::path::end())
-        .and(auth.clone())
         .and(warp::body::json())
-        .map(|(), start_params: StartParams| start(start_params));
+        .map(start);
 
     let api_stop = warp::post()
         .and(warp::path("stop"))
         .and(warp::path::end())
-        .and(auth.clone())
-        .map(|()| stop_core());
+        .map(stop_core);
 
     let api_logs = warp::get()
         .and(warp::path("logs"))
         .and(warp::path::end())
-        .and(auth)
-        .map(|()| get_logs());
+        .map(get_logs);
 
     api_ping
         .or(api_start)
@@ -215,7 +263,7 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn helper_routes_require_access_token() {
+    async fn ping_requires_access_token() {
         let response = warp::test::request()
             .method("GET")
             .path("/ping")
@@ -223,6 +271,22 @@ mod tests {
             .await;
 
         assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
+    }
+
+    #[tokio::test]
+    async fn logs_are_available_without_access_token() {
+        let response = warp::test::request()
+            .method("GET")
+            .path("/logs")
+            .reply(&routes())
+            .await;
+
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(
+            response.headers().get("content-type").unwrap(),
+            "text/plain; charset=utf-8"
+        );
+        assert_eq!(response.headers().get("cache-control").unwrap(), "no-store");
     }
 
     #[tokio::test]
@@ -235,6 +299,10 @@ mod tests {
             .await;
 
         assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(
+            response.headers().get(PROTOCOL_VERSION_HEADER).unwrap(),
+            PROTOCOL_VERSION
+        );
         assert_eq!(
             response.body(),
             std::env::current_exe()
@@ -249,17 +317,66 @@ mod tests {
         let response = warp::test::request()
             .method("POST")
             .path("/start")
-            .header(ACCESS_TOKEN_HEADER, access_token())
             .header("content-type", "application/json")
-            .body(r#"{"path":"FlClashCore.exe","arg":"attacker-pipe"}"#)
+            .body(
+                r#"{"address":"\\\\.\\pipe\\FlClashCore_0123456789abcdef0123456789abcdef","path":"attacker.exe"}"#,
+            )
             .reply(&routes())
             .await;
 
         assert_eq!(response.status(), StatusCode::BAD_REQUEST);
     }
 
+    #[tokio::test]
+    async fn debug_build_refuses_privileged_core_startup() {
+        let response = warp::test::request()
+            .method("POST")
+            .path("/start")
+            .header("content-type", "application/json")
+            .body(r#"{"address":"\\\\.\\pipe\\FlClashCore_0123456789abcdef0123456789abcdef"}"#)
+            .reply(&routes())
+            .await;
+
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(
+            response.body(),
+            "privileged Core startup is disabled in debug builds"
+        );
+    }
+
+    #[tokio::test]
+    async fn stop_is_available_without_access_token() {
+        let response = warp::test::request()
+            .method("POST")
+            .path("/stop")
+            .reply(&routes())
+            .await;
+
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+
     #[test]
-    fn core_pipe_name_is_fixed() {
-        assert_eq!(CORE_PIPE_NAME, r"\\.\pipe\FlClashCore");
+    fn core_path_is_fixed_beside_the_helper() {
+        assert_eq!(
+            core_path().unwrap().file_name().unwrap(),
+            std::ffi::OsStr::new(env!("CORE_NAME"))
+        );
+    }
+
+    #[test]
+    fn only_accepts_random_core_pipe_namespace() {
+        assert!(is_allowed_core_pipe(
+            r"\\.\pipe\FlClashCore_0123456789abcdef0123456789abcdef"
+        ));
+        assert!(!is_allowed_core_pipe(r"\\.\pipe\FlClashCore"));
+        assert!(!is_allowed_core_pipe(
+            r"\\.\pipe\Other_0123456789abcdef0123456789abcdef"
+        ));
+        assert!(!is_allowed_core_pipe(
+            r"\\.\pipe\FlClashCore_0123456789abcdef"
+        ));
+        assert!(!is_allowed_core_pipe(
+            r"\\.\pipe\FlClashCore_0123456789abcdef0123456789abcdeg"
+        ));
     }
 }

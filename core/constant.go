@@ -111,7 +111,7 @@ const (
 	crashMethod                    CoreMethod = "crash"
 	setupConfigMethod              CoreMethod = "setupConfig"
 	getConfigMethod                CoreMethod = "getConfig"
-	deleteFileMethod               CoreMethod = "deleteFile"
+	clearEffectMethod              CoreMethod = "clearEffect"
 )
 
 type CoreMethod string

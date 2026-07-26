@@ -269,12 +269,12 @@ func handleMethodCall(call *MethodCall, response MethodResponse) {
 			response.success(value)
 		})
 		return
-	case deleteFileMethod:
-		path := ""
-		if !decodeMethodArguments(call, response, &path) {
+	case clearEffectMethod:
+		var profileId int64
+		if !decodeMethodArguments(call, response, &profileId) {
 			return
 		}
-		handleDeleteFile(path, response)
+		handleClearEffect(profileId, response)
 		return
 	default:
 		if !handlePlatformMethodCall(call, response) {

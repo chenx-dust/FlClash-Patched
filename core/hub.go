@@ -22,8 +22,10 @@ import (
 	"golang.org/x/exp/slices"
 	"net"
 	"os"
+	"path/filepath"
 	"runtime"
 	"runtime/debug"
+	"strconv"
 	"sync/atomic"
 	"time"
 )
@@ -436,30 +438,32 @@ func handleUpdateConfig(params *UpdateParams) string {
 	return ""
 }
 
-func handleDeleteFile(path string, response MethodResponse) {
+// handleClearEffect derives the provider directory from a profile ID so the
+// method cannot be used as a general-purpose privileged file deletion API.
+func handleClearEffect(profileId int64, response MethodResponse) {
 	go func() {
-		fileInfo, err := os.Stat(path)
-		if err != nil {
-			if !os.IsNotExist(err) {
-				response.success(err.Error())
-				return
-			}
-			response.success("")
+		if !isInit.Load() {
+			response.success("not initialized")
 			return
 		}
-		if fileInfo.IsDir() {
-			err = os.RemoveAll(path)
-			if err != nil {
-				response.success(err.Error())
-				return
-			}
-		} else {
-			err = os.Remove(path)
-			if err != nil {
-				response.success(err.Error())
-				return
-			}
+		if profileId <= 0 {
+			response.success("invalid profile id")
+			return
 		}
+		providersRoot := filepath.Join(
+			constant.Path.HomeDir(),
+			"profiles",
+			"providers",
+		)
+		providersPath := filepath.Join(
+			providersRoot,
+			strconv.FormatInt(profileId, 10),
+		)
+		if err := os.RemoveAll(providersPath); err != nil {
+			response.success(err.Error())
+			return
+		}
+		_ = os.Remove(providersRoot)
 		response.success("")
 	}()
 }

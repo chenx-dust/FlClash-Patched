@@ -28,6 +28,8 @@ Read `.agents/architecture.md` for the current core modes, manager stack, build 
 
 ## Pitfalls
 
-- Debug Windows helper auth differs from release token verification.
+- Debug Windows helper ping authentication differs from release token verification.
+- Do not expose direct filesystem deletion APIs through Core or helper IPC; use
+  a scope-specific cleanup API instead.
 - `plugins/setup/` is a build harness, not a Dart API plugin.
 - Build hooks can trigger Go or Rust compilation indirectly through Flutter platform builds.

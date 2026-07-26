@@ -363,6 +363,24 @@ fn io_loop(name: String, sink: StreamSink<Vec<u8>, SseCodec>) {
             continue;
         }
 
+        #[cfg(windows)]
+        let connected_payload = match stream.peer_creds().and_then(|credentials| {
+            credentials.pid().ok_or_else(|| {
+                io::Error::new(
+                    io::ErrorKind::PermissionDenied,
+                    "peer process ID is unavailable",
+                )
+            })
+        }) {
+            Ok(process_id) => process_id.to_le_bytes().to_vec(),
+            Err(e) => {
+                report_error(&sink, format!("peer credentials error: {e}"));
+                continue;
+            }
+        };
+        #[cfg(not(windows))]
+        let connected_payload = Vec::new();
+
         let (tx, rx) = mpsc::sync_channel::<Vec<u8>>(MAX_PENDING_MESSAGES);
         match STATE.lock() {
             Ok(mut state) if server_active() => state.tx = Some(tx),
@@ -373,7 +391,10 @@ fn io_loop(name: String, sink: StreamSink<Vec<u8>, SseCodec>) {
             }
         }
 
-        if sink.add(make_frame(TYPE_CONNECTED, &[])).is_err() {
+        if sink
+            .add(make_frame(TYPE_CONNECTED, &connected_payload))
+            .is_err()
+        {
             break;
         }
 

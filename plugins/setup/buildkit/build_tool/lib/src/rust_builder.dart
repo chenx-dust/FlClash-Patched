@@ -39,7 +39,10 @@ class RustBuilder {
     if (release) {
       args.add('--release');
     }
-    final env = {'TOKEN': token};
+    final env = {
+      'TOKEN': token,
+      'CORE_NAME': '${config.coreName}${target.executableExtension}',
+    };
 
     final srcPath = p.join(
       _helperPath,

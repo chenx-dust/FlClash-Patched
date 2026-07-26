@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
@@ -9,7 +10,7 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/state.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:path/path.dart' as p;
 
 class Request {
@@ -147,7 +148,7 @@ class Request {
 
   Future<bool> pingHelper() async {
     try {
-      final options = _helperRequestOptions();
+      final options = _helperRequestOptions(includeToken: true);
       if (options == null) {
         return false;
       }
@@ -158,6 +159,10 @@ class Request {
       if (response.statusCode != HttpStatus.ok || helperPath is! String) {
         return false;
       }
+      if (response.headers.value(helperProtocolVersionHeader) !=
+          helperProtocolVersion) {
+        return false;
+      }
       return p.Context(
         style: p.Style.windows,
       ).equals(helperPath.trim(), appPath.helperPath);
@@ -166,26 +171,26 @@ class Request {
     }
   }
 
-  Future<bool> startCoreByHelper() async {
+  Future<int?> startCoreByHelper(String address) async {
     try {
       final options = _helperRequestOptions();
       if (options == null) {
-        return false;
+        return null;
       }
       final response = await dio
           .post(
             'http://$localhost:$helperPort/start',
-            data: json.encode({'path': appPath.corePath}),
+            data: json.encode({'address': address}),
             options: options,
           )
           .timeout(const Duration(milliseconds: 2000));
       if (response.statusCode != HttpStatus.ok) {
-        return false;
+        return null;
       }
-      final data = response.data as String;
-      return data.isEmpty;
+      final data = response.data;
+      return data is String ? int.tryParse(data.trim()) : null;
     } catch (_) {
-      return false;
+      return null;
     }
   }
 
@@ -208,8 +213,14 @@ class Request {
     }
   }
 
-  Options? _helperRequestOptions() {
-    final token = kDebugMode ? helperDebugAccessToken : globalState.coreSHA256;
+  Options? _helperRequestOptions({bool includeToken = false}) {
+    if (!kReleaseMode) {
+      return null;
+    }
+    if (!includeToken) {
+      return Options(responseType: ResponseType.plain);
+    }
+    final token = globalState.coreSHA256;
     if (token.isEmpty) {
       return null;
     }
