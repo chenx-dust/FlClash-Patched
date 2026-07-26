@@ -114,7 +114,7 @@ class CommonAction extends _$CommonAction {
 @Riverpod(keepAlive: true)
 class SetupAction extends _$SetupAction {
   Timer? _updateTimer;
-  final _setupTaskScheduler = SerialLatestTaskScheduler();
+  final _setupTaskScheduler = SerialTaskScheduler();
   DateTime? startTime;
 
   bool get isStart => startTime != null && startTime!.isBeforeNow;
@@ -133,11 +133,7 @@ class SetupAction extends _$SetupAction {
   void fullSetup() {
     if (!ref.read(initProvider)) return;
     ref.read(delayDataSourceProvider.notifier).value = {};
-    unawaited(
-      _setupTaskScheduler.runLatest((isLatest) {
-        return _runSetup(force: true, isLatest: isLatest);
-      }),
-    );
+    unawaited(_enqueueSetup(force: true));
     ref.read(logsProvider.notifier).value = FixedList(500);
     ref.read(requestsProvider.notifier).value = FixedList(500);
   }
@@ -220,11 +216,23 @@ class SetupAction extends _$SetupAction {
     debouncer.call(FunctionTag.updateConfig, () async {
       await globalState.safeRun(() async {
         final updateParams = ref.read(updateParamsProvider);
-        final res = await _requestAdmin(updateParams.tun.enable);
-        if (res.isError) return;
-        final realTunEnable = ref.read(realTunEnableProvider);
+        var enableTun = updateParams.tun.enable;
+        final authorization = await _authorizeTun(enableTun);
+        if (authorization == AuthorizeCode.error) {
+          enableTun = false;
+        } else if (authorization == AuthorizeCode.success) {
+          ref.read(realTunEnableProvider.notifier).value = true;
+          try {
+            await ref.read(coreActionProvider.notifier).restartCore();
+          } catch (_) {
+            ref.read(realTunEnableProvider.notifier).value = false;
+            rethrow;
+          }
+          return;
+        }
+        ref.read(realTunEnableProvider.notifier).value = enableTun;
         final message = await coreController.updateConfig(
-          updateParams.copyWith.tun(enable: realTunEnable),
+          updateParams.copyWith.tun(enable: enableTun),
         );
         ref.read(checkIpNumProvider.notifier).add();
         if (message.isNotEmpty) throw message;
@@ -281,14 +289,12 @@ class SetupAction extends _$SetupAction {
     bool silence = false,
     bool force = false,
     VoidCallback? preloadInvoke,
-    bool Function()? isLatest,
   }) {
     return _setupTaskScheduler.run(() {
       return _runSetup(
         force: force,
         silence: silence,
         preloadInvoke: preloadInvoke,
-        isLatest: isLatest,
       );
     });
   }
@@ -297,13 +303,11 @@ class SetupAction extends _$SetupAction {
     bool silence = false,
     bool force = false,
     VoidCallback? preloadInvoke,
-    bool Function()? isLatest,
   }) {
     return _setupConfig(
       force: force,
       silence: silence,
       preloadInvoke: preloadInvoke,
-      isLatest: isLatest,
       onUpdated: () async {
         await ref.read(proxiesActionProvider.notifier).updateGroups();
         await ref.read(providersProvider.notifier).syncProviders();
@@ -379,55 +383,40 @@ class SetupAction extends _$SetupAction {
     return '';
   }
 
-  Future<Result<bool>> _requestAdmin(bool enableTun) async {
+  Future<AuthorizeCode> _authorizeTun(bool enableTun) async {
     final realTunEnable = ref.read(realTunEnableProvider);
-    if (enableTun != realTunEnable && realTunEnable == false) {
-      final code = await system.authorizeCore();
-      switch (code) {
-        case AuthorizeCode.success:
-          await ref.read(coreActionProvider.notifier).restartCore();
-          return Result.error('');
-        case AuthorizeCode.none:
-          break;
-        case AuthorizeCode.error:
-          enableTun = false;
-          break;
-      }
-    }
-    ref.read(realTunEnableProvider.notifier).value = enableTun;
-    return Result.success(enableTun);
+    if (!enableTun || realTunEnable) return AuthorizeCode.none;
+    return system.authorizeCore();
   }
 
   Future<void> _setupConfig({
     bool force = false,
     bool silence = false,
     VoidCallback? preloadInvoke,
-    bool Function()? isLatest,
     FutureOr Function()? onUpdated,
   }) async {
-    bool isStale() => isLatest?.call() == false;
-    if (isStale()) return;
     var profile = ref.read(currentProfileProvider);
     final nextProfile = await profile?.checkAndUpdateAndCopy();
-    if (isStale()) return;
     if (nextProfile != null) {
       profile = nextProfile;
       ref.read(profilesProvider.notifier).put(nextProfile);
     }
     commonPrint.log('setup ===> ${profile?.realLabel}');
     final patchConfig = ref.read(patchClashConfigProvider);
-    final res = await _requestAdmin(patchConfig.tun.enable);
-    if (isStale()) return;
-    if (res.isError) return;
-    final realTunEnable = ref.read(realTunEnableProvider);
-    final realPatchConfig = patchConfig.copyWith.tun(enable: realTunEnable);
+    var enableTun = patchConfig.tun.enable;
+    final authorization = await _authorizeTun(enableTun);
+    if (authorization == AuthorizeCode.success) {
+      await ref.read(coreActionProvider.notifier)._restartRuntime();
+    } else if (authorization == AuthorizeCode.error) {
+      enableTun = false;
+    }
+    ref.read(realTunEnableProvider.notifier).value = enableTun;
+    final realPatchConfig = patchConfig.copyWith.tun(enable: enableTun);
     final setupState = await ref.read(setupStateProvider(profile?.id).future);
-    if (isStale()) return;
     final vm2 = await getProfile(
       setupState: setupState,
       patchConfig: realPatchConfig,
     );
-    if (isStale()) return;
     final yamlString = vm2.a;
     final yamlMd5 = vm2.b;
     if (yamlMd5 == globalState.lastConfigMd5 && force == false) return;
@@ -435,14 +424,11 @@ class SetupAction extends _$SetupAction {
       globalState.lastVpnState = ref.read(vpnStateProvider);
       final sharedState = ref.read(sharedStateProvider);
       await preferences.saveShareState(sharedState);
-      if (isStale()) return;
     }
     await globalState.loadingRun(
       () async {
         final configFilePath = await appPath.configFilePath;
-        if (isStale()) return;
         await File(configFilePath).safeWriteAsString(yamlString);
-        if (isStale()) return;
         final message = await coreController.setupConfig(
           setupState: setupState,
           params: _setupParams,
@@ -452,7 +438,6 @@ class SetupAction extends _$SetupAction {
           throw message;
         }
         globalState.lastConfigMd5 = yamlMd5;
-        if (isStale()) return;
         ref.read(checkIpNumProvider.notifier).add();
         await onUpdated?.call();
       },
@@ -574,13 +559,17 @@ class CoreAction extends _$CoreAction {
     return Result.success(enableTun);
   }
 
-  Future<void> restartCore([bool start = false]) async {
+  Future<void> _restartRuntime() async {
     final isDisconnected =
         ref.read(coreStatusProvider) == CoreStatus.disconnected;
     ref.read(coreStatusProvider.notifier).value = CoreStatus.disconnected;
     await coreController.shutdown(!isDisconnected);
     await connectCore();
     await initCore();
+  }
+
+  Future<void> restartCore([bool start = false]) async {
+    await _restartRuntime();
     if (start || ref.read(isStartProvider)) {
       await ref
           .read(setupActionProvider.notifier)

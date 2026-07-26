@@ -5,9 +5,9 @@ import 'package:fl_clash/common/function.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('SerialLatestTaskScheduler', () {
+  group('SerialTaskScheduler', () {
     test('serializes tasks in submission order', () async {
-      final scheduler = SerialLatestTaskScheduler();
+      final scheduler = SerialTaskScheduler();
       final firstStarted = Completer<void>();
       final releaseFirst = Completer<void>();
       final events = <String>[];
@@ -40,54 +40,8 @@ void main() {
       expect(maxRunningTasks, 1);
     });
 
-    test('keeps only the latest pending profile setup', () async {
-      final scheduler = SerialLatestTaskScheduler();
-      final firstStarted = Completer<void>();
-      final releaseFirst = Completer<void>();
-      final preparedProfiles = <String>[];
-      final appliedProfiles = <String>[];
-
-      Future<void> setupProfile(
-        String profile,
-        bool Function() isLatest, {
-        Completer<void>? started,
-        Future<void>? waitFor,
-      }) async {
-        preparedProfiles.add(profile);
-        started?.complete();
-        if (waitFor != null) {
-          await waitFor;
-        }
-        if (isLatest()) {
-          appliedProfiles.add(profile);
-        }
-      }
-
-      final first = scheduler.runLatest((isLatest) {
-        return setupProfile(
-          'A',
-          isLatest,
-          started: firstStarted,
-          waitFor: releaseFirst.future,
-        );
-      });
-      await firstStarted.future;
-
-      final second = scheduler.runLatest((isLatest) {
-        return setupProfile('B', isLatest);
-      });
-      final third = scheduler.runLatest((isLatest) {
-        return setupProfile('C', isLatest);
-      });
-      releaseFirst.complete();
-      await Future.wait([first, second, third]);
-
-      expect(preparedProfiles, ['A', 'C']);
-      expect(appliedProfiles, ['C']);
-    });
-
     test('continues after a failed serialized task', () async {
-      final scheduler = SerialLatestTaskScheduler();
+      final scheduler = SerialTaskScheduler();
 
       await expectLater(
         scheduler.run<void>(() async {

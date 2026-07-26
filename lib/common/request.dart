@@ -147,12 +147,10 @@ class Request {
 
   Future<bool> pingHelper() async {
     try {
-      final response = await dio
-          .get(
-            'http://$localhost:$helperPort/ping',
-            options: _helperRequestOptions(),
-          )
-          .timeout(const Duration(milliseconds: 2000));
+      final response = await dio.get(
+        'http://$localhost:$helperPort/ping',
+        options: _helperRequestOptions(),
+      );
       final helperPath = response.data;
       if (response.statusCode != HttpStatus.ok || helperPath is! String) {
         commonPrint.log(
@@ -189,13 +187,11 @@ class Request {
 
   Future<int?> startCoreByHelper(String address) async {
     try {
-      final response = await dio
-          .post(
-            'http://$localhost:$helperPort/start',
-            data: json.encode({'address': address}),
-            options: _helperRequestOptions(),
-          )
-          .timeout(const Duration(milliseconds: 2000));
+      final response = await dio.post(
+        'http://$localhost:$helperPort/start',
+        data: json.encode({'address': address}),
+        options: _helperRequestOptions(),
+      );
       if (response.statusCode != HttpStatus.ok) {
         return null;
       }
@@ -212,12 +208,10 @@ class Request {
 
   Future<bool> stopCoreByHelper() async {
     try {
-      final response = await dio
-          .post(
-            'http://$localhost:$helperPort/stop',
-            options: _helperRequestOptions(),
-          )
-          .timeout(const Duration(milliseconds: 2000));
+      final response = await dio.post(
+        'http://$localhost:$helperPort/stop',
+        options: _helperRequestOptions(),
+      );
       if (response.statusCode != HttpStatus.ok) {
         return false;
       }
@@ -233,7 +227,11 @@ class Request {
   }
 
   Options _helperRequestOptions() {
-    return Options(responseType: ResponseType.plain);
+    return Options(
+      responseType: ResponseType.plain,
+      connectTimeout: const Duration(milliseconds: 500),
+      receiveTimeout: const Duration(seconds: 2),
+    );
   }
 }
 
