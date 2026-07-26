@@ -111,7 +111,7 @@ class CommonAction extends _$CommonAction {
 
 @Riverpod(keepAlive: true)
 class SetupAction extends _$SetupAction {
-  final _setupTaskScheduler = SerialLatestTaskScheduler();
+  final _setupTaskScheduler = SerialTaskScheduler();
   static const _updateTickerTag = 'SetupAction.update';
 
   DateTime? startTime;
