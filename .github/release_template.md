@@ -26,7 +26,7 @@
         <tr>
             <td>iOS</td>
             <td>
-                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/v0.8.104/FlClash-0.8.104-ios-arm64-unsigned.ipa"><img src="https://img.shields.io/badge/UnsignedIPA-arm64-%23000000.svg?logo=apple"></a>
+                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-ios-arm64-unsigned.ipa"><img src="https://img.shields.io/badge/UnsignedIPA-arm64-%23000000.svg?logo=apple"></a>
             </td>
         </tr>
         <tr>
