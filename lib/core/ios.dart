@@ -10,7 +10,7 @@ import 'package:fl_clash/state.dart';
 import 'interface.dart';
 import 'method.dart';
 
-class CoreIOS extends CoreHandlerInterface with ServiceListener {
+class CoreIOS extends CoreHandlerInterface {
   static CoreIOS? _instance;
 
   static const _appCoreMethods = {
@@ -29,9 +29,7 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
   Completer<bool> _connectedCompleter = Completer();
   bool _isNetworkExtensionCoreActive = false;
 
-  CoreIOS._internal() {
-    service?.addListener(this);
-  }
+  CoreIOS._internal();
 
   factory CoreIOS() {
     _instance ??= CoreIOS._internal();
@@ -63,7 +61,7 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
 
   @override
   Future<String> setupConfig(SetupParams setupParams) async {
-    _preManualInvoke();
+    await _preManualInvoke();
     final appResult = await _invoke<String>(
       useNetworkExtensionCore: false,
       method: CoreMethod.setupConfig,
@@ -87,7 +85,7 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
 
   @override
   Future<String> updateConfig(UpdateParams updateParams) async {
-    _preManualInvoke();
+    await _preManualInvoke();
     final appResult = await _invoke<String>(
       useNetworkExtensionCore: false,
       method: CoreMethod.updateConfig,
@@ -126,7 +124,11 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
       return false;
     }
     _connectedCompleter = Completer();
-    return service?.shutdown() ?? true;
+    try {
+      return await service?.shutdown() ?? true;
+    } finally {
+      _isNetworkExtensionCoreActive = false;
+    }
   }
 
   @override
@@ -221,11 +223,6 @@ class CoreIOS extends CoreHandlerInterface with ServiceListener {
 
   @override
   Completer get completer => _connectedCompleter;
-
-  @override
-  void onServiceCrash(String message) {
-    _isNetworkExtensionCoreActive = false;
-  }
 
   Future<void> _preManualInvoke() async {
     try {
