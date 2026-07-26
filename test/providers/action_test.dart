@@ -688,6 +688,7 @@ void main() {
             'Available': 'Node A',
             'Changed': 'Removed Node',
             'Removed Group': 'Node C',
+            'Empty': 'COMPATIBLE',
           },
         );
         final container = ProviderContainer(
@@ -699,7 +700,14 @@ void main() {
         addTearDown(container.dispose);
         when(() => coreHandler.getProxies()).thenAnswer(
           (_) async => ProxiesData(
-            all: ['Available', 'Changed', 'Node A', 'Node B'],
+            all: [
+              'Available',
+              'Changed',
+              'Empty',
+              'Node A',
+              'Node B',
+              'COMPATIBLE',
+            ],
             proxies: Map<String, dynamic>.from({
               'Available': {
                 'name': 'Available',
@@ -711,8 +719,14 @@ void main() {
                 'type': 'Selector',
                 'all': ['Node B'],
               },
+              'Empty': {
+                'name': 'Empty',
+                'type': 'Selector',
+                'all': ['COMPATIBLE'],
+              },
               'Node A': {'name': 'Node A', 'type': 'Shadowsocks'},
               'Node B': {'name': 'Node B', 'type': 'Shadowsocks'},
+              'COMPATIBLE': {'name': 'COMPATIBLE', 'type': 'Compatible'},
             }),
           ),
         );
@@ -726,6 +740,7 @@ void main() {
         expect(container.read(groupsProvider).map((group) => group.name), [
           'Available',
           'Changed',
+          'Empty',
         ]);
       },
     );
