@@ -14,36 +14,21 @@ use std::process::{Command, Stdio};
 use std::sync::{Arc, Mutex};
 use std::{io, thread};
 use warp::http::StatusCode;
-use warp::reject::Reject;
 use warp::{Filter, Rejection, Reply};
 #[cfg(windows)]
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 
 const LISTEN_PORT: u16 = 47890;
 const CORE_PIPE_PREFIX: &str = r"\\.\pipe\FlClashCore_";
-const ACCESS_TOKEN_HEADER: &str = "x-flclash-token";
-const DEBUG_ACCESS_TOKEN: &str = "flclash-debug";
 const PROTOCOL_VERSION_HEADER: &str = "x-flclash-helper-protocol";
-const PROTOCOL_VERSION: &str = "3";
+const PROTOCOL_VERSION: &str = "4";
+const EXPECTED_CORE_SHA256: &str = env!("CORE_SHA256");
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct StartParams {
     pub address: String,
 }
-
-fn access_token() -> &'static str {
-    if cfg!(debug_assertions) {
-        DEBUG_ACCESS_TOKEN
-    } else {
-        env!("TOKEN")
-    }
-}
-
-#[derive(Debug)]
-struct Unauthorized;
-
-impl Reject for Unauthorized {}
 
 fn core_path() -> Result<PathBuf, Error> {
     let helper_path = std::env::current_exe()?;
@@ -76,6 +61,23 @@ fn sha256_file(file: &mut File) -> Result<String, Error> {
     Ok(format!("{:x}", hasher.finalize()))
 }
 
+fn open_verified_core(path: &Path, expected_sha256: &str) -> Result<File, Error> {
+    if expected_sha256.is_empty() {
+        return Err(Error::other("expected Core SHA256 is empty"));
+    }
+    let mut core_file = open_core(path)?;
+    if sha256_file(&mut core_file)? != expected_sha256 {
+        return Err(Error::other("Core executable SHA256 mismatch"));
+    }
+    Ok(core_file)
+}
+
+fn open_fixed_verified_core() -> Result<(PathBuf, File), Error> {
+    let path = core_path()?;
+    let file = open_verified_core(&path, EXPECTED_CORE_SHA256)?;
+    Ok((path, file))
+}
+
 fn is_allowed_core_pipe(address: &str) -> bool {
     let Some(suffix) = address.strip_prefix(CORE_PIPE_PREFIX) else {
         return false;
@@ -89,28 +91,14 @@ static PROCESS: Lazy<Arc<Mutex<Option<std::process::Child>>>> =
     Lazy::new(|| Arc::new(Mutex::new(None)));
 
 fn start(start_params: StartParams) -> impl Reply {
-    if cfg!(debug_assertions) {
-        return "privileged Core startup is disabled in debug builds".to_string();
-    }
     if !is_allowed_core_pipe(&start_params.address) {
         return "invalid Core pipe address".to_string();
     }
 
-    let core_path = match core_path() {
-        Ok(path) => path,
+    let (core_path, _core_file) = match open_fixed_verified_core() {
+        Ok(core) => core,
         Err(error) => return error.to_string(),
     };
-    let mut core_file = match open_core(&core_path) {
-        Ok(file) => file,
-        Err(error) => return error.to_string(),
-    };
-    let sha256 = match sha256_file(&mut core_file) {
-        Ok(sha256) => sha256,
-        Err(error) => return error.to_string(),
-    };
-    if sha256 != access_token() {
-        return "Core executable SHA256 mismatch".to_string();
-    }
 
     stop_core();
     let mut process = PROCESS.lock().unwrap();
@@ -180,36 +168,32 @@ fn get_logs() -> impl Reply {
     )
 }
 
-fn authenticated() -> impl Filter<Extract = ((),), Error = Rejection> + Clone {
-    warp::header::optional::<String>(ACCESS_TOKEN_HEADER).and_then(
-        |token: Option<String>| async move {
-            if token.as_deref() == Some(access_token()) {
-                Ok(())
-            } else {
-                Err(warp::reject::custom(Unauthorized))
-            }
-        },
+fn ping_response(result: Result<PathBuf, Error>) -> warp::reply::Response {
+    let (value, status) = match result {
+        Ok(path) => (path.to_string_lossy().into_owned(), StatusCode::OK),
+        Err(error) => (error.to_string(), StatusCode::CONFLICT),
+    };
+    warp::reply::with_header(
+        warp::reply::with_status(value, status),
+        PROTOCOL_VERSION_HEADER,
+        PROTOCOL_VERSION,
     )
+    .into_response()
 }
 
-async fn handle_rejection(rejection: Rejection) -> Result<impl Reply, Rejection> {
-    if rejection.find::<Unauthorized>().is_none() {
-        return Err(rejection);
+fn ping() -> warp::reply::Response {
+    let result = open_fixed_verified_core().and_then(|_| std::env::current_exe());
+    if let Err(error) = &result {
+        log_message(format!("Helper ping failed: {error}"));
     }
-    Ok(warp::reply::with_status("", StatusCode::UNAUTHORIZED))
+    ping_response(result)
 }
 
 fn routes() -> impl Filter<Extract = (impl Reply,), Error = Rejection> + Clone {
     let api_ping = warp::get()
         .and(warp::path("ping"))
         .and(warp::path::end())
-        .and(authenticated())
-        .map(|()| {
-            let path = std::env::current_exe()
-                .map(|path| path.to_string_lossy().into_owned())
-                .unwrap_or_default();
-            warp::reply::with_header(path, PROTOCOL_VERSION_HEADER, PROTOCOL_VERSION)
-        });
+        .map(ping);
 
     let api_start = warp::post()
         .and(warp::path("start"))
@@ -227,11 +211,7 @@ fn routes() -> impl Filter<Extract = (impl Reply,), Error = Rejection> + Clone {
         .and(warp::path::end())
         .map(get_logs);
 
-    api_ping
-        .or(api_start)
-        .or(api_stop)
-        .or(api_logs)
-        .recover(handle_rejection)
+    api_ping.or(api_start).or(api_stop).or(api_logs)
 }
 
 #[cfg(not(all(feature = "windows-service", target_os = "windows")))]
@@ -244,8 +224,8 @@ where
     F: Future<Output = ()> + Send + 'static,
     S: FnOnce() -> anyhow::Result<()>,
 {
-    if !cfg!(debug_assertions) && access_token().is_empty() {
-        anyhow::bail!("helper access token is empty");
+    if EXPECTED_CORE_SHA256.is_empty() {
+        anyhow::bail!("expected Core SHA256 is empty");
     }
 
     let (_, server) = warp::serve(routes())
@@ -261,20 +241,59 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::io::Write;
 
     #[tokio::test]
-    async fn ping_requires_access_token() {
+    async fn ping_returns_running_helper_path_for_verified_core() {
+        let response = ping_response(Ok(PathBuf::from("FlClashHelperService.exe")));
+
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(
+            response.headers().get(PROTOCOL_VERSION_HEADER).unwrap(),
+            PROTOCOL_VERSION
+        );
+        assert_eq!(
+            warp::hyper::body::to_bytes(response.into_body())
+                .await
+                .unwrap(),
+            "FlClashHelperService.exe"
+        );
+    }
+
+    #[tokio::test]
+    async fn ping_rejects_unverified_core() {
+        let response = ping_response(Err(Error::other("Core executable SHA256 mismatch")));
+
+        assert_eq!(response.status(), StatusCode::CONFLICT);
+        assert_eq!(
+            response.headers().get(PROTOCOL_VERSION_HEADER).unwrap(),
+            PROTOCOL_VERSION
+        );
+        assert_eq!(
+            warp::hyper::body::to_bytes(response.into_body())
+                .await
+                .unwrap(),
+            "Core executable SHA256 mismatch"
+        );
+    }
+
+    #[tokio::test]
+    async fn ping_is_available_without_authentication() {
         let response = warp::test::request()
             .method("GET")
             .path("/ping")
             .reply(&routes())
             .await;
 
-        assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
+        assert!(response.status() == StatusCode::OK || response.status() == StatusCode::CONFLICT);
+        assert_eq!(
+            response.headers().get(PROTOCOL_VERSION_HEADER).unwrap(),
+            PROTOCOL_VERSION
+        );
     }
 
     #[tokio::test]
-    async fn logs_are_available_without_access_token() {
+    async fn logs_are_available_without_authentication() {
         let response = warp::test::request()
             .method("GET")
             .path("/logs")
@@ -287,29 +306,6 @@ mod tests {
             "text/plain; charset=utf-8"
         );
         assert_eq!(response.headers().get("cache-control").unwrap(), "no-store");
-    }
-
-    #[tokio::test]
-    async fn ping_returns_the_running_helper_path() {
-        let response = warp::test::request()
-            .method("GET")
-            .path("/ping")
-            .header(ACCESS_TOKEN_HEADER, access_token())
-            .reply(&routes())
-            .await;
-
-        assert_eq!(response.status(), StatusCode::OK);
-        assert_eq!(
-            response.headers().get(PROTOCOL_VERSION_HEADER).unwrap(),
-            PROTOCOL_VERSION
-        );
-        assert_eq!(
-            response.body(),
-            std::env::current_exe()
-                .unwrap()
-                .to_string_lossy()
-                .as_bytes()
-        );
     }
 
     #[tokio::test]
@@ -327,25 +323,30 @@ mod tests {
         assert_eq!(response.status(), StatusCode::BAD_REQUEST);
     }
 
-    #[tokio::test]
-    async fn debug_build_refuses_privileged_core_startup() {
-        let response = warp::test::request()
-            .method("POST")
-            .path("/start")
-            .header("content-type", "application/json")
-            .body(r#"{"address":"\\\\.\\pipe\\FlClashCore_0123456789abcdef0123456789abcdef"}"#)
-            .reply(&routes())
-            .await;
+    #[test]
+    fn verifies_core_sha256_in_all_build_modes() {
+        let path =
+            std::env::temp_dir().join(format!("flclash-helper-core-sha256-{}", std::process::id()));
+        let mut file = File::create(&path).unwrap();
+        file.write_all(b"test").unwrap();
+        drop(file);
 
-        assert_eq!(response.status(), StatusCode::OK);
+        assert!(open_verified_core(
+            &path,
+            "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+        )
+        .is_ok());
         assert_eq!(
-            response.body(),
-            "privileged Core startup is disabled in debug builds"
+            open_verified_core(&path, "invalid")
+                .unwrap_err()
+                .to_string(),
+            "Core executable SHA256 mismatch"
         );
+        std::fs::remove_file(path).unwrap();
     }
 
     #[tokio::test]
-    async fn stop_is_available_without_access_token() {
+    async fn stop_is_available_without_authentication() {
         let response = warp::test::request()
             .method("POST")
             .path("/stop")

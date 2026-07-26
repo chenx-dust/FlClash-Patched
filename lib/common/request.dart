@@ -10,7 +10,6 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/state.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:path/path.dart' as p;
 
 class Request {
@@ -148,40 +147,53 @@ class Request {
 
   Future<bool> pingHelper() async {
     try {
-      final options = _helperRequestOptions(includeToken: true);
-      if (options == null) {
-        return false;
-      }
       final response = await dio
-          .get('http://$localhost:$helperPort/ping', options: options)
+          .get(
+            'http://$localhost:$helperPort/ping',
+            options: _helperRequestOptions(),
+          )
           .timeout(const Duration(milliseconds: 2000));
       final helperPath = response.data;
       if (response.statusCode != HttpStatus.ok || helperPath is! String) {
+        commonPrint.log(
+          'helper ping returned invalid response',
+          logLevel: LogLevel.warning,
+        );
         return false;
       }
-      if (response.headers.value(helperProtocolVersionHeader) !=
-          helperProtocolVersion) {
+      final protocolVersion = response.headers.value(
+        helperProtocolVersionHeader,
+      );
+      if (protocolVersion != helperProtocolVersion) {
+        commonPrint.log(
+          'helper protocol mismatch: $protocolVersion',
+          logLevel: LogLevel.warning,
+        );
         return false;
       }
-      return p.Context(
+      final matches = p.Context(
         style: p.Style.windows,
       ).equals(helperPath.trim(), appPath.helperPath);
-    } catch (_) {
+      if (!matches) {
+        commonPrint.log(
+          'helper executable path mismatch',
+          logLevel: LogLevel.warning,
+        );
+      }
+      return matches;
+    } catch (error) {
+      commonPrint.log('helper ping failed: $error', logLevel: LogLevel.warning);
       return false;
     }
   }
 
   Future<int?> startCoreByHelper(String address) async {
     try {
-      final options = _helperRequestOptions();
-      if (options == null) {
-        return null;
-      }
       final response = await dio
           .post(
             'http://$localhost:$helperPort/start',
             data: json.encode({'address': address}),
-            options: options,
+            options: _helperRequestOptions(),
           )
           .timeout(const Duration(milliseconds: 2000));
       if (response.statusCode != HttpStatus.ok) {
@@ -189,45 +201,39 @@ class Request {
       }
       final data = response.data;
       return data is String ? int.tryParse(data.trim()) : null;
-    } catch (_) {
+    } catch (error) {
+      commonPrint.log(
+        'helper Core start failed: $error',
+        logLevel: LogLevel.warning,
+      );
       return null;
     }
   }
 
   Future<bool> stopCoreByHelper() async {
     try {
-      final options = _helperRequestOptions();
-      if (options == null) {
-        return false;
-      }
       final response = await dio
-          .post('http://$localhost:$helperPort/stop', options: options)
+          .post(
+            'http://$localhost:$helperPort/stop',
+            options: _helperRequestOptions(),
+          )
           .timeout(const Duration(milliseconds: 2000));
       if (response.statusCode != HttpStatus.ok) {
         return false;
       }
       final data = response.data as String;
       return data.isEmpty;
-    } catch (_) {
+    } catch (error) {
+      commonPrint.log(
+        'helper Core stop failed: $error',
+        logLevel: LogLevel.warning,
+      );
       return false;
     }
   }
 
-  Options? _helperRequestOptions({bool includeToken = false}) {
-    if (!kReleaseMode) {
-      return null;
-    }
-    if (!includeToken) {
-      return Options(responseType: ResponseType.plain);
-    }
-    final token = globalState.coreSHA256;
-    if (token.isEmpty) {
-      return null;
-    }
-    return Options(
-      responseType: ResponseType.plain,
-      headers: {helperAccessTokenHeader: token},
-    );
+  Options _helperRequestOptions() {
+    return Options(responseType: ResponseType.plain);
   }
 }
 

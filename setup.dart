@@ -111,6 +111,10 @@ List<String> createFlutterBuildArgs({
   return flutterBuildArgs;
 }
 
+Map<String, String> createBuildEnvironment(String env) {
+  return {'APP_ENV': env};
+}
+
 String _getTargets(String platform, String arch, String? customTargets) {
   if (customTargets != null) return customTargets;
   if (platform == 'linux' && arch == 'amd64') return 'deb,appimage,rpm';
@@ -136,13 +140,8 @@ Future<int> _package(
   String? androidArch,
   required bool verbose,
 }) async {
-  final coreSha256 = platform == 'windows' ? await _buildGoCore(rootDir) : null;
-
   final file = File(p.join(rootDir, 'env.json'));
-
-  await file.writeAsString(
-    jsonEncode({'APP_ENV': env, 'CORE_SHA256': ?coreSha256}),
-  );
+  await file.writeAsString(jsonEncode(createBuildEnvironment(env)));
 
   final flutterBuildArgs = createFlutterBuildArgs(
     platform: platform,
@@ -201,32 +200,6 @@ Future<int> _package(
   });
   final exitCode = await process.exitCode;
   return exitCode;
-}
-
-Future<String?> _buildGoCore(String rootDir) async {
-  final buildToolDir = p.join(
-    rootDir,
-    'plugins',
-    'setup',
-    'buildkit',
-    'build_tool',
-  );
-  final result = await Process.run('dart', [
-    'run',
-    'build_tool',
-    'windows',
-    '--root-dir',
-    rootDir,
-  ], workingDirectory: buildToolDir);
-  if (result.exitCode != 0) {
-    stderr.write(result.stderr);
-    return null;
-  }
-  final shaFile = File(p.join(rootDir, 'core_sha256.json'));
-  if (!shaFile.existsSync()) return null;
-  final content =
-      jsonDecode(shaFile.readAsStringSync()) as Map<String, dynamic>;
-  return content['CORE_SHA256'] as String?;
 }
 
 String _detectArch() {

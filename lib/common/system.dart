@@ -209,11 +209,20 @@ class Windows {
 
   Future<bool> registerService() async {
     if (await request.pingHelper()) {
+      commonPrint.log('helper service is ready');
       return true;
     }
 
+    commonPrint.log(
+      'helper service is unavailable, requesting elevated installation',
+      logLevel: LogLevel.warning,
+    );
     await request.stopCoreByHelper();
     if (!runas(appPath.helperPath, 'install')) {
+      commonPrint.log(
+        'failed to launch elevated helper installation',
+        logLevel: LogLevel.error,
+      );
       return false;
     }
 
@@ -222,6 +231,12 @@ class Windows {
       maxAttempts: 10,
       retryIf: (isRunning) => !isRunning,
       delay: const Duration(seconds: 1),
+    );
+    commonPrint.log(
+      isRunning
+          ? 'helper service installation completed'
+          : 'helper service did not become ready after installation',
+      logLevel: isRunning ? LogLevel.info : LogLevel.error,
     );
     return isRunning;
   }

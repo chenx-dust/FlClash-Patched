@@ -115,10 +115,10 @@ Shared:
 
 `setup.dart` is the release build orchestrator:
 
-1. On Windows, pre-builds Go core via `dart run build_tool windows` and reads `core_sha256.json`.
-2. Writes `env.json` (`APP_ENV`).
-3. Passes SHA256 as `--dart-define=CORE_SHA256=$val`, embedded at compile time for Windows.
-4. Activates `flutter_distributor` for packaging.
+1. Writes `env.json` (`APP_ENV`).
+2. Activates `flutter_distributor` for packaging.
+3. Relies on the platform build hook to build the required Core artifacts before
+   the native application is linked.
 
 Go core building is handled by `build_tool`, a standalone Dart CLI in `plugins/setup/buildkit/build_tool/`.
 
@@ -142,8 +142,8 @@ Responsibilities are deliberately split:
 - `buildkit/build_tool/` owns target resolution, input fingerprinting, compilation, output copying, and cache validation.
 - `core/` and `services/helper/` remain source owners; `libclash/` and Android `jniLibs`/header directories are generated
   output locations.
-- `setup.dart` remains the release/package orchestrator. On Windows it runs the same build tool before Flutter compilation
-  because the core SHA must be available for `--dart-define`.
+- `setup.dart` remains the release/package orchestrator and does not pre-build
+  platform artifacts or pass Core integrity data into Dart.
 
 Platform outputs remain explicit:
 
@@ -156,8 +156,8 @@ Go core and, on Windows, a separate Rust helper. Per-target records live under `
 
 - Go fingerprints cover the target-specific `go list -deps` inputs inside `core/` and `Clash.Meta`, module files, effective
   build configuration, build-tool sources, target flags, Go environment/toolchain, and Android NDK compiler details.
-- Windows helper fingerprints cover its Rust sources and manifests, Cargo/Rust toolchains and flags, build mode, and the
-  release core SHA token.
+- Windows helper fingerprints cover its Rust sources and manifests, Cargo/Rust
+  toolchains and flags, and the expected Core SHA256.
 - A cache hit requires the fingerprint and every recorded output's path, size, and modification state to match. It exits
   silently without Go/Cargo compilation, output copying, or Windows `taskkill`.
 - Cache records are written only after a successful build and protected by per-target process/file locks. Missing outputs,
@@ -170,18 +170,18 @@ FFI library, while setup is only the build and packaging bridge for FlClash's ex
 
 Windows helper integrity/version check:
 
-- Release: Core SHA256 is embedded in both the Flutter app and the Rust helper.
-  The authenticated ping presents that build token, and the helper verifies the
-  fixed `FlClashCore.exe` beside the helper before every launch. The loopback-only
-  control and log routes do not require the token.
-- Debug/Profile: the requested TUN setting remains visible, but Dart silently
-  forces the effective TUN state off and does not contact the helper. The helper
-  also refuses privileged Core startup.
+- The build tool constructs the Core first, calculates its SHA256, and always
+  builds the Rust Helper with release hardening and that expected hash.
+- Flutter does not embed or send the Core SHA256. Debug, Profile, and Release
+  builds use the same Helper protocol and may use TUN through the same flow.
+- Ping is loopback-only and requires no request token. The Helper verifies the
+  fixed `FlClashCore.exe` beside it against its embedded SHA256 before reporting
+  readiness, and repeats the verification before every launch.
 - Flutter creates a named pipe with a 128-bit random suffix and passes only that
   address to the helper. The helper validates the address namespace, returns the
   spawned Core PID, and Flutter matches it against the named-pipe peer PID.
-- The ping token is for build/version matching, not third-party code-signing
-  attestation.
+- The Helper path and protocol version allow Flutter to replace stale service
+  registrations, while the Helper-owned Core check detects mismatched builds.
 
 Build configuration defaults live in `build_tool/lib/src/options.dart` and can be overridden via a root `build_config.yaml`.
 
@@ -202,8 +202,11 @@ Architecture detection is automatic. The `--description` flag passed to `flutter
 `services/helper/` is a Windows-only privileged helper for starting the core as admin and managing TUN. It is built with:
 
 ```bash
-cargo build --release --features windows-service
+make core-windows
 ```
+
+The build tool always compiles the Helper in Rust release mode after calculating
+the SHA256 of the Core produced for the active Flutter configuration.
 
 The helper owns its Windows Service Control Manager lifecycle through two elevated commands:
 
@@ -215,10 +218,11 @@ The helper owns its Windows Service Control Manager lifecycle through two elevat
 The Dart layer only launches the helper's `install` command through `ShellExecuteW`; it does not compose `sc.exe`,
 `taskkill`, or `cmd.exe` command lines.
 
-In release builds it opens the fixed Core executable beside the helper without
-write/delete sharing, validates it against the embedded SHA256, and keeps that
-handle open through process creation. The authenticated ping requires the
-matching build token, while `/start`, `/stop`, and `/logs` remain loopback-only
-without token validation. The helper accepts only FlClash's random Core
-named-pipe namespace, returns the spawned PID, and reports its executable path
-and protocol version from ping so stale registrations are replaced.
+In every Flutter build mode it opens the fixed Core executable beside the Helper
+without write/delete sharing, validates it against the SHA256 embedded only in
+the Helper, and keeps that handle open through process creation. `/ping`
+self-validates the Core before reporting readiness; `/start`, `/stop`, and
+`/logs` remain loopback-only without request-token validation. The Helper accepts
+only FlClash's random Core named-pipe namespace, returns the spawned PID, and
+reports its executable path and protocol version from ping so stale
+registrations are replaced.

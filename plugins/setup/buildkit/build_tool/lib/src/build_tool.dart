@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
@@ -199,37 +198,27 @@ class BuildWindowsCommand extends BuildCommand {
     final coreResults = await goBuilder.buildAll(targets, force: force);
     final corePaths =
         coreResults.map((result) => result.primaryOutput).toList();
-    late final BuildExecution helperResult;
     final rustBuilder = RustBuilder(
       rootDir: _rootDir,
       config: config,
       cache: cache,
       notice: notice,
     );
-
-    if (debug) {
-      helperResult = await rustBuilder.build(
-        targets.first,
-        '',
-        release: false,
-        force: force,
-        beforeBuild: () async {
-          await Process.run('taskkill', [
-            '/F',
-            '/IM',
-            '${config.helperName}${targets.first.executableExtension}',
-          ]);
-        },
-      );
-    } else {
-      final coreSha256 = await calcSha256(corePaths.first);
-      helperResult = await rustBuilder.build(
-        targets.first,
-        coreSha256,
-        force: force,
-      );
-      await _writeCoreSha256(coreSha256);
-    }
+    final coreSha256 = await calcSha256(corePaths.first);
+    final helperResult = await rustBuilder.build(
+      targets.first,
+      coreSha256,
+      force: force,
+      beforeBuild: debug
+          ? () async {
+              await Process.run('taskkill', [
+                '/F',
+                '/IM',
+                '${config.helperName}${targets.first.executableExtension}',
+              ]);
+            }
+          : null,
+    );
 
     if (helperResult.rebuilt || coreResults.any((result) => result.rebuilt)) {
       _log.info('Build complete: $corePaths');
@@ -281,13 +270,6 @@ class BuildMacosCommand extends BuildCommand {
       );
     }
   }
-}
-
-Future<void> _writeCoreSha256(String coreSha256) async {
-  final file = File(p.join(_rootDir, 'core_sha256.json'));
-  final content = jsonEncode({'CORE_SHA256': coreSha256});
-  if (await file.exists() && await file.readAsString() == content) return;
-  await file.writeAsString(content, flush: true);
 }
 
 Future<void> runMain(List<String> args) async {

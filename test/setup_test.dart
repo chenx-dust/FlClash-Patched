@@ -21,6 +21,10 @@ void main() {
       expect(results['env'], 'dev');
     });
 
+    test('Flutter build environment does not depend on Core SHA256', () {
+      expect(setup.createBuildEnvironment('dev'), {'APP_ENV': 'dev'});
+    });
+
     test('omits verbose from flutter build args by default', () {
       final args = setup.createFlutterBuildArgs(
         platform: 'android',

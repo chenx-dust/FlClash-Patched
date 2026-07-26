@@ -10,7 +10,6 @@ import 'package:fl_clash/plugins/app.dart';
 import 'package:fl_clash/plugins/service.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
-import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' show basename;
@@ -381,9 +380,6 @@ class SetupAction extends _$SetupAction {
   }
 
   Future<Result<bool>> _requestAdmin(bool enableTun) async {
-    if (system.isWindows && !kReleaseMode) {
-      enableTun = false;
-    }
     final realTunEnable = ref.read(realTunEnableProvider);
     if (enableTun != realTunEnable && realTunEnable == false) {
       final code = await system.authorizeCore();
@@ -560,9 +556,6 @@ class CoreAction extends _$CoreAction {
   }
 
   Future<Result<bool>> requestAdmin(bool enableTun) async {
-    if (system.isWindows && !kReleaseMode) {
-      enableTun = false;
-    }
     final realTunEnable = ref.read(realTunEnableProvider);
     if (enableTun != realTunEnable && realTunEnable == false) {
       final code = await system.authorizeCore();

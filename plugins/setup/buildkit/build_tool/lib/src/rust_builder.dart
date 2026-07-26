@@ -30,24 +30,20 @@ class RustBuilder {
 
   Future<BuildExecution> build(
     Target target,
-    String token, {
-    bool release = true,
+    String coreSha256, {
     bool force = false,
     Future<void> Function()? beforeBuild,
   }) async {
-    final args = ['build', '--features', 'windows-service'];
-    if (release) {
-      args.add('--release');
-    }
+    final args = ['build', '--features', 'windows-service', '--release'];
     final env = {
-      'TOKEN': token,
+      'CORE_SHA256': coreSha256,
       'CORE_NAME': '${config.coreName}${target.executableExtension}',
     };
 
     final srcPath = p.join(
       _helperPath,
       'target',
-      release ? 'release' : 'debug',
+      'release',
       'helper${target.executableExtension}',
     );
     final destDir = p.join(_outputPath, target.goos);
@@ -56,12 +52,10 @@ class RustBuilder {
       '${config.helperName}${target.executableExtension}',
     );
     return cache.run(
-      key: '${target.goos}-${target.goarch}-helper-'
-          '${release ? 'release' : 'debug'}',
+      key: '${target.goos}-${target.goarch}-helper-release',
       fingerprint: () => _calculateFingerprint(
         target: target,
-        token: token,
-        release: release,
+        coreSha256: coreSha256,
         args: args,
       ),
       primaryOutput: destPath,
@@ -91,8 +85,7 @@ class RustBuilder {
 
   Future<String> _calculateFingerprint({
     required Target target,
-    required String token,
-    required bool release,
+    required String coreSha256,
     required List<String> args,
   }) async {
     final builder = FingerprintBuilder(rootDir: rootDir)
@@ -102,9 +95,8 @@ class RustBuilder {
         'goos': target.goos,
         'goarch': target.goarch,
       })
-      ..addValue('release', release)
       ..addValue('arguments', args)
-      ..addValue('token', token)
+      ..addValue('core_sha256', coreSha256)
       ..addValue('environment', _rustEnvironment())
       ..addValue('config', config.toFingerprintMap());
 

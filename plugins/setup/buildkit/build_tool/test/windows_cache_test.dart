@@ -43,20 +43,20 @@ void main() {
       );
 
   Future<BuildExecution> buildHelper({
-    required String coreToken,
+    required String coreSha256,
     required String sourceFingerprint,
-    bool debug = false,
+    bool stopRunningHelper = false,
   }) =>
       cache.run(
-        key: 'windows-amd64-helper-${debug ? 'debug' : 'release'}',
-        fingerprint: () async => '$sourceFingerprint:$coreToken',
+        key: 'windows-amd64-helper-release',
+        fingerprint: () async => '$sourceFingerprint:$coreSha256',
         primaryOutput: helperOutput.path,
         notice: notice,
         build: () async {
-          if (debug) taskKills++;
+          if (stopRunningHelper) taskKills++;
           helperBuilds++;
           helperOutput.writeAsStringSync(
-            'helper-$sourceFingerprint-$coreToken',
+            'helper-$sourceFingerprint-$coreSha256',
           );
           return [helperOutput.path];
         },
@@ -64,12 +64,12 @@ void main() {
 
   test('core and release helper both skip when unchanged', () async {
     await buildCore('core-a');
-    await buildHelper(coreToken: 'sha-a', sourceFingerprint: 'helper-a');
+    await buildHelper(coreSha256: 'sha-a', sourceFingerprint: 'helper-a');
 
     expect((await buildCore('core-a')).rebuilt, isFalse);
     expect(
       (await buildHelper(
-        coreToken: 'sha-a',
+        coreSha256: 'sha-a',
         sourceFingerprint: 'helper-a',
       ))
           .rebuilt,
@@ -81,12 +81,12 @@ void main() {
 
   test('helper source change does not rebuild core', () async {
     await buildCore('core-a');
-    await buildHelper(coreToken: 'sha-a', sourceFingerprint: 'helper-a');
+    await buildHelper(coreSha256: 'sha-a', sourceFingerprint: 'helper-a');
 
     expect((await buildCore('core-a')).rebuilt, isFalse);
     expect(
       (await buildHelper(
-        coreToken: 'sha-a',
+        coreSha256: 'sha-a',
         sourceFingerprint: 'helper-b',
       ))
           .rebuilt,
@@ -96,12 +96,12 @@ void main() {
     expect(helperBuilds, 2);
   });
 
-  test('release core SHA change invalidates helper token', () async {
-    await buildHelper(coreToken: 'sha-a', sourceFingerprint: 'helper-a');
+  test('Core SHA change invalidates hardened helper', () async {
+    await buildHelper(coreSha256: 'sha-a', sourceFingerprint: 'helper-a');
 
     expect(
       (await buildHelper(
-        coreToken: 'sha-b',
+        coreSha256: 'sha-b',
         sourceFingerprint: 'helper-a',
       ))
           .rebuilt,
@@ -110,19 +110,19 @@ void main() {
     expect(helperBuilds, 2);
   });
 
-  test('debug helper cache hit does not run taskkill', () async {
+  test('development cache hit does not stop running helper', () async {
     await buildHelper(
-      coreToken: '',
+      coreSha256: 'sha-a',
       sourceFingerprint: 'helper-a',
-      debug: true,
+      stopRunningHelper: true,
     );
     expect(taskKills, 1);
 
     expect(
       (await buildHelper(
-        coreToken: '',
+        coreSha256: 'sha-a',
         sourceFingerprint: 'helper-a',
-        debug: true,
+        stopRunningHelper: true,
       ))
           .rebuilt,
       isFalse,
