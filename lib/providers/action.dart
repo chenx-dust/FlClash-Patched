@@ -823,6 +823,10 @@ class ThemeAction extends _$ThemeAction {
 
 @Riverpod(keepAlive: true)
 class ProxiesAction extends _$ProxiesAction {
+  static const _delayTestConcurrency = 50;
+
+  Future<void> _delayTestQueue = Future.value();
+
   @override
   void build() {}
 
@@ -982,10 +986,28 @@ class ProxiesAction extends _$ProxiesAction {
   Future<void> testProxyDelays(
     List<Proxy> proxies,
     String? testUrl, {
-    Duration batchTimeout = const Duration(seconds: 1),
+    Duration uiTimeout = const Duration(seconds: 1),
+    FutureOr<void> Function(Proxy proxy)? onDelayChanged,
+  }) {
+    final operation = _delayTestQueue.then((_) {
+      return _runProxyDelayTests(
+        proxies,
+        testUrl,
+        onDelayChanged: onDelayChanged,
+      );
+    });
+    _delayTestQueue = operation.catchError((Object error) {
+      commonPrint.log('delayTest queue error: $error');
+    });
+    return operation.timeout(uiTimeout, onTimeout: () {});
+  }
+
+  Future<void> _runProxyDelayTests(
+    List<Proxy> proxies,
+    String? testUrl, {
     FutureOr<void> Function(Proxy proxy)? onDelayChanged,
   }) async {
-    final batches = proxies.batch(100);
+    final batches = proxies.batch(_delayTestConcurrency);
     for (final batch in batches) {
       await Future.wait(
         batch.map((proxy) async {
@@ -994,7 +1016,7 @@ class ProxiesAction extends _$ProxiesAction {
               proxy,
               testUrl,
               onDelayChanged: () => onDelayChanged?.call(proxy),
-            ).timeout(batchTimeout);
+            );
           } catch (e) {
             commonPrint.log('delayTest batch error: $e');
           }

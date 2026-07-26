@@ -512,7 +512,7 @@ void main() {
           .testProxyDelays(
             [fastProxy, slowProxy],
             'https://default.test',
-            batchTimeout: const Duration(seconds: 30),
+            uiTimeout: const Duration(seconds: 30),
             onDelayChanged: (proxy) {
               final delay = container.read(
                 delayDataSourceProvider.select(
@@ -550,6 +550,77 @@ void main() {
       );
       await groupTestFuture;
     });
+
+    test(
+      'returns after the UI timeout while queued batches continue in order',
+      () async {
+        final proxies = List.generate(
+          51,
+          (index) => Proxy(name: 'Node $index', type: 'Shadowsocks'),
+        );
+        final responses = {
+          for (final proxy in proxies) proxy.name: Completer<Delay>(),
+        };
+        final requestedNames = <String>[];
+        final firstBatchStarted = Completer<void>();
+        final secondBatchStarted = Completer<void>();
+        final lastResultPublished = Completer<void>();
+        when(
+          () => coreHandler.asyncTestDelay('https://default.test', any()),
+        ).thenAnswer((invocation) {
+          final proxyName = invocation.positionalArguments[1] as String;
+          requestedNames.add(proxyName);
+          if (requestedNames.length == 50) {
+            firstBatchStarted.complete();
+          }
+          if (proxyName == proxies.last.name) {
+            secondBatchStarted.complete();
+          }
+          return responses[proxyName]!.future;
+        });
+
+        final uiFuture = container
+            .read(proxiesActionProvider.notifier)
+            .testProxyDelays(
+              proxies,
+              'https://default.test',
+              uiTimeout: Duration.zero,
+              onDelayChanged: (proxy) {
+                final delay = container.read(
+                  delayDataSourceProvider.select(
+                    (delayMap) => delayMap['https://default.test']?[proxy.name],
+                  ),
+                );
+                if (proxy == proxies.last &&
+                    delay == 42 &&
+                    !lastResultPublished.isCompleted) {
+                  lastResultPublished.complete();
+                }
+              },
+            );
+
+        await firstBatchStarted.future;
+        await uiFuture;
+        expect(requestedNames, hasLength(50));
+        expect(requestedNames, isNot(contains(proxies.last.name)));
+
+        for (final proxy in proxies.take(50)) {
+          responses[proxy.name]!.complete(
+            Delay(url: 'https://default.test', name: proxy.name, value: 42),
+          );
+        }
+        await secondBatchStarted.future;
+
+        responses[proxies.last.name]!.complete(
+          Delay(
+            url: 'https://default.test',
+            name: proxies.last.name,
+            value: 42,
+          ),
+        );
+        await lastResultPublished.future;
+      },
+    );
 
     test('publishes timeout state for a failed delay request', () async {
       const proxy = Proxy(name: 'Node A', type: 'Shadowsocks');
