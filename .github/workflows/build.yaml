@@ -7,7 +7,7 @@ on:
   pull_request:
 env:
   IS_STABLE: ${{ !contains(github.ref, 'pre') }}
-  FLUTTER_VERSION: '3.44.6'
+  FLUTTER_VERSION: '3.44.8'
 
 jobs:
   test:
@@ -239,20 +239,9 @@ jobs:
           version=$(echo "${{ github.ref_name }}" | sed 's/^v//')
           sed "s|VERSION|$version|g" ./.github/release_template.md >> release.md
 
-      - name: Generate sha256
-        if: ${{ env.IS_STABLE == 'true' }}
-        run: |
-          cd ./dist
-          sha256sum ./* > SHA256SUMS
-
-      - name: Patch release.md
-        run: |
-          version=$(echo "${{ github.ref_name }}" | sed 's/^v//')
-          sed "s|VERSION|$version|g" ./.github/release_template.md > release.md
-
       - name: Release
-        if: ${{ env.IS_STABLE == 'true' }}
         uses: softprops/action-gh-release@v3
         with:
+          prerelease: ${{ env.IS_STABLE != 'true' }}
           files: ./dist/*
           body_path: './release.md'
