@@ -5,14 +5,14 @@ import 'package:fl_clash/models/models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:webdav_client/webdav_client.dart';
 
-typedef DAVClientFactory = DAVClient Function(DAVProps props, String password);
+typedef DAVClientFactory = DAVClient Function(DAVProps props);
 
 class DAVClient {
   late Client client;
   late String fileName;
 
-  DAVClient(DAVProps dav, String password) {
-    client = newClient(dav.uri, user: dav.user, password: password);
+  DAVClient(DAVProps dav) {
+    client = newClient(dav.uri, user: dav.user, password: dav.password);
     fileName = dav.fileName;
     client.setHeaders({'accept-charset': 'utf-8', 'Content-Type': 'text/xml'});
     client.setConnectTimeout(8000);
@@ -55,22 +55,21 @@ class DAVConnectionController extends ValueNotifier<bool?> {
   final DAVClientFactory _createClient;
 
   DAVProps? _lastProps;
-  String? _lastPassword;
+  bool _hasUpdated = false;
   int _requestId = 0;
   bool _disposed = false;
 
   DAVClient? client;
 
-  Future<void> update(DAVProps? props, String password) async {
-    final nextClient = props == null ? null : _createClient(props, password);
+  Future<void> update(DAVProps? props) async {
+    final nextClient = props == null ? null : _createClient(props);
     client = nextClient;
 
     final rawProps = props?.copyWith(fileName: '');
     final rawLastProps = _lastProps?.copyWith(fileName: '');
-    final isSameCredentials =
-        rawProps == rawLastProps && password == _lastPassword;
+    final isSameCredentials = _hasUpdated && rawProps == rawLastProps;
     _lastProps = props;
-    _lastPassword = password;
+    _hasUpdated = true;
     if (isSameCredentials) {
       return;
     }

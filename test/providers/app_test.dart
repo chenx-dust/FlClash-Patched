@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:fl_clash/common/constant.dart';
-import 'package:fl_clash/common/dav_secret_storage.dart';
 import 'package:fl_clash/common/request.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
@@ -11,27 +10,6 @@ import 'package:fl_clash/providers/app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:riverpod/riverpod.dart';
-
-class _MemorySecureStorage implements SecureStorageBackend {
-  final values = <String, String>{};
-  bool failWrites = false;
-
-  @override
-  Future<void> delete(String key) async {
-    values.remove(key);
-  }
-
-  @override
-  Future<String?> read(String key) async => values[key];
-
-  @override
-  Future<void> write(String key, String value) async {
-    if (failWrites) {
-      throw StateError('secure storage unavailable');
-    }
-    values[key] = value;
-  }
-}
 
 void main() {
   late ProviderContainer container;
@@ -52,57 +30,6 @@ void main() {
     test('can update to true', () {
       container.read(realTunEnableProvider.notifier).update((_) => true);
       expect(container.read(realTunEnableProvider), true);
-    });
-  });
-
-  group('DavPassword provider', () {
-    test('default is empty', () {
-      expect(container.read(davPasswordProvider), isEmpty);
-    });
-
-    test('persists password before updating state', () async {
-      final backend = _MemorySecureStorage();
-      final storage = DAVSecretStorage(backend);
-      container.dispose();
-      container = ProviderContainer(
-        overrides: [davSecretStorageServiceProvider.overrideWithValue(storage)],
-      );
-
-      await container.read(davPasswordProvider.notifier).set('secret');
-
-      expect(container.read(davPasswordProvider), 'secret');
-      expect(backend.values.values.single, 'secret');
-    });
-
-    test('keeps state unchanged when secure storage fails', () async {
-      final backend = _MemorySecureStorage()..failWrites = true;
-      final storage = DAVSecretStorage(backend);
-      container.dispose();
-      container = ProviderContainer(
-        overrides: [davSecretStorageServiceProvider.overrideWithValue(storage)],
-      );
-
-      await expectLater(
-        container.read(davPasswordProvider.notifier).set('secret'),
-        throwsStateError,
-      );
-
-      expect(container.read(davPasswordProvider), isEmpty);
-    });
-
-    test('clears password', () async {
-      final backend = _MemorySecureStorage();
-      final storage = DAVSecretStorage(backend);
-      container.dispose();
-      container = ProviderContainer(
-        overrides: [davSecretStorageServiceProvider.overrideWithValue(storage)],
-      );
-      await container.read(davPasswordProvider.notifier).set('secret');
-
-      await container.read(davPasswordProvider.notifier).set('');
-
-      expect(container.read(davPasswordProvider), isEmpty);
-      expect(backend.values, isEmpty);
     });
   });
 

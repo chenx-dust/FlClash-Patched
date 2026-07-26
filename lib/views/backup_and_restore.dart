@@ -37,18 +37,10 @@ class _BackupAndRestoreState extends ConsumerState<BackupAndRestore>
     ref.listenManual(davSettingProvider, (_, _) {
       _updateDAVClient();
     }, fireImmediately: true);
-    ref.listenManual(davPasswordProvider, (_, _) {
-      _updateDAVClient();
-    });
   }
 
   void _updateDAVClient() {
-    unawaited(
-      _davConnection.update(
-        ref.read(davSettingProvider),
-        ref.read(davPasswordProvider),
-      ),
-    );
+    unawaited(_davConnection.update(ref.read(davSettingProvider)));
   }
 
   @override
@@ -416,47 +408,26 @@ class _WebDAVFormDialogState extends ConsumerState<WebDAVFormDialog> {
     super.initState();
     _uriController = TextEditingController(text: widget.dav?.uri);
     _userController = TextEditingController(text: widget.dav?.user);
-    _passwordController = TextEditingController(
-      text: ref.read(davPasswordProvider),
-    );
+    _passwordController = TextEditingController(text: widget.dav?.password);
   }
 
-  Future<void> _submit() async {
+  void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    final saved = await globalState.loadingRun<bool>(
-      () async {
-        await ref
-            .read(davPasswordProvider.notifier)
-            .set(_passwordController.text);
-        ref
-            .read(davSettingProvider.notifier)
-            .update(
-              (_) => DAVProps(
-                uri: _uriController.text,
-                user: _userController.text,
-                fileName: widget.dav?.fileName ?? defaultDavFileName,
-              ),
-            );
-        return true;
-      },
-      tag: LoadingTag.backup_restore,
-      title: currentAppLocalizations.save,
-    );
-    if (saved != true || !mounted) return;
+    ref
+        .read(davSettingProvider.notifier)
+        .update(
+          (_) => DAVProps(
+            uri: _uriController.text,
+            user: _userController.text,
+            password: _passwordController.text,
+            fileName: widget.dav?.fileName ?? defaultDavFileName,
+          ),
+        );
     Navigator.pop(context);
   }
 
-  Future<void> _delete() async {
-    final deleted = await globalState.loadingRun<bool>(
-      () async {
-        await ref.read(davPasswordProvider.notifier).set('');
-        ref.read(davSettingProvider.notifier).update((_) => null);
-        return true;
-      },
-      tag: LoadingTag.backup_restore,
-      title: currentAppLocalizations.delete,
-    );
-    if (deleted != true || !mounted) return;
+  void _delete() {
+    ref.read(davSettingProvider.notifier).update((_) => null);
     Navigator.pop(context);
   }
 

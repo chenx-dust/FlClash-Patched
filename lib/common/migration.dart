@@ -1,7 +1,6 @@
 import 'package:fl_clash/database/database.dart';
 import 'package:fl_clash/models/models.dart';
 
-import 'dav_secret_storage.dart';
 import 'preferences.dart';
 import 'task.dart';
 
@@ -14,8 +13,6 @@ abstract interface class MigrationStore {
   Future<int> getVersion();
 
   Future<Map<String, Object?>?> getClashConfigMap();
-
-  Future<void> saveDavPassword(String password);
 
   Future<void> restore(MigrationData data);
 
@@ -38,10 +35,6 @@ class _AppMigrationStore implements MigrationStore {
   @override
   Future<Map<String, Object?>?> getClashConfigMap() =>
       preferences.getClashConfigMap();
-
-  @override
-  Future<void> saveDavPassword(String password) =>
-      davSecretStorage.save(password);
 
   @override
   Future<void> restore(MigrationData data) {
@@ -95,15 +88,17 @@ class Migration {
         oldVersion = 0;
       }
       if (config != null) {
-        final hasLegacyDavPassword = await _saveLegacyDavPassword(configMap);
-        if (hasLegacyDavPassword && !await _store.saveConfig(config)) {
-          throw StateError('Failed to remove the legacy WebDAV password');
+        final storedDavPassword = _getStoredDavPassword(configMap);
+        final hasPlainTextDavPassword =
+            storedDavPassword != null &&
+            storedDavPassword == config.davProps?.password;
+        if (hasPlainTextDavPassword && !await _store.saveConfig(config)) {
+          throw StateError('Failed to obfuscate the legacy WebDAV password');
         }
         return config;
       }
     }
 
-    await _saveLegacyDavPassword(configMap);
     MigrationData data = MigrationData(configMap: configMap);
     var shouldClearClashConfig = false;
     if (oldVersion == 0) {
@@ -128,21 +123,12 @@ class Migration {
     await _store.setVersion(currentVersion);
     return config;
   }
-
-  Future<bool> _saveLegacyDavPassword(Map<String, Object?>? configMap) async {
-    final password = _getLegacyDavPassword(configMap);
-    if (password == null) {
-      return false;
-    }
-    await _store.saveDavPassword(password);
-    return true;
-  }
 }
 
 bool _isV0(Map<String, Object?>? configMap) =>
     configMap?['proxiesStyle'] != null;
 
-String? _getLegacyDavPassword(Map<String, Object?>? configMap) {
+String? _getStoredDavPassword(Map<String, Object?>? configMap) {
   final dav = configMap?['davProps'] ?? configMap?['dav'];
   if (dav is! Map) {
     return null;

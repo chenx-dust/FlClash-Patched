@@ -61,7 +61,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 301));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 301));
+    await tester.pump(const Duration(milliseconds: 421));
     await tester.pump();
     expect(key.currentState!.length, 3);
     expect(find.byKey(const ValueKey('B')), findsNothing);
@@ -106,6 +106,47 @@ void main() {
     for (final label in ['A', 'B', 'C', 'D']) {
       expect(find.byKey(ValueKey(label)), findsOneWidget);
     }
+    expect(tester.takeException(), null);
+  });
+
+  testWidgets('SuperGrid completes a pending drop when disposed', (
+    tester,
+  ) async {
+    final key = GlobalKey<SuperGridState>();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: SuperGrid(
+              key: key,
+              crossAxisCount: 4,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              children: [_item('A'), _item('B'), _item('C'), _item('D')],
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.byKey(const ValueKey('A'))),
+    );
+    await tester.pump();
+    await gesture.moveBy(const Offset(10, 0));
+    await tester.pump();
+    await gesture.moveTo(tester.getCenter(find.byKey(const ValueKey('D'))));
+    await tester.pump(const Duration(milliseconds: 300));
+    await gesture.up();
+    await tester.pump();
+
+    final transformCompleted = key.currentState!.isTransformCompleter;
+    await tester.pumpWidget(const MaterialApp(home: SizedBox.shrink()));
+
+    expect(await transformCompleted, isFalse);
+    await tester.pump(const Duration(seconds: 2));
     expect(tester.takeException(), null);
   });
 }

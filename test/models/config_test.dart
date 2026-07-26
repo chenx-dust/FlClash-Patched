@@ -348,7 +348,23 @@ void main() {
   });
 
   group('Config composite serialization', () {
-    test('DAVProps ignores a legacy password', () {
+    test('DAVProps obfuscates and restores its password', () {
+      const props = DAVProps(
+        uri: 'https://dav.example.com',
+        user: 'user',
+        password: '密碼-🔐',
+      );
+
+      final json = props.toJson();
+
+      expect(json['password'], startsWith('v1.'));
+      expect(json['password'], isNot(contains('密碼')));
+      expect(DAVProps.fromJson(json), props);
+      expect(props.toString(), isNot(contains('密碼')));
+      expect(props.toString(), contains('password: ***'));
+    });
+
+    test('DAVProps accepts and rewrites a legacy plain-text password', () {
       final props = DAVProps.fromJson({
         'uri': 'https://dav.example.com',
         'user': 'user',
@@ -356,11 +372,20 @@ void main() {
         'fileName': 'backup.zip',
       });
 
-      expect(props.toJson(), {
+      expect(props.password, 'legacy-secret');
+      expect(props.toJson()['password'], startsWith('v1.'));
+      expect(props.toJson()['password'], isNot(contains('legacy-secret')));
+    });
+
+    test('DAVProps rejects a damaged obfuscated password', () {
+      final props = DAVProps.fromJson({
         'uri': 'https://dav.example.com',
         'user': 'user',
+        'password': 'v1.invalid.invalid',
         'fileName': 'backup.zip',
       });
+
+      expect(props.password, isEmpty);
     });
 
     test('default Config round-trip', () {

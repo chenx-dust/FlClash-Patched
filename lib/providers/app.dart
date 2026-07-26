@@ -13,22 +13,6 @@ import 'package:wifi_ssid/wifi_ssid.dart';
 
 part 'generated/app.g.dart';
 
-@Riverpod(keepAlive: true)
-DAVSecretStorage davSecretStorageService(Ref ref) => davSecretStorage;
-
-@Riverpod(keepAlive: true)
-class DavPassword extends _$DavPassword with AutoDisposeNotifierMixin {
-  @override
-  String build() {
-    return '';
-  }
-
-  Future<void> set(String password) async {
-    await ref.read(davSecretStorageServiceProvider).save(password);
-    value = password;
-  }
-}
-
 @riverpod
 class RealTunEnable extends _$RealTunEnable with AutoDisposeNotifierMixin {
   @override
@@ -492,7 +476,6 @@ List<Override> buildAppStateOverrides(AppState appState) {
     runTimeProvider.overrideWithBuild((_, _) => appState.runTime),
     providersProvider.overrideWithBuild((_, _) => appState.providers),
     localIpProvider.overrideWithBuild((_, _) => appState.localIp),
-    davPasswordProvider.overrideWithBuild((_, _) => appState.davPassword),
     requestsProvider.overrideWithBuild((_, _) => appState.requests),
     versionProvider.overrideWithBuild((_, _) => appState.version),
     logsProvider.overrideWithBuild((_, _) => appState.logs),

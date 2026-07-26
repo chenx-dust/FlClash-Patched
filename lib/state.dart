@@ -87,7 +87,6 @@ class GlobalState {
   Future<ProviderContainer> _initData(int version) async {
     packageInfo = await PackageInfo.fromPlatform();
     var config = await migration.run();
-    final davPassword = await davSecretStorage.read();
     _didCrashOnPreviousExecution = await system.didCrashOnPreviousExecution();
     if (_didCrashOnPreviousExecution) {
       config = config.copyWith(currentProfileId: null);
@@ -101,7 +100,6 @@ class GlobalState {
       logs: FixedList(maxLength),
       traffics: FixedList(30),
       totalTraffic: const Traffic(),
-      davPassword: davPassword,
       systemUiOverlayStyle: const SystemUiOverlayStyle(),
     );
     final appStateOverrides = buildAppStateOverrides(appState);

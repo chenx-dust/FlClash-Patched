@@ -112,11 +112,16 @@ void main() {
     });
 
     test('can update WebDAV settings', () {
-      const davProps = DAVProps(uri: 'https://dav.example.com', user: 'user');
+      const davProps = DAVProps(
+        uri: 'https://dav.example.com',
+        user: 'user',
+        password: 'secret',
+      );
 
       container.read(davSettingProvider.notifier).update((_) => davProps);
 
       expect(container.read(davSettingProvider), davProps);
+      expect(container.read(configProvider).davProps?.password, 'secret');
     });
   });
 

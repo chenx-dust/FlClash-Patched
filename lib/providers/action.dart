@@ -723,10 +723,7 @@ class StoreAction extends _$StoreAction {
   }
 
   Future handleClear() async {
-    await Future.wait([
-      preferences.clearPreferences(),
-      davSecretStorage.clear(),
-    ]);
+    await preferences.clearPreferences();
     commonPrint.log('clear preferences');
     await database.close();
     await File(await appPath.databasePath).safeDelete(recursive: true);

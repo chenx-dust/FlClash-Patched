@@ -217,17 +217,22 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
     if (currentState == null) {
       return;
     }
-    if (mounted && currentState.children.isNotEmpty) {
-      await currentState.isTransformCompleter;
-      final dashboardWidgets = currentState.children
-          .map((item) => DashboardWidget.getDashboardWidget(item))
-          .toList();
-      ref
-          .read(appSettingProvider.notifier)
-          .update(
-            (state) => state.copyWith(dashboardWidgets: dashboardWidgets),
-          );
+    if (!mounted || currentState.children.isEmpty) {
+      return;
     }
+    final transformCompleted = await currentState.isTransformCompleter;
+    if (!transformCompleted ||
+        !mounted ||
+        !currentState.mounted ||
+        !identical(key.currentState, currentState)) {
+      return;
+    }
+    final dashboardWidgets = currentState.children
+        .map((item) => DashboardWidget.getDashboardWidget(item))
+        .toList();
+    ref
+        .read(appSettingProvider.notifier)
+        .update((state) => state.copyWith(dashboardWidgets: dashboardWidgets));
   }
 
   @override

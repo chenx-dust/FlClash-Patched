@@ -14,7 +14,6 @@ dependencies:
   path_provider: ^2.1.5
   path: ^1.9.0
   shared_preferences: ^2.5.3
-  flutter_secure_storage: ^10.3.1
   window_manager:
     git:
       url: https://github.com/chen08209/window_manager

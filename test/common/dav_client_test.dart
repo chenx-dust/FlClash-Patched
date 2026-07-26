@@ -5,7 +5,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _FakeDAVClient extends DAVClient {
-  _FakeDAVClient(super.dav, super.password, this.result, [this.onPing]);
+  _FakeDAVClient(super.dav, this.result, [this.onPing]);
 
   final Future<bool> result;
   final void Function()? onPing;
@@ -18,8 +18,16 @@ class _FakeDAVClient extends DAVClient {
 }
 
 void main() {
-  const firstProps = DAVProps(uri: 'https://dav.example.com', user: 'first');
-  const secondProps = DAVProps(uri: 'https://dav.example.com', user: 'second');
+  const firstProps = DAVProps(
+    uri: 'https://dav.example.com',
+    user: 'first',
+    password: 'first-password',
+  );
+  const secondProps = DAVProps(
+    uri: 'https://dav.example.com',
+    user: 'second',
+    password: 'second-password',
+  );
 
   test('latest DAV connectivity check wins', () async {
     final firstResult = Completer<bool>();
@@ -27,14 +35,14 @@ void main() {
     final results = [firstResult.future, secondResult.future];
     var index = 0;
     final controller = DAVConnectionController(
-      createClient: (props, password) {
-        return _FakeDAVClient(props, password, results[index++]);
+      createClient: (props) {
+        return _FakeDAVClient(props, results[index++]);
       },
     );
     addTearDown(controller.dispose);
 
-    final firstUpdate = controller.update(firstProps, 'first-password');
-    final secondUpdate = controller.update(secondProps, 'second-password');
+    final firstUpdate = controller.update(firstProps);
+    final secondUpdate = controller.update(secondProps);
 
     secondResult.complete(true);
     await secondUpdate;
@@ -48,22 +56,14 @@ void main() {
   test('changing only the remote file name does not ping again', () async {
     var pingCount = 0;
     final controller = DAVConnectionController(
-      createClient: (props, password) {
-        return _FakeDAVClient(
-          props,
-          password,
-          Future.value(true),
-          () => pingCount++,
-        );
+      createClient: (props) {
+        return _FakeDAVClient(props, Future.value(true), () => pingCount++);
       },
     );
     addTearDown(controller.dispose);
 
-    await controller.update(firstProps, 'password');
-    await controller.update(
-      firstProps.copyWith(fileName: 'another.zip'),
-      'password',
-    );
+    await controller.update(firstProps);
+    await controller.update(firstProps.copyWith(fileName: 'another.zip'));
 
     expect(pingCount, 1);
     expect(controller.value, isTrue);
@@ -73,13 +73,13 @@ void main() {
   test('new credentials reset connectivity while ping is pending', () async {
     final result = Completer<bool>();
     final controller = DAVConnectionController(
-      createClient: (props, password) {
-        return _FakeDAVClient(props, password, result.future);
+      createClient: (props) {
+        return _FakeDAVClient(props, result.future);
       },
     );
     addTearDown(controller.dispose);
 
-    final update = controller.update(firstProps, 'password');
+    final update = controller.update(firstProps);
 
     expect(controller.value, isNull);
     result.complete(true);
