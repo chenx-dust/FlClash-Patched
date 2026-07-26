@@ -586,7 +586,7 @@ func readManagedConfig(root *os.Root, path string) ([]byte, error) {
 }
 
 func handleGetProfileConfig(profileID int64) (*config.RawConfig, error) {
-	if !isInit {
+	if !isInit.Load() {
 		return nil, fmt.Errorf("not initialized")
 	}
 	if profileID <= 0 {
@@ -622,7 +622,7 @@ func handleUpdateConfig(params *UpdateParams) string {
 }
 
 func handleDeleteManagedPath(params *DeleteManagedPathParams) string {
-	if !isInit {
+	if !isInit.Load() {
 		return "not initialized"
 	}
 	path, err := resolveManagedPath(params.RelativePath)
