@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:fl_clash/common/constant.dart';
+import 'package:fl_clash/common/path.dart';
 import 'package:fl_clash/core/transport.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -19,9 +19,10 @@ void main() {
   test('Windows Core pipe uses a 128-bit random suffix', () {
     const prefix = r'\\.\pipe\FlClashCore_';
     expect(windowsPipeName, startsWith(prefix));
+    expect(windowsPipeName.substring(prefix.length), hasLength(22));
     expect(
       windowsPipeName.substring(prefix.length),
-      matches(RegExp(r'^[0-9a-f]{32}$')),
+      matches(RegExp(r'^[A-Za-z0-9_-]{21}[AQgw]$')),
     );
   });
 

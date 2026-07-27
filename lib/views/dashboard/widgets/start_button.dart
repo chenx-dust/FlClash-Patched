@@ -165,7 +165,6 @@ class _StartButtonState extends ConsumerState<StartButton>
           floatingActionButtonTheme: theme.floatingActionButtonTheme.copyWith(
             sizeConstraints: const BoxConstraints(
               minWidth: 56,
-              maxWidth: 220,
               minHeight: _buttonHeight,
               maxHeight: _buttonHeight,
             ),
