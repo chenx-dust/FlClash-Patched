@@ -104,12 +104,7 @@ class GlobalState {
 
   Future<ProviderContainer> _initData(int version) async {
     packageInfo = await PackageInfo.fromPlatform();
-    var config = await migration.run();
-    _didCrashOnPreviousExecution = await system.didCrashOnPreviousExecution();
-    if (_didCrashOnPreviousExecution) {
-      config = config.copyWith(currentProfileId: null);
-      await preferences.saveConfig(config);
-    }
+    final config = await migration.run();
     final appState = AppState(
       brightness: WidgetsBinding.instance.platformDispatcher.platformBrightness,
       version: version,
