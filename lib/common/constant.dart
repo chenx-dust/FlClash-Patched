@@ -1,5 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
+import 'dart:math' show max;
 import 'dart:ui';
 
 import 'package:collection/collection.dart';
