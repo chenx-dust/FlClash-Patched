@@ -26,7 +26,6 @@
 		75E6931713F2CBFC7F5647EA /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35334DA7DC4F8101DB01E237 /* Pods_RunnerTests.framework */; };
 		7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */; };
 		7891A0012FF2266100620D82 /* ServiceChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7891A0002FF2266100620D82 /* ServiceChannel.swift */; };
-		7891A00D2FF2D00000620D82 /* TunnelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7891A00C2FF2D00000620D82 /* TunnelController.swift */; };
 		7891A00F2FF2D00000620D82 /* SharedStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7891A00E2FF2D00000620D82 /* SharedStateStore.swift */; };
 		7891A0112FF2D00000620D82 /* CoreEventRelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7891A0102FF2D00000620D82 /* CoreEventRelay.swift */; };
 		7891A0032FF2361D00620D82 /* IOSCoreBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 7891A0022FF2361D00620D82 /* IOSCoreBridge.m */; };
@@ -35,6 +34,10 @@
 		7891A0092FF2A10100620D82 /* libclash_lowmem.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7891A00B2FF2C4D700620D82 /* libclash_lowmem.a */; };
 		7891A00A2FF2A10100620D82 /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 7891A0072FF23B9500620D82 /* libresolv.tbd */; };
 		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
+		7C0000123000000000000001 /* TunnelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C0000023000000000000001 /* TunnelController.swift */; };
+		7C0000133000000000000001 /* TunnelCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C0000033000000000000001 /* TunnelCoordinator.swift */; };
+		7C0000143000000000000001 /* TunnelManagerStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C0000043000000000000001 /* TunnelManagerStore.swift */; };
+		7C0000153000000000000001 /* TunnelTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C0000053000000000000001 /* TunnelTypes.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
@@ -127,10 +130,13 @@
 		7891A0052FF2361D00620D82 /* libclash.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libclash.a; path = ../libclash/ios/arm64/libclash.a; sourceTree = "<group>"; };
 		7891A0072FF23B9500620D82 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
 		7891A00B2FF2C4D700620D82 /* libclash_lowmem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libclash_lowmem.a; path = ../libclash/ios/arm64/libclash_lowmem.a; sourceTree = "<group>"; };
-		7891A00C2FF2D00000620D82 /* TunnelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunnelController.swift; sourceTree = "<group>"; };
 		7891A00E2FF2D00000620D82 /* SharedStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStateStore.swift; sourceTree = "<group>"; };
 		7891A0102FF2D00000620D82 /* CoreEventRelay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreEventRelay.swift; sourceTree = "<group>"; };
 		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
+		7C0000023000000000000001 /* TunnelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunnelController.swift; sourceTree = "<group>"; };
+		7C0000033000000000000001 /* TunnelCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunnelCoordinator.swift; sourceTree = "<group>"; };
+		7C0000043000000000000001 /* TunnelManagerStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunnelManagerStore.swift; sourceTree = "<group>"; };
+		7C0000053000000000000001 /* TunnelTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunnelTypes.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
@@ -273,6 +279,17 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		7C0000013000000000000001 /* Tunnel */ = {
+			isa = PBXGroup;
+			children = (
+				7C0000023000000000000001 /* TunnelController.swift */,
+				7C0000033000000000000001 /* TunnelCoordinator.swift */,
+				7C0000043000000000000001 /* TunnelManagerStore.swift */,
+				7C0000053000000000000001 /* TunnelTypes.swift */,
+			);
+			path = Tunnel;
+			sourceTree = "<group>";
+		};
 		9740EEB11CF90186004384FC /* Flutter */ = {
 			isa = PBXGroup;
 			children = (
@@ -328,7 +345,7 @@
 				7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */,
 				0590E2612FFA576B00321CD8 /* ShortcutProvider.swift */,
 				7891A0002FF2266100620D82 /* ServiceChannel.swift */,
-				7891A00C2FF2D00000620D82 /* TunnelController.swift */,
+				7C0000013000000000000001 /* Tunnel */,
 				7891A00E2FF2D00000620D82 /* SharedStateStore.swift */,
 				7891A0102FF2D00000620D82 /* CoreEventRelay.swift */,
 				7891A0042FF2361D00620D82 /* IOSCoreBridge.h */,
@@ -691,7 +708,10 @@
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */,
 				7891A0012FF2266100620D82 /* ServiceChannel.swift in Sources */,
-				7891A00D2FF2D00000620D82 /* TunnelController.swift in Sources */,
+				7C0000123000000000000001 /* TunnelController.swift in Sources */,
+				7C0000133000000000000001 /* TunnelCoordinator.swift in Sources */,
+				7C0000143000000000000001 /* TunnelManagerStore.swift in Sources */,
+				7C0000153000000000000001 /* TunnelTypes.swift in Sources */,
 				7891A00F2FF2D00000620D82 /* SharedStateStore.swift in Sources */,
 				7891A0112FF2D00000620D82 /* CoreEventRelay.swift in Sources */,
 				0590E2622FFA577300321CD8 /* ShortcutProvider.swift in Sources */,

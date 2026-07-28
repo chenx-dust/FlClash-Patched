@@ -124,8 +124,14 @@ final class ServiceChannel {
       return
     }
     log("syncState saved bytes=\(data.count)")
-    tunnelController.reloadOnDemandRules()
-    result("")
+    tunnelController.reloadOnDemandRules { error in
+      if let error {
+        self.log("syncState preferences failed: \(error.localizedDescription)")
+        result("failed to sync Network Extension preferences: \(error.localizedDescription)")
+        return
+      }
+      result("")
+    }
   }
 
   private func invokeAppCore(
