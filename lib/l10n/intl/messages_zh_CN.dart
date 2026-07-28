@@ -685,6 +685,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "restoreFromWebDAVDesc": MessageLookupByLibrary.simpleMessage(
       "通过 WebDAV 恢复数据",
     ),
+    "restoreHiddenGroups": MessageLookupByLibrary.simpleMessage("恢复隐藏组"),
     "restoreOnlyConfig": MessageLookupByLibrary.simpleMessage("仅恢复配置文件"),
     "restoreStrategy": MessageLookupByLibrary.simpleMessage("恢复策略"),
     "restoreStrategy_compatible": MessageLookupByLibrary.simpleMessage("兼容"),
@@ -796,6 +797,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectedCountTitle": m26,
     "settings": MessageLookupByLibrary.simpleMessage("设置"),
     "show": MessageLookupByLibrary.simpleMessage("显示"),
+    "showHiddenGroups": MessageLookupByLibrary.simpleMessage("显示隐藏组"),
     "showLess": MessageLookupByLibrary.simpleMessage("收起"),
     "showMore": MessageLookupByLibrary.simpleMessage("展开"),
     "showPassword": MessageLookupByLibrary.simpleMessage("显示密码"),
@@ -832,6 +834,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "submit": MessageLookupByLibrary.simpleMessage("提交"),
     "subscriptionInfo": MessageLookupByLibrary.simpleMessage("订阅信息"),
     "suspended": MessageLookupByLibrary.simpleMessage("挂起中..."),
+    "swipeToSwitchPage": MessageLookupByLibrary.simpleMessage("滑动切页"),
     "sync": MessageLookupByLibrary.simpleMessage("同步"),
     "system": MessageLookupByLibrary.simpleMessage("系统"),
     "systemApp": MessageLookupByLibrary.simpleMessage("系统应用"),

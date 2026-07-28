@@ -5357,6 +5357,26 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `Show Hidden`
+  String get showHiddenGroups {
+    return Intl.message(
+      'Show Hidden',
+      name: 'showHiddenGroups',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Restore Hidden`
+  String get restoreHiddenGroups {
+    return Intl.message(
+      'Restore Hidden',
+      name: 'restoreHiddenGroups',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

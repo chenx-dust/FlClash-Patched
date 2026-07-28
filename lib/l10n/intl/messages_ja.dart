@@ -771,6 +771,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "restoreFromWebDAVDesc": MessageLookupByLibrary.simpleMessage(
       "WebDAV を介してデータを復元する",
     ),
+    "restoreHiddenGroups": MessageLookupByLibrary.simpleMessage("非表示グループを復元"),
     "restoreOnlyConfig": MessageLookupByLibrary.simpleMessage("設定ファイルのみを復元する"),
     "restoreStrategy": MessageLookupByLibrary.simpleMessage("復元ストラテジー"),
     "restoreStrategy_compatible": MessageLookupByLibrary.simpleMessage("互換"),
@@ -908,6 +909,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectedCountTitle": m26,
     "settings": MessageLookupByLibrary.simpleMessage("設定"),
     "show": MessageLookupByLibrary.simpleMessage("表示"),
+    "showHiddenGroups": MessageLookupByLibrary.simpleMessage("非表示グループを表示"),
     "showLess": MessageLookupByLibrary.simpleMessage("折りたたむ"),
     "showMore": MessageLookupByLibrary.simpleMessage("展開する"),
     "showPassword": MessageLookupByLibrary.simpleMessage("パスワードを表示"),
@@ -946,6 +948,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "submit": MessageLookupByLibrary.simpleMessage("送信"),
     "subscriptionInfo": MessageLookupByLibrary.simpleMessage("サブスクリプション情報"),
     "suspended": MessageLookupByLibrary.simpleMessage("一時停止中..."),
+    "swipeToSwitchPage": MessageLookupByLibrary.simpleMessage("スワイプでページ切り替え"),
     "sync": MessageLookupByLibrary.simpleMessage("同期"),
     "system": MessageLookupByLibrary.simpleMessage("システム"),
     "systemApp": MessageLookupByLibrary.simpleMessage("システムアプリ"),

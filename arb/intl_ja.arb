@@ -644,5 +644,7 @@
   "excludeDeviceCommunication": "デバイス間通信を除外",
   "excludeDeviceCommunicationDesc": "AirDrop や AirPlay などのデバイス間通信がトンネルをバイパスすることを許可する",
   "hideUnavailable": "タイムアウト非表示",
-  "showUnavailable": "タイムアウト表示"
+  "showUnavailable": "タイムアウト表示",
+  "showHiddenGroups": "非表示グループを表示",
+  "restoreHiddenGroups": "非表示グループを復元"
 }

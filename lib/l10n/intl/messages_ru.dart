@@ -1005,6 +1005,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "restoreFromWebDAVDesc": MessageLookupByLibrary.simpleMessage(
       "Восстановить данные через WebDAV",
     ),
+    "restoreHiddenGroups": MessageLookupByLibrary.simpleMessage(
+      "Восстановить скрытые группы",
+    ),
     "restoreOnlyConfig": MessageLookupByLibrary.simpleMessage(
       "Восстановить только файлы конфигурации",
     ),
@@ -1168,6 +1171,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectedCountTitle": m26,
     "settings": MessageLookupByLibrary.simpleMessage("Настройки"),
     "show": MessageLookupByLibrary.simpleMessage("Показать"),
+    "showHiddenGroups": MessageLookupByLibrary.simpleMessage(
+      "Показать скрытые группы",
+    ),
     "showLess": MessageLookupByLibrary.simpleMessage("Показать меньше"),
     "showMore": MessageLookupByLibrary.simpleMessage("Показать больше"),
     "showPassword": MessageLookupByLibrary.simpleMessage("Показать пароль"),
@@ -1218,6 +1224,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Информация о подписке",
     ),
     "suspended": MessageLookupByLibrary.simpleMessage("Приостановлено..."),
+    "swipeToSwitchPage": MessageLookupByLibrary.simpleMessage(
+      "Переключение страниц свайпом",
+    ),
     "sync": MessageLookupByLibrary.simpleMessage("Синхронизация"),
     "system": MessageLookupByLibrary.simpleMessage("Система"),
     "systemApp": MessageLookupByLibrary.simpleMessage("Системное приложение"),
