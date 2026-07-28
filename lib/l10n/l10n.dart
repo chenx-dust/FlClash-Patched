@@ -5109,20 +5109,20 @@ class AppLocalizations {
     );
   }
 
-  /// `Show Hidden Groups`
+  /// `Show Hidden`
   String get showHiddenGroups {
     return Intl.message(
-      'Show Hidden Groups',
+      'Show Hidden',
       name: 'showHiddenGroups',
       desc: '',
       args: [],
     );
   }
 
-  /// `Restore Group Hiding`
+  /// `Restore Hidden`
   String get restoreHiddenGroups {
     return Intl.message(
-      'Restore Group Hiding',
+      'Restore Hidden',
       name: 'restoreHiddenGroups',
       desc: '',
       args: [],
