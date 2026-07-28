@@ -19,10 +19,6 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Test release notes generation
-        shell: bash
-        run: bash .github/scripts/generate_release_notes_test.sh
-
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -224,15 +220,6 @@ jobs:
           path: ./dist/
           pattern: artifact-*
           merge-multiple: true
-
-      - name: Generate release.md
-        shell: bash
-        run: |
-          pre_tag=$(
-            curl --silent "https://api.github.com/repos/${{ github.repository }}/releases/latest" |
-              sed -nE 's/.*"tag_name": "([^"]+)".*/\1/p'
-          )
-          bash .github/scripts/generate_release_notes.sh "$pre_tag" release.md
 
       - name: Patch release.md
         run: |
