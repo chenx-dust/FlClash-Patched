@@ -842,6 +842,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "restoreFromWebDAVDesc": MessageLookupByLibrary.simpleMessage(
       "Restore data via WebDAV",
     ),
+    "restoreHiddenGroups": MessageLookupByLibrary.simpleMessage(
+      "Restore Hidden",
+    ),
     "restoreOnlyConfig": MessageLookupByLibrary.simpleMessage(
       "Restore configuration files only",
     ),
@@ -995,6 +998,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectedCountTitle": m23,
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),
     "show": MessageLookupByLibrary.simpleMessage("Show"),
+    "showHiddenGroups": MessageLookupByLibrary.simpleMessage("Show Hidden"),
+    "showUnavailable": MessageLookupByLibrary.simpleMessage("Show Timeout"),
     "shrink": MessageLookupByLibrary.simpleMessage("Shrink"),
     "silentLaunch": MessageLookupByLibrary.simpleMessage("Silent Launch"),
     "silentLaunchDesc": MessageLookupByLibrary.simpleMessage(

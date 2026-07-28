@@ -601,5 +601,7 @@
   "excludeDeviceCommunication": "Exclude Device Communication",
   "excludeDeviceCommunicationDesc": "Allow device-to-device traffic such as AirDrop and AirPlay to bypass the tunnel",
   "hideUnavailable": "Hide Timeout",
-  "showUnavailable": "Show Timeout"
+  "showUnavailable": "Show Timeout",
+  "showHiddenGroups": "Show Hidden",
+  "restoreHiddenGroups": "Restore Hidden"
 }
