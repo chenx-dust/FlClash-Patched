@@ -272,8 +272,9 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
               key: Key(trackerInfo.id),
               trackerInfo: trackerInfo,
               onClickFilter: (type, value) {
-                _setTrackerFilter(_trackerFilter.add(type, value));
+                _setTrackerFilter(_trackerFilter.toggle(type, value));
               },
+              filter: _trackerFilter,
               onDetailClosed: () async {
                 await _updateConnections(flushDeferred: true);
               },

@@ -222,8 +222,11 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
                           key: Key(trackerInfo.id),
                           trackerInfo: trackerInfo,
                           onClickFilter: (type, value) {
-                            _setTrackerFilter(_trackerFilter.add(type, value));
+                            _setTrackerFilter(
+                              _trackerFilter.toggle(type, value),
+                            );
                           },
+                          filter: _trackerFilter,
                           detailTitle: appLocalizations.details(
                             appLocalizations.request,
                           ),

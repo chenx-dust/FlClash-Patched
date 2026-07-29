@@ -16,6 +16,7 @@ class TrackerInfoItem extends ConsumerWidget {
   final Future<void> Function()? onDetailClosed;
   final Widget? trailing;
   final String detailTitle;
+  final TrackerInfoFilter filter;
 
   const TrackerInfoItem({
     super.key,
@@ -25,6 +26,7 @@ class TrackerInfoItem extends ConsumerWidget {
     this.onDetailClosed,
     this.trailing,
     required this.detailTitle,
+    this.filter = const TrackerInfoFilter(),
   });
 
   static double get subTitleHeight {
@@ -125,6 +127,7 @@ class TrackerInfoItem extends ConsumerWidget {
               body: TrackerInfoDetailView(
                 trackerInfo: trackerInfo,
                 onClickFilter: onClickFilter,
+                filter: filter,
               ),
               title: detailTitle,
             );
@@ -153,15 +156,42 @@ class TrackerInfoItem extends ConsumerWidget {
   }
 }
 
-class TrackerInfoDetailView extends StatelessWidget {
+class TrackerInfoDetailView extends StatefulWidget {
   final TrackerInfo trackerInfo;
   final void Function(TrackerInfoFilterType type, String value)? onClickFilter;
+  final TrackerInfoFilter filter;
 
   const TrackerInfoDetailView({
     super.key,
     required this.trackerInfo,
     this.onClickFilter,
+    this.filter = const TrackerInfoFilter(),
   });
+
+  @override
+  State<TrackerInfoDetailView> createState() => _TrackerInfoDetailViewState();
+}
+
+class _TrackerInfoDetailViewState extends State<TrackerInfoDetailView> {
+  late TrackerInfoFilter _filter;
+
+  TrackerInfo get trackerInfo => widget.trackerInfo;
+
+  void Function(TrackerInfoFilterType type, String value)? get onClickFilter =>
+      widget.onClickFilter;
+
+  @override
+  void initState() {
+    super.initState();
+    _filter = widget.filter;
+  }
+
+  void _applyFilter(TrackerInfoFilterType type, String value) {
+    onClickFilter?.call(type, value);
+    setState(() {
+      _filter = _filter.toggle(type, value);
+    });
+  }
 
   String _getRuleText() {
     final rule = trackerInfo.rule;
@@ -212,16 +242,21 @@ class TrackerInfoDetailView extends StatelessWidget {
       runSpacing: 8,
       alignment: WrapAlignment.end,
       children: [
-        for (final chain in trackerInfo.chains)
-          CommonChip(
+        ...trackerInfo.chains.map((chain) {
+          final filterApplied = _filter.contains(
+            TrackerInfoFilterType.chain,
+            chain,
+          );
+          return CommonChip(
             label: chain,
-            labelStyle: context.textTheme.labelMedium,
+            labelStyle: context.textTheme.labelSmall?.copyWith(
+              color: filterApplied ? context.colorScheme.primary : null,
+            ),
             onPressed: filterable
-                ? () {
-                    onClickFilter!(TrackerInfoFilterType.chain, chain);
-                  }
+                ? () => _applyFilter(TrackerInfoFilterType.chain, chain)
                 : null,
-          ),
+          );
+        }),
       ],
     );
     return ListItem(
@@ -248,10 +283,12 @@ class TrackerInfoDetailView extends StatelessWidget {
         filterType != null &&
         filterValue?.isNotEmpty == true &&
         onClickFilter != null;
+    final filterApplied =
+        canFilter && _filter.contains(filterType, filterValue!);
     return ListItem(
       onTap: canFilter
           ? () {
-              onClickFilter!(filterType, filterValue!);
+              _applyFilter(filterType, filterValue!);
             }
           : null,
       title: Row(
@@ -263,7 +300,11 @@ class TrackerInfoDetailView extends StatelessWidget {
             spacing: 4,
             children: [
               Text(title),
-              if (canFilter) const Icon(Icons.filter_alt_outlined, size: 18),
+              if (canFilter)
+                Icon(
+                  filterApplied ? Icons.filter_alt : Icons.filter_alt_outlined,
+                  size: 18,
+                ),
               if (quickCopy)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
@@ -276,7 +317,13 @@ class TrackerInfoDetailView extends StatelessWidget {
                 ),
             ],
           ),
-          Flexible(child: Text(desc, textAlign: TextAlign.end)),
+          Flexible(
+            child: Text(
+              desc,
+              textAlign: TextAlign.end,
+              style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 14),
+            ),
+          ),
         ],
       ),
     );

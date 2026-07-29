@@ -56,6 +56,15 @@ class TrackerInfoFilter {
 
   bool get isNotEmpty => !isEmpty;
 
+  bool contains(TrackerInfoFilterType type, String value) {
+    return switch (type) {
+      TrackerInfoFilterType.process => processes.contains(value),
+      TrackerInfoFilterType.chain => chains.contains(value),
+      TrackerInfoFilterType.network => networks.contains(value),
+      TrackerInfoFilterType.rule => rules.contains(value),
+    };
+  }
+
   TrackerInfoFilter copyWith({
     Set<String>? processes,
     Set<String>? chains,
