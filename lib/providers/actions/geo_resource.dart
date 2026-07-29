@@ -37,7 +37,17 @@ class GeoResourceAction extends _$GeoResourceAction {
         .stop(geoResource.updatingKey, current);
   }
 
+  Future<void> updateAllGeoResources() async {
+    await _applyProfileBeforeUpdate();
+    await Future.wait(GeoResource.values.map(_requestGeoResourceUpdate));
+  }
+
   Future<void> updateGeoResource(GeoResource geoResource) async {
+    await _applyProfileBeforeUpdate();
+    await _requestGeoResourceUpdate(geoResource);
+  }
+
+  Future<void> _requestGeoResourceUpdate(GeoResource geoResource) async {
     _manualUpdates.add(geoResource);
     final operation = _startUpdating(geoResource);
     try {
@@ -76,6 +86,11 @@ class GeoResourceAction extends _$GeoResourceAction {
     } else {
       _stopUpdating(geoResource);
     }
+  }
+
+  Future<void> _applyProfileBeforeUpdate() async {
+    debouncer.cancel(FunctionTag.applyProfile);
+    await ref.read(setupActionProvider.notifier).applyProfile(silence: true);
   }
 
   void updateGeoResourceUrl(GeoResource geoResource, String newUrl) {

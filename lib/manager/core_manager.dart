@@ -9,6 +9,7 @@ import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/providers/core.dart';
 import 'package:fl_clash/providers/state.dart';
+import 'package:collection/collection.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -57,6 +58,20 @@ class _CoreContainerState extends ConsumerState<CoreManager>
         _core.stopLog();
       }
     }, fireImmediately: true);
+    ref.listenManual(patchClashConfigProvider, (prev, next) {
+      if (prev == null) {
+        return;
+      }
+      final isEquality = const MapEquality<GeoResource, String>().equals(
+        prev.geoXUrl,
+        next.geoXUrl,
+      );
+      if (!isEquality) {
+        ref
+            .read(setupActionProvider.notifier)
+            .applyProfileDebounce(silence: true);
+      }
+    });
   }
 
   @override

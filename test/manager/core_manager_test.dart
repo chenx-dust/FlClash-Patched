@@ -7,6 +7,7 @@ import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/manager/core_manager.dart';
 import 'package:fl_clash/manager/status_manager.dart';
 import 'package:fl_clash/models/models.dart';
+import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/providers/core.dart';
@@ -17,6 +18,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockCoreHandlerInterface extends Mock implements CoreHandlerInterface {}
+
+class _RecordingSetupAction extends SetupAction {
+  int applyProfileDebounceCount = 0;
+  bool? lastSilence;
+
+  @override
+  void applyProfileDebounce({bool silence = false, bool force = false}) {
+    applyProfileDebounceCount++;
+    lastSilence = silence;
+  }
+}
 
 const _crash = CoreEvent(type: CoreEventType.crash, data: 'boom');
 
@@ -45,13 +57,16 @@ _MockCoreHandlerInterface _coreInterface() {
 
 Future<ProviderContainer> _pumpCoreManager(
   WidgetTester tester,
-  CoreHandlerInterface coreInterface,
-) async {
+  CoreHandlerInterface coreInterface, {
+  SetupAction? setupAction,
+}) async {
   final container = ProviderContainer(
     overrides: [
       coreHandlerProvider.overrideWithValue(
         CoreController.scoped(coreInterface),
       ),
+      if (setupAction != null)
+        setupActionProvider.overrideWith(() => setupAction),
     ],
   );
   addTearDown(container.dispose);
@@ -176,6 +191,40 @@ void main() {
     await tester.pump();
 
     verify(() => coreInterface.stopLog()).called(1);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('geo URL changes silently reapply the profile', (tester) async {
+    final coreInterface = _coreInterface();
+    final setupAction = _RecordingSetupAction();
+    final container = await _pumpCoreManager(
+      tester,
+      coreInterface,
+      setupAction: setupAction,
+    );
+
+    container
+        .read(patchClashConfigProvider.notifier)
+        .update(
+          (state) => state.copyWith(
+            geoXUrl: {
+              ...state.geoXUrl,
+              GeoResource.MMDB: 'https://example.com/Country.mmdb',
+            },
+          ),
+        );
+    await tester.pump();
+
+    expect(setupAction.applyProfileDebounceCount, 1);
+    expect(setupAction.lastSilence, isTrue);
+
+    container
+        .read(patchClashConfigProvider.notifier)
+        .update((state) => state.copyWith(globalUa: 'FlClash-Test'));
+    await tester.pump();
+
+    expect(setupAction.applyProfileDebounceCount, 1);
 
     await tester.pumpWidget(const SizedBox.shrink());
   });
