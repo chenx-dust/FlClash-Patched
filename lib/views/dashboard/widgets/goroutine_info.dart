@@ -44,6 +44,7 @@ class _GoroutineInfoState extends State<GoroutineInfo> {
       height: getWidgetHeight(1),
       child: RepaintBoundary(
         child: CommonCard(
+          onLongPress: () {},
           info: Info(
             iconData: Icons.account_tree_outlined,
             label: appLocalizations.goroutineInfo,
