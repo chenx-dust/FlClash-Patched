@@ -126,6 +126,16 @@ void main() {
   });
 
   group('GeoResourceAction', () {
+    late _MockCoreHandlerInterface coreHandler;
+
+    setUp(() {
+      coreHandler = _MockCoreHandlerInterface();
+      CoreController.resetInstance();
+      CoreController.test(coreHandler);
+    });
+
+    tearDown(CoreController.resetInstance);
+
     test('GeoResource has correct updatingKey', () {
       expect(GeoResource.MMDB.updatingKey, 'geo_resource_MMDB');
       expect(GeoResource.ASN.updatingKey, 'geo_resource_ASN');
@@ -163,6 +173,59 @@ void main() {
         container.read(patchClashConfigProvider).geoXUrl[GeoResource.MMDB],
         url,
       );
+    });
+
+    test('applies the profile before updating one resource', () async {
+      final events = <String>[];
+      when(() => coreHandler.updateGeoData(GeoResource.MMDB.name)).thenAnswer((
+        _,
+      ) async {
+        events.add('update');
+        return '';
+      });
+      final container = ProviderContainer(
+        overrides: [
+          setupActionProvider.overrideWith(() => _RecordingSetupAction(events)),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container
+          .read(geoResourceActionProvider.notifier)
+          .updateGeoResource(GeoResource.MMDB);
+
+      expect(events, ['apply', 'update']);
+      verify(() => coreHandler.updateGeoData(GeoResource.MMDB.name)).called(1);
+    });
+
+    test('applies the profile once before updating all resources', () async {
+      final events = <String>[];
+      when(() => coreHandler.updateGeoData(any())).thenAnswer((
+        invocation,
+      ) async {
+        events.add('update:${invocation.positionalArguments.single}');
+        return '';
+      });
+      final container = ProviderContainer(
+        overrides: [
+          setupActionProvider.overrideWith(() => _RecordingSetupAction(events)),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container
+          .read(geoResourceActionProvider.notifier)
+          .updateAllGeoResources();
+
+      expect(events.first, 'apply');
+      expect(events.where((event) => event == 'apply'), hasLength(1));
+      expect(events.skip(1).toSet(), {
+        for (final geoResource in GeoResource.values)
+          'update:${geoResource.name}',
+      });
+      verify(
+        () => coreHandler.updateGeoData(any()),
+      ).called(GeoResource.values.length);
     });
   });
 
@@ -883,6 +946,22 @@ const _restartResult = CoreLifecycleResult(
   revision: 1,
   outcome: CoreLifecycleOutcome.applied,
 );
+
+class _RecordingSetupAction extends SetupAction {
+  final List<String> events;
+
+  _RecordingSetupAction(this.events);
+
+  @override
+  Future<void> applyProfile({
+    bool silence = false,
+    bool force = false,
+    Future<void> Function()? preloadInvoke,
+  }) async {
+    expect(silence, isTrue);
+    events.add('apply');
+  }
+}
 
 class _RestartRecordingCoreAction extends CoreAction {
   int restartCount = 0;
