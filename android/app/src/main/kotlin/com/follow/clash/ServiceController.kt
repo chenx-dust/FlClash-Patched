@@ -81,7 +81,8 @@ object ServiceController {
             nextBinding.bind().onFailure { error ->
                 GlobalState.log("Unable to bind background service: $error")
                 clearBinding()
-                return@withLock 0L
+                runTimeMillis = 0L
+                return@withLock runTimeMillis
             }
         }
 
@@ -89,8 +90,13 @@ object ServiceController {
         val result = currentBinding.useService { service -> service.start() }
         if (result.isFailure) {
             GlobalState.log("Unable to start background service: ${result.exceptionOrNull()}")
+            currentBinding.stopIfConnected()
+                .onFailure { error ->
+                    GlobalState.log("Unable to clean up failed background service start: $error")
+                }
             clearBinding()
-            return@withLock 0L
+            runTimeMillis = 0L
+            return@withLock runTimeMillis
         }
 
         runTimeMillis = previousRunTimeMillis.takeIf { it != 0L }
@@ -152,14 +158,21 @@ private class ManagedServiceBinding(
     }
 
     suspend fun <R> useService(
-        timeoutMillis: Long = 5_000,
+        connectionTimeoutMillis: Long = 5_000,
         block: suspend (ManagedService) -> R,
     ): Result<R> = runCatching {
-        withTimeout(timeoutMillis) {
-            val service = serviceState.filterNotNull().first().getOrThrow()
-            withContext(Dispatchers.Default) {
-                block(service)
-            }
+        val service = withTimeout(connectionTimeoutMillis) {
+            serviceState.filterNotNull().first().getOrThrow()
+        }
+        withContext(Dispatchers.Default) {
+            block(service)
+        }
+    }
+
+    suspend fun stopIfConnected(): Result<Unit> = runCatching {
+        val service = serviceState.value?.getOrNull() ?: return@runCatching
+        withContext(Dispatchers.Default) {
+            service.stop()
         }
     }
 
