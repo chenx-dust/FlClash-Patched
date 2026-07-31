@@ -103,7 +103,6 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
     if (_requestListening) {
       return;
     }
-    commonPrint.log('start listening requests', logLevel: LogLevel.debug);
     _requestListening = true;
     unawaited(
       coreController.startRequestNotify().then((requests) {
@@ -119,7 +118,6 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
     if (!_requestListening) {
       return;
     }
-    commonPrint.log('stop listening requests', logLevel: LogLevel.debug);
     _requestListening = false;
     coreController.stopRequestNotify();
   }

@@ -115,7 +115,6 @@ class _LogsViewState extends ConsumerState<LogsView> {
     if (_logListening) {
       return;
     }
-    commonPrint.log('start listening logs', logLevel: LogLevel.debug);
     _logListening = true;
     unawaited(
       coreController.startLogNotify().then((logs) {
@@ -134,7 +133,6 @@ class _LogsViewState extends ConsumerState<LogsView> {
     if (!_logListening) {
       return;
     }
-    commonPrint.log('stop listening logs', logLevel: LogLevel.debug);
     _logListening = false;
     coreController.stopLogNotify();
   }
