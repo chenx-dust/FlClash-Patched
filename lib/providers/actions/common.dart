@@ -37,8 +37,15 @@ class CommonAction extends _$CommonAction {
 
   Future<void> autoCheckUpdate() async {
     if (!ref.read(appSettingProvider).autoCheckUpdate) return;
-    final res = await request.checkForUpdate();
-    checkUpdateResultHandle(data: res);
+    try {
+      final data = await request.checkForUpdate();
+      await checkUpdateResultHandle(data: data);
+    } catch (e, s) {
+      commonPrint.log(
+        'autoCheckUpdate failed: $e\n$s',
+        logLevel: LogLevel.warning,
+      );
+    }
   }
 
   Future<void> checkUpdateResultHandle({
@@ -73,7 +80,7 @@ class CommonAction extends _$CommonAction {
             .update((state) => state.copyWith(autoCheckUpdate: false));
       }
     } else if (isUser) {
-      globalState.showMessage(
+      await globalState.showMessage(
         title: currentAppLocalizations.checkUpdate,
         message: TextSpan(text: currentAppLocalizations.checkUpdateError),
       );
