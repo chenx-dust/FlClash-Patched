@@ -99,7 +99,6 @@ class Request {
             options: Options(responseType: ResponseType.json),
           )
           .timeout(const Duration(seconds: 10));
-      if (response.statusCode != 200) return null;
       final data = response.data as Map<String, dynamic>;
       final remoteVersion = data['tag_name'];
       final version = globalState.packageInfo.version;
@@ -108,8 +107,7 @@ class Request {
       if (!hasUpdate) return null;
       return data;
     } catch (e) {
-      commonPrint.log('checkForUpdate failed', logLevel: LogLevel.warning);
-      return null;
+      rethrow;
     }
   }
 
