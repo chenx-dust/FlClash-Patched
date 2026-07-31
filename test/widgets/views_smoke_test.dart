@@ -273,9 +273,10 @@ void main() {
 
     await tester.tap(find.text('DNS Mode'));
     await tester.pumpAndSettle();
-    expect(find.text('fakeIp'), findsWidgets);
+    expect(find.text('fake-ip'), findsWidgets);
+    expect(find.text('redir-host'), findsOneWidget);
 
-    await tester.tap(find.text('fakeIp').last);
+    await tester.tap(find.text('fake-ip').last);
     await tester.pumpAndSettle();
 
     expect(

@@ -1939,11 +1939,21 @@ class AppLocalizations {
     return Intl.message('Prefer HTTP/3', name: 'preferH3', desc: '', args: []);
   }
 
-  /// `Prioritize the use of DOH's http/3`
+  /// `Prefer HTTP/3 for DoH`
   String get preferH3Desc {
     return Intl.message(
-      'Prioritize the use of DOH\'s http/3',
+      'Prefer HTTP/3 for DoH',
       name: 'preferH3Desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `When disabled, AAAA queries return an empty result`
+  String get dnsIPv6Desc {
+    return Intl.message(
+      'When disabled, AAAA queries return an empty result',
+      name: 'dnsIPv6Desc',
       desc: '',
       args: [],
     );
@@ -1959,10 +1969,10 @@ class AppLocalizations {
     );
   }
 
-  /// `DNS connection following rules, need to configure proxy-server-nameserver`
+  /// `DNS connections follow rules; proxy-server-nameserver must be configured`
   String get respectRulesDesc {
     return Intl.message(
-      'DNS connection following rules, need to configure proxy-server-nameserver',
+      'DNS connections follow rules; proxy-server-nameserver must be configured',
       name: 'respectRulesDesc',
       desc: '',
       args: [],
@@ -1994,6 +2004,16 @@ class AppLocalizations {
     );
   }
 
+  /// `Domains matched in Fake IP mode receive real IP addresses instead of Fake IP addresses`
+  String get fakeipFilterDesc {
+    return Intl.message(
+      'Domains matched in Fake IP mode receive real IP addresses instead of Fake IP addresses',
+      name: 'fakeipFilterDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Default Nameserver`
   String get defaultNameserver {
     return Intl.message(
@@ -2004,10 +2024,10 @@ class AppLocalizations {
     );
   }
 
-  /// `For resolving DNS server`
+  /// `For resolving DNS servers`
   String get defaultNameserverDesc {
     return Intl.message(
-      'For resolving DNS server',
+      'For resolving DNS servers',
       name: 'defaultNameserverDesc',
       desc: '',
       args: [],
@@ -2019,10 +2039,10 @@ class AppLocalizations {
     return Intl.message('Nameserver', name: 'nameserver', desc: '', args: []);
   }
 
-  /// `For resolving domain`
+  /// `For resolving domains`
   String get nameserverDesc {
     return Intl.message(
-      'For resolving domain',
+      'For resolving domains',
       name: 'nameserverDesc',
       desc: '',
       args: [],
@@ -2034,11 +2054,31 @@ class AppLocalizations {
     return Intl.message('Use hosts', name: 'useHosts', desc: '', args: []);
   }
 
+  /// `Checks the hosts entries in the configuration before querying upstream DNS servers`
+  String get useHostsDesc {
+    return Intl.message(
+      'Checks the hosts entries in the configuration before querying upstream DNS servers',
+      name: 'useHostsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Use system hosts`
   String get useSystemHosts {
     return Intl.message(
       'Use system hosts',
       name: 'useSystemHosts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Checks the operating system's hosts file when resolving domain names`
+  String get useSystemHostsDesc {
+    return Intl.message(
+      'Checks the operating system\'s hosts file when resolving domain names',
+      name: 'useSystemHostsDesc',
       desc: '',
       args: [],
     );
@@ -2054,10 +2094,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Specify the corresponding nameserver policy`
+  /// `Assigns specific DNS servers to matching domains, geosite categories, or rule sets`
   String get nameserverPolicyDesc {
     return Intl.message(
-      'Specify the corresponding nameserver policy',
+      'Assigns specific DNS servers to matching domains, geosite categories, or rule sets',
       name: 'nameserverPolicyDesc',
       desc: '',
       args: [],
@@ -2074,10 +2114,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Domain for resolving proxy nodes`
+  /// `For resolving proxy node domains`
   String get proxyNameserverDesc {
     return Intl.message(
-      'Domain for resolving proxy nodes',
+      'For resolving proxy node domains',
       name: 'proxyNameserverDesc',
       desc: '',
       args: [],
@@ -2109,10 +2149,10 @@ class AppLocalizations {
     return Intl.message('Fallback', name: 'fallback', desc: '', args: []);
   }
 
-  /// `Generally use offshore DNS`
+  /// `Generally uses overseas DNS`
   String get fallbackDesc {
     return Intl.message(
-      'Generally use offshore DNS',
+      'Generally uses overseas DNS',
       name: 'fallbackDesc',
       desc: '',
       args: [],
@@ -2129,9 +2169,29 @@ class AppLocalizations {
     );
   }
 
+  /// `Checks nameserver results against GeoIP Code; results outside that region use fallback`
+  String get fallbackGeoipDesc {
+    return Intl.message(
+      'Checks nameserver results against GeoIP Code; results outside that region use fallback',
+      name: 'fallbackGeoipDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `GeoIP code`
   String get geoipCode {
     return Intl.message('GeoIP code', name: 'geoipCode', desc: '', args: []);
+  }
+
+  /// `Domains matching these GeoSite categories use fallback directly`
+  String get fallbackGeositeDesc {
+    return Intl.message(
+      'Domains matching these GeoSite categories use fallback directly',
+      name: 'fallbackGeositeDesc',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `IP CIDR`
@@ -2139,9 +2199,29 @@ class AppLocalizations {
     return Intl.message('IP CIDR', name: 'ipcidr', desc: '', args: []);
   }
 
+  /// `Nameserver results matching these CIDR prefixes are replaced with fallback results`
+  String get fallbackIpcidrDesc {
+    return Intl.message(
+      'Nameserver results matching these CIDR prefixes are replaced with fallback results',
+      name: 'fallbackIpcidrDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Domain`
   String get domain {
     return Intl.message('Domain', name: 'domain', desc: '', args: []);
+  }
+
+  /// `Matching domains use fallback directly without querying nameserver`
+  String get fallbackDomainDesc {
+    return Intl.message(
+      'Matching domains use fallback directly without querying nameserver',
+      name: 'fallbackDomainDesc',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Reset`

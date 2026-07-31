@@ -265,6 +265,26 @@ void main() {
   });
 
   group('PatchClashConfig JSON round-trip', () {
+    test('DNS modes use their declared config values', () {
+      const values = {
+        DnsMode.normal: 'normal',
+        DnsMode.fakeIp: 'fake-ip',
+        DnsMode.redirHost: 'redir-host',
+        DnsMode.hosts: 'hosts',
+      };
+
+      for (final entry in values.entries) {
+        expect(entry.key.value, entry.value);
+
+        final dns = Dns(enhancedMode: entry.key);
+        expect(dns.toJson()['enhanced-mode'], entry.value);
+        expect(
+          Dns.fromJson({'enhanced-mode': entry.value}).enhancedMode,
+          entry.key,
+        );
+      }
+    });
+
     test('defaults match Clash patch defaults', () {
       const config = PatchClashConfig();
 

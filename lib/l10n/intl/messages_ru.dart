@@ -334,7 +334,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Сервер имен по умолчанию",
     ),
     "defaultNameserverDesc": MessageLookupByLibrary.simpleMessage(
-      "Для разрешения DNS-сервера",
+      "Для разрешения DNS-серверов",
     ),
     "defaultText": MessageLookupByLibrary.simpleMessage("По умолчанию"),
     "delay": MessageLookupByLibrary.simpleMessage("Задержка"),
@@ -374,6 +374,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Обновление настроек, связанных с DNS",
     ),
     "dnsHijacking": MessageLookupByLibrary.simpleMessage("DNS-перехват"),
+    "dnsIPv6Desc": MessageLookupByLibrary.simpleMessage(
+      "Если выключено, запросы AAAA возвращают пустой результат",
+    ),
     "dnsMode": MessageLookupByLibrary.simpleMessage("Режим DNS"),
     "doYouWantToPass": MessageLookupByLibrary.simpleMessage(
       "Вы хотите пропустить",
@@ -460,13 +463,28 @@ class MessageLookup extends MessageLookupByLibrary {
     "externalFetch": MessageLookupByLibrary.simpleMessage("Внешнее получение"),
     "externalLink": MessageLookupByLibrary.simpleMessage("Внешняя ссылка"),
     "fakeipFilter": MessageLookupByLibrary.simpleMessage("Фильтр FakeIP"),
+    "fakeipFilterDesc": MessageLookupByLibrary.simpleMessage(
+      "Совпавшие домены в режиме Fake IP получают реальные IP-адреса вместо Fake IP",
+    ),
     "fakeipRange": MessageLookupByLibrary.simpleMessage("Диапазон FakeIP"),
     "fallback": MessageLookupByLibrary.simpleMessage("Резервный"),
     "fallbackDesc": MessageLookupByLibrary.simpleMessage(
-      "Обычно используется оффшорный DNS",
+      "Обычно используются зарубежные DNS-серверы",
+    ),
+    "fallbackDomainDesc": MessageLookupByLibrary.simpleMessage(
+      "Совпавшие домены используют fallback напрямую, без запроса к nameserver",
     ),
     "fallbackFilter": MessageLookupByLibrary.simpleMessage(
       "Фильтр резервного DNS",
+    ),
+    "fallbackGeoipDesc": MessageLookupByLibrary.simpleMessage(
+      "Проверяет результаты nameserver по коду GeoIP; для адресов вне этого региона используется fallback",
+    ),
+    "fallbackGeositeDesc": MessageLookupByLibrary.simpleMessage(
+      "Домены из этих категорий GeoSite напрямую используют fallback",
+    ),
+    "fallbackIpcidrDesc": MessageLookupByLibrary.simpleMessage(
+      "Результаты nameserver из этих префиксов CIDR заменяются результатами fallback",
     ),
     "fidelityScheme": MessageLookupByLibrary.simpleMessage("Точная передача"),
     "file": MessageLookupByLibrary.simpleMessage("Файл"),
@@ -700,13 +718,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "name": MessageLookupByLibrary.simpleMessage("Имя"),
     "nameserver": MessageLookupByLibrary.simpleMessage("Сервер имен"),
     "nameserverDesc": MessageLookupByLibrary.simpleMessage(
-      "Для разрешения домена",
+      "Для разрешения доменов",
     ),
     "nameserverPolicy": MessageLookupByLibrary.simpleMessage(
       "Политика сервера имен",
     ),
     "nameserverPolicyDesc": MessageLookupByLibrary.simpleMessage(
-      "Указать соответствующую политику сервера имен",
+      "Назначает DNS-серверы совпавшим доменам, категориям GeoSite или наборам правил",
     ),
     "network": MessageLookupByLibrary.simpleMessage("Сеть"),
     "networkDesc": MessageLookupByLibrary.simpleMessage(
@@ -819,7 +837,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "preferH3": MessageLookupByLibrary.simpleMessage("Предпочитать HTTP/3"),
     "preferH3Desc": MessageLookupByLibrary.simpleMessage(
-      "Приоритетное использование HTTP/3 для DOH",
+      "Предпочитать HTTP/3 для DoH",
     ),
     "prerequisites": MessageLookupByLibrary.simpleMessage(
       "Предварительные условия",
@@ -878,7 +896,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Прокси-сервер имен",
     ),
     "proxyNameserverDesc": MessageLookupByLibrary.simpleMessage(
-      "Домен для разрешения прокси-узлов",
+      "Для разрешения доменов прокси-узлов",
     ),
     "proxyNameserverPolicy": MessageLookupByLibrary.simpleMessage(
       "Политика прокси-сервера имен",
@@ -937,7 +955,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "respectRules": MessageLookupByLibrary.simpleMessage("Соблюдение правил"),
     "respectRulesDesc": MessageLookupByLibrary.simpleMessage(
-      "DNS-соединение следует правилам, необходимо настроить proxy-server-nameserver",
+      "DNS-соединения следуют правилам; необходимо настроить proxy-server-nameserver",
     ),
     "restart": MessageLookupByLibrary.simpleMessage("Перезапустить"),
     "restartCoreTip": MessageLookupByLibrary.simpleMessage(
@@ -1262,8 +1280,14 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "urlTip": m26,
     "useHosts": MessageLookupByLibrary.simpleMessage("Использовать hosts"),
+    "useHostsDesc": MessageLookupByLibrary.simpleMessage(
+      "Проверяет записи hosts из конфигурации перед запросом к вышестоящим DNS-серверам",
+    ),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage(
       "Использовать системные hosts",
+    ),
+    "useSystemHostsDesc": MessageLookupByLibrary.simpleMessage(
+      "Проверяет системный файл Hosts при разрешении доменных имен",
     ),
     "userAgent": MessageLookupByLibrary.simpleMessage("User-Agent"),
     "value": MessageLookupByLibrary.simpleMessage("Значение"),

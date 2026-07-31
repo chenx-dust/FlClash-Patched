@@ -117,11 +117,13 @@ class IPv6Item extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
     final ipv6 = ref.watch(
       patchClashConfigProvider.select((state) => state.dns.ipv6),
     );
     return ListItem.toggle(
       title: const Text('IPv6'),
+      subtitle: Text(appLocalizations.dnsIPv6Desc),
       value: ipv6,
       onChanged: (bool value) async {
         ref
@@ -165,7 +167,7 @@ class DnsModeItem extends ConsumerWidget {
     );
     return ListItem<DnsMode>.options(
       title: Text(appLocalizations.dnsMode),
-      subtitle: Text(enhancedMode.name),
+      subtitle: Text(enhancedMode.value),
       dialogTitle: appLocalizations.dnsMode,
       options: DnsMode.values,
       onChanged: (value) {
@@ -176,7 +178,7 @@ class DnsModeItem extends ConsumerWidget {
             .read(patchClashConfigProvider.notifier)
             .update((state) => state.copyWith.dns(enhancedMode: value));
       },
-      textBuilder: (dnsMode) => dnsMode.name,
+      textBuilder: (dnsMode) => dnsMode.value,
       value: enhancedMode,
     );
   }
@@ -226,6 +228,7 @@ class FakeIpFilterItem extends ConsumerWidget {
     );
     return ListItem.open(
       title: Text(appLocalizations.fakeipFilter),
+      subtitle: Text(appLocalizations.fakeipFilterDesc),
       blur: false,
       widget: ListInputPage(
         title: appLocalizations.fakeipFilter,
@@ -316,6 +319,7 @@ class UseHostsItem extends ConsumerWidget {
     );
     return ListItem.toggle(
       title: Text(appLocalizations.useHosts),
+      subtitle: Text(appLocalizations.useHostsDesc),
       value: useHosts,
       onChanged: (bool value) async {
         ref
@@ -337,6 +341,7 @@ class UseSystemHostsItem extends ConsumerWidget {
     );
     return ListItem.toggle(
       title: Text(appLocalizations.useSystemHosts),
+      subtitle: Text(appLocalizations.useSystemHostsDesc),
       value: useSystemHosts,
       onChanged: (bool value) async {
         ref
@@ -486,6 +491,7 @@ class GeoipItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
     final geoip = ref.watch(
       patchClashConfigProvider.select(
         (state) => state.dns.fallbackFilter.geoip,
@@ -493,6 +499,7 @@ class GeoipItem extends ConsumerWidget {
     );
     return ListItem.toggle(
       title: const Text('GeoIP'),
+      subtitle: Text(appLocalizations.fallbackGeoipDesc),
       value: geoip,
       onChanged: (bool value) async {
         ref
@@ -545,6 +552,7 @@ class GeositeItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
     final geosite = ref.watch(
       patchClashConfigProvider.select(
         (state) => state.dns.fallbackFilter.geosite,
@@ -552,6 +560,7 @@ class GeositeItem extends ConsumerWidget {
     );
     return ListItem.open(
       title: const Text('GeoSite'),
+      subtitle: Text(appLocalizations.fallbackGeositeDesc),
       blur: false,
       widget: ListInputPage(
         title: 'GeoSite',
@@ -584,6 +593,7 @@ class IpcidrItem extends ConsumerWidget {
     );
     return ListItem.open(
       title: Text(appLocalizations.ipcidr),
+      subtitle: Text(appLocalizations.fallbackIpcidrDesc),
       blur: false,
       widget: ListInputPage(
         title: appLocalizations.ipcidr,
@@ -616,6 +626,7 @@ class DomainItem extends ConsumerWidget {
     );
     return ListItem.open(
       title: Text(appLocalizations.domain),
+      subtitle: Text(appLocalizations.fallbackDomainDesc),
       blur: false,
       widget: ListInputPage(
         title: appLocalizations.domain,

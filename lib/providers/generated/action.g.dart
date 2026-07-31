@@ -40,7 +40,7 @@ final class CommonActionProvider extends $NotifierProvider<CommonAction, void> {
   }
 }
 
-String _$commonActionHash() => r'522ce3569e09bd9909a3445ac4e958ce25ee892e';
+String _$commonActionHash() => r'a334849573623d15a470d9304183aaa2cb10a2c0';
 
 abstract class _$CommonAction extends $Notifier<void> {
   void build();
@@ -502,7 +502,7 @@ final class GeoResourceActionProvider
   }
 }
 
-String _$geoResourceActionHash() => r'57bd7703ae4102e4542b61d925a8ba531df5fd79';
+String _$geoResourceActionHash() => r'07db35465d2ef269f03a1d1b89715cd56cb32bbb';
 
 abstract class _$GeoResourceAction extends $Notifier<void> {
   void build();

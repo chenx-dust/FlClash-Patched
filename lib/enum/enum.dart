@@ -186,13 +186,16 @@ enum ProxiesListHeaderStyle { loose, standard, tight }
 
 enum ProxyCardType { standard, shrink, min }
 
+@JsonEnum(valueField: 'value')
 enum DnsMode {
-  normal,
-  @JsonValue('fake-ip')
-  fakeIp,
-  @JsonValue('redir-host')
-  redirHost,
-  hosts,
+  normal('normal'),
+  fakeIp('fake-ip'),
+  redirHost('redir-host'),
+  hosts('hosts');
+
+  final String value;
+
+  const DnsMode(this.value);
 }
 
 enum KeyboardModifier {

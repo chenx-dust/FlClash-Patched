@@ -254,6 +254,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "discoverNewVersion": MessageLookupByLibrary.simpleMessage("发现新版本"),
     "dnsDesc": MessageLookupByLibrary.simpleMessage("更新 DNS 相关设置"),
     "dnsHijacking": MessageLookupByLibrary.simpleMessage("DNS 劫持"),
+    "dnsIPv6Desc": MessageLookupByLibrary.simpleMessage("关闭后，AAAA 查询将返回空结果"),
     "dnsMode": MessageLookupByLibrary.simpleMessage("DNS 模式"),
     "doYouWantToPass": MessageLookupByLibrary.simpleMessage("是否要通过"),
     "domain": MessageLookupByLibrary.simpleMessage("域名"),
@@ -316,10 +317,25 @@ class MessageLookup extends MessageLookupByLibrary {
     "externalFetch": MessageLookupByLibrary.simpleMessage("外部获取"),
     "externalLink": MessageLookupByLibrary.simpleMessage("外部链接"),
     "fakeipFilter": MessageLookupByLibrary.simpleMessage("FakeIP 过滤"),
+    "fakeipFilterDesc": MessageLookupByLibrary.simpleMessage(
+      "Fake IP 模式下，匹配的域名返回真实 IP 而非 Fake IP",
+    ),
     "fakeipRange": MessageLookupByLibrary.simpleMessage("FakeIP 范围"),
     "fallback": MessageLookupByLibrary.simpleMessage("备用"),
     "fallbackDesc": MessageLookupByLibrary.simpleMessage("一般情况下使用境外 DNS"),
+    "fallbackDomainDesc": MessageLookupByLibrary.simpleMessage(
+      "匹配的域名直接使用 fallback，不查询 nameserver",
+    ),
     "fallbackFilter": MessageLookupByLibrary.simpleMessage("备用过滤"),
+    "fallbackGeoipDesc": MessageLookupByLibrary.simpleMessage(
+      "按 GeoIP 代码检查 nameserver 结果；不属于该地区时采用 fallback",
+    ),
+    "fallbackGeositeDesc": MessageLookupByLibrary.simpleMessage(
+      "匹配这些 GeoSite 分类的域名直接使用 fallback",
+    ),
+    "fallbackIpcidrDesc": MessageLookupByLibrary.simpleMessage(
+      "nameserver 结果命中这些 CIDR 前缀时改用 fallback 结果",
+    ),
     "fidelityScheme": MessageLookupByLibrary.simpleMessage("高保真"),
     "file": MessageLookupByLibrary.simpleMessage("文件"),
     "fileDesc": MessageLookupByLibrary.simpleMessage("直接上传配置文件"),
@@ -477,7 +493,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "nameserver": MessageLookupByLibrary.simpleMessage("域名服务器"),
     "nameserverDesc": MessageLookupByLibrary.simpleMessage("用于解析域名"),
     "nameserverPolicy": MessageLookupByLibrary.simpleMessage("域名服务器策略"),
-    "nameserverPolicyDesc": MessageLookupByLibrary.simpleMessage("指定对应域名服务器策略"),
+    "nameserverPolicyDesc": MessageLookupByLibrary.simpleMessage(
+      "为匹配的域名、GeoSite 分类或规则集指定 DNS 服务器",
+    ),
     "network": MessageLookupByLibrary.simpleMessage("网络"),
     "networkDesc": MessageLookupByLibrary.simpleMessage("修改网络相关设置"),
     "networkDetection": MessageLookupByLibrary.simpleMessage("网络检测"),
@@ -546,7 +564,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "positiveIntegerTip": MessageLookupByLibrary.simpleMessage("请输入大于 0 的整数"),
     "predictiveBack": MessageLookupByLibrary.simpleMessage("预见性返回"),
     "preferH3": MessageLookupByLibrary.simpleMessage("优先使用 HTTP/3"),
-    "preferH3Desc": MessageLookupByLibrary.simpleMessage("优先使用 DOH 的 http/3"),
+    "preferH3Desc": MessageLookupByLibrary.simpleMessage("优先使用 DOH 的 HTTP/3"),
     "prerequisites": MessageLookupByLibrary.simpleMessage("前置条件"),
     "pressKeyboard": MessageLookupByLibrary.simpleMessage("请按下按键"),
     "preview": MessageLookupByLibrary.simpleMessage("预览"),
@@ -842,7 +860,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "urlDesc": MessageLookupByLibrary.simpleMessage("通过 URL 获取配置文件"),
     "urlTip": m26,
     "useHosts": MessageLookupByLibrary.simpleMessage("使用 Hosts"),
+    "useHostsDesc": MessageLookupByLibrary.simpleMessage(
+      "查询上游 DNS 前先匹配配置中的 hosts",
+    ),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("使用系统 Hosts"),
+    "useSystemHostsDesc": MessageLookupByLibrary.simpleMessage(
+      "解析域名时匹配操作系统的 Hosts 文件",
+    ),
     "userAgent": MessageLookupByLibrary.simpleMessage("用户代理"),
     "value": MessageLookupByLibrary.simpleMessage("值"),
     "vibrantScheme": MessageLookupByLibrary.simpleMessage("活力"),

@@ -323,7 +323,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Default Nameserver",
     ),
     "defaultNameserverDesc": MessageLookupByLibrary.simpleMessage(
-      "For resolving DNS server",
+      "For resolving DNS servers",
     ),
     "defaultText": MessageLookupByLibrary.simpleMessage("Default"),
     "delay": MessageLookupByLibrary.simpleMessage("Delay"),
@@ -363,6 +363,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Update DNS related settings",
     ),
     "dnsHijacking": MessageLookupByLibrary.simpleMessage("DNS hijacking"),
+    "dnsIPv6Desc": MessageLookupByLibrary.simpleMessage(
+      "When disabled, AAAA queries return an empty result",
+    ),
     "dnsMode": MessageLookupByLibrary.simpleMessage("DNS Mode"),
     "doYouWantToPass": MessageLookupByLibrary.simpleMessage(
       "Do you want to pass",
@@ -441,12 +444,27 @@ class MessageLookup extends MessageLookupByLibrary {
     "externalFetch": MessageLookupByLibrary.simpleMessage("External fetch"),
     "externalLink": MessageLookupByLibrary.simpleMessage("External link"),
     "fakeipFilter": MessageLookupByLibrary.simpleMessage("FakeIP filter"),
+    "fakeipFilterDesc": MessageLookupByLibrary.simpleMessage(
+      "Domains matched in Fake IP mode receive real IP addresses instead of Fake IP addresses",
+    ),
     "fakeipRange": MessageLookupByLibrary.simpleMessage("FakeIP range"),
     "fallback": MessageLookupByLibrary.simpleMessage("Fallback"),
     "fallbackDesc": MessageLookupByLibrary.simpleMessage(
-      "Generally use offshore DNS",
+      "Generally uses overseas DNS",
+    ),
+    "fallbackDomainDesc": MessageLookupByLibrary.simpleMessage(
+      "Matching domains use fallback directly without querying nameserver",
     ),
     "fallbackFilter": MessageLookupByLibrary.simpleMessage("Fallback filter"),
+    "fallbackGeoipDesc": MessageLookupByLibrary.simpleMessage(
+      "Checks nameserver results against GeoIP Code; results outside that region use fallback",
+    ),
+    "fallbackGeositeDesc": MessageLookupByLibrary.simpleMessage(
+      "Domains matching these GeoSite categories use fallback directly",
+    ),
+    "fallbackIpcidrDesc": MessageLookupByLibrary.simpleMessage(
+      "Nameserver results matching these CIDR prefixes are replaced with fallback results",
+    ),
     "fidelityScheme": MessageLookupByLibrary.simpleMessage("Fidelity"),
     "file": MessageLookupByLibrary.simpleMessage("File"),
     "fileDesc": MessageLookupByLibrary.simpleMessage("Directly upload profile"),
@@ -665,13 +683,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "name": MessageLookupByLibrary.simpleMessage("Name"),
     "nameserver": MessageLookupByLibrary.simpleMessage("Nameserver"),
     "nameserverDesc": MessageLookupByLibrary.simpleMessage(
-      "For resolving domain",
+      "For resolving domains",
     ),
     "nameserverPolicy": MessageLookupByLibrary.simpleMessage(
       "Nameserver Policy",
     ),
     "nameserverPolicyDesc": MessageLookupByLibrary.simpleMessage(
-      "Specify the corresponding nameserver policy",
+      "Assigns specific DNS servers to matching domains, geosite categories, or rule sets",
     ),
     "network": MessageLookupByLibrary.simpleMessage("Network"),
     "networkDesc": MessageLookupByLibrary.simpleMessage(
@@ -774,7 +792,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "predictiveBack": MessageLookupByLibrary.simpleMessage("Predictive Back"),
     "preferH3": MessageLookupByLibrary.simpleMessage("Prefer HTTP/3"),
     "preferH3Desc": MessageLookupByLibrary.simpleMessage(
-      "Prioritize the use of DOH\'s http/3",
+      "Prefer HTTP/3 for DoH",
     ),
     "prerequisites": MessageLookupByLibrary.simpleMessage("Prerequisites"),
     "pressKeyboard": MessageLookupByLibrary.simpleMessage(
@@ -829,7 +847,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "proxyNameserver": MessageLookupByLibrary.simpleMessage("Proxy Nameserver"),
     "proxyNameserverDesc": MessageLookupByLibrary.simpleMessage(
-      "Domain for resolving proxy nodes",
+      "For resolving proxy node domains",
     ),
     "proxyNameserverPolicy": MessageLookupByLibrary.simpleMessage(
       "Proxy Nameserver Policy",
@@ -886,7 +904,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "respectRules": MessageLookupByLibrary.simpleMessage("Respect Rules"),
     "respectRulesDesc": MessageLookupByLibrary.simpleMessage(
-      "DNS connection following rules, need to configure proxy-server-nameserver",
+      "DNS connections follow rules; proxy-server-nameserver must be configured",
     ),
     "restart": MessageLookupByLibrary.simpleMessage("Restart"),
     "restartCoreTip": MessageLookupByLibrary.simpleMessage(
@@ -1187,7 +1205,13 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "urlTip": m26,
     "useHosts": MessageLookupByLibrary.simpleMessage("Use hosts"),
+    "useHostsDesc": MessageLookupByLibrary.simpleMessage(
+      "Checks the hosts entries in the configuration before querying upstream DNS servers",
+    ),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("Use system hosts"),
+    "useSystemHostsDesc": MessageLookupByLibrary.simpleMessage(
+      "Checks the operating system\'s hosts file when resolving domain names",
+    ),
     "userAgent": MessageLookupByLibrary.simpleMessage("User-Agent"),
     "value": MessageLookupByLibrary.simpleMessage("Value"),
     "vibrantScheme": MessageLookupByLibrary.simpleMessage("Vibrant"),
