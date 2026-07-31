@@ -17,10 +17,6 @@ class Window {
   }
 
   Future<void> init(int version, WindowProps props) async {
-    final acquire = await singleInstanceLock.acquire();
-    if (!acquire) {
-      exit(0);
-    }
     if (system.isWindows) {
       protocol.register('clash');
       protocol.register('clashmeta');
