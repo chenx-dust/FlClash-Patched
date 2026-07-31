@@ -5,6 +5,18 @@ import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+List<String> _parseNameserverPolicyValue(String value) {
+  return value.splitByMultipleSeparatorsList;
+}
+
+String _serializeNameserverPolicyValue(List<String> values) {
+  return values.join(',');
+}
+
+Widget _buildNameserverPolicySubtitle(MapEntry<String, String> item) {
+  return Text(_parseNameserverPolicyValue(item.value).join('\n'));
+}
+
 class OverrideItem extends ConsumerWidget {
   const OverrideItem({super.key});
 
@@ -351,10 +363,14 @@ class NameserverPolicyItem extends ConsumerWidget {
       widget: MapInputPage(
         title: appLocalizations.nameserverPolicy,
         map: nameserverPolicy,
+        keyLabel: appLocalizations.domain,
+        valueLabel: appLocalizations.nameserver,
         keyMaxLength: TextInputLimits.domain,
         valueMaxLength: TextInputLimits.dnsServer,
+        valueParser: _parseNameserverPolicyValue,
+        valueSerializer: _serializeNameserverPolicyValue,
         titleBuilder: (item) => Text(item.key),
-        subtitleBuilder: (item) => Text(item.value),
+        subtitleBuilder: _buildNameserverPolicySubtitle,
       ),
       onChanged: (value) {
         ref
@@ -416,10 +432,14 @@ class ProxyServerNameserverPolicyItem extends ConsumerWidget {
       widget: MapInputPage(
         title: appLocalizations.proxyNameserverPolicy,
         map: proxyServerNameserverPolicy,
+        keyLabel: appLocalizations.domain,
+        valueLabel: appLocalizations.nameserver,
         keyMaxLength: TextInputLimits.domain,
         valueMaxLength: TextInputLimits.dnsServer,
+        valueParser: _parseNameserverPolicyValue,
+        valueSerializer: _serializeNameserverPolicyValue,
         titleBuilder: (item) => Text(item.key),
-        subtitleBuilder: (item) => Text(item.value),
+        subtitleBuilder: _buildNameserverPolicySubtitle,
       ),
       onChanged: (value) {
         ref

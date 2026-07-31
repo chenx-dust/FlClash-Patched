@@ -13,6 +13,18 @@ const _defaultUaValue = '';
 const _customUaValue = '__custom_ua__';
 const _presetUas = ['clash-verge/v2.4.2', 'ClashforWindows/0.19.23'];
 
+List<String> _parseHostsValue(String value) {
+  return value.splitByMultipleSeparatorsList;
+}
+
+String _serializeHostsValue(List<String> values) {
+  return values.join(',');
+}
+
+Widget _buildHostsSubtitle(MapEntry<String, String> item) {
+  return Text(_parseHostsValue(item.value).join('\n'));
+}
+
 class LogLevelItem extends ConsumerWidget {
   const LogLevelItem({super.key});
 
@@ -379,10 +391,13 @@ class HostsItem extends ConsumerWidget {
       widget: MapInputPage(
         title: 'Hosts',
         map: hosts,
+        keyLabel: appLocalizations.domain,
         keyMaxLength: TextInputLimits.domain,
         valueMaxLength: TextInputLimits.hostValue,
+        valueParser: _parseHostsValue,
+        valueSerializer: _serializeHostsValue,
         titleBuilder: (item) => Text(item.key),
-        subtitleBuilder: (item) => Text(item.value),
+        subtitleBuilder: _buildHostsSubtitle,
       ),
       onChanged: (value) {
         ref
