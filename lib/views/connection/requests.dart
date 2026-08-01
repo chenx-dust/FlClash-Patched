@@ -194,6 +194,22 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
                 ),
               );
             }
+            final items = requests
+                .map<Widget>(
+                  (trackerInfo) => TrackerInfoItem(
+                    key: Key(trackerInfo.id),
+                    trackerInfo: trackerInfo,
+                    onClickFilter: (type, value) {
+                      _setTrackerFilter(_trackerFilter.toggle(type, value));
+                    },
+                    filter: _trackerFilter,
+                    detailTitle: appLocalizations.details(
+                      appLocalizations.request,
+                    ),
+                  ),
+                )
+                .separated(const Divider(height: 0))
+                .toList();
             return Expanded(
               child: Align(
                 alignment: Alignment.topCenter,
@@ -209,29 +225,13 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
                           .value
                           .copyWith(autoScrollToEnd: false);
                     },
-                    child: SuperListView.separated(
+                    child: SuperListView.builder(
                       reverse: true,
                       shrinkWrap: true,
                       physics: const NextClampingScrollPhysics(),
                       controller: _scrollController,
-                      itemBuilder: (_, index) {
-                        final trackerInfo = requests[index];
-                        return TrackerInfoItem(
-                          key: Key(trackerInfo.id),
-                          trackerInfo: trackerInfo,
-                          onClickFilter: (type, value) {
-                            _setTrackerFilter(
-                              _trackerFilter.toggle(type, value),
-                            );
-                          },
-                          filter: _trackerFilter,
-                          detailTitle: appLocalizations.details(
-                            appLocalizations.request,
-                          ),
-                        );
-                      },
-                      separatorBuilder: (_, _) => const Divider(height: 0),
-                      itemCount: requests.length,
+                      itemBuilder: (_, index) => items[index],
+                      itemCount: items.length,
                     ),
                   ),
                 ),
