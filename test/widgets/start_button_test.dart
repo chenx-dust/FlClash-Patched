@@ -41,7 +41,9 @@ void main() {
     );
   });
 
-  testWidgets('RunTimeText uses one color below 100 hours', (tester) async {
+  testWidgets('RunTimeText formats multi-day runtimes below 100 hours', (
+    tester,
+  ) async {
     const colorScheme = ColorScheme.light(
       primary: Color(0xFF6750A4),
       onPrimaryContainer: Color(0xFF21005D),
@@ -60,7 +62,7 @@ void main() {
       ),
     );
 
-    expect(text.data, '99:00:00');
+    expect(text.data, '4d 03:00:00');
     expect(text.style?.color, colorScheme.onPrimaryContainer);
   });
 

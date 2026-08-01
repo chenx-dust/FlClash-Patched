@@ -2,6 +2,7 @@ import 'package:fl_clash/common/task.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 
 int _double(int value) => value * 2;
@@ -134,11 +135,15 @@ void main() {
       expect(config['sniffer']['sniff']['HTTP']['ports'], ['80', '443']);
       expect(
         config['proxy-providers']['remote']['path'],
-        startsWith('/profiles/providers/7/proxies/'),
+        startsWith(
+          '${p.join('/profiles', 'providers', '7', 'proxies')}${p.separator}',
+        ),
       );
       expect(
         config['rule-providers']['remote']['path'],
-        startsWith('/profiles/providers/7/rules/'),
+        startsWith(
+          '${p.join('/profiles', 'providers', '7', 'rules')}${p.separator}',
+        ),
       );
       expect(config['rules'], [
         'DOMAIN-SUFFIX,added.example,Original',
@@ -189,12 +194,12 @@ void main() {
       const Log(
         logLevel: LogLevel.info,
         payload: 'first',
-        dateTime: '2026-07-26 10:00:00',
+        timestamp: 1785031200000,
       ),
       const Log(
         logLevel: LogLevel.error,
         payload: 'second',
-        dateTime: '2026-07-26 10:00:01',
+        timestamp: 1785031201000,
       ),
     ];
 
