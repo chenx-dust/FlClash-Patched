@@ -268,7 +268,21 @@ func handleAsyncTestDelay(params *TestDelayParams, fn func(*Delay)) {
 				return delayData, nil
 			}
 			delay, err := proxy.URLTest(ctx, testUrl, expectedStatus)
-			if err != nil || delay == 0 {
+			if err != nil {
+				log.Warnln(
+					"[Delay Test] proxy %q failed for %q: %v",
+					params.ProxyName,
+					testUrl,
+					err,
+				)
+				return delayData, nil
+			}
+			if delay == 0 {
+				log.Warnln(
+					"[Delay Test] proxy %q returned zero delay for %q",
+					params.ProxyName,
+					testUrl,
+				)
 				return delayData, nil
 			}
 

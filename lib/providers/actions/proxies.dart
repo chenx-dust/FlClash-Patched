@@ -5,7 +5,7 @@ typedef _DelayTestRequest = ({Completer<Delay> completer, _DelayTestKey key});
 
 @Riverpod(keepAlive: true)
 class ProxiesAction extends _$ProxiesAction {
-  static const _delayTestConcurrency = 50;
+  static const _delayTestConcurrency = 10;
 
   final Queue<_DelayTestRequest> _delayTestQueue = Queue();
   final Map<_DelayTestKey, Future<Delay>> _pendingDelayTests = {};

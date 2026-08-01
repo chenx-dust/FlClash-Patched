@@ -805,7 +805,7 @@ void main() {
       'returns after the UI timeout while requests respect the concurrency limit',
       () async {
         final proxies = List.generate(
-          51,
+          11,
           (index) => Proxy(name: 'Node $index', type: 'Shadowsocks'),
         );
         final responses = {
@@ -820,7 +820,7 @@ void main() {
         ).thenAnswer((invocation) {
           final proxyName = invocation.positionalArguments[1] as String;
           requestedNames.add(proxyName);
-          if (requestedNames.length == 50) {
+          if (requestedNames.length == 10) {
             firstBatchStarted.complete();
           }
           if (proxyName == proxies.last.name) {
@@ -851,10 +851,10 @@ void main() {
 
         await firstBatchStarted.future;
         await uiFuture;
-        expect(requestedNames, hasLength(50));
+        expect(requestedNames, hasLength(10));
         expect(requestedNames, isNot(contains(proxies.last.name)));
 
-        for (final proxy in proxies.take(50)) {
+        for (final proxy in proxies.take(10)) {
           responses[proxy.name]!.complete(
             Delay(url: 'https://default.test', name: proxy.name, value: 42),
           );

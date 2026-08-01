@@ -37,7 +37,7 @@ var (
 	isRunning      = false
 	runLock        sync.Mutex
 	delayTestCall  singleflight.Group[*Delay]
-	delayTestSlots = make(chan struct{}, 50)
+	delayTestSlots = make(chan struct{}, 10)
 	debugError     = false
 )
 
