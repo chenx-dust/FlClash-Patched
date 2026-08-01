@@ -27,17 +27,17 @@ List<CoreEvent> coreEventsFromData(Object? data) {
 }
 
 abstract mixin class CoreEventListener {
-  void onLog(Log log) {}
+  FutureOr<void> onLog(Log log) {}
 
-  void onDelay(Delay delay) {}
+  FutureOr<void> onDelay(Delay delay) {}
 
-  void onRequest(TrackerInfo connection) {}
+  FutureOr<void> onRequest(TrackerInfo connection) {}
 
-  void onLoaded(String providerName) {}
+  FutureOr<void> onLoaded(String providerName) {}
 
-  void onCrash(String message) {}
+  FutureOr<void> onCrash(String message) {}
 
-  void onGeoUpdate(
+  FutureOr<void> onGeoUpdate(
     String geoType,
     bool updating,
     bool skipped,
@@ -51,41 +51,39 @@ class CoreEventManager {
   CoreEventManager._() {
     _controller.stream.listen((event) {
       for (final CoreEventListener listener in _listeners) {
-        try {
-          switch (event.type) {
-            case CoreEventType.log:
-              listener.onLog(Log.fromJson(event.data));
-              break;
-            case CoreEventType.delay:
-              listener.onDelay(Delay.fromJson(event.data));
-              break;
-            case CoreEventType.request:
-              listener.onRequest(TrackerInfo.fromJson(event.data));
-              break;
-            case CoreEventType.loaded:
-              listener.onLoaded(event.data);
-              break;
-            case CoreEventType.crash:
-              listener.onCrash(event.data);
-              break;
-            case CoreEventType.geoUpdate:
-              final data = event.data as Map<String, dynamic>;
-              listener.onGeoUpdate(
-                data['type'] as String,
-                data['updating'] as bool,
-                data['skipped'] as bool? ?? false,
-                data['error'] as String?,
-              );
-              break;
-          }
-        } catch (error) {
-          commonPrint.log(
-            'Unable to dispatch Core event ${event.type.name}: $error',
-            logLevel: LogLevel.error,
-          );
-        }
+        unawaited(_dispatch(event, listener));
       }
     });
+  }
+
+  Future<void> _dispatch(CoreEvent event, CoreEventListener listener) async {
+    try {
+      switch (event.type) {
+        case CoreEventType.log:
+          await listener.onLog(Log.fromJson(event.data));
+        case CoreEventType.delay:
+          await listener.onDelay(Delay.fromJson(event.data));
+        case CoreEventType.request:
+          await listener.onRequest(TrackerInfo.fromJson(event.data));
+        case CoreEventType.loaded:
+          await listener.onLoaded(event.data);
+        case CoreEventType.crash:
+          await listener.onCrash(event.data);
+        case CoreEventType.geoUpdate:
+          final data = event.data as Map<String, dynamic>;
+          await listener.onGeoUpdate(
+            data['type'] as String,
+            data['updating'] as bool,
+            data['skipped'] as bool? ?? false,
+            data['error'] as String?,
+          );
+      }
+    } catch (error) {
+      commonPrint.log(
+        'Unable to dispatch Core event ${event.type.name}: $error',
+        logLevel: LogLevel.error,
+      );
+    }
   }
 
   static final CoreEventManager instance = CoreEventManager._();

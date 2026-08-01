@@ -96,7 +96,6 @@ class _CoreContainerState extends ConsumerState<CoreManager>
 
   @override
   Future<void> onLoaded(String providerName) async {
-    final ref = globalState.container;
     ref
         .read(providersProvider.notifier)
         .setProvider(await widget.controller.getExternalProvider(providerName));
