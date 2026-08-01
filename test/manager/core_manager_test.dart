@@ -12,6 +12,37 @@ import 'package:mocktail/mocktail.dart';
 class _MockCoreHandlerInterface extends Mock implements CoreHandlerInterface {}
 
 void main() {
+  testWidgets('loaded provider refresh errors are handled in the background', (
+    tester,
+  ) async {
+    final coreInterface = _MockCoreHandlerInterface();
+    when(
+      () => coreInterface.getExternalProvider('provider-a'),
+    ).thenAnswer((_) async => throw StateError('send queue is full'));
+    final controller = CoreController.test(coreInterface);
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          home: CoreManager(controller: controller, child: const SizedBox()),
+        ),
+      ),
+    );
+
+    coreEventManager.sendEvent(
+      const CoreEvent(type: CoreEventType.loaded, data: 'provider-a'),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    verify(() => coreInterface.getExternalProvider('provider-a')).called(1);
+    expect(tester.takeException(), isNull);
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets('duplicate crash events disconnect the core only once', (
     tester,
   ) async {
