@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/common/theme.dart';
 import 'package:fl_clash/enum/enum.dart';
@@ -28,6 +30,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:smooth_sheets/smooth_sheets.dart';
 
 void main() {
@@ -57,6 +60,17 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
+      final startsCoreListener = entry.key == 'requests' || entry.key == 'logs';
+      final wasBackground = globalState.isBackground.value;
+      if (startsCoreListener) {
+        globalState.isBackground.value = true;
+        addTearDown(() {
+          globalState.isBackground.value = wasBackground;
+        });
+      }
+      if (entry.key == 'resources') {
+        PathProviderPlatform.instance = _TestPathProvider();
+      }
 
       final container = ProviderContainer(
         overrides: [profilesProvider.overrideWith(_TestProfiles.new)],
@@ -92,8 +106,8 @@ void main() {
   final toolDestinations = <String, Type>{
     'Theme': ThemeView,
     'Backup and Restore': BackupAndRestore,
-    'Basic configuration': ConfigView,
-    'Advanced configuration': AdvancedConfigView,
+    'Basic Configuration': ConfigView,
+    'Advanced Configuration': AdvancedConfigView,
     'Application': ApplicationSettingView,
   };
 
@@ -199,7 +213,7 @@ void main() {
     );
     await tester.pump();
 
-    await tester.tap(find.text('DNS mode'));
+    await tester.tap(find.text('DNS Mode'));
     await tester.pumpAndSettle();
     expect(find.text('fakeIp'), findsWidgets);
 
@@ -231,11 +245,11 @@ void main() {
       ),
     );
     await tester.pump();
-    await tester.tap(find.text('Override Dns'));
+    await tester.tap(find.text('Override DNS'));
     await tester.pump();
     await tester.tap(find.text('Status'));
     await tester.pump();
-    await tester.tap(find.text('PreferH3'));
+    await tester.tap(find.text('Prefer HTTP/3'));
     await tester.pump();
     await tester.tap(find.text('IPv6'));
     await tester.pump();
@@ -479,6 +493,21 @@ class _TestProfiles extends Profiles {
 
   @override
   List<Profile> build() => initial;
+}
+
+class _TestPathProvider extends PathProviderPlatform {
+  @override
+  Future<String?> getApplicationCachePath() async => Directory.systemTemp.path;
+
+  @override
+  Future<String?> getApplicationSupportPath() async =>
+      Directory.systemTemp.path;
+
+  @override
+  Future<String?> getDownloadsPath() async => Directory.systemTemp.path;
+
+  @override
+  Future<String?> getTemporaryPath() async => Directory.systemTemp.path;
 }
 
 class _TestProfileCustomRules extends ProfileCustomRules {
