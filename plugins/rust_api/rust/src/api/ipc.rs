@@ -54,6 +54,7 @@ const TYPE_ERROR: u8 = 0x04;
 
 const MAX_FRAME_SIZE: usize = 64 * 1024 * 1024;
 const MAX_PENDING_MESSAGES: usize = 8;
+const SEND_QUEUE_TIMEOUT: Duration = Duration::from_secs(3);
 const IO_POLL_INTERVAL: Duration = Duration::from_millis(20);
 const ACCEPT_POLL_INTERVAL: Duration = Duration::from_millis(50);
 const PEER_AUTH_TIMEOUT: Duration = Duration::from_secs(10);
@@ -506,10 +507,30 @@ pub fn send_ipc_message(data: Vec<u8>) -> Result<(), String> {
         .clone()
         .ok_or("IPC client is not connected")?;
 
-    match tx.try_send(data) {
-        Ok(()) => Ok(()),
-        Err(TrySendError::Full(_)) => Err("IPC send queue is full".into()),
-        Err(TrySendError::Disconnected(_)) => Err("IPC client is disconnected".into()),
+    enqueue_message(&tx, data, SEND_QUEUE_TIMEOUT)
+}
+
+fn enqueue_message(
+    tx: &SyncSender<Vec<u8>>,
+    mut data: Vec<u8>,
+    timeout: Duration,
+) -> Result<(), String> {
+    let deadline = Instant::now() + timeout;
+    loop {
+        match tx.try_send(data) {
+            Ok(()) => return Ok(()),
+            Err(TrySendError::Full(pending)) => {
+                let now = Instant::now();
+                if now >= deadline {
+                    return Err("IPC send queue remained full".into());
+                }
+                data = pending;
+                thread::sleep(IO_POLL_INTERVAL.min(deadline.saturating_duration_since(now)));
+            }
+            Err(TrySendError::Disconnected(_)) => {
+                return Err("IPC client is disconnected".into());
+            }
+        }
     }
 }
 
@@ -878,6 +899,34 @@ mod frame_tests {
     use super::*;
     use std::collections::VecDeque;
     use std::io::Cursor;
+
+    #[test]
+    fn enqueue_message_waits_for_queue_capacity() {
+        let (tx, rx) = mpsc::sync_channel(1);
+        tx.send(b"first".to_vec()).unwrap();
+        let receiver = thread::spawn(move || {
+            thread::sleep(Duration::from_millis(5));
+            assert_eq!(rx.recv().unwrap(), b"first");
+            assert_eq!(rx.recv().unwrap(), b"second");
+        });
+
+        assert_eq!(
+            enqueue_message(&tx, b"second".to_vec(), Duration::from_secs(1)),
+            Ok(()),
+        );
+        receiver.join().unwrap();
+    }
+
+    #[test]
+    fn enqueue_message_times_out_when_queue_stays_full() {
+        let (tx, _rx) = mpsc::sync_channel(1);
+        tx.send(b"first".to_vec()).unwrap();
+
+        assert_eq!(
+            enqueue_message(&tx, b"second".to_vec(), Duration::ZERO),
+            Err("IPC send queue remained full".into()),
+        );
+    }
 
     enum ReadStep {
         Data(Vec<u8>),
