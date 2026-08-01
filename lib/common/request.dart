@@ -23,6 +23,8 @@ class Request {
     _clashDio.httpClientAdapter = IOHttpClientAdapter(
       createHttpClient: () {
         final client = HttpClient();
+        client.badCertificateCallback =
+            FlClashHttpOverrides.handleBadCertificate;
         client.findProxy = (Uri uri) {
           client.userAgent = globalState.ua;
           return FlClashHttpOverrides.handleFindProxy(uri);
@@ -44,6 +46,10 @@ class Request {
       commonPrint.log('getFileResponseForUrl error ${e.toString()}');
       if (e is DioException) {
         if (e.type == DioExceptionType.unknown) {
+          final detail = e.error?.toString().trim();
+          if (detail != null && detail.isNotEmpty) {
+            throw '${currentAppLocalizations.unknownNetworkError}\n$detail';
+          }
           throw currentAppLocalizations.unknownNetworkError;
         } else if (e.type == DioExceptionType.badResponse) {
           final response = e.response;
@@ -56,7 +62,7 @@ class Request {
         }
         rethrow;
       }
-      throw currentAppLocalizations.unknownNetworkError;
+      throw '${currentAppLocalizations.unknownNetworkError}\n$e';
     }
   }
 
