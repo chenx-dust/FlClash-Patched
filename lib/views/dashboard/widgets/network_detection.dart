@@ -6,14 +6,9 @@ import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class NetworkDetection extends ConsumerStatefulWidget {
+class NetworkDetection extends ConsumerWidget {
   const NetworkDetection({super.key});
 
-  @override
-  ConsumerState<NetworkDetection> createState() => _NetworkDetectionState();
-}
-
-class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
   String _countryCodeToEmoji(String countryCode) {
     final String code = countryCode.toUpperCase();
     if (code.length != 2) {
@@ -24,8 +19,28 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
     return String.fromCharCode(firstLetter) + String.fromCharCode(secondLetter);
   }
 
+  String _getIpText(String ip, bool isIpVisible) {
+    if (isIpVisible) {
+      return ip;
+    }
+    if (ip.contains('.')) {
+      // IPv4
+      final parts = ip.split('.');
+      if (parts.length == 4) {
+        return '${parts[0]}.***.***.***';
+      }
+    } else if (ip.contains(':')) {
+      // IPv6
+      final parts = ip.split(':');
+      if (parts.length >= 2) {
+        return '${parts[0]}:${parts[1]}:****:****:****:****:****:****';
+      }
+    }
+    return '***.***.***.***';
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final appLocalizations = context.appLocalizations;
     final networkDetection = ref.watch(networkDetectionProvider);
     final ipInfo = networkDetection.ipInfo;
@@ -40,7 +55,10 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
     return SizedBox(
       height: getWidgetHeight(1),
       child: CommonCard(
-        onPressed: () => copyText(context, ipInfo?.ip),
+        onPressed: isLoading != true
+            ? () => ref.read(checkIpNumProvider.notifier).add()
+            : null,
+        onLongPress: () => copyText(context, ipInfo?.ip),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -71,21 +89,21 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
                   const SizedBox(width: 2),
                   AspectRatio(
                     aspectRatio: 1,
-                    child: IconButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        globalState.showMessage(
-                          title: appLocalizations.tip,
-                          message: TextSpan(
-                            text: appLocalizations.detectionTip,
-                          ),
-                          cancelable: false,
-                        );
-                      },
-                      icon: Icon(
-                        size: 16.ap,
-                        Icons.info_outline,
-                        color: context.colorScheme.onSurfaceVariant,
+                    child: ExcludeFocus(
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        onPressed: ipInfo != null
+                            ? ref
+                                  .read(networkDetectionProvider.notifier)
+                                  .toggleIpVisibility
+                            : null,
+                        icon: Icon(
+                          size: 16.ap,
+                          networkDetection.isIpVisible
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                          color: context.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
                   ),
@@ -100,7 +118,7 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
                   child: ipInfo != null
                       ? TooltipText(
                           text: Text(
-                            ipInfo.ip,
+                            _getIpText(ipInfo.ip, networkDetection.isIpVisible),
                             style: context.textTheme.bodyMedium?.toLight
                                 .adjustSize(1),
                             maxLines: 1,

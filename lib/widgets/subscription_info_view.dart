@@ -12,15 +12,13 @@ class SubscriptionInfoView extends StatelessWidget {
     if (subscriptionInfo == null) {
       return Container();
     }
-    if (subscriptionInfo?.total == 0) {
-      return Container();
-    }
+
     final use = subscriptionInfo!.upload + subscriptionInfo!.download;
     final total = subscriptionInfo!.total;
-    final progress = use / total;
+    final progress = total == 0 ? 0.0 : use / total;
 
     final useShow = use.traffic.show;
-    final totalShow = total.traffic.show;
+    final totalShow = total == 0 ? '∞' : total.traffic.show;
     final expireShow =
         subscriptionInfo?.expire != null && subscriptionInfo!.expire != 0
         ? DateTime.fromMillisecondsSinceEpoch(
