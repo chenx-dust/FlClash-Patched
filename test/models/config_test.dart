@@ -105,6 +105,7 @@ void main() {
       expect(restored.openLogs, false);
       expect(restored.closeConnections, true);
       expect(restored.isAnimateToPage, true);
+      expect(restored.isSwipeToPage, true);
       expect(restored.autoCheckUpdate, true);
       expect(restored.showLabel, false);
       expect(restored.minimizeOnExit, true);
@@ -121,6 +122,7 @@ void main() {
         autoLaunch: true,
         highPriorityAutoLaunch: true,
         closeConnections: false,
+        isSwipeToPage: false,
         testUrl: 'https://custom.test',
         customUserAgent: 'CustomUA/1.0',
       );
@@ -134,6 +136,7 @@ void main() {
       expect(restored.autoLaunch, true);
       expect(restored.highPriorityAutoLaunch, true);
       expect(restored.closeConnections, false);
+      expect(restored.isSwipeToPage, false);
       expect(restored.testUrl, 'https://custom.test');
       expect(restored.customUserAgent, 'CustomUA/1.0');
     });
@@ -316,7 +319,6 @@ void main() {
       expect(props.primaryColors, defaultPrimaryColors);
       expect(props.themeMode, ThemeMode.system);
       expect(props.pureBlack, false);
-      expect(props.monochromeTrayIcon, true);
       expect(props.predictiveBack, true);
       expect(props.textScale.scale, 1.0);
     });
@@ -331,7 +333,6 @@ void main() {
         primaryColor: 0xFF123456,
         themeMode: ThemeMode.light,
         pureBlack: true,
-        monochromeTrayIcon: true,
         predictiveBack: true,
         textScale: TextScale(enable: true, scale: 1.5),
       );
@@ -339,7 +340,6 @@ void main() {
       expect(restored.primaryColor, 0xFF123456);
       expect(restored.themeMode, ThemeMode.light);
       expect(restored.pureBlack, true);
-      expect(restored.monochromeTrayIcon, true);
       expect(restored.predictiveBack, true);
       expect(restored.textScale.scale, 1.5);
     });

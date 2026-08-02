@@ -75,6 +75,7 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default(true) bool closeConnections,
     @Default(defaultTestUrl) String testUrl,
     @Default(true) bool isAnimateToPage,
+    @Default(true) bool isSwipeToPage,
     @Default(true) bool autoCheckUpdate,
     @Default(false) bool showLabel,
     @Default(false) bool disclaimerAccepted,
@@ -213,7 +214,6 @@ abstract class ThemeProps with _$ThemeProps {
     @Default(ThemeMode.dark) ThemeMode themeMode,
     @Default(DynamicSchemeVariant.content) DynamicSchemeVariant schemeVariant,
     @Default(false) bool pureBlack,
-    @Default(true) bool monochromeTrayIcon,
     @Default(true) bool predictiveBack,
     @Default(TextScale()) TextScale textScale,
   }) = _ThemeProps;
