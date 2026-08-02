@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/enum/enum.dart';
@@ -193,21 +191,13 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
     });
   }
 
-  Future<void> _updateConnectionsTask() async {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (mounted) {
-        await _updateConnections();
-        timer = Timer(const Duration(seconds: 1), () async {
-          _updateConnectionsTask();
-        });
-      }
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    _updateConnectionsTask();
+    foregroundTicker.register(this, _updateConnections);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateConnections();
+    });
   }
 
   Future<void> _updateConnections({bool flushDeferred = false}) async {
@@ -321,10 +311,9 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
 
   @override
   void dispose() {
-    timer?.cancel();
+    foregroundTicker.unregister(this);
     _connectionsStateNotifier.dispose();
     _scrollController.dispose();
-    timer = null;
     super.dispose();
   }
 

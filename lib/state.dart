@@ -28,6 +28,7 @@ class GlobalState {
   final navigatorKey = GlobalKey<NavigatorState>();
   late final String appEnv;
   late final PackageInfo packageInfo;
+  final isBackground = ValueNotifier<bool>(false);
   Function? updateCurrentDelayDebounce;
   late Measure measure;
   late CommonTheme theme;
@@ -81,6 +82,26 @@ class GlobalState {
 
   BuildContext get _context => navigatorKey.currentContext!;
 
+  void handleBackground() async {
+    commonPrint.log('background', logLevel: LogLevel.debug);
+    if (isBackground.value) {
+      return;
+    }
+    isBackground.value = true;
+    render?.pause();
+    foregroundTicker.pause();
+  }
+
+  void handleForeground() {
+    commonPrint.log('foreground', logLevel: LogLevel.debug);
+    foregroundTicker.resume();
+    if (!isBackground.value) {
+      return;
+    }
+    isBackground.value = false;
+    render?.resume();
+  }
+
   Future<ProviderContainer> _initData(int version) async {
     packageInfo = await PackageInfo.fromPlatform();
     final config = await migration.run();
@@ -98,6 +119,14 @@ class GlobalState {
     final configOverrides = buildConfigOverrides(config);
     container = ProviderContainer(
       overrides: [...appStateOverrides, ...configOverrides],
+    );
+    foregroundTicker.updateSettings(
+      interval: Duration(
+        seconds: config.appSettingProps.foregroundTickerInterval,
+      ),
+      slowInterval: Duration(
+        seconds: config.appSettingProps.foregroundTickerIdleInterval,
+      ),
     );
     final profiles = await database.profilesDao.query().get();
     container.read(profilesProvider.notifier).setAndReorder(profiles);

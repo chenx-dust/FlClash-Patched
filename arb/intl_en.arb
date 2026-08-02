@@ -383,6 +383,7 @@
   "emptyTip": "{label} cannot be empty",
   "urlTip": "{label} must be a url",
   "numberTip": "{label} must be a number",
+  "positiveIntegerTip": "Please enter an integer greater than 0",
   "interval": "Interval",
   "existsTip": "Current {label} already exists",
   "deleteTip": "Are you sure you want to delete the current {label}?",

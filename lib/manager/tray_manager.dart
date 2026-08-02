@@ -77,12 +77,6 @@ class _TrayContainerState extends ConsumerState<TrayManager> with TrayListener {
   }
 
   @override
-  void onTrayMenuItemClick(MenuItem menuItem) {
-    render?.active();
-    super.onTrayMenuItemClick(menuItem);
-  }
-
-  @override
   void onTrayIconMouseDown() {
     if (system.isMacOS) {
       trayManager.popUpContextMenu();
