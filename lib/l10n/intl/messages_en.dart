@@ -465,6 +465,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hasCacheChange": MessageLookupByLibrary.simpleMessage(
       "Do you want to cache the changes?",
     ),
+    "header": MessageLookupByLibrary.simpleMessage("Header"),
     "hideFromList": MessageLookupByLibrary.simpleMessage("Hide from list"),
     "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage(
       "High Priority Auto Launch",
@@ -486,8 +487,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "hoursCount": m11,
     "icon": MessageLookupByLibrary.simpleMessage("Icon"),
     "iconRecords": MessageLookupByLibrary.simpleMessage("Icon records"),
-    "iconSource": MessageLookupByLibrary.simpleMessage("Icon Source"),
-    "iconStyle": MessageLookupByLibrary.simpleMessage("Icon Style"),
+    "iconSource": MessageLookupByLibrary.simpleMessage("Icon source"),
+    "iconStyle": MessageLookupByLibrary.simpleMessage("Icon style"),
     "iconUrl": MessageLookupByLibrary.simpleMessage("Icon URL"),
     "ignoreBatteryOptimization": MessageLookupByLibrary.simpleMessage(
       "Ignore battery optimization",
@@ -668,8 +669,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "onDemandDesc": MessageLookupByLibrary.simpleMessage(
       "Configure the program running state for specific scenarios",
     ),
-    "onlyConfig": MessageLookupByLibrary.simpleMessage("Config Only"),
-    "onlyEmoji": MessageLookupByLibrary.simpleMessage("Emoji Only"),
+    "onlyConfig": MessageLookupByLibrary.simpleMessage("Config only"),
+    "onlyEmoji": MessageLookupByLibrary.simpleMessage("Emoji only"),
     "onlyIcon": MessageLookupByLibrary.simpleMessage("Icon"),
     "onlyStatisticsProxy": MessageLookupByLibrary.simpleMessage(
       "Only Statistics Proxy",
@@ -847,7 +848,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Restore data via WebDAV",
     ),
     "restoreHiddenGroups": MessageLookupByLibrary.simpleMessage(
-      "Restore Hidden",
+      "Restore Group Hiding",
     ),
     "restoreOnlyConfig": MessageLookupByLibrary.simpleMessage(
       "Restore configuration files only",
@@ -1005,7 +1006,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectedCountTitle": m23,
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),
     "show": MessageLookupByLibrary.simpleMessage("Show"),
-    "showHiddenGroups": MessageLookupByLibrary.simpleMessage("Show Hidden"),
+    "showHiddenGroups": MessageLookupByLibrary.simpleMessage(
+      "Show Hidden Groups",
+    ),
     "showUnavailable": MessageLookupByLibrary.simpleMessage("Show Timeout"),
     "shrink": MessageLookupByLibrary.simpleMessage("Shrink"),
     "silentLaunch": MessageLookupByLibrary.simpleMessage("Silent Launch"),
@@ -1038,6 +1041,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "stop": MessageLookupByLibrary.simpleMessage("Stop"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("Stopping VPN..."),
     "style": MessageLookupByLibrary.simpleMessage("Style"),
+    "styleSettings": MessageLookupByLibrary.simpleMessage("Style Settings"),
     "subRule": MessageLookupByLibrary.simpleMessage("Sub Rule"),
     "subRuleEmpty": MessageLookupByLibrary.simpleMessage("Sub rule is empty"),
     "subRuleNotEmpty": MessageLookupByLibrary.simpleMessage(

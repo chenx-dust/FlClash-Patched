@@ -283,7 +283,9 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
     ref.listenManual(currentPageLabelProvider, (prev, next) {
       if (prev != next) {
         _closePopupMenus(prev);
-        _toPage(next);
+        if (!_isUpdatingPageLabelFromView) {
+          _toPage(next);
+        }
       }
     });
   }
@@ -315,14 +317,37 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
       return;
     }
     final isAnimateToPage = ref.read(appSettingProvider).isAnimateToPage;
-    if (isAnimateToPage && !ignoreAnimateTo) {
-      await _pageController.animateToPage(
-        index,
-        duration: midDuration,
-        curve: Curves.easeOutCubic,
-      );
-    } else {
-      _pageController.jumpToPage(index);
+    _programmaticPageChangeCount++;
+    try {
+      if (isAnimateToPage && !ignoreAnimateTo) {
+        await _pageController.animateToPage(
+          index,
+          duration: midDuration,
+          curve: Curves.easeOutCubic,
+        );
+      } else {
+        _pageController.jumpToPage(index);
+      }
+    } finally {
+      _programmaticPageChangeCount--;
+    }
+  }
+
+  void _handlePageChanged(int index) {
+    if (_programmaticPageChangeCount > 0 ||
+        index < 0 ||
+        index >= widget.navigationItems.length) {
+      return;
+    }
+    final pageLabel = widget.navigationItems[index].label;
+    if (pageLabel == ref.read(currentPageLabelProvider)) {
+      return;
+    }
+    _isUpdatingPageLabelFromView = true;
+    try {
+      ref.read(currentPageLabelProvider.notifier).toPage(pageLabel);
+    } finally {
+      _isUpdatingPageLabelFromView = false;
     }
   }
 
@@ -362,6 +387,7 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
       (item) => item.label == pageLabel,
     );
     return PageView.builder(
+      scrollDirection: isMobile ? Axis.horizontal : Axis.vertical,
       controller: _pageController,
       physics: isMobile && isSwipeToPage
           ? null

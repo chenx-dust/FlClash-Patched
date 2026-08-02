@@ -10,6 +10,11 @@ List<CoreEvent> coreEventsFromData(Object? data) {
   final events = <CoreEvent>[];
   for (final item in items.whereType<Map>()) {
     try {
+      final type = item['type'];
+      if (type is! String ||
+          !CoreEventType.values.any((eventType) => eventType.name == type)) {
+        throw FormatException('Unknown Core event type: $type');
+      }
       events.add(CoreEvent.fromJson(Map<String, Object?>.from(item)));
     } catch (error) {
       commonPrint.log(
