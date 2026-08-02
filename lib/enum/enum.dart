@@ -247,7 +247,6 @@ enum FunctionTag {
   updateDelay,
   vpnTip,
   autoLaunch,
-  renderPause,
   updatePageIndex,
   pageChange,
   proxiesTabChange,
@@ -258,6 +257,8 @@ enum FunctionTag {
   saveSharedFile,
   removeProxy,
   suspend,
+  tickerPause,
+  tickerResume,
 }
 
 enum DashboardWidget {

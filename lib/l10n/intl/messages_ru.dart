@@ -828,6 +828,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Введите другой порт",
     ),
     "portTip": m21,
+    "positiveIntegerTip": MessageLookupByLibrary.simpleMessage(
+      "Введите целое число больше 0",
+    ),
     "predictiveBack": MessageLookupByLibrary.simpleMessage(
       "Предиктивный возврат",
     ),

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:math';
 
 import 'package:fl_clash/common/common.dart';
@@ -22,9 +21,7 @@ class StatusManager extends StatefulWidget {
 
 class StatusManagerState extends State<StatusManager> {
   final _messagesNotifier = ValueNotifier<List<CommonMessage>>([]);
-  final _bufferMessages = Queue<CommonMessage>();
   final _activeTimers = <String, Timer>{};
-  bool _isDisplayingMessage = false;
 
   @override
   void initState() {
@@ -38,7 +35,6 @@ class StatusManagerState extends State<StatusManager> {
       timer.cancel();
     }
     _activeTimers.clear();
-    _bufferMessages.clear();
     super.dispose();
   }
 
@@ -53,25 +49,16 @@ class StatusManagerState extends State<StatusManager> {
       actionState: actionState,
       allowCopy: allowCopy,
     );
-    _bufferMessages.add(commonMessage);
     commonPrint.log('message: $text');
-    _processQueue();
+    _showMessage(commonMessage);
   }
 
-  void _cancelMessage(String id) {
-    _bufferMessages.removeWhere((msg) => msg.id == id);
-    if (_activeTimers.containsKey(id)) {
-      _removeMessage(id);
+  void _showMessage(CommonMessage message) {
+    for (final timer in _activeTimers.values) {
+      timer.cancel();
     }
-  }
-
-  void _processQueue() {
-    if (_isDisplayingMessage || _bufferMessages.isEmpty) {
-      return;
-    }
-    _isDisplayingMessage = true;
-    final message = _bufferMessages.removeFirst();
-    _messagesNotifier.value = List.from(_messagesNotifier.value)..add(message);
+    _activeTimers.clear();
+    _messagesNotifier.value = [message];
     final timer = Timer(message.duration, () {
       _removeMessage(message.id);
     });
@@ -83,8 +70,6 @@ class StatusManagerState extends State<StatusManager> {
     final currentMessages = List<CommonMessage>.from(_messagesNotifier.value);
     currentMessages.removeWhere((msg) => msg.id == id);
     _messagesNotifier.value = currentMessages;
-    _isDisplayingMessage = false;
-    _processQueue();
   }
 
   @override
@@ -129,9 +114,9 @@ class StatusManagerState extends State<StatusManager> {
                                   );
                                   final showCloseButton = cardWidth >= 480;
                                   return Dismissible(
-                                    key: ValueKey(messages.last.id),
+                                    key: ValueKey(message.id),
                                     onDismissed: (_) {
-                                      _cancelMessage(messages.last.id);
+                                      _removeMessage(message.id);
                                     },
                                     child: Card(
                                       clipBehavior: Clip.antiAlias,

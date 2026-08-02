@@ -4,6 +4,7 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/manager/window_manager.dart';
+import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/animated_visibility.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:window_manager/window_manager.dart';
 
 class AppStateManager extends ConsumerStatefulWidget {
   final Widget child;
@@ -23,10 +25,35 @@ class AppStateManager extends ConsumerStatefulWidget {
 
 class _AppStateManagerState extends ConsumerState<AppStateManager>
     with WidgetsBindingObserver {
+  void _syncForegroundTickerSettings(AppSettingProps appSetting) {
+    foregroundTicker.updateSettings(
+      interval: Duration(seconds: appSetting.foregroundTickerInterval),
+      slowInterval: Duration(seconds: appSetting.foregroundTickerIdleInterval),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _syncForegroundTickerSettings(ref.read(appSettingProvider));
+    ref.listenManual(
+      appSettingProvider.select(
+        (state) => (
+          state.foregroundTickerInterval,
+          state.foregroundTickerIdleWhenUnfocused,
+          state.foregroundTickerIdleInterval,
+        ),
+      ),
+      (prev, next) {
+        final appSetting = ref.read(appSettingProvider);
+        _syncForegroundTickerSettings(appSetting);
+        if (!appSetting.foregroundTickerIdleWhenUnfocused &&
+            !globalState.isBackground.value) {
+          foregroundTicker.resume();
+        }
+      },
+    );
     ref.listenManual(checkIpProvider, (prev, next) {
       if (prev != next && next.a && next.c) {
         ref.read(networkDetectionProvider.notifier).startCheck();
@@ -81,14 +108,37 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    commonPrint.log('$state');
-    if (state == AppLifecycleState.resumed) {
-      permissions.check();
-      render?.resume();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final ref = globalState.container;
-        ref.read(setupActionProvider.notifier).tryCheckIp();
-      });
+    commonPrint.log('$state', logLevel: LogLevel.debug);
+    switch (state) {
+      case AppLifecycleState.inactive:
+        if (system.isDesktop) {
+          final isVisible = await windowManager.isVisible();
+          final isMinimized = await windowManager.isMinimized();
+          commonPrint.log('isVisible: $isVisible, isMinimized: $isMinimized', logLevel: LogLevel.debug);
+          if (isVisible || !isMinimized) {
+            if (ref.read(appSettingProvider).foregroundTickerIdleWhenUnfocused) {
+              foregroundTicker.slow();
+            } else {
+              foregroundTicker.resume();
+            }
+            break;
+          }
+        }
+      case AppLifecycleState.paused:
+      case AppLifecycleState.hidden:
+        await preferences.saveConfig(ref.read(configProvider));
+        globalState.handleBackground();
+        break;
+      case AppLifecycleState.resumed:
+        permissions.check();
+        globalState.handleForeground();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final ref = globalState.container;
+          ref.read(setupActionProvider.notifier).tryCheckIp();
+        });
+        break;
+      default:
+        break;
     }
   }
 
@@ -99,12 +149,7 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
 
   @override
   Widget build(BuildContext context) {
-    return Listener(
-      onPointerHover: (_) {
-        render?.resume();
-      },
-      child: widget.child,
-    );
+    return widget.child;
   }
 }
 
