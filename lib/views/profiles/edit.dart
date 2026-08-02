@@ -163,7 +163,7 @@ class EditProfileViewState extends State<EditProfileView> {
           message: TextSpan(text: context.appLocalizations.hasCacheChange),
         );
         if (res == true && context.mounted) {
-          _handleSaveEdit(context, content);
+          await _handleSaveEdit(context, content);
         } else {
           return true;
         }
@@ -174,8 +174,10 @@ class EditProfileViewState extends State<EditProfileView> {
     if (data == null) {
       return;
     }
-    _rawText = data;
-    _fileData = Uint8List.fromList(utf8.encode(data));
+    setState(() {
+      _rawText = data;
+      _fileData = Uint8List.fromList(utf8.encode(data));
+    });
     _fileInfoNotifier.value = _fileInfoNotifier.value?.copyWith(
       size: _fileData?.length ?? 0,
       lastModified: DateTime.now(),
@@ -380,11 +382,12 @@ class EditProfileViewState extends State<EditProfileView> {
       policy: PageTraversalPolicy(),
       child: PageFocusScope(
         child: CommonPopScope(
-          onPop: (context) {
+          canPop: _fileData == null,
+          onPop: (context) async {
             if (_fileData == null) {
               return true;
             }
-            _handleBack();
+            await _handleBack();
             return false;
           },
           child: FloatLayout(

@@ -656,8 +656,8 @@ class CloseWindowIntent extends Intent {
   const CloseWindowIntent();
 }
 
-class EscapeBackIntent extends Intent {
-  const EscapeBackIntent();
+class BackIntent extends Intent {
+  const BackIntent();
 }
 
 @freezed
