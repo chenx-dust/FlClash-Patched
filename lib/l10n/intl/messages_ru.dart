@@ -834,6 +834,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "proxyType": MessageLookupByLibrary.simpleMessage("Тип прокси"),
     "pruneCache": MessageLookupByLibrary.simpleMessage("Очистить кэш"),
+    "predictiveBack": MessageLookupByLibrary.simpleMessage(
+      "Предиктивный возврат",
+    ),
     "pureBlackMode": MessageLookupByLibrary.simpleMessage("Чисто черный режим"),
     "qrcode": MessageLookupByLibrary.simpleMessage("QR-код"),
     "qrcodeDesc": MessageLookupByLibrary.simpleMessage(
@@ -1089,6 +1092,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "submit": MessageLookupByLibrary.simpleMessage("Отправить"),
     "suspended": MessageLookupByLibrary.simpleMessage("Приостановлено..."),
+    "swipeToSwitchPage": MessageLookupByLibrary.simpleMessage(
+      "Переключение страниц свайпом",
+    ),
     "sync": MessageLookupByLibrary.simpleMessage("Синхронизация"),
     "system": MessageLookupByLibrary.simpleMessage("Система"),
     "systemApp": MessageLookupByLibrary.simpleMessage("Системное приложение"),

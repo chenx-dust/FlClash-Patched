@@ -634,6 +634,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "proxyType": MessageLookupByLibrary.simpleMessage("プロキシタイプ"),
     "pruneCache": MessageLookupByLibrary.simpleMessage("キャッシュの削除"),
+    "predictiveBack": MessageLookupByLibrary.simpleMessage("予測型戻る"),
     "pureBlackMode": MessageLookupByLibrary.simpleMessage("純黒モード"),
     "qrcode": MessageLookupByLibrary.simpleMessage("QR コード"),
     "qrcodeDesc": MessageLookupByLibrary.simpleMessage(
@@ -843,6 +844,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subRuleNotEmpty": MessageLookupByLibrary.simpleMessage("サブルールは空にできません"),
     "submit": MessageLookupByLibrary.simpleMessage("送信"),
     "suspended": MessageLookupByLibrary.simpleMessage("一時停止中..."),
+    "swipeToSwitchPage": MessageLookupByLibrary.simpleMessage("スワイプでページ切り替え"),
     "sync": MessageLookupByLibrary.simpleMessage("同期"),
     "system": MessageLookupByLibrary.simpleMessage("システム"),
     "systemApp": MessageLookupByLibrary.simpleMessage("システムアプリ"),
