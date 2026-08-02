@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"runtime/debug"
 	"strconv"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -39,6 +40,33 @@ var (
 	externalProviders = map[string]cp.Provider{}
 	logSubscriber     observable.Subscription[log.Event]
 )
+
+var (
+	logNotifyMutex   sync.Mutex
+	logNotifyEnabled bool
+	logNotifyCache   [maxCachedLogNotify]StampedLogEvent
+	logNotifyStart   int
+	logNotifyLen     int
+)
+
+var (
+	requestNotifyMutex   sync.Mutex
+	requestNotifyEnabled bool
+	requestNotifyCache   [maxCachedRequestNotify]*statistic.TrackerInfo
+	requestNotifyStart   int
+	requestNotifyLen     int
+)
+
+const (
+	maxCachedLogNotify     = 100
+	maxCachedRequestNotify = 100
+)
+
+type StampedLogEvent struct {
+	LogLevel log.LogLevel
+	Payload  string
+	Time     int64
+}
 
 func handleInitClash(params *InitParams) bool {
 	runLock.Lock()
@@ -382,35 +410,61 @@ func handleSuspend(suspended bool) bool {
 	return true
 }
 
-func handleStartLog() {
-	runLock.Lock()
-	if logSubscriber != nil {
-		log.UnSubscribe(logSubscriber)
-	}
-	subscriber := log.Subscribe()
-	logSubscriber = subscriber
-	runLock.Unlock()
-	go func() {
-		for logData := range subscriber {
-			if logData.LogLevel < log.Level() {
-				continue
-			}
-			message := &Message{
-				Type: LogMessage,
-				Data: logData,
-			}
-			sendMessage(*message)
+func handleStartLogNotify() []StampedLogEvent {
+	logNotifyMutex.Lock()
+	defer logNotifyMutex.Unlock()
+	logs := make([]StampedLogEvent, logNotifyLen)
+	if logNotifyLen != 0 {
+		for i := 0; i < logNotifyLen; i++ {
+			index := (logNotifyStart + i) % maxCachedLogNotify
+			logs[i] = logNotifyCache[index]
 		}
-	}()
+	}
+	logNotifyStart = 0
+	logNotifyLen = 0
+	logNotifyEnabled = true
+
+	return logs
 }
 
-func handleStopLog() {
-	runLock.Lock()
-	defer runLock.Unlock()
-	if logSubscriber != nil {
-		log.UnSubscribe(logSubscriber)
-		logSubscriber = nil
+func handleStopLogNotify() {
+	logNotifyMutex.Lock()
+	defer logNotifyMutex.Unlock()
+	logNotifyEnabled = false
+}
+
+func cacheLog(logData StampedLogEvent) {
+	if logNotifyLen < maxCachedLogNotify {
+		index := (logNotifyStart + logNotifyLen) % maxCachedLogNotify
+		logNotifyCache[index] = logData
+		logNotifyLen++
+		return
 	}
+	logNotifyCache[logNotifyStart] = logData
+	logNotifyStart = (logNotifyStart + 1) % maxCachedLogNotify
+}
+
+func handleStartRequestNotify() []*statistic.TrackerInfo {
+	requestNotifyMutex.Lock()
+	defer requestNotifyMutex.Unlock()
+
+	requests := make([]*statistic.TrackerInfo, requestNotifyLen)
+	for i := 0; i < requestNotifyLen; i++ {
+		index := (requestNotifyStart + i) % maxCachedRequestNotify
+		requests[i] = requestNotifyCache[index]
+		requestNotifyCache[index] = nil
+	}
+	requestNotifyStart = 0
+	requestNotifyLen = 0
+	requestNotifyEnabled = true
+
+	return requests
+}
+
+func handleStopRequestNotify() {
+	requestNotifyMutex.Lock()
+	defer requestNotifyMutex.Unlock()
+	requestNotifyEnabled = false
 }
 
 func handleGetCountryCode(ip string, fn func(value string)) {
@@ -634,6 +688,21 @@ func init() {
 		})
 	}
 	statistic.DefaultRequestNotify = func(c statistic.Tracker) {
+		requestNotifyMutex.Lock()
+		if !requestNotifyEnabled {
+			defer requestNotifyMutex.Unlock()
+			request := c.Info()
+			if requestNotifyLen < maxCachedRequestNotify {
+				index := (requestNotifyStart + requestNotifyLen) % maxCachedRequestNotify
+				requestNotifyCache[index] = request
+				requestNotifyLen++
+				return
+			}
+			requestNotifyCache[requestNotifyStart] = request
+			requestNotifyStart = (requestNotifyStart + 1) % maxCachedRequestNotify
+			return
+		}
+		requestNotifyMutex.Unlock()
 		sendMessage(Message{
 			Type: RequestMessage,
 			Data: c,
