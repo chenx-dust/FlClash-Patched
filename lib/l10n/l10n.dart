@@ -254,10 +254,10 @@ class AppLocalizations {
     );
   }
 
-  /// `No profile, Please add a profile`
+  /// `No profile, please add a profile`
   String get nullProfileDesc {
     return Intl.message(
-      'No profile, Please add a profile',
+      'No profile, please add a profile',
       name: 'nullProfileDesc',
       desc: '',
       args: [],
@@ -499,6 +499,26 @@ class AppLocalizations {
     return Intl.message(
       'Auto check for updates when the app starts',
       name: 'autoCheckUpdateDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ignore Certificate Validation`
+  String get ignoreCertificateErrors {
+    return Intl.message(
+      'Ignore Certificate Validation',
+      name: 'ignoreCertificateErrors',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow HTTPS connections with invalid certificates. This reduces security`
+  String get ignoreCertificateErrorsDesc {
+    return Intl.message(
+      'Allow HTTPS connections with invalid certificates. This reduces security',
+      name: 'ignoreCertificateErrorsDesc',
       desc: '',
       args: [],
     );
@@ -924,6 +944,11 @@ class AppLocalizations {
     return Intl.message('Log level', name: 'logLevel', desc: '', args: []);
   }
 
+  /// `User-Agent`
+  String get userAgent {
+    return Intl.message('User-Agent', name: 'userAgent', desc: '', args: []);
+  }
+
   /// `Show`
   String get show {
     return Intl.message('Show', name: 'show', desc: '', args: []);
@@ -974,10 +999,10 @@ class AppLocalizations {
     );
   }
 
-  /// `A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.`
+  /// `A multi-platform proxy client based on mihomo, simple and easy to use, open-source and ad-free.`
   String get desc {
     return Intl.message(
-      'A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.',
+      'A multi-platform proxy client based on mihomo, simple and easy to use, open-source and ad-free.',
       name: 'desc',
       desc: '',
       args: [],
@@ -1194,10 +1219,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Allow applications to bypass VPN`
+  /// `Allow Applications to Bypass VPN`
   String get allowBypass {
     return Intl.message(
-      'Allow applications to bypass VPN',
+      'Allow Applications to Bypass VPN',
       name: 'allowBypass',
       desc: '',
       args: [],
@@ -1224,14 +1249,59 @@ class AppLocalizations {
     );
   }
 
-  /// `Once enabled, the Clash kernel can be controlled on port 9090`
+  /// `Configure external access to the Clash core`
   String get externalControllerDesc {
     return Intl.message(
-      'Once enabled, the Clash kernel can be controlled on port 9090',
+      'Configure external access to the Clash core',
       name: 'externalControllerDesc',
       desc: '',
       args: [],
     );
+  }
+
+  /// `Enable External Controller`
+  String get enableExternalController {
+    return Intl.message(
+      'Enable External Controller',
+      name: 'enableExternalController',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow LAN Access`
+  String get allowLanAccess {
+    return Intl.message(
+      'Allow LAN Access',
+      name: 'allowLanAccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow access to the external controller from the LAN`
+  String get allowLanAccessDesc {
+    return Intl.message(
+      'Allow access to the external controller from the LAN',
+      name: 'allowLanAccessDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Listening Port`
+  String get listeningPort {
+    return Intl.message(
+      'Listening Port',
+      name: 'listeningPort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Random`
+  String get random {
+    return Intl.message('Random', name: 'random', desc: '', args: []);
   }
 
   /// `When turned on it will be able to receive IPv6 traffic`
@@ -1262,11 +1332,6 @@ class AppLocalizations {
       desc: '',
       args: [],
     );
-  }
-
-  /// `User-Agent`
-  String get userAgent {
-    return Intl.message('User-Agent', name: 'userAgent', desc: '', args: []);
   }
 
   /// `Unified Delay`
@@ -1564,30 +1629,40 @@ class AppLocalizations {
     );
   }
 
-  /// `Pure black mode`
+  /// `Pure Black Mode`
   String get pureBlackMode {
     return Intl.message(
-      'Pure black mode',
+      'Pure Black Mode',
       name: 'pureBlackMode',
       desc: '',
       args: [],
     );
   }
 
-  /// `Predictive back`
+  /// `Monochrome Tray Icon`
+  String get monochromeTrayIcon {
+    return Intl.message(
+      'Monochrome Tray Icon',
+      name: 'monochromeTrayIcon',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Predictive Back`
   String get predictiveBack {
     return Intl.message(
-      'Predictive back',
+      'Predictive Back',
       name: 'predictiveBack',
       desc: '',
       args: [],
     );
   }
 
-  /// `Tcp keep alive interval`
+  /// `TCP Keep Alive Interval`
   String get keepAliveIntervalDesc {
     return Intl.message(
-      'Tcp keep alive interval',
+      'TCP Keep Alive Interval',
       name: 'keepAliveIntervalDesc',
       desc: '',
       args: [],
@@ -1859,11 +1934,26 @@ class AppLocalizations {
     );
   }
 
-  /// `Prioritize the use of DOH's http/3`
+  /// `Prefer HTTP/3`
+  String get preferH3 {
+    return Intl.message('Prefer HTTP/3', name: 'preferH3', desc: '', args: []);
+  }
+
+  /// `Prefer HTTP/3 for DoH`
   String get preferH3Desc {
     return Intl.message(
-      'Prioritize the use of DOH\'s http/3',
+      'Prefer HTTP/3 for DoH',
       name: 'preferH3Desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `When disabled, AAAA queries return an empty result`
+  String get dnsIPv6Desc {
+    return Intl.message(
+      'When disabled, AAAA queries return an empty result',
+      name: 'dnsIPv6Desc',
       desc: '',
       args: [],
     );
@@ -1879,36 +1969,46 @@ class AppLocalizations {
     );
   }
 
-  /// `DNS connection following rules, need to configure proxy-server-nameserver`
+  /// `DNS connections follow rules; proxy-server-nameserver must be configured`
   String get respectRulesDesc {
     return Intl.message(
-      'DNS connection following rules, need to configure proxy-server-nameserver',
+      'DNS connections follow rules; proxy-server-nameserver must be configured',
       name: 'respectRulesDesc',
       desc: '',
       args: [],
     );
   }
 
-  /// `DNS mode`
+  /// `DNS Mode`
   String get dnsMode {
-    return Intl.message('DNS mode', name: 'dnsMode', desc: '', args: []);
+    return Intl.message('DNS Mode', name: 'dnsMode', desc: '', args: []);
   }
 
-  /// `Fakeip range`
+  /// `FakeIP range`
   String get fakeipRange {
     return Intl.message(
-      'Fakeip range',
+      'FakeIP range',
       name: 'fakeipRange',
       desc: '',
       args: [],
     );
   }
 
-  /// `Fakeip filter`
+  /// `FakeIP filter`
   String get fakeipFilter {
     return Intl.message(
-      'Fakeip filter',
+      'FakeIP filter',
       name: 'fakeipFilter',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Domains matched in Fake IP mode receive real IP addresses instead of Fake IP addresses`
+  String get fakeipFilterDesc {
+    return Intl.message(
+      'Domains matched in Fake IP mode receive real IP addresses instead of Fake IP addresses',
+      name: 'fakeipFilterDesc',
       desc: '',
       args: [],
     );
@@ -1924,10 +2024,10 @@ class AppLocalizations {
     );
   }
 
-  /// `For resolving DNS server`
+  /// `For resolving DNS servers`
   String get defaultNameserverDesc {
     return Intl.message(
-      'For resolving DNS server',
+      'For resolving DNS servers',
       name: 'defaultNameserverDesc',
       desc: '',
       args: [],
@@ -1939,10 +2039,10 @@ class AppLocalizations {
     return Intl.message('Nameserver', name: 'nameserver', desc: '', args: []);
   }
 
-  /// `For resolving domain`
+  /// `For resolving domains`
   String get nameserverDesc {
     return Intl.message(
-      'For resolving domain',
+      'For resolving domains',
       name: 'nameserverDesc',
       desc: '',
       args: [],
@@ -1954,11 +2054,31 @@ class AppLocalizations {
     return Intl.message('Use hosts', name: 'useHosts', desc: '', args: []);
   }
 
+  /// `Checks the hosts entries in the configuration before querying upstream DNS servers`
+  String get useHostsDesc {
+    return Intl.message(
+      'Checks the hosts entries in the configuration before querying upstream DNS servers',
+      name: 'useHostsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Use system hosts`
   String get useSystemHosts {
     return Intl.message(
       'Use system hosts',
       name: 'useSystemHosts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Checks the operating system's hosts file when resolving domain names`
+  String get useSystemHostsDesc {
+    return Intl.message(
+      'Checks the operating system\'s hosts file when resolving domain names',
+      name: 'useSystemHostsDesc',
       desc: '',
       args: [],
     );
@@ -1974,10 +2094,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Specify the corresponding nameserver policy`
+  /// `Assigns specific DNS servers to matching domains, geosite categories, or rule sets`
   String get nameserverPolicyDesc {
     return Intl.message(
-      'Specify the corresponding nameserver policy',
+      'Assigns specific DNS servers to matching domains, geosite categories, or rule sets',
       name: 'nameserverPolicyDesc',
       desc: '',
       args: [],
@@ -1994,10 +2114,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Domain for resolving proxy nodes`
+  /// `For resolving proxy node domains`
   String get proxyNameserverDesc {
     return Intl.message(
-      'Domain for resolving proxy nodes',
+      'For resolving proxy node domains',
       name: 'proxyNameserverDesc',
       desc: '',
       args: [],
@@ -2029,10 +2149,10 @@ class AppLocalizations {
     return Intl.message('Fallback', name: 'fallback', desc: '', args: []);
   }
 
-  /// `Generally use offshore DNS`
+  /// `Generally uses overseas DNS`
   String get fallbackDesc {
     return Intl.message(
-      'Generally use offshore DNS',
+      'Generally uses overseas DNS',
       name: 'fallbackDesc',
       desc: '',
       args: [],
@@ -2049,9 +2169,29 @@ class AppLocalizations {
     );
   }
 
+  /// `Checks nameserver results against GeoIP Code; results outside that region use fallback`
+  String get fallbackGeoipDesc {
+    return Intl.message(
+      'Checks nameserver results against GeoIP Code; results outside that region use fallback',
+      name: 'fallbackGeoipDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `GeoIP code`
   String get geoipCode {
     return Intl.message('GeoIP code', name: 'geoipCode', desc: '', args: []);
+  }
+
+  /// `Domains matching these GeoSite categories use fallback directly`
+  String get fallbackGeositeDesc {
+    return Intl.message(
+      'Domains matching these GeoSite categories use fallback directly',
+      name: 'fallbackGeositeDesc',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `IP CIDR`
@@ -2059,9 +2199,29 @@ class AppLocalizations {
     return Intl.message('IP CIDR', name: 'ipcidr', desc: '', args: []);
   }
 
+  /// `Nameserver results matching these CIDR prefixes are replaced with fallback results`
+  String get fallbackIpcidrDesc {
+    return Intl.message(
+      'Nameserver results matching these CIDR prefixes are replaced with fallback results',
+      name: 'fallbackIpcidrDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Domain`
   String get domain {
     return Intl.message('Domain', name: 'domain', desc: '', args: []);
+  }
+
+  /// `Matching domains use fallback directly without querying nameserver`
+  String get fallbackDomainDesc {
+    return Intl.message(
+      'Matching domains use fallback directly without querying nameserver',
+      name: 'fallbackDomainDesc',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Reset`
@@ -2219,24 +2379,39 @@ class AppLocalizations {
     return Intl.message('Icon', name: 'onlyIcon', desc: '', args: []);
   }
 
-  /// `Icon source`
+  /// `Icon Source`
   String get iconSource {
-    return Intl.message('Icon source', name: 'iconSource', desc: '', args: []);
+    return Intl.message('Icon Source', name: 'iconSource', desc: '', args: []);
   }
 
-  /// `Config only`
+  /// `Config Only`
   String get onlyConfig {
-    return Intl.message('Config only', name: 'onlyConfig', desc: '', args: []);
+    return Intl.message('Config Only', name: 'onlyConfig', desc: '', args: []);
   }
 
-  /// `Emoji only`
+  /// `Emoji Only`
   String get onlyEmoji {
-    return Intl.message('Emoji only', name: 'onlyEmoji', desc: '', args: []);
+    return Intl.message('Emoji Only', name: 'onlyEmoji', desc: '', args: []);
   }
 
-  /// `Stack mode`
+  /// `Stack Mode`
   String get stackMode {
-    return Intl.message('Stack mode', name: 'stackMode', desc: '', args: []);
+    return Intl.message('Stack Mode', name: 'stackMode', desc: '', args: []);
+  }
+
+  /// `MTU`
+  String get mtu {
+    return Intl.message('MTU', name: 'mtu', desc: '', args: []);
+  }
+
+  /// `MTU must be an integer between 1 and 65535`
+  String get mtuRangeTip {
+    return Intl.message(
+      'MTU must be an integer between 1 and 65535',
+      name: 'mtuRangeTip',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Network`
@@ -3559,9 +3734,9 @@ class AppLocalizations {
     return Intl.message('Delay Test', name: 'delayTest', desc: '', args: []);
   }
 
-  /// `Close all`
+  /// `Close All`
   String get closeAll {
-    return Intl.message('Close all', name: 'closeAll', desc: '', args: []);
+    return Intl.message('Close All', name: 'closeAll', desc: '', args: []);
   }
 
   /// `Proxy group is empty`
@@ -4999,20 +5174,20 @@ class AppLocalizations {
     );
   }
 
-  /// `Show Hidden Groups`
+  /// `Show Hidden`
   String get showHiddenGroups {
     return Intl.message(
-      'Show Hidden Groups',
+      'Show Hidden',
       name: 'showHiddenGroups',
       desc: '',
       args: [],
     );
   }
 
-  /// `Restore Group Hiding`
+  /// `Restore Hidden`
   String get restoreHiddenGroups {
     return Intl.message(
-      'Restore Group Hiding',
+      'Restore Hidden',
       name: 'restoreHiddenGroups',
       desc: '',
       args: [],

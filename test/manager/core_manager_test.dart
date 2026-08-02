@@ -16,7 +16,6 @@ void main() {
     tester,
   ) async {
     final coreInterface = _MockCoreHandlerInterface();
-    when(() => coreInterface.stopLog()).thenAnswer((_) {});
     final controller = CoreController.test(coreInterface);
     final container = ProviderContainer();
     addTearDown(container.dispose);

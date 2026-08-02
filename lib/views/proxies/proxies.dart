@@ -115,6 +115,9 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
           (group) => !state.currentUnfoldSet.contains(group.name),
         );
         return IconButton(
+          tooltip: allCollapsed
+              ? context.appLocalizations.expand
+              : context.appLocalizations.collapse,
           onPressed: () {
             final unfoldSet = allCollapsed
                 ? state.groups.map((group) => group.name).toSet()
@@ -211,8 +214,11 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
       floatingActionButton: _canDelayTest(proxiesType) ? _buildFAB() : null,
       actions: _buildActions(context),
       title: context.appLocalizations.proxies,
-      searchActions: [_buildRegexSearchButton()],
-      searchState: AppBarSearchState(onSearch: _onSearch),
+      searchState: AppBarSearchState(
+        onSearch: _onSearch,
+        onRegexChange: _onRegexSearchChange,
+        useRegex: useRegex,
+      ),
       body: switch (proxiesType) {
         ProxiesType.tab => ProxiesTabView(key: _proxiesTabKey),
         ProxiesType.list => ProxiesListView(key: _proxiesListKey),
