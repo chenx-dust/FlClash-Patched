@@ -795,8 +795,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "proxyType": MessageLookupByLibrary.simpleMessage("Proxy type"),
     "pruneCache": MessageLookupByLibrary.simpleMessage("Prune cache"),
-    "pureBlackMode": MessageLookupByLibrary.simpleMessage("Pure Black Mode"),
-    "qrcode": MessageLookupByLibrary.simpleMessage("QR Code"),
+    "predictiveBack": MessageLookupByLibrary.simpleMessage("Predictive back"),
+    "pureBlackMode": MessageLookupByLibrary.simpleMessage("Pure black mode"),
+    "qrcode": MessageLookupByLibrary.simpleMessage("QR code"),
     "qrcodeDesc": MessageLookupByLibrary.simpleMessage(
       "Scan QR code to obtain profile",
     ),
@@ -1043,6 +1044,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "submit": MessageLookupByLibrary.simpleMessage("Submit"),
     "suspended": MessageLookupByLibrary.simpleMessage("Suspended..."),
+    "swipeToSwitchPage": MessageLookupByLibrary.simpleMessage(
+      "Swipe to Switch Pages",
+    ),
     "sync": MessageLookupByLibrary.simpleMessage("Sync"),
     "system": MessageLookupByLibrary.simpleMessage("System"),
     "systemApp": MessageLookupByLibrary.simpleMessage("System app"),

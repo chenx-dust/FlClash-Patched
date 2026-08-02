@@ -944,7 +944,7 @@ class AppLocalizations {
     );
   }
 
-  /// `A multi-platform proxy client based on mihomo, simple and easy to use, open-source and ad-free.`
+  /// `A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.`
   String get desc {
     return Intl.message(
       'A multi-platform proxy client based on mihomo, simple and easy to use, open-source and ad-free.',
@@ -1544,27 +1544,17 @@ class AppLocalizations {
     );
   }
 
-  /// `Monochrome Tray Icon`
-  String get monochromeTrayIcon {
-    return Intl.message(
-      'Monochrome Tray Icon',
-      name: 'monochromeTrayIcon',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Predictive Back`
+  /// `Predictive back`
   String get predictiveBack {
     return Intl.message(
-      'Predictive Back',
+      'Predictive back',
       name: 'predictiveBack',
       desc: '',
       args: [],
     );
   }
 
-  /// `TCP Keep Alive Interval`
+  /// `Tcp keep alive interval`
   String get keepAliveIntervalDesc {
     return Intl.message(
       'TCP Keep Alive Interval',
