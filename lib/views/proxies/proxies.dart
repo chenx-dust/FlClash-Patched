@@ -29,6 +29,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
     return [
       if (_isTab)
         IconButton(
+          tooltip: appLocalizations.scrollToSelected,
           onPressed: () {
             _proxiesTabKey.currentState?.scrollToGroupSelected();
           },
@@ -81,14 +82,41 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
     ];
   }
 
-  Widget? _buildFAB() {
-    return _isTab
-        ? DelayTestButton(
-            onClick: () async {
-              await _proxiesTabKey.currentState?.delayTestCurrentGroup();
-            },
-          )
-        : null;
+  Widget _buildListUnfoldButton() {
+    return Consumer(
+      builder: (_, ref, _) {
+        final state = ref.watch(proxiesListStateProvider);
+        final allCollapsed = state.groups.every(
+          (group) => !state.currentUnfoldSet.contains(group.name),
+        );
+        return IconButton(
+          tooltip: allCollapsed
+              ? context.appLocalizations.expand
+              : context.appLocalizations.collapse,
+          onPressed: () {
+            final unfoldSet = allCollapsed
+                ? state.groups.map((group) => group.name).toSet()
+                : <String>{};
+            ref
+                .read(proxiesActionProvider.notifier)
+                .updateCurrentUnfoldSet(unfoldSet);
+          },
+          icon: Icon(allCollapsed ? Icons.unfold_more : Icons.unfold_less),
+        );
+      },
+    );
+  }
+
+  Widget _buildFAB() {
+    return DelayTestButton(
+      onClick: () async {
+        if (_isTab) {
+          await _proxiesTabKey.currentState?.delayTestCurrentGroup();
+        } else {
+          await _proxiesListKey.currentState?.delayTestUnfoldedGroups();
+        }
+      },
+    );
   }
 
   void _onSearch(String value) {
@@ -140,11 +168,8 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
       floatingActionButton: _buildFAB(),
       actions: _buildActions(context),
       title: context.appLocalizations.proxies,
-      searchState: AppBarSearchState(
-        onSearch: _onSearch,
-        onRegexChange: _onRegexSearchChange,
-        useRegex: useRegex,
-      ),
+      searchActions: [_buildRegexSearchButton()],
+      searchState: AppBarSearchState(onSearch: _onSearch),
       body: switch (proxiesType) {
         ProxiesType.tab => ProxiesTabView(key: _proxiesTabKey),
         ProxiesType.list => const ProxiesListView(),

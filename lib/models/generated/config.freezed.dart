@@ -1495,7 +1495,7 @@ as bool,
 /// @nodoc
 mixin _$ProxiesStyleProps {
 
- ProxiesType get type; ProxiesSortType get sortType; ProxiesLayout get layout; ProxiesIconStyle get iconStyle; ProxyCardType get cardType;
+@JsonKey(unknownEnumValue: ProxiesType.tab) ProxiesType get type;@JsonKey(unknownEnumValue: ProxiesSortType.none) ProxiesSortType get sortType;@JsonKey(unknownEnumValue: ProxiesLayout.standard) ProxiesLayout get layout;@JsonKey(unknownEnumValue: ProxiesListHeaderStyle.loose) ProxiesListHeaderStyle get listHeaderStyle;@JsonKey(unknownEnumValue: ProxiesIconStyle.standard) ProxiesIconStyle get iconStyle;@JsonKey(unknownEnumValue: ProxiesIconSource.standard) ProxiesIconSource get iconSource;@JsonKey(unknownEnumValue: ProxyCardType.standard) ProxyCardType get cardType;
 /// Create a copy of ProxiesStyleProps
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1528,7 +1528,7 @@ abstract mixin class $ProxiesStylePropsCopyWith<$Res>  {
   factory $ProxiesStylePropsCopyWith(ProxiesStyleProps value, $Res Function(ProxiesStyleProps) _then) = _$ProxiesStylePropsCopyWithImpl;
 @useResult
 $Res call({
- ProxiesType type, ProxiesSortType sortType, ProxiesLayout layout, ProxiesIconStyle iconStyle, ProxyCardType cardType
+@JsonKey(unknownEnumValue: ProxiesType.tab) ProxiesType type,@JsonKey(unknownEnumValue: ProxiesSortType.none) ProxiesSortType sortType,@JsonKey(unknownEnumValue: ProxiesLayout.standard) ProxiesLayout layout,@JsonKey(unknownEnumValue: ProxiesListHeaderStyle.loose) ProxiesListHeaderStyle listHeaderStyle,@JsonKey(unknownEnumValue: ProxiesIconStyle.standard) ProxiesIconStyle iconStyle,@JsonKey(unknownEnumValue: ProxiesIconSource.standard) ProxiesIconSource iconSource,@JsonKey(unknownEnumValue: ProxyCardType.standard) ProxyCardType cardType
 });
 
 
@@ -1637,7 +1637,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ProxiesType type,  ProxiesSortType sortType,  ProxiesLayout layout,  ProxiesIconStyle iconStyle,  ProxyCardType cardType)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: ProxiesType.tab)  ProxiesType type, @JsonKey(unknownEnumValue: ProxiesSortType.none)  ProxiesSortType sortType, @JsonKey(unknownEnumValue: ProxiesLayout.standard)  ProxiesLayout layout, @JsonKey(unknownEnumValue: ProxiesListHeaderStyle.loose)  ProxiesListHeaderStyle listHeaderStyle, @JsonKey(unknownEnumValue: ProxiesIconStyle.standard)  ProxiesIconStyle iconStyle, @JsonKey(unknownEnumValue: ProxiesIconSource.standard)  ProxiesIconSource iconSource, @JsonKey(unknownEnumValue: ProxyCardType.standard)  ProxyCardType cardType)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProxiesStyleProps() when $default != null:
 return $default(_that.type,_that.sortType,_that.layout,_that.iconStyle,_that.cardType);case _:
@@ -1658,7 +1658,7 @@ return $default(_that.type,_that.sortType,_that.layout,_that.iconStyle,_that.car
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ProxiesType type,  ProxiesSortType sortType,  ProxiesLayout layout,  ProxiesIconStyle iconStyle,  ProxyCardType cardType)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(unknownEnumValue: ProxiesType.tab)  ProxiesType type, @JsonKey(unknownEnumValue: ProxiesSortType.none)  ProxiesSortType sortType, @JsonKey(unknownEnumValue: ProxiesLayout.standard)  ProxiesLayout layout, @JsonKey(unknownEnumValue: ProxiesListHeaderStyle.loose)  ProxiesListHeaderStyle listHeaderStyle, @JsonKey(unknownEnumValue: ProxiesIconStyle.standard)  ProxiesIconStyle iconStyle, @JsonKey(unknownEnumValue: ProxiesIconSource.standard)  ProxiesIconSource iconSource, @JsonKey(unknownEnumValue: ProxyCardType.standard)  ProxyCardType cardType)  $default,) {final _that = this;
 switch (_that) {
 case _ProxiesStyleProps():
 return $default(_that.type,_that.sortType,_that.layout,_that.iconStyle,_that.cardType);case _:
@@ -1678,7 +1678,7 @@ return $default(_that.type,_that.sortType,_that.layout,_that.iconStyle,_that.car
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ProxiesType type,  ProxiesSortType sortType,  ProxiesLayout layout,  ProxiesIconStyle iconStyle,  ProxyCardType cardType)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(unknownEnumValue: ProxiesType.tab)  ProxiesType type, @JsonKey(unknownEnumValue: ProxiesSortType.none)  ProxiesSortType sortType, @JsonKey(unknownEnumValue: ProxiesLayout.standard)  ProxiesLayout layout, @JsonKey(unknownEnumValue: ProxiesListHeaderStyle.loose)  ProxiesListHeaderStyle listHeaderStyle, @JsonKey(unknownEnumValue: ProxiesIconStyle.standard)  ProxiesIconStyle iconStyle, @JsonKey(unknownEnumValue: ProxiesIconSource.standard)  ProxiesIconSource iconSource, @JsonKey(unknownEnumValue: ProxyCardType.standard)  ProxyCardType cardType)?  $default,) {final _that = this;
 switch (_that) {
 case _ProxiesStyleProps() when $default != null:
 return $default(_that.type,_that.sortType,_that.layout,_that.iconStyle,_that.cardType);case _:
@@ -1693,14 +1693,16 @@ return $default(_that.type,_that.sortType,_that.layout,_that.iconStyle,_that.car
 @JsonSerializable()
 
 class _ProxiesStyleProps implements ProxiesStyleProps {
-  const _ProxiesStyleProps({this.type = ProxiesType.tab, this.sortType = ProxiesSortType.none, this.layout = ProxiesLayout.standard, this.iconStyle = ProxiesIconStyle.standard, this.cardType = ProxyCardType.expand});
+  const _ProxiesStyleProps({@JsonKey(unknownEnumValue: ProxiesType.tab) this.type = ProxiesType.tab, @JsonKey(unknownEnumValue: ProxiesSortType.none) this.sortType = ProxiesSortType.none, @JsonKey(unknownEnumValue: ProxiesLayout.standard) this.layout = ProxiesLayout.standard, @JsonKey(unknownEnumValue: ProxiesListHeaderStyle.loose) this.listHeaderStyle = ProxiesListHeaderStyle.loose, @JsonKey(unknownEnumValue: ProxiesIconStyle.standard) this.iconStyle = ProxiesIconStyle.standard, @JsonKey(unknownEnumValue: ProxiesIconSource.standard) this.iconSource = ProxiesIconSource.standard, @JsonKey(unknownEnumValue: ProxyCardType.standard) this.cardType = ProxyCardType.standard});
   factory _ProxiesStyleProps.fromJson(Map<String, dynamic> json) => _$ProxiesStylePropsFromJson(json);
 
-@override@JsonKey() final  ProxiesType type;
-@override@JsonKey() final  ProxiesSortType sortType;
-@override@JsonKey() final  ProxiesLayout layout;
-@override@JsonKey() final  ProxiesIconStyle iconStyle;
-@override@JsonKey() final  ProxyCardType cardType;
+@override@JsonKey(unknownEnumValue: ProxiesType.tab) final  ProxiesType type;
+@override@JsonKey(unknownEnumValue: ProxiesSortType.none) final  ProxiesSortType sortType;
+@override@JsonKey(unknownEnumValue: ProxiesLayout.standard) final  ProxiesLayout layout;
+@override@JsonKey(unknownEnumValue: ProxiesListHeaderStyle.loose) final  ProxiesListHeaderStyle listHeaderStyle;
+@override@JsonKey(unknownEnumValue: ProxiesIconStyle.standard) final  ProxiesIconStyle iconStyle;
+@override@JsonKey(unknownEnumValue: ProxiesIconSource.standard) final  ProxiesIconSource iconSource;
+@override@JsonKey(unknownEnumValue: ProxyCardType.standard) final  ProxyCardType cardType;
 
 /// Create a copy of ProxiesStyleProps
 /// with the given fields replaced by the non-null parameter values.
@@ -1735,7 +1737,7 @@ abstract mixin class _$ProxiesStylePropsCopyWith<$Res> implements $ProxiesStyleP
   factory _$ProxiesStylePropsCopyWith(_ProxiesStyleProps value, $Res Function(_ProxiesStyleProps) _then) = __$ProxiesStylePropsCopyWithImpl;
 @override @useResult
 $Res call({
- ProxiesType type, ProxiesSortType sortType, ProxiesLayout layout, ProxiesIconStyle iconStyle, ProxyCardType cardType
+@JsonKey(unknownEnumValue: ProxiesType.tab) ProxiesType type,@JsonKey(unknownEnumValue: ProxiesSortType.none) ProxiesSortType sortType,@JsonKey(unknownEnumValue: ProxiesLayout.standard) ProxiesLayout layout,@JsonKey(unknownEnumValue: ProxiesListHeaderStyle.loose) ProxiesListHeaderStyle listHeaderStyle,@JsonKey(unknownEnumValue: ProxiesIconStyle.standard) ProxiesIconStyle iconStyle,@JsonKey(unknownEnumValue: ProxiesIconSource.standard) ProxiesIconSource iconSource,@JsonKey(unknownEnumValue: ProxyCardType.standard) ProxyCardType cardType
 });
 
 
