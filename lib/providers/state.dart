@@ -235,18 +235,12 @@ GroupsState filterGroupsState(Ref ref, String query) {
     return currentGroups;
   }
   final useRegex = ref.watch(searchUseRegexProvider(QueryTag.proxies));
-  final matcher = query.isNotEmpty
-      ? SearchMatcher(query, useRegex: useRegex)
-      : null;
-  final delayMap = hideUnavailable ? ref.watch(delayDataSourceProvider) : null;
-  final defaultTestUrl = hideUnavailable
-      ? ref.watch(appSettingProvider.select((state) => state.testUrl))
-      : null;
+  final matcher = SearchMatcher(query, useRegex: useRegex);
   final groups = currentGroups.value
       .map((group) {
         return group.copyWith(
           all: group.all
-              .where((proxy) => proxy.name.toLowerCase().contains(lowQuery))
+              .where((proxy) => matcher.hasMatch(proxy.name))
               .toList(),
         );
       })

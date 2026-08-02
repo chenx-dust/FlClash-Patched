@@ -134,6 +134,31 @@ extension TrackerInfoExt on TrackerInfo {
     }
     return process.trim();
   }
+
+  bool get hasSpeed => uploadSpeed != null && downloadSpeed != null;
+
+  TrackerInfo withCalculatedSpeed({
+    required TrackerInfo previous,
+    required Duration elapsed,
+  }) {
+    if (id != previous.id || elapsed <= Duration.zero) {
+      return this;
+    }
+
+    int calculateSpeed(int current, int previous) {
+      final delta = current - previous;
+      if (delta <= 0) {
+        return 0;
+      }
+      return (delta * Duration.microsecondsPerSecond / elapsed.inMicroseconds)
+          .round();
+    }
+
+    return copyWith(
+      uploadSpeed: calculateSpeed(upload, previous.upload),
+      downloadSpeed: calculateSpeed(download, previous.download),
+    );
+  }
 }
 
 String _logDateTime(dynamic _) {
@@ -160,23 +185,48 @@ abstract class Log with _$Log {
 abstract class LogsState with _$LogsState {
   const factory LogsState({
     @Default([]) List<Log> logs,
-    @Default([]) List<String> keywords,
+    @Default({}) Set<LogSource> sources,
+    @Default({}) Set<LogLevel> levels,
     @Default('') String query,
+    @Default(false) bool useRegex,
     @Default(true) bool autoScrollToEnd,
   }) = _LogsState;
 }
 
 extension LogsStateExt on LogsState {
+  bool get hasFilters {
+    return sources.isNotEmpty || levels.isNotEmpty;
+  }
+
+  LogsState toggleSource(LogSource source) {
+    return copyWith(sources: _toggle(sources, source));
+  }
+
+  LogsState toggleLevel(LogLevel level) {
+    return copyWith(levels: _toggle(levels, level));
+  }
+
+  LogsState clearFilters() {
+    return copyWith(sources: {}, levels: {});
+  }
+
   List<Log> get list {
-    final lowQuery = query.toLowerCase();
+    final matcher = SearchMatcher(query, useRegex: useRegex);
     return logs.where((log) {
-      final logLevelName = log.logLevel.name;
-      final logSourceName = log.source.name;
-      return {logLevelName, logSourceName}.containsAll(keywords) &&
-          ((log.payload.toLowerCase().contains(lowQuery)) ||
-              logLevelName.contains(lowQuery) ||
-              logSourceName.contains(lowQuery));
+      final matchesSource = sources.isEmpty || sources.contains(log.source);
+      final matchesLevel = levels.isEmpty || levels.contains(log.logLevel);
+      return matchesSource && matchesLevel && matcher.hasMatch(log.payload);
     }).toList();
+  }
+
+  Set<T> _toggle<T>(Set<T> values, T value) {
+    final nextValues = Set<T>.from(values);
+    if (nextValues.contains(value)) {
+      nextValues.remove(value);
+    } else {
+      nextValues.add(value);
+    }
+    return nextValues;
   }
 }
 
@@ -186,29 +236,43 @@ abstract class TrackerInfosState with _$TrackerInfosState {
     @Default([]) List<TrackerInfo> trackerInfos,
     @Default([]) List<String> keywords,
     @Default('') String query,
+    @Default(false) bool useRegex,
     @Default(true) bool autoScrollToEnd,
   }) = _TrackerInfosState;
 }
 
 extension TrackerInfosStateExt on TrackerInfosState {
   List<TrackerInfo> get list {
-    final lowerQuery = query.toLowerCase().trim();
-    final lowQuery = query.toLowerCase();
+    final matcher = SearchMatcher(query, useRegex: useRegex);
     return trackerInfos.where((trackerInfo) {
       final chains = trackerInfo.chains;
       final process = trackerInfo.metadata.process;
-      final networkText = trackerInfo.metadata.network.toLowerCase();
-      final hostText = trackerInfo.metadata.host.toLowerCase();
-      final destinationIPText = trackerInfo.metadata.destinationIP
-          .toLowerCase();
-      final processText = trackerInfo.metadata.process.toLowerCase();
-      final chainsText = chains.join('').toLowerCase();
+      final metadata = trackerInfo.metadata;
+      final ruleText = [
+        trackerInfo.rule,
+        trackerInfo.rulePayload,
+      ].where((value) => value.isNotEmpty).join(' ');
+      final chainsText = chains.join('');
       return {...chains, process}.containsAll(keywords) &&
-          (networkText.contains(lowerQuery) ||
-              hostText.contains(lowerQuery) ||
-              destinationIPText.contains(lowQuery) ||
-              processText.contains(lowerQuery) ||
-              chainsText.contains(lowerQuery));
+          matcher.hasAnyMatch([
+            metadata.network,
+            metadata.host,
+            metadata.remoteDestination,
+            metadata.sourceIP,
+            metadata.sourcePort,
+            metadata.destinationIP,
+            metadata.destinationPort,
+            metadata.process,
+            metadata.processPath,
+            metadata.sourceGeoIP.join(' '),
+            metadata.destinationGeoIP.join(' '),
+            metadata.sourceIPASN,
+            metadata.destinationIPASN,
+            metadata.specialRules,
+            metadata.specialProxy,
+            ruleText,
+            chainsText,
+          ]);
     }).toList();
   }
 }
@@ -374,6 +438,10 @@ extension TrafficExt on Traffic {
 
   String get desc {
     return '${up.traffic.show} ↑ ${down.traffic.show} ↓';
+  }
+
+  String get speedDesc {
+    return '${up.traffic.show}/s ↑ ${down.traffic.show}/s ↓';
   }
 
   String get trayTitle {
@@ -561,6 +629,8 @@ class PopupMenuItemData {
     required this.label,
     this.onPressed,
     this.danger = false,
+    this.selected = false,
+    this.closeOnPressed = true,
     this.subItems = const [],
   });
 
@@ -568,6 +638,8 @@ class PopupMenuItemData {
   final VoidCallback? onPressed;
   final IconData? icon;
   final bool danger;
+  final bool selected;
+  final bool closeOnPressed;
   final List<PopupMenuItemData> subItems;
 }
 

@@ -3,6 +3,7 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/state.dart';
+import 'package:fl_clash/views/connection/filter.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,15 +11,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class TrackerInfoItem extends ConsumerWidget {
   final TrackerInfo trackerInfo;
   final Function(String)? onClickKeyword;
+  final void Function(TrackerInfoFilterType type, String value)? onClickFilter;
+  final Future<void> Function()? onDetailClosed;
   final Widget? trailing;
   final String detailTitle;
+  final TrackerInfoFilter filter;
 
   const TrackerInfoItem({
     super.key,
     required this.trackerInfo,
     this.onClickKeyword,
+    this.onClickFilter,
+    this.onDetailClosed,
     this.trailing,
     required this.detailTitle,
+    this.filter = const TrackerInfoFilter(),
   });
 
   static double get subTitleHeight {
@@ -30,7 +37,14 @@ class TrackerInfoItem extends ConsumerWidget {
         ? '${trackerInfo.progressText} · '
         : '';
     final traffic = Traffic(up: trackerInfo.upload, down: trackerInfo.download);
-    return '${trackerInfo.start.getLastUpdateTimeDesc(context)} · $progress${traffic.desc}';
+    final speed = trackerInfo.hasSpeed
+        ? Traffic(
+            up: trackerInfo.uploadSpeed!,
+            down: trackerInfo.downloadSpeed!,
+          )
+        : null;
+    final speedText = speed != null ? ' · ${speed.speedDesc}' : '';
+    return '${trackerInfo.chains.last} · $progress${traffic.desc}$speedText';
   }
 
   @override
@@ -41,60 +55,40 @@ class TrackerInfoItem extends ConsumerWidget {
             state.findProcessMode == FindProcessMode.always && system.isAndroid,
       ),
     );
-    final title = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    final title = Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      spacing: 8,
       children: [
-        Text(trackerInfo.desc, style: context.textTheme.bodyLarge),
-        const SizedBox(height: 6),
+        Flexible(
+          child: Text(trackerInfo.desc, style: context.textTheme.bodyLarge),
+        ),
         Text(
-          _getSourceText(context, trackerInfo),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: context.textTheme.bodyMedium?.copyWith(
-            color: context.colorScheme.onSurfaceVariant,
+          trackerInfo.start.getLastUpdateTimeDesc(context),
+          style: context.textTheme.bodySmall?.copyWith(
+            color: context.colorScheme.onSurface.opacity60,
           ),
         ),
       ],
     );
-    final subTitle = SizedBox(
-      height: subTitleHeight,
-      child: Row(
-        spacing: 8,
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Flexible(
-            child: ListView.separated(
-              separatorBuilder: (_, _) => const SizedBox(width: 6),
-              padding: EdgeInsets.zero,
-              scrollDirection: Axis.horizontal,
-              itemCount: trackerInfo.chains.length,
-              itemBuilder: (_, index) {
-                final chain = trackerInfo.chains[index];
-                return CommonChip(
-                  label: chain,
-                  labelStyle: context.textTheme.bodySmall?.copyWith(
-                    color: context.colorScheme.onSurfaceVariant,
-                  ),
-                  onPressed: () {
-                    if (onClickKeyword == null) return;
-                    onClickKeyword!(chain);
-                  },
-                );
-              },
-            ),
-          ),
-          ?trailing,
-        ],
+    final subTitle = Text(
+      _getSourceText(context, trackerInfo),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: context.textTheme.labelMedium?.copyWith(
+        color: context.colorScheme.onSurfaceVariant,
       ),
     );
     final icon = value
         ? GestureDetector(
             onTap: () {
-              if (onClickKeyword == null) return;
               final process = trackerInfo.metadata.process;
               if (process.isEmpty) return;
-              onClickKeyword!(process);
+              if (onClickFilter != null) {
+                onClickFilter!(TrackerInfoFilterType.process, process);
+                return;
+              }
+              onClickKeyword?.call(process);
             },
             child: Container(
               margin: const EdgeInsets.only(top: 4),
@@ -108,17 +102,22 @@ class TrackerInfoItem extends ConsumerWidget {
           )
         : null;
     return ListItem(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      onTap: () {
-        showExtend(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      onTap: () async {
+        await showExtend(
           context,
           builder: (_) {
             return AdaptiveSheetScaffold(
-              body: TrackerInfoDetailView(trackerInfo: trackerInfo),
+              body: TrackerInfoDetailView(
+                trackerInfo: trackerInfo,
+                onClickFilter: onClickFilter,
+                filter: filter,
+              ),
               title: detailTitle,
             );
           },
         );
+        await onDetailClosed?.call();
       },
       title: Column(
         mainAxisSize: MainAxisSize.min,
@@ -141,10 +140,42 @@ class TrackerInfoItem extends ConsumerWidget {
   }
 }
 
-class TrackerInfoDetailView extends StatelessWidget {
+class TrackerInfoDetailView extends StatefulWidget {
   final TrackerInfo trackerInfo;
+  final void Function(TrackerInfoFilterType type, String value)? onClickFilter;
+  final TrackerInfoFilter filter;
 
-  const TrackerInfoDetailView({super.key, required this.trackerInfo});
+  const TrackerInfoDetailView({
+    super.key,
+    required this.trackerInfo,
+    this.onClickFilter,
+    this.filter = const TrackerInfoFilter(),
+  });
+
+  @override
+  State<TrackerInfoDetailView> createState() => _TrackerInfoDetailViewState();
+}
+
+class _TrackerInfoDetailViewState extends State<TrackerInfoDetailView> {
+  late TrackerInfoFilter _filter;
+
+  TrackerInfo get trackerInfo => widget.trackerInfo;
+
+  void Function(TrackerInfoFilterType type, String value)? get onClickFilter =>
+      widget.onClickFilter;
+
+  @override
+  void initState() {
+    super.initState();
+    _filter = widget.filter;
+  }
+
+  void _applyFilter(TrackerInfoFilterType type, String value) {
+    onClickFilter?.call(type, value);
+    setState(() {
+      _filter = _filter.toggle(type, value);
+    });
+  }
 
   String _getRuleText() {
     final rule = trackerInfo.rule;
@@ -189,13 +220,27 @@ class TrackerInfoDetailView extends StatelessWidget {
   }
 
   Widget _buildChains(BuildContext context) {
+    final filterable = onClickFilter != null;
     final chains = Wrap(
       spacing: 8,
       runSpacing: 8,
       alignment: WrapAlignment.end,
       children: [
-        for (final chain in trackerInfo.chains)
-          CommonChip(label: chain, onPressed: () {}),
+        ...trackerInfo.chains.map((chain) {
+          final filterApplied = _filter.contains(
+            TrackerInfoFilterType.chain,
+            chain,
+          );
+          return CommonChip(
+            label: chain,
+            labelStyle: context.textTheme.labelSmall?.copyWith(
+              color: filterApplied ? context.colorScheme.primary : null,
+            ),
+            onPressed: filterable
+                ? () => _applyFilter(TrackerInfoFilterType.chain, chain)
+                : null,
+          );
+        }),
       ],
     );
     return ListItem(
@@ -215,8 +260,21 @@ class TrackerInfoDetailView extends StatelessWidget {
     required String title,
     required String desc,
     bool quickCopy = false,
+    TrackerInfoFilterType? filterType,
+    String? filterValue,
   }) {
+    final canFilter =
+        filterType != null &&
+        filterValue?.isNotEmpty == true &&
+        onClickFilter != null;
+    final filterApplied =
+        canFilter && _filter.contains(filterType, filterValue!);
     return ListItem(
+      onTap: canFilter
+          ? () {
+              _applyFilter(filterType, filterValue!);
+            }
+          : null,
       title: Row(
         spacing: 16,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -226,6 +284,11 @@ class TrackerInfoDetailView extends StatelessWidget {
             spacing: 4,
             children: [
               Text(title),
+              if (canFilter)
+                Icon(
+                  filterApplied ? Icons.filter_alt : Icons.filter_alt_outlined,
+                  size: 18,
+                ),
               if (quickCopy)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
@@ -238,7 +301,13 @@ class TrackerInfoDetailView extends StatelessWidget {
                 ),
             ],
           ),
-          Flexible(child: Text(desc, textAlign: TextAlign.end)),
+          Flexible(
+            child: Text(
+              desc,
+              textAlign: TextAlign.end,
+              style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 14),
+            ),
+          ),
         ],
       ),
     );
@@ -253,12 +322,24 @@ class TrackerInfoDetailView extends StatelessWidget {
         desc: trackerInfo.start.showFull,
       ),
       if (_getProcessText().isNotEmpty)
-        _buildItem(title: appLocalizations.process, desc: _getProcessText()),
+        _buildItem(
+          title: appLocalizations.process,
+          desc: _getProcessText(),
+          filterType: TrackerInfoFilterType.process,
+          filterValue: trackerInfo.metadata.process,
+        ),
       _buildItem(
         title: appLocalizations.networkType,
         desc: trackerInfo.metadata.network,
+        filterType: TrackerInfoFilterType.network,
+        filterValue: trackerInfo.metadata.network,
       ),
-      _buildItem(title: appLocalizations.rule, desc: _getRuleText()),
+      _buildItem(
+        title: appLocalizations.rule,
+        desc: _getRuleText(),
+        filterType: TrackerInfoFilterType.rule,
+        filterValue: getTrackerInfoRuleText(trackerInfo),
+      ),
       if (trackerInfo.metadata.host.isNotEmpty)
         _buildItem(
           title: appLocalizations.host,

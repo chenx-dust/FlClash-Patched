@@ -254,7 +254,7 @@ class AppLocalizations {
     );
   }
 
-  /// `No profile, please add a profile`
+  /// `No profile, Please add a profile`
   String get nullProfileDesc {
     return Intl.message(
       'No profile, please add a profile',
@@ -1139,6 +1139,21 @@ class AppLocalizations {
     return Intl.message('Search', name: 'search', desc: '', args: []);
   }
 
+  /// `Filter`
+  String get filter {
+    return Intl.message('Filter', name: 'filter', desc: '', args: []);
+  }
+
+  /// `No filter conditions`
+  String get noFilterCondition {
+    return Intl.message(
+      'No filter conditions',
+      name: 'noFilterCondition',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Regex search`
   String get regexSearch {
     return Intl.message(
@@ -1149,7 +1164,7 @@ class AppLocalizations {
     );
   }
 
-  /// `Allow Applications to Bypass VPN`
+  /// `Allow applications to bypass VPN`
   String get allowBypass {
     return Intl.message(
       'Allow Applications to Bypass VPN',
@@ -1607,6 +1622,11 @@ class AppLocalizations {
   /// `Source`
   String get source {
     return Intl.message('Source', name: 'source', desc: '', args: []);
+  }
+
+  /// `Level`
+  String get level {
+    return Intl.message('Level', name: 'level', desc: '', args: []);
   }
 
   /// `Action`
@@ -3529,9 +3549,9 @@ class AppLocalizations {
     return Intl.message('Delay Test', name: 'delayTest', desc: '', args: []);
   }
 
-  /// `Close All`
+  /// `Close all`
   String get closeAll {
-    return Intl.message('Close All', name: 'closeAll', desc: '', args: []);
+    return Intl.message('Close all', name: 'closeAll', desc: '', args: []);
   }
 
   /// `Proxy group is empty`
