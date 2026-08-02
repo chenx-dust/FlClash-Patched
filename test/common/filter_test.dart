@@ -12,7 +12,7 @@ void main() {
       logLevel: level,
       source: source,
       payload: payload,
-      dateTime: '2024-01-01',
+      timestamp: 0,
     );
 
     test('returns all logs when no filters and empty query', () {
