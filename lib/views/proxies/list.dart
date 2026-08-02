@@ -403,7 +403,7 @@ class _ListHeaderState extends State<ListHeader> {
       builder: (context, cardFocusNode, actionsFocusNode) {
         return CommonCard(
           focusNode: cardFocusNode,
-          enterAnimated: widget.enterAnimated,
+          enterAnimated: false,
           key: widget.key,
           radius: 18.ap,
           type: CommonCardType.filled,

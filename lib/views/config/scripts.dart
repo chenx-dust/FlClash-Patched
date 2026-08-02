@@ -246,7 +246,7 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
       message: TextSpan(text: appLocalizations.saveChanges),
     );
     if (res == true && mounted) {
-      _handleEditorSave(context, title, content, script: script);
+      await _handleEditorSave(context, title, content, script: script);
     } else {
       return true;
     }
@@ -296,6 +296,7 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
         ? false
         : ref.watch(isUpdatingProvider(selectedScript.updatingKey));
     return CommonPopScope(
+      canPop: selectedScriptId == null,
       onPop: (_) {
         if (selectedScriptId != null) {
           ref.read(itemProvider(_key).notifier).value = null;

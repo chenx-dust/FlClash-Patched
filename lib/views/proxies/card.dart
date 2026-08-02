@@ -42,18 +42,11 @@ class ProxyCard extends StatelessWidget {
             alignment: type == ProxyCardType.expand
                 ? Alignment.centerLeft
                 : Alignment.centerRight,
-            child: delay == 0 || delay == null
+            child: delay == 0
                 ? SizedBox(
                     height: measure.labelSmallHeight,
                     width: measure.labelSmallHeight,
-                    child: delay == 0
-                        ? const CommonCircleLoading()
-                        : IconButton(
-                            icon: const Icon(Icons.bolt),
-                            iconSize: globalState.measure.labelSmallHeight,
-                            padding: EdgeInsets.zero,
-                            onPressed: _handleTestCurrentDelay,
-                          ),
+                    child: const CommonCircleLoading(),
                   )
                 : GestureDetector(
                     onTap: _handleTestCurrentDelay,
@@ -134,6 +127,7 @@ class ProxyCard extends StatelessWidget {
             );
             return CommonCard(
               key: key,
+              onLongPress: _handleTestCurrentDelay,
               onPressed: () {
                 _changeProxy(ref);
               },

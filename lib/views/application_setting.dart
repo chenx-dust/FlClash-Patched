@@ -234,6 +234,28 @@ class AnimateTabItem extends ConsumerWidget {
   }
 }
 
+class SwipeToPageItem extends ConsumerWidget {
+  const SwipeToPageItem({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appLocalizations = context.appLocalizations;
+    final isSwipeToPage = ref.watch(
+      appSettingProvider.select((state) => state.isSwipeToPage),
+    );
+    return ListItem.toggle(
+      title: Text(appLocalizations.swipeToSwitchPage),
+      subtitle: Text(appLocalizations.tabAnimationDesc),
+      value: isSwipeToPage,
+      onChanged: (value) {
+        ref
+            .read(appSettingProvider.notifier)
+            .update((state) => state.copyWith(isSwipeToPage: value));
+      },
+    );
+  }
+}
+
 class OpenLogsItem extends ConsumerWidget {
   const OpenLogsItem({super.key});
 
@@ -273,28 +295,6 @@ class AutoCheckUpdateItem extends ConsumerWidget {
         ref
             .read(appSettingProvider.notifier)
             .update((state) => state.copyWith(autoCheckUpdate: value));
-      },
-    );
-  }
-}
-
-class IgnoreCertificateErrorsItem extends ConsumerWidget {
-  const IgnoreCertificateErrorsItem({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final appLocalizations = context.appLocalizations;
-    final ignoreCertificateErrors = ref.watch(
-      appSettingProvider.select((state) => state.ignoreCertificateErrors),
-    );
-    return ListItem.toggle(
-      title: Text(appLocalizations.ignoreCertificateErrors),
-      subtitle: Text(appLocalizations.ignoreCertificateErrorsDesc),
-      value: ignoreCertificateErrors,
-      onChanged: (bool value) {
-        ref
-            .read(appSettingProvider.notifier)
-            .update((state) => state.copyWith(ignoreCertificateErrors: value));
       },
     );
   }
@@ -506,6 +506,7 @@ class ApplicationSettingView extends ConsumerWidget {
       const AutoRunItem(),
       if (system.isAndroid) ...[const HiddenItem()],
       const AnimateTabItem(),
+      const SwipeToPageItem(),
       const OpenLogsItem(),
       const CloseConnectionsItem(),
       const UsageItem(),
