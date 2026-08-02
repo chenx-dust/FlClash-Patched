@@ -21,11 +21,15 @@ class ProxiesView extends ConsumerStatefulWidget {
 
 class _ProxiesViewState extends ConsumerState<ProxiesView> {
   final GlobalKey<ProxiesTabViewState> _proxiesTabKey = GlobalKey();
+  final GlobalKey<ProxiesListViewState> _proxiesListKey = GlobalKey();
   bool _hasProviders = false;
   bool _isTab = false;
 
   List<Widget> _buildActions(BuildContext context) {
     final appLocalizations = context.appLocalizations;
+    final proxiesStyle = ref.watch(proxiesStyleSettingProvider);
+    final hideUnavailable = proxiesStyle.hideUnavailable;
+    final showHiddenGroups = proxiesStyle.showHiddenGroups;
     return [
       if (_isTab)
         IconButton(
@@ -35,21 +39,16 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
           },
           icon: const Icon(Icons.adjust, weight: 1),
         ),
+      if (!_isTab) _buildListUnfoldButton(),
       CommonPopupBox(
         targetBuilder: (open) {
-          return IconButton(
-            onPressed: () {
-              final isMobile = ref.read(isMobileViewProvider);
-              open(offset: Offset(0, isMobile ? 0 : 20));
-            },
-            icon: const Icon(Icons.more_vert),
-          );
+          return IconButton(onPressed: open, icon: const Icon(Icons.more_vert));
         },
         popup: CommonPopupMenu(
           items: [
             PopupMenuItemData(
               icon: Icons.tune,
-              label: appLocalizations.settings,
+              label: appLocalizations.styleSettings,
               onPressed: () {
                 showSheet(
                   context: context,
@@ -57,10 +56,36 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
                   builder: (_) {
                     return AdaptiveSheetScaffold(
                       body: const ProxiesSetting(),
-                      title: appLocalizations.settings,
+                      title: appLocalizations.styleSettings,
                     );
                   },
                 );
+              },
+            ),
+            PopupMenuItemData(
+              icon: hideUnavailable
+                  ? Icons.filter_alt_off_outlined
+                  : Icons.filter_alt_outlined,
+              label: hideUnavailable
+                  ? appLocalizations.showUnavailable
+                  : appLocalizations.hideUnavailable,
+              onPressed: () {
+                final current = ref.read(proxiesStyleSettingProvider);
+                ref.read(proxiesStyleSettingProvider.notifier).value = current
+                    .copyWith(hideUnavailable: !current.hideUnavailable);
+              },
+            ),
+            PopupMenuItemData(
+              icon: showHiddenGroups
+                  ? Icons.visibility_off_outlined
+                  : Icons.visibility_outlined,
+              label: showHiddenGroups
+                  ? appLocalizations.restoreHiddenGroups
+                  : appLocalizations.showHiddenGroups,
+              onPressed: () {
+                final current = ref.read(proxiesStyleSettingProvider);
+                ref.read(proxiesStyleSettingProvider.notifier).value = current
+                    .copyWith(showHiddenGroups: !current.showHiddenGroups);
               },
             ),
             if (_hasProviders)
@@ -90,9 +115,6 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
           (group) => !state.currentUnfoldSet.contains(group.name),
         );
         return IconButton(
-          tooltip: allCollapsed
-              ? context.appLocalizations.expand
-              : context.appLocalizations.collapse,
           onPressed: () {
             final unfoldSet = allCollapsed
                 ? state.groups.map((group) => group.name).toSet()
@@ -117,6 +139,27 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
         }
       },
     );
+  }
+
+  bool _canDelayTest(ProxiesType proxiesType) {
+    return switch (proxiesType) {
+      ProxiesType.tab => ref.watch(
+        proxiesTabStateProvider.select((state) {
+          final currentGroup = state.groups.getGroup(
+            state.currentGroupName ?? '',
+          );
+          return currentGroup?.all.isNotEmpty ?? false;
+        }),
+      ),
+      ProxiesType.list => ref.watch(
+        proxiesListStateProvider.select((state) {
+          return state.groups.any((group) {
+            return state.currentUnfoldSet.contains(group.name) &&
+                group.all.isNotEmpty;
+          });
+        }),
+      ),
+    };
   }
 
   void _onSearch(String value) {
@@ -165,14 +208,14 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
     return CommonScaffold(
       isLoading: isLoading,
       resizeToAvoidBottomInset: false,
-      floatingActionButton: _buildFAB(),
+      floatingActionButton: _canDelayTest(proxiesType) ? _buildFAB() : null,
       actions: _buildActions(context),
       title: context.appLocalizations.proxies,
       searchActions: [_buildRegexSearchButton()],
       searchState: AppBarSearchState(onSearch: _onSearch),
       body: switch (proxiesType) {
         ProxiesType.tab => ProxiesTabView(key: _proxiesTabKey),
-        ProxiesType.list => const ProxiesListView(),
+        ProxiesType.list => ProxiesListView(key: _proxiesListKey),
       },
     );
   }

@@ -296,12 +296,14 @@ void main() {
       expect(props.type, ProxiesType.tab);
       expect(props.sortType, ProxiesSortType.none);
       expect(props.layout, ProxiesLayout.standard);
+      expect(props.showHiddenGroups, false);
     });
 
     test('round-trip with custom values', () {
       const props = ProxiesStyleProps(
         type: ProxiesType.list,
         sortType: ProxiesSortType.delay,
+        showHiddenGroups: true,
       );
       final restored = roundTrip(
         () => props.toJson(),
@@ -309,6 +311,7 @@ void main() {
       );
       expect(restored.type, ProxiesType.list);
       expect(restored.sortType, ProxiesSortType.delay);
+      expect(restored.showHiddenGroups, true);
     });
   });
 
