@@ -870,6 +870,83 @@ void main() {
       );
     });
   });
+
+  group('ProxiesAction group updates', () {
+    late _MockCoreHandlerInterface coreHandler;
+
+    setUp(() {
+      coreHandler = _MockCoreHandlerInterface();
+      CoreController.resetInstance();
+      CoreController.test(coreHandler);
+    });
+
+    tearDown(CoreController.resetInstance);
+
+    test(
+      'removes unavailable proxy selections from the current profile',
+      () async {
+        final profile = Profile.normal().copyWith(
+          selectedMap: {
+            'Available': 'Node A',
+            'Changed': 'Removed Node',
+            'Removed Group': 'Node C',
+            'Empty': 'COMPATIBLE',
+          },
+        );
+        final container = ProviderContainer(
+          overrides: [
+            currentProfileIdProvider.overrideWithBuild((_, _) => profile.id),
+            profilesProvider.overrideWith(() => _TestProfiles([profile])),
+          ],
+        );
+        addTearDown(container.dispose);
+        when(() => coreHandler.getProxies()).thenAnswer(
+          (_) async => ProxiesData(
+            all: [
+              'Available',
+              'Changed',
+              'Empty',
+              'Node A',
+              'Node B',
+              'COMPATIBLE',
+            ],
+            proxies: Map<String, dynamic>.from({
+              'Available': {
+                'name': 'Available',
+                'type': 'Selector',
+                'all': ['Node A'],
+              },
+              'Changed': {
+                'name': 'Changed',
+                'type': 'Selector',
+                'all': ['Node B'],
+              },
+              'Empty': {
+                'name': 'Empty',
+                'type': 'Selector',
+                'all': ['COMPATIBLE'],
+              },
+              'Node A': {'name': 'Node A', 'type': 'Shadowsocks'},
+              'Node B': {'name': 'Node B', 'type': 'Shadowsocks'},
+              'COMPATIBLE': {'name': 'COMPATIBLE', 'type': 'Compatible'},
+            }),
+          ),
+        );
+
+        await container.read(proxiesActionProvider.notifier).updateGroups();
+
+        expect(
+          container.read(profilesProvider).getProfile(profile.id)?.selectedMap,
+          {'Available': 'Node A'},
+        );
+        expect(container.read(groupsProvider).map((group) => group.name), [
+          'Available',
+          'Changed',
+          'Empty',
+        ]);
+      },
+    );
+  });
 }
 
 class _TestProfiles extends Profiles {

@@ -69,9 +69,9 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m23(count) => "已选择 ${count} 项";
 
-  static String m24(label) => "${label} 必须为 URL";
+  static String m26(label) => "${label} 必须为 URL";
 
-  static String m25(count) => "${count} 年前";
+  static String m27(count) => "${count} 年前";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -226,7 +226,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "deleteMultipTip": m1,
     "deleteTip": m2,
     "desc": MessageLookupByLibrary.simpleMessage(
-      "基于 mihomo 的多平台代理客户端，简单易用，开源无广告。",
+      "基于 ClashMeta 的多平台代理客户端，简单易用，开源无广告。",
     ),
     "destination": MessageLookupByLibrary.simpleMessage("目标地址"),
     "destinationGeoIP": MessageLookupByLibrary.simpleMessage("目标地理定位"),
@@ -251,10 +251,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "download": MessageLookupByLibrary.simpleMessage("下载"),
     "downloadSpeed": MessageLookupByLibrary.simpleMessage("下载速度"),
     "downloadTraffic": MessageLookupByLibrary.simpleMessage("下载流量"),
-    "dozeSuspend": MessageLookupByLibrary.simpleMessage("Doze 休眠"),
-    "dozeSuspendDesc": MessageLookupByLibrary.simpleMessage(
-      "Android 进入 Doze 模式时挂起核心以降低耗电",
-    ),
     "edit": MessageLookupByLibrary.simpleMessage("编辑"),
     "editGlobalRules": MessageLookupByLibrary.simpleMessage("编辑全局规则"),
     "editProxy": MessageLookupByLibrary.simpleMessage("编辑代理"),
@@ -263,10 +259,32 @@ class MessageLookup extends MessageLookupByLibrary {
     "editSsid": MessageLookupByLibrary.simpleMessage("编辑 SSID"),
     "emptyTip": m4,
     "en": MessageLookupByLibrary.simpleMessage("英语"),
+    "enforceRoutes": MessageLookupByLibrary.simpleMessage("强制路由"),
+    "enforceRoutesDesc": MessageLookupByLibrary.simpleMessage(
+      "即使存在更具体的路由也确保流量经过隧道",
+    ),
     "entries": MessageLookupByLibrary.simpleMessage("个条目"),
     "entriesCount": m5,
     "exclude": MessageLookupByLibrary.simpleMessage("从最近任务中隐藏"),
+    "excludeAPNs": MessageLookupByLibrary.simpleMessage("排除 APNs"),
+    "excludeAPNsDesc": MessageLookupByLibrary.simpleMessage(
+      "允许 Apple 推送通知流量绕过隧道",
+    ),
+    "excludeCellularServices": MessageLookupByLibrary.simpleMessage("排除蜂窝服务"),
+    "excludeCellularServicesDesc": MessageLookupByLibrary.simpleMessage(
+      "允许 Wi-Fi 通话等蜂窝服务流量绕过隧道",
+    ),
     "excludeDesc": MessageLookupByLibrary.simpleMessage("应用在后台时,从最近任务中隐藏应用"),
+    "excludeDeviceCommunication": MessageLookupByLibrary.simpleMessage(
+      "排除设备间通信",
+    ),
+    "excludeDeviceCommunicationDesc": MessageLookupByLibrary.simpleMessage(
+      "允许 AirDrop、AirPlay 等设备间通信流量绕过隧道",
+    ),
+    "excludeLocalNetworks": MessageLookupByLibrary.simpleMessage("排除本地网络"),
+    "excludeLocalNetworksDesc": MessageLookupByLibrary.simpleMessage(
+      "允许直接访问本地网络上的设备",
+    ),
     "excludeProxyFilter": MessageLookupByLibrary.simpleMessage("排除节点过滤器"),
     "excludeSsids": MessageLookupByLibrary.simpleMessage("排除 SSIDs"),
     "excludeSsidsDesc": MessageLookupByLibrary.simpleMessage(
@@ -332,10 +350,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "goToConfigureScript": MessageLookupByLibrary.simpleMessage("前往配置脚本"),
     "goroutineInfo": MessageLookupByLibrary.simpleMessage("协程数"),
     "hasCacheChange": MessageLookupByLibrary.simpleMessage("是否缓存修改"),
+    "header": MessageLookupByLibrary.simpleMessage("标题"),
     "helperCorruptTip": MessageLookupByLibrary.simpleMessage(
       "Helper 服务不可用，无法启用 TUN 模式，请重新安装 FlClash。",
     ),
     "hideFromList": MessageLookupByLibrary.simpleMessage("从列表中隐藏"),
+    "hideUnavailable": MessageLookupByLibrary.simpleMessage("隐藏超时"),
     "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage("高优先级自启动"),
     "highPriorityAutoLaunchDesc": MessageLookupByLibrary.simpleMessage(
       "使用 Windows 计划任务更早启动",
@@ -350,6 +370,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hoursCount": m11,
     "icon": MessageLookupByLibrary.simpleMessage("图片"),
     "iconRecords": MessageLookupByLibrary.simpleMessage("图标记录"),
+    "iconSource": MessageLookupByLibrary.simpleMessage("图标来源"),
     "iconStyle": MessageLookupByLibrary.simpleMessage("图标样式"),
     "iconUrl": MessageLookupByLibrary.simpleMessage("图标链接"),
     "ignoreBatteryOptimization": MessageLookupByLibrary.simpleMessage("忽略电池优化"),
@@ -357,6 +378,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "importFile": MessageLookupByLibrary.simpleMessage("通过文件导入"),
     "importFromURL": MessageLookupByLibrary.simpleMessage("从 URL 导入"),
     "importUrl": MessageLookupByLibrary.simpleMessage("通过 URL 导入"),
+    "includeAllNetworks": MessageLookupByLibrary.simpleMessage("包含所有网络"),
+    "includeAllNetworksDesc": MessageLookupByLibrary.simpleMessage(
+      "将所有网络流量路由到隧道，包括本地和蜂窝服务",
+    ),
     "includeAllProxies": MessageLookupByLibrary.simpleMessage("包含所有代理"),
     "includeAllProxiesTip": MessageLookupByLibrary.simpleMessage(
       "引入不包含策略组的所有代理，可在下方额外添加策略组",
@@ -384,7 +409,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "ipv6InboundDesc": MessageLookupByLibrary.simpleMessage("允许 IPv6 入站"),
     "ja": MessageLookupByLibrary.simpleMessage("日语"),
     "justNow": MessageLookupByLibrary.simpleMessage("刚刚"),
-    "keepAliveIntervalDesc": MessageLookupByLibrary.simpleMessage("TCP 保持活动间隔"),
+    "keepAliveIntervalDesc": MessageLookupByLibrary.simpleMessage("TCP保持活动间隔"),
     "key": MessageLookupByLibrary.simpleMessage("键"),
     "language": MessageLookupByLibrary.simpleMessage("语言"),
     "layout": MessageLookupByLibrary.simpleMessage("布局"),
@@ -429,13 +454,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "mixedPort": MessageLookupByLibrary.simpleMessage("混合端口"),
     "mode": MessageLookupByLibrary.simpleMessage("模式"),
     "monochromeScheme": MessageLookupByLibrary.simpleMessage("单色"),
-    "monochromeTrayIcon": MessageLookupByLibrary.simpleMessage("单色托盘图标"),
     "monthsAgo": m18,
     "more": MessageLookupByLibrary.simpleMessage("更多"),
-    "mtu": MessageLookupByLibrary.simpleMessage("MTU"),
-    "mtuRangeTip": MessageLookupByLibrary.simpleMessage(
-      "MTU 必须是 1 到 65535 之间的整数",
-    ),
     "name": MessageLookupByLibrary.simpleMessage("名称"),
     "nameserver": MessageLookupByLibrary.simpleMessage("域名服务器"),
     "nameserverDesc": MessageLookupByLibrary.simpleMessage("用于解析域名"),
@@ -445,6 +465,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "networkDesc": MessageLookupByLibrary.simpleMessage("修改网络相关设置"),
     "networkDetection": MessageLookupByLibrary.simpleMessage("网络检测"),
     "networkException": MessageLookupByLibrary.simpleMessage("网络异常，请检查连接后重试"),
+    "networkExtension": MessageLookupByLibrary.simpleMessage("网络扩展"),
     "networkSpeed": MessageLookupByLibrary.simpleMessage("网络速度"),
     "networkSpeedNotification": MessageLookupByLibrary.simpleMessage("显示实时网速"),
     "networkSpeedNotificationDesc": MessageLookupByLibrary.simpleMessage(
@@ -469,6 +490,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "numberTip": m20,
     "onDemand": MessageLookupByLibrary.simpleMessage("按需运行"),
     "onDemandDesc": MessageLookupByLibrary.simpleMessage("配置程序特定场景运行状态"),
+    "onlyConfig": MessageLookupByLibrary.simpleMessage("仅配置"),
+    "onlyEmoji": MessageLookupByLibrary.simpleMessage("仅 Emoji"),
     "onlyIcon": MessageLookupByLibrary.simpleMessage("仅图标"),
     "onlyStatisticsProxy": MessageLookupByLibrary.simpleMessage("仅统计代理"),
     "onlyStatisticsProxyDesc": MessageLookupByLibrary.simpleMessage(
@@ -559,7 +582,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxyProvidersNotEmpty": MessageLookupByLibrary.simpleMessage("代理集不能为空"),
     "proxyType": MessageLookupByLibrary.simpleMessage("代理类型"),
     "pruneCache": MessageLookupByLibrary.simpleMessage("修剪缓存"),
-    "predictiveBack": MessageLookupByLibrary.simpleMessage("预见性返回"),
     "pureBlackMode": MessageLookupByLibrary.simpleMessage("纯黑模式"),
     "qrcode": MessageLookupByLibrary.simpleMessage("二维码"),
     "qrcodeDesc": MessageLookupByLibrary.simpleMessage("扫描二维码获取配置文件"),
@@ -596,6 +618,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "restoreFromWebDAVDesc": MessageLookupByLibrary.simpleMessage(
       "通过 WebDAV 恢复数据",
     ),
+    "restoreHiddenGroups": MessageLookupByLibrary.simpleMessage("恢复隐藏组"),
     "restoreOnlyConfig": MessageLookupByLibrary.simpleMessage("仅恢复配置文件"),
     "restoreStrategy": MessageLookupByLibrary.simpleMessage("恢复策略"),
     "restoreStrategy_compatible": MessageLookupByLibrary.simpleMessage("兼容"),
@@ -706,6 +729,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectedCountTitle": m23,
     "settings": MessageLookupByLibrary.simpleMessage("设置"),
     "show": MessageLookupByLibrary.simpleMessage("显示"),
+    "showHiddenGroups": MessageLookupByLibrary.simpleMessage("显示隐藏组"),
+    "showUnavailable": MessageLookupByLibrary.simpleMessage("显示超时"),
     "shrink": MessageLookupByLibrary.simpleMessage("紧凑"),
     "silentLaunch": MessageLookupByLibrary.simpleMessage("静默启动"),
     "silentLaunchDesc": MessageLookupByLibrary.simpleMessage("后台启动"),
@@ -731,10 +756,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "stop": MessageLookupByLibrary.simpleMessage("暂停"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("正在停止 VPN..."),
     "style": MessageLookupByLibrary.simpleMessage("风格"),
+    "styleSettings": MessageLookupByLibrary.simpleMessage("样式设置"),
     "subRule": MessageLookupByLibrary.simpleMessage("子规则"),
     "subRuleEmpty": MessageLookupByLibrary.simpleMessage("子规则为空"),
     "subRuleNotEmpty": MessageLookupByLibrary.simpleMessage("子规则不能为空"),
     "submit": MessageLookupByLibrary.simpleMessage("提交"),
+    "suspendSupport": MessageLookupByLibrary.simpleMessage("休眠支持"),
+    "suspendSupportDesc": MessageLookupByLibrary.simpleMessage(
+      "设备空闲时挂起核心以降低耗电",
+    ),
     "suspended": MessageLookupByLibrary.simpleMessage("挂起中..."),
     "swipeToSwitchPage": MessageLookupByLibrary.simpleMessage("滑动切页"),
     "sync": MessageLookupByLibrary.simpleMessage("同步"),
@@ -782,7 +812,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "uploadTraffic": MessageLookupByLibrary.simpleMessage("上传流量"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("通过 URL 获取配置文件"),
-    "urlTip": m24,
+    "urlTip": m26,
     "useHosts": MessageLookupByLibrary.simpleMessage("使用 Hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("使用系统 Hosts"),
     "userAgent": MessageLookupByLibrary.simpleMessage("用户代理"),
@@ -798,7 +828,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnTip": MessageLookupByLibrary.simpleMessage("重启 VPN 后改变生效"),
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV 配置"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("白名单模式"),
-    "yearsAgo": m25,
+    "yearsAgo": m27,
     "zh_CN": MessageLookupByLibrary.simpleMessage("中文简体"),
   };
 }

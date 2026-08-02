@@ -53,7 +53,9 @@ abstract class Profile with _$Profile {
     @Default(true) bool autoUpdate,
     @Default({}) Map<String, String> selectedMap,
     @Default({}) Set<String> unfoldSet,
-    @Default(OverwriteType.standard) OverwriteType overwriteType,
+    @Default(OverwriteType.standard)
+    @JsonKey(unknownEnumValue: OverwriteType.standard)
+    OverwriteType overwriteType,
     int? scriptId,
     int? order,
     String? ageSecretKey,

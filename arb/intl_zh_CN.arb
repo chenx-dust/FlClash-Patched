@@ -27,6 +27,7 @@
   "downloadSpeed": "下载速度",
   "nullProfileDesc": "没有配置文件,请先添加配置文件",
   "settings": "设置",
+  "styleSettings": "样式设置",
   "language": "语言",
   "defaultText": "默认",
   "more": "更多",
@@ -208,6 +209,7 @@
   "clipboardImport": "剪贴板导入",
   "clipboardExport": "导出剪贴板",
   "layout": "布局",
+  "header": "标题",
   "tight": "紧凑",
   "standard": "标准",
   "loose": "宽松",
@@ -276,6 +278,9 @@
   "exportSuccess": "导出成功",
   "iconStyle": "图标样式",
   "onlyIcon": "仅图标",
+  "iconSource": "图标来源",
+  "onlyConfig": "仅配置",
+  "onlyEmoji": "仅 Emoji",
   "stackMode": "栈模式",
   "mtu": "MTU",
   "mtuRangeTip": "MTU 必须是 1 到 65535 之间的整数",
@@ -596,5 +601,7 @@
   "excludeDeviceCommunication": "排除设备间通信",
   "excludeDeviceCommunicationDesc": "允许 AirDrop、AirPlay 等设备间通信流量绕过隧道",
   "hideUnavailable": "隐藏超时",
-  "showUnavailable": "显示超时"
+  "showUnavailable": "显示超时",
+  "showHiddenGroups": "显示隐藏组",
+  "restoreHiddenGroups": "恢复隐藏组"
 }
