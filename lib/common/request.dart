@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -35,7 +36,10 @@ class Request {
   Future<Response<Uint8List>> getFileResponseForUrl(String url) async {
     try {
       return await _clashDio
-          .get<Uint8List>(url, options: Options(responseType: ResponseType.bytes))
+          .get<Uint8List>(
+            url,
+            options: Options(responseType: ResponseType.bytes),
+          )
           .timeout(const Duration(seconds: 10));
     } catch (e) {
       commonPrint.log('getFileResponseForUrl error ${e.toString()}');
@@ -94,10 +98,11 @@ class Request {
 
   Future<Map<String, dynamic>?> checkForUpdate() async {
     try {
-      final response = await dio.get(
-        'https://api.github.com/repos/$repository/releases/latest',
-        options: Options(responseType: ResponseType.json),
-      )
+      final response = await dio
+          .get(
+            'https://api.github.com/repos/$repository/releases/latest',
+            options: Options(responseType: ResponseType.json),
+          )
           .timeout(const Duration(seconds: 10));
       final data = response.data as Map<String, dynamic>;
       final remoteVersion = data['tag_name'];

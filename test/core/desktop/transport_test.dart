@@ -20,18 +20,24 @@ void main() {
   group('IPCCoreTransport typed events', () {
     late StreamController<Uint8List> rawEvents;
     late List<List<int>> sentMessages;
+    late List<int> authorizedPids;
+    late int clearAuthorizationCount;
     late int stopCount;
     late IPCCoreTransport transport;
 
     setUp(() {
       rawEvents = StreamController<Uint8List>();
       sentMessages = [];
+      authorizedPids = [];
+      clearAuthorizationCount = 0;
       stopCount = 0;
       transport = IPCCoreTransport(
         address: 'test-address',
         startServer: (_) => rawEvents.stream,
         sendMessage: (data) async => sentMessages.add(data),
         stopServer: () async => stopCount++,
+        authorizePeer: (pid) async => authorizedPids.add(pid),
+        clearPeerAuthorization: () async => clearAuthorizationCount++,
       );
     });
 
@@ -89,6 +95,18 @@ void main() {
       await transport.send('hello');
 
       expect(sentMessages, [utf8.encode('hello')]);
+    });
+
+    test('forwards peer authorization changes', () async {
+      final open = transport.open();
+      rawEvents.add(_frame(0x00));
+      await open;
+
+      await transport.authorizePeer(1234);
+      await transport.clearPeerAuthorization();
+
+      expect(authorizedPids, [1234]);
+      expect(clearAuthorizationCount, 1);
     });
 
     test('emits startup failure and fails open', () async {
