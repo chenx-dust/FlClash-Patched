@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AppSettingProps {
 
- String? get locale;@JsonKey(fromJson: dashboardWidgetsSafeFormJson) List<DashboardWidget> get dashboardWidgets; bool get onlyStatisticsProxy; bool get autoLaunch; bool get highPriorityAutoLaunch; bool get silentLaunch; bool get autoRun; bool get openLogs; bool get closeConnections; String get testUrl; bool get isAnimateToPage; bool get isSwipeToPage; bool get autoCheckUpdate; bool get ignoreCertificateErrors; bool get showLabel; bool get disclaimerAccepted; bool get minimizeOnExit; bool get hidden; bool get developerMode;@JsonKey(unknownEnumValue: RestoreStrategy.compatible) RestoreStrategy get restoreStrategy; String get customUserAgent; int get foregroundTickerInterval; bool get foregroundTickerIdleWhenUnfocused; int get foregroundTickerIdleInterval;
+ String? get locale;@JsonKey(fromJson: dashboardWidgetsSafeFormJson) List<DashboardWidget> get dashboardWidgets; bool get onlyStatisticsProxy; bool get autoLaunch; bool get highPriorityAutoLaunch; bool get silentLaunch; bool get autoRun; bool get openLogs; bool get closeConnections; String get testUrl; bool get isAnimateToPage; bool get isSwipeToPage; bool get autoCheckUpdate; bool get showLabel; bool get disclaimerAccepted; bool get minimizeOnExit; bool get hidden; bool get developerMode;@JsonKey(unknownEnumValue: RestoreStrategy.compatible) RestoreStrategy get restoreStrategy; bool get showTrayTitle; String get customUserAgent; int get foregroundTickerInterval; bool get foregroundTickerIdleWhenUnfocused; int get foregroundTickerIdleInterval;
 /// Create a copy of AppSettingProps
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $AppSettingPropsCopyWith<AppSettingProps> get copyWith => _$AppSettingPropsCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettingProps&&(identical(other.locale, locale) || other.locale == locale)&&const DeepCollectionEquality().equals(other.dashboardWidgets, dashboardWidgets)&&(identical(other.onlyStatisticsProxy, onlyStatisticsProxy) || other.onlyStatisticsProxy == onlyStatisticsProxy)&&(identical(other.autoLaunch, autoLaunch) || other.autoLaunch == autoLaunch)&&(identical(other.highPriorityAutoLaunch, highPriorityAutoLaunch) || other.highPriorityAutoLaunch == highPriorityAutoLaunch)&&(identical(other.silentLaunch, silentLaunch) || other.silentLaunch == silentLaunch)&&(identical(other.autoRun, autoRun) || other.autoRun == autoRun)&&(identical(other.openLogs, openLogs) || other.openLogs == openLogs)&&(identical(other.closeConnections, closeConnections) || other.closeConnections == closeConnections)&&(identical(other.testUrl, testUrl) || other.testUrl == testUrl)&&(identical(other.isAnimateToPage, isAnimateToPage) || other.isAnimateToPage == isAnimateToPage)&&(identical(other.isSwipeToPage, isSwipeToPage) || other.isSwipeToPage == isSwipeToPage)&&(identical(other.autoCheckUpdate, autoCheckUpdate) || other.autoCheckUpdate == autoCheckUpdate)&&(identical(other.ignoreCertificateErrors, ignoreCertificateErrors) || other.ignoreCertificateErrors == ignoreCertificateErrors)&&(identical(other.showLabel, showLabel) || other.showLabel == showLabel)&&(identical(other.disclaimerAccepted, disclaimerAccepted) || other.disclaimerAccepted == disclaimerAccepted)&&(identical(other.minimizeOnExit, minimizeOnExit) || other.minimizeOnExit == minimizeOnExit)&&(identical(other.hidden, hidden) || other.hidden == hidden)&&(identical(other.developerMode, developerMode) || other.developerMode == developerMode)&&(identical(other.restoreStrategy, restoreStrategy) || other.restoreStrategy == restoreStrategy)&&(identical(other.customUserAgent, customUserAgent) || other.customUserAgent == customUserAgent)&&(identical(other.foregroundTickerInterval, foregroundTickerInterval) || other.foregroundTickerInterval == foregroundTickerInterval)&&(identical(other.foregroundTickerIdleWhenUnfocused, foregroundTickerIdleWhenUnfocused) || other.foregroundTickerIdleWhenUnfocused == foregroundTickerIdleWhenUnfocused)&&(identical(other.foregroundTickerIdleInterval, foregroundTickerIdleInterval) || other.foregroundTickerIdleInterval == foregroundTickerIdleInterval));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettingProps&&(identical(other.locale, locale) || other.locale == locale)&&const DeepCollectionEquality().equals(other.dashboardWidgets, dashboardWidgets)&&(identical(other.onlyStatisticsProxy, onlyStatisticsProxy) || other.onlyStatisticsProxy == onlyStatisticsProxy)&&(identical(other.autoLaunch, autoLaunch) || other.autoLaunch == autoLaunch)&&(identical(other.highPriorityAutoLaunch, highPriorityAutoLaunch) || other.highPriorityAutoLaunch == highPriorityAutoLaunch)&&(identical(other.silentLaunch, silentLaunch) || other.silentLaunch == silentLaunch)&&(identical(other.autoRun, autoRun) || other.autoRun == autoRun)&&(identical(other.openLogs, openLogs) || other.openLogs == openLogs)&&(identical(other.closeConnections, closeConnections) || other.closeConnections == closeConnections)&&(identical(other.testUrl, testUrl) || other.testUrl == testUrl)&&(identical(other.isAnimateToPage, isAnimateToPage) || other.isAnimateToPage == isAnimateToPage)&&(identical(other.isSwipeToPage, isSwipeToPage) || other.isSwipeToPage == isSwipeToPage)&&(identical(other.autoCheckUpdate, autoCheckUpdate) || other.autoCheckUpdate == autoCheckUpdate)&&(identical(other.showLabel, showLabel) || other.showLabel == showLabel)&&(identical(other.disclaimerAccepted, disclaimerAccepted) || other.disclaimerAccepted == disclaimerAccepted)&&(identical(other.minimizeOnExit, minimizeOnExit) || other.minimizeOnExit == minimizeOnExit)&&(identical(other.hidden, hidden) || other.hidden == hidden)&&(identical(other.developerMode, developerMode) || other.developerMode == developerMode)&&(identical(other.restoreStrategy, restoreStrategy) || other.restoreStrategy == restoreStrategy)&&(identical(other.showTrayTitle, showTrayTitle) || other.showTrayTitle == showTrayTitle)&&(identical(other.customUserAgent, customUserAgent) || other.customUserAgent == customUserAgent)&&(identical(other.foregroundTickerInterval, foregroundTickerInterval) || other.foregroundTickerInterval == foregroundTickerInterval)&&(identical(other.foregroundTickerIdleWhenUnfocused, foregroundTickerIdleWhenUnfocused) || other.foregroundTickerIdleWhenUnfocused == foregroundTickerIdleWhenUnfocused)&&(identical(other.foregroundTickerIdleInterval, foregroundTickerIdleInterval) || other.foregroundTickerIdleInterval == foregroundTickerIdleInterval));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,locale,const DeepCollectionEquality().hash(dashboardWidgets),onlyStatisticsProxy,autoLaunch,highPriorityAutoLaunch,silentLaunch,autoRun,openLogs,closeConnections,testUrl,isAnimateToPage,isSwipeToPage,autoCheckUpdate,ignoreCertificateErrors,showLabel,disclaimerAccepted,minimizeOnExit,hidden,developerMode,restoreStrategy,customUserAgent,foregroundTickerInterval,foregroundTickerIdleWhenUnfocused,foregroundTickerIdleInterval]);
+int get hashCode => Object.hashAll([runtimeType,locale,const DeepCollectionEquality().hash(dashboardWidgets),onlyStatisticsProxy,autoLaunch,highPriorityAutoLaunch,silentLaunch,autoRun,openLogs,closeConnections,testUrl,isAnimateToPage,isSwipeToPage,autoCheckUpdate,showLabel,disclaimerAccepted,minimizeOnExit,hidden,developerMode,restoreStrategy,showTrayTitle,customUserAgent,foregroundTickerInterval,foregroundTickerIdleWhenUnfocused,foregroundTickerIdleInterval]);
 
 @override
 String toString() {
-  return 'AppSettingProps(locale: $locale, dashboardWidgets: $dashboardWidgets, onlyStatisticsProxy: $onlyStatisticsProxy, autoLaunch: $autoLaunch, highPriorityAutoLaunch: $highPriorityAutoLaunch, silentLaunch: $silentLaunch, autoRun: $autoRun, openLogs: $openLogs, closeConnections: $closeConnections, testUrl: $testUrl, isAnimateToPage: $isAnimateToPage, isSwipeToPage: $isSwipeToPage, autoCheckUpdate: $autoCheckUpdate, ignoreCertificateErrors: $ignoreCertificateErrors, showLabel: $showLabel, disclaimerAccepted: $disclaimerAccepted, minimizeOnExit: $minimizeOnExit, hidden: $hidden, developerMode: $developerMode, restoreStrategy: $restoreStrategy, customUserAgent: $customUserAgent, foregroundTickerInterval: $foregroundTickerInterval, foregroundTickerIdleWhenUnfocused: $foregroundTickerIdleWhenUnfocused, foregroundTickerIdleInterval: $foregroundTickerIdleInterval)';
+  return 'AppSettingProps(locale: $locale, dashboardWidgets: $dashboardWidgets, onlyStatisticsProxy: $onlyStatisticsProxy, autoLaunch: $autoLaunch, highPriorityAutoLaunch: $highPriorityAutoLaunch, silentLaunch: $silentLaunch, autoRun: $autoRun, openLogs: $openLogs, closeConnections: $closeConnections, testUrl: $testUrl, isAnimateToPage: $isAnimateToPage, isSwipeToPage: $isSwipeToPage, autoCheckUpdate: $autoCheckUpdate, showLabel: $showLabel, disclaimerAccepted: $disclaimerAccepted, minimizeOnExit: $minimizeOnExit, hidden: $hidden, developerMode: $developerMode, restoreStrategy: $restoreStrategy, showTrayTitle: $showTrayTitle, customUserAgent: $customUserAgent, foregroundTickerInterval: $foregroundTickerInterval, foregroundTickerIdleWhenUnfocused: $foregroundTickerIdleWhenUnfocused, foregroundTickerIdleInterval: $foregroundTickerIdleInterval)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $AppSettingPropsCopyWith<$Res>  {
   factory $AppSettingPropsCopyWith(AppSettingProps value, $Res Function(AppSettingProps) _then) = _$AppSettingPropsCopyWithImpl;
 @useResult
 $Res call({
- String? locale,@JsonKey(fromJson: dashboardWidgetsSafeFormJson) List<DashboardWidget> dashboardWidgets, bool onlyStatisticsProxy, bool autoLaunch, bool highPriorityAutoLaunch, bool silentLaunch, bool autoRun, bool openLogs, bool closeConnections, String testUrl, bool isAnimateToPage, bool isSwipeToPage, bool autoCheckUpdate, bool ignoreCertificateErrors, bool showLabel, bool disclaimerAccepted, bool minimizeOnExit, bool hidden, bool developerMode,@JsonKey(unknownEnumValue: RestoreStrategy.compatible) RestoreStrategy restoreStrategy, String customUserAgent, int foregroundTickerInterval, bool foregroundTickerIdleWhenUnfocused, int foregroundTickerIdleInterval
+ String? locale,@JsonKey(fromJson: dashboardWidgetsSafeFormJson) List<DashboardWidget> dashboardWidgets, bool onlyStatisticsProxy, bool autoLaunch, bool highPriorityAutoLaunch, bool silentLaunch, bool autoRun, bool openLogs, bool closeConnections, String testUrl, bool isAnimateToPage, bool isSwipeToPage, bool autoCheckUpdate, bool showLabel, bool disclaimerAccepted, bool minimizeOnExit, bool hidden, bool developerMode,@JsonKey(unknownEnumValue: RestoreStrategy.compatible) RestoreStrategy restoreStrategy, bool showTrayTitle, String customUserAgent, int foregroundTickerInterval, bool foregroundTickerIdleWhenUnfocused, int foregroundTickerIdleInterval
 });
 
 
@@ -65,7 +65,7 @@ class _$AppSettingPropsCopyWithImpl<$Res>
 
 /// Create a copy of AppSettingProps
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? locale = freezed,Object? dashboardWidgets = null,Object? onlyStatisticsProxy = null,Object? autoLaunch = null,Object? highPriorityAutoLaunch = null,Object? silentLaunch = null,Object? autoRun = null,Object? openLogs = null,Object? closeConnections = null,Object? testUrl = null,Object? isAnimateToPage = null,Object? isSwipeToPage = null,Object? autoCheckUpdate = null,Object? ignoreCertificateErrors = null,Object? showLabel = null,Object? disclaimerAccepted = null,Object? minimizeOnExit = null,Object? hidden = null,Object? developerMode = null,Object? restoreStrategy = null,Object? customUserAgent = null,Object? foregroundTickerInterval = null,Object? foregroundTickerIdleWhenUnfocused = null,Object? foregroundTickerIdleInterval = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? locale = freezed,Object? dashboardWidgets = null,Object? onlyStatisticsProxy = null,Object? autoLaunch = null,Object? highPriorityAutoLaunch = null,Object? silentLaunch = null,Object? autoRun = null,Object? openLogs = null,Object? closeConnections = null,Object? testUrl = null,Object? isAnimateToPage = null,Object? isSwipeToPage = null,Object? autoCheckUpdate = null,Object? showLabel = null,Object? disclaimerAccepted = null,Object? minimizeOnExit = null,Object? hidden = null,Object? developerMode = null,Object? restoreStrategy = null,Object? showTrayTitle = null,Object? customUserAgent = null,Object? foregroundTickerInterval = null,Object? foregroundTickerIdleWhenUnfocused = null,Object? foregroundTickerIdleInterval = null,}) {
   return _then(_self.copyWith(
 locale: freezed == locale ? _self.locale : locale // ignore: cast_nullable_to_non_nullable
 as String?,dashboardWidgets: null == dashboardWidgets ? _self.dashboardWidgets : dashboardWidgets // ignore: cast_nullable_to_non_nullable
@@ -78,6 +78,7 @@ as bool,openLogs: null == openLogs ? _self.openLogs : openLogs // ignore: cast_n
 as bool,closeConnections: null == closeConnections ? _self.closeConnections : closeConnections // ignore: cast_nullable_to_non_nullable
 as bool,testUrl: null == testUrl ? _self.testUrl : testUrl // ignore: cast_nullable_to_non_nullable
 as String,isAnimateToPage: null == isAnimateToPage ? _self.isAnimateToPage : isAnimateToPage // ignore: cast_nullable_to_non_nullable
+as bool,isSwipeToPage: null == isSwipeToPage ? _self.isSwipeToPage : isSwipeToPage // ignore: cast_nullable_to_non_nullable
 as bool,autoCheckUpdate: null == autoCheckUpdate ? _self.autoCheckUpdate : autoCheckUpdate // ignore: cast_nullable_to_non_nullable
 as bool,showLabel: null == showLabel ? _self.showLabel : showLabel // ignore: cast_nullable_to_non_nullable
 as bool,disclaimerAccepted: null == disclaimerAccepted ? _self.disclaimerAccepted : disclaimerAccepted // ignore: cast_nullable_to_non_nullable
@@ -174,10 +175,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? locale, @JsonKey(fromJson: dashboardWidgetsSafeFormJson)  List<DashboardWidget> dashboardWidgets,  bool onlyStatisticsProxy,  bool autoLaunch,  bool highPriorityAutoLaunch,  bool silentLaunch,  bool autoRun,  bool openLogs,  bool closeConnections,  String testUrl,  bool isAnimateToPage,  bool isSwipeToPage,  bool autoCheckUpdate,  bool ignoreCertificateErrors,  bool showLabel,  bool disclaimerAccepted,  bool minimizeOnExit,  bool hidden,  bool developerMode, @JsonKey(unknownEnumValue: RestoreStrategy.compatible)  RestoreStrategy restoreStrategy,  String customUserAgent,  int foregroundTickerInterval,  bool foregroundTickerIdleWhenUnfocused,  int foregroundTickerIdleInterval)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? locale, @JsonKey(fromJson: dashboardWidgetsSafeFormJson)  List<DashboardWidget> dashboardWidgets,  bool onlyStatisticsProxy,  bool autoLaunch,  bool highPriorityAutoLaunch,  bool silentLaunch,  bool autoRun,  bool openLogs,  bool closeConnections,  String testUrl,  bool isAnimateToPage,  bool isSwipeToPage,  bool autoCheckUpdate,  bool showLabel,  bool disclaimerAccepted,  bool minimizeOnExit,  bool hidden,  bool developerMode, @JsonKey(unknownEnumValue: RestoreStrategy.compatible)  RestoreStrategy restoreStrategy,  bool showTrayTitle,  String customUserAgent,  int foregroundTickerInterval,  bool foregroundTickerIdleWhenUnfocused,  int foregroundTickerIdleInterval)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AppSettingProps() when $default != null:
-return $default(_that.locale,_that.dashboardWidgets,_that.onlyStatisticsProxy,_that.autoLaunch,_that.highPriorityAutoLaunch,_that.silentLaunch,_that.autoRun,_that.openLogs,_that.closeConnections,_that.testUrl,_that.isAnimateToPage,_that.isSwipeToPage,_that.autoCheckUpdate,_that.ignoreCertificateErrors,_that.showLabel,_that.disclaimerAccepted,_that.minimizeOnExit,_that.hidden,_that.developerMode,_that.restoreStrategy,_that.customUserAgent,_that.foregroundTickerInterval,_that.foregroundTickerIdleWhenUnfocused,_that.foregroundTickerIdleInterval);case _:
+return $default(_that.locale,_that.dashboardWidgets,_that.onlyStatisticsProxy,_that.autoLaunch,_that.highPriorityAutoLaunch,_that.silentLaunch,_that.autoRun,_that.openLogs,_that.closeConnections,_that.testUrl,_that.isAnimateToPage,_that.isSwipeToPage,_that.autoCheckUpdate,_that.showLabel,_that.disclaimerAccepted,_that.minimizeOnExit,_that.hidden,_that.developerMode,_that.restoreStrategy,_that.showTrayTitle,_that.customUserAgent,_that.foregroundTickerInterval,_that.foregroundTickerIdleWhenUnfocused,_that.foregroundTickerIdleInterval);case _:
   return orElse();
 
 }
@@ -195,10 +196,10 @@ return $default(_that.locale,_that.dashboardWidgets,_that.onlyStatisticsProxy,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? locale, @JsonKey(fromJson: dashboardWidgetsSafeFormJson)  List<DashboardWidget> dashboardWidgets,  bool onlyStatisticsProxy,  bool autoLaunch,  bool highPriorityAutoLaunch,  bool silentLaunch,  bool autoRun,  bool openLogs,  bool closeConnections,  String testUrl,  bool isAnimateToPage,  bool isSwipeToPage,  bool autoCheckUpdate,  bool ignoreCertificateErrors,  bool showLabel,  bool disclaimerAccepted,  bool minimizeOnExit,  bool hidden,  bool developerMode, @JsonKey(unknownEnumValue: RestoreStrategy.compatible)  RestoreStrategy restoreStrategy,  String customUserAgent,  int foregroundTickerInterval,  bool foregroundTickerIdleWhenUnfocused,  int foregroundTickerIdleInterval)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? locale, @JsonKey(fromJson: dashboardWidgetsSafeFormJson)  List<DashboardWidget> dashboardWidgets,  bool onlyStatisticsProxy,  bool autoLaunch,  bool highPriorityAutoLaunch,  bool silentLaunch,  bool autoRun,  bool openLogs,  bool closeConnections,  String testUrl,  bool isAnimateToPage,  bool isSwipeToPage,  bool autoCheckUpdate,  bool showLabel,  bool disclaimerAccepted,  bool minimizeOnExit,  bool hidden,  bool developerMode, @JsonKey(unknownEnumValue: RestoreStrategy.compatible)  RestoreStrategy restoreStrategy,  bool showTrayTitle,  String customUserAgent,  int foregroundTickerInterval,  bool foregroundTickerIdleWhenUnfocused,  int foregroundTickerIdleInterval)  $default,) {final _that = this;
 switch (_that) {
 case _AppSettingProps():
-return $default(_that.locale,_that.dashboardWidgets,_that.onlyStatisticsProxy,_that.autoLaunch,_that.highPriorityAutoLaunch,_that.silentLaunch,_that.autoRun,_that.openLogs,_that.closeConnections,_that.testUrl,_that.isAnimateToPage,_that.isSwipeToPage,_that.autoCheckUpdate,_that.ignoreCertificateErrors,_that.showLabel,_that.disclaimerAccepted,_that.minimizeOnExit,_that.hidden,_that.developerMode,_that.restoreStrategy,_that.customUserAgent,_that.foregroundTickerInterval,_that.foregroundTickerIdleWhenUnfocused,_that.foregroundTickerIdleInterval);case _:
+return $default(_that.locale,_that.dashboardWidgets,_that.onlyStatisticsProxy,_that.autoLaunch,_that.highPriorityAutoLaunch,_that.silentLaunch,_that.autoRun,_that.openLogs,_that.closeConnections,_that.testUrl,_that.isAnimateToPage,_that.isSwipeToPage,_that.autoCheckUpdate,_that.showLabel,_that.disclaimerAccepted,_that.minimizeOnExit,_that.hidden,_that.developerMode,_that.restoreStrategy,_that.showTrayTitle,_that.customUserAgent,_that.foregroundTickerInterval,_that.foregroundTickerIdleWhenUnfocused,_that.foregroundTickerIdleInterval);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -215,10 +216,10 @@ return $default(_that.locale,_that.dashboardWidgets,_that.onlyStatisticsProxy,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? locale, @JsonKey(fromJson: dashboardWidgetsSafeFormJson)  List<DashboardWidget> dashboardWidgets,  bool onlyStatisticsProxy,  bool autoLaunch,  bool highPriorityAutoLaunch,  bool silentLaunch,  bool autoRun,  bool openLogs,  bool closeConnections,  String testUrl,  bool isAnimateToPage,  bool isSwipeToPage,  bool autoCheckUpdate,  bool ignoreCertificateErrors,  bool showLabel,  bool disclaimerAccepted,  bool minimizeOnExit,  bool hidden,  bool developerMode, @JsonKey(unknownEnumValue: RestoreStrategy.compatible)  RestoreStrategy restoreStrategy,  String customUserAgent,  int foregroundTickerInterval,  bool foregroundTickerIdleWhenUnfocused,  int foregroundTickerIdleInterval)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? locale, @JsonKey(fromJson: dashboardWidgetsSafeFormJson)  List<DashboardWidget> dashboardWidgets,  bool onlyStatisticsProxy,  bool autoLaunch,  bool highPriorityAutoLaunch,  bool silentLaunch,  bool autoRun,  bool openLogs,  bool closeConnections,  String testUrl,  bool isAnimateToPage,  bool isSwipeToPage,  bool autoCheckUpdate,  bool showLabel,  bool disclaimerAccepted,  bool minimizeOnExit,  bool hidden,  bool developerMode, @JsonKey(unknownEnumValue: RestoreStrategy.compatible)  RestoreStrategy restoreStrategy,  bool showTrayTitle,  String customUserAgent,  int foregroundTickerInterval,  bool foregroundTickerIdleWhenUnfocused,  int foregroundTickerIdleInterval)?  $default,) {final _that = this;
 switch (_that) {
 case _AppSettingProps() when $default != null:
-return $default(_that.locale,_that.dashboardWidgets,_that.onlyStatisticsProxy,_that.autoLaunch,_that.highPriorityAutoLaunch,_that.silentLaunch,_that.autoRun,_that.openLogs,_that.closeConnections,_that.testUrl,_that.isAnimateToPage,_that.isSwipeToPage,_that.autoCheckUpdate,_that.ignoreCertificateErrors,_that.showLabel,_that.disclaimerAccepted,_that.minimizeOnExit,_that.hidden,_that.developerMode,_that.restoreStrategy,_that.customUserAgent,_that.foregroundTickerInterval,_that.foregroundTickerIdleWhenUnfocused,_that.foregroundTickerIdleInterval);case _:
+return $default(_that.locale,_that.dashboardWidgets,_that.onlyStatisticsProxy,_that.autoLaunch,_that.highPriorityAutoLaunch,_that.silentLaunch,_that.autoRun,_that.openLogs,_that.closeConnections,_that.testUrl,_that.isAnimateToPage,_that.isSwipeToPage,_that.autoCheckUpdate,_that.showLabel,_that.disclaimerAccepted,_that.minimizeOnExit,_that.hidden,_that.developerMode,_that.restoreStrategy,_that.showTrayTitle,_that.customUserAgent,_that.foregroundTickerInterval,_that.foregroundTickerIdleWhenUnfocused,_that.foregroundTickerIdleInterval);case _:
   return null;
 
 }
@@ -230,7 +231,7 @@ return $default(_that.locale,_that.dashboardWidgets,_that.onlyStatisticsProxy,_t
 @JsonSerializable()
 
 class _AppSettingProps implements AppSettingProps {
-  const _AppSettingProps({this.locale, @JsonKey(fromJson: dashboardWidgetsSafeFormJson) final  List<DashboardWidget> dashboardWidgets = defaultDashboardWidgets, this.onlyStatisticsProxy = false, this.autoLaunch = false, this.highPriorityAutoLaunch = false, this.silentLaunch = false, this.autoRun = false, this.openLogs = false, this.closeConnections = true, this.testUrl = defaultTestUrl, this.isAnimateToPage = true, this.isSwipeToPage = true, this.autoCheckUpdate = true, this.ignoreCertificateErrors = false, this.showLabel = false, this.disclaimerAccepted = false, this.minimizeOnExit = true, this.hidden = false, this.developerMode = false, @JsonKey(unknownEnumValue: RestoreStrategy.compatible) this.restoreStrategy = RestoreStrategy.compatible, this.customUserAgent = '', this.foregroundTickerInterval = defaultForegroundTickerInterval, this.foregroundTickerIdleWhenUnfocused = true, this.foregroundTickerIdleInterval = defaultForegroundTickerIdleInterval}): _dashboardWidgets = dashboardWidgets;
+  const _AppSettingProps({this.locale, @JsonKey(fromJson: dashboardWidgetsSafeFormJson) final  List<DashboardWidget> dashboardWidgets = defaultDashboardWidgets, this.onlyStatisticsProxy = false, this.autoLaunch = false, this.highPriorityAutoLaunch = false, this.silentLaunch = false, this.autoRun = false, this.openLogs = false, this.closeConnections = true, this.testUrl = defaultTestUrl, this.isAnimateToPage = true, this.isSwipeToPage = true, this.autoCheckUpdate = true, this.showLabel = false, this.disclaimerAccepted = false, this.minimizeOnExit = true, this.hidden = false, this.developerMode = false, @JsonKey(unknownEnumValue: RestoreStrategy.compatible) this.restoreStrategy = RestoreStrategy.compatible, this.showTrayTitle = true, this.customUserAgent = '', this.foregroundTickerInterval = defaultForegroundTickerInterval, this.foregroundTickerIdleWhenUnfocused = true, this.foregroundTickerIdleInterval = defaultForegroundTickerIdleInterval}): _dashboardWidgets = dashboardWidgets;
   factory _AppSettingProps.fromJson(Map<String, dynamic> json) => _$AppSettingPropsFromJson(json);
 
 @override final  String? locale;
@@ -250,6 +251,7 @@ class _AppSettingProps implements AppSettingProps {
 @override@JsonKey() final  bool closeConnections;
 @override@JsonKey() final  String testUrl;
 @override@JsonKey() final  bool isAnimateToPage;
+@override@JsonKey() final  bool isSwipeToPage;
 @override@JsonKey() final  bool autoCheckUpdate;
 @override@JsonKey() final  bool showLabel;
 @override@JsonKey() final  bool disclaimerAccepted;
@@ -272,16 +274,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettingProps&&(identical(other.locale, locale) || other.locale == locale)&&const DeepCollectionEquality().equals(other._dashboardWidgets, _dashboardWidgets)&&(identical(other.onlyStatisticsProxy, onlyStatisticsProxy) || other.onlyStatisticsProxy == onlyStatisticsProxy)&&(identical(other.autoLaunch, autoLaunch) || other.autoLaunch == autoLaunch)&&(identical(other.highPriorityAutoLaunch, highPriorityAutoLaunch) || other.highPriorityAutoLaunch == highPriorityAutoLaunch)&&(identical(other.silentLaunch, silentLaunch) || other.silentLaunch == silentLaunch)&&(identical(other.autoRun, autoRun) || other.autoRun == autoRun)&&(identical(other.openLogs, openLogs) || other.openLogs == openLogs)&&(identical(other.closeConnections, closeConnections) || other.closeConnections == closeConnections)&&(identical(other.testUrl, testUrl) || other.testUrl == testUrl)&&(identical(other.isAnimateToPage, isAnimateToPage) || other.isAnimateToPage == isAnimateToPage)&&(identical(other.isSwipeToPage, isSwipeToPage) || other.isSwipeToPage == isSwipeToPage)&&(identical(other.autoCheckUpdate, autoCheckUpdate) || other.autoCheckUpdate == autoCheckUpdate)&&(identical(other.ignoreCertificateErrors, ignoreCertificateErrors) || other.ignoreCertificateErrors == ignoreCertificateErrors)&&(identical(other.showLabel, showLabel) || other.showLabel == showLabel)&&(identical(other.disclaimerAccepted, disclaimerAccepted) || other.disclaimerAccepted == disclaimerAccepted)&&(identical(other.minimizeOnExit, minimizeOnExit) || other.minimizeOnExit == minimizeOnExit)&&(identical(other.hidden, hidden) || other.hidden == hidden)&&(identical(other.developerMode, developerMode) || other.developerMode == developerMode)&&(identical(other.restoreStrategy, restoreStrategy) || other.restoreStrategy == restoreStrategy)&&(identical(other.customUserAgent, customUserAgent) || other.customUserAgent == customUserAgent)&&(identical(other.foregroundTickerInterval, foregroundTickerInterval) || other.foregroundTickerInterval == foregroundTickerInterval)&&(identical(other.foregroundTickerIdleWhenUnfocused, foregroundTickerIdleWhenUnfocused) || other.foregroundTickerIdleWhenUnfocused == foregroundTickerIdleWhenUnfocused)&&(identical(other.foregroundTickerIdleInterval, foregroundTickerIdleInterval) || other.foregroundTickerIdleInterval == foregroundTickerIdleInterval));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettingProps&&(identical(other.locale, locale) || other.locale == locale)&&const DeepCollectionEquality().equals(other._dashboardWidgets, _dashboardWidgets)&&(identical(other.onlyStatisticsProxy, onlyStatisticsProxy) || other.onlyStatisticsProxy == onlyStatisticsProxy)&&(identical(other.autoLaunch, autoLaunch) || other.autoLaunch == autoLaunch)&&(identical(other.highPriorityAutoLaunch, highPriorityAutoLaunch) || other.highPriorityAutoLaunch == highPriorityAutoLaunch)&&(identical(other.silentLaunch, silentLaunch) || other.silentLaunch == silentLaunch)&&(identical(other.autoRun, autoRun) || other.autoRun == autoRun)&&(identical(other.openLogs, openLogs) || other.openLogs == openLogs)&&(identical(other.closeConnections, closeConnections) || other.closeConnections == closeConnections)&&(identical(other.testUrl, testUrl) || other.testUrl == testUrl)&&(identical(other.isAnimateToPage, isAnimateToPage) || other.isAnimateToPage == isAnimateToPage)&&(identical(other.isSwipeToPage, isSwipeToPage) || other.isSwipeToPage == isSwipeToPage)&&(identical(other.autoCheckUpdate, autoCheckUpdate) || other.autoCheckUpdate == autoCheckUpdate)&&(identical(other.showLabel, showLabel) || other.showLabel == showLabel)&&(identical(other.disclaimerAccepted, disclaimerAccepted) || other.disclaimerAccepted == disclaimerAccepted)&&(identical(other.minimizeOnExit, minimizeOnExit) || other.minimizeOnExit == minimizeOnExit)&&(identical(other.hidden, hidden) || other.hidden == hidden)&&(identical(other.developerMode, developerMode) || other.developerMode == developerMode)&&(identical(other.restoreStrategy, restoreStrategy) || other.restoreStrategy == restoreStrategy)&&(identical(other.showTrayTitle, showTrayTitle) || other.showTrayTitle == showTrayTitle)&&(identical(other.customUserAgent, customUserAgent) || other.customUserAgent == customUserAgent)&&(identical(other.foregroundTickerInterval, foregroundTickerInterval) || other.foregroundTickerInterval == foregroundTickerInterval)&&(identical(other.foregroundTickerIdleWhenUnfocused, foregroundTickerIdleWhenUnfocused) || other.foregroundTickerIdleWhenUnfocused == foregroundTickerIdleWhenUnfocused)&&(identical(other.foregroundTickerIdleInterval, foregroundTickerIdleInterval) || other.foregroundTickerIdleInterval == foregroundTickerIdleInterval));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,locale,const DeepCollectionEquality().hash(_dashboardWidgets),onlyStatisticsProxy,autoLaunch,highPriorityAutoLaunch,silentLaunch,autoRun,openLogs,closeConnections,testUrl,isAnimateToPage,isSwipeToPage,autoCheckUpdate,ignoreCertificateErrors,showLabel,disclaimerAccepted,minimizeOnExit,hidden,developerMode,restoreStrategy,customUserAgent,foregroundTickerInterval,foregroundTickerIdleWhenUnfocused,foregroundTickerIdleInterval]);
+int get hashCode => Object.hashAll([runtimeType,locale,const DeepCollectionEquality().hash(_dashboardWidgets),onlyStatisticsProxy,autoLaunch,highPriorityAutoLaunch,silentLaunch,autoRun,openLogs,closeConnections,testUrl,isAnimateToPage,isSwipeToPage,autoCheckUpdate,showLabel,disclaimerAccepted,minimizeOnExit,hidden,developerMode,restoreStrategy,showTrayTitle,customUserAgent,foregroundTickerInterval,foregroundTickerIdleWhenUnfocused,foregroundTickerIdleInterval]);
 
 @override
 String toString() {
-  return 'AppSettingProps(locale: $locale, dashboardWidgets: $dashboardWidgets, onlyStatisticsProxy: $onlyStatisticsProxy, autoLaunch: $autoLaunch, highPriorityAutoLaunch: $highPriorityAutoLaunch, silentLaunch: $silentLaunch, autoRun: $autoRun, openLogs: $openLogs, closeConnections: $closeConnections, testUrl: $testUrl, isAnimateToPage: $isAnimateToPage, isSwipeToPage: $isSwipeToPage, autoCheckUpdate: $autoCheckUpdate, ignoreCertificateErrors: $ignoreCertificateErrors, showLabel: $showLabel, disclaimerAccepted: $disclaimerAccepted, minimizeOnExit: $minimizeOnExit, hidden: $hidden, developerMode: $developerMode, restoreStrategy: $restoreStrategy, customUserAgent: $customUserAgent, foregroundTickerInterval: $foregroundTickerInterval, foregroundTickerIdleWhenUnfocused: $foregroundTickerIdleWhenUnfocused, foregroundTickerIdleInterval: $foregroundTickerIdleInterval)';
+  return 'AppSettingProps(locale: $locale, dashboardWidgets: $dashboardWidgets, onlyStatisticsProxy: $onlyStatisticsProxy, autoLaunch: $autoLaunch, highPriorityAutoLaunch: $highPriorityAutoLaunch, silentLaunch: $silentLaunch, autoRun: $autoRun, openLogs: $openLogs, closeConnections: $closeConnections, testUrl: $testUrl, isAnimateToPage: $isAnimateToPage, isSwipeToPage: $isSwipeToPage, autoCheckUpdate: $autoCheckUpdate, showLabel: $showLabel, disclaimerAccepted: $disclaimerAccepted, minimizeOnExit: $minimizeOnExit, hidden: $hidden, developerMode: $developerMode, restoreStrategy: $restoreStrategy, showTrayTitle: $showTrayTitle, customUserAgent: $customUserAgent, foregroundTickerInterval: $foregroundTickerInterval, foregroundTickerIdleWhenUnfocused: $foregroundTickerIdleWhenUnfocused, foregroundTickerIdleInterval: $foregroundTickerIdleInterval)';
 }
 
 
@@ -292,7 +294,7 @@ abstract mixin class _$AppSettingPropsCopyWith<$Res> implements $AppSettingProps
   factory _$AppSettingPropsCopyWith(_AppSettingProps value, $Res Function(_AppSettingProps) _then) = __$AppSettingPropsCopyWithImpl;
 @override @useResult
 $Res call({
- String? locale,@JsonKey(fromJson: dashboardWidgetsSafeFormJson) List<DashboardWidget> dashboardWidgets, bool onlyStatisticsProxy, bool autoLaunch, bool highPriorityAutoLaunch, bool silentLaunch, bool autoRun, bool openLogs, bool closeConnections, String testUrl, bool isAnimateToPage, bool isSwipeToPage, bool autoCheckUpdate, bool ignoreCertificateErrors, bool showLabel, bool disclaimerAccepted, bool minimizeOnExit, bool hidden, bool developerMode,@JsonKey(unknownEnumValue: RestoreStrategy.compatible) RestoreStrategy restoreStrategy, String customUserAgent, int foregroundTickerInterval, bool foregroundTickerIdleWhenUnfocused, int foregroundTickerIdleInterval
+ String? locale,@JsonKey(fromJson: dashboardWidgetsSafeFormJson) List<DashboardWidget> dashboardWidgets, bool onlyStatisticsProxy, bool autoLaunch, bool highPriorityAutoLaunch, bool silentLaunch, bool autoRun, bool openLogs, bool closeConnections, String testUrl, bool isAnimateToPage, bool isSwipeToPage, bool autoCheckUpdate, bool showLabel, bool disclaimerAccepted, bool minimizeOnExit, bool hidden, bool developerMode,@JsonKey(unknownEnumValue: RestoreStrategy.compatible) RestoreStrategy restoreStrategy, bool showTrayTitle, String customUserAgent, int foregroundTickerInterval, bool foregroundTickerIdleWhenUnfocused, int foregroundTickerIdleInterval
 });
 
 
@@ -309,7 +311,7 @@ class __$AppSettingPropsCopyWithImpl<$Res>
 
 /// Create a copy of AppSettingProps
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? locale = freezed,Object? dashboardWidgets = null,Object? onlyStatisticsProxy = null,Object? autoLaunch = null,Object? highPriorityAutoLaunch = null,Object? silentLaunch = null,Object? autoRun = null,Object? openLogs = null,Object? closeConnections = null,Object? testUrl = null,Object? isAnimateToPage = null,Object? isSwipeToPage = null,Object? autoCheckUpdate = null,Object? ignoreCertificateErrors = null,Object? showLabel = null,Object? disclaimerAccepted = null,Object? minimizeOnExit = null,Object? hidden = null,Object? developerMode = null,Object? restoreStrategy = null,Object? customUserAgent = null,Object? foregroundTickerInterval = null,Object? foregroundTickerIdleWhenUnfocused = null,Object? foregroundTickerIdleInterval = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? locale = freezed,Object? dashboardWidgets = null,Object? onlyStatisticsProxy = null,Object? autoLaunch = null,Object? highPriorityAutoLaunch = null,Object? silentLaunch = null,Object? autoRun = null,Object? openLogs = null,Object? closeConnections = null,Object? testUrl = null,Object? isAnimateToPage = null,Object? isSwipeToPage = null,Object? autoCheckUpdate = null,Object? showLabel = null,Object? disclaimerAccepted = null,Object? minimizeOnExit = null,Object? hidden = null,Object? developerMode = null,Object? restoreStrategy = null,Object? showTrayTitle = null,Object? customUserAgent = null,Object? foregroundTickerInterval = null,Object? foregroundTickerIdleWhenUnfocused = null,Object? foregroundTickerIdleInterval = null,}) {
   return _then(_AppSettingProps(
 locale: freezed == locale ? _self.locale : locale // ignore: cast_nullable_to_non_nullable
 as String?,dashboardWidgets: null == dashboardWidgets ? _self._dashboardWidgets : dashboardWidgets // ignore: cast_nullable_to_non_nullable
@@ -322,6 +324,7 @@ as bool,openLogs: null == openLogs ? _self.openLogs : openLogs // ignore: cast_n
 as bool,closeConnections: null == closeConnections ? _self.closeConnections : closeConnections // ignore: cast_nullable_to_non_nullable
 as bool,testUrl: null == testUrl ? _self.testUrl : testUrl // ignore: cast_nullable_to_non_nullable
 as String,isAnimateToPage: null == isAnimateToPage ? _self.isAnimateToPage : isAnimateToPage // ignore: cast_nullable_to_non_nullable
+as bool,isSwipeToPage: null == isSwipeToPage ? _self.isSwipeToPage : isSwipeToPage // ignore: cast_nullable_to_non_nullable
 as bool,autoCheckUpdate: null == autoCheckUpdate ? _self.autoCheckUpdate : autoCheckUpdate // ignore: cast_nullable_to_non_nullable
 as bool,showLabel: null == showLabel ? _self.showLabel : showLabel // ignore: cast_nullable_to_non_nullable
 as bool,disclaimerAccepted: null == disclaimerAccepted ? _self.disclaimerAccepted : disclaimerAccepted // ignore: cast_nullable_to_non_nullable
@@ -2033,7 +2036,7 @@ as double,
 /// @nodoc
 mixin _$ThemeProps {
 
- int? get primaryColor; List<int> get primaryColors;@JsonKey(unknownEnumValue: ThemeMode.system) ThemeMode get themeMode;@JsonKey(unknownEnumValue: DynamicSchemeVariant.content) DynamicSchemeVariant get schemeVariant; bool get pureBlack; bool get monochromeTrayIcon; bool get predictiveBack; TextScale get textScale;
+ int? get primaryColor; List<int> get primaryColors; ThemeMode get themeMode; DynamicSchemeVariant get schemeVariant; bool get pureBlack; bool get predictiveBack; TextScale get textScale;
 /// Create a copy of ThemeProps
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -2046,16 +2049,16 @@ $ThemePropsCopyWith<ThemeProps> get copyWith => _$ThemePropsCopyWithImpl<ThemePr
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ThemeProps&&(identical(other.primaryColor, primaryColor) || other.primaryColor == primaryColor)&&const DeepCollectionEquality().equals(other.primaryColors, primaryColors)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.schemeVariant, schemeVariant) || other.schemeVariant == schemeVariant)&&(identical(other.pureBlack, pureBlack) || other.pureBlack == pureBlack)&&(identical(other.monochromeTrayIcon, monochromeTrayIcon) || other.monochromeTrayIcon == monochromeTrayIcon)&&(identical(other.predictiveBack, predictiveBack) || other.predictiveBack == predictiveBack)&&(identical(other.textScale, textScale) || other.textScale == textScale));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ThemeProps&&(identical(other.primaryColor, primaryColor) || other.primaryColor == primaryColor)&&const DeepCollectionEquality().equals(other.primaryColors, primaryColors)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.schemeVariant, schemeVariant) || other.schemeVariant == schemeVariant)&&(identical(other.pureBlack, pureBlack) || other.pureBlack == pureBlack)&&(identical(other.predictiveBack, predictiveBack) || other.predictiveBack == predictiveBack)&&(identical(other.textScale, textScale) || other.textScale == textScale));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,primaryColor,const DeepCollectionEquality().hash(primaryColors),themeMode,schemeVariant,pureBlack,monochromeTrayIcon,predictiveBack,textScale);
+int get hashCode => Object.hash(runtimeType,primaryColor,const DeepCollectionEquality().hash(primaryColors),themeMode,schemeVariant,pureBlack,predictiveBack,textScale);
 
 @override
 String toString() {
-  return 'ThemeProps(primaryColor: $primaryColor, primaryColors: $primaryColors, themeMode: $themeMode, schemeVariant: $schemeVariant, pureBlack: $pureBlack, monochromeTrayIcon: $monochromeTrayIcon, predictiveBack: $predictiveBack, textScale: $textScale)';
+  return 'ThemeProps(primaryColor: $primaryColor, primaryColors: $primaryColors, themeMode: $themeMode, schemeVariant: $schemeVariant, pureBlack: $pureBlack, predictiveBack: $predictiveBack, textScale: $textScale)';
 }
 
 
@@ -2066,7 +2069,7 @@ abstract mixin class $ThemePropsCopyWith<$Res>  {
   factory $ThemePropsCopyWith(ThemeProps value, $Res Function(ThemeProps) _then) = _$ThemePropsCopyWithImpl;
 @useResult
 $Res call({
- int? primaryColor, List<int> primaryColors,@JsonKey(unknownEnumValue: ThemeMode.system) ThemeMode themeMode,@JsonKey(unknownEnumValue: DynamicSchemeVariant.content) DynamicSchemeVariant schemeVariant, bool pureBlack, bool monochromeTrayIcon, bool predictiveBack, TextScale textScale
+ int? primaryColor, List<int> primaryColors, ThemeMode themeMode, DynamicSchemeVariant schemeVariant, bool pureBlack, bool predictiveBack, TextScale textScale
 });
 
 
@@ -2083,14 +2086,13 @@ class _$ThemePropsCopyWithImpl<$Res>
 
 /// Create a copy of ThemeProps
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? primaryColor = freezed,Object? primaryColors = null,Object? themeMode = null,Object? schemeVariant = null,Object? pureBlack = null,Object? monochromeTrayIcon = null,Object? predictiveBack = null,Object? textScale = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? primaryColor = freezed,Object? primaryColors = null,Object? themeMode = null,Object? schemeVariant = null,Object? pureBlack = null,Object? predictiveBack = null,Object? textScale = null,}) {
   return _then(_self.copyWith(
 primaryColor: freezed == primaryColor ? _self.primaryColor : primaryColor // ignore: cast_nullable_to_non_nullable
 as int?,primaryColors: null == primaryColors ? _self.primaryColors : primaryColors // ignore: cast_nullable_to_non_nullable
 as List<int>,themeMode: null == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
 as ThemeMode,schemeVariant: null == schemeVariant ? _self.schemeVariant : schemeVariant // ignore: cast_nullable_to_non_nullable
 as DynamicSchemeVariant,pureBlack: null == pureBlack ? _self.pureBlack : pureBlack // ignore: cast_nullable_to_non_nullable
-as bool,monochromeTrayIcon: null == monochromeTrayIcon ? _self.monochromeTrayIcon : monochromeTrayIcon // ignore: cast_nullable_to_non_nullable
 as bool,predictiveBack: null == predictiveBack ? _self.predictiveBack : predictiveBack // ignore: cast_nullable_to_non_nullable
 as bool,textScale: null == textScale ? _self.textScale : textScale // ignore: cast_nullable_to_non_nullable
 as TextScale,
@@ -2187,10 +2189,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? primaryColor,  List<int> primaryColors, @JsonKey(unknownEnumValue: ThemeMode.system)  ThemeMode themeMode, @JsonKey(unknownEnumValue: DynamicSchemeVariant.content)  DynamicSchemeVariant schemeVariant,  bool pureBlack,  bool monochromeTrayIcon,  bool predictiveBack,  TextScale textScale)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? primaryColor,  List<int> primaryColors,  ThemeMode themeMode,  DynamicSchemeVariant schemeVariant,  bool pureBlack,  bool predictiveBack,  TextScale textScale)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ThemeProps() when $default != null:
-return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.schemeVariant,_that.pureBlack,_that.monochromeTrayIcon,_that.predictiveBack,_that.textScale);case _:
+return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.schemeVariant,_that.pureBlack,_that.predictiveBack,_that.textScale);case _:
   return orElse();
 
 }
@@ -2208,10 +2210,10 @@ return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.sch
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? primaryColor,  List<int> primaryColors, @JsonKey(unknownEnumValue: ThemeMode.system)  ThemeMode themeMode, @JsonKey(unknownEnumValue: DynamicSchemeVariant.content)  DynamicSchemeVariant schemeVariant,  bool pureBlack,  bool monochromeTrayIcon,  bool predictiveBack,  TextScale textScale)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? primaryColor,  List<int> primaryColors,  ThemeMode themeMode,  DynamicSchemeVariant schemeVariant,  bool pureBlack,  bool predictiveBack,  TextScale textScale)  $default,) {final _that = this;
 switch (_that) {
 case _ThemeProps():
-return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.schemeVariant,_that.pureBlack,_that.monochromeTrayIcon,_that.predictiveBack,_that.textScale);case _:
+return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.schemeVariant,_that.pureBlack,_that.predictiveBack,_that.textScale);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -2228,10 +2230,10 @@ return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.sch
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? primaryColor,  List<int> primaryColors, @JsonKey(unknownEnumValue: ThemeMode.system)  ThemeMode themeMode, @JsonKey(unknownEnumValue: DynamicSchemeVariant.content)  DynamicSchemeVariant schemeVariant,  bool pureBlack,  bool monochromeTrayIcon,  bool predictiveBack,  TextScale textScale)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? primaryColor,  List<int> primaryColors,  ThemeMode themeMode,  DynamicSchemeVariant schemeVariant,  bool pureBlack,  bool predictiveBack,  TextScale textScale)?  $default,) {final _that = this;
 switch (_that) {
 case _ThemeProps() when $default != null:
-return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.schemeVariant,_that.pureBlack,_that.monochromeTrayIcon,_that.predictiveBack,_that.textScale);case _:
+return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.schemeVariant,_that.pureBlack,_that.predictiveBack,_that.textScale);case _:
   return null;
 
 }
@@ -2243,7 +2245,7 @@ return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.sch
 @JsonSerializable()
 
 class _ThemeProps implements ThemeProps {
-  const _ThemeProps({this.primaryColor, final  List<int> primaryColors = defaultPrimaryColors, @JsonKey(unknownEnumValue: ThemeMode.system) this.themeMode = ThemeMode.system, @JsonKey(unknownEnumValue: DynamicSchemeVariant.content) this.schemeVariant = DynamicSchemeVariant.content, this.pureBlack = false, this.monochromeTrayIcon = true, this.predictiveBack = true, this.textScale = const TextScale()}): _primaryColors = primaryColors;
+  const _ThemeProps({this.primaryColor, final  List<int> primaryColors = defaultPrimaryColors, this.themeMode = ThemeMode.system, this.schemeVariant = DynamicSchemeVariant.content, this.pureBlack = false, this.predictiveBack = true, this.textScale = const TextScale()}): _primaryColors = primaryColors;
   factory _ThemeProps.fromJson(Map<String, dynamic> json) => _$ThemePropsFromJson(json);
 
 @override final  int? primaryColor;
@@ -2257,7 +2259,6 @@ class _ThemeProps implements ThemeProps {
 @override@JsonKey() final  ThemeMode themeMode;
 @override@JsonKey() final  DynamicSchemeVariant schemeVariant;
 @override@JsonKey() final  bool pureBlack;
-@override@JsonKey() final  bool monochromeTrayIcon;
 @override@JsonKey() final  bool predictiveBack;
 @override@JsonKey() final  TextScale textScale;
 
@@ -2274,16 +2275,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ThemeProps&&(identical(other.primaryColor, primaryColor) || other.primaryColor == primaryColor)&&const DeepCollectionEquality().equals(other._primaryColors, _primaryColors)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.schemeVariant, schemeVariant) || other.schemeVariant == schemeVariant)&&(identical(other.pureBlack, pureBlack) || other.pureBlack == pureBlack)&&(identical(other.monochromeTrayIcon, monochromeTrayIcon) || other.monochromeTrayIcon == monochromeTrayIcon)&&(identical(other.predictiveBack, predictiveBack) || other.predictiveBack == predictiveBack)&&(identical(other.textScale, textScale) || other.textScale == textScale));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ThemeProps&&(identical(other.primaryColor, primaryColor) || other.primaryColor == primaryColor)&&const DeepCollectionEquality().equals(other._primaryColors, _primaryColors)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.schemeVariant, schemeVariant) || other.schemeVariant == schemeVariant)&&(identical(other.pureBlack, pureBlack) || other.pureBlack == pureBlack)&&(identical(other.predictiveBack, predictiveBack) || other.predictiveBack == predictiveBack)&&(identical(other.textScale, textScale) || other.textScale == textScale));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,primaryColor,const DeepCollectionEquality().hash(_primaryColors),themeMode,schemeVariant,pureBlack,monochromeTrayIcon,predictiveBack,textScale);
+int get hashCode => Object.hash(runtimeType,primaryColor,const DeepCollectionEquality().hash(_primaryColors),themeMode,schemeVariant,pureBlack,predictiveBack,textScale);
 
 @override
 String toString() {
-  return 'ThemeProps(primaryColor: $primaryColor, primaryColors: $primaryColors, themeMode: $themeMode, schemeVariant: $schemeVariant, pureBlack: $pureBlack, monochromeTrayIcon: $monochromeTrayIcon, predictiveBack: $predictiveBack, textScale: $textScale)';
+  return 'ThemeProps(primaryColor: $primaryColor, primaryColors: $primaryColors, themeMode: $themeMode, schemeVariant: $schemeVariant, pureBlack: $pureBlack, predictiveBack: $predictiveBack, textScale: $textScale)';
 }
 
 
@@ -2294,7 +2295,7 @@ abstract mixin class _$ThemePropsCopyWith<$Res> implements $ThemePropsCopyWith<$
   factory _$ThemePropsCopyWith(_ThemeProps value, $Res Function(_ThemeProps) _then) = __$ThemePropsCopyWithImpl;
 @override @useResult
 $Res call({
- int? primaryColor, List<int> primaryColors,@JsonKey(unknownEnumValue: ThemeMode.system) ThemeMode themeMode,@JsonKey(unknownEnumValue: DynamicSchemeVariant.content) DynamicSchemeVariant schemeVariant, bool pureBlack, bool monochromeTrayIcon, bool predictiveBack, TextScale textScale
+ int? primaryColor, List<int> primaryColors, ThemeMode themeMode, DynamicSchemeVariant schemeVariant, bool pureBlack, bool predictiveBack, TextScale textScale
 });
 
 
@@ -2311,14 +2312,13 @@ class __$ThemePropsCopyWithImpl<$Res>
 
 /// Create a copy of ThemeProps
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? primaryColor = freezed,Object? primaryColors = null,Object? themeMode = null,Object? schemeVariant = null,Object? pureBlack = null,Object? monochromeTrayIcon = null,Object? predictiveBack = null,Object? textScale = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? primaryColor = freezed,Object? primaryColors = null,Object? themeMode = null,Object? schemeVariant = null,Object? pureBlack = null,Object? predictiveBack = null,Object? textScale = null,}) {
   return _then(_ThemeProps(
 primaryColor: freezed == primaryColor ? _self.primaryColor : primaryColor // ignore: cast_nullable_to_non_nullable
 as int?,primaryColors: null == primaryColors ? _self._primaryColors : primaryColors // ignore: cast_nullable_to_non_nullable
 as List<int>,themeMode: null == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
 as ThemeMode,schemeVariant: null == schemeVariant ? _self.schemeVariant : schemeVariant // ignore: cast_nullable_to_non_nullable
 as DynamicSchemeVariant,pureBlack: null == pureBlack ? _self.pureBlack : pureBlack // ignore: cast_nullable_to_non_nullable
-as bool,monochromeTrayIcon: null == monochromeTrayIcon ? _self.monochromeTrayIcon : monochromeTrayIcon // ignore: cast_nullable_to_non_nullable
 as bool,predictiveBack: null == predictiveBack ? _self.predictiveBack : predictiveBack // ignore: cast_nullable_to_non_nullable
 as bool,textScale: null == textScale ? _self.textScale : textScale // ignore: cast_nullable_to_non_nullable
 as TextScale,
