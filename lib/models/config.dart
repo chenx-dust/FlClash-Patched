@@ -183,11 +183,27 @@ abstract class NetworkProps with _$NetworkProps {
 @freezed
 abstract class ProxiesStyleProps with _$ProxiesStyleProps {
   const factory ProxiesStyleProps({
-    @Default(ProxiesType.tab) ProxiesType type,
-    @Default(ProxiesSortType.none) ProxiesSortType sortType,
-    @Default(ProxiesLayout.standard) ProxiesLayout layout,
-    @Default(ProxiesIconStyle.standard) ProxiesIconStyle iconStyle,
-    @Default(ProxyCardType.expand) ProxyCardType cardType,
+    @Default(ProxiesType.tab)
+    @JsonKey(unknownEnumValue: ProxiesType.tab)
+    ProxiesType type,
+    @Default(ProxiesSortType.none)
+    @JsonKey(unknownEnumValue: ProxiesSortType.none)
+    ProxiesSortType sortType,
+    @Default(ProxiesLayout.standard)
+    @JsonKey(unknownEnumValue: ProxiesLayout.standard)
+    ProxiesLayout layout,
+    @Default(ProxiesListHeaderStyle.loose)
+    @JsonKey(unknownEnumValue: ProxiesListHeaderStyle.loose)
+    ProxiesListHeaderStyle listHeaderStyle,
+    @Default(ProxiesIconStyle.standard)
+    @JsonKey(unknownEnumValue: ProxiesIconStyle.standard)
+    ProxiesIconStyle iconStyle,
+    @Default(ProxiesIconSource.standard)
+    @JsonKey(unknownEnumValue: ProxiesIconSource.standard)
+    ProxiesIconSource iconSource,
+    @Default(ProxyCardType.standard)
+    @JsonKey(unknownEnumValue: ProxyCardType.standard)
+    ProxyCardType cardType,
   }) = _ProxiesStyleProps;
 
   factory ProxiesStyleProps.fromJson(Map<String, Object?>? json) => json == null

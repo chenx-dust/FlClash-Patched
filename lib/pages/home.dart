@@ -283,9 +283,7 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
     ref.listenManual(currentPageLabelProvider, (prev, next) {
       if (prev != next) {
         _closePopupMenus(prev);
-        if (!_isUpdatingPageLabelFromView) {
-          _toPage(next);
-        }
+        _toPage(next);
       }
     });
   }
@@ -317,43 +315,31 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
       return;
     }
     final isAnimateToPage = ref.read(appSettingProvider).isAnimateToPage;
-    _programmaticPageChangeCount++;
-    try {
-      if (isAnimateToPage && !ignoreAnimateTo) {
-        await _pageController.animateToPage(
-          index,
-          duration: midDuration,
-          curve: Curves.easeOutCubic,
-        );
-      } else {
-        _pageController.jumpToPage(index);
-      }
-    } finally {
-      _programmaticPageChangeCount--;
-    }
-  }
-
-  void _handlePageChanged(int index) {
-    if (_programmaticPageChangeCount > 0 ||
-        index < 0 ||
-        index >= widget.navigationItems.length) {
-      return;
-    }
-    final pageLabel = widget.navigationItems[index].label;
-    if (pageLabel == ref.read(currentPageLabelProvider)) {
-      return;
-    }
-    _isUpdatingPageLabelFromView = true;
-    try {
-      ref.read(currentPageLabelProvider.notifier).toPage(pageLabel);
-    } finally {
-      _isUpdatingPageLabelFromView = false;
+    if (isAnimateToPage && !ignoreAnimateTo) {
+      await _pageController.animateToPage(
+        index,
+        duration: midDuration,
+        curve: Curves.easeOutCubic,
+      );
+    } else {
+      _pageController.jumpToPage(index);
     }
   }
 
   void _updatePageController() {
     final pageLabel = ref.read(currentPageLabelProvider);
     _toPage(pageLabel, true);
+  }
+
+  void _closePopupMenus(PageLabel? pageLabel) {
+    if (pageLabel == null) {
+      return;
+    }
+    final pageContext = GlobalObjectKey(pageLabel).currentContext;
+    if (pageContext == null) {
+      return;
+    }
+    CommonPopupRoute.closeAll(pageContext);
   }
 
   @override
