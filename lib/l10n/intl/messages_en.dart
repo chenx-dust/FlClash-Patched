@@ -157,12 +157,16 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "agree": MessageLookupByLibrary.simpleMessage("Agree"),
     "allowBypass": MessageLookupByLibrary.simpleMessage(
-      "Allow applications to bypass VPN",
+      "Allow Applications to Bypass VPN",
     ),
     "allowBypassDesc": MessageLookupByLibrary.simpleMessage(
       "Some apps can bypass VPN when turned on",
     ),
     "allowLan": MessageLookupByLibrary.simpleMessage("Allow LAN"),
+    "allowLanAccess": MessageLookupByLibrary.simpleMessage("Allow LAN Access"),
+    "allowLanAccessDesc": MessageLookupByLibrary.simpleMessage(
+      "Allow access to the external controller from the LAN",
+    ),
     "allowLanDesc": MessageLookupByLibrary.simpleMessage(
       "Allow access proxy through the LAN",
     ),
@@ -249,7 +253,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "clearData": MessageLookupByLibrary.simpleMessage("Clear Data"),
     "clipboardExport": MessageLookupByLibrary.simpleMessage("Export Clipboard"),
     "clipboardImport": MessageLookupByLibrary.simpleMessage("Clipboard Import"),
-    "closeAll": MessageLookupByLibrary.simpleMessage("Close all"),
+    "closeAll": MessageLookupByLibrary.simpleMessage("Close All"),
     "collapse": MessageLookupByLibrary.simpleMessage("Collapse"),
     "color": MessageLookupByLibrary.simpleMessage("Color"),
     "colorSchemes": MessageLookupByLibrary.simpleMessage("Color schemes"),
@@ -315,7 +319,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Default Nameserver",
     ),
     "defaultNameserverDesc": MessageLookupByLibrary.simpleMessage(
-      "For resolving DNS server",
+      "For resolving DNS servers",
     ),
     "defaultText": MessageLookupByLibrary.simpleMessage("Default"),
     "delay": MessageLookupByLibrary.simpleMessage("Delay"),
@@ -324,7 +328,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "deleteMultipTip": m1,
     "deleteTip": m2,
     "desc": MessageLookupByLibrary.simpleMessage(
-      "A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.",
+      "A multi-platform proxy client based on mihomo, simple and easy to use, open-source and ad-free.",
     ),
     "destination": MessageLookupByLibrary.simpleMessage("Destination"),
     "destinationGeoIP": MessageLookupByLibrary.simpleMessage(
@@ -355,7 +359,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Update DNS related settings",
     ),
     "dnsHijacking": MessageLookupByLibrary.simpleMessage("DNS hijacking"),
-    "dnsMode": MessageLookupByLibrary.simpleMessage("DNS mode"),
+    "dnsIPv6Desc": MessageLookupByLibrary.simpleMessage(
+      "When disabled, AAAA queries return an empty result",
+    ),
+    "dnsMode": MessageLookupByLibrary.simpleMessage("DNS Mode"),
     "doYouWantToPass": MessageLookupByLibrary.simpleMessage(
       "Do you want to pass",
     ),
@@ -373,6 +380,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "editSsid": MessageLookupByLibrary.simpleMessage("Edit SSID"),
     "emptyTip": m4,
     "en": MessageLookupByLibrary.simpleMessage("English"),
+    "enableExternalController": MessageLookupByLibrary.simpleMessage(
+      "Enable External Controller",
+    ),
     "enforceRoutes": MessageLookupByLibrary.simpleMessage("Enforce Routes"),
     "enforceRoutesDesc": MessageLookupByLibrary.simpleMessage(
       "Ensure traffic is routed through the tunnel even when more specific routes exist",
@@ -425,17 +435,32 @@ class MessageLookup extends MessageLookupByLibrary {
       "External Controller",
     ),
     "externalControllerDesc": MessageLookupByLibrary.simpleMessage(
-      "Once enabled, the Clash kernel can be controlled on port 9090",
+      "Configure external access to the Clash core",
     ),
     "externalFetch": MessageLookupByLibrary.simpleMessage("External fetch"),
     "externalLink": MessageLookupByLibrary.simpleMessage("External link"),
-    "fakeipFilter": MessageLookupByLibrary.simpleMessage("Fakeip filter"),
-    "fakeipRange": MessageLookupByLibrary.simpleMessage("Fakeip range"),
+    "fakeipFilter": MessageLookupByLibrary.simpleMessage("FakeIP filter"),
+    "fakeipFilterDesc": MessageLookupByLibrary.simpleMessage(
+      "Domains matched in Fake IP mode receive real IP addresses instead of Fake IP addresses",
+    ),
+    "fakeipRange": MessageLookupByLibrary.simpleMessage("FakeIP range"),
     "fallback": MessageLookupByLibrary.simpleMessage("Fallback"),
     "fallbackDesc": MessageLookupByLibrary.simpleMessage(
-      "Generally use offshore DNS",
+      "Generally uses overseas DNS",
+    ),
+    "fallbackDomainDesc": MessageLookupByLibrary.simpleMessage(
+      "Matching domains use fallback directly without querying nameserver",
     ),
     "fallbackFilter": MessageLookupByLibrary.simpleMessage("Fallback filter"),
+    "fallbackGeoipDesc": MessageLookupByLibrary.simpleMessage(
+      "Checks nameserver results against GeoIP Code; results outside that region use fallback",
+    ),
+    "fallbackGeositeDesc": MessageLookupByLibrary.simpleMessage(
+      "Domains matching these GeoSite categories use fallback directly",
+    ),
+    "fallbackIpcidrDesc": MessageLookupByLibrary.simpleMessage(
+      "Nameserver results matching these CIDR prefixes are replaced with fallback results",
+    ),
     "fidelityScheme": MessageLookupByLibrary.simpleMessage("Fidelity"),
     "file": MessageLookupByLibrary.simpleMessage("File"),
     "fileDesc": MessageLookupByLibrary.simpleMessage("Directly upload profile"),
@@ -518,11 +543,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "hoursCount": m11,
     "icon": MessageLookupByLibrary.simpleMessage("Icon"),
     "iconRecords": MessageLookupByLibrary.simpleMessage("Icon records"),
-    "iconSource": MessageLookupByLibrary.simpleMessage("Icon source"),
+    "iconSource": MessageLookupByLibrary.simpleMessage("Icon Source"),
     "iconStyle": MessageLookupByLibrary.simpleMessage("Icon Style"),
     "iconUrl": MessageLookupByLibrary.simpleMessage("Icon URL"),
     "ignoreBatteryOptimization": MessageLookupByLibrary.simpleMessage(
       "Ignore battery optimization",
+    ),
+    "ignoreCertificateErrors": MessageLookupByLibrary.simpleMessage(
+      "Ignore Certificate Validation",
+    ),
+    "ignoreCertificateErrorsDesc": MessageLookupByLibrary.simpleMessage(
+      "Allow HTTPS connections with invalid certificates. This reduces security",
     ),
     "import": MessageLookupByLibrary.simpleMessage("Import"),
     "importFile": MessageLookupByLibrary.simpleMessage("Import from file"),
@@ -580,7 +611,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "ja": MessageLookupByLibrary.simpleMessage("Japanese"),
     "justNow": MessageLookupByLibrary.simpleMessage("Just now"),
     "keepAliveIntervalDesc": MessageLookupByLibrary.simpleMessage(
-      "Tcp keep alive interval",
+      "TCP Keep Alive Interval",
     ),
     "key": MessageLookupByLibrary.simpleMessage("Key"),
     "language": MessageLookupByLibrary.simpleMessage("Language"),
@@ -589,6 +620,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "light": MessageLookupByLibrary.simpleMessage("Light"),
     "list": MessageLookupByLibrary.simpleMessage("List"),
     "listen": MessageLookupByLibrary.simpleMessage("Listen"),
+    "listeningPort": MessageLookupByLibrary.simpleMessage("Listening Port"),
     "loadTest": MessageLookupByLibrary.simpleMessage("Load test"),
     "loading": MessageLookupByLibrary.simpleMessage("Loading..."),
     "local": MessageLookupByLibrary.simpleMessage("Local"),
@@ -638,18 +670,25 @@ class MessageLookup extends MessageLookupByLibrary {
     "mixedPort": MessageLookupByLibrary.simpleMessage("Mixed port"),
     "mode": MessageLookupByLibrary.simpleMessage("Mode"),
     "monochromeScheme": MessageLookupByLibrary.simpleMessage("Monochrome"),
+    "monochromeTrayIcon": MessageLookupByLibrary.simpleMessage(
+      "Monochrome Tray Icon",
+    ),
     "monthsAgo": m18,
     "more": MessageLookupByLibrary.simpleMessage("More"),
+    "mtu": MessageLookupByLibrary.simpleMessage("MTU"),
+    "mtuRangeTip": MessageLookupByLibrary.simpleMessage(
+      "MTU must be an integer between 1 and 65535",
+    ),
     "name": MessageLookupByLibrary.simpleMessage("Name"),
     "nameserver": MessageLookupByLibrary.simpleMessage("Nameserver"),
     "nameserverDesc": MessageLookupByLibrary.simpleMessage(
-      "For resolving domain",
+      "For resolving domains",
     ),
     "nameserverPolicy": MessageLookupByLibrary.simpleMessage(
       "Nameserver Policy",
     ),
     "nameserverPolicyDesc": MessageLookupByLibrary.simpleMessage(
-      "Specify the corresponding nameserver policy",
+      "Assigns specific DNS servers to matching domains, geosite categories, or rule sets",
     ),
     "network": MessageLookupByLibrary.simpleMessage("Network"),
     "networkDesc": MessageLookupByLibrary.simpleMessage(
@@ -694,7 +733,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "The current proxy group cannot be selected.",
     ),
     "nullProfileDesc": MessageLookupByLibrary.simpleMessage(
-      "No profile, Please add a profile",
+      "No profile, please add a profile",
     ),
     "nullTip": m19,
     "numberTip": m20,
@@ -702,8 +741,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "onDemandDesc": MessageLookupByLibrary.simpleMessage(
       "Configure the program running state for specific scenarios",
     ),
-    "onlyConfig": MessageLookupByLibrary.simpleMessage("Config only"),
-    "onlyEmoji": MessageLookupByLibrary.simpleMessage("Emoji only"),
+    "onlyConfig": MessageLookupByLibrary.simpleMessage("Config Only"),
+    "onlyEmoji": MessageLookupByLibrary.simpleMessage("Emoji Only"),
     "onlyIcon": MessageLookupByLibrary.simpleMessage("Icon"),
     "onlyStatisticsProxy": MessageLookupByLibrary.simpleMessage(
       "Only Statistics Proxy",
@@ -746,9 +785,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Please enter a different port",
     ),
     "portTip": m21,
-    "predictiveBack": MessageLookupByLibrary.simpleMessage("Predictive back"),
+    "predictiveBack": MessageLookupByLibrary.simpleMessage("Predictive Back"),
+    "preferH3": MessageLookupByLibrary.simpleMessage("Prefer HTTP/3"),
     "preferH3Desc": MessageLookupByLibrary.simpleMessage(
-      "Prioritize the use of DOH\'s http/3",
+      "Prefer HTTP/3 for DoH",
     ),
     "prerequisites": MessageLookupByLibrary.simpleMessage("Prerequisites"),
     "pressKeyboard": MessageLookupByLibrary.simpleMessage(
@@ -803,7 +843,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "proxyNameserver": MessageLookupByLibrary.simpleMessage("Proxy Nameserver"),
     "proxyNameserverDesc": MessageLookupByLibrary.simpleMessage(
-      "Domain for resolving proxy nodes",
+      "For resolving proxy node domains",
     ),
     "proxyNameserverPolicy": MessageLookupByLibrary.simpleMessage(
       "Proxy Nameserver Policy",
@@ -824,13 +864,14 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "proxyType": MessageLookupByLibrary.simpleMessage("Proxy type"),
     "pruneCache": MessageLookupByLibrary.simpleMessage("Prune cache"),
-    "pureBlackMode": MessageLookupByLibrary.simpleMessage("Pure black mode"),
+    "pureBlackMode": MessageLookupByLibrary.simpleMessage("Pure Black Mode"),
     "qrcode": MessageLookupByLibrary.simpleMessage("QR Code"),
     "qrcodeDesc": MessageLookupByLibrary.simpleMessage(
       "Scan QR code to obtain profile",
     ),
     "quickFill": MessageLookupByLibrary.simpleMessage("Quick fill"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("Rainbow"),
+    "random": MessageLookupByLibrary.simpleMessage("Random"),
     "redirPort": MessageLookupByLibrary.simpleMessage("Redir port"),
     "redo": MessageLookupByLibrary.simpleMessage("Redo"),
     "regexSearch": MessageLookupByLibrary.simpleMessage("Regex search"),
@@ -859,7 +900,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "respectRules": MessageLookupByLibrary.simpleMessage("Respect Rules"),
     "respectRulesDesc": MessageLookupByLibrary.simpleMessage(
-      "DNS connection following rules, need to configure proxy-server-nameserver",
+      "DNS connections follow rules; proxy-server-nameserver must be configured",
     ),
     "restart": MessageLookupByLibrary.simpleMessage("Restart"),
     "restartCoreTip": MessageLookupByLibrary.simpleMessage(
@@ -877,7 +918,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Restore data via WebDAV",
     ),
     "restoreHiddenGroups": MessageLookupByLibrary.simpleMessage(
-      "Restore Group Hiding",
+      "Restore Hidden",
     ),
     "restoreOnlyConfig": MessageLookupByLibrary.simpleMessage(
       "Restore configuration files only",
@@ -1035,9 +1076,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectedCountTitle": m23,
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),
     "show": MessageLookupByLibrary.simpleMessage("Show"),
-    "showHiddenGroups": MessageLookupByLibrary.simpleMessage(
-      "Show Hidden Groups",
-    ),
+    "showHiddenGroups": MessageLookupByLibrary.simpleMessage("Show Hidden"),
     "showUnavailable": MessageLookupByLibrary.simpleMessage("Show Timeout"),
     "shrink": MessageLookupByLibrary.simpleMessage("Shrink"),
     "silentLaunch": MessageLookupByLibrary.simpleMessage("Silent Launch"),
@@ -1056,7 +1095,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Split strategy cannot be empty",
     ),
     "ssidsEmpty": MessageLookupByLibrary.simpleMessage("SSIDs is empty"),
-    "stackMode": MessageLookupByLibrary.simpleMessage("Stack mode"),
+    "stackMode": MessageLookupByLibrary.simpleMessage("Stack Mode"),
     "standard": MessageLookupByLibrary.simpleMessage("Standard"),
     "standardModeDesc": MessageLookupByLibrary.simpleMessage(
       "Standard mode, override basic configuration, provide simple rule addition capability",
@@ -1162,7 +1201,13 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "urlTip": m26,
     "useHosts": MessageLookupByLibrary.simpleMessage("Use hosts"),
+    "useHostsDesc": MessageLookupByLibrary.simpleMessage(
+      "Checks the hosts entries in the configuration before querying upstream DNS servers",
+    ),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("Use system hosts"),
+    "useSystemHostsDesc": MessageLookupByLibrary.simpleMessage(
+      "Checks the operating system\'s hosts file when resolving domain names",
+    ),
     "userAgent": MessageLookupByLibrary.simpleMessage("User-Agent"),
     "value": MessageLookupByLibrary.simpleMessage("Value"),
     "vibrantScheme": MessageLookupByLibrary.simpleMessage("Vibrant"),

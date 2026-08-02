@@ -107,6 +107,7 @@ void main() {
       expect(restored.isAnimateToPage, true);
       expect(restored.isSwipeToPage, true);
       expect(restored.autoCheckUpdate, true);
+      expect(restored.ignoreCertificateErrors, false);
       expect(restored.showLabel, false);
       expect(restored.minimizeOnExit, true);
       expect(restored.restoreStrategy, RestoreStrategy.compatible);
@@ -123,6 +124,7 @@ void main() {
         highPriorityAutoLaunch: true,
         closeConnections: false,
         isSwipeToPage: false,
+        ignoreCertificateErrors: true,
         testUrl: 'https://custom.test',
         customUserAgent: 'CustomUA/1.0',
       );
@@ -137,6 +139,7 @@ void main() {
       expect(restored.highPriorityAutoLaunch, true);
       expect(restored.closeConnections, false);
       expect(restored.isSwipeToPage, false);
+      expect(restored.ignoreCertificateErrors, true);
       expect(restored.testUrl, 'https://custom.test');
       expect(restored.customUserAgent, 'CustomUA/1.0');
     });
@@ -247,13 +250,34 @@ void main() {
   });
 
   group('PatchClashConfig JSON round-trip', () {
+    test('DNS modes use their declared config values', () {
+      const values = {
+        DnsMode.normal: 'normal',
+        DnsMode.fakeIp: 'fake-ip',
+        DnsMode.redirHost: 'redir-host',
+        DnsMode.hosts: 'hosts',
+      };
+
+      for (final entry in values.entries) {
+        expect(entry.key.value, entry.value);
+
+        final dns = Dns(enhancedMode: entry.key);
+        expect(dns.toJson()['enhanced-mode'], entry.value);
+        expect(
+          Dns.fromJson({'enhanced-mode': entry.value}).enhancedMode,
+          entry.key,
+        );
+      }
+    });
+
     test('defaults match Clash patch defaults', () {
       const config = PatchClashConfig();
 
       expect(config.mixedPort, defaultMixedPort);
       expect(config.allowLan, false);
       expect(config.mode, Mode.rule);
-      expect(config.externalController, ExternalControllerStatus.close);
+      expect(config.externalController, '');
+      expect(config.secret, '');
       expect(config.geodataLoader, GeodataLoader.memconservative);
       expect(config.geositeMatcher, GeositeMatcher.succinct);
       expect(config.tun.mtu, defaultTunMtu);
@@ -322,6 +346,7 @@ void main() {
       expect(props.primaryColors, defaultPrimaryColors);
       expect(props.themeMode, ThemeMode.system);
       expect(props.pureBlack, false);
+      expect(props.monochromeTrayIcon, true);
       expect(props.predictiveBack, true);
       expect(props.textScale.scale, 1.0);
     });
@@ -336,6 +361,7 @@ void main() {
         primaryColor: 0xFF123456,
         themeMode: ThemeMode.light,
         pureBlack: true,
+        monochromeTrayIcon: true,
         predictiveBack: true,
         textScale: TextScale(enable: true, scale: 1.5),
       );
@@ -343,6 +369,7 @@ void main() {
       expect(restored.primaryColor, 0xFF123456);
       expect(restored.themeMode, ThemeMode.light);
       expect(restored.pureBlack, true);
+      expect(restored.monochromeTrayIcon, true);
       expect(restored.predictiveBack, true);
       expect(restored.textScale.scale, 1.5);
     });

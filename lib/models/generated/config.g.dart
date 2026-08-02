@@ -23,6 +23,8 @@ _AppSettingProps _$AppSettingPropsFromJson(Map<String, dynamic> json) =>
       isAnimateToPage: json['isAnimateToPage'] as bool? ?? true,
       isSwipeToPage: json['isSwipeToPage'] as bool? ?? true,
       autoCheckUpdate: json['autoCheckUpdate'] as bool? ?? true,
+      ignoreCertificateErrors:
+          json['ignoreCertificateErrors'] as bool? ?? false,
       showLabel: json['showLabel'] as bool? ?? false,
       disclaimerAccepted: json['disclaimerAccepted'] as bool? ?? false,
       minimizeOnExit: json['minimizeOnExit'] as bool? ?? true,
@@ -55,6 +57,7 @@ Map<String, dynamic> _$AppSettingPropsToJson(_AppSettingProps instance) =>
       'isAnimateToPage': instance.isAnimateToPage,
       'isSwipeToPage': instance.isSwipeToPage,
       'autoCheckUpdate': instance.autoCheckUpdate,
+      'ignoreCertificateErrors': instance.ignoreCertificateErrors,
       'showLabel': instance.showLabel,
       'disclaimerAccepted': instance.disclaimerAccepted,
       'minimizeOnExit': instance.minimizeOnExit,
@@ -258,7 +261,7 @@ _ProxiesStyleProps _$ProxiesStylePropsFromJson(Map<String, dynamic> json) =>
           $enumDecodeNullable(
             _$ProxyCardTypeEnumMap,
             json['cardType'],
-            unknownValue: ProxyCardType.expand,
+            unknownValue: ProxyCardType.standard,
           ) ??
           ProxyCardType.standard,
       hideUnavailable: json['hideUnavailable'] as bool? ?? false,
@@ -347,6 +350,7 @@ _ThemeProps _$ThemePropsFromJson(Map<String, dynamic> json) => _ThemeProps(
       ) ??
       DynamicSchemeVariant.content,
   pureBlack: json['pureBlack'] as bool? ?? false,
+  monochromeTrayIcon: json['monochromeTrayIcon'] as bool? ?? true,
   predictiveBack: json['predictiveBack'] as bool? ?? true,
   textScale: json['textScale'] == null
       ? const TextScale()
@@ -360,6 +364,7 @@ Map<String, dynamic> _$ThemePropsToJson(_ThemeProps instance) =>
       'themeMode': _$ThemeModeEnumMap[instance.themeMode]!,
       'schemeVariant': _$DynamicSchemeVariantEnumMap[instance.schemeVariant]!,
       'pureBlack': instance.pureBlack,
+      'monochromeTrayIcon': instance.monochromeTrayIcon,
       'predictiveBack': instance.predictiveBack,
       'textScale': instance.textScale,
     };

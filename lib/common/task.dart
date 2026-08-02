@@ -112,7 +112,8 @@ Future<VM2<String, String>> _makeRealProfileTask(
     );
   }
 
-  rawConfig['external-controller'] = realPatchConfig.externalController.value;
+  rawConfig['external-controller'] = realPatchConfig.externalController;
+  rawConfig['secret'] = realPatchConfig.secret;
   rawConfig['external-ui'] = '';
   rawConfig['interface-name'] = '';
   rawConfig['external-ui-url'] = '';
