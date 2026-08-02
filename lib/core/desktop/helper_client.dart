@@ -1,14 +1,73 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:dio/dio.dart';
-import 'package:fl_clash/common/constant.dart';
 import 'package:fl_clash/common/print.dart';
 import 'package:fl_clash/enum/enum.dart';
-import 'package:path/path.dart' as p;
+import 'package:rust_api/rust_api.dart' as rust_api;
 
 import 'launcher.dart';
 import 'model.dart';
+
+const _helperRequestTimeout = Duration(seconds: 2);
+
+final class HelperCallResult {
+  final bool ok;
+  final String? sessionId;
+  final int? corePid;
+  final bool? stopped;
+  final String? reason;
+  final String? code;
+  final String? message;
+
+  const HelperCallResult({
+    required this.ok,
+    this.sessionId,
+    this.corePid,
+    this.stopped,
+    this.reason,
+    this.code,
+    this.message,
+  });
+
+  factory HelperCallResult.fromBridge(rust_api.HelperRpcResponse response) {
+    return HelperCallResult(
+      ok: response.ok,
+      sessionId: response.sessionId,
+      corePid: response.corePid,
+      stopped: response.stopped,
+      reason: response.reason,
+      code: response.code,
+      message: response.message,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'HelperCallResult(ok: $ok, sessionId: $sessionId, '
+        'corePid: $corePid, stopped: $stopped, reason: $reason, '
+        'code: $code, message: $message)';
+  }
+}
+
+typedef HelperPingCall = Future<HelperCallResult> Function();
+typedef HelperStartCall =
+    Future<HelperCallResult> Function(String address, String sessionId);
+typedef HelperStopCall = Future<HelperCallResult> Function(String sessionId);
+
+Future<HelperCallResult> _helperPing() async {
+  return HelperCallResult.fromBridge(await rust_api.helperPing());
+}
+
+Future<HelperCallResult> _helperStart(String address, String sessionId) async {
+  return HelperCallResult.fromBridge(
+    await rust_api.helperStartCore(address: address, sessionId: sessionId),
+  );
+}
+
+Future<HelperCallResult> _helperStop(String sessionId) async {
+  return HelperCallResult.fromBridge(
+    await rust_api.helperStopCore(sessionId: sessionId),
+  );
+}
 
 final class HelperStartResponse {
   final String sessionId;
@@ -45,69 +104,42 @@ final class WindowsHelperException implements Exception {
 }
 
 final class WindowsHelperClient {
-  final Dio _dio;
-  final String Function() _expectedHelperPath;
-  final String baseUrl;
+  final HelperPingCall _ping;
+  final HelperStartCall _start;
+  final HelperStopCall _stop;
 
-  WindowsHelperClient({
-    Dio? dio,
-    String Function()? expectedHelperPath,
-    this.baseUrl = 'http://$localhost:$helperPort',
-  }) : _dio = dio ?? Dio(),
-       _expectedHelperPath = expectedHelperPath ?? _defaultHelperPath;
-
-  static String _defaultHelperPath() {
-    final context = p.Context(style: p.Style.windows);
-    return context.join(
-      context.dirname(Platform.resolvedExecutable),
-      '$appHelperService.exe',
-    );
-  }
+  const WindowsHelperClient({
+    HelperPingCall ping = _helperPing,
+    HelperStartCall start = _helperStart,
+    HelperStopCall stop = _helperStop,
+  }) : _ping = ping,
+       _start = start,
+       _stop = stop;
 
   Future<bool> isReady({Duration? timeout, bool logFailure = true}) async {
     if (timeout != null && timeout <= Duration.zero) {
       return false;
     }
-    final cancelToken = CancelToken();
-    final timeoutTimer = timeout == null
-        ? null
-        : Timer(
-            timeout,
-            () => cancelToken.cancel('helper ping deadline exceeded'),
-          );
     try {
-      final response = await _dio.get<Object?>(
-        '$baseUrl/ping',
-        cancelToken: cancelToken,
-        options: _options(ResponseType.plain),
-      );
-      final helperPath = response.data;
-      if (response.statusCode != HttpStatus.ok || helperPath is! String) {
-        _logPingFailure('helper ping returned invalid response', logFailure);
-        return false;
+      final operation = _ping();
+      final response = timeout == null
+          ? await operation
+          : await operation.timeout(timeout);
+      final valid =
+          response.ok &&
+          response.sessionId == null &&
+          response.corePid == null &&
+          response.stopped == null &&
+          response.reason == null &&
+          response.code == null &&
+          response.message == null;
+      if (!valid) {
+        _logPingFailure('helper ping returned an invalid response', logFailure);
       }
-      final protocolVersion = response.headers.value(
-        helperProtocolVersionHeader,
-      );
-      if (protocolVersion != helperProtocolVersion) {
-        _logPingFailure(
-          'helper protocol mismatch: $protocolVersion',
-          logFailure,
-        );
-        return false;
-      }
-      final matches = p.Context(
-        style: p.Style.windows,
-      ).equals(helperPath.trim(), _expectedHelperPath());
-      if (!matches) {
-        _logPingFailure('helper executable path mismatch', logFailure);
-      }
-      return matches;
+      return valid;
     } catch (error) {
       _logPingFailure('helper ping failed: $error', logFailure);
       return false;
-    } finally {
-      timeoutTimer?.cancel();
     }
   }
 
@@ -123,28 +155,27 @@ final class WindowsHelperClient {
   }) async {
     _validateSessionId(sessionId);
     try {
-      final response = await _dio.post<Object?>(
-        '$baseUrl/start',
-        data: {'address': address, 'sessionId': sessionId},
-        options: _options(ResponseType.json),
-      );
-      final data = _responseMap(response, operation: 'start');
-      final returnedSession = data['sessionId'];
-      final pid = data['pid'];
-      if (returnedSession != sessionId || pid is! int || pid <= 0) {
+      final response = await _start(
+        address,
+        sessionId,
+      ).timeout(_helperRequestTimeout);
+      _throwIfFailed(response, operation: 'start');
+      if (response.sessionId != sessionId ||
+          response.corePid == null ||
+          response.corePid! <= 0 ||
+          response.stopped != null ||
+          response.reason != null) {
         throw const WindowsHelperException(
           code: 'invalidResponse',
           message: 'Helper returned an invalid start response',
         );
       }
       return HelperStartResponse(
-        sessionId: returnedSession as String,
-        pid: pid,
+        sessionId: response.sessionId!,
+        pid: response.corePid!,
       );
     } on WindowsHelperException {
       rethrow;
-    } on DioException catch (error) {
-      throw _mapDioException(error, operation: 'start');
     } catch (error) {
       throw WindowsHelperException(
         code: 'transportError',
@@ -157,28 +188,27 @@ final class WindowsHelperClient {
   Future<HelperStopResponse> stop(String sessionId) async {
     _validateSessionId(sessionId);
     try {
-      final response = await _dio.post<Object?>(
-        '$baseUrl/stop',
-        data: {'sessionId': sessionId},
-        options: _options(ResponseType.json),
+      final response = await _stop(sessionId).timeout(_helperRequestTimeout);
+      _throwIfFailed(response, operation: 'stop');
+      final stopped = response.stopped;
+      final reason = response.reason;
+      if (response.sessionId != sessionId ||
+          stopped == null ||
+          response.corePid != null ||
+          (stopped && reason != null) ||
+          (!stopped && reason != 'notRunning')) {
+        throw const WindowsHelperException(
+          code: 'invalidResponse',
+          message: 'Helper returned an invalid stop response',
+        );
+      }
+      return HelperStopResponse(
+        sessionId: response.sessionId!,
+        stopped: stopped,
+        reason: reason,
       );
-      return _parseStopResponse(response, sessionId);
     } on WindowsHelperException {
       rethrow;
-    } on DioException catch (error) {
-      final response = error.response;
-      if (response?.statusCode == HttpStatus.conflict) {
-        final data = _mapFrom(response?.data);
-        final reason = data?['reason'];
-        if (reason is String) {
-          throw WindowsHelperException(
-            code: reason,
-            message: 'Helper refused to stop the requested Core session',
-            details: data,
-          );
-        }
-      }
-      throw _mapDioException(error, operation: 'stop');
     } catch (error) {
       throw WindowsHelperException(
         code: 'transportError',
@@ -188,78 +218,21 @@ final class WindowsHelperClient {
     }
   }
 
-  HelperStopResponse _parseStopResponse(
-    Response<Object?> response,
-    String sessionId,
-  ) {
-    final data = _responseMap(response, operation: 'stop');
-    final returnedSession = data['sessionId'];
-    final stopped = data['stopped'];
-    final reason = data['reason'];
-    if (returnedSession != sessionId ||
-        stopped is! bool ||
-        (stopped && reason != null) ||
-        (!stopped && reason != 'notRunning')) {
-      throw const WindowsHelperException(
-        code: 'invalidResponse',
-        message: 'Helper returned an invalid stop response',
-      );
+  void _throwIfFailed(HelperCallResult response, {required String operation}) {
+    if (response.ok) {
+      if (response.code != null || response.message != null) {
+        throw const WindowsHelperException(
+          code: 'invalidResponse',
+          message: 'Helper returned success with error details',
+        );
+      }
+      return;
     }
-    return HelperStopResponse(
-      sessionId: returnedSession as String,
-      stopped: stopped,
-      reason: reason as String?,
+    throw WindowsHelperException(
+      code: response.code ?? 'helperRequestFailed',
+      message: response.message ?? 'Helper $operation request failed',
+      details: response,
     );
-  }
-
-  Map<String, Object?> _responseMap(
-    Response<Object?> response, {
-    required String operation,
-  }) {
-    if (response.statusCode != HttpStatus.ok) {
-      throw WindowsHelperException(
-        code: 'unexpectedStatus',
-        message: 'Helper $operation returned HTTP ${response.statusCode}',
-        details: response.data,
-      );
-    }
-    final data = _mapFrom(response.data);
-    if (data == null) {
-      throw WindowsHelperException(
-        code: 'invalidResponse',
-        message: 'Helper returned an invalid $operation response',
-        details: response.data,
-      );
-    }
-    return data;
-  }
-
-  WindowsHelperException _mapDioException(
-    DioException error, {
-    required String operation,
-  }) {
-    final data = _mapFrom(error.response?.data);
-    final code = data?['code'];
-    final message = data?['message'];
-    if (code is String && message is String) {
-      return WindowsHelperException(
-        code: code,
-        message: message,
-        details: data?['details'],
-      );
-    }
-    return WindowsHelperException(
-      code: 'transportError',
-      message: 'Helper $operation request failed',
-      details: error.toString(),
-    );
-  }
-
-  Map<String, Object?>? _mapFrom(Object? data) {
-    if (data is! Map) {
-      return null;
-    }
-    return Map<String, Object?>.from(data);
   }
 
   void _validateSessionId(String sessionId) {
@@ -269,14 +242,6 @@ final class WindowsHelperClient {
         message: 'Core session ID must be 128-bit lowercase hexadecimal',
       );
     }
-  }
-
-  Options _options(ResponseType responseType) {
-    return Options(
-      responseType: responseType,
-      connectTimeout: const Duration(milliseconds: 300),
-      receiveTimeout: const Duration(seconds: 2),
-    );
   }
 }
 
@@ -382,4 +347,4 @@ final class HelperCoreLease implements CoreProcessLease {
   }
 }
 
-final windowsHelperClient = WindowsHelperClient();
+const windowsHelperClient = WindowsHelperClient();

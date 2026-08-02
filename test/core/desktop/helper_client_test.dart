@@ -1,9 +1,3 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:typed_data';
-
-import 'package:dio/dio.dart';
-import 'package:fl_clash/common/constant.dart';
 import 'package:fl_clash/core/desktop/helper_client.dart';
 import 'package:fl_clash/core/desktop/model.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,21 +10,27 @@ void main() {
   test(
     'start returns a Helper lease identity with matching session and PID',
     () async {
-      final adapter = _ResponseAdapter((options) {
-        expect(options.path, endsWith('/start'));
-        expect(options.data, {
-          'address': r'\\.\pipe\FlClashCore_abc',
-          'sessionId': _sessionId,
-        });
-        return _jsonResponse({'sessionId': _sessionId, 'pid': 6456});
-      });
-      final client = _client(adapter);
+      var requestedAddress = '';
+      var requestedSession = '';
+      final client = _client(
+        start: (address, sessionId) async {
+          requestedAddress = address;
+          requestedSession = sessionId;
+          return const HelperCallResult(
+            ok: true,
+            sessionId: _sessionId,
+            corePid: 6456,
+          );
+        },
+      );
 
       final response = await client.start(
-        address: r'\\.\pipe\FlClashCore_abc',
+        address: r'\\.\pipe\FlClashCore_AAAAAAAAAAAAAAAAAAAAAA',
         sessionId: _sessionId,
       );
 
+      expect(requestedAddress, r'\\.\pipe\FlClashCore_AAAAAAAAAAAAAAAAAAAAAA');
+      expect(requestedSession, _sessionId);
       expect(response.pid, 6456);
       expect(response.sessionId, _sessionId);
     },
@@ -38,11 +38,10 @@ void main() {
 
   test('start rejects a response for another session', () async {
     final client = _client(
-      _ResponseAdapter(
-        (_) => _jsonResponse({
-          'sessionId': 'fedcba9876543210fedcba9876543210',
-          'pid': 6456,
-        }),
+      start: (_, _) async => const HelperCallResult(
+        ok: true,
+        sessionId: 'fedcba9876543210fedcba9876543210',
+        corePid: 6456,
       ),
     );
 
@@ -59,15 +58,21 @@ void main() {
   });
 
   test('matching stop parses a confirmed response', () async {
-    final adapter = _ResponseAdapter((options) {
-      expect(options.path, endsWith('/stop'));
-      expect(options.data, {'sessionId': _sessionId});
-      return _jsonResponse({'sessionId': _sessionId, 'stopped': true});
-    });
-    final client = _client(adapter);
+    var requestedSession = '';
+    final client = _client(
+      stop: (sessionId) async {
+        requestedSession = sessionId;
+        return const HelperCallResult(
+          ok: true,
+          sessionId: _sessionId,
+          stopped: true,
+        );
+      },
+    );
 
     final response = await client.stop(_sessionId);
 
+    expect(requestedSession, _sessionId);
     expect(response.sessionId, _sessionId);
     expect(response.stopped, isTrue);
     expect(response.reason, isNull);
@@ -75,12 +80,11 @@ void main() {
 
   test('stop rejects an unknown unconfirmed reason', () async {
     final client = _client(
-      _ResponseAdapter(
-        (_) => _jsonResponse({
-          'sessionId': _sessionId,
-          'stopped': false,
-          'reason': 'unknown',
-        }),
+      stop: (_) async => const HelperCallResult(
+        ok: true,
+        sessionId: _sessionId,
+        stopped: false,
+        reason: 'unknown',
       ),
     );
 
@@ -98,12 +102,10 @@ void main() {
 
   test('session mismatch is typed and never reported as stopped', () async {
     final client = _client(
-      _ResponseAdapter(
-        (_) => _jsonResponse({
-          'sessionId': _sessionId,
-          'stopped': false,
-          'reason': 'sessionMismatch',
-        }, statusCode: 409),
+      stop: (_) async => const HelperCallResult(
+        ok: false,
+        code: 'sessionMismatch',
+        message: 'another Core session is running',
       ),
     );
 
@@ -120,19 +122,22 @@ void main() {
   });
 
   test('Helper lease stops only its immutable session', () async {
-    final requestedSessions = <Object?>[];
+    final requestedSessions = <String>[];
     final client = _client(
-      _ResponseAdapter((options) {
-        if (options.path.endsWith('/start')) {
-          return _jsonResponse({'sessionId': _sessionId, 'pid': 6456});
-        }
-        requestedSessions.add(options.data);
-        return _jsonResponse({
-          'sessionId': _sessionId,
-          'stopped': false,
-          'reason': 'notRunning',
-        });
-      }),
+      start: (_, _) async => const HelperCallResult(
+        ok: true,
+        sessionId: _sessionId,
+        corePid: 6456,
+      ),
+      stop: (sessionId) async {
+        requestedSessions.add(sessionId);
+        return const HelperCallResult(
+          ok: true,
+          sessionId: _sessionId,
+          stopped: false,
+          reason: 'notRunning',
+        );
+      },
     );
     final launcher = WindowsHelperLauncher(client);
     final lease = await launcher.start(
@@ -144,9 +149,7 @@ void main() {
 
     expect(lease.owner, CoreProcessOwner.windowsHelper);
     expect(lease.pid, 6456);
-    expect(requestedSessions, [
-      {'sessionId': _sessionId},
-    ]);
+    expect(requestedSessions, [_sessionId]);
     expect(result.stopped, isFalse);
     expect(result.exitConfirmed, isTrue);
   });
@@ -198,69 +201,80 @@ void main() {
   test(
     'Helper launcher compensates an uncertain start with exact stop',
     () async {
-      final requests = <RequestOptions>[];
+      final requestedSessions = <String>[];
       final client = _client(
-        _ResponseAdapter((options) {
-          requests.add(options);
-          if (options.path.endsWith('/start')) {
-            throw DioException(
-              requestOptions: options,
-              type: DioExceptionType.connectionError,
-            );
-          }
-          return _jsonResponse({
-            'sessionId': _sessionId,
-            'stopped': false,
-            'reason': 'notRunning',
-          });
-        }),
+        start: (_, _) async => throw StateError('connection lost'),
+        stop: (sessionId) async {
+          requestedSessions.add(sessionId);
+          return const HelperCallResult(
+            ok: true,
+            sessionId: _sessionId,
+            stopped: false,
+            reason: 'notRunning',
+          );
+        },
       );
       final launcher = WindowsHelperLauncher(client);
 
       await expectLater(
         launcher.start(sessionId: _sessionId, address: 'test-address'),
-        throwsA(isA<WindowsHelperException>()),
+        throwsA(
+          isA<WindowsHelperException>().having(
+            (error) => error.code,
+            'code',
+            'transportError',
+          ),
+        ),
       );
 
-      expect(requests.map((request) => request.path), [
-        endsWith('/start'),
-        endsWith('/stop'),
-      ]);
-      expect(requests.last.data, {'sessionId': _sessionId});
+      expect(requestedSessions, [_sessionId]);
     },
   );
 
-  test('ping requires protocol 5 and the expected Helper path', () async {
-    final adapter = _ResponseAdapter(
-      (_) => ResponseBody.fromString(
-        r'C:\Program Files\FlClash\FlClashHelperService.exe',
-        200,
-        headers: {
-          helperProtocolVersionHeader: [helperProtocolVersion],
-          Headers.contentTypeHeader: ['text/plain'],
-        },
-      ),
-    );
-    final client = _client(
-      adapter,
-      expectedHelperPath: () =>
-          r'C:\Program Files\FlClash\FlClashHelperService.exe',
+  test('ping accepts only an empty successful response', () async {
+    final ready = _client(ping: () async => const HelperCallResult(ok: true));
+    final invalid = _client(
+      ping: () async => const HelperCallResult(ok: true, sessionId: _sessionId),
     );
 
-    expect(await client.isReady(), isTrue);
+    expect(await ready.isReady(), isTrue);
+    expect(await invalid.isReady(logFailure: false), isFalse);
+  });
+
+  test('ping failures and expired deadlines report not ready', () async {
+    final failed = _client(ping: () async => throw StateError('unavailable'));
+    final expired = _client(
+      ping: () => Future<HelperCallResult>.delayed(
+        const Duration(seconds: 1),
+        () => const HelperCallResult(ok: true),
+      ),
+    );
+
+    expect(await failed.isReady(logFailure: false), isFalse);
+    expect(
+      await expired.isReady(
+        timeout: const Duration(milliseconds: 1),
+        logFailure: false,
+      ),
+      isFalse,
+    );
+    expect(await expired.isReady(timeout: Duration.zero), isFalse);
   });
 
   test('invalid session IDs are rejected before the request', () async {
-    final adapter = _ResponseAdapter(
-      (_) => _jsonResponse({'sessionId': _sessionId, 'pid': 1}),
+    var startCalls = 0;
+    final client = _client(
+      start: (_, _) async {
+        startCalls++;
+        return const HelperCallResult(ok: true);
+      },
     );
-    final client = _client(adapter);
 
     await expectLater(
       client.start(address: 'test-address', sessionId: 'ABCDEF'),
       throwsA(isA<WindowsHelperException>()),
     );
-    expect(adapter.requestCount, 0);
+    expect(startCalls, 0);
   });
 
   test(
@@ -304,43 +318,23 @@ void main() {
   });
 }
 
-WindowsHelperClient _client(
-  _ResponseAdapter adapter, {
-  String Function()? expectedHelperPath,
+WindowsHelperClient _client({
+  HelperPingCall? ping,
+  HelperStartCall? start,
+  HelperStopCall? stop,
 }) {
-  final dio = Dio()..httpClientAdapter = adapter;
   return WindowsHelperClient(
-    dio: dio,
-    expectedHelperPath: expectedHelperPath ?? () => r'C:\Helper.exe',
+    ping: ping ?? () async => const HelperCallResult(ok: true),
+    start:
+        start ??
+        (_, _) async =>
+            const HelperCallResult(ok: true, sessionId: _sessionId, corePid: 1),
+    stop:
+        stop ??
+        (_) async => const HelperCallResult(
+          ok: true,
+          sessionId: _sessionId,
+          stopped: true,
+        ),
   );
-}
-
-ResponseBody _jsonResponse(Map<String, Object?> body, {int statusCode = 200}) {
-  return ResponseBody.fromString(
-    jsonEncode(body),
-    statusCode,
-    headers: {
-      Headers.contentTypeHeader: ['application/json'],
-    },
-  );
-}
-
-final class _ResponseAdapter implements HttpClientAdapter {
-  final ResponseBody Function(RequestOptions options) response;
-  int requestCount = 0;
-
-  _ResponseAdapter(this.response);
-
-  @override
-  Future<ResponseBody> fetch(
-    RequestOptions options,
-    Stream<Uint8List>? requestStream,
-    Future<void>? cancelFuture,
-  ) async {
-    requestCount++;
-    return response(options);
-  }
-
-  @override
-  void close({bool force = false}) {}
 }

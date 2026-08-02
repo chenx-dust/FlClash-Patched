@@ -27,7 +27,7 @@ Desktop core mode:
   disconnects or closes.
 - `lib/core/desktop/lifecycle.dart` serializes process intents and owns the authoritative desktop state machine.
 - `lib/core/desktop/launcher.dart` abstracts direct child-process and Windows Helper ownership through idempotent process
-  leases. `lib/core/desktop/helper_client.dart` is the typed loopback HTTP client for the privileged Helper.
+  leases. `lib/core/desktop/helper_client.dart` is the typed client for the privileged Helper's native named-pipe RPC.
 
 `lib/core/controller.dart` (`CoreController`) selects the implementation based on platform. `lib/core/interface.dart` defines the shared `CoreHandlerInterface`.
 
@@ -306,15 +306,21 @@ Windows helper integrity/version check:
   builds the Rust Helper with release hardening and that expected hash.
 - Flutter does not embed or send the Core SHA256. Debug, Profile, and Release
   builds use the same Helper protocol and may use TUN through the same flow.
-- `/ping` is loopback-only and requires no request token. The Helper verifies the fixed `FlClashCore.exe` beside it against
-  its embedded SHA256 before reporting readiness, and repeats verification before every launch. The response includes the
-  running Helper path and protocol header; Dart checks both against the current installation.
-- Flutter creates a 128-bit lowercase-hex session ID and uses it as the random named-pipe suffix. `/start` receives only
-  that address and session ID, validates the fixed `FlClashCore_<session>` namespace, starts the fixed Core beside the
-  Helper, and returns the same session ID plus the spawned PID. Flutter verifies both the session and named-pipe peer PID.
-- `/stop` requires the same session ID. A missing process returns `notRunning`; a different owner returns
-  `sessionMismatch` without terminating that process. Session IDs are ownership tokens for lifecycle safety, not a claim
-  that the loopback HTTP endpoints are authenticated.
+- The Helper exposes a local named-pipe RPC endpoint with an explicit Windows
+  DACL and rejects remote clients. It verifies that the client PID belongs to
+  the sibling `FlClash.exe`; the app verifies that the server PID belongs to
+  the registered sibling `FlClashHelperService.exe`.
+- Ping requires no caller-supplied token. The Helper verifies the fixed
+  `FlClashCore.exe` beside it against its embedded SHA256 before reporting
+  readiness, and repeats the verification before every launch.
+- Flutter creates a 128-bit lowercase-hex lifecycle session ID. Start passes the
+  session together with the randomized Core pipe address; the Helper validates
+  both, returns the same session and spawned PID, and Flutter matches that PID
+  against the Core pipe peer.
+- Stop requires the exact owning session. A missing process returns `notRunning`;
+  a different owner returns `sessionMismatch` without terminating that process.
+- The Helper-owned Core check detects mismatched builds, while service PID and
+  executable-path checks detect stale or substituted Helper registrations.
 
 Build configuration defaults live in `build_tool/lib/src/options.dart` and can be overridden via a root `build_config.yaml`.
 
