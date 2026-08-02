@@ -171,7 +171,7 @@ enum ProxiesLayout { loose, standard, tight }
 
 enum ProxiesListHeaderStyle { loose, standard, tight }
 
-enum ProxyCardType { standard, shrink, min }
+enum ProxyCardType { expand, shrink, min }
 
 enum DnsMode {
   normal,
@@ -222,6 +222,8 @@ extension KeyboardModifierExt on KeyboardModifier {
 enum HotAction { start, view, mode, proxy, tun }
 
 enum ProxiesIconStyle { none, standard, icon }
+
+enum ProxiesIconSource { standard, config, emoji }
 
 enum FontFamily {
   twEmoji('Twemoji'),

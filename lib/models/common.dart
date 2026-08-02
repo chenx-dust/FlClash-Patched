@@ -79,6 +79,7 @@ abstract class Metadata with _$Metadata {
     @Default('') String destinationIP,
     @Default('') String destinationPort,
     @Default('') String host,
+    @JsonKey(unknownEnumValue: JsonKey.nullForUndefinedEnumValue)
     DnsMode? dnsMode,
     @Default('') String process,
     @Default('') String processPath,
@@ -168,8 +169,12 @@ String _logDateTime(dynamic _) {
 @freezed
 abstract class Log with _$Log {
   const factory Log({
-    @JsonKey(name: 'LogLevel') @Default(LogLevel.info) LogLevel logLevel,
-    @Default(LogSource.app) LogSource source,
+    @JsonKey(name: 'LogLevel', unknownEnumValue: LogLevel.info)
+    @Default(LogLevel.info)
+    LogLevel logLevel,
+    @Default(LogSource.app)
+    @JsonKey(unknownEnumValue: LogSource.app)
+    LogSource source,
     @JsonKey(name: 'Payload') @Default('') String payload,
     @JsonKey(fromJson: _logDateTime) required String dateTime,
   }) = _Log;
@@ -603,7 +608,7 @@ abstract class IpInfo with _$IpInfo {
 @freezed
 abstract class HotKeyAction with _$HotKeyAction {
   const factory HotKeyAction({
-    required HotAction action,
+    @JsonKey(unknownEnumValue: HotAction.start) required HotAction action,
     int? key,
     @Default({}) Set<KeyboardModifier> modifiers,
   }) = _HotKeyAction;

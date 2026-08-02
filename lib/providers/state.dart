@@ -20,6 +20,9 @@ GroupsState currentGroupsState(Ref ref) {
   final mode = ref.watch(
     patchClashConfigProvider.select((state) => state.mode),
   );
+  final showHiddenGroups = ref.watch(
+    proxiesStyleSettingProvider.select((state) => state.showHiddenGroups),
+  );
   final groups = ref.watch(
     groupsProvider.select(
       (state) => state.map((item) {
@@ -36,7 +39,7 @@ GroupsState currentGroupsState(Ref ref) {
       Mode.global => groups.toList(),
       Mode.rule =>
         groups
-            .where((item) => item.hidden == false)
+            .where((item) => showHiddenGroups || item.hidden != true)
             .where((element) => element.name != GroupName.GLOBAL.name)
             .toList(),
     },
