@@ -383,6 +383,7 @@
   "emptyTip": "{label} 不能为空",
   "urlTip": "{label} 必须为 URL",
   "numberTip": "{label} 必须为数字",
+  "positiveIntegerTip": "请输入大于 0 的整数",
   "interval": "间隔",
   "existsTip": "{label} 当前已存在",
   "deleteTip": "确定删除当前 {label} 吗？",

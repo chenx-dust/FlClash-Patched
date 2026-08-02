@@ -262,6 +262,9 @@ class _AppSettingProps implements AppSettingProps {
 @override@JsonKey() final  bool developerMode;
 @override@JsonKey(unknownEnumValue: RestoreStrategy.compatible) final  RestoreStrategy restoreStrategy;
 @override@JsonKey() final  String customUserAgent;
+@override@JsonKey() final  int foregroundTickerInterval;
+@override@JsonKey() final  bool foregroundTickerIdleWhenUnfocused;
+@override@JsonKey() final  int foregroundTickerIdleInterval;
 
 /// Create a copy of AppSettingProps
 /// with the given fields replaced by the non-null parameter values.

@@ -562,6 +562,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "port": MessageLookupByLibrary.simpleMessage("端口"),
     "portConflictTip": MessageLookupByLibrary.simpleMessage("请输入不同的端口"),
     "portTip": m21,
+    "positiveIntegerTip": MessageLookupByLibrary.simpleMessage("请输入大于 0 的整数"),
     "predictiveBack": MessageLookupByLibrary.simpleMessage("预见性返回"),
     "preferH3": MessageLookupByLibrary.simpleMessage("优先使用 HTTP/3"),
     "preferH3Desc": MessageLookupByLibrary.simpleMessage("优先使用 DOH 的 HTTP/3"),
