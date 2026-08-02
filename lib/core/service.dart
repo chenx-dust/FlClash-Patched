@@ -31,7 +31,7 @@ class CoreService extends CoreHandlerInterface {
   factory CoreService._create() {
     final address = system.isWindows ? windowsPipeName : unixSocketPath;
     final directLauncher = DirectCoreLauncher();
-    final helperLauncher = WindowsHelperLauncher(windowsHelperClient);
+    const helperLauncher = WindowsHelperLauncher(windowsHelperClient);
     final lifecycle = DesktopCoreLifecycle(
       transportFactory: () => IPCCoreTransport(address: address),
       launcherResolver: WindowsHelperLauncherResolver(

@@ -6,9 +6,9 @@
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `cleanup_socket`, `ensure_private_preferred_runtime_root`, `ensure_private_runtime_dir`, `finish_server`, `has_secure_token_name`, `io_loop`, `is_nonblocking_idle`, `is_preferred_runtime_dir`, `is_usable_preferred_runtime_root`, `macos_peer_pid`, `make_frame`, `peer_identity`, `poll`, `preferred_unix_runtime_root`, `prepare_socket`, `report_error`, `reset`, `secure_socket_permissions`, `server_active`, `stop_server_thread`, `unix_runtime_dir`, `validate_frame_len`, `validate_peer_identity`, `wait_for_authorized_peer`, `write_all_interruptible`, `write_frame`
-// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `FrameReader`, `PeerIdentity`, `ServerState`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `eq`, `fmt`
+// These functions are ignored because they are not marked as `pub`: `available_read_len`, `cleanup_socket`, `finish_server`, `io_loop`, `is_expected_disconnect_error`, `is_nonblocking_idle`, `make_frame`, `normalize_windows_pipe_write`, `poll`, `prepare_socket`, `report_error`, `reset`, `secure_socket_permissions`, `server_active`, `stop_server_thread`, `validate_frame_len`, `validate_peer_identity`, `validate_peer_pid`, `wait_for_authorized_peer`, `wait_for_expected_core_pid`, `windows_pipe_available_bytes`, `write_all_interruptible`, `write_frame`
+// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `FrameReader`, `PeerIdentity`, `ServerState`, `WindowsPipeReader`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `eq`, `fmt`, `read`
 // These functions are ignored (category: IgnoreBecauseOwnerTyShouldIgnore): `default`
 
 Future<void> setExpectedCorePid({required int pid}) =>
