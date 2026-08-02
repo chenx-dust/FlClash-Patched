@@ -86,6 +86,7 @@ class CommonCard extends StatelessWidget {
     super.key,
     bool? isSelected,
     this.type = CommonCardType.plain,
+    this.focusNode,
     this.onPressed,
     this.selectWidget,
     this.radius,
@@ -101,6 +102,7 @@ class CommonCard extends StatelessWidget {
   final bool enterAnimated;
   final bool isSelected;
   final bool isError;
+  final FocusNode? focusNode;
   final void Function()? onPressed;
   final void Function()? onLongPress;
   final Widget? selectWidget;
@@ -198,6 +200,32 @@ class CommonCard extends StatelessWidget {
     return colorScheme.primary;
   }
 
+  Color? _buildOverlayColor(BuildContext context, Set<WidgetState> states) {
+    final color = context.colorScheme.onSurface;
+    if (onPressed == null) {
+      return WidgetStateProperty<Color?>.fromMap(<WidgetState, Color?>{
+        WidgetState.pressed: color.withAlpha(26),
+        WidgetState.hovered: Colors.transparent,
+        WidgetState.focused: Colors.transparent,
+      }).resolve(states);
+    }
+    return WidgetStateProperty<Color?>.fromMap(<WidgetState, Color?>{
+      WidgetState.pressed: color.withAlpha(26),
+      WidgetState.hovered: color.withAlpha(20),
+      WidgetState.focused: color.withAlpha(26),
+    }).resolve(states);
+  }
+
+  FocusNode? _buildFocusNode() {
+    if (focusNode != null) {
+      return focusNode;
+    }
+    if (onPressed == null && onLongPress == null) {
+      return FocusNode(skipTraversal: true);
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     var childWidget = child;
@@ -225,6 +253,7 @@ class CommonCard extends StatelessWidget {
     final card = switch (type == CommonCardType.filled) {
       true => FilledButton(
         onLongPress: onLongPress,
+        focusNode: _buildFocusNode(),
         clipBehavior: Clip.antiAlias,
         style:
             FilledButton.styleFrom(
@@ -246,12 +275,16 @@ class CommonCard extends StatelessWidget {
               side: WidgetStateProperty.resolveWith(
                 (states) => _buildBorderSide(context, states),
               ),
+              overlayColor: WidgetStateProperty.resolveWith(
+                (states) => _buildOverlayColor(context, states),
+              ),
             ),
         onPressed: onPressed,
         child: childWidget,
       ),
       false => OutlinedButton(
         onLongPress: onLongPress,
+        focusNode: _buildFocusNode(),
         clipBehavior: Clip.antiAlias,
         style:
             OutlinedButton.styleFrom(
@@ -269,6 +302,9 @@ class CommonCard extends StatelessWidget {
             ).copyWith(
               side: WidgetStateProperty.resolveWith(
                 (states) => _buildBorderSide(context, states),
+              ),
+              overlayColor: WidgetStateProperty.resolveWith(
+                (states) => _buildOverlayColor(context, states),
               ),
             ),
         onPressed: onPressed,

@@ -471,7 +471,8 @@ class _ListHeaderState extends State<ListHeader> {
   @override
   Widget build(BuildContext context) {
     return CommonCard(
-      enterAnimated: widget.enterAnimated,
+      focusNode: FocusNode(skipTraversal: true),
+      enterAnimated: false,
       key: widget.key,
       radius: 18.ap,
       type: CommonCardType.filled,
