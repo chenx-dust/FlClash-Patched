@@ -233,44 +233,61 @@ func handleResetTraffic() {
 }
 
 func handleAsyncTestDelay(params *TestDelayParams, fn func(*Delay)) {
-	batchKey := params.ProxyName + "\x00" + params.TestUrl
-	mBatch.Go(batchKey, func() (bool, error) {
-		testUrl := params.TestUrl
-		if testUrl == "" {
-			testUrl = constant.DefaultTestURL
-		}
-		delayData := &Delay{
-			Name:  params.ProxyName,
-			Url:   testUrl,
-			Value: -1,
-		}
+	testUrl := params.TestUrl
+	if testUrl == "" {
+		testUrl = constant.DefaultTestURL
+	}
+	delayTestKey := params.ProxyName + "\x00" + testUrl
+	go func() {
+		delayData, _, _ := delayTestCall.Do(delayTestKey, func() (*Delay, error) {
+			delayTestSlots <- struct{}{}
+			defer func() {
+				<-delayTestSlots
+			}()
+			delayData := &Delay{
+				Name:  params.ProxyName,
+				Url:   testUrl,
+				Value: -1,
+			}
 
-		expectedStatus, err := utils.NewUnsignedRanges[uint16]("")
-		if err != nil {
-			fn(delayData)
-			return false, nil
-		}
+			expectedStatus, err := utils.NewUnsignedRanges[uint16]("")
+			if err != nil {
+				return delayData, nil
+			}
 
-		ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*time.Duration(params.Timeout))
-		defer cancel()
+			ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*time.Duration(params.Timeout))
+			defer cancel()
 
-		proxies := tunnel.AllProxies()
-		proxy := proxies[params.ProxyName]
+			proxies := tunnel.AllProxies()
+			proxy := proxies[params.ProxyName]
 
-		if proxy == nil {
-			fn(delayData)
-			return false, nil
-		}
-		delay, err := proxy.URLTest(ctx, testUrl, expectedStatus)
-		if err != nil || delay == 0 {
-			fn(delayData)
-			return false, nil
-		}
+			if proxy == nil {
+				return delayData, nil
+			}
+			delay, err := proxy.URLTest(ctx, testUrl, expectedStatus)
+			if err != nil {
+				log.Warnln(
+					"[Delay Test] proxy %q failed for %q: %v",
+					params.ProxyName,
+					testUrl,
+					err,
+				)
+				return delayData, nil
+			}
+			if delay == 0 {
+				log.Warnln(
+					"[Delay Test] proxy %q returned zero delay for %q",
+					params.ProxyName,
+					testUrl,
+				)
+				return delayData, nil
+			}
 
-		delayData.Value = int32(delay)
+			delayData.Value = int32(delay)
+			return delayData, nil
+		})
 		fn(delayData)
-		return false, nil
-	})
+	}()
 }
 
 func handleGetConnections() *statistic.Snapshot {
