@@ -9,6 +9,7 @@ import 'chip.dart';
 import 'inherited.dart';
 
 typedef OnKeywordsUpdateCallback = void Function(List<String> keywords);
+typedef KeywordLabelBuilder = String Function(String keyword);
 
 typedef AppBarSearchStateBuilder =
     AppBarSearchState? Function(AppBarSearchState? state);
@@ -25,6 +26,7 @@ class CommonScaffold extends StatefulWidget {
   final AppBarEditState? editState;
   final AppBarSearchState? searchState;
   final OnKeywordsUpdateCallback? onKeywordsUpdate;
+  final KeywordLabelBuilder? keywordLabelBuilder;
   final bool? resizeToAvoidBottomInset;
 
   const CommonScaffold({
@@ -40,6 +42,7 @@ class CommonScaffold extends StatefulWidget {
     this.searchState,
     this.floatingActionButton,
     this.onKeywordsUpdate,
+    this.keywordLabelBuilder,
     this.resizeToAvoidBottomInset,
   });
 
@@ -85,12 +88,33 @@ class CommonScaffoldState extends State<CommonScaffold> {
     _updateSearchState((state) => state?.copyWith(query: ''));
   }
 
+  AppBarThemeData _buildStaticAppBarTheme(
+    ThemeData theme, {
+    Color? backgroundColor,
+    IconThemeData? iconTheme,
+    TextStyle? titleTextStyle,
+    TextStyle? toolbarTextStyle,
+  }) {
+    return theme.appBarTheme.copyWith(
+      backgroundColor:
+          backgroundColor ??
+          theme.appBarTheme.backgroundColor ??
+          theme.colorScheme.surface,
+      scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
+      iconTheme: iconTheme,
+      titleTextStyle: titleTextStyle,
+      toolbarTextStyle: toolbarTextStyle,
+    );
+  }
+
   Widget _buildSearchingAppBarTheme(Widget child) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
     return Theme(
       data: theme.copyWith(
-        appBarTheme: theme.appBarTheme.copyWith(
+        appBarTheme: _buildStaticAppBarTheme(
+          theme,
           backgroundColor: colorScheme.brightness == Brightness.dark
               ? Colors.grey[900]
               : Colors.white,
@@ -116,8 +140,11 @@ class CommonScaffoldState extends State<CommonScaffold> {
       );
     }
     if (oldWidget.searchState != widget.searchState) {
+      final currentSearchState = _appBarState.value.searchState;
       _appBarState.value = _appBarState.value.copyWith(
-        searchState: widget.searchState,
+        searchState: widget.searchState?.copyWith(
+          query: currentSearchState?.query,
+        ),
       );
     }
     if (oldWidget.isLoading != widget.isLoading) {
@@ -130,6 +157,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
     if (_appBarState.value.searchState != null) {
       _appBarState.value.searchState!.onSearch('');
     }
+    _updateSearchState((state) => state?.copyWith(query: ''));
   }
 
   void _handleClear() {
@@ -197,18 +225,30 @@ class CommonScaffoldState extends State<CommonScaffold> {
         : null;
   }
 
+  bool _isInvalidRegexSearch(AppBarSearchState searchState) {
+    final query = searchState.query ?? '';
+    return searchState.useRegex &&
+        query.isNotEmpty &&
+        !SearchMatcher.isValidRegex(query);
+  }
+
   Widget _buildTitle(AppBarSearchState? startState) {
     final appLocalizations = context.appLocalizations;
+    final isInvalidRegex =
+        startState != null && _isInvalidRegexSearch(startState);
     return _isSearch
         ? TextField(
             autofocus: true,
             controller: _textController,
             inputFormatters: TextInputLimits.limit(TextInputLimits.search),
-            style: context.textTheme.titleLarge,
+            style: context.textTheme.titleLarge?.copyWith(
+              color: isInvalidRegex ? context.colorScheme.error : null,
+            ),
             onChanged: (value) {
               if (startState != null) {
                 startState.onSearch(value);
               }
+              _updateSearchState((state) => state?.copyWith(query: value));
             },
             decoration: InputDecoration(hintText: appLocalizations.search),
           )
@@ -221,14 +261,44 @@ class CommonScaffoldState extends State<CommonScaffold> {
           );
   }
 
-  List<Widget> _buildActions(bool hasSearch, List<Widget> actions) {
+  void _toggleRegexSearch(AppBarSearchState searchState) {
+    final useRegex = !searchState.useRegex;
+    searchState.onRegexChange?.call(useRegex);
+    _updateSearchState((state) => state?.copyWith(useRegex: useRegex));
+  }
+
+  Widget _buildRegexSearchButton(AppBarSearchState searchState) {
+    void onPressed() {
+      _toggleRegexSearch(searchState);
+    }
+
+    if (searchState.useRegex) {
+      return IconButton.filledTonal(
+        tooltip: context.appLocalizations.regexSearch,
+        onPressed: onPressed,
+        icon: const Icon(Icons.code),
+      );
+    }
+    return IconButton(
+      tooltip: context.appLocalizations.regexSearch,
+      onPressed: onPressed,
+      icon: const Icon(Icons.code_outlined),
+    );
+  }
+
+  List<Widget> _buildActions(
+    AppBarSearchState? searchState,
+    List<Widget> actions,
+  ) {
     if (_isSearch) {
       return genActions([
+        if (searchState?.onRegexChange != null)
+          _buildRegexSearchButton(searchState!),
         IconButton(onPressed: _handleClear, icon: const Icon(Icons.close)),
       ]);
     }
     return genActions([
-      if (hasSearch && widget.searchState?.autoAddSearch == true)
+      if (searchState != null && widget.searchState?.autoAddSearch == true)
         IconButton(
           onPressed: () {
             _updateSearchState((state) => state?.copyWith(query: ''));
@@ -260,43 +330,47 @@ class CommonScaffoldState extends State<CommonScaffold> {
   }
 
   PreferredSizeWidget _buildAppBar(VoidCallback? backAction) {
+    final theme = Theme.of(context);
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          widget.appBar ??
-              ValueListenableBuilder<AppBarState>(
-                valueListenable: _appBarState,
-                builder: (_, state, _) {
-                  return _buildAppBarWrap(
-                    AppBar(
-                      automaticallyImplyLeading: backAction != null
-                          ? false
-                          : true,
-                      animateColor: true,
-                      centerTitle: widget.centerTitle ?? false,
-                      leading: _buildLeading(backAction),
-                      title: _buildTitle(state.searchState),
-                      actions: _buildActions(
-                        state.searchState != null,
-                        state.actions.isNotEmpty
-                            ? state.actions
-                            : widget.actions ?? [],
+      child: Theme(
+        data: theme.copyWith(appBarTheme: _buildStaticAppBarTheme(theme)),
+        child: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            widget.appBar ??
+                ValueListenableBuilder<AppBarState>(
+                  valueListenable: _appBarState,
+                  builder: (_, state, _) {
+                    return _buildAppBarWrap(
+                      AppBar(
+                        automaticallyImplyLeading: backAction != null
+                            ? false
+                            : true,
+                        animateColor: true,
+                        centerTitle: widget.centerTitle ?? false,
+                        leading: _buildLeading(backAction),
+                        title: _buildTitle(state.searchState),
+                        actions: _buildActions(
+                          state.searchState,
+                          state.actions.isNotEmpty
+                              ? state.actions
+                              : widget.actions ?? [],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
-          ValueListenableBuilder(
-            valueListenable: _loadingNotifier,
-            builder: (_, value, _) {
-              return value == true
-                  ? const LinearProgressIndicator()
-                  : Container();
-            },
-          ),
-        ],
+                    );
+                  },
+                ),
+            ValueListenableBuilder(
+              valueListenable: _loadingNotifier,
+              builder: (_, value, _) {
+                return value == true
+                    ? const LinearProgressIndicator()
+                    : Container();
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -323,7 +397,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
               return Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
-                  vertical: 16,
+                  vertical: 8,
                 ),
                 child: Wrap(
                   runSpacing: 8,
@@ -331,7 +405,12 @@ class CommonScaffoldState extends State<CommonScaffold> {
                   children: [
                     for (final keyword in keywords)
                       CommonChip(
-                        label: keyword,
+                        label:
+                            widget.keywordLabelBuilder?.call(keyword) ??
+                            keyword,
+                        labelStyle: context.textTheme.labelSmall?.copyWith(
+                          color: context.colorScheme.onSurfaceVariant,
+                        ),
                         type: ChipType.delete,
                         onPressed: () {
                           _deleteKeyword(keyword);
