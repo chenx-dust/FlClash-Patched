@@ -682,9 +682,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "optional": MessageLookupByLibrary.simpleMessage("Необязательно"),
     "options": MessageLookupByLibrary.simpleMessage("Опции"),
     "other": MessageLookupByLibrary.simpleMessage("Другое"),
-    "otherContributors": MessageLookupByLibrary.simpleMessage(
-      "Другие участники",
-    ),
     "outboundMode": MessageLookupByLibrary.simpleMessage(
       "Режим исходящего трафика",
     ),
@@ -725,6 +722,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Введите другой порт",
     ),
     "portTip": m21,
+    "predictiveBack": MessageLookupByLibrary.simpleMessage(
+      "Предиктивный возврат",
+    ),
     "preferH3Desc": MessageLookupByLibrary.simpleMessage(
       "Приоритетное использование HTTP/3 для DOH",
     ),
