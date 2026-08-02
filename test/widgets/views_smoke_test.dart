@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/common/theme.dart';
+import 'package:fl_clash/core/controller.dart';
+import 'package:fl_clash/core/interface.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/models/models.dart';
@@ -30,8 +32,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:smooth_sheets/smooth_sheets.dart';
+
+class _MockCoreHandlerInterface extends Mock implements CoreHandlerInterface {}
 
 void main() {
   final cases = <String, Widget>{
@@ -101,6 +106,59 @@ void main() {
 
       await tester.pumpWidget(const SizedBox.shrink());
     });
+  }
+
+  final listenerCases = <String, Widget>{
+    'requests': const RequestsView(),
+    'logs': const LogsView(),
+  };
+
+  for (final entry in listenerCases.entries) {
+    testWidgets(
+      '${entry.key} listens without modifying providers during widget lifecycle',
+      (tester) async {
+        final coreHandler = _MockCoreHandlerInterface();
+        CoreController.resetInstance();
+        CoreController.test(coreHandler);
+        when(
+          () => coreHandler.startLogNotify(),
+        ).thenAnswer((_) async => const <Log>[]);
+        when(() => coreHandler.stopLogNotify()).thenAnswer((_) {});
+        when(
+          () => coreHandler.startRequestNotify(),
+        ).thenAnswer((_) async => const <TrackerInfo>[]);
+        when(() => coreHandler.stopRequestNotify()).thenAnswer((_) {});
+
+        final wasBackground = globalState.isBackground.value;
+        final wasAttached = globalState.isAttach;
+        globalState.isBackground.value = false;
+        globalState.isAttach = true;
+
+        final container = ProviderContainer();
+        globalState.container = container;
+        addTearDown(() {
+          container.dispose();
+          globalState.isAttach = wasAttached;
+          globalState.isBackground.value = wasBackground;
+          CoreController.resetInstance();
+        });
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: _TestApp(child: entry.value),
+          ),
+        );
+        await tester.pump();
+
+        expect(tester.takeException(), null);
+
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pump();
+
+        expect(tester.takeException(), null);
+      },
+    );
   }
 
   final toolDestinations = <String, Type>{
