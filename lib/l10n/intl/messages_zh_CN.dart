@@ -69,6 +69,11 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m23(count) => "已选择 ${count} 项";
 
+  static String m24(interval, idleInterval) =>
+      "${interval} · 怠速 ${idleInterval}";
+
+  static String m25(interval) => "${interval} · 怠速已禁用";
+
   static String m26(label) => "${label} 必须为 URL";
 
   static String m27(count) => "${count} 年前";
@@ -123,6 +128,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "allowBypass": MessageLookupByLibrary.simpleMessage("允许应用绕过 VPN"),
     "allowBypassDesc": MessageLookupByLibrary.simpleMessage("开启后部分应用可绕过 VPN"),
     "allowLan": MessageLookupByLibrary.simpleMessage("局域网代理"),
+    "allowLanAccess": MessageLookupByLibrary.simpleMessage("允许局域网访问"),
+    "allowLanAccessDesc": MessageLookupByLibrary.simpleMessage("允许从局域网访问外部控制器"),
     "allowLanDesc": MessageLookupByLibrary.simpleMessage("允许通过局域网访问代理"),
     "app": MessageLookupByLibrary.simpleMessage("应用"),
     "appAccessControl": MessageLookupByLibrary.simpleMessage("应用访问控制"),
@@ -226,7 +233,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "deleteMultipTip": m1,
     "deleteTip": m2,
     "desc": MessageLookupByLibrary.simpleMessage(
-      "基于 ClashMeta 的多平台代理客户端，简单易用，开源无广告。",
+      "基于 mihomo 的多平台代理客户端，简单易用，开源无广告。",
     ),
     "destination": MessageLookupByLibrary.simpleMessage("目标地址"),
     "destinationGeoIP": MessageLookupByLibrary.simpleMessage("目标地理定位"),
@@ -245,6 +252,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "discoverNewVersion": MessageLookupByLibrary.simpleMessage("发现新版本"),
     "dnsDesc": MessageLookupByLibrary.simpleMessage("更新 DNS 相关设置"),
     "dnsHijacking": MessageLookupByLibrary.simpleMessage("DNS 劫持"),
+    "dnsIPv6Desc": MessageLookupByLibrary.simpleMessage("关闭后，AAAA 查询将返回空结果"),
     "dnsMode": MessageLookupByLibrary.simpleMessage("DNS 模式"),
     "doYouWantToPass": MessageLookupByLibrary.simpleMessage("是否要通过"),
     "domain": MessageLookupByLibrary.simpleMessage("域名"),
@@ -259,6 +267,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "editSsid": MessageLookupByLibrary.simpleMessage("编辑 SSID"),
     "emptyTip": m4,
     "en": MessageLookupByLibrary.simpleMessage("英语"),
+    "enableExternalController": MessageLookupByLibrary.simpleMessage("启用外部控制器"),
     "enforceRoutes": MessageLookupByLibrary.simpleMessage("强制路由"),
     "enforceRoutesDesc": MessageLookupByLibrary.simpleMessage(
       "即使存在更具体的路由也确保流量经过隧道",
@@ -301,15 +310,30 @@ class MessageLookup extends MessageLookupByLibrary {
     "expressiveScheme": MessageLookupByLibrary.simpleMessage("表现力"),
     "externalController": MessageLookupByLibrary.simpleMessage("外部控制器"),
     "externalControllerDesc": MessageLookupByLibrary.simpleMessage(
-      "开启后将可以通过 9090 端口控制 Clash 内核",
+      "配置 Clash 内核的外部访问",
     ),
     "externalFetch": MessageLookupByLibrary.simpleMessage("外部获取"),
     "externalLink": MessageLookupByLibrary.simpleMessage("外部链接"),
-    "fakeipFilter": MessageLookupByLibrary.simpleMessage("Fakeip 过滤"),
-    "fakeipRange": MessageLookupByLibrary.simpleMessage("Fakeip 范围"),
+    "fakeipFilter": MessageLookupByLibrary.simpleMessage("FakeIP 过滤"),
+    "fakeipFilterDesc": MessageLookupByLibrary.simpleMessage(
+      "Fake IP 模式下，匹配的域名返回真实 IP 而非 Fake IP",
+    ),
+    "fakeipRange": MessageLookupByLibrary.simpleMessage("FakeIP 范围"),
     "fallback": MessageLookupByLibrary.simpleMessage("备用"),
     "fallbackDesc": MessageLookupByLibrary.simpleMessage("一般情况下使用境外 DNS"),
+    "fallbackDomainDesc": MessageLookupByLibrary.simpleMessage(
+      "匹配的域名直接使用 fallback，不查询 nameserver",
+    ),
     "fallbackFilter": MessageLookupByLibrary.simpleMessage("备用过滤"),
+    "fallbackGeoipDesc": MessageLookupByLibrary.simpleMessage(
+      "按 GeoIP 代码检查 nameserver 结果；不属于该地区时采用 fallback",
+    ),
+    "fallbackGeositeDesc": MessageLookupByLibrary.simpleMessage(
+      "匹配这些 GeoSite 分类的域名直接使用 fallback",
+    ),
+    "fallbackIpcidrDesc": MessageLookupByLibrary.simpleMessage(
+      "nameserver 结果命中这些 CIDR 前缀时改用 fallback 结果",
+    ),
     "fidelityScheme": MessageLookupByLibrary.simpleMessage("高保真"),
     "file": MessageLookupByLibrary.simpleMessage("文件"),
     "fileDesc": MessageLookupByLibrary.simpleMessage("直接上传配置文件"),
@@ -374,6 +398,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "iconStyle": MessageLookupByLibrary.simpleMessage("图标样式"),
     "iconUrl": MessageLookupByLibrary.simpleMessage("图标链接"),
     "ignoreBatteryOptimization": MessageLookupByLibrary.simpleMessage("忽略电池优化"),
+    "ignoreCertificateErrors": MessageLookupByLibrary.simpleMessage("忽略证书验证"),
+    "ignoreCertificateErrorsDesc": MessageLookupByLibrary.simpleMessage(
+      "允许使用无效证书的 HTTPS 连接，这会降低安全性",
+    ),
     "import": MessageLookupByLibrary.simpleMessage("导入"),
     "importFile": MessageLookupByLibrary.simpleMessage("通过文件导入"),
     "importFromURL": MessageLookupByLibrary.simpleMessage("从 URL 导入"),
@@ -409,7 +437,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "ipv6InboundDesc": MessageLookupByLibrary.simpleMessage("允许 IPv6 入站"),
     "ja": MessageLookupByLibrary.simpleMessage("日语"),
     "justNow": MessageLookupByLibrary.simpleMessage("刚刚"),
-    "keepAliveIntervalDesc": MessageLookupByLibrary.simpleMessage("TCP保持活动间隔"),
+    "keepAliveIntervalDesc": MessageLookupByLibrary.simpleMessage("TCP 保持活动间隔"),
     "key": MessageLookupByLibrary.simpleMessage("键"),
     "language": MessageLookupByLibrary.simpleMessage("语言"),
     "layout": MessageLookupByLibrary.simpleMessage("布局"),
@@ -417,6 +445,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "light": MessageLookupByLibrary.simpleMessage("浅色"),
     "list": MessageLookupByLibrary.simpleMessage("列表"),
     "listen": MessageLookupByLibrary.simpleMessage("监听"),
+    "listeningPort": MessageLookupByLibrary.simpleMessage("监听端口"),
     "loadTest": MessageLookupByLibrary.simpleMessage("加载测试"),
     "loading": MessageLookupByLibrary.simpleMessage("加载中..."),
     "local": MessageLookupByLibrary.simpleMessage("本地"),
@@ -454,13 +483,20 @@ class MessageLookup extends MessageLookupByLibrary {
     "mixedPort": MessageLookupByLibrary.simpleMessage("混合端口"),
     "mode": MessageLookupByLibrary.simpleMessage("模式"),
     "monochromeScheme": MessageLookupByLibrary.simpleMessage("单色"),
+    "monochromeTrayIcon": MessageLookupByLibrary.simpleMessage("单色托盘图标"),
     "monthsAgo": m18,
     "more": MessageLookupByLibrary.simpleMessage("更多"),
+    "mtu": MessageLookupByLibrary.simpleMessage("MTU"),
+    "mtuRangeTip": MessageLookupByLibrary.simpleMessage(
+      "MTU 必须是 1 到 65535 之间的整数",
+    ),
     "name": MessageLookupByLibrary.simpleMessage("名称"),
     "nameserver": MessageLookupByLibrary.simpleMessage("域名服务器"),
     "nameserverDesc": MessageLookupByLibrary.simpleMessage("用于解析域名"),
     "nameserverPolicy": MessageLookupByLibrary.simpleMessage("域名服务器策略"),
-    "nameserverPolicyDesc": MessageLookupByLibrary.simpleMessage("指定对应域名服务器策略"),
+    "nameserverPolicyDesc": MessageLookupByLibrary.simpleMessage(
+      "为匹配的域名、GeoSite 分类或规则集指定 DNS 服务器",
+    ),
     "network": MessageLookupByLibrary.simpleMessage("网络"),
     "networkDesc": MessageLookupByLibrary.simpleMessage("修改网络相关设置"),
     "networkDetection": MessageLookupByLibrary.simpleMessage("网络检测"),
@@ -527,7 +563,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "portConflictTip": MessageLookupByLibrary.simpleMessage("请输入不同的端口"),
     "portTip": m21,
     "predictiveBack": MessageLookupByLibrary.simpleMessage("预见性返回"),
-    "preferH3Desc": MessageLookupByLibrary.simpleMessage("优先使用 DOH 的 http/3"),
+    "preferH3": MessageLookupByLibrary.simpleMessage("优先使用 HTTP/3"),
+    "preferH3Desc": MessageLookupByLibrary.simpleMessage("优先使用 DOH 的 HTTP/3"),
     "prerequisites": MessageLookupByLibrary.simpleMessage("前置条件"),
     "pressKeyboard": MessageLookupByLibrary.simpleMessage("请按下按键"),
     "preview": MessageLookupByLibrary.simpleMessage("预览"),
@@ -587,6 +624,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "qrcodeDesc": MessageLookupByLibrary.simpleMessage("扫描二维码获取配置文件"),
     "quickFill": MessageLookupByLibrary.simpleMessage("一键填入"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("彩虹"),
+    "random": MessageLookupByLibrary.simpleMessage("随机"),
     "redirPort": MessageLookupByLibrary.simpleMessage("Redir 端口"),
     "redo": MessageLookupByLibrary.simpleMessage("重做"),
     "regexSearch": MessageLookupByLibrary.simpleMessage("正则搜索"),
@@ -799,6 +837,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "tunDesc": MessageLookupByLibrary.simpleMessage("仅在管理员模式生效"),
     "turnOff": MessageLookupByLibrary.simpleMessage("关闭"),
     "turnOn": MessageLookupByLibrary.simpleMessage("开启"),
+    "uiUpdateIdleInterval": MessageLookupByLibrary.simpleMessage("怠速更新周期"),
+    "uiUpdateIdleWhenUnfocused": MessageLookupByLibrary.simpleMessage("失焦时怠速"),
+    "uiUpdateIdleWhenUnfocusedDesc": MessageLookupByLibrary.simpleMessage(
+      "应用窗口失去焦点时使用怠速更新周期",
+    ),
+    "uiUpdateInterval": MessageLookupByLibrary.simpleMessage("UI 信息更新周期"),
+    "uiUpdateIntervalDesc": m24,
+    "uiUpdateIntervalIdleDisabledDesc": m25,
     "unauthorized": MessageLookupByLibrary.simpleMessage("未授权"),
     "undo": MessageLookupByLibrary.simpleMessage("撤销"),
     "unifiedDelay": MessageLookupByLibrary.simpleMessage("统一延迟"),
@@ -814,7 +860,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "urlDesc": MessageLookupByLibrary.simpleMessage("通过 URL 获取配置文件"),
     "urlTip": m26,
     "useHosts": MessageLookupByLibrary.simpleMessage("使用 Hosts"),
+    "useHostsDesc": MessageLookupByLibrary.simpleMessage(
+      "查询上游 DNS 前先匹配配置中的 hosts",
+    ),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("使用系统 Hosts"),
+    "useSystemHostsDesc": MessageLookupByLibrary.simpleMessage(
+      "解析域名时匹配操作系统的 Hosts 文件",
+    ),
     "userAgent": MessageLookupByLibrary.simpleMessage("用户代理"),
     "value": MessageLookupByLibrary.simpleMessage("值"),
     "vibrantScheme": MessageLookupByLibrary.simpleMessage("活力"),
