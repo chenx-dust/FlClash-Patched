@@ -1,7 +1,16 @@
 part of '../action.dart';
 
+typedef _DelayTestKey = ({String proxyName, String testUrl});
+typedef _DelayTestRequest = ({Completer<Delay> completer, _DelayTestKey key});
+
 @Riverpod(keepAlive: true)
 class ProxiesAction extends _$ProxiesAction {
+  static const _delayTestConcurrency = maxConcurrentDelayTests;
+
+  final Queue<_DelayTestRequest> _delayTestQueue = Queue();
+  final Map<_DelayTestKey, Future<Delay>> _pendingDelayTests = {};
+  int _runningDelayTests = 0;
+
   @override
   void build() {}
 
@@ -105,6 +114,15 @@ class ProxiesAction extends _$ProxiesAction {
   }
 
   void setDelay(Delay delay) {
+    final key = (proxyName: delay.name, testUrl: delay.url);
+    // A manual test owns this key until its RPC result completes.
+    if (_pendingDelayTests.containsKey(key)) {
+      return;
+    }
+    _setDelay(delay);
+  }
+
+  void _setDelay(Delay delay) {
     ref.read(delayDataSourceProvider.notifier).setDelay(delay);
   }
 
@@ -128,65 +146,108 @@ class ProxiesAction extends _$ProxiesAction {
     if (proxyState.proxyName.isEmpty) {
       return;
     }
-    setDelay(Delay(url: currentTestUrl, name: proxyState.proxyName, value: 0));
-    await onDelayChanged?.call();
-    late final Delay delay;
-    try {
-      delay = await coreController.getDelay(
-        currentTestUrl,
-        proxyState.proxyName,
+    final delayTest = _scheduleDelayTest((
+      proxyName: proxyState.proxyName,
+      testUrl: currentTestUrl,
+    ));
+    if (delayTest.started) {
+      _setDelay(
+        Delay(url: currentTestUrl, name: proxyState.proxyName, value: 0),
       );
+    }
+    await onDelayChanged?.call();
+    try {
+      await delayTest.future;
     } catch (error) {
       commonPrint.log(
         'Delay test failed for ${proxyState.proxyName}: $error',
-        logLevel: LogLevel.error,
+        logLevel: coreFailureLogLevel(error),
       );
-      final currentDelay = ref.read(
-        delayDataSourceProvider.select(
-          (delayMap) => delayMap[currentTestUrl]?[proxyState.proxyName],
-        ),
-      );
-      if (currentDelay == 0) {
-        setDelay(
-          Delay(url: currentTestUrl, name: proxyState.proxyName, value: -1),
-        );
-      }
       await onDelayChanged?.call();
       rethrow;
     }
-    final currentDelay = ref.read(
-      delayDataSourceProvider.select(
-        (delayMap) => delayMap[currentTestUrl]?[proxyState.proxyName],
-      ),
-    );
-    if (currentDelay == 0) {
-      setDelay(delay);
-    }
     await onDelayChanged?.call();
+  }
+
+  ({Future<Delay> future, bool started}) _scheduleDelayTest(_DelayTestKey key) {
+    final pendingDelayTest = _pendingDelayTests[key];
+    if (pendingDelayTest != null) {
+      return (future: pendingDelayTest, started: false);
+    }
+    final completer = Completer<Delay>();
+    final future = completer.future;
+    _pendingDelayTests[key] = future;
+    _delayTestQueue.add((completer: completer, key: key));
+    _startDelayTests();
+    return (future: future, started: true);
+  }
+
+  void _startDelayTests() {
+    while (_runningDelayTests < _delayTestConcurrency &&
+        _delayTestQueue.isNotEmpty) {
+      final request = _delayTestQueue.removeFirst();
+      _runningDelayTests++;
+      unawaited(_runDelayTest(request));
+    }
+  }
+
+  Future<void> _runDelayTest(_DelayTestRequest request) async {
+    try {
+      final delay = await coreController.getDelay(
+        request.key.testUrl,
+        request.key.proxyName,
+      );
+      _setDelay(delay);
+      request.completer.complete(delay);
+    } catch (error, stackTrace) {
+      _setDelay(
+        Delay(url: request.key.testUrl, name: request.key.proxyName, value: -1),
+      );
+      request.completer.completeError(error, stackTrace);
+    } finally {
+      if (identical(
+        _pendingDelayTests[request.key],
+        request.completer.future,
+      )) {
+        _pendingDelayTests.remove(request.key);
+      }
+      _runningDelayTests--;
+      _startDelayTests();
+    }
   }
 
   Future<void> testProxyDelays(
     List<Proxy> proxies,
     String? testUrl, {
-    Duration batchTimeout = const Duration(seconds: 1),
+    Duration uiTimeout = const Duration(seconds: 1),
+    FutureOr<void> Function(Proxy proxy)? onDelayChanged,
+  }) {
+    final operation = _runProxyDelayTests(
+      proxies,
+      testUrl,
+      onDelayChanged: onDelayChanged,
+    );
+    return operation.timeout(uiTimeout, onTimeout: () {});
+  }
+
+  Future<void> _runProxyDelayTests(
+    List<Proxy> proxies,
+    String? testUrl, {
     FutureOr<void> Function(Proxy proxy)? onDelayChanged,
   }) async {
-    final batches = proxies.batch(100);
-    for (final batch in batches) {
-      await Future.wait(
-        batch.map((proxy) async {
-          try {
-            await testProxyDelay(
-              proxy,
-              testUrl,
-              onDelayChanged: () => onDelayChanged?.call(proxy),
-            ).timeout(batchTimeout);
-          } catch (error) {
-            commonPrint.log('delayTest batch error: $error');
-          }
-        }),
-      );
-    }
+    await Future.wait(
+      proxies.map((proxy) async {
+        try {
+          await testProxyDelay(
+            proxy,
+            testUrl,
+            onDelayChanged: () => onDelayChanged?.call(proxy),
+          );
+        } catch (error) {
+          commonPrint.log('delayTest request error: $error');
+        }
+      }),
+    );
     ref.read(sortNumProvider.notifier).add();
   }
 

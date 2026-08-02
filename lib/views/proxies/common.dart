@@ -53,52 +53,15 @@ Future<void> resetProxySelection(String groupName) async {
 }
 
 Future<void> proxyDelayTest(Proxy proxy, [String? testUrl]) async {
-  final ref = globalState.container;
-  final groups = getGroups();
-  final selectedMap = ref.read(
-    currentProfileProvider.select((state) => state?.selectedMap ?? {}),
-  );
-  final state = computeRealSelectedProxyState(
-    proxy.name,
-    groups: groups,
-    selectedMap: selectedMap,
-  );
-  final currentTestUrl = state.testUrl.takeFirstValid([
-    ref.read(realTestUrlProvider(testUrl)),
-  ]);
-  if (state.proxyName.isEmpty) {
-    return;
-  }
-  ref
+  await globalState.container
       .read(proxiesActionProvider.notifier)
-      .setDelay(Delay(url: currentTestUrl, name: state.proxyName, value: 0));
-  try {
-    final delay = await coreController.getDelay(
-      currentTestUrl,
-      state.proxyName,
-    );
-    ref.read(proxiesActionProvider.notifier).setDelay(delay);
-  } catch (error) {
-    commonPrint.log(
-      'Delay test failed for ${state.proxyName}: $error',
-      logLevel: coreFailureLogLevel(error),
-    );
-    ref
-        .read(proxiesActionProvider.notifier)
-        .setDelay(Delay(url: currentTestUrl, name: state.proxyName, value: -1));
-  }
+      .testProxyDelay(proxy, testUrl);
 }
 
 Future<void> delayTest(List<Proxy> proxies, [String? testUrl]) async {
-  final batches = proxies.batch(maxConcurrentDelayTests);
-  for (final batch in batches) {
-    await Future.wait(
-      batch.map((proxy) async {
-        await proxyDelayTest(proxy, testUrl);
-      }),
-    );
-  }
-  globalState.container.read(sortNumProvider.notifier).add();
+  await globalState.container
+      .read(proxiesActionProvider.notifier)
+      .testProxyDelays(proxies, testUrl);
 }
 
 double getScrollToSelectedOffset({
