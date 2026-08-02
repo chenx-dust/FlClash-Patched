@@ -323,6 +323,8 @@ final class DesktopCoreLifecycle implements DesktopCoreLifecycleController {
             intent.revision,
             allowUnconfirmedExit: false,
           );
+        } else {
+          await _transport.clearPeerAuthorization();
         }
         if (_desired.target == _LifecycleTarget.stopped) {
           _publish(const DesktopCoreIdle());
@@ -338,7 +340,7 @@ final class DesktopCoreLifecycle implements DesktopCoreLifecycleController {
           );
         }
         await _transportSubscription.cancel();
-        await _transport.close();
+        await _clearPeerAuthorizationThen(_transport.close);
         _publish(DesktopCoreClosed(intent.revision));
         await _stateController.close();
         await _crashController.close();
@@ -368,6 +370,10 @@ final class DesktopCoreLifecycle implements DesktopCoreLifecycleController {
     }
 
     try {
+      await _transport.clearPeerAuthorization();
+      if (!_wantsRunning) {
+        return false;
+      }
       if (!await _ensureTransportReady()) {
         return false;
       }
@@ -383,6 +389,7 @@ final class DesktopCoreLifecycle implements DesktopCoreLifecycleController {
         sessionId: sessionId,
         address: _transport.address,
       );
+      await _transport.authorizePeer(lease.pid);
       if (lease.sessionId != sessionId) {
         await releaseLease();
         throw _failure(
@@ -495,7 +502,9 @@ final class DesktopCoreLifecycle implements DesktopCoreLifecycleController {
   Future<void> _cleanObsoleteLease(CoreProcessLease lease, int revision) async {
     late final CoreProcessStopResult result;
     try {
-      result = await lease.stop(timeouts.disconnection);
+      result = await _clearPeerAuthorizationThen(
+        () => lease.stop(timeouts.disconnection),
+      );
     } catch (error, stackTrace) {
       _unconfirmedLease = lease;
       throw _failure(
@@ -527,7 +536,9 @@ final class DesktopCoreLifecycle implements DesktopCoreLifecycleController {
     required bool allowFailure,
   }) async {
     try {
-      final result = await lease.stop(timeouts.disconnection);
+      final result = await _clearPeerAuthorizationThen(
+        () => lease.stop(timeouts.disconnection),
+      );
       if (result.exitConfirmed) {
         _unconfirmedLease = null;
       } else if (!allowFailure) {
@@ -567,7 +578,9 @@ final class DesktopCoreLifecycle implements DesktopCoreLifecycleController {
       }
     });
     try {
-      final stopResult = await session.lease.stop(timeouts.disconnection);
+      final stopResult = await _clearPeerAuthorizationThen(
+        () => session.lease.stop(timeouts.disconnection),
+      );
       if (!stopResult.exitConfirmed) {
         if (!allowUnconfirmedExit) {
           throw _failure(
@@ -713,22 +726,43 @@ final class DesktopCoreLifecycle implements DesktopCoreLifecycleController {
       _crashController.add(failure);
     }
     late final Future<void> operation;
-    operation = session.lease
-        .stop(timeouts.disconnection)
-        .then<void>((result) {
-          if (!result.exitConfirmed) {
-            _unconfirmedLease = session.lease;
-          }
-        })
-        .catchError((_) {
-          _unconfirmedLease = session.lease;
-        })
-        .whenComplete(() {
-          if (identical(_unexpectedDisconnectOperation, operation)) {
-            _unexpectedDisconnectOperation = null;
-          }
-        });
+    operation =
+        _clearPeerAuthorizationThen(
+              () => session.lease.stop(timeouts.disconnection),
+            )
+            .then<void>((result) {
+              if (!result.exitConfirmed) {
+                _unconfirmedLease = session.lease;
+              }
+            })
+            .catchError((_) {
+              _unconfirmedLease = session.lease;
+            })
+            .whenComplete(() {
+              if (identical(_unexpectedDisconnectOperation, operation)) {
+                _unexpectedDisconnectOperation = null;
+              }
+            });
     _unexpectedDisconnectOperation = operation;
+  }
+
+  Future<T> _clearPeerAuthorizationThen<T>(Future<T> Function() action) async {
+    Object? authorizationError;
+    StackTrace? authorizationStackTrace;
+    try {
+      await _transport.clearPeerAuthorization();
+    } catch (error, stackTrace) {
+      authorizationError = error;
+      authorizationStackTrace = stackTrace;
+    }
+    final result = await action();
+    if (authorizationError != null) {
+      Error.throwWithStackTrace(
+        authorizationError,
+        authorizationStackTrace ?? StackTrace.current,
+      );
+    }
+    return result;
   }
 
   DesktopCoreFailure _failure({

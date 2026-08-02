@@ -1,6 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
-import 'dart:math';
+import 'dart:math' show max;
 import 'dart:ui';
 
 import 'package:collection/collection.dart';
@@ -14,8 +14,6 @@ const appHelperService = 'FlClashHelperService';
 const browserUa =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 const packageName = 'com.follow.clash';
-final unixSocketPath = '/tmp/FlClashSocket_${Random().nextInt(10000)}.sock';
-final windowsPipeName = '\\\\.\\pipe\\FlClashCore_${_randomPipeId()}';
 const helperPort = 47890;
 const helperProtocolVersionHeader = 'x-flclash-helper-protocol';
 const helperProtocolVersion = '5';
@@ -34,14 +32,6 @@ final listHeaderPadding = EdgeInsets.only(
 const sheetAppBarHeight = 68.0;
 
 const watchExecution = false;
-
-String _randomPipeId() {
-  final random = Random.secure();
-  return List.generate(
-    16,
-    (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0'),
-  ).join();
-}
 
 final defaultTextScaleFactor =
     WidgetsBinding.instance.platformDispatcher.textScaleFactor;
