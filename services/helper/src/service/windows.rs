@@ -150,7 +150,6 @@ fn run_windows_service() -> Result<()> {
     status_result.context("report helper service stopped")?;
     Ok(())
 }
-
 fn install_service() -> Result<()> {
     let manager = ServiceManager::local_computer(
         None::<&str>,
