@@ -40,7 +40,7 @@ final class CommonActionProvider extends $NotifierProvider<CommonAction, void> {
   }
 }
 
-String _$commonActionHash() => r'522ce3569e09bd9909a3445ac4e958ce25ee892e';
+String _$commonActionHash() => r'b7e26fddfa7945499a6214eb2335a4f233d97ea8';
 
 abstract class _$CommonAction extends $Notifier<void> {
   void build();
@@ -91,7 +91,7 @@ final class SetupActionProvider extends $NotifierProvider<SetupAction, void> {
   }
 }
 
-String _$setupActionHash() => r'27018fa3a8606b501472f50aa4b46eeb0c964ff3';
+String _$setupActionHash() => r'3aff7717e99a60e978f1ade3b966d45cb4fa985c';
 
 abstract class _$SetupAction extends $Notifier<void> {
   void build();
@@ -193,7 +193,7 @@ final class CoreActionProvider extends $NotifierProvider<CoreAction, void> {
   }
 }
 
-String _$coreActionHash() => r'f314ae5f40da30a71ece0b5f84cdd2e9d7335ee9';
+String _$coreActionHash() => r'7ed3840d905268fd205c9686ca8d293797c0893e';
 
 abstract class _$CoreAction extends $Notifier<void> {
   void build();
@@ -502,7 +502,7 @@ final class GeoResourceActionProvider
   }
 }
 
-String _$geoResourceActionHash() => r'980385b1cc4e685e0e2732471083c63d29b59c10';
+String _$geoResourceActionHash() => r'07db35465d2ef269f03a1d1b89715cd56cb32bbb';
 
 abstract class _$GeoResourceAction extends $Notifier<void> {
   void build();

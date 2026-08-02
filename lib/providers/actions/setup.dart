@@ -329,7 +329,7 @@ class SetupAction extends _$SetupAction {
       );
       return res.a;
     } catch (e) {
-      globalState.showNotifier(e.toString());
+      globalState.showNotifier(e.toString(), allowCopy: true);
     }
     return '';
   }
