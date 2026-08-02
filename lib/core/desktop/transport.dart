@@ -15,6 +15,8 @@ const _typeError = 0x04;
 typedef IpcServerStarter = Stream<Uint8List> Function(String address);
 typedef IpcMessageSender = Future<void> Function(List<int> data);
 typedef IpcServerStopper = Future<void> Function();
+typedef IpcPeerAuthorizer = Future<void> Function(int pid);
+typedef IpcPeerAuthorizationClearer = Future<void> Function();
 
 enum DesktopTransportState { idle, starting, ready, connected, failed, closed }
 
@@ -60,6 +62,10 @@ abstract interface class DesktopCoreTransport {
   Future<TransportConnected> waitUntilConnected(Duration timeout);
 
   Future<void> send(String message);
+
+  Future<void> authorizePeer(int pid);
+
+  Future<void> clearPeerAuthorization();
 
   Future<void> close();
 }
@@ -147,6 +153,14 @@ final class DesktopCoreTransportBinding implements DesktopCoreTransport {
   Future<void> send(String message) => _transport.send(message);
 
   @override
+  Future<void> authorizePeer(int pid) => _transport.authorizePeer(pid);
+
+  @override
+  Future<void> clearPeerAuthorization() {
+    return _transport.clearPeerAuthorization();
+  }
+
+  @override
   Future<void> close() {
     return _closeOperation ??= _close();
   }
@@ -173,6 +187,8 @@ final class IPCCoreTransport implements DesktopCoreTransport {
   final IpcServerStarter _startServer;
   final IpcMessageSender _sendMessage;
   final IpcServerStopper _stopServer;
+  final IpcPeerAuthorizer _authorizePeer;
+  final IpcPeerAuthorizationClearer _clearPeerAuthorization;
 
   final StreamController<DesktopTransportEvent> _eventController =
       StreamController<DesktopTransportEvent>.broadcast();
@@ -193,9 +209,14 @@ final class IPCCoreTransport implements DesktopCoreTransport {
     IpcServerStarter? startServer,
     IpcMessageSender? sendMessage,
     IpcServerStopper? stopServer,
+    IpcPeerAuthorizer? authorizePeer,
+    IpcPeerAuthorizationClearer? clearPeerAuthorization,
   }) : _startServer = startServer ?? _restartIpcServer,
        _sendMessage = sendMessage ?? _sendIpcMessage,
-       _stopServer = stopServer ?? stopIpcServer;
+       _stopServer = stopServer ?? stopIpcServer,
+       _authorizePeer = authorizePeer ?? _setExpectedCorePid,
+       _clearPeerAuthorization =
+           clearPeerAuthorization ?? _clearExpectedCorePid;
 
   static Stream<Uint8List> _restartIpcServer(String address) {
     return restartIpcServer(name: address);
@@ -203,6 +224,14 @@ final class IPCCoreTransport implements DesktopCoreTransport {
 
   static Future<void> _sendIpcMessage(List<int> data) {
     return sendIpcMessage(data: data);
+  }
+
+  static Future<void> _setExpectedCorePid(int pid) {
+    return setExpectedCorePid(pid: pid);
+  }
+
+  static Future<void> _clearExpectedCorePid() {
+    return clearExpectedCorePid();
   }
 
   @override
@@ -373,6 +402,12 @@ final class IPCCoreTransport implements DesktopCoreTransport {
     }
     return _sendMessage(utf8.encode(message));
   }
+
+  @override
+  Future<void> authorizePeer(int pid) => _authorizePeer(pid);
+
+  @override
+  Future<void> clearPeerAuthorization() => _clearPeerAuthorization();
 
   @override
   Future<void> close() {

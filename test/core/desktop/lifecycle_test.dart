@@ -23,6 +23,9 @@ void main() {
       expect(lifecycle.state, isA<DesktopCoreStarting>());
       transport.ready();
       await launcher.started;
+      await pumpEventQueue();
+      expect(transport.clearAuthorizationCount, 1);
+      expect(transport.authorizedPids, [42]);
       expect(lifecycle.state, isNot(isA<DesktopCoreRunning>()));
       transport.connect(pid: 42, generation: 1);
 

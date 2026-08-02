@@ -25,6 +25,8 @@ final class FakeDesktopCoreTransport implements DesktopCoreTransport {
   Object? closeError;
   Future<void>? _closeOperation;
   final Completer<void> _closed = Completer<void>();
+  final List<int> authorizedPids = [];
+  int clearAuthorizationCount = 0;
   int closeCount = 0;
 
   FakeDesktopCoreTransport({
@@ -136,6 +138,16 @@ final class FakeDesktopCoreTransport implements DesktopCoreTransport {
       throw error;
     }
     sentMessages.add(message);
+  }
+
+  @override
+  Future<void> authorizePeer(int pid) async {
+    authorizedPids.add(pid);
+  }
+
+  @override
+  Future<void> clearPeerAuthorization() async {
+    clearAuthorizationCount++;
   }
 
   @override
