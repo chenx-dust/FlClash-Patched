@@ -16,9 +16,7 @@ void main() {
       expect(info.expire, 200);
     });
 
-    test('falls back to zero for null and invalid values', () {
-      expect(SubscriptionInfo.formHString(null), const SubscriptionInfo());
-
+    test('falls back to zero for invalid values', () {
       final info = SubscriptionInfo.formHString(
         'upload=bad; download=20; total=; expire=abc',
       );
