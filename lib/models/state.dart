@@ -58,6 +58,7 @@ abstract class CommonMessage with _$CommonMessage {
     required String text,
     @Default(Duration(seconds: 3)) Duration duration,
     MessageActionState? actionState,
+    @Default(false) bool allowCopy,
   }) = _CommonMessage;
 }
 

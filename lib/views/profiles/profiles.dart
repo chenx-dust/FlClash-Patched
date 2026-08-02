@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
@@ -68,15 +69,18 @@ class _ProfilesViewState extends State<ProfilesView> {
   }
 
   List<Widget> _buildActions(List<Profile> profiles) {
+    final appLocalizations = context.appLocalizations;
     return profiles.isNotEmpty
         ? [
             IconButton(
+              tooltip: appLocalizations.update,
               onPressed: () {
                 _updateProfiles(profiles);
               },
               icon: const Icon(Icons.sync),
             ),
             IconButton(
+              tooltip: appLocalizations.sort,
               onPressed: () {
                 showSheet(
                   context: context,
@@ -266,6 +270,8 @@ class ProfileItem extends StatelessWidget {
       final value = await picker.saveFile(
         profile.realLabel,
         mFile.readAsBytesSync(),
+        type: FileType.custom,
+        allowedExtensions: const ['yaml', 'yml'],
       );
       if (value == null) return false;
       return true;
@@ -366,86 +372,92 @@ class ProfileItem extends StatelessWidget {
       key: const ValueKey('menu'),
       popup: _buildPopupMenu(context),
       targetBuilder: (open) {
-        return LayoutBuilder(
-          builder: (_, constraints) {
-            void openMenu() {
-              open(offset: Offset(constraints.maxWidth, 24));
-            }
+        BuildContext? popupButtonContext;
 
-            return FocusEntryOnArrow(
-              directions: {LogicalKeyboardKey.arrowRight},
-              builder: (context, cardFocusNode, moreFocusNode) {
-                return CommonCard(
-                  focusNode: cardFocusNode,
-                  isSelected: profile.id == groupValue,
-                  onPressed: () {
-                    onChanged(profile.id);
-                  },
-                  onLongPress: openMenu,
-                  child: ListItem(
-                    key: Key(profile.id.toString()),
-                    horizontalTitleGap: 16,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    trailing: SizedBox(
-                      height: 40,
-                      width: 40,
-                      child: Consumer(
-                        builder: (_, ref, _) {
-                          final isUpdating = ref.watch(
-                            isUpdatingProvider(profile.updatingKey),
-                          );
-                          return FadeThroughBox(
-                            child: isUpdating
-                                ? const Padding(
-                                    key: ValueKey('loading'),
-                                    padding: EdgeInsets.all(8),
-                                    child: CommonCircleLoading(),
-                                  )
-                                : IconButton(
-                                    focusNode: moreFocusNode,
-                                    onPressed: openMenu,
-                                    icon: const Icon(Icons.more_vert),
-                                  ),
-                          );
-                        },
-                      ),
-                    ),
-                    title: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            profile.realLabel,
-                            style: context.textTheme.titleMedium,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ...switch (profile.type) {
-                                ProfileType.file => _buildFileProfileInfo(
-                                  context,
+        void openMenu() {
+          open(targetContext: popupButtonContext);
+        }
+
+        return GestureDetector(
+          onSecondaryTapDown: (_) => openMenu(),
+          child: FocusEntryOnArrow(
+            directions: {LogicalKeyboardKey.arrowRight},
+            builder: (context, cardFocusNode, moreFocusNode) {
+              return CommonCard(
+                focusNode: cardFocusNode,
+                isSelected: profile.id == groupValue,
+                onPressed: () {
+                  onChanged(profile.id);
+                },
+                onLongPress: openMenu,
+                child: ListItem(
+                  key: Key(profile.id.toString()),
+                  horizontalTitleGap: 16,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  trailing: SizedBox(
+                    height: 40,
+                    width: 40,
+                    child: Consumer(
+                      builder: (_, ref, _) {
+                        final isUpdating = ref.watch(
+                          isUpdatingProvider(profile.updatingKey),
+                        );
+                        return FadeThroughBox(
+                          child: isUpdating
+                              ? const Padding(
+                                  key: ValueKey('loading'),
+                                  padding: EdgeInsets.all(8),
+                                  child: CommonCircleLoading(),
+                                )
+                              : Builder(
+                                  builder: (buttonContext) {
+                                    popupButtonContext = buttonContext;
+                                    return IconButton(
+                                      focusNode: moreFocusNode,
+                                      onPressed: () {
+                                        open(targetContext: buttonContext);
+                                      },
+                                      icon: const Icon(Icons.more_vert),
+                                    );
+                                  },
                                 ),
-                                ProfileType.url => _buildUrlProfileInfo(
-                                  context,
-                                ),
-                              },
-                            ],
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                    tileTitleAlignment: ListTileTitleAlignment.titleHeight,
                   ),
-                );
-              },
-            );
-          },
+                  title: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          profile.realLabel,
+                          style: context.textTheme.titleMedium,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ...switch (profile.type) {
+                              ProfileType.file => _buildFileProfileInfo(
+                                context,
+                              ),
+                              ProfileType.url => _buildUrlProfileInfo(context),
+                            },
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  tileTitleAlignment: ListTileTitleAlignment.titleHeight,
+                ),
+              );
+            },
+          ),
         );
       },
     );

@@ -810,5 +810,6 @@ abstract class IconButtonData with _$IconButtonData {
   const factory IconButtonData({
     required IconData icon,
     required VoidCallback onPressed,
+    String? tooltip,
   }) = _IconButtonData;
 }
