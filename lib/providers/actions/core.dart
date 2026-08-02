@@ -28,7 +28,7 @@ class CoreAction extends _$CoreAction {
       await initCore();
     } catch (error) {
       ref.read(coreStatusProvider.notifier).value = CoreStatus.disconnected;
-      globalState.showNotifier(error.toString());
+      globalState.showNotifier(error.toString(), allowCopy: true);
     }
   }
 

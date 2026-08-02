@@ -489,6 +489,7 @@ class _ListHeaderState extends State<ListHeader> {
                   children: [
                     if (isExpand) ...[
                       IconButton(
+                        tooltip: context.appLocalizations.scrollToSelected,
                         focusNode: actionsFocusNode,
                         visualDensity: VisualDensity.compact,
                         padding: const EdgeInsets.all(2),
@@ -503,6 +504,7 @@ class _ListHeaderState extends State<ListHeader> {
                       ),
                       const SizedBox(width: 2),
                       IconButton(
+                        tooltip: context.appLocalizations.delayTest,
                         iconSize: 20,
                         visualDensity: VisualDensity.compact,
                         padding: const EdgeInsets.all(2),
@@ -516,6 +518,9 @@ class _ListHeaderState extends State<ListHeader> {
                     ] else
                       const SizedBox(width: 6),
                     IconButton.filledTonal(
+                      tooltip: isExpand
+                          ? context.appLocalizations.collapse
+                          : context.appLocalizations.expand,
                       focusNode: isExpand ? null : actionsFocusNode,
                       visualDensity: VisualDensity.compact,
                       padding: const EdgeInsets.all(2),

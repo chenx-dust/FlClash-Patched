@@ -39,7 +39,7 @@ class ProxyCard extends StatelessWidget {
             delayProvider(proxyName: proxy.name, testUrl: testUrl),
           );
           return FadeThroughBox(
-            alignment: type == ProxyCardType.expand
+            alignment: type == ProxyCardType.standard
                 ? Alignment.centerLeft
                 : Alignment.centerRight,
             child: delay == 0
@@ -144,7 +144,7 @@ class ProxyCard extends StatelessWidget {
               children: [
                 proxyNameText,
                 const SizedBox(height: 8),
-                if (type == ProxyCardType.expand) ...[
+                if (type == ProxyCardType.standard) ...[
                   SizedBox(
                     height: measure.bodySmallHeight,
                     child: _ProxyDesc(proxy: proxy),
