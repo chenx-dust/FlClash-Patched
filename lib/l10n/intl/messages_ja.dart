@@ -129,6 +129,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "有効化すると一部アプリが VPN をバイパス",
     ),
     "allowLan": MessageLookupByLibrary.simpleMessage("LAN を許可"),
+    "allowLanAccess": MessageLookupByLibrary.simpleMessage("LAN アクセスを許可"),
+    "allowLanAccessDesc": MessageLookupByLibrary.simpleMessage(
+      "LAN から外部コントローラーへのアクセスを許可",
+    ),
     "allowLanDesc": MessageLookupByLibrary.simpleMessage("LAN 経由でのプロキシアクセスを許可"),
     "app": MessageLookupByLibrary.simpleMessage("アプリ"),
     "appAccessControl": MessageLookupByLibrary.simpleMessage("アプリアクセス制御"),
@@ -275,6 +279,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "discoverNewVersion": MessageLookupByLibrary.simpleMessage("新バージョンを発見"),
     "dnsDesc": MessageLookupByLibrary.simpleMessage("DNS 関連設定の更新"),
     "dnsHijacking": MessageLookupByLibrary.simpleMessage("DNS ハイジャッキング"),
+    "dnsIPv6Desc": MessageLookupByLibrary.simpleMessage(
+      "無効にすると、AAAA クエリは空の結果を返します",
+    ),
     "dnsMode": MessageLookupByLibrary.simpleMessage("DNS モード"),
     "doYouWantToPass": MessageLookupByLibrary.simpleMessage("通過させますか？"),
     "domain": MessageLookupByLibrary.simpleMessage("ドメイン"),
@@ -293,6 +300,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "editSsid": MessageLookupByLibrary.simpleMessage("SSID を編集"),
     "emptyTip": m4,
     "en": MessageLookupByLibrary.simpleMessage("英語"),
+    "enableExternalController": MessageLookupByLibrary.simpleMessage(
+      "外部コントローラーを有効にする",
+    ),
+    "enforceRoutes": MessageLookupByLibrary.simpleMessage("ルートを強制"),
+    "enforceRoutesDesc": MessageLookupByLibrary.simpleMessage(
+      "より具体的なルートが存在してもトラフィックをトンネル経由にする",
+    ),
     "entries": MessageLookupByLibrary.simpleMessage(" エントリ"),
     "entriesCount": m5,
     "exclude": MessageLookupByLibrary.simpleMessage("最近のタスクから非表示"),
@@ -315,15 +329,30 @@ class MessageLookup extends MessageLookupByLibrary {
     "expressiveScheme": MessageLookupByLibrary.simpleMessage("エクスプレッシブ"),
     "externalController": MessageLookupByLibrary.simpleMessage("外部コントローラー"),
     "externalControllerDesc": MessageLookupByLibrary.simpleMessage(
-      "有効化すると Clash コアをポート 9090 で制御可能",
+      "Clash コアへの外部アクセスを設定",
     ),
     "externalFetch": MessageLookupByLibrary.simpleMessage("外部取得"),
     "externalLink": MessageLookupByLibrary.simpleMessage("外部リンク"),
-    "fakeipFilter": MessageLookupByLibrary.simpleMessage("Fakeip フィルター"),
-    "fakeipRange": MessageLookupByLibrary.simpleMessage("Fakeip 範囲"),
+    "fakeipFilter": MessageLookupByLibrary.simpleMessage("FakeIP フィルター"),
+    "fakeipFilterDesc": MessageLookupByLibrary.simpleMessage(
+      "Fake IP モードで一致したドメインには Fake IP ではなく実 IP を返します",
+    ),
+    "fakeipRange": MessageLookupByLibrary.simpleMessage("FakeIP 範囲"),
     "fallback": MessageLookupByLibrary.simpleMessage("フォールバック"),
-    "fallbackDesc": MessageLookupByLibrary.simpleMessage("通常はオフショア DNS を使用"),
+    "fallbackDesc": MessageLookupByLibrary.simpleMessage("通常は海外 DNS を使用"),
+    "fallbackDomainDesc": MessageLookupByLibrary.simpleMessage(
+      "一致するドメインは nameserver へ問い合わせず、直接 fallback を使用します",
+    ),
     "fallbackFilter": MessageLookupByLibrary.simpleMessage("フォールバックフィルター"),
+    "fallbackGeoipDesc": MessageLookupByLibrary.simpleMessage(
+      "nameserver の結果を GeoIP コードで確認し、その地域外なら fallback を使用します",
+    ),
+    "fallbackGeositeDesc": MessageLookupByLibrary.simpleMessage(
+      "これらの GeoSite カテゴリに一致するドメインは直接 fallback を使用します",
+    ),
+    "fallbackIpcidrDesc": MessageLookupByLibrary.simpleMessage(
+      "nameserver の結果がこれらの CIDR プレフィックスに一致すると fallback の結果へ切り替えます",
+    ),
     "fidelityScheme": MessageLookupByLibrary.simpleMessage("ハイファイデリティー"),
     "file": MessageLookupByLibrary.simpleMessage("ファイル"),
     "fileDesc": MessageLookupByLibrary.simpleMessage("プロファイルを直接アップロード"),
@@ -372,6 +401,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hasCacheChange": MessageLookupByLibrary.simpleMessage("変更をキャッシュしますか？"),
     "header": MessageLookupByLibrary.simpleMessage("ヘッダー"),
     "hideFromList": MessageLookupByLibrary.simpleMessage("リストから隠す"),
+    "hideUnavailable": MessageLookupByLibrary.simpleMessage("タイムアウト非表示"),
     "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage("高優先度自動起動"),
     "highPriorityAutoLaunchDesc": MessageLookupByLibrary.simpleMessage(
       "Windows タスクスケジューラでより早く起動します",
@@ -393,6 +423,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "iconUrl": MessageLookupByLibrary.simpleMessage("アイコン URL"),
     "ignoreBatteryOptimization": MessageLookupByLibrary.simpleMessage(
       "バッテリー最適化を無視",
+    ),
+    "ignoreCertificateErrors": MessageLookupByLibrary.simpleMessage(
+      "証明書の検証を無視",
+    ),
+    "ignoreCertificateErrorsDesc": MessageLookupByLibrary.simpleMessage(
+      "無効な証明書を使用する HTTPS 接続を許可します。セキュリティが低下します",
     ),
     "import": MessageLookupByLibrary.simpleMessage("インポート"),
     "importFile": MessageLookupByLibrary.simpleMessage("ファイルからインポート"),
@@ -437,6 +473,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "light": MessageLookupByLibrary.simpleMessage("ライト"),
     "list": MessageLookupByLibrary.simpleMessage("リスト"),
     "listen": MessageLookupByLibrary.simpleMessage("リスン"),
+    "listeningPort": MessageLookupByLibrary.simpleMessage("リスニングポート"),
     "loadTest": MessageLookupByLibrary.simpleMessage("読み込みテスト"),
     "loading": MessageLookupByLibrary.simpleMessage("読み込み中..."),
     "local": MessageLookupByLibrary.simpleMessage("ローカル"),
@@ -488,7 +525,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "nameserverDesc": MessageLookupByLibrary.simpleMessage("ドメイン解決用"),
     "nameserverPolicy": MessageLookupByLibrary.simpleMessage("ネームサーバーポリシー"),
     "nameserverPolicyDesc": MessageLookupByLibrary.simpleMessage(
-      "対応するネームサーバーポリシーを指定",
+      "一致するドメイン、GeoSite カテゴリ、またはルールセットに DNS サーバーを割り当てます",
     ),
     "network": MessageLookupByLibrary.simpleMessage("ネットワーク"),
     "networkDesc": MessageLookupByLibrary.simpleMessage("ネットワーク関連設定の変更"),
@@ -569,7 +606,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "portConflictTip": MessageLookupByLibrary.simpleMessage("別のポートを入力してください"),
     "portTip": m21,
     "predictiveBack": MessageLookupByLibrary.simpleMessage("予測型戻る"),
-    "preferH3Desc": MessageLookupByLibrary.simpleMessage("DOH の HTTP/3 を優先使用"),
+    "preferH3": MessageLookupByLibrary.simpleMessage("HTTP/3 を優先"),
+    "preferH3Desc": MessageLookupByLibrary.simpleMessage("DoH の HTTP/3 を優先します"),
     "prerequisites": MessageLookupByLibrary.simpleMessage("前提条件"),
     "pressKeyboard": MessageLookupByLibrary.simpleMessage("キーボードを押してください"),
     "preview": MessageLookupByLibrary.simpleMessage("プレビュー"),
@@ -615,7 +653,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "proxyNameserver": MessageLookupByLibrary.simpleMessage("プロキシネームサーバー"),
     "proxyNameserverDesc": MessageLookupByLibrary.simpleMessage(
-      "プロキシノード解決用ドメイン",
+      "プロキシノードのドメイン解決用",
     ),
     "proxyNameserverPolicy": MessageLookupByLibrary.simpleMessage(
       "プロキシネームサーバーポリシー",
@@ -636,7 +674,6 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "proxyType": MessageLookupByLibrary.simpleMessage("プロキシタイプ"),
     "pruneCache": MessageLookupByLibrary.simpleMessage("キャッシュの削除"),
-    "predictiveBack": MessageLookupByLibrary.simpleMessage("予測型戻る"),
     "pureBlackMode": MessageLookupByLibrary.simpleMessage("純黒モード"),
     "qrcode": MessageLookupByLibrary.simpleMessage("QR コード"),
     "qrcodeDesc": MessageLookupByLibrary.simpleMessage(
@@ -644,6 +681,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "quickFill": MessageLookupByLibrary.simpleMessage("クイック入力"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("レインボー"),
+    "random": MessageLookupByLibrary.simpleMessage("ランダム"),
     "redirPort": MessageLookupByLibrary.simpleMessage("Redir ポート"),
     "redo": MessageLookupByLibrary.simpleMessage("やり直す"),
     "regexSearch": MessageLookupByLibrary.simpleMessage("正規表現検索"),
@@ -666,7 +704,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "resourcesDesc": MessageLookupByLibrary.simpleMessage("外部リソース関連情報"),
     "respectRules": MessageLookupByLibrary.simpleMessage("ルール尊重"),
     "respectRulesDesc": MessageLookupByLibrary.simpleMessage(
-      "DNS 接続がルールに従う（proxy-server-nameserver の設定が必要）",
+      "DNS 接続をルールに従わせます（proxy-server-nameserver の設定が必要）",
     ),
     "restart": MessageLookupByLibrary.simpleMessage("再起動"),
     "restartCoreTip": MessageLookupByLibrary.simpleMessage("コアを再起動してもよろしいですか？"),
@@ -903,7 +941,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "urlDesc": MessageLookupByLibrary.simpleMessage("URL 経由でプロファイルを取得"),
     "urlTip": m24,
     "useHosts": MessageLookupByLibrary.simpleMessage("ホストを使用"),
+    "useHostsDesc": MessageLookupByLibrary.simpleMessage(
+      "上流 DNS へ問い合わせる前に、設定内の hosts エントリを確認します",
+    ),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("システムホストを使用"),
+    "useSystemHostsDesc": MessageLookupByLibrary.simpleMessage(
+      "ドメイン名の解決時に OS の Hosts ファイルを確認します",
+    ),
     "userAgent": MessageLookupByLibrary.simpleMessage("ユーザーエージェント"),
     "value": MessageLookupByLibrary.simpleMessage("値"),
     "vibrantScheme": MessageLookupByLibrary.simpleMessage("ビブラント"),
