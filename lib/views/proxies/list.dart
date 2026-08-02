@@ -288,9 +288,9 @@ class ProxiesListViewState extends State<ProxiesListView> {
     final expandedGroups = state.groups.where(
       (group) => state.currentUnfoldSet.contains(group.name),
     );
-    for (final group in expandedGroups) {
-      await delayTest(group.all, group.testUrl);
-    }
+    await Future.wait(
+      expandedGroups.map((group) => delayTest(group.all, group.testUrl)),
+    );
   }
 
   void _jumpTo(double offset) {
@@ -387,7 +387,12 @@ class ProxiesListViewState extends State<ProxiesListView> {
                                 gradient: LinearGradient(
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
-                                  colors: [surface, surface, surface.opacity60, surface.opacity0],
+                                  colors: [
+                                    surface,
+                                    surface,
+                                    surface.opacity60,
+                                    surface.opacity0,
+                                  ],
                                   stops: [0, fadeStart, fadeStart, 1],
                                 ),
                               ),
