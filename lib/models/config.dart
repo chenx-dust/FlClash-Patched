@@ -85,6 +85,7 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default(RestoreStrategy.compatible)
     @JsonKey(unknownEnumValue: RestoreStrategy.compatible)
     RestoreStrategy restoreStrategy,
+    @Default(true) bool showTrayTitle,
     @Default('') String customUserAgent,
   }) = _AppSettingProps;
 
@@ -106,10 +107,14 @@ abstract class AppSettingProps with _$AppSettingProps {
 abstract class AccessControlProps with _$AccessControlProps {
   const factory AccessControlProps({
     @Default(false) bool enable,
-    @Default(AccessControlMode.rejectSelected) AccessControlMode mode,
+    @Default(AccessControlMode.rejectSelected)
+    @JsonKey(unknownEnumValue: AccessControlMode.rejectSelected)
+    AccessControlMode mode,
     @Default([]) List<String> acceptList,
     @Default([]) List<String> rejectList,
-    @Default(AccessSortType.none) AccessSortType sort,
+    @Default(AccessSortType.none)
+    @JsonKey(unknownEnumValue: AccessSortType.none)
+    AccessSortType sort,
     @Default(true) bool isFilterSystemApp,
     @Default(true) bool isFilterNonInternetApp,
   }) = _AccessControlProps;
@@ -171,7 +176,9 @@ abstract class NetworkProps with _$NetworkProps {
   const factory NetworkProps({
     @Default(true) bool systemProxy,
     @Default(defaultBypassDomain) List<String> bypassDomain,
-    @Default(RouteMode.config) RouteMode routeMode,
+    @Default(RouteMode.config)
+    @JsonKey(unknownEnumValue: RouteMode.config)
+    RouteMode routeMode,
     @Default(true) bool autoSetSystemDns,
     @Default(false) bool appendSystemDns,
   }) = _NetworkProps;
@@ -201,9 +208,11 @@ abstract class ProxiesStyleProps with _$ProxiesStyleProps {
     @Default(ProxiesIconSource.standard)
     @JsonKey(unknownEnumValue: ProxiesIconSource.standard)
     ProxiesIconSource iconSource,
-    @Default(ProxyCardType.standard)
-    @JsonKey(unknownEnumValue: ProxyCardType.standard)
+    @Default(ProxyCardType.expand)
+    @JsonKey(unknownEnumValue: ProxyCardType.expand)
     ProxyCardType cardType,
+    @Default(false) bool hideUnavailable,
+    @Default(false) bool showHiddenGroups,
   }) = _ProxiesStyleProps;
 
   factory ProxiesStyleProps.fromJson(Map<String, Object?>? json) => json == null
@@ -227,8 +236,12 @@ abstract class ThemeProps with _$ThemeProps {
   const factory ThemeProps({
     int? primaryColor,
     @Default(defaultPrimaryColors) List<int> primaryColors,
-    @Default(ThemeMode.dark) ThemeMode themeMode,
-    @Default(DynamicSchemeVariant.content) DynamicSchemeVariant schemeVariant,
+    @Default(ThemeMode.system)
+    @JsonKey(unknownEnumValue: ThemeMode.system)
+    ThemeMode themeMode,
+    @Default(DynamicSchemeVariant.content)
+    @JsonKey(unknownEnumValue: DynamicSchemeVariant.content)
+    DynamicSchemeVariant schemeVariant,
     @Default(false) bool pureBlack,
     @Default(true) bool predictiveBack,
     @Default(TextScale()) TextScale textScale,

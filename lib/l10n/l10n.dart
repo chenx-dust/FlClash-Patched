@@ -164,21 +164,21 @@ class AppLocalizations {
     );
   }
 
-  /// `Doze Suspend`
-  String get dozeSuspend {
+  /// `Suspend Support`
+  String get suspendSupport {
     return Intl.message(
-      'Doze Suspend',
-      name: 'dozeSuspend',
+      'Suspend Support',
+      name: 'suspendSupport',
       desc: '',
       args: [],
     );
   }
 
-  /// `Suspend the core while Android is in Doze mode to reduce battery usage`
-  String get dozeSuspendDesc {
+  /// `Suspend the core while the device is idle to reduce battery usage`
+  String get suspendSupportDesc {
     return Intl.message(
-      'Suspend the core while Android is in Doze mode to reduce battery usage',
-      name: 'dozeSuspendDesc',
+      'Suspend the core while the device is idle to reduce battery usage',
+      name: 'suspendSupportDesc',
       desc: '',
       args: [],
     );
@@ -257,7 +257,7 @@ class AppLocalizations {
   /// `No profile, Please add a profile`
   String get nullProfileDesc {
     return Intl.message(
-      'No profile, please add a profile',
+      'No profile, Please add a profile',
       name: 'nullProfileDesc',
       desc: '',
       args: [],
@@ -267,6 +267,16 @@ class AppLocalizations {
   /// `Settings`
   String get settings {
     return Intl.message('Settings', name: 'settings', desc: '', args: []);
+  }
+
+  /// `Style Settings`
+  String get styleSettings {
+    return Intl.message(
+      'Style Settings',
+      name: 'styleSettings',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Language`
@@ -619,9 +629,9 @@ class AppLocalizations {
     return Intl.message('Delete', name: 'delete', desc: '', args: []);
   }
 
-  /// `Seconds`
+  /// `seconds`
   String get seconds {
-    return Intl.message('Seconds', name: 'seconds', desc: '', args: []);
+    return Intl.message('seconds', name: 'seconds', desc: '', args: []);
   }
 
   /// `QR Code`
@@ -967,7 +977,7 @@ class AppLocalizations {
   /// `A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.`
   String get desc {
     return Intl.message(
-      'A multi-platform proxy client based on mihomo, simple and easy to use, open-source and ad-free.',
+      'A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.',
       name: 'desc',
       desc: '',
       args: [],
@@ -1187,7 +1197,7 @@ class AppLocalizations {
   /// `Allow applications to bypass VPN`
   String get allowBypass {
     return Intl.message(
-      'Allow Applications to Bypass VPN',
+      'Allow applications to bypass VPN',
       name: 'allowBypass',
       desc: '',
       args: [],
@@ -1252,6 +1262,11 @@ class AppLocalizations {
       desc: '',
       args: [],
     );
+  }
+
+  /// `User-Agent`
+  String get userAgent {
+    return Intl.message('User-Agent', name: 'userAgent', desc: '', args: []);
   }
 
   /// `Unified Delay`
@@ -1549,10 +1564,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Pure Black Mode`
+  /// `Pure black mode`
   String get pureBlackMode {
     return Intl.message(
-      'Pure Black Mode',
+      'Pure black mode',
       name: 'pureBlackMode',
       desc: '',
       args: [],
@@ -1572,7 +1587,7 @@ class AppLocalizations {
   /// `Tcp keep alive interval`
   String get keepAliveIntervalDesc {
     return Intl.message(
-      'TCP Keep Alive Interval',
+      'Tcp keep alive interval',
       name: 'keepAliveIntervalDesc',
       desc: '',
       args: [],
@@ -1672,6 +1687,11 @@ class AppLocalizations {
   /// `Layout`
   String get layout {
     return Intl.message('Layout', name: 'layout', desc: '', args: []);
+  }
+
+  /// `Header`
+  String get header {
+    return Intl.message('Header', name: 'header', desc: '', args: []);
   }
 
   /// `Tight`
@@ -2199,39 +2219,24 @@ class AppLocalizations {
     return Intl.message('Icon', name: 'onlyIcon', desc: '', args: []);
   }
 
-  /// `Icon Source`
+  /// `Icon source`
   String get iconSource {
-    return Intl.message('Icon Source', name: 'iconSource', desc: '', args: []);
+    return Intl.message('Icon source', name: 'iconSource', desc: '', args: []);
   }
 
-  /// `Config Only`
+  /// `Config only`
   String get onlyConfig {
-    return Intl.message('Config Only', name: 'onlyConfig', desc: '', args: []);
+    return Intl.message('Config only', name: 'onlyConfig', desc: '', args: []);
   }
 
-  /// `Emoji Only`
+  /// `Emoji only`
   String get onlyEmoji {
-    return Intl.message('Emoji Only', name: 'onlyEmoji', desc: '', args: []);
+    return Intl.message('Emoji only', name: 'onlyEmoji', desc: '', args: []);
   }
 
-  /// `Stack Mode`
+  /// `Stack mode`
   String get stackMode {
-    return Intl.message('Stack Mode', name: 'stackMode', desc: '', args: []);
-  }
-
-  /// `MTU`
-  String get mtu {
-    return Intl.message('MTU', name: 'mtu', desc: '', args: []);
-  }
-
-  /// `MTU must be an integer between 1 and 65535`
-  String get mtuRangeTip {
-    return Intl.message(
-      'MTU must be an integer between 1 and 65535',
-      name: 'mtuRangeTip',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Stack mode', name: 'stackMode', desc: '', args: []);
   }
 
   /// `Network`
@@ -2464,19 +2469,19 @@ class AppLocalizations {
     return Intl.message('Listen', name: 'listen', desc: '', args: []);
   }
 
-  /// `undo`
+  /// `Undo`
   String get undo {
-    return Intl.message('undo', name: 'undo', desc: '', args: []);
+    return Intl.message('Undo', name: 'undo', desc: '', args: []);
   }
 
-  /// `redo`
+  /// `Redo`
   String get redo {
-    return Intl.message('redo', name: 'redo', desc: '', args: []);
+    return Intl.message('Redo', name: 'redo', desc: '', args: []);
   }
 
-  /// `none`
+  /// `None`
   String get none {
-    return Intl.message('none', name: 'none', desc: '', args: []);
+    return Intl.message('None', name: 'none', desc: '', args: []);
   }
 
   /// `Basic Configuration`
@@ -4844,6 +4849,16 @@ class AppLocalizations {
     return Intl.message('Generate', name: 'generateSecret', desc: '', args: []);
   }
 
+  /// `Network Extension`
+  String get networkExtension {
+    return Intl.message(
+      'Network Extension',
+      name: 'networkExtension',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Include All Networks`
   String get includeAllNetworks {
     return Intl.message(
@@ -4984,20 +4999,20 @@ class AppLocalizations {
     );
   }
 
-  /// `Show Hidden`
+  /// `Show Hidden Groups`
   String get showHiddenGroups {
     return Intl.message(
-      'Show Hidden',
+      'Show Hidden Groups',
       name: 'showHiddenGroups',
       desc: '',
       args: [],
     );
   }
 
-  /// `Restore Hidden`
+  /// `Restore Group Hiding`
   String get restoreHiddenGroups {
     return Intl.message(
-      'Restore Hidden',
+      'Restore Group Hiding',
       name: 'restoreHiddenGroups',
       desc: '',
       args: [],

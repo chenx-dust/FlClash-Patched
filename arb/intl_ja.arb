@@ -27,6 +27,7 @@
   "downloadSpeed": "ダウンロード速度",
   "nullProfileDesc": "プロファイルがありません。追加してください",
   "settings": "設定",
+  "styleSettings": "スタイル設定",
   "language": "言語",
   "defaultText": "デフォルト",
   "more": "詳細",
@@ -208,6 +209,7 @@
   "clipboardImport": "クリップボードからインポート",
   "clipboardExport": "クリップボードにエクスポート",
   "layout": "レイアウト",
+  "header": "ヘッダー",
   "tight": "密",
   "standard": "標準",
   "loose": "疎",
@@ -276,6 +278,9 @@
   "exportSuccess": "エクスポート成功",
   "iconStyle": "アイコンスタイル",
   "onlyIcon": "アイコンのみ",
+  "iconSource": "アイコンソース",
+  "onlyConfig": "設定のみ",
+  "onlyEmoji": "Emoji のみ",
   "stackMode": "スタックモード",
   "mtu": "MTU",
   "mtuRangeTip": "MTU は 1 から 65535 までの整数である必要があります",
@@ -596,5 +601,7 @@
   "excludeDeviceCommunication": "デバイス間通信を除外",
   "excludeDeviceCommunicationDesc": "AirDrop や AirPlay などのデバイス間通信がトンネルをバイパスすることを許可する",
   "hideUnavailable": "タイムアウト非表示",
-  "showUnavailable": "タイムアウト表示"
+  "showUnavailable": "タイムアウト表示",
+  "showHiddenGroups": "非表示グループを表示",
+  "restoreHiddenGroups": "グループを再び非表示"
 }
