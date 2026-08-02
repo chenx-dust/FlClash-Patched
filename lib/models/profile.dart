@@ -24,8 +24,7 @@ abstract class SubscriptionInfo with _$SubscriptionInfo {
   factory SubscriptionInfo.fromJson(Map<String, Object?> json) =>
       _$SubscriptionInfoFromJson(json);
 
-  factory SubscriptionInfo.formHString(String? info) {
-    if (info == null) return const SubscriptionInfo();
+  factory SubscriptionInfo.formHString(String info) {
     final list = info.split(';');
     final Map<String, int?> map = {};
     for (final i in list) {
@@ -189,7 +188,9 @@ extension ProfileExtension on Profile {
         utils.getFileNameFromUrl(url),
         id.toString(),
       ]),
-      subscriptionInfo: SubscriptionInfo.formHString(userinfo),
+      subscriptionInfo: userinfo != null
+          ? SubscriptionInfo.formHString(userinfo)
+          : null,
     ).saveFile(response.data ?? Uint8List.fromList([]));
   }
 
