@@ -269,6 +269,16 @@ class AppLocalizations {
     return Intl.message('Settings', name: 'settings', desc: '', args: []);
   }
 
+  /// `Style Settings`
+  String get styleSettings {
+    return Intl.message(
+      'Style Settings',
+      name: 'styleSettings',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Language`
   String get language {
     return Intl.message('Language', name: 'language', desc: '', args: []);
@@ -1674,6 +1684,11 @@ class AppLocalizations {
     return Intl.message('Layout', name: 'layout', desc: '', args: []);
   }
 
+  /// `Header`
+  String get header {
+    return Intl.message('Header', name: 'header', desc: '', args: []);
+  }
+
   /// `Tight`
   String get tight {
     return Intl.message('Tight', name: 'tight', desc: '', args: []);
@@ -2199,22 +2214,22 @@ class AppLocalizations {
     return Intl.message('Icon', name: 'onlyIcon', desc: '', args: []);
   }
 
-  /// `Icon Source`
+  /// `Icon source`
   String get iconSource {
-    return Intl.message('Icon Source', name: 'iconSource', desc: '', args: []);
+    return Intl.message('Icon source', name: 'iconSource', desc: '', args: []);
   }
 
-  /// `Config Only`
+  /// `Config only`
   String get onlyConfig {
-    return Intl.message('Config Only', name: 'onlyConfig', desc: '', args: []);
+    return Intl.message('Config only', name: 'onlyConfig', desc: '', args: []);
   }
 
-  /// `Emoji Only`
+  /// `Emoji only`
   String get onlyEmoji {
-    return Intl.message('Emoji Only', name: 'onlyEmoji', desc: '', args: []);
+    return Intl.message('Emoji only', name: 'onlyEmoji', desc: '', args: []);
   }
 
-  /// `Stack Mode`
+  /// `Stack mode`
   String get stackMode {
     return Intl.message('Stack Mode', name: 'stackMode', desc: '', args: []);
   }
@@ -4974,20 +4989,20 @@ class AppLocalizations {
     );
   }
 
-  /// `Show Hidden`
+  /// `Show Hidden Groups`
   String get showHiddenGroups {
     return Intl.message(
-      'Show Hidden',
+      'Show Hidden Groups',
       name: 'showHiddenGroups',
       desc: '',
       args: [],
     );
   }
 
-  /// `Restore Hidden`
+  /// `Restore Group Hiding`
   String get restoreHiddenGroups {
     return Intl.message(
-      'Restore Hidden',
+      'Restore Group Hiding',
       name: 'restoreHiddenGroups',
       desc: '',
       args: [],
