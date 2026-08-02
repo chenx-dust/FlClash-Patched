@@ -162,8 +162,9 @@ extension TrackerInfoExt on TrackerInfo {
   }
 }
 
-String _logDateTime(dynamic _) {
-  return DateTime.now().showFull;
+int _logTimestamp(dynamic value) {
+  if (value is int) return value;
+  return DateTime.now().millisecondsSinceEpoch;
 }
 
 @freezed
@@ -176,11 +177,14 @@ abstract class Log with _$Log {
     @JsonKey(unknownEnumValue: LogSource.app)
     LogSource source,
     @JsonKey(name: 'Payload') @Default('') String payload,
-    @JsonKey(fromJson: _logDateTime) required String dateTime,
+    @JsonKey(name: 'Time', fromJson: _logTimestamp) required int timestamp,
   }) = _Log;
 
   factory Log.app(String payload) {
-    return Log(payload: payload, dateTime: _logDateTime(null));
+    return Log(
+      payload: payload,
+      timestamp: DateTime.now().millisecondsSinceEpoch,
+    );
   }
 
   factory Log.fromJson(Map<String, Object?> json) => _$LogFromJson(json);

@@ -219,6 +219,11 @@ void main() {
     final container = ProviderContainer();
     addTearDown(container.dispose);
     globalState.container = container;
+    final wasBackground = globalState.isBackground.value;
+    globalState.isBackground.value = true;
+    addTearDown(() {
+      globalState.isBackground.value = wasBackground;
+    });
     final isActive = ValueNotifier(true);
     addTearDown(isActive.dispose);
 
