@@ -383,6 +383,7 @@
   "emptyTip": "{label} не может быть пустым",
   "urlTip": "{label} должен быть URL",
   "numberTip": "{label} должно быть числом",
+  "positiveIntegerTip": "Введите целое число больше 0",
   "interval": "Интервал",
   "existsTip": "Текущий {label} уже существует",
   "deleteTip": "Вы уверены, что хотите удалить текущий {label}?",

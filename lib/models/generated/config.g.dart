@@ -38,6 +38,14 @@ _AppSettingProps _$AppSettingPropsFromJson(Map<String, dynamic> json) =>
           ) ??
           RestoreStrategy.compatible,
       customUserAgent: json['customUserAgent'] as String? ?? '',
+      foregroundTickerInterval:
+          (json['foregroundTickerInterval'] as num?)?.toInt() ??
+          defaultForegroundTickerInterval,
+      foregroundTickerIdleWhenUnfocused:
+          json['foregroundTickerIdleWhenUnfocused'] as bool? ?? true,
+      foregroundTickerIdleInterval:
+          (json['foregroundTickerIdleInterval'] as num?)?.toInt() ??
+          defaultForegroundTickerIdleInterval,
     );
 
 Map<String, dynamic> _$AppSettingPropsToJson(_AppSettingProps instance) =>
@@ -65,6 +73,10 @@ Map<String, dynamic> _$AppSettingPropsToJson(_AppSettingProps instance) =>
       'developerMode': instance.developerMode,
       'restoreStrategy': _$RestoreStrategyEnumMap[instance.restoreStrategy]!,
       'customUserAgent': instance.customUserAgent,
+      'foregroundTickerInterval': instance.foregroundTickerInterval,
+      'foregroundTickerIdleWhenUnfocused':
+          instance.foregroundTickerIdleWhenUnfocused,
+      'foregroundTickerIdleInterval': instance.foregroundTickerIdleInterval,
     };
 
 const _$RestoreStrategyEnumMap = {
