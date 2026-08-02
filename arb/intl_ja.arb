@@ -383,6 +383,7 @@
   "emptyTip": "{label} は空欄にできません",
   "urlTip": "{label} は URL である必要があります",
   "numberTip": "{label} は数字でなければなりません",
+  "positiveIntegerTip": "0 より大きい整数を入力してください",
   "interval": "インターバル",
   "existsTip": "現在の {label} は既に存在しています",
   "deleteTip": "現在の {label} を削除してもよろしいですか？",
