@@ -14,6 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'effect.dart';
 import 'list.dart';
+import 'sheet.dart';
 import 'theme.dart';
 
 class OptionsDialog<T> extends StatelessWidget {
@@ -465,6 +466,8 @@ class MapInputPage extends ConsumerStatefulWidget {
   final String? valueLabel;
   final int? keyMaxLength;
   final int? valueMaxLength;
+  final List<String> Function(String value)? valueParser;
+  final String Function(List<String> values)? valueSerializer;
 
   const MapInputPage({
     super.key,
@@ -477,7 +480,9 @@ class MapInputPage extends ConsumerStatefulWidget {
     this.subtitleBuilder,
     this.keyMaxLength,
     this.valueMaxLength,
-  });
+    this.valueParser,
+    this.valueSerializer,
+  }) : assert((valueParser == null) == (valueSerializer == null));
 
   @override
   ConsumerState<MapInputPage> createState() => _MapInputPageState();
@@ -527,6 +532,13 @@ class _MapInputPageState extends ConsumerState<MapInputPage> {
       return null;
     }
 
+    if (widget.valueParser != null) {
+      final value = await _showListValueEditor(item, uniqueValidator);
+      if (value == null) return;
+      _updateItem(item, value);
+      return;
+    }
+
     final keyField = Field(
       label: widget.keyLabel ?? appLocalizations.key,
       value: item == null ? '' : item.key,
@@ -548,6 +560,66 @@ class _MapInputPageState extends ConsumerState<MapInputPage> {
       ),
     );
     if (value == null) return;
+    _updateItem(item, value);
+  }
+
+  Future<MapEntry<String, String>?> _showListValueEditor(
+    MapEntry<String, String>? item,
+    FormFieldValidator<String> uniqueValidator,
+  ) async {
+    final appLocalizations = context.appLocalizations;
+    var key = item?.key;
+    if (key == null) {
+      key = await globalState.showCommonDialog<String>(
+        child: AddDialog(
+          title: appLocalizations.add,
+          valueField: Field(
+            label: widget.keyLabel ?? appLocalizations.key,
+            value: '',
+            validator: (value) {
+              final uniqueError = uniqueValidator(value);
+              if (uniqueError != null) {
+                return uniqueError;
+              }
+              if (value == null || value.isEmpty) {
+                return appLocalizations.emptyTip(
+                  widget.keyLabel ?? appLocalizations.key,
+                );
+              }
+              return null;
+            },
+          ),
+          valueMaxLength: widget.keyMaxLength,
+        ),
+      );
+      if (key == null || !mounted) {
+        return null;
+      }
+    }
+    final matchingKey = key;
+    final values = await showExtend<List<String>>(
+      context,
+      props: const ExtendProps(blur: false),
+      builder: (_) {
+        return ListInputPage(
+          title: matchingKey,
+          items: item == null ? [] : widget.valueParser!(item.value),
+          valueLabel: widget.valueLabel,
+          itemMaxLength: widget.valueMaxLength,
+          titleBuilder: (value) => Text(value),
+        );
+      },
+    );
+    if (values == null || values.isEmpty) {
+      return null;
+    }
+    return MapEntry(matchingKey, widget.valueSerializer!(values));
+  }
+
+  void _updateItem(
+    MapEntry<String, String>? item,
+    MapEntry<String, String> value,
+  ) {
     final index = _items.indexWhere((entry) {
       return entry.key == item?.key;
     });

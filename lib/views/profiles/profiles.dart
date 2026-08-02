@@ -222,7 +222,7 @@ class ProfileItem extends StatelessWidget {
         return AdaptiveSheetScaffold(
           actions: [
             IconButtonData(
-              icon: Icons.security,
+              icon: Icons.key_outlined,
               onPressed: () {
                 editKey.currentState?.showAgeKeyGenerator();
               },

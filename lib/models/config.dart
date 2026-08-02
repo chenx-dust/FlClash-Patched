@@ -77,6 +77,7 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default(true) bool isAnimateToPage,
     @Default(true) bool isSwipeToPage,
     @Default(true) bool autoCheckUpdate,
+    @Default(false) bool ignoreCertificateErrors,
     @Default(false) bool showLabel,
     @Default(false) bool disclaimerAccepted,
     @Default(true) bool minimizeOnExit,
@@ -85,7 +86,6 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default(RestoreStrategy.compatible)
     @JsonKey(unknownEnumValue: RestoreStrategy.compatible)
     RestoreStrategy restoreStrategy,
-    @Default(true) bool showTrayTitle,
     @Default('') String customUserAgent,
   }) = _AppSettingProps;
 
@@ -208,8 +208,8 @@ abstract class ProxiesStyleProps with _$ProxiesStyleProps {
     @Default(ProxiesIconSource.standard)
     @JsonKey(unknownEnumValue: ProxiesIconSource.standard)
     ProxiesIconSource iconSource,
-    @Default(ProxyCardType.expand)
-    @JsonKey(unknownEnumValue: ProxyCardType.expand)
+    @Default(ProxyCardType.standard)
+    @JsonKey(unknownEnumValue: ProxyCardType.standard)
     ProxyCardType cardType,
     @Default(false) bool hideUnavailable,
     @Default(false) bool showHiddenGroups,
@@ -243,6 +243,7 @@ abstract class ThemeProps with _$ThemeProps {
     @JsonKey(unknownEnumValue: DynamicSchemeVariant.content)
     DynamicSchemeVariant schemeVariant,
     @Default(false) bool pureBlack,
+    @Default(true) bool monochromeTrayIcon,
     @Default(true) bool predictiveBack,
     @Default(TextScale()) TextScale textScale,
   }) = _ThemeProps;
