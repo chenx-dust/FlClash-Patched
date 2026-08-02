@@ -484,6 +484,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hasCacheChange": MessageLookupByLibrary.simpleMessage(
       "Хотите сохранить изменения в кэше?",
     ),
+    "header": MessageLookupByLibrary.simpleMessage("Заголовок"),
     "hideFromList": MessageLookupByLibrary.simpleMessage("Скрыть из списка"),
     "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage(
       "Автозапуск с высоким приоритетом",
@@ -507,6 +508,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hoursCount": m11,
     "icon": MessageLookupByLibrary.simpleMessage("Иконка"),
     "iconRecords": MessageLookupByLibrary.simpleMessage("История иконок"),
+    "iconSource": MessageLookupByLibrary.simpleMessage("Источник иконки"),
     "iconStyle": MessageLookupByLibrary.simpleMessage("Стиль иконки"),
     "iconUrl": MessageLookupByLibrary.simpleMessage("URL иконки"),
     "ignoreBatteryOptimization": MessageLookupByLibrary.simpleMessage(
@@ -698,6 +700,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "onDemandDesc": MessageLookupByLibrary.simpleMessage(
       "Настройка состояния работы приложения для определенных сценариев",
     ),
+    "onlyConfig": MessageLookupByLibrary.simpleMessage("Только конфигурация"),
+    "onlyEmoji": MessageLookupByLibrary.simpleMessage("Только Emoji"),
     "onlyIcon": MessageLookupByLibrary.simpleMessage("Только иконка"),
     "onlyStatisticsProxy": MessageLookupByLibrary.simpleMessage(
       "Только статистика прокси",
@@ -891,6 +895,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "restoreFromWebDAVDesc": MessageLookupByLibrary.simpleMessage(
       "Восстановить данные через WebDAV",
     ),
+    "restoreHiddenGroups": MessageLookupByLibrary.simpleMessage(
+      "Снова скрывать группы",
+    ),
     "restoreOnlyConfig": MessageLookupByLibrary.simpleMessage(
       "Восстановить только файлы конфигурации",
     ),
@@ -1053,6 +1060,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectedCountTitle": m23,
     "settings": MessageLookupByLibrary.simpleMessage("Настройки"),
     "show": MessageLookupByLibrary.simpleMessage("Показать"),
+    "showHiddenGroups": MessageLookupByLibrary.simpleMessage(
+      "Показать скрытые группы",
+    ),
+    "showUnavailable": MessageLookupByLibrary.simpleMessage("Показать таймаут"),
     "shrink": MessageLookupByLibrary.simpleMessage("Сжать"),
     "silentLaunch": MessageLookupByLibrary.simpleMessage("Тихий запуск"),
     "silentLaunchDesc": MessageLookupByLibrary.simpleMessage(
@@ -1086,6 +1097,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "stop": MessageLookupByLibrary.simpleMessage("Стоп"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("Остановка VPN..."),
     "style": MessageLookupByLibrary.simpleMessage("Стиль"),
+    "styleSettings": MessageLookupByLibrary.simpleMessage("Настройки стиля"),
     "subRule": MessageLookupByLibrary.simpleMessage("Подправило"),
     "subRuleEmpty": MessageLookupByLibrary.simpleMessage("Подправило пусто"),
     "subRuleNotEmpty": MessageLookupByLibrary.simpleMessage(

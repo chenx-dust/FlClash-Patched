@@ -398,7 +398,7 @@ final class ProxiesActionProvider
   }
 }
 
-String _$proxiesActionHash() => r'1d02d6a84d6cfc87e6d88175fef4eb96f0874ab8';
+String _$proxiesActionHash() => r'97859762825bd1cc5c93c03f450738bd7234fc65';
 
 abstract class _$ProxiesAction extends $Notifier<void> {
   void build();
@@ -450,7 +450,7 @@ final class ProfilesActionProvider
   }
 }
 
-String _$profilesActionHash() => r'90ff5fa8494378b572f43d2a4d4d5bd52de20119';
+String _$profilesActionHash() => r'da9ab4a37409570859ed47b13e066ea199ee6aa7';
 
 abstract class _$ProfilesAction extends $Notifier<void> {
   void build();

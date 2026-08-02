@@ -5,28 +5,35 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/providers/state.dart';
+import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sliver_tools/sliver_tools.dart';
 
 import 'card.dart';
 import 'common.dart';
 
 typedef GroupNameProxiesMap = Map<String, List<Proxy>>;
 
+const double _listGroupSpacing = 10;
+const double _listRowSpacing = 8;
+const double _listBodyBottomSpacing = 8;
+
 class ProxiesListView extends StatefulWidget {
   const ProxiesListView({super.key});
 
   @override
-  State<ProxiesListView> createState() => _ProxiesListViewState();
+  State<ProxiesListView> createState() => ProxiesListViewState();
 }
 
-class _ProxiesListViewState extends State<ProxiesListView> {
+class ProxiesListViewState extends State<ProxiesListView> {
   final _controller = ScrollController();
   final _headerStateNotifier = ValueNotifier<ProxiesListHeaderSelectorState?>(
     null,
   );
   List<double> _headerOffset = [];
+  List<String> _headerGroupNames = [];
   double containerHeight = 0;
 
   @override
@@ -40,9 +47,11 @@ class _ProxiesListViewState extends State<ProxiesListView> {
 
   ProxiesListHeaderSelectorState _getProxiesListHeaderSelectorState(
     double initOffset,
+    ProxiesListHeaderStyle listHeaderStyle,
   ) {
     final index = _headerOffset.findInterval(initOffset);
     final currentIndex = index;
+    final listHeaderHeight = getListHeaderHeight(listHeaderStyle);
     double headerOffset = 0.0;
     if (index + 1 <= _headerOffset.length - 1) {
       final endOffset = _headerOffset[index + 1];
@@ -58,17 +67,13 @@ class _ProxiesListViewState extends State<ProxiesListView> {
   }
 
   void _adjustHeader() {
+    final listHeaderStyle = globalState.container.read(
+      proxiesStyleSettingProvider.select((state) => state.listHeaderStyle),
+    );
     _headerStateNotifier.value = _getProxiesListHeaderSelectorState(
       !_controller.hasClients ? 0 : _controller.offset,
+      listHeaderStyle,
     );
-  }
-
-  double _getListItemHeight(Type type, ProxyCardType proxyCardType) {
-    return switch (type) {
-      const (SizedBox) => 8,
-      const (ListHeader) => listHeaderHeight,
-      Type() => getItemHeight(proxyCardType),
-    };
   }
 
   @override
@@ -79,8 +84,12 @@ class _ProxiesListViewState extends State<ProxiesListView> {
     super.dispose();
   }
 
-  void _handleChange(Set<String> currentUnfoldSet, String groupName) {
-    _autoScrollToGroup(groupName);
+  void _handleChange(
+    Set<String> currentUnfoldSet,
+    String groupName,
+    ProxiesListHeaderStyle listHeaderStyle,
+  ) {
+    _autoScrollToGroup(groupName, listHeaderStyle);
     final tempUnfoldSet = Set<String>.from(currentUnfoldSet);
     if (tempUnfoldSet.contains(groupName)) {
       tempUnfoldSet.remove(groupName);
@@ -93,100 +102,106 @@ class _ProxiesListViewState extends State<ProxiesListView> {
     });
   }
 
-  List<double> _getItemHeightList(
-    List<Widget> items,
-    ProxyCardType proxyCardType,
-  ) {
-    final itemHeightList = <double>[];
-    final List<double> headerOffset = [];
-    double currentHeight = 0;
-    for (final item in items) {
-      if (item.runtimeType == ListHeader) {
-        headerOffset.add(currentHeight);
-      }
-      final itemHeight = _getListItemHeight(item.runtimeType, proxyCardType);
-      itemHeightList.add(itemHeight);
-      currentHeight = currentHeight + itemHeight;
+  double _getGroupBodyHeight({
+    required Group group,
+    required bool isExpand,
+    required int columns,
+    required ProxyCardType cardType,
+  }) {
+    if (!isExpand) {
+      return _listGroupSpacing;
     }
-    _headerOffset = headerOffset;
-    return itemHeightList;
+    final rowCount = (group.all.length / columns).ceil();
+    if (rowCount == 0) {
+      return _listGroupSpacing;
+    }
+    return _listGroupSpacing +
+        rowCount * getItemHeight(cardType) +
+        (rowCount - 1) * _listRowSpacing +
+        _listBodyBottomSpacing;
   }
 
-  List<Widget> _buildItems(
-    WidgetRef ref, {
+  void _updateHeaderOffsets({
+    required List<Group> groups,
+    required Set<String> currentUnfoldSet,
+    required int columns,
+    required ProxyCardType cardType,
+    required ProxiesListHeaderStyle listHeaderStyle,
+  }) {
+    final headerOffset = <double>[];
+    final headerGroupNames = <String>[];
+    double currentHeight = 0;
+    for (final group in groups) {
+      headerOffset.add(currentHeight);
+      headerGroupNames.add(group.name);
+      currentHeight += getListHeaderHeight(listHeaderStyle);
+      currentHeight += _getGroupBodyHeight(
+        group: group,
+        isExpand: currentUnfoldSet.contains(group.name),
+        columns: columns,
+        cardType: cardType,
+      );
+    }
+    _headerOffset = headerOffset;
+    _headerGroupNames = headerGroupNames;
+  }
+
+  List<Widget> _buildSlivers({
     required List<Group> groups,
     required int columns,
     required Set<String> currentUnfoldSet,
     required ProxyCardType cardType,
+    required ProxiesListHeaderStyle listHeaderStyle,
   }) {
-    final items = <Widget>[];
+    final slivers = <Widget>[];
     for (final group in groups) {
       final groupName = group.name;
       final isExpand = currentUnfoldSet.contains(groupName);
-      items.addAll([
-        ListHeader(
-          onScrollToSelected: _scrollToGroupSelected,
-          isExpand: isExpand,
-          group: group,
-          onChange: (String groupName) {
-            _handleChange(currentUnfoldSet, groupName);
-          },
+      slivers.addAll([
+        SliverToBoxAdapter(
+          child: SizedBox(
+            height: getListHeaderHeight(listHeaderStyle),
+            child: ListHeader(
+              onScrollToSelected: _scrollToGroupSelected,
+              listHeaderStyle: listHeaderStyle,
+              isExpand: isExpand,
+              group: group,
+              onChange: (String groupName) {
+                _handleChange(currentUnfoldSet, groupName, listHeaderStyle);
+              },
+            ),
+          ),
         ),
-        const SizedBox(height: 8),
+        const SliverToBoxAdapter(child: SizedBox(height: _listGroupSpacing)),
+        _ProxyGroupSliver(
+          key: ValueKey('$groupName.body'),
+          group: group,
+          isExpand: isExpand,
+          columns: columns,
+          cardType: cardType,
+        ),
       ]);
-      if (isExpand) {
-        final proxies = group.all;
-        final chunks = proxies.chunks(columns);
-        final rows = chunks
-            .map<Widget>((proxies) {
-              final children = proxies
-                  .map<Widget>(
-                    (proxy) => Flexible(
-                      child: SizedBox(
-                        height: getItemHeight(cardType),
-                        child: ProxyCard(
-                          testUrl: group.testUrl,
-                          type: cardType,
-                          groupType: group.type,
-                          key: ValueKey('$groupName.${proxy.name}'),
-                          proxy: proxy,
-                          groupName: groupName,
-                        ),
-                      ),
-                    ),
-                  )
-                  .fill(
-                    columns,
-                    filler: (_) => const Flexible(child: SizedBox()),
-                  )
-                  .separated(const SizedBox(width: 8));
-
-              return Row(children: children.toList());
-            })
-            .separated(const SizedBox(height: 8));
-        items.addAll([...rows, const SizedBox(height: 8)]);
-      }
     }
-    return items;
+    return slivers;
   }
 
-  Widget _buildHeader(
-    WidgetRef ref, {
+  Widget _buildHeader({
     required Group group,
     required Set<String> currentUnfoldSet,
+    required ProxiesListHeaderStyle listHeaderStyle,
   }) {
     final groupName = group.name;
     final isExpand = currentUnfoldSet.contains(groupName);
     return SizedBox(
-      height: listHeaderHeight,
+      height: getListHeaderHeight(listHeaderStyle),
       child: ListHeader(
-        enterAnimated: false,
         onScrollToSelected: _scrollToGroupSelected,
+        listHeaderStyle: listHeaderStyle,
         key: Key(groupName),
         isExpand: isExpand,
         group: group,
         onChange: (String groupName) {
-          _handleChange(currentUnfoldSet, groupName);
+          _handleChange(currentUnfoldSet, groupName, listHeaderStyle);
         },
       ),
     );
@@ -196,10 +211,7 @@ class _ProxiesListViewState extends State<ProxiesListView> {
     if (_controller.position.maxScrollExtent == 0) {
       return 0;
     }
-    final currentGroups = getCurrentGroups();
-    final findIndex = currentGroups.indexWhere(
-      (item) => item.name == groupName,
-    );
+    final findIndex = _headerGroupNames.indexOf(groupName);
     final index = findIndex != -1 ? findIndex : 0;
     return _headerOffset[index];
   }
@@ -243,14 +255,17 @@ class _ProxiesListViewState extends State<ProxiesListView> {
     _controller.jumpTo(targetScrollOffset);
   }
 
-  void _autoScrollToGroup(String groupName) {
+  void _autoScrollToGroup(
+    String groupName,
+    ProxiesListHeaderStyle listHeaderStyle,
+  ) {
     final pixels = _controller.position.pixels;
     final offset = _getGroupOffset(groupName);
     _scrollToMakeVisibleWithPadding(
       containerHeight: containerHeight,
       pixels: pixels,
       start: offset,
-      end: offset + listHeaderHeight,
+      end: offset + getListHeaderHeight(listHeaderStyle),
     );
   }
 
@@ -266,6 +281,16 @@ class _ProxiesListViewState extends State<ProxiesListView> {
             proxies: proxies ?? [],
           ),
     );
+  }
+
+  Future<void> delayTestUnfoldedGroups() async {
+    final state = globalState.container.read(proxiesListStateProvider);
+    final expandedGroups = state.groups.where(
+      (group) => state.currentUnfoldSet.contains(group.name),
+    );
+    for (final group in expandedGroups) {
+      await delayTest(group.all, group.testUrl);
+    }
   }
 
   void _jumpTo(double offset) {
@@ -287,6 +312,9 @@ class _ProxiesListViewState extends State<ProxiesListView> {
     return Consumer(
       builder: (_, ref, _) {
         final state = ref.watch(proxiesListStateProvider);
+        final headerStyle = ref.watch(
+          proxiesStyleSettingProvider.select((state) => state.listHeaderStyle),
+        );
         ref.watch(themeSettingProvider.select((state) => state.textScale));
         if (state.groups.isEmpty) {
           return NullStatus(
@@ -294,14 +322,20 @@ class _ProxiesListViewState extends State<ProxiesListView> {
             label: appLocalizations.nullTip(appLocalizations.proxies),
           );
         }
-        final items = _buildItems(
-          ref,
+        final slivers = _buildSlivers(
           groups: state.groups,
           currentUnfoldSet: state.currentUnfoldSet,
           columns: state.columns,
           cardType: state.proxyCardType,
+          listHeaderStyle: headerStyle,
         );
-        final itemsOffset = _getItemHeightList(items, state.proxyCardType);
+        _updateHeaderOffsets(
+          groups: state.groups,
+          currentUnfoldSet: state.currentUnfoldSet,
+          columns: state.columns,
+          cardType: state.proxyCardType,
+          listHeaderStyle: headerStyle,
+        );
         return CommonScrollBar(
           controller: _controller,
           thumbVisibility: true,
@@ -311,17 +345,15 @@ class _ProxiesListViewState extends State<ProxiesListView> {
               Positioned.fill(
                 child: ScrollConfiguration(
                   behavior: HiddenBarScrollBehavior(),
-                  child: ListView.builder(
+                  child: CustomScrollView(
                     key: proxiesListStoreKey,
-                    padding: const EdgeInsets.all(16),
                     controller: _controller,
-                    itemExtentBuilder: (index, _) {
-                      return itemsOffset[index];
-                    },
-                    itemCount: items.length,
-                    itemBuilder: (_, index) {
-                      return items[index];
-                    },
+                    slivers: [
+                      SliverPadding(
+                        padding: const EdgeInsets.all(16),
+                        sliver: SliverMainAxisGroup(slivers: slivers),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -341,13 +373,24 @@ class _ProxiesListViewState extends State<ProxiesListView> {
                       if (index < 0 || state.groups.isEmpty) {
                         return Container();
                       }
+                      final surface = context.colorScheme.surface;
+                      final headerBackgroundHeight =
+                          16 + getListHeaderHeight(headerStyle) + 8;
+                      final fadeStart = 1 - 16.ap / headerBackgroundHeight;
                       return Stack(
                         children: [
                           Positioned(
                             top: -headerState.offset,
                             child: Container(
                               width: container.maxWidth,
-                              color: context.colorScheme.surface,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [surface, surface, surface.opacity60, surface.opacity0],
+                                  stops: [0, fadeStart, fadeStart, 1],
+                                ),
+                              ),
                               padding: const EdgeInsets.only(
                                 top: 16,
                                 left: 16,
@@ -355,9 +398,9 @@ class _ProxiesListViewState extends State<ProxiesListView> {
                                 bottom: 8,
                               ),
                               child: _buildHeader(
-                                ref,
                                 group: state.groups[index],
                                 currentUnfoldSet: state.currentUnfoldSet,
+                                listHeaderStyle: headerStyle,
                               ),
                             ),
                           ),
@@ -375,6 +418,78 @@ class _ProxiesListViewState extends State<ProxiesListView> {
   }
 }
 
+class _ProxyGroupSliver extends StatelessWidget {
+  final Group group;
+  final bool isExpand;
+  final int columns;
+  final ProxyCardType cardType;
+
+  const _ProxyGroupSliver({
+    super.key,
+    required this.group,
+    required this.isExpand,
+    required this.columns,
+    required this.cardType,
+  });
+
+  int get _rowCount {
+    return (group.all.length / max(columns, 1)).ceil();
+  }
+
+  double get _contentExtent {
+    if (_rowCount == 0) {
+      return 0;
+    }
+    return _rowCount * getItemHeight(cardType) +
+        (_rowCount - 1) * _listRowSpacing +
+        _listBodyBottomSpacing;
+  }
+
+  Duration get _animationDuration {
+    final milliseconds = 100 + _contentExtent * 0.25;
+    return Duration(
+      milliseconds: min(milliseconds, isExpand ? 120 : 250).round(),
+    );
+  }
+
+  Widget _buildGrid() {
+    final groupName = group.name;
+    return SliverPadding(
+      padding:
+          EdgeInsets.only(bottom: isExpand ? _listGroupSpacing : 0) +
+          const EdgeInsets.symmetric(horizontal: _listRowSpacing / 2),
+      sliver: SliverGrid(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: columns,
+          mainAxisSpacing: _listRowSpacing,
+          crossAxisSpacing: _listRowSpacing,
+          mainAxisExtent: getItemHeight(cardType),
+        ),
+        delegate: SliverChildBuilderDelegate((_, index) {
+          final proxy = group.all[index];
+          return ProxyCard(
+            testUrl: group.testUrl,
+            type: cardType,
+            groupType: group.type,
+            key: ValueKey('$groupName.${proxy.name}'),
+            proxy: proxy,
+            groupName: groupName,
+          );
+        }, childCount: isExpand ? group.all.length : 0),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverAnimatedPaintExtent(
+      duration: _animationDuration,
+      curve: Curves.easeInOutCubic,
+      child: _buildGrid(),
+    );
+  }
+}
+
 class ListHeader extends StatefulWidget {
   final Group group;
 
@@ -382,11 +497,11 @@ class ListHeader extends StatefulWidget {
   final Function(String groupName) onScrollToSelected;
   final bool isExpand;
 
-  final bool enterAnimated;
+  final ProxiesListHeaderStyle listHeaderStyle;
 
   const ListHeader({
     super.key,
-    this.enterAnimated = true,
+    this.listHeaderStyle = ProxiesListHeaderStyle.loose,
     required this.group,
     required this.onChange,
     required this.onScrollToSelected,
@@ -404,9 +519,60 @@ class _ListHeaderState extends State<ListHeader> {
 
   String get groupName => widget.group.name;
 
+  String get emojiIcon => getFirstEmoji(groupName);
+
   String get groupType => widget.group.type.name;
 
   bool get isExpand => widget.isExpand;
+
+  double get _cardRadius => switch (widget.listHeaderStyle) {
+    ProxiesListHeaderStyle.loose => 18,
+    ProxiesListHeaderStyle.standard => 16,
+    ProxiesListHeaderStyle.tight => 22,
+  };
+
+  double get _iconSpacing => switch (widget.listHeaderStyle) {
+    ProxiesListHeaderStyle.loose => 16,
+    ProxiesListHeaderStyle.standard => 12,
+    ProxiesListHeaderStyle.tight => 8,
+  };
+
+  double get _iconRadius => switch (widget.listHeaderStyle) {
+    ProxiesListHeaderStyle.loose => 12,
+    ProxiesListHeaderStyle.standard => 11,
+    ProxiesListHeaderStyle.tight => 16,
+  };
+
+  EdgeInsets get _contentPadding => switch (widget.listHeaderStyle) {
+    ProxiesListHeaderStyle.loose => const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 12,
+    ),
+    ProxiesListHeaderStyle.standard => const EdgeInsets.symmetric(
+      horizontal: 10,
+      vertical: 8,
+    ),
+    ProxiesListHeaderStyle.tight => const EdgeInsets.symmetric(
+      horizontal: 6,
+      vertical: 6,
+    ),
+  };
+
+  TextStyle? _getTitleStyle(BuildContext context) {
+    return switch (widget.listHeaderStyle) {
+      ProxiesListHeaderStyle.loose => context.textTheme.titleMedium,
+      ProxiesListHeaderStyle.standard => context.textTheme.titleSmall,
+      ProxiesListHeaderStyle.tight => context.textTheme.titleSmall,
+    };
+  }
+
+  TextStyle? _getLabelStyle(BuildContext context) {
+    return switch (widget.listHeaderStyle) {
+      ProxiesListHeaderStyle.loose => context.textTheme.labelMedium,
+      ProxiesListHeaderStyle.standard => context.textTheme.labelSmall,
+      ProxiesListHeaderStyle.tight => context.textTheme.labelSmall,
+    };
+  }
 
   Future<void> _delayTest() async {
     if (isLock) return;
@@ -419,32 +585,61 @@ class _ListHeaderState extends State<ListHeader> {
     widget.onChange(groupName);
   }
 
+  bool _shouldUseEmojiAsIcon(ProxiesIconSource source) {
+    final emoji = emojiIcon;
+    return switch (source) {
+      ProxiesIconSource.standard => icon.isEmpty && emoji.isNotEmpty,
+      ProxiesIconSource.config => false,
+      ProxiesIconSource.emoji => emoji.isNotEmpty,
+    };
+  }
+
+  Widget _buildIconContent(double size, ProxiesIconSource source) {
+    final emoji = emojiIcon;
+    if (_shouldUseEmojiAsIcon(source)) {
+      return EmojiText(
+        emoji,
+        style: TextStyle(fontSize: size * 0.75, height: 1.2),
+      );
+    }
+    final src = source == ProxiesIconSource.emoji ? '' : icon;
+    return IconTheme.merge(
+      data: IconThemeData(size: size),
+      child: CommonTargetIcon(src: src),
+    );
+  }
+
   Widget _buildIcon() {
     return Consumer(
-      builder: (_, ref, child) {
-        final iconStyle = ref.watch(
-          proxiesStyleSettingProvider.select((state) => state.iconStyle),
+      builder: (_, ref, _) {
+        final props = ref.watch(
+          proxiesStyleSettingProvider.select(
+            (state) => VM2(state.iconStyle, state.iconSource),
+          ),
         );
+        final iconStyle = props.a;
+        final iconSource = props.b;
         return switch (iconStyle) {
           ProxiesIconStyle.standard => LayoutBuilder(
             builder: (_, constraints) {
+              const double iconPadding = 6;
               return Container(
-                margin: const EdgeInsets.only(right: 16),
+                margin: EdgeInsets.only(right: _iconSpacing),
                 child: AspectRatio(
                   aspectRatio: 1,
                   child: Container(
                     height: constraints.maxHeight,
                     width: constraints.maxWidth,
                     alignment: Alignment.center,
-                    padding: EdgeInsets.all(6.ap),
+                    padding: EdgeInsets.all(iconPadding.ap),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(_iconRadius),
                       color: context.colorScheme.secondaryContainer,
                     ),
                     clipBehavior: Clip.antiAlias,
-                    child: IconTheme.merge(
-                      data: IconThemeData(size: constraints.maxHeight - 12.ap),
-                      child: CommonTargetIcon(src: icon),
+                    child: _buildIconContent(
+                      constraints.maxHeight - iconPadding.ap * 2,
+                      iconSource,
                     ),
                   ),
                 ),
@@ -452,12 +647,12 @@ class _ListHeaderState extends State<ListHeader> {
             },
           ),
           ProxiesIconStyle.icon => Container(
-            margin: const EdgeInsets.only(right: 16),
+            margin: EdgeInsets.only(left: 8.ap, right: _iconSpacing),
             child: LayoutBuilder(
               builder: (_, constraints) {
-                return IconTheme.merge(
-                  data: IconThemeData(size: constraints.maxHeight - 8.ap),
-                  child: CommonTargetIcon(src: icon),
+                return _buildIconContent(
+                  constraints.maxHeight - 8.ap,
+                  iconSource,
                 );
               },
             ),
@@ -468,85 +663,107 @@ class _ListHeaderState extends State<ListHeader> {
     );
   }
 
+  Widget _buildTitle() {
+    return Consumer(
+      builder: (_, ref, _) {
+        final props = ref.watch(
+          proxiesStyleSettingProvider.select(
+            (state) => VM2(state.iconStyle, state.iconSource),
+          ),
+        );
+        final shouldUseEmojiAsIcon =
+            props.a != ProxiesIconStyle.none && _shouldUseEmojiAsIcon(props.b);
+        final displayGroupName = shouldUseEmojiAsIcon
+            ? removeLeadingEmoji(groupName).takeFirstValid([groupName])
+            : groupName;
+        return EmojiText(
+          displayGroupName,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: _getTitleStyle(context),
+        );
+      },
+    );
+  }
+
+  Widget _buildInfo() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          groupType,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: _getLabelStyle(context)?.toLight,
+        ),
+        Flexible(
+          flex: 1,
+          child: Consumer(
+            builder: (_, ref, _) {
+              final proxyName = ref
+                  .watch(selectedProxyNameProvider(groupName))
+                  .takeFirstValid([]);
+              if (proxyName.isEmpty) {
+                return const SizedBox();
+              }
+              return EmojiText(
+                ' · $proxyName',
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: _getLabelStyle(context)?.toLight,
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeaderContent() {
+    if (widget.listHeaderStyle == ProxiesListHeaderStyle.tight) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(flex: 2, child: _buildTitle()),
+          const SizedBox(width: 8),
+          Flexible(flex: 3, child: _buildInfo()),
+        ],
+      );
+    } else {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildTitle(),
+          const SizedBox(height: 4),
+          Flexible(flex: 1, child: _buildInfo()),
+          const SizedBox(width: 4),
+        ],
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return CommonCard(
       focusNode: FocusNode(skipTraversal: true),
       enterAnimated: false,
       key: widget.key,
-      radius: 18.ap,
+      radius: _cardRadius.ap,
       type: CommonCardType.filled,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: _contentPadding,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   _buildIcon(),
-                  Flexible(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        EmojiText(
-                          groupName,
-                          style: context.textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 4),
-                        Flexible(
-                          flex: 1,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                groupType,
-                                style: context.textTheme.labelMedium?.toLight,
-                              ),
-                              Flexible(
-                                flex: 1,
-                                child: Consumer(
-                                  builder: (_, ref, _) {
-                                    final proxyName = ref
-                                        .watch(
-                                          selectedProxyNameProvider(groupName),
-                                        )
-                                        .takeFirstValid([]);
-                                    return Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        if (proxyName.isNotEmpty) ...[
-                                          Flexible(
-                                            flex: 1,
-                                            child: EmojiText(
-                                              overflow: TextOverflow.ellipsis,
-                                              ' · $proxyName',
-                                              style: context
-                                                  .textTheme
-                                                  .labelMedium
-                                                  ?.toLight,
-                                            ),
-                                          ),
-                                        ],
-                                      ],
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                      ],
-                    ),
-                  ),
+                  Flexible(child: _buildHeaderContent()),
                 ],
               ),
             ),
@@ -603,6 +820,9 @@ class _ListHeaderState extends State<ListHeader> {
       ),
       onPressed: () {
         _handleChange(groupName);
+      },
+      onLongPress: () async {
+        await resetProxySelection(groupName);
       },
     );
   }

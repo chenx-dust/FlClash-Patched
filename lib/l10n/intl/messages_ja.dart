@@ -370,6 +370,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "goToConfigureScript": MessageLookupByLibrary.simpleMessage("スクリプト設定に移動"),
     "goroutineInfo": MessageLookupByLibrary.simpleMessage("ゴルーチン数"),
     "hasCacheChange": MessageLookupByLibrary.simpleMessage("変更をキャッシュしますか？"),
+    "header": MessageLookupByLibrary.simpleMessage("ヘッダー"),
     "hideFromList": MessageLookupByLibrary.simpleMessage("リストから隠す"),
     "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage("高優先度自動起動"),
     "highPriorityAutoLaunchDesc": MessageLookupByLibrary.simpleMessage(
@@ -387,6 +388,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hoursCount": m11,
     "icon": MessageLookupByLibrary.simpleMessage("アイコン"),
     "iconRecords": MessageLookupByLibrary.simpleMessage("アイコン履歴"),
+    "iconSource": MessageLookupByLibrary.simpleMessage("アイコンソース"),
     "iconStyle": MessageLookupByLibrary.simpleMessage("アイコンスタイル"),
     "iconUrl": MessageLookupByLibrary.simpleMessage("アイコン URL"),
     "ignoreBatteryOptimization": MessageLookupByLibrary.simpleMessage(
@@ -526,6 +528,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "onDemandDesc": MessageLookupByLibrary.simpleMessage(
       "特定のシナリオでのアプリの実行状態を設定",
     ),
+    "onlyConfig": MessageLookupByLibrary.simpleMessage("設定のみ"),
+    "onlyEmoji": MessageLookupByLibrary.simpleMessage("Emoji のみ"),
     "onlyIcon": MessageLookupByLibrary.simpleMessage("アイコンのみ"),
     "onlyStatisticsProxy": MessageLookupByLibrary.simpleMessage("プロキシのみ統計"),
     "onlyStatisticsProxyDesc": MessageLookupByLibrary.simpleMessage(
@@ -675,6 +679,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "restoreFromWebDAVDesc": MessageLookupByLibrary.simpleMessage(
       "WebDAV を介してデータを復元する",
     ),
+    "restoreHiddenGroups": MessageLookupByLibrary.simpleMessage("グループを再び非表示"),
     "restoreOnlyConfig": MessageLookupByLibrary.simpleMessage("設定ファイルのみを復元する"),
     "restoreStrategy": MessageLookupByLibrary.simpleMessage("復元ストラテジー"),
     "restoreStrategy_compatible": MessageLookupByLibrary.simpleMessage("互換"),
@@ -811,6 +816,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectedCountTitle": m23,
     "settings": MessageLookupByLibrary.simpleMessage("設定"),
     "show": MessageLookupByLibrary.simpleMessage("表示"),
+    "showHiddenGroups": MessageLookupByLibrary.simpleMessage("非表示グループを表示"),
+    "showUnavailable": MessageLookupByLibrary.simpleMessage("タイムアウト表示"),
     "shrink": MessageLookupByLibrary.simpleMessage("縮小"),
     "silentLaunch": MessageLookupByLibrary.simpleMessage("バックグラウンド起動"),
     "silentLaunchDesc": MessageLookupByLibrary.simpleMessage("バックグラウンドで起動"),
@@ -838,6 +845,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "stop": MessageLookupByLibrary.simpleMessage("停止"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("VPN を停止中..."),
     "style": MessageLookupByLibrary.simpleMessage("スタイル"),
+    "styleSettings": MessageLookupByLibrary.simpleMessage("スタイル設定"),
     "subRule": MessageLookupByLibrary.simpleMessage("サブルール"),
     "subRuleEmpty": MessageLookupByLibrary.simpleMessage("サブルールが空です"),
     "subRuleNotEmpty": MessageLookupByLibrary.simpleMessage("サブルールは空にできません"),
