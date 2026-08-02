@@ -241,11 +241,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "checkUpdateError": MessageLookupByLibrary.simpleMessage(
       "The current application is already the latest version",
     ),
-    "clearData": MessageLookupByLibrary.simpleMessage("Clear Data"),
-    "clipboardExport": MessageLookupByLibrary.simpleMessage("Export Clipboard"),
-    "clipboardImport": MessageLookupByLibrary.simpleMessage("Clipboard Import"),
-    "closeAll": MessageLookupByLibrary.simpleMessage("Close All"),
-    "collapse": MessageLookupByLibrary.simpleMessage("Collapse"),
+    "clearData": MessageLookupByLibrary.simpleMessage("Clear data"),
+    "clipboardExport": MessageLookupByLibrary.simpleMessage("Export clipboard"),
+    "clipboardImport": MessageLookupByLibrary.simpleMessage("Clipboard import"),
+    "closeAll": MessageLookupByLibrary.simpleMessage("Close all"),
     "color": MessageLookupByLibrary.simpleMessage("Color"),
     "colorSchemes": MessageLookupByLibrary.simpleMessage("Color schemes"),
     "columns": MessageLookupByLibrary.simpleMessage("Columns"),
@@ -358,7 +357,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "download": MessageLookupByLibrary.simpleMessage("Download"),
     "downloadSpeed": MessageLookupByLibrary.simpleMessage("Download speed"),
     "downloadTraffic": MessageLookupByLibrary.simpleMessage("Download traffic"),
-    "dozeSuspend": MessageLookupByLibrary.simpleMessage("Doze Suspend"),
+    "dozeSuspend": MessageLookupByLibrary.simpleMessage("Doze suspend"),
     "dozeSuspendDesc": MessageLookupByLibrary.simpleMessage(
       "Suspend the core while Android is in Doze mode to reduce battery usage",
     ),
@@ -415,6 +414,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "fileIsUpdate": MessageLookupByLibrary.simpleMessage(
       "The file has been modified. Do you want to save the changes?",
     ),
+    "filter": MessageLookupByLibrary.simpleMessage("Filter"),
     "findProcessMode": MessageLookupByLibrary.simpleMessage("Find Process"),
     "findProcessModeDesc": MessageLookupByLibrary.simpleMessage(
       "There is a certain performance loss after opening",
@@ -549,6 +549,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "key": MessageLookupByLibrary.simpleMessage("Key"),
     "language": MessageLookupByLibrary.simpleMessage("Language"),
     "layout": MessageLookupByLibrary.simpleMessage("Layout"),
+    "level": MessageLookupByLibrary.simpleMessage("Level"),
     "light": MessageLookupByLibrary.simpleMessage("Light"),
     "list": MessageLookupByLibrary.simpleMessage("List"),
     "listen": MessageLookupByLibrary.simpleMessage("Listen"),
@@ -641,6 +642,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "networkType": MessageLookupByLibrary.simpleMessage("Network type"),
     "neutralScheme": MessageLookupByLibrary.simpleMessage("Neutral"),
     "noData": MessageLookupByLibrary.simpleMessage("No data"),
+    "noFilterCondition": MessageLookupByLibrary.simpleMessage(
+      "No filter conditions",
+    ),
     "noHotKey": MessageLookupByLibrary.simpleMessage("No HotKey"),
     "noInfo": MessageLookupByLibrary.simpleMessage("No info"),
     "noLongerRemind": MessageLookupByLibrary.simpleMessage(
@@ -799,7 +803,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "quickFill": MessageLookupByLibrary.simpleMessage("Quick fill"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("Rainbow"),
     "redirPort": MessageLookupByLibrary.simpleMessage("Redir port"),
-    "redo": MessageLookupByLibrary.simpleMessage("redo"),
+    "redo": MessageLookupByLibrary.simpleMessage("Redo"),
+    "regexSearch": MessageLookupByLibrary.simpleMessage("Regex search"),
     "remote": MessageLookupByLibrary.simpleMessage("Remote"),
     "remoteBackupDesc": MessageLookupByLibrary.simpleMessage(
       "Backup local data to WebDAV",
@@ -1107,6 +1112,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "unnamed": MessageLookupByLibrary.simpleMessage("Unnamed"),
     "update": MessageLookupByLibrary.simpleMessage("Update"),
     "upload": MessageLookupByLibrary.simpleMessage("Upload"),
+    "uploadSpeed": MessageLookupByLibrary.simpleMessage("Upload speed"),
+    "uploadTraffic": MessageLookupByLibrary.simpleMessage("Upload traffic"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage(
       "Obtain profile through URL",
