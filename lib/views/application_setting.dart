@@ -1,5 +1,7 @@
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/config.dart';
+import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -530,6 +532,7 @@ class ApplicationSettingView extends ConsumerWidget {
       const AnimateTabItem(),
       const SwipeToPageItem(),
       const OpenLogsItem(),
+      const ForegroundTickerIntervalItem(),
       const CloseConnectionsItem(),
       const UsageItem(),
       if (system.isAndroid || system.isMacOS)

@@ -2994,6 +2994,16 @@ class AppLocalizations {
     );
   }
 
+  /// `Please enter an integer greater than 0`
+  String get positiveIntegerTip {
+    return Intl.message(
+      'Please enter an integer greater than 0',
+      name: 'positiveIntegerTip',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Interval`
   String get interval {
     return Intl.message('Interval', name: 'interval', desc: '', args: []);
