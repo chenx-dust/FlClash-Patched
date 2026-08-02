@@ -60,7 +60,13 @@ class _ProvidersViewState extends ConsumerState<ProvidersView> {
       items: ruleProviders,
     );
     return AdaptiveSheetScaffold(
-      actions: [IconButtonData(icon: Icons.sync, onPressed: _updateProviders)],
+      actions: [
+        IconButtonData(
+          icon: Icons.sync,
+          tooltip: appLocalizations.sync,
+          onPressed: _updateProviders,
+        ),
+      ],
       body: generateListView([...proxySection, ...ruleSection]),
       title: appLocalizations.providers,
     );
@@ -116,57 +122,62 @@ class ProviderItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListItem(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      title: Text(provider.name),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 4),
-          if (provider.updateAt.microsecondsSinceEpoch > 0)
-            Text(_buildProviderDesc(context)),
-          const SizedBox(height: 4),
-          if (provider.subscriptionInfo != null)
-            SubscriptionInfoView(subscriptionInfo: provider.subscriptionInfo),
-          const SizedBox(height: 8),
-          Wrap(
-            runSpacing: 6,
-            spacing: 12,
-            runAlignment: WrapAlignment.center,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              CommonChip(
-                avatar: const Icon(Icons.upload),
-                label: context.appLocalizations.upload,
-                onPressed: _handleSideLoadProvider,
-              ),
-              if (provider.vehicleType == 'HTTP')
-                Consumer(
-                  builder: (_, ref, _) {
-                    final isUpdating = ref.watch(
-                      isUpdatingProvider(provider.updatingKey),
-                    );
-                    return isUpdating
-                        ? const SizedBox(
-                            height: 30,
-                            width: 30,
-                            child: Padding(
-                              padding: EdgeInsets.all(2),
-                              child: CommonCircleLoading(),
-                            ),
+    return CommonPopupBox(
+      popup: _buildPopupMenu(context),
+      targetBuilder: (open) {
+        BuildContext? popupButtonContext;
+
+        void openMenu() {
+          open(targetContext: popupButtonContext);
+        }
+
+        return GestureDetector(
+          onSecondaryTapDown: (_) => openMenu(),
+          child: ListItem(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            tileTitleAlignment: ListTileTitleAlignment.top,
+            trailing: SizedBox(
+              height: 40,
+              width: 40,
+              child: Consumer(
+                builder: (context, ref, _) {
+                  popupButtonContext = context;
+                  final isUpdating = ref.watch(
+                    isUpdatingProvider(provider.updatingKey),
+                  );
+                  return FadeThroughBox(
+                    child: isUpdating
+                        ? const Padding(
+                            key: ValueKey('loading'),
+                            padding: EdgeInsets.all(8),
+                            child: CommonCircleLoading(),
                           )
-                        : CommonChip(
-                            avatar: const Icon(Icons.sync),
-                            label: context.appLocalizations.sync,
-                            onPressed: _handleUpdateProvider,
-                          );
-                  },
-                ),
-            ],
+                        : IconButton(
+                            onPressed: openMenu,
+                            icon: const Icon(Icons.more_vert),
+                          ),
+                  );
+                },
+              ),
+            ),
+            title: Text(provider.name),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 4),
+                if (provider.updateAt.microsecondsSinceEpoch > 0)
+                  Text(_buildProviderDesc(context)),
+                const SizedBox(height: 4),
+                if (provider.subscriptionInfo != null)
+                  SubscriptionInfoView(
+                    subscriptionInfo: provider.subscriptionInfo,
+                  ),
+                const SizedBox(height: 4),
+              ],
+            ),
           ),
-          const SizedBox(height: 4),
-        ],
-      ),
+        );
+      },
     );
   }
 }

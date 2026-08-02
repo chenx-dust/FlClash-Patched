@@ -83,12 +83,7 @@ class GlobalState {
 
   Future<ProviderContainer> _initData(int version) async {
     packageInfo = await PackageInfo.fromPlatform();
-    var config = await migration.run();
-    _didCrashOnPreviousExecution = await system.didCrashOnPreviousExecution();
-    if (_didCrashOnPreviousExecution) {
-      config = config.copyWith(currentProfileId: null);
-      await preferences.saveConfig(config);
-    }
+    final config = await migration.run();
     final appState = AppState(
       brightness: WidgetsBinding.instance.platformDispatcher.platformBrightness,
       version: version,
@@ -153,7 +148,7 @@ class GlobalState {
     } catch (e, s) {
       commonPrint.log('$title ===> $e, $s', logLevel: LogLevel.warning);
       if (silence) {
-        showNotifier(e.toString());
+        showNotifier(e.toString(), allowCopy: true);
       } else {
         showMessage(
           title: title ?? currentAppLocalizations.tip,
@@ -275,11 +270,19 @@ class GlobalState {
     );
   }
 
-  void showNotifier(String text, {MessageActionState? actionState}) {
+  void showNotifier(
+    String text, {
+    MessageActionState? actionState,
+    bool allowCopy = false,
+  }) {
     if (text.isEmpty) {
       return;
     }
-    navigatorKey.currentContext?.showNotifier(text, actionState: actionState);
+    navigatorKey.currentContext?.showNotifier(
+      text,
+      actionState: actionState,
+      allowCopy: allowCopy,
+    );
   }
 
   Future<void> openUrl(String url) async {
