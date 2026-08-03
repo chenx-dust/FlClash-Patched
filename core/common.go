@@ -246,7 +246,7 @@ func updateConfig(params *UpdateParams) {
 
 	updateListeners()
 	if updater.GeoAutoUpdate() {
-		updater.RegisterGeoUpdaterWithCancel()
+		updater.RegisterGeoUpdater()
 	}
 }
 
@@ -263,8 +263,8 @@ func applyConfig(params *SetupParams) error {
 	hub.ApplyConfig(currentConfig)
 	patchSelectGroup(params.SelectedMap)
 	updateListeners()
-	if updater.GeoAutoUpdate() {
-		updater.RegisterGeoUpdaterWithCancel()
+	if !features.WithLowMemory && updater.GeoAutoUpdate() {
+		updater.RegisterGeoUpdater()
 	}
 	return err
 }

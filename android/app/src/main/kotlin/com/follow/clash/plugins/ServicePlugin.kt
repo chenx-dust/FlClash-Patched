@@ -38,7 +38,7 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
             "invokeMethod" -> invokeMethod(call, result)
             "getRunTime" -> getRunTime(result)
             "syncState" -> syncState(call, result)
-            "start" -> start(result)
+            "start" -> start(call, result)
             "stop" -> stop(result)
             else -> result.notImplemented()
         }
@@ -79,23 +79,31 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     }
 
     private fun syncState(call: MethodCall, result: MethodChannel.Result) {
-        val data = call.arguments as? String
-        val state = runCatching {
-            gson.fromJson(data, SharedState::class.java)
-        }.getOrNull()
+        val state = sharedState(call)
         if (state == null) {
             result.success("Invalid shared state")
             return
         }
-        scope.launch {
-            ServiceState.syncSharedState(state)
-            result.success("")
-        }
+        ServiceState.syncSharedState(state)
+        result.success("")
     }
 
-    private fun start(result: MethodChannel.Result) {
+    private fun start(call: MethodCall, result: MethodChannel.Result) {
+        val state = sharedState(call)
+        if (state == null) {
+            result.success(false)
+            return
+        }
+        ServiceState.syncSharedState(state)
         ServiceState.requestStart()
         result.success(true)
+    }
+
+    private fun sharedState(call: MethodCall): SharedState? {
+        val data = call.arguments as? String ?: return null
+        return runCatching {
+            gson.fromJson(data, SharedState::class.java)
+        }.getOrNull()
     }
 
     private fun stop(result: MethodChannel.Result) {

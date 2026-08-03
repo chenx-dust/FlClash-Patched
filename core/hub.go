@@ -77,6 +77,9 @@ func handleInitClash(params *InitParams) bool {
 	constant.Path.ASN()
 	constant.Path.GeoIP()
 	constant.Path.GeoSite()
+	if features.IOS && !features.WithLowMemory {
+		constant.SetSaveMatcherCache(true)
+	}
 	isInit.Store(true)
 	return true
 }
@@ -106,7 +109,7 @@ func handleGetIsInit() bool {
 func handleForceGC() {
 	log.Infoln("[APP] request force GC")
 	runtime.GC()
-	if features.Android {
+	if features.Android || features.IOS {
 		debug.FreeOSMemory()
 	}
 }
@@ -672,6 +675,31 @@ func handleSetupConfig(params *SetupParams) string {
 }
 
 func init() {
+	logSubscriber = log.Subscribe()
+	go func() {
+		for logData := range logSubscriber {
+			if logData.LogLevel < log.Level() {
+				continue
+			}
+			stampedLog := StampedLogEvent{
+				LogLevel: logData.LogLevel,
+				Payload:  logData.Payload,
+				Time:     time.Now().UnixMilli(),
+			}
+			writeSystemLog(logData.LogLevel.String(), logData.Payload)
+			logNotifyMutex.Lock()
+			if !logNotifyEnabled {
+				cacheLog(stampedLog)
+				logNotifyMutex.Unlock()
+				continue
+			}
+			logNotifyMutex.Unlock()
+			sendMessage(Message{
+				Type: LogMessage,
+				Data: stampedLog,
+			})
+		}
+	}()
 	adapter.UrlTestHook = func(url string, name string, delay uint16) {
 		delayData := &Delay{
 			Url:  url,

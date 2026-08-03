@@ -119,7 +119,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "addRule": MessageLookupByLibrary.simpleMessage("Add Rule"),
     "addSsid": MessageLookupByLibrary.simpleMessage("Add SSID"),
-    "addedRules": MessageLookupByLibrary.simpleMessage("Added rules"),
+    "addedRules": MessageLookupByLibrary.simpleMessage("Added Rules"),
     "additionalParameters": MessageLookupByLibrary.simpleMessage(
       "Additional parameters",
     ),
@@ -169,6 +169,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "allowLanDesc": MessageLookupByLibrary.simpleMessage(
       "Allow access proxy through the LAN",
+    ),
+    "alwaysOn": MessageLookupByLibrary.simpleMessage("Always On"),
+    "alwaysOnDesc": MessageLookupByLibrary.simpleMessage(
+      "Keep VPN connected under any network conditions",
     ),
     "app": MessageLookupByLibrary.simpleMessage("App"),
     "appAccessControl": MessageLookupByLibrary.simpleMessage(
@@ -246,7 +250,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "cancelSelectAll": MessageLookupByLibrary.simpleMessage(
       "Cancel select all",
     ),
-    "checkUpdate": MessageLookupByLibrary.simpleMessage("Check for updates"),
+    "checkUpdate": MessageLookupByLibrary.simpleMessage("Check for Updates"),
     "checkUpdateError": MessageLookupByLibrary.simpleMessage(
       "The current application is already the latest version",
     ),

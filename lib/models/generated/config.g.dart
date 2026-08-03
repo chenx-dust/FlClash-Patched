@@ -172,8 +172,15 @@ _VpnProps _$VpnPropsFromJson(Map<String, dynamic> json) => _VpnProps(
   ipv6: json['ipv6'] as bool? ?? false,
   allowBypass: json['allowBypass'] as bool? ?? true,
   dnsHijacking: json['dnsHijacking'] as bool? ?? false,
-  dozeSuspend: json['dozeSuspend'] as bool? ?? true,
+  suspendSupport: json['suspendSupport'] as bool? ?? true,
   networkSpeedNotification: json['networkSpeedNotification'] as bool? ?? false,
+  includeAllNetworks: json['includeAllNetworks'] as bool? ?? false,
+  excludeLocalNetworks: json['excludeLocalNetworks'] as bool? ?? true,
+  excludeAPNs: json['excludeAPNs'] as bool? ?? true,
+  excludeCellularServices: json['excludeCellularServices'] as bool? ?? true,
+  enforceRoutes: json['enforceRoutes'] as bool? ?? false,
+  excludeDeviceCommunication:
+      json['excludeDeviceCommunication'] as bool? ?? true,
   accessControlProps: json['accessControlProps'] == null
       ? defaultAccessControlProps
       : AccessControlProps.fromJson(
@@ -187,8 +194,14 @@ Map<String, dynamic> _$VpnPropsToJson(_VpnProps instance) => <String, dynamic>{
   'ipv6': instance.ipv6,
   'allowBypass': instance.allowBypass,
   'dnsHijacking': instance.dnsHijacking,
-  'dozeSuspend': instance.dozeSuspend,
+  'suspendSupport': instance.suspendSupport,
   'networkSpeedNotification': instance.networkSpeedNotification,
+  'includeAllNetworks': instance.includeAllNetworks,
+  'excludeLocalNetworks': instance.excludeLocalNetworks,
+  'excludeAPNs': instance.excludeAPNs,
+  'excludeCellularServices': instance.excludeCellularServices,
+  'enforceRoutes': instance.enforceRoutes,
+  'excludeDeviceCommunication': instance.excludeDeviceCommunication,
   'accessControlProps': instance.accessControlProps,
 };
 
@@ -442,6 +455,7 @@ _Config _$ConfigFromJson(Map<String, dynamic> json) => _Config(
           ?.map((e) => e as String)
           .toList() ??
       const [],
+  alwaysOn: json['alwaysOn'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$ConfigToJson(_Config instance) => <String, dynamic>{
@@ -457,4 +471,5 @@ Map<String, dynamic> _$ConfigToJson(_Config instance) => <String, dynamic>{
   'windowProps': instance.windowProps,
   'patchClashConfig': instance.patchClashConfig,
   'excludeSSIDs': instance.excludeSSIDs,
+  'alwaysOn': instance.alwaysOn,
 };

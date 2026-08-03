@@ -3,6 +3,14 @@ import 'package:build_tool/src/target.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('iOS targets include regular and low-memory builds', () {
+    final targets = Target.forPlatform('ios');
+
+    expect(targets, [Target.iosArm64, Target.iosArm64LowMem]);
+    expect(Target.iosArm64.lowMemory, isFalse);
+    expect(Target.iosArm64LowMem.lowMemory, isTrue);
+  });
+
   group('resolveAndroidTargets', () {
     test('defaults to all Android targets', () {
       final targets = Target.resolveAndroidTargets();

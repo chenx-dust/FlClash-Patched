@@ -107,7 +107,7 @@ UpdateParams updateParams(Ref ref) {
 
 @riverpod
 ProxyState proxyState(Ref ref) {
-  final suspend = ref.watch(suspendProvider);
+  final suspend = system.isIOS ? false : ref.watch(suspendProvider);
   final isStart = ref.watch(runTimeProvider.select((state) => state != null));
   final vm2 = ref.watch(
     networkSettingProvider.select(
@@ -615,6 +615,8 @@ SharedState sharedState(Ref ref) {
     currentProfileName: currentProfileName,
     onlyStatisticsProxy: onlyStatisticsProxy,
     networkSpeedNotification: vpnSetting.networkSpeedNotification,
+    excludeSSIDs: excludeSSIDs,
+    alwaysOn: alwaysOn,
     setupParams: SetupParams(selectedMap: selectedMap, testUrl: testUrl),
     vpnOptions: VpnOptions(
       enable: vpnSetting.enable,
@@ -625,7 +627,7 @@ SharedState sharedState(Ref ref) {
       dnsHijacking: vpnSetting.dnsHijacking,
       accessControlProps: vpnSetting.accessControlProps,
       allowBypass: vpnSetting.allowBypass,
-      dozeSuspend: vpnSetting.dozeSuspend,
+      suspendSupport: vpnSetting.suspendSupport,
       bypassDomain: bypassDomain,
       mtu: mtu,
       includeAllNetworks: vpnSetting.includeAllNetworks,
