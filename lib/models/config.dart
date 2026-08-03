@@ -168,8 +168,14 @@ abstract class VpnProps with _$VpnProps {
     @Default(false) bool ipv6,
     @Default(true) bool allowBypass,
     @Default(false) bool dnsHijacking,
-    @Default(true) bool dozeSuspend,
+    @Default(true) bool suspendSupport,
     @Default(false) bool networkSpeedNotification,
+    @Default(false) bool includeAllNetworks,
+    @Default(true) bool excludeLocalNetworks,
+    @Default(true) bool excludeAPNs,
+    @Default(true) bool excludeCellularServices,
+    @Default(false) bool enforceRoutes,
+    @Default(true) bool excludeDeviceCommunication,
     @Default(defaultAccessControlProps) AccessControlProps accessControlProps,
   }) = _VpnProps;
 
@@ -286,6 +292,7 @@ abstract class Config with _$Config {
     @Default(defaultWindowProps) WindowProps windowProps,
     @Default(defaultClashConfig) PatchClashConfig patchClashConfig,
     @Default([]) List<String> excludeSSIDs,
+    @Default(false) bool alwaysOn,
   }) = _Config;
 
   factory Config.fromJson(Map<String, Object?> json) => _$ConfigFromJson(json);

@@ -76,7 +76,7 @@ class SetupAction extends _$SetupAction {
       return;
     }
     commonPrint.log('init status');
-    if (system.isAndroid) {
+    if (system.isMobile) {
       await _updateStartTime();
     }
     final shouldRun = _isRunning || ref.read(appSettingProvider).autoRun;

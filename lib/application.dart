@@ -9,6 +9,7 @@ import 'package:fl_clash/manager/manager.dart';
 import 'package:fl_clash/plugins/app.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -38,6 +39,7 @@ class ApplicationState extends ConsumerState<Application> {
         TargetPlatform.windows: commonSharedXPageTransitions,
         TargetPlatform.linux: commonSharedXPageTransitions,
         TargetPlatform.macOS: commonSharedXPageTransitions,
+        TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
       },
     );
   }
@@ -103,8 +105,13 @@ class ApplicationState extends ConsumerState<Application> {
           child: HotKeyManager(child: ProxyManager(child: child)),
         ),
       );
+    } else if (system.isMobile) {
+      return MobileManager(
+        child: TileManager(child: child),
+      );
+    } else {
+      return child;
     }
-    return AndroidManager(child: TileManager(child: child));
   }
 
   Widget _buildState({required Widget child}) {
@@ -131,7 +138,10 @@ class ApplicationState extends ConsumerState<Application> {
     if (system.isDesktop) {
       return WindowHeaderContainer(child: child);
     }
-    return VpnManager(child: child);
+    if (system.isAndroid) {
+      return VpnManager(child: child);
+    }
+    return child;
   }
 
   Widget _buildApp({required Widget child}) {
