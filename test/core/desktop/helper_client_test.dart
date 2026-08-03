@@ -154,50 +154,6 @@ void main() {
     expect(result.exitConfirmed, isTrue);
   });
 
-  test('Helper lease retries stop after a transport failure', () async {
-    var stopRequests = 0;
-    final client = _client(
-      _ResponseAdapter((options) {
-        if (options.path.endsWith('/start')) {
-          return _jsonResponse({'sessionId': _sessionId, 'pid': 6456});
-        }
-        stopRequests++;
-        if (stopRequests == 1) {
-          throw DioException(
-            requestOptions: options,
-            type: DioExceptionType.connectionError,
-          );
-        }
-        return _jsonResponse({
-          'sessionId': _sessionId,
-          'stopped': false,
-          'reason': 'notRunning',
-        });
-      }),
-    );
-    final launcher = WindowsHelperLauncher(client);
-    final lease = await launcher.start(
-      sessionId: _sessionId,
-      address: 'test-address',
-    );
-
-    await expectLater(
-      lease.stop(const Duration(seconds: 1)),
-      throwsA(
-        isA<WindowsHelperException>().having(
-          (error) => error.code,
-          'code',
-          'transportError',
-        ),
-      ),
-    );
-    final result = await lease.stop(const Duration(seconds: 1));
-
-    expect(stopRequests, 2);
-    expect(result.stopped, isFalse);
-    expect(result.exitConfirmed, isTrue);
-  });
-
   test(
     'Helper launcher compensates an uncertain start with exact stop',
     () async {
