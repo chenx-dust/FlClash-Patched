@@ -721,4 +721,4 @@ final class _ConfigProvider extends $FunctionalProvider<Config, Config, Config>
   }
 }
 
-String _$_configHash() => r'7f29da1e31a3393fb36ab43c21f0d1b38223afec';
+String _$_configHash() => r'f3ce474160446d07d8267523aabab3eb7906ad28';
