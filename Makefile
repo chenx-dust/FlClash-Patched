@@ -6,7 +6,7 @@ ARCH_ARG := $(if $(ARCH),--arch $(ARCH),)
 TARGET_PLATFORM_ARG := $(if $(TARGET_PLATFORM),--target-platform $(TARGET_PLATFORM),)
 FORCE_ARG := $(if $(filter 1 true yes,$(FORCE)),--force,)
 
-.PHONY: help submodules core core-macos core-linux core-windows core-android
+.PHONY: help submodules core core-macos core-linux core-windows core-android core-ios
 
 help:
 	@echo 'make core                         # build macOS core by default'
@@ -15,6 +15,7 @@ help:
 	@echo 'make core-android ARCH=arm64'
 	@echo 'make core-android TARGET_PLATFORM=android-arm64'
 	@echo 'make core-macos FORCE=1            # bypass setup build cache'
+	@echo 'make core-ios FORCE=1             # build iOS core (arm64, macOS host only)'
 
 submodules:
 	git submodule update --init --recursive
@@ -33,3 +34,6 @@ core-windows:
 
 core-android:
 	$(MAKE) core PLATFORM=android
+
+core-ios:
+	$(MAKE) core PLATFORM=ios

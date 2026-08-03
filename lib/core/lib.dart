@@ -43,11 +43,7 @@ class CoreLib extends CoreHandlerInterface {
       throw StateError(initializationError);
     }
     _connectedCompleter.complete(true);
-    final syncError =
-        await service?.syncState(
-          globalState.container.read(sharedStateProvider),
-        ) ??
-        '';
+    final syncError = await _syncState();
     if (syncError.isNotEmpty) {
       _connectedCompleter = Completer<bool>();
       await service?.shutdown();
@@ -82,7 +78,7 @@ class CoreLib extends CoreHandlerInterface {
     _connectedCompleter = Completer<bool>();
     final stopped = await service?.shutdown() ?? true;
     if (!stopped) {
-      throw StateError('Android Core service shutdown failed');
+      throw StateError('Mobile Core service shutdown failed');
     }
     return CoreLifecycleResult(
       revision: revision,
@@ -102,14 +98,19 @@ class CoreLib extends CoreHandlerInterface {
 
   @override
   Future<bool> startListener() async {
-    final listenerStarted = await super.startListener();
-    final serviceStarted = await service?.start() ?? false;
+    final listenerStarted = system.isIOS || await super.startListener();
+    final serviceStarted =
+        await service?.start(globalState.container.read(sharedStateProvider)) ??
+        false;
     return listenerStarted && serviceStarted;
   }
 
   @override
   Future<bool> stopListener() async {
     final serviceStopped = await service?.stop() ?? false;
+    if (system.isIOS) {
+      return serviceStopped;
+    }
     final listenerStopped = await super.stopListener();
     return serviceStopped && listenerStopped;
   }
@@ -134,12 +135,28 @@ class CoreLib extends CoreHandlerInterface {
         ?.invokeMethod(
           CoreMethodCall(id: id, method: method, arguments: arguments),
         )
-        .withTimeout(timeout: timeout, onTimeout: () => null);
+        .withTimeout(
+          timeout: timeout,
+          onTimeout: () {
+            commonPrint.log(
+              'Invoke action timed out: $method',
+              logLevel: LogLevel.error,
+            );
+            return null;
+          },
+        );
     if (response == null) {
       return null;
     }
     return response.unwrap<T>();
   }
+
+  Future<String> _syncState() async {
+    return await service?.syncState(
+          globalState.container.read(sharedStateProvider),
+        ) ??
+        '';
+  }
 }
 
-CoreLib? get coreLib => system.isAndroid ? CoreLib() : null;
+CoreLib? get coreLib => system.isAndroid || system.isIOS ? CoreLib() : null;

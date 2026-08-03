@@ -15,4 +15,15 @@ FlClash Go core build harness (FFI plugin).
   s.platform = :ios, '11.0'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.swift_version = '5.0'
+
+  s.script_phase = {
+    :name => 'Build Go core',
+    :script => 'sh "$PODS_TARGET_SRCROOT/../buildkit/build_pod.sh"',
+    :execution_position => :before_compile,
+    :input_files => ['${BUILT_PRODUCTS_DIR}/buildkit_phony'],
+    :output_files => [
+      "${SRCROOT}/../libclash/ios/arm64/libclash.a",
+      "${SRCROOT}/../libclash/ios/arm64/libclash_lowmem.a",
+    ],
+  }
 end
