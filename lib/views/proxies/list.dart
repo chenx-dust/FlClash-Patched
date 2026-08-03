@@ -119,7 +119,9 @@ class ProxiesListViewState extends State<ProxiesListView> {
                 child: SizedBox(
                   height: getListHeaderHeight(listHeaderStyle),
                   child: ListHeader(
-                    onScrollToSelected: _scrollToGroupSelected,
+                    onScrollToSelected: (groupName) {
+                      _scrollToGroupSelected(groupName, columns);
+                    },
                     listHeaderStyle: listHeaderStyle,
                     key: Key(groupName),
                     isExpand: isExpand,
@@ -261,6 +263,9 @@ class ProxiesListViewState extends State<ProxiesListView> {
         final headerStyle = ref.watch(
           proxiesStyleSettingProvider.select((state) => state.listHeaderStyle),
         );
+        final proxiesLayout = ref.watch(
+          proxiesStyleSettingProvider.select((state) => state.layout),
+        );
         ref.watch(themeSettingProvider.select((state) => state.textScale));
         if (state.groups.isEmpty) {
           return NullStatus(
@@ -268,22 +273,26 @@ class ProxiesListViewState extends State<ProxiesListView> {
             label: appLocalizations.nullTip(appLocalizations.proxies),
           );
         }
-        final slivers = _buildSlivers(
-          groups: state.groups,
-          currentUnfoldSet: state.currentUnfoldSet,
-          columns: state.columns,
-          cardType: state.proxyCardType,
-          listHeaderStyle: headerStyle,
-        );
-        _updateHeaderOffsets(
-          groups: state.groups,
-          currentUnfoldSet: state.currentUnfoldSet,
-          columns: state.columns,
-          cardType: state.proxyCardType,
-          listHeaderStyle: headerStyle,
-        );
         return LayoutBuilder(
           builder: (_, constraints) {
+            final columns = utils.getProxiesColumns(
+              max(constraints.maxWidth - 32, 0),
+              proxiesLayout,
+            );
+            final slivers = _buildSlivers(
+              groups: state.groups,
+              currentUnfoldSet: state.currentUnfoldSet,
+              columns: columns,
+              cardType: state.proxyCardType,
+              listHeaderStyle: headerStyle,
+            );
+            _updateHeaderOffsets(
+              groups: state.groups,
+              currentUnfoldSet: state.currentUnfoldSet,
+              columns: columns,
+              cardType: state.proxyCardType,
+              listHeaderStyle: headerStyle,
+            );
             containerHeight = max(constraints.maxHeight - 16, 0);
             return CommonScrollBar(
               controller: _controller,
