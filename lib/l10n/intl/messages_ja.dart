@@ -139,6 +139,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "LAN から外部コントローラーへのアクセスを許可",
     ),
     "allowLanDesc": MessageLookupByLibrary.simpleMessage("LAN 経由でのプロキシアクセスを許可"),
+    "alwaysOn": MessageLookupByLibrary.simpleMessage("常時接続"),
+    "alwaysOnDesc": MessageLookupByLibrary.simpleMessage(
+      "あらゆるネットワーク環境でVPN接続を維持",
+    ),
     "app": MessageLookupByLibrary.simpleMessage("アプリ"),
     "appAccessControl": MessageLookupByLibrary.simpleMessage("アプリアクセス制御"),
     "appendSystemDns": MessageLookupByLibrary.simpleMessage("システム DNS を追加"),
@@ -293,10 +297,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "download": MessageLookupByLibrary.simpleMessage("ダウンロード"),
     "downloadSpeed": MessageLookupByLibrary.simpleMessage("ダウンロード速度"),
     "downloadTraffic": MessageLookupByLibrary.simpleMessage("ダウンロード通信量"),
-    "dozeSuspend": MessageLookupByLibrary.simpleMessage("Doze サスペンド"),
-    "dozeSuspendDesc": MessageLookupByLibrary.simpleMessage(
-      "Android が Doze モードの間、バッテリー消費を抑えるためコアを一時停止します",
-    ),
     "edit": MessageLookupByLibrary.simpleMessage("編集"),
     "editGlobalRules": MessageLookupByLibrary.simpleMessage("グローバルルールを編集"),
     "editProxy": MessageLookupByLibrary.simpleMessage("プロキシを編集"),
@@ -315,8 +315,30 @@ class MessageLookup extends MessageLookupByLibrary {
     "entries": MessageLookupByLibrary.simpleMessage(" エントリ"),
     "entriesCount": m5,
     "exclude": MessageLookupByLibrary.simpleMessage("最近のタスクから非表示"),
+    "excludeAPNs": MessageLookupByLibrary.simpleMessage("APNs を除外"),
+    "excludeAPNsDesc": MessageLookupByLibrary.simpleMessage(
+      "Apple プッシュ通知トラフィックがトンネルをバイパスすることを許可する",
+    ),
+    "excludeCellularServices": MessageLookupByLibrary.simpleMessage(
+      "セルラーサービスを除外",
+    ),
+    "excludeCellularServicesDesc": MessageLookupByLibrary.simpleMessage(
+      "Wi-Fi 通話などのセルラーサービストラフィックがトンネルをバイパスすることを許可する",
+    ),
     "excludeDesc": MessageLookupByLibrary.simpleMessage(
       "アプリがバックグラウンド時に最近のタスクから非表示",
+    ),
+    "excludeDeviceCommunication": MessageLookupByLibrary.simpleMessage(
+      "デバイス間通信を除外",
+    ),
+    "excludeDeviceCommunicationDesc": MessageLookupByLibrary.simpleMessage(
+      "AirDrop や AirPlay などのデバイス間通信がトンネルをバイパスすることを許可する",
+    ),
+    "excludeLocalNetworks": MessageLookupByLibrary.simpleMessage(
+      "ローカルネットワークを除外",
+    ),
+    "excludeLocalNetworksDesc": MessageLookupByLibrary.simpleMessage(
+      "ローカルネットワーク上のデバイスへの直接アクセスを許可する",
     ),
     "excludeProxyFilter": MessageLookupByLibrary.simpleMessage("除外プロキシフィルター"),
     "excludeSsids": MessageLookupByLibrary.simpleMessage("除外 SSID"),
@@ -439,6 +461,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "importFile": MessageLookupByLibrary.simpleMessage("ファイルからインポート"),
     "importFromURL": MessageLookupByLibrary.simpleMessage("URL からインポート"),
     "importUrl": MessageLookupByLibrary.simpleMessage("URL からインポート"),
+    "includeAllNetworks": MessageLookupByLibrary.simpleMessage("すべてのネットワークを含む"),
+    "includeAllNetworksDesc": MessageLookupByLibrary.simpleMessage(
+      "ローカルおよびセルラーサービスを含むすべてのネットワークトラフィックをトンネル経由にする",
+    ),
     "includeAllProxies": MessageLookupByLibrary.simpleMessage("すべてのプロキシを含める"),
     "includeAllProxiesTip": MessageLookupByLibrary.simpleMessage(
       "プロキシグループに含まれないすべてのプロキシをインポートします。下でさらにプロキシグループを追加できます",
@@ -538,6 +564,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "networkException": MessageLookupByLibrary.simpleMessage(
       "ネットワーク例外、接続を確認してもう一度お試しください",
     ),
+    "networkExtension": MessageLookupByLibrary.simpleMessage("ネットワーク拡張"),
     "networkSpeed": MessageLookupByLibrary.simpleMessage("ネットワーク速度"),
     "networkSpeedNotification": MessageLookupByLibrary.simpleMessage(
       "リアルタイムのネットワーク速度を表示",
@@ -896,6 +923,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "subRuleEmpty": MessageLookupByLibrary.simpleMessage("サブルールが空です"),
     "subRuleNotEmpty": MessageLookupByLibrary.simpleMessage("サブルールは空にできません"),
     "submit": MessageLookupByLibrary.simpleMessage("送信"),
+    "suspendSupport": MessageLookupByLibrary.simpleMessage("サスペンド対応"),
+    "suspendSupportDesc": MessageLookupByLibrary.simpleMessage(
+      "デバイスがアイドル状態の間、バッテリー消費を抑えるためコアを一時停止します",
+    ),
     "suspended": MessageLookupByLibrary.simpleMessage("一時停止中..."),
     "swipeToSwitchPage": MessageLookupByLibrary.simpleMessage("スワイプでページ切り替え"),
     "sync": MessageLookupByLibrary.simpleMessage("同期"),

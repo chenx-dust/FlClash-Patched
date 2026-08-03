@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
+import 'package:xml/xml.dart';
 
 import '../setup.dart' as setup;
 import '../tool/geodata.dart' as geodata;
@@ -246,6 +250,31 @@ void main() {
         'verbose',
         'dart-define-from-file=env.json',
         'split-per-abi',
+      ]);
+    });
+
+    test('adds default iOS export method to flutter build args', () {
+      final args = setup.createFlutterBuildArgs(
+        platform: 'ios',
+        verbose: false,
+      );
+
+      expect(args, [
+        'dart-define-from-file=env.json',
+        'export-method=app-store',
+      ]);
+    });
+
+    test('uses iOS export options plist when provided', () {
+      final args = setup.createFlutterBuildArgs(
+        platform: 'ios',
+        verbose: false,
+        iosExportOptionsPlist: 'ios/ExportOptions.plist',
+      );
+
+      expect(args, [
+        'dart-define-from-file=env.json',
+        'export-options-plist=ios/ExportOptions.plist',
       ]);
     });
   });

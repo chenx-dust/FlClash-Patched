@@ -53,11 +53,17 @@ abstract class VpnOptions with _$VpnOptions {
     required AccessControlProps accessControlProps,
     required bool allowBypass,
     required bool systemProxy,
-    required bool dozeSuspend,
+    required bool suspendSupport,
     required List<String> bypassDomain,
     required String stack,
     @Default(defaultTunMtu) int mtu,
     @Default([]) List<String> routeAddress,
+    @Default(false) bool includeAllNetworks,
+    @Default(true) bool excludeLocalNetworks,
+    @Default(true) bool excludeAPNs,
+    @Default(true) bool excludeCellularServices,
+    @Default(false) bool enforceRoutes,
+    @Default(true) bool excludeDeviceCommunication,
   }) = _VpnOptions;
 
   factory VpnOptions.fromJson(Map<String, Object?> json) =>

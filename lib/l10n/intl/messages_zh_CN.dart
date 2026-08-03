@@ -131,6 +131,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "allowLanAccess": MessageLookupByLibrary.simpleMessage("允许局域网访问"),
     "allowLanAccessDesc": MessageLookupByLibrary.simpleMessage("允许从局域网访问外部控制器"),
     "allowLanDesc": MessageLookupByLibrary.simpleMessage("允许通过局域网访问代理"),
+    "alwaysOn": MessageLookupByLibrary.simpleMessage("始终连接"),
+    "alwaysOnDesc": MessageLookupByLibrary.simpleMessage("在任何网络环境下保持 VPN 连接"),
     "app": MessageLookupByLibrary.simpleMessage("应用"),
     "appAccessControl": MessageLookupByLibrary.simpleMessage("应用访问控制"),
     "appendSystemDns": MessageLookupByLibrary.simpleMessage("追加系统 DNS"),
@@ -259,10 +261,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "download": MessageLookupByLibrary.simpleMessage("下载"),
     "downloadSpeed": MessageLookupByLibrary.simpleMessage("下载速度"),
     "downloadTraffic": MessageLookupByLibrary.simpleMessage("下载流量"),
-    "dozeSuspend": MessageLookupByLibrary.simpleMessage("Doze 休眠"),
-    "dozeSuspendDesc": MessageLookupByLibrary.simpleMessage(
-      "Android 进入 Doze 模式时挂起核心以降低耗电",
-    ),
     "edit": MessageLookupByLibrary.simpleMessage("编辑"),
     "editGlobalRules": MessageLookupByLibrary.simpleMessage("编辑全局规则"),
     "editProxy": MessageLookupByLibrary.simpleMessage("编辑代理"),
@@ -279,7 +277,25 @@ class MessageLookup extends MessageLookupByLibrary {
     "entries": MessageLookupByLibrary.simpleMessage("个条目"),
     "entriesCount": m5,
     "exclude": MessageLookupByLibrary.simpleMessage("从最近任务中隐藏"),
+    "excludeAPNs": MessageLookupByLibrary.simpleMessage("排除 APNs"),
+    "excludeAPNsDesc": MessageLookupByLibrary.simpleMessage(
+      "允许 Apple 推送通知流量绕过隧道",
+    ),
+    "excludeCellularServices": MessageLookupByLibrary.simpleMessage("排除蜂窝服务"),
+    "excludeCellularServicesDesc": MessageLookupByLibrary.simpleMessage(
+      "允许 Wi-Fi 通话等蜂窝服务流量绕过隧道",
+    ),
     "excludeDesc": MessageLookupByLibrary.simpleMessage("应用在后台时,从最近任务中隐藏应用"),
+    "excludeDeviceCommunication": MessageLookupByLibrary.simpleMessage(
+      "排除设备间通信",
+    ),
+    "excludeDeviceCommunicationDesc": MessageLookupByLibrary.simpleMessage(
+      "允许 AirDrop、AirPlay 等设备间通信流量绕过隧道",
+    ),
+    "excludeLocalNetworks": MessageLookupByLibrary.simpleMessage("排除本地网络"),
+    "excludeLocalNetworksDesc": MessageLookupByLibrary.simpleMessage(
+      "允许直接访问本地网络上的设备",
+    ),
     "excludeProxyFilter": MessageLookupByLibrary.simpleMessage("排除节点过滤器"),
     "excludeSsids": MessageLookupByLibrary.simpleMessage("排除 SSIDs"),
     "excludeSsidsDesc": MessageLookupByLibrary.simpleMessage(
@@ -389,6 +405,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "importFile": MessageLookupByLibrary.simpleMessage("通过文件导入"),
     "importFromURL": MessageLookupByLibrary.simpleMessage("从 URL 导入"),
     "importUrl": MessageLookupByLibrary.simpleMessage("通过 URL 导入"),
+    "includeAllNetworks": MessageLookupByLibrary.simpleMessage("包含所有网络"),
+    "includeAllNetworksDesc": MessageLookupByLibrary.simpleMessage(
+      "将所有网络流量路由到隧道，包括本地和蜂窝服务",
+    ),
     "includeAllProxies": MessageLookupByLibrary.simpleMessage("包含所有代理"),
     "includeAllProxiesTip": MessageLookupByLibrary.simpleMessage(
       "引入不包含策略组的所有代理，可在下方额外添加策略组",
@@ -480,6 +500,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "networkDesc": MessageLookupByLibrary.simpleMessage("修改网络相关设置"),
     "networkDetection": MessageLookupByLibrary.simpleMessage("网络检测"),
     "networkException": MessageLookupByLibrary.simpleMessage("网络异常，请检查连接后重试"),
+    "networkExtension": MessageLookupByLibrary.simpleMessage("网络扩展"),
     "networkSpeed": MessageLookupByLibrary.simpleMessage("网络速度"),
     "networkSpeedNotification": MessageLookupByLibrary.simpleMessage("显示实时网速"),
     "networkSpeedNotificationDesc": MessageLookupByLibrary.simpleMessage(
@@ -778,6 +799,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "subRuleEmpty": MessageLookupByLibrary.simpleMessage("子规则为空"),
     "subRuleNotEmpty": MessageLookupByLibrary.simpleMessage("子规则不能为空"),
     "submit": MessageLookupByLibrary.simpleMessage("提交"),
+    "suspendSupport": MessageLookupByLibrary.simpleMessage("休眠支持"),
+    "suspendSupportDesc": MessageLookupByLibrary.simpleMessage(
+      "设备空闲时挂起核心以降低耗电",
+    ),
     "suspended": MessageLookupByLibrary.simpleMessage("挂起中..."),
     "swipeToSwitchPage": MessageLookupByLibrary.simpleMessage("滑动切页"),
     "sync": MessageLookupByLibrary.simpleMessage("同步"),

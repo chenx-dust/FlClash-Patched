@@ -563,7 +563,7 @@ class GeositeItem extends ConsumerWidget {
       subtitle: Text(appLocalizations.fallbackGeositeDesc),
       blur: false,
       widget: ListInputPage(
-        title: 'Geosite',
+        title: 'GeoSite',
         items: geosite,
         itemMaxLength: TextInputLimits.geoSite,
         titleBuilder: (item) => Text(item),
