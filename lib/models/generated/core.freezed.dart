@@ -663,7 +663,7 @@ as bool,dnsHijacking: null == dnsHijacking ? _self.dnsHijacking : dnsHijacking /
 as bool,accessControlProps: null == accessControlProps ? _self.accessControlProps : accessControlProps // ignore: cast_nullable_to_non_nullable
 as AccessControlProps,allowBypass: null == allowBypass ? _self.allowBypass : allowBypass // ignore: cast_nullable_to_non_nullable
 as bool,systemProxy: null == systemProxy ? _self.systemProxy : systemProxy // ignore: cast_nullable_to_non_nullable
-as bool,dozeSuspend: null == dozeSuspend ? _self.dozeSuspend : dozeSuspend // ignore: cast_nullable_to_non_nullable
+as bool,suspendSupport: null == suspendSupport ? _self.suspendSupport : suspendSupport // ignore: cast_nullable_to_non_nullable
 as bool,bypassDomain: null == bypassDomain ? _self.bypassDomain : bypassDomain // ignore: cast_nullable_to_non_nullable
 as List<String>,stack: null == stack ? _self.stack : stack // ignore: cast_nullable_to_non_nullable
 as String,mtu: null == mtu ? _self.mtu : mtu // ignore: cast_nullable_to_non_nullable
@@ -834,7 +834,7 @@ class _VpnOptions implements VpnOptions {
 @override final  AccessControlProps accessControlProps;
 @override final  bool allowBypass;
 @override final  bool systemProxy;
-@override final  bool dozeSuspend;
+@override final  bool suspendSupport;
  final  List<String> _bypassDomain;
 @override List<String> get bypassDomain {
   if (_bypassDomain is EqualUnmodifiableListView) return _bypassDomain;
@@ -851,6 +851,12 @@ class _VpnOptions implements VpnOptions {
   return EqualUnmodifiableListView(_routeAddress);
 }
 
+@override@JsonKey() final  bool includeAllNetworks;
+@override@JsonKey() final  bool excludeLocalNetworks;
+@override@JsonKey() final  bool excludeAPNs;
+@override@JsonKey() final  bool excludeCellularServices;
+@override@JsonKey() final  bool enforceRoutes;
+@override@JsonKey() final  bool excludeDeviceCommunication;
 
 /// Create a copy of VpnOptions
 /// with the given fields replaced by the non-null parameter values.
@@ -911,7 +917,7 @@ as bool,dnsHijacking: null == dnsHijacking ? _self.dnsHijacking : dnsHijacking /
 as bool,accessControlProps: null == accessControlProps ? _self.accessControlProps : accessControlProps // ignore: cast_nullable_to_non_nullable
 as AccessControlProps,allowBypass: null == allowBypass ? _self.allowBypass : allowBypass // ignore: cast_nullable_to_non_nullable
 as bool,systemProxy: null == systemProxy ? _self.systemProxy : systemProxy // ignore: cast_nullable_to_non_nullable
-as bool,dozeSuspend: null == dozeSuspend ? _self.dozeSuspend : dozeSuspend // ignore: cast_nullable_to_non_nullable
+as bool,suspendSupport: null == suspendSupport ? _self.suspendSupport : suspendSupport // ignore: cast_nullable_to_non_nullable
 as bool,bypassDomain: null == bypassDomain ? _self._bypassDomain : bypassDomain // ignore: cast_nullable_to_non_nullable
 as List<String>,stack: null == stack ? _self.stack : stack // ignore: cast_nullable_to_non_nullable
 as String,mtu: null == mtu ? _self.mtu : mtu // ignore: cast_nullable_to_non_nullable

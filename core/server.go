@@ -137,3 +137,6 @@ func startServer(arg string) {
 func handlePlatformMethodCall(call *MethodCall, response MethodResponse) bool {
 	return false
 }
+
+func writeSystemLog(level, message string) {
+}
