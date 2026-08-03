@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:fl_clash/manager/android_manager.dart';
+import 'package:fl_clash/manager/mobile_manager.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/providers/database.dart';
@@ -31,12 +31,12 @@ void main() {
 
   tearDown(() => container.dispose());
 
-  Future<void> pumpAndroidManager(WidgetTester tester) async {
+  Future<void> pumpMobileManager(WidgetTester tester) async {
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
         child: const TestApp(
-          child: AndroidManager(child: SizedBox(key: Key('child'))),
+          child: MobileManager(child: SizedBox(key: Key('child'))),
         ),
       ),
     );
@@ -44,7 +44,7 @@ void main() {
   }
 
   testWidgets('renders its child unchanged', (tester) async {
-    await pumpAndroidManager(tester);
+    await pumpMobileManager(tester);
 
     expect(find.byKey(const Key('child')), findsOneWidget);
     expect(tester.takeException(), null);
@@ -55,7 +55,7 @@ void main() {
   testWidgets('persists shared state after the debounce window', (
     tester,
   ) async {
-    await pumpAndroidManager(tester);
+    await pumpMobileManager(tester);
     expect(store.getString('sharedState'), isNull);
 
     container.read(appSettingProvider.notifier).value = const AppSettingProps(
@@ -79,7 +79,7 @@ void main() {
   testWidgets('does not persist when shared state is unchanged', (
     tester,
   ) async {
-    await pumpAndroidManager(tester);
+    await pumpMobileManager(tester);
 
     container.read(appSettingProvider.notifier).value = const AppSettingProps();
     await tester.pump();

@@ -34,6 +34,8 @@ class System {
 
   bool get isDesktop => isWindows || isMacOS || isLinux;
 
+  bool get isMobile => isAndroid || isIOS;
+
   bool get isWindows => Platform.isWindows;
 
   bool get isMacOS => Platform.isMacOS;
@@ -177,7 +179,7 @@ class System {
   }
 
   Future<AuthorizeCode> authorizeCore() async {
-    if (system.isAndroid) {
+    if (system.isMobile) {
       return AuthorizeCode.error;
     }
     if (system.isWindows) {
@@ -256,7 +258,7 @@ class System {
   }
 
   Future<void> exit() async {
-    if (system.isAndroid) {
+    if (system.isMobile) {
       await SystemNavigator.pop();
     }
   }

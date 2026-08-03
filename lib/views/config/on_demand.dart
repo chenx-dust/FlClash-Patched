@@ -14,9 +14,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wifi_ssid/wifi_ssid.dart';
 
 class OnDemandView extends ConsumerStatefulWidget {
-  const OnDemandView({super.key, this.isAndroid, this.isMacOS});
+  const OnDemandView({super.key, this.isAndroid, this.isIOS, this.isMacOS});
 
   final bool? isAndroid;
+  final bool? isIOS;
   final bool? isMacOS;
 
   @override
@@ -35,6 +36,8 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
   static const _prerequisiteVerticalPadding = 16.0;
 
   bool get _isAndroid => widget.isAndroid ?? system.isAndroid;
+
+  bool get _isIOS => widget.isIOS ?? system.isIOS;
 
   bool get _isMacOS => widget.isMacOS ?? system.isMacOS;
 
@@ -426,10 +429,29 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
   @override
   Widget build(BuildContext context) {
     final excludeSSIDs = ref.watch(excludeSSIDsProvider);
+    final alwaysOn = ref.watch(alwaysOnProvider);
     final selectedItems = ref.watch(itemsProvider(key));
     return CommonScaffold(
       body: CustomScrollView(
         slivers: [
+          if (_isIOS)
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverToBoxAdapter(
+                child: generateSectionV3(
+                  items: [
+                    ListItem.toggle(
+                      title: Text(context.appLocalizations.alwaysOn),
+                      subtitle: Text(context.appLocalizations.alwaysOnDesc),
+                      value: alwaysOn,
+                      onChanged: (value) {
+                        ref.read(alwaysOnProvider.notifier).value = value;
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverToBoxAdapter(child: _buildPrerequisites()),

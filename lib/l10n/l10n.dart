@@ -169,6 +169,26 @@ class AppLocalizations {
     );
   }
 
+  /// `Suspend Support`
+  String get suspendSupport {
+    return Intl.message(
+      'Suspend Support',
+      name: 'suspendSupport',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Suspend the core while the device is idle to reduce battery usage`
+  String get suspendSupportDesc {
+    return Intl.message(
+      'Suspend the core while the device is idle to reduce battery usage',
+      name: 'suspendSupportDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Doze Suspend`
   String get dozeSuspend {
     return Intl.message(
@@ -1079,10 +1099,10 @@ class AppLocalizations {
     return Intl.message('Password', name: 'password', desc: '', args: []);
   }
 
-  /// `Check for updates`
+  /// `Check for Updates`
   String get checkUpdate {
     return Intl.message(
-      'Check for updates',
+      'Check for Updates',
       name: 'checkUpdate',
       desc: '',
       args: [],
@@ -3339,9 +3359,9 @@ class AppLocalizations {
     );
   }
 
-  /// `Added rules`
+  /// `Added Rules`
   String get addedRules {
-    return Intl.message('Added rules', name: 'addedRules', desc: '', args: []);
+    return Intl.message('Added Rules', name: 'addedRules', desc: '', args: []);
   }
 
   /// `Control global added rules`
@@ -4739,6 +4759,21 @@ class AppLocalizations {
     return Intl.message(
       'SSIDs is empty',
       name: 'ssidsEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Always On`
+  String get alwaysOn {
+    return Intl.message('Always On', name: 'alwaysOn', desc: '', args: []);
+  }
+
+  /// `Keep VPN connected under any network conditions`
+  String get alwaysOnDesc {
+    return Intl.message(
+      'Keep VPN connected under any network conditions',
+      name: 'alwaysOnDesc',
       desc: '',
       args: [],
     );

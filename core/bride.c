@@ -1,4 +1,4 @@
-//go:build android && cgo
+//go:build (android || ios) && cgo
 
 #include "bride.h"
 
@@ -15,6 +15,8 @@ int (*resolve_uid_func)(void *tun_interface, int protocol, const char *source, c
 char* (*resolve_package_func)(void *tun_interface, int uid);
 
 void (*result_func)(void *invoke_Interface, const char *data);
+
+void (*system_log_func)(const char *level, const char *message);
 
 int protect(void *tun_interface, int fd) {
     if (protect_func == NULL) {
@@ -60,4 +62,11 @@ void result(void *invoke_Interface, const char *data) {
         return;
     }
     result_func(invoke_Interface, data);
+}
+
+void system_log(const char *level, const char *message) {
+    if (system_log_func == NULL) {
+        return;
+    }
+    system_log_func(level, message);
 }

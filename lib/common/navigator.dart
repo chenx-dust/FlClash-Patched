@@ -18,7 +18,7 @@ class BaseNavigator {
     final supportsPredictiveBack = system.supportsPredictiveBack(
       globalState.container.read(versionProvider),
     );
-    if (themeProps.predictiveBack && supportsPredictiveBack) {
+    if (themeProps.predictiveBack && supportsPredictiveBack || system.isIOS) {
       return Navigator.of(
         context,
       ).push<T>(MaterialPageRoute(builder: (context) => child));

@@ -186,6 +186,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "allowLanDesc": MessageLookupByLibrary.simpleMessage(
       "Разрешить доступ к прокси через локальную сеть",
     ),
+    "alwaysOn": MessageLookupByLibrary.simpleMessage("Всегда включён"),
+    "alwaysOnDesc": MessageLookupByLibrary.simpleMessage(
+      "Поддерживать VPN-подключение в любых сетевых условиях",
+    ),
     "app": MessageLookupByLibrary.simpleMessage("Приложение"),
     "appAccessControl": MessageLookupByLibrary.simpleMessage(
       "Контроль доступа приложений",
@@ -1263,6 +1267,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "submit": MessageLookupByLibrary.simpleMessage("Отправить"),
     "subscriptionInfo": MessageLookupByLibrary.simpleMessage(
       "Информация о подписке",
+    ),
+    "suspendSupport": MessageLookupByLibrary.simpleMessage(
+      "Поддержка приостановки",
+    ),
+    "suspendSupportDesc": MessageLookupByLibrary.simpleMessage(
+      "Приостанавливать ядро при простое устройства, чтобы снизить расход батареи",
     ),
     "suspended": MessageLookupByLibrary.simpleMessage("Приостановлено..."),
     "swipeToSwitchPage": MessageLookupByLibrary.simpleMessage(

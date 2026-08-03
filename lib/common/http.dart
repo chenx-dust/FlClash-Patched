@@ -23,7 +23,7 @@ class FlClashHttpOverrides extends HttpOverrides {
       return 'DIRECT';
     }
     final isStart = read(isStartProvider);
-    final suspend = read(suspendProvider);
+    final suspend = system.isIOS ? false : read(suspendProvider);
     commonPrint.log('find $url proxy: $isStart');
     if (!isStart || suspend) return 'DIRECT';
     final mixedPort = read(

@@ -17,7 +17,7 @@ Widget? _childOf(Widget widget) {
     TrayManager(:final child) => child,
     HotKeyManager(:final child) => child,
     ProxyManager(:final child) => child,
-    AndroidManager(:final child) => child,
+    MobileManager(:final child) => child,
     TileManager(:final child) => child,
     AppStateManager(:final child) => child,
     CoreManager(:final child) => child,
@@ -48,9 +48,10 @@ Widget? _innermostChildOf(Widget root) {
   return current ?? previous;
 }
 
-Widget _stack({required bool isDesktop}) {
+Widget _stack({required bool isDesktop, bool? isAndroid}) {
   return buildManagerStack(
     isDesktop: isDesktop,
+    isAndroid: isAndroid ?? !isDesktop,
     onConnectivityChanged: (_) async {},
     child: _leaf,
   );
@@ -82,7 +83,7 @@ void main() {
       StatusManager,
       ThemeManager,
       BackManager,
-      AndroidManager,
+      MobileManager,
       TileManager,
       AppStateManager,
       CoreManager,
@@ -108,6 +109,13 @@ void main() {
     );
   });
 
+  test('iOS uses the mobile manager stack without the Android VPN manager', () {
+    final ios = _chainFrom(_stack(isDesktop: false, isAndroid: false));
+
+    expect(ios, contains(MobileManager));
+    expect(ios, isNot(contains(VpnManager)));
+  });
+
   test('mobile-only managers never appear on desktop', () {
     final desktop = _chainFrom(_stack(isDesktop: true));
 
@@ -115,7 +123,7 @@ void main() {
       desktop,
       isNot(
         anyOf(
-          contains(AndroidManager),
+          contains(MobileManager),
           contains(TileManager),
           contains(VpnManager),
         ),

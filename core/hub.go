@@ -77,8 +77,14 @@ func handleInitClash(params *InitParams) bool {
 	constant.Path.ASN()
 	constant.Path.GeoIP()
 	constant.Path.GeoSite()
+	if features.IOS && !features.WithLowMemory {
+		constant.SetSaveMatcherCache(true)
+	}
 	initOwnership(params.HomeDir)
 	isInit.Store(true)
+	if features.IOS {
+		ensureLogStarted()
+	}
 	return true
 }
 
@@ -108,7 +114,7 @@ func handleForceGC() {
 	log.Infoln("[APP] request force GC")
 	tunnel.InvalidateAllProxies()
 	runtime.GC()
-	if features.Android {
+	if features.Android || features.IOS {
 		debug.FreeOSMemory()
 	}
 }
@@ -628,6 +634,7 @@ func startLogLocked() {
 				if logData.LogLevel < log.Level() {
 					continue
 				}
+				writeSystemLog(logData.LogLevel.String(), logData.Payload)
 				stampedLog := StampedLogEvent{
 					LogLevel: logData.LogLevel,
 					Payload:  logData.Payload,

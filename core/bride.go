@@ -28,6 +28,9 @@ func invokeResult(callback unsafe.Pointer, data string) {
 	C.result(callback, s)
 }
 
+func writeSystemLog(level, message string) {
+}
+
 func releaseObject(callback unsafe.Pointer) {
 	C.release_object(callback)
 }

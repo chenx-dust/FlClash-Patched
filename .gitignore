@@ -77,6 +77,7 @@ problems-report.html
 !/assets/data/.gitkeep
 /plugins/rust_api/.claude/
 /issue-triage/
+/ios/Flutter/GeneratedBundleConfig.xcconfig
 devtools_options.yaml
 
 # FVM Version Cache

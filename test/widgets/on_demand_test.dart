@@ -36,6 +36,7 @@ void main() {
     List<String> ssids = const [],
     WifiSsidPermission permission = WifiSsidPermission.denied,
     bool isAndroid = false,
+    bool isIOS = false,
     bool isMacOS = false,
     Locale? locale,
     Size size = const Size(1400, 1000),
@@ -61,7 +62,11 @@ void main() {
         container: container,
         child: TestApp(
           locale: locale,
-          child: OnDemandView(isAndroid: isAndroid, isMacOS: isMacOS),
+          child: OnDemandView(
+            isAndroid: isAndroid,
+            isIOS: isIOS,
+            isMacOS: isMacOS,
+          ),
         ),
       ),
     );
@@ -163,8 +168,18 @@ void main() {
   ) async {
     await pumpView(tester, isAndroid: true);
 
-    expect(find.text('Ignore Battery Optimization'), findsOneWidget);
+    expect(find.text('Ignore battery optimization'), findsOneWidget);
     expect(find.text('Location Permission'), findsOneWidget);
+  });
+
+  testWidgets('iOS exposes the always-on setting', (tester) async {
+    await pumpView(tester, isIOS: true);
+
+    expect(find.text('Always On'), findsOneWidget);
+    expect(
+      find.text('Keep VPN connected under any network conditions'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('a narrow row in a verbose locale keeps its text readable', (
@@ -183,8 +198,8 @@ void main() {
     final descWidth = tester
         .getSize(
           find.text(
-            'По требованию системы для получения имени сети Wi-Fi необходимо '
-            'разрешение на геолокацию.',
+            'Согласно требованиям системы для получения имени Wi-Fi '
+            'необходимо предоставить разрешение на геолокацию.',
           ),
         )
         .width;
@@ -207,8 +222,8 @@ void main() {
     );
 
     final desc = find.text(
-      'По требованию системы для получения имени сети Wi-Fi необходимо '
-      'разрешение на геолокацию.',
+      'Согласно требованиям системы для получения имени Wi-Fi необходимо '
+      'предоставить разрешение на геолокацию.',
     );
 
     final card = tester.getRect(find.byType(DecorationListItem).first);
@@ -238,7 +253,7 @@ void main() {
   ) async {
     await pumpView(tester);
 
-    expect(find.text('Ignore Battery Optimization'), findsNothing);
+    expect(find.text('Ignore battery optimization'), findsNothing);
     expect(find.text('Location Permission'), findsNothing);
     expect(find.bySemanticsLabel('Tap to authorize'), findsNothing);
   });

@@ -92,7 +92,7 @@ class CoreLib extends CoreHandlerInterface {
     _connectedCompleter = Completer<bool>();
     final stopped = await _service?.shutdown() ?? true;
     if (!stopped) {
-      throw StateError('Android Core service shutdown failed');
+      throw StateError('Mobile Core service shutdown failed');
     }
     return CoreLifecycleResult(
       revision: revision,
@@ -112,14 +112,21 @@ class CoreLib extends CoreHandlerInterface {
 
   @override
   Future<bool> startListener() async {
-    final listenerStarted = await super.startListener();
-    final serviceStarted = await _service?.start() ?? false;
+    final listenerStarted = system.isIOS || await super.startListener();
+    final serviceStarted =
+        await _service?.start(
+          globalState.container.read(sharedStateProvider),
+        ) ??
+        false;
     return listenerStarted && serviceStarted;
   }
 
   @override
   Future<bool> stopListener() async {
     final serviceStopped = await _service?.stop() ?? false;
+    if (system.isIOS) {
+      return serviceStopped;
+    }
     final listenerStopped = await super.stopListener();
     return serviceStopped && listenerStopped;
   }
@@ -160,4 +167,4 @@ class CoreLib extends CoreHandlerInterface {
   }
 }
 
-CoreLib? get coreLib => system.isAndroid ? CoreLib() : null;
+CoreLib? get coreLib => system.isAndroid || system.isIOS ? CoreLib() : null;

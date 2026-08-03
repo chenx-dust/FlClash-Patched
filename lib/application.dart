@@ -19,13 +19,17 @@ import 'pages/pages.dart';
 
 Widget buildManagerStack({
   required bool isDesktop,
+  bool? isAndroid,
   required Future<void> Function(List<ConnectivityResult> results)
   onConnectivityChanged,
   required Widget child,
 }) {
+  final mobileIsAndroid = isAndroid ?? system.isAndroid;
   final platformApp = isDesktop
       ? WindowHeaderContainer(child: child)
-      : VpnManager(child: child);
+      : mobileIsAndroid
+      ? VpnManager(child: child)
+      : child;
   final state = AppStateManager(
     child: CoreManager(
       child: ConnectivityManager(
@@ -40,7 +44,7 @@ Widget buildManagerStack({
             child: HotKeyManager(child: ProxyManager(child: state)),
           ),
         )
-      : AndroidManager(child: TileManager(child: state));
+      : MobileManager(child: TileManager(child: state));
   return AppEnvManager(
     child: LocaleManager(
       child: StatusManager(

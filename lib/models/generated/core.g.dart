@@ -88,7 +88,7 @@ _VpnOptions _$VpnOptionsFromJson(Map<String, dynamic> json) => _VpnOptions(
   ),
   allowBypass: json['allowBypass'] as bool,
   systemProxy: json['systemProxy'] as bool,
-  dozeSuspend: json['dozeSuspend'] as bool,
+  suspendSupport: json['suspendSupport'] as bool,
   bypassDomain: (json['bypassDomain'] as List<dynamic>)
       .map((e) => e as String)
       .toList(),
@@ -99,6 +99,13 @@ _VpnOptions _$VpnOptionsFromJson(Map<String, dynamic> json) => _VpnOptions(
           ?.map((e) => e as String)
           .toList() ??
       const [],
+  includeAllNetworks: json['includeAllNetworks'] as bool? ?? false,
+  excludeLocalNetworks: json['excludeLocalNetworks'] as bool? ?? true,
+  excludeAPNs: json['excludeAPNs'] as bool? ?? true,
+  excludeCellularServices: json['excludeCellularServices'] as bool? ?? true,
+  enforceRoutes: json['enforceRoutes'] as bool? ?? false,
+  excludeDeviceCommunication:
+      json['excludeDeviceCommunication'] as bool? ?? true,
 );
 
 Map<String, dynamic> _$VpnOptionsToJson(_VpnOptions instance) =>
@@ -110,11 +117,17 @@ Map<String, dynamic> _$VpnOptionsToJson(_VpnOptions instance) =>
       'accessControlProps': instance.accessControlProps,
       'allowBypass': instance.allowBypass,
       'systemProxy': instance.systemProxy,
-      'dozeSuspend': instance.dozeSuspend,
+      'suspendSupport': instance.suspendSupport,
       'bypassDomain': instance.bypassDomain,
       'stack': instance.stack,
       'mtu': instance.mtu,
       'routeAddress': instance.routeAddress,
+      'includeAllNetworks': instance.includeAllNetworks,
+      'excludeLocalNetworks': instance.excludeLocalNetworks,
+      'excludeAPNs': instance.excludeAPNs,
+      'excludeCellularServices': instance.excludeCellularServices,
+      'enforceRoutes': instance.enforceRoutes,
+      'excludeDeviceCommunication': instance.excludeDeviceCommunication,
     };
 
 _InitParams _$InitParamsFromJson(Map<String, dynamic> json) => _InitParams(

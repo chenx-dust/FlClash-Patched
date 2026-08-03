@@ -1,4 +1,4 @@
-//go:build !(android && cgo)
+//go:build !((android || ios) && cgo)
 
 package main
 
@@ -54,6 +54,9 @@ func (response MethodResponse) send() {
 
 func deliverEvent(data []byte) {
 	send(data)
+}
+
+func writeSystemLog(level, message string) {
 }
 
 func writeFrame(w io.Writer, data []byte) (int, error) {

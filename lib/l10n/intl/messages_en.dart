@@ -133,7 +133,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "addRule": MessageLookupByLibrary.simpleMessage("Add Rule"),
     "addSsid": MessageLookupByLibrary.simpleMessage("Add SSID"),
     "addWidget": MessageLookupByLibrary.simpleMessage("Add widget"),
-    "addedRules": MessageLookupByLibrary.simpleMessage("Added rules"),
+    "addedRules": MessageLookupByLibrary.simpleMessage("Added Rules"),
     "additionalParameters": MessageLookupByLibrary.simpleMessage(
       "Additional parameters",
     ),
@@ -183,6 +183,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "allowLanDesc": MessageLookupByLibrary.simpleMessage(
       "Allow access proxy through the LAN",
+    ),
+    "alwaysOn": MessageLookupByLibrary.simpleMessage("Always On"),
+    "alwaysOnDesc": MessageLookupByLibrary.simpleMessage(
+      "Keep VPN connected under any network conditions",
     ),
     "app": MessageLookupByLibrary.simpleMessage("App"),
     "appAccessControl": MessageLookupByLibrary.simpleMessage(
@@ -273,7 +277,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "changelogFixes": MessageLookupByLibrary.simpleMessage("Bug fixes"),
     "changelogPerformance": MessageLookupByLibrary.simpleMessage("Performance"),
     "changelogReverts": MessageLookupByLibrary.simpleMessage("Reverts"),
-    "checkUpdate": MessageLookupByLibrary.simpleMessage("Check for updates"),
+    "checkUpdate": MessageLookupByLibrary.simpleMessage("Check for Updates"),
     "checkUpdateError": MessageLookupByLibrary.simpleMessage(
       "The current application is already the latest version",
     ),
@@ -1191,6 +1195,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "submit": MessageLookupByLibrary.simpleMessage("Submit"),
     "subscriptionInfo": MessageLookupByLibrary.simpleMessage(
       "Subscription info",
+    ),
+    "suspendSupport": MessageLookupByLibrary.simpleMessage("Suspend Support"),
+    "suspendSupportDesc": MessageLookupByLibrary.simpleMessage(
+      "Suspend the core while the device is idle to reduce battery usage",
     ),
     "suspended": MessageLookupByLibrary.simpleMessage("Suspended..."),
     "swipeToSwitchPage": MessageLookupByLibrary.simpleMessage(

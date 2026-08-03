@@ -15,6 +15,15 @@ class _RecordingListener with ServiceListener {
   void onServiceEvent(CoreEvent event) => events.add(event);
 }
 
+const _sharedState = SharedState(
+  stopTip: 'stopTip',
+  startTip: 'startTip',
+  currentProfileName: 'profile',
+  stopText: 'stop',
+  onlyStatisticsProxy: false,
+  networkSpeedNotification: false,
+);
+
 class _ThrowingListener with ServiceListener {
   var called = false;
 
@@ -82,7 +91,7 @@ void main() {
     test('start and stop report the platform result', () async {
       mockChannel((call) async => call.method == 'start');
 
-      expect(await Service().start(), isTrue);
+      expect(await Service().start(_sharedState), isTrue);
       expect(await Service().stop(), isFalse);
       expect(calls.map((call) => call.method), ['start', 'stop']);
     });
@@ -90,7 +99,7 @@ void main() {
     test('an absent start or stop result is treated as failure', () async {
       mockChannel((_) async => null);
 
-      expect(await Service().start(), isFalse);
+      expect(await Service().start(_sharedState), isFalse);
       expect(await Service().stop(), isFalse);
     });
 

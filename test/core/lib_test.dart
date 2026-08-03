@@ -45,7 +45,7 @@ class _FakeService implements Service {
   }
 
   @override
-  Future<bool> start() async {
+  Future<bool> start(SharedState state) async {
     calls.add('start');
     return startResult;
   }

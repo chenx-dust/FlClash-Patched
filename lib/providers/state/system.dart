@@ -185,10 +185,14 @@ SharedState sharedState(Ref ref) {
   final testUrl = appSetting.testUrl;
   final stack = clashConfig.stack;
   final port = clashConfig.mixedPort;
+  final excludeSSIDs = ref.watch(excludeSSIDsProvider);
+  final alwaysOn = ref.watch(alwaysOnProvider);
   return SharedState(
     currentProfileName: currentProfileName,
     onlyStatisticsProxy: onlyStatisticsProxy,
     networkSpeedNotification: vpnSetting.networkSpeedNotification,
+    excludeSSIDs: excludeSSIDs,
+    alwaysOn: alwaysOn,
     stopText: currentAppLocalizations.stop,
     stopTip: currentAppLocalizations.stopVpn,
     startTip: currentAppLocalizations.startVpn,
@@ -202,10 +206,16 @@ SharedState sharedState(Ref ref) {
       dnsHijacking: vpnSetting.dnsHijacking,
       accessControlProps: vpnSetting.accessControlProps,
       allowBypass: vpnSetting.allowBypass,
-      dozeSuspend: vpnSetting.dozeSuspend,
+      suspendSupport: vpnSetting.suspendSupport,
       bypassDomain: networkSetting.bypassDomain,
       routeAddress: clashConfig.routeAddress,
       mtu: clashConfig.mtu,
+      includeAllNetworks: vpnSetting.includeAllNetworks,
+      excludeLocalNetworks: vpnSetting.excludeLocalNetworks,
+      excludeAPNs: vpnSetting.excludeAPNs,
+      excludeCellularServices: vpnSetting.excludeCellularServices,
+      enforceRoutes: vpnSetting.enforceRoutes,
+      excludeDeviceCommunication: vpnSetting.excludeDeviceCommunication,
     ),
   );
 }
