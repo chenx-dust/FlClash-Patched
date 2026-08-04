@@ -5,22 +5,20 @@ use serde::{Deserialize, Serialize};
 use std::io::{self, Read, Write};
 #[cfg(windows)]
 use std::mem::{size_of, MaybeUninit};
+#[cfg(windows)]
+use std::os::windows::ffi::OsStringExt;
 use std::path::{Path, PathBuf};
 #[cfg(windows)]
 use std::ptr::null;
 use std::time::Duration;
 
 #[cfg(windows)]
-use windows_sys::Win32::{
-    Foundation::CloseHandle,
-    System::{
-        Services::{
-            CloseServiceHandle, OpenSCManagerW, OpenServiceW, QueryServiceStatusEx, SC_HANDLE,
-            SC_MANAGER_CONNECT, SC_STATUS_PROCESS_INFO, SERVICE_QUERY_STATUS, SERVICE_RUNNING,
-            SERVICE_STATUS_PROCESS,
-        },
-        Threading::{OpenProcess, QueryFullProcessImageNameW, PROCESS_QUERY_LIMITED_INFORMATION},
-    },
+use windows_sys::Win32::Foundation::ERROR_INSUFFICIENT_BUFFER;
+#[cfg(windows)]
+use windows_sys::Win32::System::Services::{
+    CloseServiceHandle, OpenSCManagerW, OpenServiceW, QueryServiceConfigW, QueryServiceStatusEx,
+    QUERY_SERVICE_CONFIGW, SC_HANDLE, SC_MANAGER_CONNECT, SC_STATUS_PROCESS_INFO,
+    SERVICE_QUERY_CONFIG, SERVICE_QUERY_STATUS, SERVICE_RUNNING, SERVICE_STATUS_PROCESS,
 };
 
 const HELPER_PIPE_NAME: &str = r"\\.\pipe\FlClashHelper-v1";
@@ -121,7 +119,9 @@ impl Drop for OwnedServiceHandle {
 }
 
 #[cfg(windows)]
-fn helper_service_pid() -> io::Result<u32> {
+fn helper_service_identity() -> io::Result<(u32, PathBuf)> {
+    // An unelevated app cannot reliably open the LocalSystem service process.
+    // SCM exposes both identity fields with ordinary query permissions.
     let manager = unsafe { OpenSCManagerW(null(), null(), SC_MANAGER_CONNECT) };
     if manager.is_null() {
         return Err(io::Error::last_os_error());
@@ -131,7 +131,13 @@ fn helper_service_pid() -> io::Result<u32> {
         .encode_utf16()
         .chain(std::iter::once(0))
         .collect();
-    let service = unsafe { OpenServiceW(manager.0, service_name.as_ptr(), SERVICE_QUERY_STATUS) };
+    let service = unsafe {
+        OpenServiceW(
+            manager.0,
+            service_name.as_ptr(),
+            SERVICE_QUERY_CONFIG | SERVICE_QUERY_STATUS,
+        )
+    };
     if service.is_null() {
         return Err(io::Error::last_os_error());
     }
@@ -157,28 +163,112 @@ fn helper_service_pid() -> io::Result<u32> {
             "FlClash helper service is not running",
         ));
     }
-    Ok(status.dwProcessId)
+    let executable_path = query_service_executable_path(service.0)?;
+    Ok((status.dwProcessId, executable_path))
 }
 
 #[cfg(windows)]
-fn process_image_path(pid: u32) -> io::Result<PathBuf> {
-    let process = unsafe { OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, pid) };
-    if process.is_null() {
-        return Err(io::Error::last_os_error());
-    }
-    let mut buffer = vec![0_u16; 32_768];
-    let mut length = u32::try_from(buffer.len()).unwrap();
+fn query_service_executable_path(service: SC_HANDLE) -> io::Result<PathBuf> {
+    let mut bytes_needed = 0_u32;
     let result =
-        unsafe { QueryFullProcessImageNameW(process, 0, buffer.as_mut_ptr(), &mut length) };
-    let error = (result == 0).then(io::Error::last_os_error);
-    unsafe {
-        CloseHandle(process);
+        unsafe { QueryServiceConfigW(service, std::ptr::null_mut(), 0, &mut bytes_needed) };
+    if result != 0 || bytes_needed == 0 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "service configuration size is unavailable",
+        ));
     }
-    if let Some(error) = error {
+    let error = io::Error::last_os_error();
+    if error.raw_os_error() != Some(ERROR_INSUFFICIENT_BUFFER as i32) {
         return Err(error);
     }
-    buffer.truncate(length as usize);
-    Ok(PathBuf::from(String::from_utf16_lossy(&buffer)))
+
+    loop {
+        let byte_count = usize::try_from(bytes_needed).map_err(|_| {
+            io::Error::new(
+                io::ErrorKind::InvalidData,
+                "service configuration is too large",
+            )
+        })?;
+        let word_count = byte_count.div_ceil(size_of::<usize>());
+        // QUERY_SERVICE_CONFIGW requires pointer alignment that Vec<u8> does not guarantee.
+        let mut config_buffer = vec![0_usize; word_count];
+        let buffer_size = config_buffer
+            .len()
+            .checked_mul(size_of::<usize>())
+            .and_then(|size| u32::try_from(size).ok())
+            .ok_or_else(|| {
+                io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "service configuration is too large",
+                )
+            })?;
+        let mut next_bytes_needed = 0_u32;
+        let result = unsafe {
+            QueryServiceConfigW(
+                service,
+                config_buffer.as_mut_ptr().cast(),
+                buffer_size,
+                &mut next_bytes_needed,
+            )
+        };
+        if result != 0 {
+            let config = unsafe { &*config_buffer.as_ptr().cast::<QUERY_SERVICE_CONFIGW>() };
+            let command = unsafe { wide_string(config.lpBinaryPathName)? };
+            return registered_service_executable_path(&command);
+        }
+
+        let error = io::Error::last_os_error();
+        if error.raw_os_error() != Some(ERROR_INSUFFICIENT_BUFFER as i32)
+            || next_bytes_needed <= buffer_size
+        {
+            return Err(error);
+        }
+        bytes_needed = next_bytes_needed;
+    }
+}
+
+#[cfg(windows)]
+unsafe fn wide_string(value: *const u16) -> io::Result<std::ffi::OsString> {
+    if value.is_null() {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "service executable path is unavailable",
+        ));
+    }
+    let mut length = 0_usize;
+    while unsafe { *value.add(length) } != 0 {
+        length += 1;
+        if length > 32_768 {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "service executable path is too long",
+            ));
+        }
+    }
+    Ok(std::ffi::OsString::from_wide(unsafe {
+        std::slice::from_raw_parts(value, length)
+    }))
+}
+
+#[cfg(windows)]
+fn registered_service_executable_path(command: &std::ffi::OsStr) -> io::Result<PathBuf> {
+    let command = command.to_string_lossy();
+    let command = command.trim();
+    let path = if let Some(command) = command.strip_prefix('"') {
+        command.strip_suffix('"').filter(|path| !path.contains('"'))
+    } else if command.chars().all(|character| !character.is_whitespace()) {
+        Some(command)
+    } else {
+        None
+    };
+    match path {
+        Some(path) if !path.is_empty() => Ok(PathBuf::from(path)),
+        _ => Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "helper service command must contain only its executable path",
+        )),
+    }
 }
 
 #[cfg(windows)]
@@ -188,10 +278,10 @@ fn authenticate_server(stream: &interprocess::local_socket::Stream) -> io::Resul
         .map_err(|error| io::Error::new(error.kind(), format!("query helper PID: {error}")))?
         .pid()
         .ok_or_else(|| io::Error::new(io::ErrorKind::PermissionDenied, "server PID unavailable"))?;
-    let service_pid = helper_service_pid().map_err(|error| {
+    let (service_pid, service_path) = helper_service_identity().map_err(|error| {
         io::Error::new(
             error.kind(),
-            format!("query FlClash helper service PID: {error}"),
+            format!("query FlClash helper service identity: {error}"),
         )
     })?;
     if pid != service_pid {
@@ -200,7 +290,7 @@ fn authenticate_server(stream: &interprocess::local_socket::Stream) -> io::Resul
             format!("helper server PID mismatch: actual={pid}, service={service_pid}"),
         ));
     }
-    let actual_path = std::fs::canonicalize(process_image_path(pid)?)?;
+    let actual_path = std::fs::canonicalize(service_path)?;
     let expected_path =
         std::fs::canonicalize(helper_path_from_app_path(&std::env::current_exe()?)?)?;
     if !actual_path
@@ -301,5 +391,28 @@ mod tests {
             helper_path_from_app_path(&app).unwrap(),
             PathBuf::from("install").join(HELPER_EXECUTABLE_NAME),
         );
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn service_command_must_only_name_the_helper_executable() {
+        assert_eq!(
+            registered_service_executable_path(std::ffi::OsStr::new(
+                r#""C:\Program Files\FlClash\FlClashHelperService.exe""#,
+            ))
+            .unwrap(),
+            PathBuf::from(r"C:\Program Files\FlClash\FlClashHelperService.exe"),
+        );
+        assert_eq!(
+            registered_service_executable_path(std::ffi::OsStr::new(
+                r"C:\FlClash\FlClashHelperService.exe",
+            ))
+            .unwrap(),
+            PathBuf::from(r"C:\FlClash\FlClashHelperService.exe"),
+        );
+        assert!(registered_service_executable_path(std::ffi::OsStr::new(
+            r#""C:\Program Files\FlClash\FlClashHelperService.exe" attacker"#,
+        ))
+        .is_err(),);
     }
 }
