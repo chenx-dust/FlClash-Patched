@@ -214,6 +214,10 @@ void main() {
   testWidgets('revealed proxy stays below the pinned header', (tester) async {
     await pumpListLayout(tester, size: const Size(600, 400), proxyCount: 30);
 
+    final fadeFinder = find.byKey(const ValueKey('Selector.headerFade'));
+    final fadeBox = tester.widget<Container>(fadeFinder);
+    final gradient =
+        (fadeBox.decoration as BoxDecoration).gradient as LinearGradient;
     final proxyFinder = find.byKey(const ValueKey('Selector.Proxy 3')).first;
     final targetContext = tester.element(proxyFinder);
     final scrollable = Scrollable.of(targetContext);
@@ -234,6 +238,8 @@ void main() {
     final headerBottom = tester.getBottomLeft(
       find.byKey(const ValueKey('Selector')).first,
     );
+    expect(gradient.colors.last.a, 0);
+    expect(tester.getBottomLeft(fadeFinder).dy - headerBottom.dy, 8);
     expect(
       tester.getTopLeft(proxyFinder).dy,
       greaterThanOrEqualTo(headerBottom.dy),
