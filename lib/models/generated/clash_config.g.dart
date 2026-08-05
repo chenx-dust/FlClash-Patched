@@ -254,16 +254,12 @@ _Dns _$DnsFromJson(Map<String, dynamic> json) => _Dns(
       (json['fake-ip-filter'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList() ??
-      const ['*.lan', 'localhost.ptlogin2.qq.com'],
+      const ['+.local', '+.lan'],
   nameserverPolicy:
       (json['nameserver-policy'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ) ??
-      const {
-        'www.baidu.com': '114.114.114.114',
-        '+.internal.crop.com': '10.0.0.1',
-        'geosite:cn': 'https://doh.pub/dns-query',
-      },
+      const {'geosite:cn': 'https://doh.pub/dns-query'},
   nameserver:
       (json['nameserver'] as List<dynamic>?)
           ?.map((e) => e as String)
