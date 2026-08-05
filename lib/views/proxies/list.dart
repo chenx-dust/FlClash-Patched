@@ -18,6 +18,8 @@ import 'common.dart';
 typedef GroupNameProxiesMap = Map<String, List<Proxy>>;
 
 const double _listGroupSpacing = 10;
+const double _listHeaderFadeHeight = 22;
+const double _listHeaderFadeOverflow = 8;
 const double _listRowSpacing = 8;
 const double _listBodyBottomSpacing = 8;
 
@@ -110,35 +112,49 @@ class ProxiesListViewState extends State<ProxiesListView> {
     for (final group in groups) {
       final groupName = group.name;
       final isExpand = currentUnfoldSet.contains(groupName);
+      final headerHeight = getListHeaderHeight(listHeaderStyle);
+      final backgroundHeight = headerHeight + _listHeaderFadeOverflow;
+      final fadeStart = 1 - _listHeaderFadeHeight / backgroundHeight;
+      final surface = context.colorScheme.surface;
       slivers.add(
         SliverMainAxisGroup(
           slivers: [
             PinnedHeaderSliver(
-              child: ColoredBox(
-                color: context.colorScheme.surface,
-                child: SizedBox(
-                  height: getListHeaderHeight(listHeaderStyle),
-                  child: ListHeader(
-                    onScrollToSelected: (groupName) {
-                      _scrollToGroupSelected(groupName, columns);
-                    },
-                    listHeaderStyle: listHeaderStyle,
-                    key: Key(groupName),
-                    isExpand: isExpand,
-                    group: group,
-                    onChange: (String groupName) {
-                      _handleChange(
-                        currentUnfoldSet,
-                        groupName,
-                        listHeaderStyle,
-                      );
-                    },
+              child: Container(
+                key: ValueKey('$groupName.headerFade'),
+                height: backgroundHeight,
+                padding: const EdgeInsets.only(bottom: _listHeaderFadeOverflow),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      surface,
+                      surface,
+                      surface.opacity60,
+                      surface.opacity0,
+                    ],
+                    stops: [0, fadeStart, fadeStart, 1],
                   ),
+                ),
+                child: ListHeader(
+                  onScrollToSelected: (groupName) {
+                    _scrollToGroupSelected(groupName, columns);
+                  },
+                  listHeaderStyle: listHeaderStyle,
+                  key: Key(groupName),
+                  isExpand: isExpand,
+                  group: group,
+                  onChange: (String groupName) {
+                    _handleChange(currentUnfoldSet, groupName, listHeaderStyle);
+                  },
                 ),
               ),
             ),
             const SliverToBoxAdapter(
-              child: SizedBox(height: _listGroupSpacing),
+              child: SizedBox(
+                height: _listGroupSpacing - _listHeaderFadeOverflow,
+              ),
             ),
             _ProxyGroupSliver(
               key: ValueKey('$groupName.body'),
