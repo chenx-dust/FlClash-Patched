@@ -291,12 +291,10 @@ abstract class Dns with _$Dns {
     @Default('198.18.0.1/16')
     @JsonKey(name: 'fake-ip-range')
     String fakeIpRange,
-    @Default(['*.lan', 'localhost.ptlogin2.qq.com'])
+    @Default(['+.local', '+.lan'])
     @JsonKey(name: 'fake-ip-filter')
     List<String> fakeIpFilter,
     @Default({
-      'www.baidu.com': '114.114.114.114',
-      '+.internal.crop.com': '10.0.0.1',
       'geosite:cn': 'https://doh.pub/dns-query',
     })
     @JsonKey(name: 'nameserver-policy')
