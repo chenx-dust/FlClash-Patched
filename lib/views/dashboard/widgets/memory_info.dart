@@ -1,10 +1,7 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -156,12 +153,4 @@ class _MemoryInfoState extends State<MemoryInfo> with WidgetsBindingObserver {
   }
 }
 
-Future<num> _readMemory() async {
-  final rss = ProcessInfo.currentRss;
-  final coreConnected =
-      globalState.container.read(coreStatusProvider) == CoreStatus.connected;
-  if (system.isDesktop && coreConnected) {
-    return await coreController.getMemory() + rss;
-  }
-  return rss;
-}
+Future<num> _readMemory() async => coreController.getMemory();
