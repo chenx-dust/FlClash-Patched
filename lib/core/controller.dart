@@ -52,7 +52,7 @@ class CoreController {
     if (!isExists) {
       await homeDir.create(recursive: true);
     }
-    const geoFileNameList = [MMDB, GEOIP, GEOSITE, ASN];
+    const geoFileNameList = [MMDB, GEOIP, GEOSITE, ASN, BUNDLE_MRS];
     try {
       for (final geoFileName in geoFileNameList) {
         final geoFile = File(join(homePath, geoFileName));
