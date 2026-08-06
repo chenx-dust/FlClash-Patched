@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 
 const geoDataSources = {
+  'BundleMRS.7z':
+      'https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/BundleMRS.7z',
   'GeoIP.metadb':
       'https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.metadb',
   'ASN.mmdb':

@@ -61,6 +61,7 @@ const MMDB = 'GeoIP.metadb';
 const ASN = 'ASN.mmdb';
 const GEOIP = 'GeoIP.dat';
 const GEOSITE = 'GeoSite.dat';
+const BUNDLE_MRS = 'BundleMRS.7z';
 final double kHeaderHeight = system.isDesktop
     ? !system.isMacOS
           ? 40
