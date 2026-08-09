@@ -330,6 +330,53 @@ void main() {
     expect(find.text('No data'), findsOneWidget);
   });
 
+  testWidgets('ListInputPage drag-selects and deselects consecutive items', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: _TestApp(
+          child: ListInputPage(
+            title: 'Items',
+            items: ['a', 'b', 'c', 'd'],
+            titleBuilder: _textBuilder,
+          ),
+        ),
+      ),
+    );
+
+    final checkboxes = find.byType(Checkbox);
+    final selectGesture = await tester.startGesture(
+      tester.getCenter(checkboxes.first),
+    );
+    await selectGesture.moveTo(tester.getCenter(checkboxes.at(2)));
+    await selectGesture.up();
+    await tester.pump();
+
+    expect(
+      List.generate(
+        4,
+        (index) => tester.widget<Checkbox>(checkboxes.at(index)).value,
+      ),
+      [true, true, true, false],
+    );
+
+    final deselectGesture = await tester.startGesture(
+      tester.getCenter(checkboxes.at(2)),
+    );
+    await deselectGesture.moveTo(tester.getCenter(checkboxes.first));
+    await deselectGesture.up();
+    await tester.pump();
+
+    expect(
+      List.generate(
+        4,
+        (index) => tester.widget<Checkbox>(checkboxes.at(index)).value,
+      ),
+      [false, false, false, false],
+    );
+  });
+
   testWidgets('MapInputPage adds, reorders, selects, and deletes entries', (
     tester,
   ) async {
@@ -375,6 +422,36 @@ void main() {
     await tester.tap(find.byIcon(Icons.delete));
     await tester.pump();
     expect(find.text('No data'), findsOneWidget);
+  });
+
+  testWidgets('MapInputPage drag-selects consecutive entries', (tester) async {
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: _TestApp(
+          child: MapInputPage(
+            title: 'Map',
+            map: {'a': '1', 'b': '2', 'c': '3', 'd': '4'},
+            titleBuilder: _entryTitle,
+          ),
+        ),
+      ),
+    );
+
+    final checkboxes = find.byType(Checkbox);
+    final gesture = await tester.startGesture(
+      tester.getCenter(checkboxes.first),
+    );
+    await gesture.moveTo(tester.getCenter(checkboxes.at(2)));
+    await gesture.up();
+    await tester.pump();
+
+    expect(
+      List.generate(
+        4,
+        (index) => tester.widget<Checkbox>(checkboxes.at(index)).value,
+      ),
+      [true, true, true, false],
+    );
   });
 
   testWidgets('MapInputPage adds a key before editing its value list', (

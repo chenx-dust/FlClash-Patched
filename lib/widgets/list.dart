@@ -823,6 +823,10 @@ class SelectedDecorationListItem extends StatelessWidget {
   final Widget? leading;
   final bool invalid;
   final double? minVerticalPadding;
+  final GestureDragStartCallback? onSelectionDragStart;
+  final GestureDragUpdateCallback? onSelectionDragUpdate;
+  final GestureDragEndCallback? onSelectionDragEnd;
+  final GestureDragCancelCallback? onSelectionDragCancel;
 
   const SelectedDecorationListItem({
     super.key,
@@ -836,6 +840,10 @@ class SelectedDecorationListItem extends StatelessWidget {
     this.minVerticalPadding,
     this.subtitle,
     this.leading,
+    this.onSelectionDragStart,
+    this.onSelectionDragUpdate,
+    this.onSelectionDragEnd,
+    this.onSelectionDragCancel,
   });
 
   @override
@@ -856,12 +864,19 @@ class SelectedDecorationListItem extends StatelessWidget {
         onPressed();
       },
       subtitle: subtitle,
-      trailing: CommonCheckBox(
-        value: isSelected,
-        isCircle: true,
-        onChanged: (_) {
-          onSelected();
-        },
+      trailing: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onPanStart: onSelectionDragStart,
+        onPanUpdate: onSelectionDragUpdate,
+        onPanEnd: onSelectionDragEnd,
+        onPanCancel: onSelectionDragCancel,
+        child: CommonCheckBox(
+          value: isSelected,
+          isCircle: true,
+          onChanged: (_) {
+            onSelected();
+          },
+        ),
       ),
     );
   }
