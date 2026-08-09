@@ -172,6 +172,9 @@ func defaultSetupParams() *SetupParams {
 func updateConfig(params *UpdateParams) {
 	runLock.Lock()
 	defer runLock.Unlock()
+	if currentConfig == nil || currentConfig.General == nil {
+		return
+	}
 	general := currentConfig.General
 	if params.MixedPort != nil {
 		general.MixedPort = *params.MixedPort
