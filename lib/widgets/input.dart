@@ -14,7 +14,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'effect.dart';
 import 'list.dart';
-import 'sheet.dart';
 import 'theme.dart';
 
 class OptionsDialog<T> extends StatelessWidget {
@@ -659,7 +658,7 @@ class _MapInputPageState extends ConsumerState<MapInputPage>
     }
 
     if (widget.valueParser != null) {
-      final value = await _showListValueEditor(item, uniqueValidator);
+      final value = await _showListValueDialog(item, uniqueValidator);
       if (value == null) return;
       _updateItem(item, value);
       return;
@@ -689,57 +688,30 @@ class _MapInputPageState extends ConsumerState<MapInputPage>
     _updateItem(item, value);
   }
 
-  Future<MapEntry<String, String>?> _showListValueEditor(
+  Future<MapEntry<String, String>?> _showListValueDialog(
     MapEntry<String, String>? item,
     FormFieldValidator<String> uniqueValidator,
   ) async {
     final appLocalizations = context.appLocalizations;
-    var key = item?.key;
-    if (key == null) {
-      key = await globalState.showCommonDialog<String>(
-        child: AddDialog(
-          title: appLocalizations.add,
-          valueField: Field(
-            label: widget.keyLabel ?? appLocalizations.key,
-            value: '',
-            validator: (value) {
-              final uniqueError = uniqueValidator(value);
-              if (uniqueError != null) {
-                return uniqueError;
-              }
-              if (value == null || value.isEmpty) {
-                return appLocalizations.emptyTip(
-                  widget.keyLabel ?? appLocalizations.key,
-                );
-              }
-              return null;
-            },
+    final value = await globalState
+        .showCommonDialog<MapEntry<String, List<String>>>(
+          child: MapEntryListDialog(
+            title: item != null ? appLocalizations.edit : appLocalizations.add,
+            keyField: Field(
+              label: widget.keyLabel ?? appLocalizations.key,
+              value: item?.key ?? '',
+              validator: uniqueValidator,
+            ),
+            values: item == null ? const [] : widget.valueParser!(item.value),
+            valueLabel: widget.valueLabel ?? appLocalizations.value,
+            keyMaxLength: widget.keyMaxLength,
+            valueMaxLength: widget.valueMaxLength,
           ),
-          valueMaxLength: widget.keyMaxLength,
-        ),
-      );
-      if (key == null || !mounted) {
-        return null;
-      }
-    }
-    final matchingKey = key;
-    final values = await showExtend<List<String>>(
-      context,
-      props: const ExtendProps(blur: false),
-      builder: (_) {
-        return ListInputPage(
-          title: matchingKey,
-          items: item == null ? [] : widget.valueParser!(item.value),
-          valueLabel: widget.valueLabel,
-          itemMaxLength: widget.valueMaxLength,
-          titleBuilder: (value) => Text(value),
         );
-      },
-    );
-    if (values == null || values.isEmpty) {
+    if (value == null) {
       return null;
     }
-    return MapEntry(matchingKey, widget.valueSerializer!(values));
+    return MapEntry(value.key, widget.valueSerializer!(value.value));
   }
 
   void _updateItem(
@@ -916,6 +888,197 @@ class _MapInputPageState extends ConsumerState<MapInputPage>
                 },
                 onReorderItem: _handleReorder,
               ),
+      ),
+    );
+  }
+}
+
+class MapEntryListDialog extends StatefulWidget {
+  final String title;
+  final Field keyField;
+  final List<String> values;
+  final String valueLabel;
+  final int? keyMaxLength;
+  final int? valueMaxLength;
+
+  const MapEntryListDialog({
+    super.key,
+    required this.title,
+    required this.keyField,
+    required this.values,
+    required this.valueLabel,
+    this.keyMaxLength,
+    this.valueMaxLength,
+  });
+
+  @override
+  State<MapEntryListDialog> createState() => _MapEntryListDialogState();
+}
+
+class _MapEntryListDialogState extends State<MapEntryListDialog> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late final TextEditingController _keyController;
+  final List<TextEditingController> _valueControllers = [];
+  final List<FocusNode> _valueFocusNodes = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _keyController = TextEditingController(text: widget.keyField.value);
+    final values = widget.values.isEmpty ? const [''] : widget.values;
+    for (final value in values) {
+      _valueControllers.add(TextEditingController(text: value));
+      _valueFocusNodes.add(FocusNode());
+    }
+  }
+
+  void _addValue() {
+    setState(() {
+      _valueControllers.add(TextEditingController());
+      _valueFocusNodes.add(FocusNode());
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _valueFocusNodes.last.requestFocus();
+    });
+  }
+
+  void _removeValue(int index) {
+    if (_valueControllers.length == 1) {
+      _valueControllers.single.clear();
+      _valueFocusNodes.single.requestFocus();
+      return;
+    }
+    setState(() {
+      _valueControllers.removeAt(index).dispose();
+      _valueFocusNodes.removeAt(index).dispose();
+    });
+  }
+
+  void _handleValueSubmitted(int index) {
+    if (index == _valueControllers.length - 1) {
+      _addValue();
+      return;
+    }
+    _valueFocusNodes[index + 1].requestFocus();
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
+    Navigator.of(context).pop<MapEntry<String, List<String>>>(
+      MapEntry(
+        _keyController.text,
+        _valueControllers.map((controller) => controller.text).toList(),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _keyController.dispose();
+    for (final controller in _valueControllers) {
+      controller.dispose();
+    }
+    for (final focusNode in _valueFocusNodes) {
+      focusNode.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final appLocalizations = context.appLocalizations;
+    return CommonDialog(
+      title: widget.title,
+      maxWidth: 360,
+      actions: [
+        SizedBox(
+          width: double.infinity,
+          child: Row(
+            children: [
+              TextButton.icon(
+                onPressed: _addValue,
+                icon: const Icon(Icons.add),
+                label: Text(appLocalizations.add),
+              ),
+              const Spacer(),
+              TextButton(
+                onPressed: Navigator.of(context).pop,
+                child: Text(appLocalizations.cancel),
+              ),
+              TextButton(
+                onPressed: _submit,
+                child: Text(appLocalizations.confirm),
+              ),
+            ],
+          ),
+        ),
+      ],
+      child: Form(
+        key: _formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextFormField(
+              autofocus: true,
+              controller: _keyController,
+              maxLines: 3,
+              minLines: 1,
+              inputFormatters: widget.keyMaxLength == null
+                  ? null
+                  : TextInputLimits.limit(widget.keyMaxLength!),
+              textInputAction: TextInputAction.next,
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: widget.keyField.label,
+              ),
+              onFieldSubmitted: (_) {
+                _valueFocusNodes.first.requestFocus();
+              },
+              validator: (value) {
+                final validationError = widget.keyField.validator?.call(value);
+                if (validationError != null) return validationError;
+                if (value == null || value.isEmpty) {
+                  return appLocalizations.emptyTip(widget.keyField.label);
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            for (var index = 0; index < _valueControllers.length; index++) ...[
+              TextFormField(
+                controller: _valueControllers[index],
+                focusNode: _valueFocusNodes[index],
+                inputFormatters: widget.valueMaxLength == null
+                    ? null
+                    : TextInputLimits.limit(widget.valueMaxLength!),
+                textInputAction: TextInputAction.next,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: widget.valueLabel,
+                  suffixIcon: IconButton(
+                    tooltip: appLocalizations.delete,
+                    onPressed: () => _removeValue(index),
+                    icon: const Icon(Icons.delete_outline),
+                  ),
+                ),
+                onFieldSubmitted: (_) {
+                  _handleValueSubmitted(index);
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return appLocalizations.emptyTip(widget.valueLabel);
+                  }
+                  return null;
+                },
+              ),
+              if (index < _valueControllers.length - 1)
+                const SizedBox(height: 12),
+            ],
+          ],
+        ),
       ),
     );
   }
