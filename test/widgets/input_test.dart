@@ -518,31 +518,20 @@ void main() {
     );
   });
 
-  testWidgets('MapInputPage adds a key before editing its value list', (
-    tester,
-  ) async {
-    final container = ProviderContainer(
-      overrides: [
-        viewSizeProvider.overrideWithBuild((_, _) => const Size(1200, 1000)),
-      ],
-    );
-    globalState.container = container;
-    addTearDown(() {
-      container.dispose();
-      globalState.container = ProviderContainer();
-    });
-
+  testWidgets('MapInputPage edits list values in one dialog', (tester) async {
     await tester.pumpWidget(
-      const _TestApp(
-        child: MapInputPage(
-          title: 'Policies',
-          map: {'example.com': '1.1.1.1,8.8.8.8'},
-          keyLabel: 'Domain',
-          valueLabel: 'Nameserver',
-          valueParser: _splitValues,
-          valueSerializer: _joinValues,
-          titleBuilder: _entryTitle,
-          subtitleBuilder: _entrySubtitle,
+      const ProviderScope(
+        child: _TestApp(
+          child: MapInputPage(
+            title: 'Policies',
+            map: {'example.com': '1.1.1.1,8.8.8.8'},
+            keyLabel: 'Domain',
+            valueLabel: 'Nameserver',
+            valueParser: _splitValues,
+            valueSerializer: _joinValues,
+            titleBuilder: _entryTitle,
+            subtitleBuilder: _entrySubtitle,
+          ),
         ),
       ),
     );
@@ -550,39 +539,80 @@ void main() {
     await tester.tap(find.text('example.com').first);
     await tester.pumpAndSettle();
 
+    expect(find.byType(MapEntryListDialog), findsOneWidget);
+    expect(find.byType(TextFormField), findsNWidgets(3));
     expect(find.text('1.1.1.1'), findsOneWidget);
     expect(find.text('8.8.8.8'), findsOneWidget);
-    expect(find.byType(TextFormField), findsNothing);
-
-    await tester.pageBack();
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Add'));
-    await tester.pumpAndSettle();
-    expect(find.byType(AddDialog), findsOneWidget);
-    await tester.enterText(find.byType(TextFormField), 'new.example.com');
-    await tester.tap(find.text('Confirm'));
-    await tester.pumpAndSettle();
-
-    expect(find.byType(TextFormField), findsNothing);
-    expect(find.text('No data'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(TextFormField).at(1),
+        matching: find.byIcon(Icons.delete_outline),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: find.byType(Form), matching: find.text('Add')),
+      findsNothing,
+    );
+    expect(
+      tester
+          .getCenter(
+            find.descendant(
+              of: find.byType(MapEntryListDialog),
+              matching: find.text('Add'),
+            ),
+          )
+          .dx,
+      lessThan(tester.getCenter(find.text('Cancel')).dx),
+    );
+    await tester.tap(
+      find
+          .descendant(
+            of: find.byType(MapEntryListDialog),
+            matching: find.byIcon(Icons.delete_outline),
+          )
+          .first,
+    );
+    await tester.pump();
+    expect(find.byType(TextFormField), findsNWidgets(2));
 
     await tester.tap(
       find.descendant(
-        of: find.byType(ListInputPage),
+        of: find.byType(MapEntryListDialog),
         matching: find.text('Add'),
       ),
     );
-    await tester.pumpAndSettle();
+    await tester.pump();
+    expect(find.byType(TextFormField), findsNWidgets(3));
     await tester.enterText(find.byType(TextFormField).last, '9.9.9.9');
     await tester.tap(find.text('Confirm'));
     await tester.pumpAndSettle();
 
-    await tester.pageBack();
+    expect(find.byType(MapEntryListDialog), findsNothing);
+    expect(find.text('8.8.8.8,9.9.9.9'), findsOneWidget);
+
+    await tester.tap(find.text('Add'));
+    await tester.pumpAndSettle();
+    expect(find.byType(MapEntryListDialog), findsOneWidget);
+    await tester.tap(find.text('Confirm'));
+    await tester.pump();
+    expect(find.byType(MapEntryListDialog), findsOneWidget);
+
+    final fields = find.byType(TextFormField);
+    await tester.enterText(fields.first, 'new.example.com');
+    await tester.enterText(fields.last, '4.4.4.4');
+    await tester.tap(find.text('Confirm'));
     await tester.pumpAndSettle();
 
     expect(find.text('new.example.com'), findsOneWidget);
-    expect(find.text('9.9.9.9'), findsOneWidget);
+    expect(find.text('4.4.4.4'), findsOneWidget);
+
+    await tester.tap(find.text('Add'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    expect(find.byType(MapEntryListDialog), findsNothing);
+    expect(find.text('new.example.com'), findsOneWidget);
   });
 
   test('NoInputBorder implements border geometry and interior painting', () {
