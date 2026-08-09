@@ -241,10 +241,106 @@ class ListInputPage extends ConsumerStatefulWidget {
   ConsumerState createState() => _ListInputPageState();
 }
 
-class _ListInputPageState extends ConsumerState<ListInputPage> {
+mixin _DragSelectionMixin<T extends ConsumerStatefulWidget>
+    on ConsumerState<T> {
+  final Map<String, GlobalKey> _dragSelectionKeys = {};
+  Set<String> _initialDragSelectedIds = {};
+  bool _dragSelectionValue = false;
+  int? _dragSelectionStartIndex;
+  int? _lastDragSelectionIndex;
+
+  List<String> get dragSelectionIds;
+
+  Set<dynamic> get dragSelectedIds;
+
+  void setDragSelected(String id, bool selected);
+
+  GlobalKey dragSelectionKey(String id) {
+    return _dragSelectionKeys.putIfAbsent(id, GlobalKey.new);
+  }
+
+  void startDragSelection(String id, LongPressStartDetails details) {
+    final index = dragSelectionIds.indexOf(id);
+    if (index == -1) return;
+    _initialDragSelectedIds = dragSelectedIds.whereType<String>().toSet();
+    _dragSelectionValue = !_initialDragSelectedIds.contains(id);
+    _dragSelectionStartIndex = index;
+    _lastDragSelectionIndex = index;
+    setDragSelected(id, _dragSelectionValue);
+    _updateDragSelectionAt(details.globalPosition);
+  }
+
+  void updateDragSelection(LongPressMoveUpdateDetails details) {
+    _updateDragSelectionAt(details.globalPosition);
+  }
+
+  void _updateDragSelectionAt(Offset globalPosition) {
+    final index = _indexAt(globalPosition);
+    final startIndex = _dragSelectionStartIndex;
+    final lastIndex = _lastDragSelectionIndex;
+    if (index == null || startIndex == null || lastIndex == null) return;
+    if (index == lastIndex) return;
+    final previousStart = startIndex < lastIndex ? startIndex : lastIndex;
+    final previousEnd = startIndex > lastIndex ? startIndex : lastIndex;
+    final currentStart = startIndex < index ? startIndex : index;
+    final currentEnd = startIndex > index ? startIndex : index;
+    final affectedStart = previousStart < currentStart
+        ? previousStart
+        : currentStart;
+    final affectedEnd = previousEnd > currentEnd ? previousEnd : currentEnd;
+    for (var current = affectedStart; current <= affectedEnd; current++) {
+      final id = dragSelectionIds[current];
+      final isInCurrentRange = current >= currentStart && current <= currentEnd;
+      final selected = isInCurrentRange
+          ? _dragSelectionValue
+          : _initialDragSelectedIds.contains(id);
+      setDragSelected(id, selected);
+    }
+    _lastDragSelectionIndex = index;
+  }
+
+  void endDragSelection([LongPressEndDetails? details]) {
+    _initialDragSelectedIds = {};
+    _dragSelectionStartIndex = null;
+    _lastDragSelectionIndex = null;
+  }
+
+  int? _indexAt(Offset globalPosition) {
+    final ids = dragSelectionIds;
+    for (var index = 0; index < ids.length; index++) {
+      final context = _dragSelectionKeys[ids[index]]?.currentContext;
+      final renderObject = context?.findRenderObject();
+      if (renderObject is! RenderBox || !renderObject.hasSize) continue;
+      final position = renderObject.globalToLocal(globalPosition);
+      if ((Offset.zero & renderObject.size).contains(position)) {
+        return index;
+      }
+    }
+    return null;
+  }
+}
+
+class _ListInputPageState extends ConsumerState<ListInputPage>
+    with _DragSelectionMixin<ListInputPage> {
   List<String> _items = [];
   late List<String> _originItems;
   final _key = utils.id;
+
+  @override
+  List<String> get dragSelectionIds => _items;
+
+  @override
+  Set<dynamic> get dragSelectedIds => ref.read(itemsProvider(_key));
+
+  @override
+  void setDragSelected(String id, bool selected) {
+    ref.read(itemsProvider(_key).notifier).update((state) {
+      if (state.contains(id) == selected) return state;
+      final nextState = Set<String>.from(state);
+      selected ? nextState.add(id) : nextState.remove(id);
+      return nextState;
+    });
+  }
 
   @override
   void initState() {
@@ -338,6 +434,7 @@ class _ListInputPageState extends ConsumerState<ListInputPage> {
     required int length,
     required bool isSelected,
     required bool isEditing,
+    bool trackDragSelection = true,
   }) {
     final position = ItemPosition.get(index, length);
     return ReorderableDelayedDragStartListener(
@@ -345,22 +442,33 @@ class _ListInputPageState extends ConsumerState<ListInputPage> {
       index: index,
       child: ItemPositionProvider(
         position: position,
-        child: SelectedDecorationListItem(
-          title: widget.titleBuilder(value),
-          isSelected: isSelected,
-          isEditing: isEditing,
-          onSelected: () {
-            _handleSelected(value);
-          },
-          onPressed: () {
-            _handleAddOrEdit(value);
-          },
-          leading: widget.leadingBuilder != null
-              ? widget.leadingBuilder!(value)
-              : null,
-          subtitle: widget.subtitleBuilder != null
-              ? widget.subtitleBuilder!(value)
-              : null,
+        child: KeyedSubtree(
+          key: trackDragSelection ? dragSelectionKey(value) : null,
+          child: SelectedDecorationListItem(
+            title: widget.titleBuilder(value),
+            isSelected: isSelected,
+            isEditing: isEditing,
+            onSelected: () {
+              _handleSelected(value);
+            },
+            onPressed: () {
+              _handleAddOrEdit(value);
+            },
+            onSelectionDragStart: trackDragSelection
+                ? (details) => startDragSelection(value, details)
+                : null,
+            onSelectionDragUpdate: trackDragSelection
+                ? updateDragSelection
+                : null,
+            onSelectionDragEnd: trackDragSelection ? endDragSelection : null,
+            onSelectionDragCancel: trackDragSelection ? endDragSelection : null,
+            leading: widget.leadingBuilder != null
+                ? widget.leadingBuilder!(value)
+                : null,
+            subtitle: widget.subtitleBuilder != null
+                ? widget.subtitleBuilder!(value)
+                : null,
+          ),
         ),
       ),
     );
@@ -444,6 +552,7 @@ class _ListInputPageState extends ConsumerState<ListInputPage> {
                       length: _items.length,
                       isSelected: selectedItems.contains(value),
                       isEditing: selectedItems.isNotEmpty,
+                      trackDragSelection: false,
                     ),
                     index,
                     animation,
@@ -488,10 +597,27 @@ class MapInputPage extends ConsumerStatefulWidget {
   ConsumerState<MapInputPage> createState() => _MapInputPageState();
 }
 
-class _MapInputPageState extends ConsumerState<MapInputPage> {
+class _MapInputPageState extends ConsumerState<MapInputPage>
+    with _DragSelectionMixin<MapInputPage> {
   List<MapEntry<String, String>> _items = [];
   late final List<MapEntry<String, String>> _originItems;
   final _key = utils.id;
+
+  @override
+  List<String> get dragSelectionIds => _items.map((item) => item.key).toList();
+
+  @override
+  Set<dynamic> get dragSelectedIds => ref.read(itemsProvider(_key));
+
+  @override
+  void setDragSelected(String id, bool selected) {
+    ref.read(itemsProvider(_key).notifier).update((state) {
+      if (state.contains(id) == selected) return state;
+      final nextState = Set<String>.from(state);
+      selected ? nextState.add(id) : nextState.remove(id);
+      return nextState;
+    });
+  }
 
   @override
   void initState() {
@@ -661,6 +787,7 @@ class _MapInputPageState extends ConsumerState<MapInputPage> {
     required int length,
     required bool isSelected,
     required bool isEditing,
+    bool trackDragSelection = true,
   }) {
     final position = ItemPosition.get(index, length);
     return ReorderableDelayedDragStartListener(
@@ -668,22 +795,33 @@ class _MapInputPageState extends ConsumerState<MapInputPage> {
       index: index,
       child: ItemPositionProvider(
         position: position,
-        child: SelectedDecorationListItem(
-          title: widget.titleBuilder(value),
-          leading: widget.leadingBuilder != null
-              ? widget.leadingBuilder!(value)
-              : null,
-          subtitle: widget.subtitleBuilder != null
-              ? widget.subtitleBuilder!(value)
-              : null,
-          isSelected: isSelected,
-          isEditing: isEditing,
-          onSelected: () {
-            _handleSelected(value);
-          },
-          onPressed: () {
-            _handleAddOrEdit(value);
-          },
+        child: KeyedSubtree(
+          key: trackDragSelection ? dragSelectionKey(value.key) : null,
+          child: SelectedDecorationListItem(
+            title: widget.titleBuilder(value),
+            leading: widget.leadingBuilder != null
+                ? widget.leadingBuilder!(value)
+                : null,
+            subtitle: widget.subtitleBuilder != null
+                ? widget.subtitleBuilder!(value)
+                : null,
+            isSelected: isSelected,
+            isEditing: isEditing,
+            onSelected: () {
+              _handleSelected(value);
+            },
+            onPressed: () {
+              _handleAddOrEdit(value);
+            },
+            onSelectionDragStart: trackDragSelection
+                ? (details) => startDragSelection(value.key, details)
+                : null,
+            onSelectionDragUpdate: trackDragSelection
+                ? updateDragSelection
+                : null,
+            onSelectionDragEnd: trackDragSelection ? endDragSelection : null,
+            onSelectionDragCancel: trackDragSelection ? endDragSelection : null,
+          ),
         ),
       ),
     );
@@ -770,6 +908,7 @@ class _MapInputPageState extends ConsumerState<MapInputPage> {
                       length: _items.length,
                       isSelected: selectedItems.contains(value.key),
                       isEditing: selectedItems.isNotEmpty,
+                      trackDragSelection: false,
                     ),
                     index,
                     animation,
