@@ -98,6 +98,14 @@ func TestUpdateConfigRejectsAnUnappliedConfig(t *testing.T) {
 	}
 }
 
+func TestUpdateConfigRejectsAConfigWithoutGeneralSettings(t *testing.T) {
+	withCurrentConfig(t, &config.Config{})
+
+	if err := updateConfig(&UpdateParams{}); err != errConfigNotApplied {
+		t.Errorf("updateConfig error = %v, want errConfigNotApplied", err)
+	}
+}
+
 func TestHandleUpdateConfigReportsAnUnappliedConfig(t *testing.T) {
 	withCurrentConfig(t, nil)
 

@@ -264,7 +264,7 @@ func patchTun(target *LC.Tun, params *tunSchema) {
 func updateConfig(params *UpdateParams) error {
 	configMu.Lock()
 	defer configMu.Unlock()
-	if currentConfig == nil {
+	if currentConfig == nil || currentConfig.General == nil {
 		return errConfigNotApplied
 	}
 
