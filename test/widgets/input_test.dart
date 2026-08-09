@@ -7,6 +7,7 @@ import 'package:fl_clash/models/common.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -330,6 +331,115 @@ void main() {
     expect(find.text('No data'), findsOneWidget);
   });
 
+  testWidgets('ListInputPage applies inverse start state to its drag range', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: _TestApp(
+          child: ListInputPage(
+            title: 'Items',
+            items: ['a', 'b', 'c', 'd'],
+            titleBuilder: _textBuilder,
+          ),
+        ),
+      ),
+    );
+
+    final checkboxes = find.byType(Checkbox);
+    final selectGesture = await tester.startGesture(
+      tester.getCenter(checkboxes.first),
+    );
+    await tester.pump(kLongPressTimeout);
+    await selectGesture.moveTo(tester.getCenter(checkboxes.last));
+    await tester.pump();
+
+    expect(
+      List.generate(
+        4,
+        (index) => tester.widget<Checkbox>(checkboxes.at(index)).value,
+      ),
+      [true, true, true, true],
+    );
+
+    await selectGesture.moveTo(tester.getCenter(checkboxes.at(1)));
+    await selectGesture.up();
+    await tester.pump();
+
+    expect(
+      List.generate(
+        4,
+        (index) => tester.widget<Checkbox>(checkboxes.at(index)).value,
+      ),
+      [true, true, false, false],
+    );
+
+    final mixedGesture = await tester.startGesture(
+      tester.getCenter(checkboxes.at(1)),
+    );
+    await tester.pump(kLongPressTimeout);
+    await mixedGesture.moveTo(tester.getCenter(checkboxes.at(2)));
+    await mixedGesture.up();
+    await tester.pump();
+
+    expect(
+      List.generate(
+        4,
+        (index) => tester.widget<Checkbox>(checkboxes.at(index)).value,
+      ),
+      [true, false, false, false],
+    );
+
+    final reverseGesture = await tester.startGesture(
+      tester.getCenter(checkboxes.at(1)),
+    );
+    await tester.pump(kLongPressTimeout);
+    await reverseGesture.moveTo(tester.getCenter(checkboxes.at(2)));
+    await reverseGesture.up();
+    await tester.pump();
+
+    expect(
+      List.generate(
+        4,
+        (index) => tester.widget<Checkbox>(checkboxes.at(index)).value,
+      ),
+      [true, true, true, false],
+    );
+  });
+
+  testWidgets('ListInputPage scrolls when dragging from a checkbox', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(400, 500);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: _TestApp(
+          child: ListInputPage(
+            title: 'Items',
+            items: List.generate(20, (index) => 'item $index'),
+            titleBuilder: _textBuilder,
+          ),
+        ),
+      ),
+    );
+
+    final scrollable = tester.state<ScrollableState>(
+      find.descendant(
+        of: find.byType(ReorderableListView),
+        matching: find.byType(Scrollable),
+      ),
+    );
+    await tester.drag(find.byType(Checkbox).first, const Offset(0, -200));
+    await tester.pumpAndSettle();
+
+    expect(scrollable.position.pixels, greaterThan(0));
+    expect(find.byIcon(Icons.delete), findsNothing);
+  });
+
   testWidgets('MapInputPage adds, reorders, selects, and deletes entries', (
     tester,
   ) async {
@@ -375,6 +485,37 @@ void main() {
     await tester.tap(find.byIcon(Icons.delete));
     await tester.pump();
     expect(find.text('No data'), findsOneWidget);
+  });
+
+  testWidgets('MapInputPage drag-selects consecutive entries', (tester) async {
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: _TestApp(
+          child: MapInputPage(
+            title: 'Map',
+            map: {'a': '1', 'b': '2', 'c': '3', 'd': '4'},
+            titleBuilder: _entryTitle,
+          ),
+        ),
+      ),
+    );
+
+    final checkboxes = find.byType(Checkbox);
+    final gesture = await tester.startGesture(
+      tester.getCenter(checkboxes.first),
+    );
+    await tester.pump(kLongPressTimeout);
+    await gesture.moveTo(tester.getCenter(checkboxes.at(2)));
+    await gesture.up();
+    await tester.pump();
+
+    expect(
+      List.generate(
+        4,
+        (index) => tester.widget<Checkbox>(checkboxes.at(index)).value,
+      ),
+      [true, true, true, false],
+    );
   });
 
   testWidgets('MapInputPage adds a key before editing its value list', (
