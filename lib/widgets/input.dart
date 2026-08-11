@@ -477,7 +477,12 @@ class _ListInputPageState extends ConsumerState<ListInputPage>
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     final selectedItems = ref.watch(itemsProvider(_key));
+    final route = ModalRoute.of(context);
+    if (route is CommonRoute) {
+      route.updateCurrentResult(List<String>.from(_items));
+    }
     return CommonPopScope(
+      canPop: route is CommonRoute && selectedItems.isEmpty,
       onPop: (_) {
         if (selectedItems.isNotEmpty) {
           ref.read(itemsProvider(_key).notifier).value = {};
@@ -803,7 +808,12 @@ class _MapInputPageState extends ConsumerState<MapInputPage>
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     final selectedItems = ref.watch(itemsProvider(_key));
+    final route = ModalRoute.of(context);
+    if (route is CommonRoute) {
+      route.updateCurrentResult(Map<String, String>.fromEntries(_items));
+    }
     return CommonPopScope(
+      canPop: route is CommonRoute && selectedItems.isEmpty,
       onPop: (_) {
         if (selectedItems.isNotEmpty) {
           ref.read(itemsProvider(_key).notifier).value = {};
