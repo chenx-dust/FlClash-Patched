@@ -9,6 +9,7 @@ import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -615,6 +616,171 @@ void main() {
     expect(find.text('new.example.com'), findsOneWidget);
   });
 
+  testWidgets('MapInputPage returns latest entries with iOS edge swipe', (
+    tester,
+  ) async {
+    Map<String, String>? result;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: ThemeData(platform: TargetPlatform.iOS),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.delegate.supportedLocales,
+          builder: (context, child) {
+            globalState.measure = Measure.of(context, 1);
+            globalState.theme = CommonTheme.of(context, 1);
+            return child!;
+          },
+          home: Builder(
+            builder: (context) {
+              return Scaffold(
+                body: FilledButton(
+                  onPressed: () async {
+                    result = await Navigator.of(context).push(
+                      CommonRoute<Map<String, String>>(
+                        builder: (_) {
+                          return const MapInputPage(
+                            title: 'Map',
+                            map: {'a': '1', 'b': '2'},
+                            titleBuilder: _entryTitle,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  child: const Text('Open'),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+
+    final listView = tester.widget<ReorderableListView>(
+      find.byType(ReorderableListView),
+    );
+    listView.onReorderItem!(0, 1);
+    await tester.pump();
+
+    await tester.dragFrom(const Offset(5, 300), const Offset(500, 0));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Open'), findsOneWidget);
+    expect(result, {'b': '2', 'a': '1'});
+  });
+
+  for (final commit in [true, false]) {
+    testWidgets(
+      'MapInputPage ${commit ? 'commits' : 'cancels'} Android predictive back',
+      (tester) async {
+        Map<String, String>? result;
+        var completed = false;
+
+        await tester.pumpWidget(
+          ProviderScope(
+            child: MaterialApp(
+              theme: ThemeData(
+                platform: TargetPlatform.android,
+                pageTransitionsTheme: const PageTransitionsTheme(
+                  builders: {
+                    TargetPlatform.android:
+                        PredictiveBackPageTransitionsBuilder(),
+                  },
+                ),
+              ),
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+              ],
+              supportedLocales: AppLocalizations.delegate.supportedLocales,
+              builder: (context, child) {
+                globalState.measure = Measure.of(context, 1);
+                globalState.theme = CommonTheme.of(context, 1);
+                return child!;
+              },
+              home: Builder(
+                builder: (context) {
+                  return Scaffold(
+                    body: FilledButton(
+                      onPressed: () async {
+                        result = await Navigator.of(context).push(
+                          CommonRoute<Map<String, String>>(
+                            builder: (_) {
+                              return const MapInputPage(
+                                title: 'Map',
+                                map: {'a': '1', 'b': '2'},
+                                titleBuilder: _entryTitle,
+                              );
+                            },
+                          ),
+                        );
+                        completed = true;
+                      },
+                      child: const Text('Open'),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+
+        await tester.tap(find.text('Open'));
+        await tester.pumpAndSettle();
+
+        final listView = tester.widget<ReorderableListView>(
+          find.byType(ReorderableListView),
+        );
+        listView.onReorderItem!(0, 1);
+        await tester.pump();
+
+        await _sendBackGesture('startBackGesture', {
+          'touchOffset': <double>[5, 300],
+          'progress': 0.0,
+          'swipeEdge': 0,
+        });
+        await tester.pump();
+        expect(_predictiveBackTransition, findsOneWidget);
+
+        await _sendBackGesture('updateBackGestureProgress', {
+          'touchOffset': <double>[100, 300],
+          'progress': 0.35,
+          'swipeEdge': 0,
+        });
+        await tester.pump();
+        await _sendBackGesture(
+          commit ? 'commitBackGesture' : 'cancelBackGesture',
+        );
+        await tester.pumpAndSettle();
+
+        if (commit) {
+          expect(find.text('Open'), findsOneWidget);
+          expect(completed, isTrue);
+          expect(result, {'b': '2', 'a': '1'});
+        } else {
+          expect(find.byType(MapInputPage), findsOneWidget);
+          expect(completed, isFalse);
+          expect(
+            tester.getTopLeft(find.text('b').first).dy,
+            lessThan(tester.getTopLeft(find.text('a').first).dy),
+          );
+        }
+      },
+    );
+  }
+
   test('NoInputBorder implements border geometry and interior painting', () {
     const border = NoInputBorder();
     const rect = Rect.fromLTWH(1, 2, 30, 40);
@@ -633,6 +799,22 @@ void main() {
     border.paint(canvas, rect);
     recorder.endRecording();
   });
+}
+
+Finder get _predictiveBackTransition => find.byWidgetPredicate(
+  (widget) =>
+      '${widget.runtimeType}' == '_PredictiveBackSharedElementPageTransition',
+);
+
+Future<void> _sendBackGesture(
+  String method, [
+  Map<String, dynamic>? arguments,
+]) async {
+  final message = const StandardMethodCodec().encodeMethodCall(
+    MethodCall(method, arguments),
+  );
+  await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .handlePlatformMessage('flutter/backgesture', message, (_) {});
 }
 
 String _optionText(String value) => value;

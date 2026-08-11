@@ -393,7 +393,9 @@ class ListItem<T> extends StatelessWidget {
               final themeProps = globalState.container.read(
                 themeSettingProvider,
               );
-              if (!isMobile || themeProps.predictiveBack) {
+              if (!isMobile ||
+                  themeProps.predictiveBack ||
+                  Theme.of(context).platform == TargetPlatform.iOS) {
                 final res = await showExtend(
                   context,
                   props: ExtendProps(
