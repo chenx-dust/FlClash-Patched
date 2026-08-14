@@ -47,7 +47,7 @@ const TYPE_DATA: u8 = 0x03;
 const TYPE_ERROR: u8 = 0x04;
 
 const MAX_FRAME_SIZE: usize = 64 * 1024 * 1024;
-const MAX_PENDING_MESSAGES: usize = 8;
+const MAX_PENDING_MESSAGES: usize = 64;
 const IO_POLL_INTERVAL: Duration = Duration::from_millis(20);
 const ACCEPT_POLL_INTERVAL: Duration = Duration::from_millis(50);
 

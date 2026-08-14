@@ -69,7 +69,6 @@ class CoreController {
         'Failed to initialize geo data: $e',
         logLevel: LogLevel.error,
       );
-      rethrow;
     }
   }
 
