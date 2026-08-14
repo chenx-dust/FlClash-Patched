@@ -90,7 +90,7 @@ class ProfilesAction extends _$ProfilesAction {
   Future<void> addProfileFormFile() async {
     final platformFile = await globalState.safeRun(picker.pickerFile);
     if (platformFile == null) return;
-    final bytes = await platformFile.readBytes();
+    final bytes = await platformFile.readAsBytes();
     globalState.navigatorKey.currentState?.popUntil((route) => route.isFirst);
     ref.read(currentPageLabelProvider.notifier).toProfiles();
     final profile = await globalState.loadingRun(
