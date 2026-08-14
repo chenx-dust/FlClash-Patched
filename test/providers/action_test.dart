@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fl_clash/common/constant.dart';
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/core/desktop/model.dart';
 import 'package:fl_clash/core/interface.dart';
@@ -962,7 +963,7 @@ void main() {
       'returns after the UI timeout while requests respect the concurrency limit',
       () async {
         final proxies = List.generate(
-          11,
+          51,
           (index) => Proxy(name: 'Node $index', type: 'Shadowsocks'),
         );
         final responses = {
@@ -977,7 +978,7 @@ void main() {
         ).thenAnswer((invocation) {
           final proxyName = invocation.positionalArguments[1] as String;
           requestedNames.add(proxyName);
-          if (requestedNames.length == 10) {
+          if (requestedNames.length == maxConcurrentDelayTests) {
             firstBatchStarted.complete();
           }
           if (proxyName == proxies.last.name) {
@@ -1008,7 +1009,7 @@ void main() {
 
         await firstBatchStarted.future;
         await uiFuture;
-        expect(requestedNames, hasLength(10));
+        expect(requestedNames, hasLength(maxConcurrentDelayTests));
         expect(requestedNames, isNot(contains(proxies.last.name)));
         expect(
           container.read(
@@ -1033,7 +1034,7 @@ void main() {
           0,
         );
 
-        for (final proxy in proxies.take(10)) {
+        for (final proxy in proxies.take(maxConcurrentDelayTests)) {
           responses[proxy.name]!.complete(
             Delay(url: 'https://default.test', name: proxy.name, value: 42),
           );

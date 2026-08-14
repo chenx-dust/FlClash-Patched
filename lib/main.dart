@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:fl_clash/pages/error.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rust_api/rust_api.dart';
@@ -19,7 +20,7 @@ Future<void> main() async {
     }
     final version = await system.init();
     final container = await globalState.init(version);
-    if (system.isDesktop) {
+    if (system.isDesktop && !kDebugMode) {
       final signals = [
         ProcessSignal.sigint,
         if (!system.isWindows) ProcessSignal.sigterm,

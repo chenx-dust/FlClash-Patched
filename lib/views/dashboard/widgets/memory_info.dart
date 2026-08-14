@@ -99,4 +99,3 @@ class _MemoryInfoState extends State<MemoryInfo>
     );
   }
 }
-
