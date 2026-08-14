@@ -11,39 +11,34 @@ class Picker {
     return FilePicker.pickFile(initialDirectory: await appPath.downloadDirPath);
   }
 
-  Future<String?> saveFile(
+  Future<Uri?> saveFile(
     String fileName,
     Uint8List bytes, {
     FileType type = FileType.any,
     List<String>? allowedExtensions,
   }) async {
-    final path = await FilePicker.saveFile(
+    return FilePicker.saveFile(
       fileName: fileName,
       initialDirectory: await appPath.downloadDirPath,
       type: type,
       allowedExtensions: allowedExtensions,
       bytes: bytes,
     );
-    if (!system.isAndroid && path != null) {
-      final file = File(path);
-      await file.safeWriteAsBytes(bytes);
-    }
-    return path;
   }
 
-  Future<String?> saveFileWithPath(String fileName, String localPath) async {
+  Future<Uri?> saveFileWithPath(String fileName, String localPath) async {
     final localFile = File(localPath);
     if (!await localFile.exists()) {
       await localFile.create(recursive: true);
     }
     final bytes = await localFile.readAsBytes();
-    final path = await FilePicker.saveFile(
+    final uri = await FilePicker.saveFile(
       fileName: fileName,
       initialDirectory: await appPath.downloadDirPath,
       bytes: bytes,
     );
     await localFile.safeDelete();
-    return path;
+    return uri;
   }
 
   Future<String?> pickerConfigQRCode() async {
@@ -61,12 +56,6 @@ class Picker {
       throw currentAppLocalizations.pleaseUploadValidQrcode;
     }
     return result;
-  }
-}
-
-extension PlatformFileExt on PlatformFile {
-  Future<Uint8List> readBytes() {
-    return readAsBytes();
   }
 }
 

@@ -9,7 +9,7 @@ import app_links
 import connectivity_plus
 import device_info_plus
 import dynamic_color
-import file_picker
+import file_picker_darwin
 import file_selector_macos
 import flutter_js
 import hotkey_manager_macos
