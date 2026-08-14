@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if (( $# < 2 || $# > 3 )); then
-  echo "Usage: $0 <previous-ref> <release-ref> [flclash-upstream-ref]" >&2
+if (( $# < 2 || $# > 4 )); then
+  echo "Usage: $0 <previous-ref> <release-ref> [flclash-upstream-ref] [mihomo-upstream-ref]" >&2
   exit 2
 fi
 
 previous_ref=$1
 release_ref=$2
 flclash_upstream_ref=${3:-upstream/dev}
+mihomo_upstream_ref=${4:-upstream/Meta}
 
 repo_root=$(git rev-parse --show-toplevel)
 core_dir="$repo_root/core/mihomo"
@@ -16,6 +17,7 @@ core_dir="$repo_root/core/mihomo"
 git -C "$repo_root" rev-parse --verify "${previous_ref}^{commit}" >/dev/null
 release_sha=$(git -C "$repo_root" rev-parse --verify "${release_ref}^{commit}")
 git -C "$repo_root" rev-parse --verify "${flclash_upstream_ref}^{commit}" >/dev/null
+git -C "$core_dir" rev-parse --verify "${mihomo_upstream_ref}^{commit}" >/dev/null
 
 read_version() {
   git -C "$repo_root" show "$1:pubspec.yaml" |
@@ -54,6 +56,15 @@ fi
 
 flclash_base=$(git -C "$repo_root" merge-base "$flclash_upstream_ref" "$release_ref")
 flclash_branch=${flclash_upstream_ref#*/}
+flclash_tag=$(
+  git -C "$repo_root" tag --sort=-version:refname --points-at "$flclash_base" |
+    sed -n '1p'
+)
+if [[ -n "$flclash_tag" ]]; then
+  flclash_label=$flclash_tag
+else
+  flclash_label=$flclash_branch
+fi
 
 core_sha=$(
   git -C "$repo_root" ls-tree "$release_ref" core/mihomo |
@@ -65,18 +76,21 @@ if [[ -z "$core_sha" ]]; then
 fi
 git -C "$core_dir" cat-file -e "${core_sha}^{commit}"
 
-mihomo_tag=$(git -C "$core_dir" describe --tags --abbrev=0 "$core_sha" 2>/dev/null || true)
+mihomo_base=$(git -C "$core_dir" merge-base "$mihomo_upstream_ref" "$core_sha")
+mihomo_branch=${mihomo_upstream_ref#*/}
+mihomo_tag=$(
+  git -C "$core_dir" tag --sort=-version:refname --points-at "$mihomo_base" |
+    sed -n '1p'
+)
 if [[ -n "$mihomo_tag" ]]; then
-  mihomo_base=$(git -C "$core_dir" rev-parse "${mihomo_tag}^{commit}")
-  mihomo_label="$mihomo_tag"
+  mihomo_label=$mihomo_tag
 else
-  mihomo_base=$core_sha
-  mihomo_label=$(git -C "$core_dir" rev-parse --short=10 "$core_sha")
+  mihomo_label=$mihomo_branch
 fi
 
 printf 'Release: %s (%s)\n' "$release_ref" "$release_sha"
 printf 'Comparison base: %s (%s)\n' "$comparison_base" "$comparison_reason"
-printf 'FlClash upstream: %s at %s\n' "$flclash_branch" "$flclash_base"
+printf 'FlClash upstream: %s at %s\n' "$flclash_label" "$flclash_base"
 printf 'mihomo upstream: %s at %s\n' "$mihomo_label" "$mihomo_base"
 printf '\nRelease commits:\n'
 git -C "$repo_root" log \
