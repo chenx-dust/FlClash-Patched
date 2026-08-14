@@ -122,7 +122,7 @@ class _EditorPageState extends ConsumerState<EditorPage> {
     if (file == null) {
       return;
     }
-    final res = utf8.decode(await file.readBytes());
+    final res = utf8.decode(await file.readAsBytes());
     if (!mounted) {
       return;
     }

@@ -17,18 +17,13 @@ class Picker {
     FileType type = FileType.any,
     List<String>? allowedExtensions,
   }) async {
-    final uri = await FilePicker.saveFile(
+    return FilePicker.saveFile(
       fileName: fileName,
       initialDirectory: await appPath.downloadDirPath,
       type: type,
       allowedExtensions: allowedExtensions,
       bytes: bytes,
     );
-    if (!system.isAndroid && uri != null && uri.scheme == 'file') {
-      final file = File(uri.toFilePath());
-      await file.safeWriteAsBytes(bytes);
-    }
-    return uri;
   }
 
   Future<Uri?> saveFileWithPath(String fileName, String localPath) async {
@@ -61,12 +56,6 @@ class Picker {
       throw MessageException(currentAppLocalizations.pleaseUploadValidQrcode);
     }
     return result;
-  }
-}
-
-extension PlatformFileExt on PlatformFile {
-  Future<Uint8List> readBytes() {
-    return readAsBytes();
   }
 }
 

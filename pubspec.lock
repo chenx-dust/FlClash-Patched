@@ -641,10 +641,10 @@ packages:
     dependency: transitive
     description:
       name: hooks
-      sha256: "9a62a50b50b769a737bc0a8ff381f333529df3ab746b2f6b02e83760231455ba"
+      sha256: "03a564c3704524ee0f7fc56fc621e8796cc2eb8c24d1f1a33b34979815b285c4"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2"
+    version: "2.1.0"
   hotkey_manager:
     dependency: "direct main"
     description:
@@ -978,10 +978,10 @@ packages:
     dependency: transitive
     description:
       name: native_toolchain_c
-      sha256: f9c168717100ae6d9fee9ffb0be379bf1f8b26b0f6bcbd4fdddcd931993a6a72
+      sha256: a1c26117c48cebe5677b0cf0e33a980a79a7c5577effc86f52e5a0d309cdcb60
       url: "https://pub.dev"
     source: hosted
-    version: "0.19.2"
+    version: "0.19.3"
   navigator_resizable:
     dependency: "direct main"
     description:
@@ -1193,10 +1193,10 @@ packages:
     dependency: transitive
     description:
       name: record_use
-      sha256: "2551bd8eecfe95d14ae75f6021ad0248be5c27f138c2ec12fcb52b500b3ba1ed"
+      sha256: "3b4ab682aff40175afca6ff090cc5aa7ce9dafe8dfbae1537a6c678e6678baee"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.0"
+    version: "1.1.0"
   reorderable_grid:
     dependency: "direct main"
     description:
