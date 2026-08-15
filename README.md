@@ -10,9 +10,14 @@
 
 A soft fork of [FlClash](https://github.com/chen08209/FlClash), with several bug fixes, power efficiency improvements and new features.
 
+> [!CAUTION]
+> 如果您是中华人民共和国公民或者长期居住在中华人民共和国境内，请在使用前仔细阅读并理解 [免责声明](./README_zh_CN.md#免责声明) 中的内容。下载、安装或使用本项目即表示您同意免责声明中的条款，并承担由此产生的全部责任。
+
 ## Features
 
-- Enhanced security (privileged behavior boundary restrictions, IPC security enhancements)
+> [!WARNING]
+> This fork is maintained with a strong personal taste. Suggestions are welcome, but may not be adopted. The release cadence is relatively fast with force pushes, so staying up to date may come with issues, and compatibility with the original project is not guaranteed. Please ensure you have backup measures in place.
+
 - Support iOS platform (requires an Apple Developer account to build)
 - Optimized experience on Linux (Pacman package distribution, fixed RPM dependencies, WM_CLASS issues)
 - Fixed bugs from upstream (startup time, window positioning, notifications)
