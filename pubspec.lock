@@ -1605,7 +1605,7 @@ packages:
     description:
       path: "packages/tray_manager"
       ref: main
-      resolved-ref: "2456b5d01a37801f54871df1a1cd27d1abdcfd9e"
+      resolved-ref: a8a87943e1e9c2c56472fe97d47394e73f488caa
       url: "https://github.com/chenx-dust/tray_manager.git"
     source: git
     version: "0.5.3"
@@ -1820,7 +1820,7 @@ packages:
     description:
       path: "packages/window_manager"
       ref: main
-      resolved-ref: c5a4dc4dce842eddd798a007ed2083b143440ea1
+      resolved-ref: "7ddbd876f96fca602670e2110348fbcb387950e9"
       url: "https://github.com/chenx-dust/window_manager.git"
     source: git
     version: "0.5.2"

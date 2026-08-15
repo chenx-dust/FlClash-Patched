@@ -72,10 +72,17 @@ class Window {
     }
   }
 
-  Future<void> show({int? activationTimestamp}) async {
+  Future<void> show({
+    int? activationTimestamp,
+    String? activationToken,
+  }) async {
+    commonPrint.log('window show ts: $activationTimestamp, token: $activationToken');
     globalState.handleForeground();
     await windowManager.setSkipTaskbar(false);
-    await windowManager.show(activationTimestamp: activationTimestamp);
+    await windowManager.show(
+      activationTimestamp: activationTimestamp,
+      activationToken: activationToken,
+    );
   }
 
   Future<bool> get isVisible async {

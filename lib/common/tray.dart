@@ -224,7 +224,10 @@ class Tray {
       keyEquivalentModifiers:
           viewShortcut?.modifiers ?? const <TrayMenuItemModifier>{},
       onClickWithDetails: (_, details) {
-        window?.show(activationTimestamp: details.activationTimestamp);
+        window?.show(
+          activationTimestamp: details.activationTimestamp,
+          activationToken: details.activationToken,
+        );
       },
     );
     menuItems.add(showMenuItem);
