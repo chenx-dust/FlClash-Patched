@@ -185,6 +185,7 @@ class Tray {
         monochrome: monochrome,
       ),
       isTemplate: system.isMacOS,
+      iconSize: 18,
     );
     if (!Platform.isLinux) {
       await trayManager.setToolTip(appName);
