@@ -3469,6 +3469,41 @@ class AppLocalizations {
     );
   }
 
+  /// `Are you sure you want to clear the selected data?`
+  String get confirmClearSelectedData {
+    return Intl.message(
+      'Are you sure you want to clear the selected data?',
+      name: 'confirmClearSelectedData',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All data`
+  String get allData {
+    return Intl.message('All data', name: 'allData', desc: '', args: []);
+  }
+
+  /// `Application settings`
+  String get resetSettingsData {
+    return Intl.message(
+      'Application settings',
+      name: 'resetSettingsData',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Profiles and scripts`
+  String get resetProfilesAndScripts {
+    return Intl.message(
+      'Profiles and scripts',
+      name: 'resetProfilesAndScripts',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Loading...`
   String get loading {
     return Intl.message('Loading...', name: 'loading', desc: '', args: []);

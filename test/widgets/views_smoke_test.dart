@@ -108,6 +108,103 @@ void main() {
     });
   }
 
+  testWidgets('backup and restore exposes clear data with confirmation', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1400, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final container = ProviderContainer(
+      overrides: [profilesProvider.overrideWith(_TestProfiles.new)],
+    );
+    addTearDown(container.dispose);
+    globalState.container = container;
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const _TestApp(child: BackupAndRestore()),
+      ),
+    );
+    await tester.pump();
+
+    final clearData = find.text('Clear Data');
+    await tester.scrollUntilVisible(
+      clearData,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(clearData);
+    await tester.pumpAndSettle();
+
+    expect(find.text('All data'), findsOneWidget);
+    expect(find.text('Application settings'), findsOneWidget);
+    expect(find.text('Profiles and scripts'), findsOneWidget);
+
+    Checkbox checkboxFor(String label) {
+      final tile = find.ancestor(
+        of: find.text(label),
+        matching: find.byType(ListTile),
+      );
+      return tester.widget<Checkbox>(
+        find.descendant(of: tile, matching: find.byType(Checkbox)),
+      );
+    }
+
+    expect(checkboxFor('All data').value, isFalse);
+    expect(checkboxFor('Application settings').value, isFalse);
+    expect(checkboxFor('Profiles and scripts').value, isFalse);
+    expect(
+      tester
+          .widget<TextButton>(find.widgetWithText(TextButton, 'Confirm'))
+          .onPressed,
+      isNull,
+    );
+
+    await tester.tap(find.text('All data'));
+    await tester.pump();
+    expect(checkboxFor('All data').value, isTrue);
+    expect(checkboxFor('Application settings').value, isTrue);
+    expect(checkboxFor('Profiles and scripts').value, isTrue);
+    final confirmButton = tester.widget<TextButton>(
+      find.widgetWithText(TextButton, 'Confirm'),
+    );
+    expect(confirmButton.onPressed, isNotNull);
+    expect(
+      confirmButton.style?.foregroundColor?.resolve({}),
+      Theme.of(
+        tester.element(find.widgetWithText(TextButton, 'Confirm')),
+      ).colorScheme.error,
+    );
+
+    await tester.tap(find.text('Application settings'));
+    await tester.pump();
+    expect(checkboxFor('All data').value, isFalse);
+    expect(checkboxFor('Application settings').value, isFalse);
+    expect(checkboxFor('Profiles and scripts').value, isTrue);
+
+    await tester.tap(find.text('Application settings'));
+    await tester.pump();
+    expect(checkboxFor('All data').value, isFalse);
+    expect(checkboxFor('Application settings').value, isTrue);
+    expect(checkboxFor('Profiles and scripts').value, isTrue);
+
+    await tester.tap(find.text('Confirm'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Are you sure you want to clear the selected data?'),
+      findsOneWidget,
+    );
+    expect(find.text('Cancel'), findsOneWidget);
+
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    expect(find.text('Cancel'), findsNothing);
+  });
+
   final listenerCases = <String, Widget>{
     'requests': const RequestsView(),
     'logs': const LogsView(),

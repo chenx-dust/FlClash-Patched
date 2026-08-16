@@ -127,6 +127,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "ageSecretKeyOptional": MessageLookupByLibrary.simpleMessage("Age 秘密鍵（任意）"),
     "agree": MessageLookupByLibrary.simpleMessage("同意"),
+    "allData": MessageLookupByLibrary.simpleMessage("すべてのデータ"),
     "allowBypass": MessageLookupByLibrary.simpleMessage(
       "アプリが VPN をバイパスすることを許可",
     ),
@@ -211,6 +212,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "confirm": MessageLookupByLibrary.simpleMessage("確認"),
     "confirmClearAllData": MessageLookupByLibrary.simpleMessage(
       "すべてのデータをクリアしてもよろしいですか？",
+    ),
+    "confirmClearSelectedData": MessageLookupByLibrary.simpleMessage(
+      "選択したデータを消去してもよろしいですか？",
     ),
     "confirmDeleteProxyGroup": MessageLookupByLibrary.simpleMessage(
       "現在のプロキシグループを削除してもよろしいですか？",
@@ -738,6 +742,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "resetPageChangesTip": MessageLookupByLibrary.simpleMessage(
       "現在のページに変更があります。リセットしてもよろしいですか？",
     ),
+    "resetProfilesAndScripts": MessageLookupByLibrary.simpleMessage(
+      "プロファイルとスクリプト",
+    ),
+    "resetSettingsData": MessageLookupByLibrary.simpleMessage("アプリ設定"),
     "resetTip": MessageLookupByLibrary.simpleMessage("リセットを確定"),
     "resources": MessageLookupByLibrary.simpleMessage("リソース"),
     "resourcesDesc": MessageLookupByLibrary.simpleMessage("外部リソース関連情報"),

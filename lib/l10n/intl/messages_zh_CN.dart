@@ -125,6 +125,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "ageSecretKeyOptional": MessageLookupByLibrary.simpleMessage("Age 私钥 (可选)"),
     "agree": MessageLookupByLibrary.simpleMessage("同意"),
+    "allData": MessageLookupByLibrary.simpleMessage("全部数据"),
     "allowBypass": MessageLookupByLibrary.simpleMessage("允许应用绕过 VPN"),
     "allowBypassDesc": MessageLookupByLibrary.simpleMessage("开启后部分应用可绕过 VPN"),
     "allowLan": MessageLookupByLibrary.simpleMessage("局域网代理"),
@@ -192,6 +193,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "configDataDetected": MessageLookupByLibrary.simpleMessage("检测到配置中存在数据"),
     "confirm": MessageLookupByLibrary.simpleMessage("确定"),
     "confirmClearAllData": MessageLookupByLibrary.simpleMessage("确定要清除所有数据？"),
+    "confirmClearSelectedData": MessageLookupByLibrary.simpleMessage(
+      "确定要清除所选数据吗？",
+    ),
     "confirmDeleteProxyGroup": MessageLookupByLibrary.simpleMessage(
       "确定要删除当前策略组吗？",
     ),
@@ -644,6 +648,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "resetPageChangesTip": MessageLookupByLibrary.simpleMessage(
       "当前页面存在更改，确定重置吗？",
     ),
+    "resetProfilesAndScripts": MessageLookupByLibrary.simpleMessage("配置与脚本"),
+    "resetSettingsData": MessageLookupByLibrary.simpleMessage("应用设置"),
     "resetTip": MessageLookupByLibrary.simpleMessage("确定要重置吗?"),
     "resources": MessageLookupByLibrary.simpleMessage("资源"),
     "resourcesDesc": MessageLookupByLibrary.simpleMessage("外部资源相关信息"),

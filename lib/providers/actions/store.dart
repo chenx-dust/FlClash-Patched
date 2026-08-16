@@ -30,43 +30,9 @@ class StoreAction extends _$StoreAction {
     });
   }
 
-  Future handleClear() async {
-    final profileIds = ref
-        .read(profilesProvider)
-        .map((item) => item.id)
-        .toSet();
-    final providersDir = Directory(await appPath.getProvidersRootPath());
-    if (await providersDir.exists()) {
-      await for (final entity in providersDir.list(followLinks: false)) {
-        if (entity is! Directory) continue;
-        final profileId = int.tryParse(p.basename(entity.path));
-        if (profileId != null && profileId > 0) {
-          profileIds.add(profileId);
-        }
-      }
-    }
-    final clearResults = await Future.wait(
-      profileIds.map(coreController.clearEffect),
-    );
-    for (final error in clearResults.where((error) => error.isNotEmpty)) {
-      commonPrint.log(error, logLevel: LogLevel.warning);
-    }
-    await preferences.clearPreferences();
-    commonPrint.log('clear preferences');
-    await database.close();
-    await File(await appPath.databasePath).safeDelete(recursive: true);
-    final homeDir = Directory(await appPath.profilesPath);
-    if (await homeDir.exists()) {
-      await for (final entity in homeDir.list(followLinks: false)) {
-        await coreController.deleteManagedPath(
-          DeleteManagedPathParams(
-            scope: ManagedPathScope.profiles,
-            relativePath: p.relative(entity.path, from: homeDir.path),
-          ),
-        );
-      }
-    }
-    await preferences.clearPreferences();
-    ref.read(systemActionProvider.notifier).handleExit(false);
+  Future<void> handleClear([Set<ResetDataType> types = allResetDataTypes]) {
+    return ref
+        .read(systemActionProvider.notifier)
+        .handleReset(() => clearApplicationData(types));
   }
 }

@@ -156,6 +156,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Age secret key (Optional)",
     ),
     "agree": MessageLookupByLibrary.simpleMessage("Agree"),
+    "allData": MessageLookupByLibrary.simpleMessage("All data"),
     "allowBypass": MessageLookupByLibrary.simpleMessage(
       "Allow Applications to Bypass VPN",
     ),
@@ -270,6 +271,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
     "confirmClearAllData": MessageLookupByLibrary.simpleMessage(
       "Are you sure you want to clear all data?",
+    ),
+    "confirmClearSelectedData": MessageLookupByLibrary.simpleMessage(
+      "Are you sure you want to clear the selected data?",
     ),
     "confirmDeleteProxyGroup": MessageLookupByLibrary.simpleMessage(
       "Are you sure you want to delete the current proxy group?",
@@ -900,6 +904,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "reset": MessageLookupByLibrary.simpleMessage("Reset"),
     "resetPageChangesTip": MessageLookupByLibrary.simpleMessage(
       "The current page has changes. Are you sure you want to reset?",
+    ),
+    "resetProfilesAndScripts": MessageLookupByLibrary.simpleMessage(
+      "Profiles and scripts",
+    ),
+    "resetSettingsData": MessageLookupByLibrary.simpleMessage(
+      "Application settings",
     ),
     "resetTip": MessageLookupByLibrary.simpleMessage("Make sure to reset"),
     "resources": MessageLookupByLibrary.simpleMessage("Resources"),
