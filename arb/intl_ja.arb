@@ -149,6 +149,7 @@
   "unknown": "不明",
   "country": "国",
   "search": "検索",
+  "clear": "クリア",
   "filter": "フィルター",
   "noFilterCondition": "フィルター条件なし",
   "regexSearch": "正規表現検索",

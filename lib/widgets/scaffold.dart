@@ -332,6 +332,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
       return genActions([
         if (_textController.text.isNotEmpty)
           IconButton(
+            tooltip: context.appLocalizations.clear,
             onPressed: _handleClearInput,
             icon: const Icon(Icons.close),
           ),

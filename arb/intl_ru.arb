@@ -149,6 +149,7 @@
   "unknown": "Неизвестно",
   "country": "Страна",
   "search": "Поиск",
+  "clear": "Очистить",
   "filter": "Фильтр",
   "noFilterCondition": "Нет условий фильтрации",
   "regexSearch": "Поиск по regex",

@@ -254,6 +254,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "checkUpdateError": MessageLookupByLibrary.simpleMessage(
       "The current application is already the latest version",
     ),
+    "clear": MessageLookupByLibrary.simpleMessage("Clear"),
     "clearData": MessageLookupByLibrary.simpleMessage("Clear Data"),
     "clipboardExport": MessageLookupByLibrary.simpleMessage("Export Clipboard"),
     "clipboardImport": MessageLookupByLibrary.simpleMessage("Clipboard Import"),

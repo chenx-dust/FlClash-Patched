@@ -149,6 +149,7 @@
   "unknown": "Unknown",
   "country": "Country",
   "search": "Search",
+  "clear": "Clear",
   "filter": "Filter",
   "noFilterCondition": "No filter conditions",
   "regexSearch": "Regex search",
