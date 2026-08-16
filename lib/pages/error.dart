@@ -1,12 +1,43 @@
 import 'package:fl_clash/common/color.dart';
+import 'package:fl_clash/common/reset.dart';
+import 'package:fl_clash/common/system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class InitErrorScreen extends StatelessWidget {
+class InitErrorScreen extends StatefulWidget {
   final Object error;
   final StackTrace stack;
 
   const InitErrorScreen({super.key, required this.error, required this.stack});
+
+  @override
+  State<InitErrorScreen> createState() => _InitErrorScreenState();
+}
+
+class _InitErrorScreenState extends State<InitErrorScreen> {
+  bool _isClearing = false;
+
+  Future<void> _clearData() async {
+    setState(() {
+      _isClearing = true;
+    });
+    try {
+      await clearApplicationData(allResetDataTypes);
+      await system.exit();
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to clear data: $error')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isClearing = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +73,15 @@ class InitErrorScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: colorScheme.error,
+                      side: BorderSide(color: colorScheme.onErrorContainer),
+                    ),
+                    onPressed: () => _copyToClipboard(context),
+                    icon: const Icon(Icons.copy),
+                    label: const Text('Copy Details'),
+                  ),
                 ],
               ),
               const SizedBox(height: 24),
@@ -55,7 +95,7 @@ class InitErrorScreen extends StatelessWidget {
                   border: Border.all(color: colorScheme.error.opacity50),
                 ),
                 child: SelectableText(
-                  error.toString(),
+                  widget.error.toString(),
                   style: TextStyle(
                     color: colorScheme.onErrorContainer,
                     fontWeight: FontWeight.w600,
@@ -75,11 +115,8 @@ class InitErrorScreen extends StatelessWidget {
                   border: Border.all(color: Colors.grey.opacity50),
                 ),
                 child: SelectableText(
-                  stack.toString(),
-                  style: const TextStyle(
-                    fontFamily: 'monospace', // Makes code easier to read
-                    fontSize: 12,
-                  ),
+                  widget.stack.toString(),
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
                 ),
               ),
               const SizedBox(height: 80),
@@ -88,9 +125,9 @@ class InitErrorScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _copyToClipboard(context),
-        label: const Text('Copy Details'),
-        icon: const Icon(Icons.copy),
+        onPressed: _isClearing ? null : _clearData,
+        label: const Text('Clear Data'),
+        icon: const Icon(Icons.delete_forever),
         backgroundColor: colorScheme.error,
         foregroundColor: colorScheme.onError,
       ),
@@ -108,7 +145,8 @@ class InitErrorScreen extends StatelessWidget {
   }
 
   void _copyToClipboard(BuildContext context) {
-    final text = '=== ERROR ===\n$error\n\n=== STACK TRACE ===\n$stack';
+    final text =
+        '=== ERROR ===\n${widget.error}\n\n=== STACK TRACE ===\n${widget.stack}';
     Clipboard.setData(ClipboardData(text: text));
 
     ScaffoldMessenger.of(context).showSnackBar(
