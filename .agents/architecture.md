@@ -23,8 +23,8 @@ Desktop core mode:
 - `lib/core/desktop/transport.dart` converts native IPC frames into ready, connected, disconnected, failed, and data
   events. A replaceable binding keeps RPC subscriptions stable when a failed or stale transport must be rebuilt.
 - `lib/core/desktop/rpc_client.dart` owns request IDs and pending completers, waits up to 10 seconds for a connection,
-  applies a three-minute default method timeout, unwraps `CoreMethodResponse`, and fails all pending calls when transport
-  disconnects or closes.
+  applies a three-minute default method timeout, unwraps `CoreMethodResponse`, fails pending calls on unexpected transport
+  loss, and cancels them without errors during planned application shutdown.
 - `lib/core/desktop/lifecycle.dart` serializes process intents and owns the authoritative desktop state machine.
 - `lib/core/desktop/launcher.dart` abstracts direct child-process and Windows Helper ownership through idempotent process
   leases. `lib/core/desktop/helper_client.dart` is the typed loopback HTTP client for the privileged Helper.

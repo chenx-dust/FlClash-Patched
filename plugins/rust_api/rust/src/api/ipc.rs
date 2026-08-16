@@ -491,7 +491,10 @@ fn io_loop(name: String, sink: StreamSink<Vec<u8>, SseCodec>) {
                     Ok(data) => {
                         pending_bytes.fetch_sub(data.len(), Ordering::SeqCst);
                         if let Err(e) = write_frame(&mut sender, &data, &writer_running) {
-                            if e.kind() != io::ErrorKind::Interrupted {
+                            if !is_expected_disconnect_error(&e)
+                                && e.kind() != io::ErrorKind::Interrupted
+                                && server_active()
+                            {
                                 error = Some(format!("write error: {e}"));
                             }
                             break;
