@@ -28,7 +28,7 @@ class _LogsViewState extends ConsumerState<LogsView> {
   void initState() {
     super.initState();
     _core = ref.read(coreHandlerProvider);
-    _scrollController = ScrollController(initialScrollOffset: double.maxFinite);
+    _scrollController = ReverseScrollController();
     _logsStateNotifier.value = _logsStateNotifier.value.copyWith(
       logs: ref.read(logsProvider).list,
     );
