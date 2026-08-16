@@ -358,30 +358,25 @@ class ProxiesListViewState extends ConsumerState<ProxiesListView> {
               controller: _controller,
               thumbVisibility: true,
               trackVisibility: true,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: ScrollConfiguration(
-                  behavior: HiddenBarScrollBehavior(),
-                  child: CustomScrollView(
-                    key: proxiesListStoreKey,
-                    controller: _controller,
-                    slivers: [
-                      for (final group in state.groups)
-                        _buildGroup(
-                          context,
-                          group: group,
-                          currentUnfoldSet: state.currentUnfoldSet,
-                          columns: columns,
-                          cardType: state.proxyCardType,
-                          listHeaderStyle: headerStyle,
-                        ),
-                      SliverToBoxAdapter(
-                        child: SizedBox(
-                          height: 16 + BottomInsetScope.of(context),
-                        ),
+              child: ScrollConfiguration(
+                behavior: HiddenBarScrollBehavior(),
+                child: CustomScrollView(
+                  key: proxiesListStoreKey,
+                  controller: _controller,
+                  slivers: [
+                    for (final group in state.groups)
+                      _buildGroup(
+                        context,
+                        group: group,
+                        currentUnfoldSet: state.currentUnfoldSet,
+                        columns: columns,
+                        cardType: state.proxyCardType,
+                        listHeaderStyle: headerStyle,
                       ),
-                    ],
-                  ),
+                    SliverToBoxAdapter(
+                      child: SizedBox(height: BottomInsetScope.of(context)),
+                    ),
+                  ],
                 ),
               ),
             );
