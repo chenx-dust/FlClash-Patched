@@ -321,7 +321,7 @@ class ProxiesListViewState extends State<ProxiesListView> {
                   controller: _controller,
                   slivers: [
                     SliverPadding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       sliver: SliverMainAxisGroup(slivers: slivers),
                     ),
                   ],
