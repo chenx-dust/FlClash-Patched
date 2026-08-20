@@ -373,6 +373,15 @@ func patchTun(target *LC.Tun, params *tunSchema) {
 	if params.RouteAddress != nil {
 		target.RouteAddress = *params.RouteAddress
 	}
+	if params.StrictRoute != nil {
+		target.StrictRoute = *params.StrictRoute
+	}
+	if params.DisableICMPForwarding != nil {
+		target.DisableICMPForwarding = *params.DisableICMPForwarding
+	}
+	if params.EndpointIndependentNAT != nil {
+		target.EndpointIndependentNat = *params.EndpointIndependentNAT
+	}
 	if params.DNSHijack != nil {
 		target.DNSHijack = *params.DNSHijack
 	}

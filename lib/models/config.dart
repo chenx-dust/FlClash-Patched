@@ -8,11 +8,7 @@ import 'models.dart';
 part 'generated/config.freezed.dart';
 part 'generated/config.g.dart';
 
-const defaultBypassDomain = [
-  'localhost',
-  '*.local',
-  '*.lan',
-];
+const defaultBypassDomain = ['localhost', '*.local', '*.lan'];
 
 const defaultAppSettingProps = AppSettingProps();
 const defaultVpnProps = VpnProps();
@@ -157,7 +153,7 @@ abstract class VpnProps with _$VpnProps {
     @Default(true) bool systemProxy,
     @Default(false) bool ipv6,
     @Default(true) bool allowBypass,
-    @Default(false) bool dnsHijacking,
+    @Default(true) bool captureDns,
     @Default(true) bool suspendSupport,
     @Default(false) bool networkSpeedNotification,
     @Default(false) bool includeAllNetworks,

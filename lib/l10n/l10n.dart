@@ -394,6 +394,81 @@ class AppLocalizations {
     );
   }
 
+  /// `Strict Route`
+  String get strictRoute {
+    return Intl.message(
+      'Strict Route',
+      name: 'strictRoute',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Use TUN strict routing mode`
+  String get strictRouteDesc {
+    return Intl.message(
+      'Use TUN strict routing mode',
+      name: 'strictRouteDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `ICMP Forwarding`
+  String get icmpForwarding {
+    return Intl.message(
+      'ICMP Forwarding',
+      name: 'icmpForwarding',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enable ICMP Ping`
+  String get icmpForwardingDesc {
+    return Intl.message(
+      'Enable ICMP Ping',
+      name: 'icmpForwardingDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `DNS Hijack`
+  String get dnsHijack {
+    return Intl.message('DNS Hijack', name: 'dnsHijack', desc: '', args: []);
+  }
+
+  /// `Redirect DNS queries to the internal DNS module`
+  String get dnsHijackDesc {
+    return Intl.message(
+      'Redirect DNS queries to the internal DNS module',
+      name: 'dnsHijackDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `NAT Enhancement`
+  String get endpointIndependentNat {
+    return Intl.message(
+      'NAT Enhancement',
+      name: 'endpointIndependentNat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Optimize UDP and P2P application connectivity`
+  String get endpointIndependentNatDesc {
+    return Intl.message(
+      'Optimize UDP and P2P application connectivity',
+      name: 'endpointIndependentNatDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Minimize on Exit`
   String get minimizeOnExit {
     return Intl.message(
@@ -3314,11 +3389,21 @@ class AppLocalizations {
     );
   }
 
-  /// `DNS hijacking`
-  String get dnsHijacking {
+  /// `Capture System DNS`
+  String get captureDns {
     return Intl.message(
-      'DNS hijacking',
-      name: 'dnsHijacking',
+      'Capture System DNS',
+      name: 'captureDns',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Redirect all system DNS queries to the internal DNS module`
+  String get captureDnsDesc {
+    return Intl.message(
+      'Redirect all system DNS queries to the internal DNS module',
+      name: 'captureDnsDesc',
       desc: '',
       args: [],
     );

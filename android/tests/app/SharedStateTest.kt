@@ -50,7 +50,7 @@ class SharedStateTest {
                 "enable": true,
                 "port": 7890,
                 "ipv6": false,
-                "dnsHijacking": true,
+                "captureDns": true,
                 "accessControlProps": {
                   "enable": true,
                   "mode": "rejectSelected",

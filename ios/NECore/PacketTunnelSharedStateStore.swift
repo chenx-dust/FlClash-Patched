@@ -86,13 +86,15 @@ private struct PacketTunnelSharedState: Decodable {
 struct PacketTunnelVPNOptions: Decodable {
   let port: Int
   let ipv6: Bool
-  let dnsHijacking: Bool
+  let captureDns: Bool
   let systemProxy: Bool
   let suspendSupport: Bool
   let bypassDomain: [String]
   let stack: String
   let mtu: Int
   let routeAddress: [String]
+  let disableIcmpForwarding: Bool
+  let endpointIndependentNat: Bool
   let includeAllNetworks: Bool
   let excludeLocalNetworks: Bool
   let excludeAPNs: Bool
@@ -103,13 +105,15 @@ struct PacketTunnelVPNOptions: Decodable {
   private enum CodingKeys: String, CodingKey {
     case port
     case ipv6
-    case dnsHijacking
+    case captureDns
     case systemProxy
     case suspendSupport
     case bypassDomain
     case stack
     case mtu
     case routeAddress
+    case disableIcmpForwarding
+    case endpointIndependentNat
     case includeAllNetworks
     case excludeLocalNetworks
     case excludeAPNs
@@ -122,7 +126,7 @@ struct PacketTunnelVPNOptions: Decodable {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     port = try container.decode(Int.self, forKey: .port)
     ipv6 = try container.decode(Bool.self, forKey: .ipv6)
-    dnsHijacking = try container.decode(Bool.self, forKey: .dnsHijacking)
+    captureDns = try container.decode(Bool.self, forKey: .captureDns)
     systemProxy = try container.decode(Bool.self, forKey: .systemProxy)
     suspendSupport = try container.decodeIfPresent(
       Bool.self,
@@ -138,6 +142,14 @@ struct PacketTunnelVPNOptions: Decodable {
       [String].self,
       forKey: .routeAddress
     ) ?? []
+    disableIcmpForwarding = try container.decodeIfPresent(
+      Bool.self,
+      forKey: .disableIcmpForwarding
+    ) ?? false
+    endpointIndependentNat = try container.decodeIfPresent(
+      Bool.self,
+      forKey: .endpointIndependentNat
+    ) ?? false
     includeAllNetworks = try container.decodeIfPresent(
       Bool.self,
       forKey: .includeAllNetworks

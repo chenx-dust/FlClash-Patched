@@ -16,7 +16,7 @@ data class VpnOptions(
     val enable: Boolean,
     val port: Int,
     val ipv6: Boolean,
-    val dnsHijacking: Boolean,
+    val captureDns: Boolean,
     val accessControlProps: AccessControlProps,
     val allowBypass: Boolean,
     val systemProxy: Boolean,
@@ -25,6 +25,8 @@ data class VpnOptions(
     val stack: String,
     val mtu: Int?,
     val routeAddress: List<String>,
+    val disableIcmpForwarding: Boolean,
+    val endpointIndependentNat: Boolean,
 )
 
 data class CIDR(

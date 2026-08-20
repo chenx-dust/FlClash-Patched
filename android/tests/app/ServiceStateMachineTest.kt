@@ -22,7 +22,7 @@ private fun vpnOptions(enable: Boolean = true) = VpnOptions(
     enable = enable,
     port = 7890,
     ipv6 = false,
-    dnsHijacking = false,
+    captureDns = false,
     accessControlProps = AccessControlProps(
         enable = false,
         mode = AccessControlMode.ACCEPT_SELECTED,
@@ -31,10 +31,13 @@ private fun vpnOptions(enable: Boolean = true) = VpnOptions(
     ),
     allowBypass = false,
     systemProxy = true,
-    dozeSuspend = true,
+    suspendSupport = true,
     bypassDomain = emptyList(),
     stack = "gvisor",
+    mtu = null,
     routeAddress = emptyList(),
+    disableIcmpForwarding = false,
+    endpointIndependentNat = false,
 )
 
 private fun configuredState(enable: Boolean = true) = SharedState(

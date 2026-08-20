@@ -35,6 +35,16 @@ void main() {
       expect(appLocalizations.networking, isNotEmpty);
       expect(appLocalizations.networkingDesc, isNotEmpty);
       expect(appLocalizations.networkingNoOutbounds, isNotEmpty);
+      expect(appLocalizations.strictRoute, isNotEmpty);
+      expect(appLocalizations.strictRouteDesc, isNotEmpty);
+      expect(appLocalizations.icmpForwarding, isNotEmpty);
+      expect(appLocalizations.icmpForwardingDesc, isNotEmpty);
+      expect(appLocalizations.dnsHijack, isNotEmpty);
+      expect(appLocalizations.dnsHijackDesc, isNotEmpty);
+      expect(appLocalizations.endpointIndependentNat, isNotEmpty);
+      expect(appLocalizations.endpointIndependentNatDesc, isNotEmpty);
+      expect(appLocalizations.captureDns, isNotEmpty);
+      expect(appLocalizations.captureDnsDesc, isNotEmpty);
     }
   });
 

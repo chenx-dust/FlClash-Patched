@@ -17,12 +17,12 @@ void main() {
   setUp(() {
     container = ProviderContainer();
     globalState.container = container;
-    globalState.lastVpnState = null;
+    globalState.lastVpnOptions = null;
   });
 
   tearDown(() {
     container.dispose();
-    globalState.lastVpnState = null;
+    globalState.lastVpnOptions = null;
   });
 
   Future<void> pumpVpnManager(WidgetTester tester) async {
@@ -103,7 +103,7 @@ void main() {
       findsNothing,
     );
 
-    globalState.lastVpnState = container.read(vpnStateProvider);
+    globalState.lastVpnOptions = container.read(vpnOptionsProvider);
     container
         .read(vpnSettingProvider.notifier)
         .update((_) => const VpnProps(enable: true));

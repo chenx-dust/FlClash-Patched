@@ -604,7 +604,7 @@ $TunCopyWith<$Res> get tun {
 /// @nodoc
 mixin _$VpnOptions {
 
- bool get enable; int get port; bool get ipv6; bool get dnsHijacking; AccessControlProps get accessControlProps; bool get allowBypass; bool get systemProxy; bool get suspendSupport; List<String> get bypassDomain; String get stack; int get mtu; List<String> get routeAddress; bool get includeAllNetworks; bool get excludeLocalNetworks; bool get excludeAPNs; bool get excludeCellularServices; bool get enforceRoutes; bool get excludeDeviceCommunication;
+ bool get enable; int get port; bool get ipv6; bool get captureDns; AccessControlProps get accessControlProps; bool get allowBypass; bool get systemProxy; bool get suspendSupport; List<String> get bypassDomain; String get stack; int get mtu; List<String> get routeAddress; bool get disableIcmpForwarding; bool get endpointIndependentNat; bool get includeAllNetworks; bool get excludeLocalNetworks; bool get excludeAPNs; bool get excludeCellularServices; bool get enforceRoutes; bool get excludeDeviceCommunication;
 /// Create a copy of VpnOptions
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -617,16 +617,16 @@ $VpnOptionsCopyWith<VpnOptions> get copyWith => _$VpnOptionsCopyWithImpl<VpnOpti
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VpnOptions&&(identical(other.enable, enable) || other.enable == enable)&&(identical(other.port, port) || other.port == port)&&(identical(other.ipv6, ipv6) || other.ipv6 == ipv6)&&(identical(other.dnsHijacking, dnsHijacking) || other.dnsHijacking == dnsHijacking)&&(identical(other.accessControlProps, accessControlProps) || other.accessControlProps == accessControlProps)&&(identical(other.allowBypass, allowBypass) || other.allowBypass == allowBypass)&&(identical(other.systemProxy, systemProxy) || other.systemProxy == systemProxy)&&(identical(other.suspendSupport, suspendSupport) || other.suspendSupport == suspendSupport)&&const DeepCollectionEquality().equals(other.bypassDomain, bypassDomain)&&(identical(other.stack, stack) || other.stack == stack)&&(identical(other.mtu, mtu) || other.mtu == mtu)&&const DeepCollectionEquality().equals(other.routeAddress, routeAddress)&&(identical(other.includeAllNetworks, includeAllNetworks) || other.includeAllNetworks == includeAllNetworks)&&(identical(other.excludeLocalNetworks, excludeLocalNetworks) || other.excludeLocalNetworks == excludeLocalNetworks)&&(identical(other.excludeAPNs, excludeAPNs) || other.excludeAPNs == excludeAPNs)&&(identical(other.excludeCellularServices, excludeCellularServices) || other.excludeCellularServices == excludeCellularServices)&&(identical(other.enforceRoutes, enforceRoutes) || other.enforceRoutes == enforceRoutes)&&(identical(other.excludeDeviceCommunication, excludeDeviceCommunication) || other.excludeDeviceCommunication == excludeDeviceCommunication));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VpnOptions&&(identical(other.enable, enable) || other.enable == enable)&&(identical(other.port, port) || other.port == port)&&(identical(other.ipv6, ipv6) || other.ipv6 == ipv6)&&(identical(other.captureDns, captureDns) || other.captureDns == captureDns)&&(identical(other.accessControlProps, accessControlProps) || other.accessControlProps == accessControlProps)&&(identical(other.allowBypass, allowBypass) || other.allowBypass == allowBypass)&&(identical(other.systemProxy, systemProxy) || other.systemProxy == systemProxy)&&(identical(other.suspendSupport, suspendSupport) || other.suspendSupport == suspendSupport)&&const DeepCollectionEquality().equals(other.bypassDomain, bypassDomain)&&(identical(other.stack, stack) || other.stack == stack)&&(identical(other.mtu, mtu) || other.mtu == mtu)&&const DeepCollectionEquality().equals(other.routeAddress, routeAddress)&&(identical(other.disableIcmpForwarding, disableIcmpForwarding) || other.disableIcmpForwarding == disableIcmpForwarding)&&(identical(other.endpointIndependentNat, endpointIndependentNat) || other.endpointIndependentNat == endpointIndependentNat)&&(identical(other.includeAllNetworks, includeAllNetworks) || other.includeAllNetworks == includeAllNetworks)&&(identical(other.excludeLocalNetworks, excludeLocalNetworks) || other.excludeLocalNetworks == excludeLocalNetworks)&&(identical(other.excludeAPNs, excludeAPNs) || other.excludeAPNs == excludeAPNs)&&(identical(other.excludeCellularServices, excludeCellularServices) || other.excludeCellularServices == excludeCellularServices)&&(identical(other.enforceRoutes, enforceRoutes) || other.enforceRoutes == enforceRoutes)&&(identical(other.excludeDeviceCommunication, excludeDeviceCommunication) || other.excludeDeviceCommunication == excludeDeviceCommunication));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,enable,port,ipv6,dnsHijacking,accessControlProps,allowBypass,systemProxy,suspendSupport,const DeepCollectionEquality().hash(bypassDomain),stack,mtu,const DeepCollectionEquality().hash(routeAddress),includeAllNetworks,excludeLocalNetworks,excludeAPNs,excludeCellularServices,enforceRoutes,excludeDeviceCommunication);
+int get hashCode => Object.hashAll([runtimeType,enable,port,ipv6,captureDns,accessControlProps,allowBypass,systemProxy,suspendSupport,const DeepCollectionEquality().hash(bypassDomain),stack,mtu,const DeepCollectionEquality().hash(routeAddress),disableIcmpForwarding,endpointIndependentNat,includeAllNetworks,excludeLocalNetworks,excludeAPNs,excludeCellularServices,enforceRoutes,excludeDeviceCommunication]);
 
 @override
 String toString() {
-  return 'VpnOptions(enable: $enable, port: $port, ipv6: $ipv6, dnsHijacking: $dnsHijacking, accessControlProps: $accessControlProps, allowBypass: $allowBypass, systemProxy: $systemProxy, suspendSupport: $suspendSupport, bypassDomain: $bypassDomain, stack: $stack, mtu: $mtu, routeAddress: $routeAddress, includeAllNetworks: $includeAllNetworks, excludeLocalNetworks: $excludeLocalNetworks, excludeAPNs: $excludeAPNs, excludeCellularServices: $excludeCellularServices, enforceRoutes: $enforceRoutes, excludeDeviceCommunication: $excludeDeviceCommunication)';
+  return 'VpnOptions(enable: $enable, port: $port, ipv6: $ipv6, captureDns: $captureDns, accessControlProps: $accessControlProps, allowBypass: $allowBypass, systemProxy: $systemProxy, suspendSupport: $suspendSupport, bypassDomain: $bypassDomain, stack: $stack, mtu: $mtu, routeAddress: $routeAddress, disableIcmpForwarding: $disableIcmpForwarding, endpointIndependentNat: $endpointIndependentNat, includeAllNetworks: $includeAllNetworks, excludeLocalNetworks: $excludeLocalNetworks, excludeAPNs: $excludeAPNs, excludeCellularServices: $excludeCellularServices, enforceRoutes: $enforceRoutes, excludeDeviceCommunication: $excludeDeviceCommunication)';
 }
 
 
@@ -637,7 +637,7 @@ abstract mixin class $VpnOptionsCopyWith<$Res>  {
   factory $VpnOptionsCopyWith(VpnOptions value, $Res Function(VpnOptions) _then) = _$VpnOptionsCopyWithImpl;
 @useResult
 $Res call({
- bool enable, int port, bool ipv6, bool dnsHijacking, AccessControlProps accessControlProps, bool allowBypass, bool systemProxy, bool suspendSupport, List<String> bypassDomain, String stack, int mtu, List<String> routeAddress, bool includeAllNetworks, bool excludeLocalNetworks, bool excludeAPNs, bool excludeCellularServices, bool enforceRoutes, bool excludeDeviceCommunication
+ bool enable, int port, bool ipv6, bool captureDns, AccessControlProps accessControlProps, bool allowBypass, bool systemProxy, bool suspendSupport, List<String> bypassDomain, String stack, int mtu, List<String> routeAddress, bool disableIcmpForwarding, bool endpointIndependentNat, bool includeAllNetworks, bool excludeLocalNetworks, bool excludeAPNs, bool excludeCellularServices, bool enforceRoutes, bool excludeDeviceCommunication
 });
 
 
@@ -654,12 +654,12 @@ class _$VpnOptionsCopyWithImpl<$Res>
 
 /// Create a copy of VpnOptions
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? enable = null,Object? port = null,Object? ipv6 = null,Object? dnsHijacking = null,Object? accessControlProps = null,Object? allowBypass = null,Object? systemProxy = null,Object? suspendSupport = null,Object? bypassDomain = null,Object? stack = null,Object? mtu = null,Object? routeAddress = null,Object? includeAllNetworks = null,Object? excludeLocalNetworks = null,Object? excludeAPNs = null,Object? excludeCellularServices = null,Object? enforceRoutes = null,Object? excludeDeviceCommunication = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? enable = null,Object? port = null,Object? ipv6 = null,Object? captureDns = null,Object? accessControlProps = null,Object? allowBypass = null,Object? systemProxy = null,Object? suspendSupport = null,Object? bypassDomain = null,Object? stack = null,Object? mtu = null,Object? routeAddress = null,Object? disableIcmpForwarding = null,Object? endpointIndependentNat = null,Object? includeAllNetworks = null,Object? excludeLocalNetworks = null,Object? excludeAPNs = null,Object? excludeCellularServices = null,Object? enforceRoutes = null,Object? excludeDeviceCommunication = null,}) {
   return _then(_self.copyWith(
 enable: null == enable ? _self.enable : enable // ignore: cast_nullable_to_non_nullable
 as bool,port: null == port ? _self.port : port // ignore: cast_nullable_to_non_nullable
 as int,ipv6: null == ipv6 ? _self.ipv6 : ipv6 // ignore: cast_nullable_to_non_nullable
-as bool,dnsHijacking: null == dnsHijacking ? _self.dnsHijacking : dnsHijacking // ignore: cast_nullable_to_non_nullable
+as bool,captureDns: null == captureDns ? _self.captureDns : captureDns // ignore: cast_nullable_to_non_nullable
 as bool,accessControlProps: null == accessControlProps ? _self.accessControlProps : accessControlProps // ignore: cast_nullable_to_non_nullable
 as AccessControlProps,allowBypass: null == allowBypass ? _self.allowBypass : allowBypass // ignore: cast_nullable_to_non_nullable
 as bool,systemProxy: null == systemProxy ? _self.systemProxy : systemProxy // ignore: cast_nullable_to_non_nullable
@@ -668,7 +668,9 @@ as bool,bypassDomain: null == bypassDomain ? _self.bypassDomain : bypassDomain /
 as List<String>,stack: null == stack ? _self.stack : stack // ignore: cast_nullable_to_non_nullable
 as String,mtu: null == mtu ? _self.mtu : mtu // ignore: cast_nullable_to_non_nullable
 as int,routeAddress: null == routeAddress ? _self.routeAddress : routeAddress // ignore: cast_nullable_to_non_nullable
-as List<String>,includeAllNetworks: null == includeAllNetworks ? _self.includeAllNetworks : includeAllNetworks // ignore: cast_nullable_to_non_nullable
+as List<String>,disableIcmpForwarding: null == disableIcmpForwarding ? _self.disableIcmpForwarding : disableIcmpForwarding // ignore: cast_nullable_to_non_nullable
+as bool,endpointIndependentNat: null == endpointIndependentNat ? _self.endpointIndependentNat : endpointIndependentNat // ignore: cast_nullable_to_non_nullable
+as bool,includeAllNetworks: null == includeAllNetworks ? _self.includeAllNetworks : includeAllNetworks // ignore: cast_nullable_to_non_nullable
 as bool,excludeLocalNetworks: null == excludeLocalNetworks ? _self.excludeLocalNetworks : excludeLocalNetworks // ignore: cast_nullable_to_non_nullable
 as bool,excludeAPNs: null == excludeAPNs ? _self.excludeAPNs : excludeAPNs // ignore: cast_nullable_to_non_nullable
 as bool,excludeCellularServices: null == excludeCellularServices ? _self.excludeCellularServices : excludeCellularServices // ignore: cast_nullable_to_non_nullable
@@ -768,10 +770,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool enable,  int port,  bool ipv6,  bool dnsHijacking,  AccessControlProps accessControlProps,  bool allowBypass,  bool systemProxy,  bool suspendSupport,  List<String> bypassDomain,  String stack,  int mtu,  List<String> routeAddress,  bool includeAllNetworks,  bool excludeLocalNetworks,  bool excludeAPNs,  bool excludeCellularServices,  bool enforceRoutes,  bool excludeDeviceCommunication)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool enable,  int port,  bool ipv6,  bool captureDns,  AccessControlProps accessControlProps,  bool allowBypass,  bool systemProxy,  bool suspendSupport,  List<String> bypassDomain,  String stack,  int mtu,  List<String> routeAddress,  bool disableIcmpForwarding,  bool endpointIndependentNat,  bool includeAllNetworks,  bool excludeLocalNetworks,  bool excludeAPNs,  bool excludeCellularServices,  bool enforceRoutes,  bool excludeDeviceCommunication)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VpnOptions() when $default != null:
-return $default(_that.enable,_that.port,_that.ipv6,_that.dnsHijacking,_that.accessControlProps,_that.allowBypass,_that.systemProxy,_that.suspendSupport,_that.bypassDomain,_that.stack,_that.mtu,_that.routeAddress,_that.includeAllNetworks,_that.excludeLocalNetworks,_that.excludeAPNs,_that.excludeCellularServices,_that.enforceRoutes,_that.excludeDeviceCommunication);case _:
+return $default(_that.enable,_that.port,_that.ipv6,_that.captureDns,_that.accessControlProps,_that.allowBypass,_that.systemProxy,_that.suspendSupport,_that.bypassDomain,_that.stack,_that.mtu,_that.routeAddress,_that.disableIcmpForwarding,_that.endpointIndependentNat,_that.includeAllNetworks,_that.excludeLocalNetworks,_that.excludeAPNs,_that.excludeCellularServices,_that.enforceRoutes,_that.excludeDeviceCommunication);case _:
   return orElse();
 
 }
@@ -789,10 +791,10 @@ return $default(_that.enable,_that.port,_that.ipv6,_that.dnsHijacking,_that.acce
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool enable,  int port,  bool ipv6,  bool dnsHijacking,  AccessControlProps accessControlProps,  bool allowBypass,  bool systemProxy,  bool suspendSupport,  List<String> bypassDomain,  String stack,  int mtu,  List<String> routeAddress,  bool includeAllNetworks,  bool excludeLocalNetworks,  bool excludeAPNs,  bool excludeCellularServices,  bool enforceRoutes,  bool excludeDeviceCommunication)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool enable,  int port,  bool ipv6,  bool captureDns,  AccessControlProps accessControlProps,  bool allowBypass,  bool systemProxy,  bool suspendSupport,  List<String> bypassDomain,  String stack,  int mtu,  List<String> routeAddress,  bool disableIcmpForwarding,  bool endpointIndependentNat,  bool includeAllNetworks,  bool excludeLocalNetworks,  bool excludeAPNs,  bool excludeCellularServices,  bool enforceRoutes,  bool excludeDeviceCommunication)  $default,) {final _that = this;
 switch (_that) {
 case _VpnOptions():
-return $default(_that.enable,_that.port,_that.ipv6,_that.dnsHijacking,_that.accessControlProps,_that.allowBypass,_that.systemProxy,_that.suspendSupport,_that.bypassDomain,_that.stack,_that.mtu,_that.routeAddress,_that.includeAllNetworks,_that.excludeLocalNetworks,_that.excludeAPNs,_that.excludeCellularServices,_that.enforceRoutes,_that.excludeDeviceCommunication);case _:
+return $default(_that.enable,_that.port,_that.ipv6,_that.captureDns,_that.accessControlProps,_that.allowBypass,_that.systemProxy,_that.suspendSupport,_that.bypassDomain,_that.stack,_that.mtu,_that.routeAddress,_that.disableIcmpForwarding,_that.endpointIndependentNat,_that.includeAllNetworks,_that.excludeLocalNetworks,_that.excludeAPNs,_that.excludeCellularServices,_that.enforceRoutes,_that.excludeDeviceCommunication);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -809,10 +811,10 @@ return $default(_that.enable,_that.port,_that.ipv6,_that.dnsHijacking,_that.acce
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool enable,  int port,  bool ipv6,  bool dnsHijacking,  AccessControlProps accessControlProps,  bool allowBypass,  bool systemProxy,  bool suspendSupport,  List<String> bypassDomain,  String stack,  int mtu,  List<String> routeAddress,  bool includeAllNetworks,  bool excludeLocalNetworks,  bool excludeAPNs,  bool excludeCellularServices,  bool enforceRoutes,  bool excludeDeviceCommunication)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool enable,  int port,  bool ipv6,  bool captureDns,  AccessControlProps accessControlProps,  bool allowBypass,  bool systemProxy,  bool suspendSupport,  List<String> bypassDomain,  String stack,  int mtu,  List<String> routeAddress,  bool disableIcmpForwarding,  bool endpointIndependentNat,  bool includeAllNetworks,  bool excludeLocalNetworks,  bool excludeAPNs,  bool excludeCellularServices,  bool enforceRoutes,  bool excludeDeviceCommunication)?  $default,) {final _that = this;
 switch (_that) {
 case _VpnOptions() when $default != null:
-return $default(_that.enable,_that.port,_that.ipv6,_that.dnsHijacking,_that.accessControlProps,_that.allowBypass,_that.systemProxy,_that.suspendSupport,_that.bypassDomain,_that.stack,_that.mtu,_that.routeAddress,_that.includeAllNetworks,_that.excludeLocalNetworks,_that.excludeAPNs,_that.excludeCellularServices,_that.enforceRoutes,_that.excludeDeviceCommunication);case _:
+return $default(_that.enable,_that.port,_that.ipv6,_that.captureDns,_that.accessControlProps,_that.allowBypass,_that.systemProxy,_that.suspendSupport,_that.bypassDomain,_that.stack,_that.mtu,_that.routeAddress,_that.disableIcmpForwarding,_that.endpointIndependentNat,_that.includeAllNetworks,_that.excludeLocalNetworks,_that.excludeAPNs,_that.excludeCellularServices,_that.enforceRoutes,_that.excludeDeviceCommunication);case _:
   return null;
 
 }
@@ -824,13 +826,13 @@ return $default(_that.enable,_that.port,_that.ipv6,_that.dnsHijacking,_that.acce
 @JsonSerializable()
 
 class _VpnOptions implements VpnOptions {
-  const _VpnOptions({required this.enable, required this.port, required this.ipv6, required this.dnsHijacking, required this.accessControlProps, required this.allowBypass, required this.systemProxy, required this.suspendSupport, required final  List<String> bypassDomain, required this.stack, this.mtu = defaultTunMtu, final  List<String> routeAddress = const [], this.includeAllNetworks = false, this.excludeLocalNetworks = true, this.excludeAPNs = true, this.excludeCellularServices = true, this.enforceRoutes = false, this.excludeDeviceCommunication = true}): _bypassDomain = bypassDomain,_routeAddress = routeAddress;
+  const _VpnOptions({required this.enable, required this.port, required this.ipv6, required this.captureDns, required this.accessControlProps, required this.allowBypass, required this.systemProxy, required this.suspendSupport, required final  List<String> bypassDomain, required this.stack, this.mtu = defaultTunMtu, final  List<String> routeAddress = const [], this.disableIcmpForwarding = false, this.endpointIndependentNat = false, this.includeAllNetworks = false, this.excludeLocalNetworks = true, this.excludeAPNs = true, this.excludeCellularServices = true, this.enforceRoutes = false, this.excludeDeviceCommunication = true}): _bypassDomain = bypassDomain,_routeAddress = routeAddress;
   factory _VpnOptions.fromJson(Map<String, dynamic> json) => _$VpnOptionsFromJson(json);
 
 @override final  bool enable;
 @override final  int port;
 @override final  bool ipv6;
-@override final  bool dnsHijacking;
+@override final  bool captureDns;
 @override final  AccessControlProps accessControlProps;
 @override final  bool allowBypass;
 @override final  bool systemProxy;
@@ -851,6 +853,8 @@ class _VpnOptions implements VpnOptions {
   return EqualUnmodifiableListView(_routeAddress);
 }
 
+@override@JsonKey() final  bool disableIcmpForwarding;
+@override@JsonKey() final  bool endpointIndependentNat;
 @override@JsonKey() final  bool includeAllNetworks;
 @override@JsonKey() final  bool excludeLocalNetworks;
 @override@JsonKey() final  bool excludeAPNs;
@@ -871,16 +875,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VpnOptions&&(identical(other.enable, enable) || other.enable == enable)&&(identical(other.port, port) || other.port == port)&&(identical(other.ipv6, ipv6) || other.ipv6 == ipv6)&&(identical(other.dnsHijacking, dnsHijacking) || other.dnsHijacking == dnsHijacking)&&(identical(other.accessControlProps, accessControlProps) || other.accessControlProps == accessControlProps)&&(identical(other.allowBypass, allowBypass) || other.allowBypass == allowBypass)&&(identical(other.systemProxy, systemProxy) || other.systemProxy == systemProxy)&&(identical(other.suspendSupport, suspendSupport) || other.suspendSupport == suspendSupport)&&const DeepCollectionEquality().equals(other._bypassDomain, _bypassDomain)&&(identical(other.stack, stack) || other.stack == stack)&&(identical(other.mtu, mtu) || other.mtu == mtu)&&const DeepCollectionEquality().equals(other._routeAddress, _routeAddress)&&(identical(other.includeAllNetworks, includeAllNetworks) || other.includeAllNetworks == includeAllNetworks)&&(identical(other.excludeLocalNetworks, excludeLocalNetworks) || other.excludeLocalNetworks == excludeLocalNetworks)&&(identical(other.excludeAPNs, excludeAPNs) || other.excludeAPNs == excludeAPNs)&&(identical(other.excludeCellularServices, excludeCellularServices) || other.excludeCellularServices == excludeCellularServices)&&(identical(other.enforceRoutes, enforceRoutes) || other.enforceRoutes == enforceRoutes)&&(identical(other.excludeDeviceCommunication, excludeDeviceCommunication) || other.excludeDeviceCommunication == excludeDeviceCommunication));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VpnOptions&&(identical(other.enable, enable) || other.enable == enable)&&(identical(other.port, port) || other.port == port)&&(identical(other.ipv6, ipv6) || other.ipv6 == ipv6)&&(identical(other.captureDns, captureDns) || other.captureDns == captureDns)&&(identical(other.accessControlProps, accessControlProps) || other.accessControlProps == accessControlProps)&&(identical(other.allowBypass, allowBypass) || other.allowBypass == allowBypass)&&(identical(other.systemProxy, systemProxy) || other.systemProxy == systemProxy)&&(identical(other.suspendSupport, suspendSupport) || other.suspendSupport == suspendSupport)&&const DeepCollectionEquality().equals(other._bypassDomain, _bypassDomain)&&(identical(other.stack, stack) || other.stack == stack)&&(identical(other.mtu, mtu) || other.mtu == mtu)&&const DeepCollectionEquality().equals(other._routeAddress, _routeAddress)&&(identical(other.disableIcmpForwarding, disableIcmpForwarding) || other.disableIcmpForwarding == disableIcmpForwarding)&&(identical(other.endpointIndependentNat, endpointIndependentNat) || other.endpointIndependentNat == endpointIndependentNat)&&(identical(other.includeAllNetworks, includeAllNetworks) || other.includeAllNetworks == includeAllNetworks)&&(identical(other.excludeLocalNetworks, excludeLocalNetworks) || other.excludeLocalNetworks == excludeLocalNetworks)&&(identical(other.excludeAPNs, excludeAPNs) || other.excludeAPNs == excludeAPNs)&&(identical(other.excludeCellularServices, excludeCellularServices) || other.excludeCellularServices == excludeCellularServices)&&(identical(other.enforceRoutes, enforceRoutes) || other.enforceRoutes == enforceRoutes)&&(identical(other.excludeDeviceCommunication, excludeDeviceCommunication) || other.excludeDeviceCommunication == excludeDeviceCommunication));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,enable,port,ipv6,dnsHijacking,accessControlProps,allowBypass,systemProxy,suspendSupport,const DeepCollectionEquality().hash(_bypassDomain),stack,mtu,const DeepCollectionEquality().hash(_routeAddress),includeAllNetworks,excludeLocalNetworks,excludeAPNs,excludeCellularServices,enforceRoutes,excludeDeviceCommunication);
+int get hashCode => Object.hashAll([runtimeType,enable,port,ipv6,captureDns,accessControlProps,allowBypass,systemProxy,suspendSupport,const DeepCollectionEquality().hash(_bypassDomain),stack,mtu,const DeepCollectionEquality().hash(_routeAddress),disableIcmpForwarding,endpointIndependentNat,includeAllNetworks,excludeLocalNetworks,excludeAPNs,excludeCellularServices,enforceRoutes,excludeDeviceCommunication]);
 
 @override
 String toString() {
-  return 'VpnOptions(enable: $enable, port: $port, ipv6: $ipv6, dnsHijacking: $dnsHijacking, accessControlProps: $accessControlProps, allowBypass: $allowBypass, systemProxy: $systemProxy, suspendSupport: $suspendSupport, bypassDomain: $bypassDomain, stack: $stack, mtu: $mtu, routeAddress: $routeAddress, includeAllNetworks: $includeAllNetworks, excludeLocalNetworks: $excludeLocalNetworks, excludeAPNs: $excludeAPNs, excludeCellularServices: $excludeCellularServices, enforceRoutes: $enforceRoutes, excludeDeviceCommunication: $excludeDeviceCommunication)';
+  return 'VpnOptions(enable: $enable, port: $port, ipv6: $ipv6, captureDns: $captureDns, accessControlProps: $accessControlProps, allowBypass: $allowBypass, systemProxy: $systemProxy, suspendSupport: $suspendSupport, bypassDomain: $bypassDomain, stack: $stack, mtu: $mtu, routeAddress: $routeAddress, disableIcmpForwarding: $disableIcmpForwarding, endpointIndependentNat: $endpointIndependentNat, includeAllNetworks: $includeAllNetworks, excludeLocalNetworks: $excludeLocalNetworks, excludeAPNs: $excludeAPNs, excludeCellularServices: $excludeCellularServices, enforceRoutes: $enforceRoutes, excludeDeviceCommunication: $excludeDeviceCommunication)';
 }
 
 
@@ -891,7 +895,7 @@ abstract mixin class _$VpnOptionsCopyWith<$Res> implements $VpnOptionsCopyWith<$
   factory _$VpnOptionsCopyWith(_VpnOptions value, $Res Function(_VpnOptions) _then) = __$VpnOptionsCopyWithImpl;
 @override @useResult
 $Res call({
- bool enable, int port, bool ipv6, bool dnsHijacking, AccessControlProps accessControlProps, bool allowBypass, bool systemProxy, bool suspendSupport, List<String> bypassDomain, String stack, int mtu, List<String> routeAddress, bool includeAllNetworks, bool excludeLocalNetworks, bool excludeAPNs, bool excludeCellularServices, bool enforceRoutes, bool excludeDeviceCommunication
+ bool enable, int port, bool ipv6, bool captureDns, AccessControlProps accessControlProps, bool allowBypass, bool systemProxy, bool suspendSupport, List<String> bypassDomain, String stack, int mtu, List<String> routeAddress, bool disableIcmpForwarding, bool endpointIndependentNat, bool includeAllNetworks, bool excludeLocalNetworks, bool excludeAPNs, bool excludeCellularServices, bool enforceRoutes, bool excludeDeviceCommunication
 });
 
 
@@ -908,12 +912,12 @@ class __$VpnOptionsCopyWithImpl<$Res>
 
 /// Create a copy of VpnOptions
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? enable = null,Object? port = null,Object? ipv6 = null,Object? dnsHijacking = null,Object? accessControlProps = null,Object? allowBypass = null,Object? systemProxy = null,Object? suspendSupport = null,Object? bypassDomain = null,Object? stack = null,Object? mtu = null,Object? routeAddress = null,Object? includeAllNetworks = null,Object? excludeLocalNetworks = null,Object? excludeAPNs = null,Object? excludeCellularServices = null,Object? enforceRoutes = null,Object? excludeDeviceCommunication = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? enable = null,Object? port = null,Object? ipv6 = null,Object? captureDns = null,Object? accessControlProps = null,Object? allowBypass = null,Object? systemProxy = null,Object? suspendSupport = null,Object? bypassDomain = null,Object? stack = null,Object? mtu = null,Object? routeAddress = null,Object? disableIcmpForwarding = null,Object? endpointIndependentNat = null,Object? includeAllNetworks = null,Object? excludeLocalNetworks = null,Object? excludeAPNs = null,Object? excludeCellularServices = null,Object? enforceRoutes = null,Object? excludeDeviceCommunication = null,}) {
   return _then(_VpnOptions(
 enable: null == enable ? _self.enable : enable // ignore: cast_nullable_to_non_nullable
 as bool,port: null == port ? _self.port : port // ignore: cast_nullable_to_non_nullable
 as int,ipv6: null == ipv6 ? _self.ipv6 : ipv6 // ignore: cast_nullable_to_non_nullable
-as bool,dnsHijacking: null == dnsHijacking ? _self.dnsHijacking : dnsHijacking // ignore: cast_nullable_to_non_nullable
+as bool,captureDns: null == captureDns ? _self.captureDns : captureDns // ignore: cast_nullable_to_non_nullable
 as bool,accessControlProps: null == accessControlProps ? _self.accessControlProps : accessControlProps // ignore: cast_nullable_to_non_nullable
 as AccessControlProps,allowBypass: null == allowBypass ? _self.allowBypass : allowBypass // ignore: cast_nullable_to_non_nullable
 as bool,systemProxy: null == systemProxy ? _self.systemProxy : systemProxy // ignore: cast_nullable_to_non_nullable
@@ -922,7 +926,9 @@ as bool,bypassDomain: null == bypassDomain ? _self._bypassDomain : bypassDomain 
 as List<String>,stack: null == stack ? _self.stack : stack // ignore: cast_nullable_to_non_nullable
 as String,mtu: null == mtu ? _self.mtu : mtu // ignore: cast_nullable_to_non_nullable
 as int,routeAddress: null == routeAddress ? _self._routeAddress : routeAddress // ignore: cast_nullable_to_non_nullable
-as List<String>,includeAllNetworks: null == includeAllNetworks ? _self.includeAllNetworks : includeAllNetworks // ignore: cast_nullable_to_non_nullable
+as List<String>,disableIcmpForwarding: null == disableIcmpForwarding ? _self.disableIcmpForwarding : disableIcmpForwarding // ignore: cast_nullable_to_non_nullable
+as bool,endpointIndependentNat: null == endpointIndependentNat ? _self.endpointIndependentNat : endpointIndependentNat // ignore: cast_nullable_to_non_nullable
+as bool,includeAllNetworks: null == includeAllNetworks ? _self.includeAllNetworks : includeAllNetworks // ignore: cast_nullable_to_non_nullable
 as bool,excludeLocalNetworks: null == excludeLocalNetworks ? _self.excludeLocalNetworks : excludeLocalNetworks // ignore: cast_nullable_to_non_nullable
 as bool,excludeAPNs: null == excludeAPNs ? _self.excludeAPNs : excludeAPNs // ignore: cast_nullable_to_non_nullable
 as bool,excludeCellularServices: null == excludeCellularServices ? _self.excludeCellularServices : excludeCellularServices // ignore: cast_nullable_to_non_nullable

@@ -132,46 +132,46 @@ final class TrayTitleStateProvider
 
 String _$trayTitleStateHash() => r'aacf3779c879f7f1144484a80043679020bf8424';
 
-@ProviderFor(vpnState)
-final vpnStateProvider = VpnStateProvider._();
+@ProviderFor(vpnOptions)
+final vpnOptionsProvider = VpnOptionsProvider._();
 
-final class VpnStateProvider
-    extends $FunctionalProvider<VpnState, VpnState, VpnState>
-    with $Provider<VpnState> {
-  VpnStateProvider._()
+final class VpnOptionsProvider
+    extends $FunctionalProvider<VpnOptions?, VpnOptions?, VpnOptions?>
+    with $Provider<VpnOptions?> {
+  VpnOptionsProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'vpnStateProvider',
+        name: r'vpnOptionsProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$vpnStateHash();
+  String debugGetCreateSourceHash() => _$vpnOptionsHash();
 
   @$internal
   @override
-  $ProviderElement<VpnState> $createElement($ProviderPointer pointer) =>
+  $ProviderElement<VpnOptions?> $createElement($ProviderPointer pointer) =>
       $ProviderElement(pointer);
 
   @override
-  VpnState create(Ref ref) {
-    return vpnState(ref);
+  VpnOptions? create(Ref ref) {
+    return vpnOptions(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(VpnState value) {
+  Override overrideWithValue(VpnOptions? value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<VpnState>(value),
+      providerOverride: $SyncValueProvider<VpnOptions?>(value),
     );
   }
 }
 
-String _$vpnStateHash() => r'128ddad03ce045ad1f8204e47aec3cb6cfa29f6e';
+String _$vpnOptionsHash() => r'571c4362bc66a30da175d96f9c4ee62be364a0e3';
 
 @ProviderFor(packageListSelectorState)
 final packageListSelectorStateProvider = PackageListSelectorStateProvider._();
@@ -430,7 +430,7 @@ final class SharedStateProvider
   }
 }
 
-String _$sharedStateHash() => r'5f7a490b73372a62c2054aa063be1dfc8e6fd106';
+String _$sharedStateHash() => r'2e1e1f252ce471c27fc77d8fea9ceb3f19df9347';
 
 @ProviderFor(AccessControlState)
 final accessControlStateProvider = AccessControlStateProvider._();

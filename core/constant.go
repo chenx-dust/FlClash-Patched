@@ -54,12 +54,15 @@ type UpdateParams struct {
 }
 
 type tunSchema struct {
-	Enable       bool               `yaml:"enable" json:"enable"`
-	Device       *string            `yaml:"device" json:"device"`
-	Stack        *constant.TUNStack `yaml:"stack" json:"stack"`
-	DNSHijack    *[]string          `yaml:"dns-hijack" json:"dns-hijack"`
-	AutoRoute    *bool              `yaml:"auto-route" json:"auto-route"`
-	RouteAddress *[]netip.Prefix    `yaml:"route-address" json:"route-address,omitempty"`
+	Enable                 bool               `yaml:"enable" json:"enable"`
+	Device                 *string            `yaml:"device" json:"device"`
+	Stack                  *constant.TUNStack `yaml:"stack" json:"stack"`
+	DNSHijack              *[]string          `yaml:"dns-hijack" json:"dns-hijack"`
+	AutoRoute              *bool              `yaml:"auto-route" json:"auto-route"`
+	RouteAddress           *[]netip.Prefix    `yaml:"route-address" json:"route-address,omitempty"`
+	StrictRoute            *bool              `yaml:"strict-route" json:"strict-route,omitempty"`
+	DisableICMPForwarding  *bool              `yaml:"disable-icmp-forwarding" json:"disable-icmp-forwarding,omitempty"`
+	EndpointIndependentNAT *bool              `yaml:"endpoint-independent-nat" json:"endpoint-independent-nat,omitempty"`
 }
 
 type SideLoadParams struct {

@@ -34,7 +34,7 @@ class GlobalState {
   }
 
   String? lastConfigMd5;
-  VpnState? lastVpnState;
+  VpnOptions? lastVpnOptions;
   bool isAttach = false;
 
   GlobalState._internal();

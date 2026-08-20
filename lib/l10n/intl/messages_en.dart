@@ -269,6 +269,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "cancelSelectAll": MessageLookupByLibrary.simpleMessage(
       "Cancel select all",
     ),
+    "captureDns": MessageLookupByLibrary.simpleMessage("Capture System DNS"),
+    "captureDnsDesc": MessageLookupByLibrary.simpleMessage(
+      "Redirect all system DNS queries to the internal DNS module",
+    ),
     "changeProxyFailedTip": MessageLookupByLibrary.simpleMessage(
       "Failed to switch proxy, the previous selection has been restored",
     ),
@@ -411,7 +415,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "dnsDesc": MessageLookupByLibrary.simpleMessage(
       "Update DNS related settings",
     ),
-    "dnsHijacking": MessageLookupByLibrary.simpleMessage("DNS hijacking"),
+    "dnsHijack": MessageLookupByLibrary.simpleMessage("DNS Hijack"),
+    "dnsHijackDesc": MessageLookupByLibrary.simpleMessage(
+      "Redirect DNS queries to the internal DNS module",
+    ),
     "dnsIPv6Desc": MessageLookupByLibrary.simpleMessage(
       "When disabled, AAAA queries return an empty result",
     ),
@@ -439,6 +446,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "en": MessageLookupByLibrary.simpleMessage("English"),
     "enableExternalController": MessageLookupByLibrary.simpleMessage(
       "Enable External Controller",
+    ),
+    "endpointIndependentNat": MessageLookupByLibrary.simpleMessage(
+      "NAT Enhancement",
+    ),
+    "endpointIndependentNatDesc": MessageLookupByLibrary.simpleMessage(
+      "Optimize UDP and P2P application connectivity",
     ),
     "endpoints": MessageLookupByLibrary.simpleMessage("Endpoints"),
     "enforceRoutes": MessageLookupByLibrary.simpleMessage("Enforce Routes"),
@@ -600,6 +613,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "hours": MessageLookupByLibrary.simpleMessage("hours"),
     "hoursAgo": m11,
     "hoursCount": m12,
+    "icmpForwarding": MessageLookupByLibrary.simpleMessage("ICMP Forwarding"),
+    "icmpForwardingDesc": MessageLookupByLibrary.simpleMessage(
+      "Enable ICMP Ping",
+    ),
     "icon": MessageLookupByLibrary.simpleMessage("Icon"),
     "iconRecords": MessageLookupByLibrary.simpleMessage("Icon records"),
     "iconSource": MessageLookupByLibrary.simpleMessage("Icon Source"),
@@ -1229,6 +1246,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "stop": MessageLookupByLibrary.simpleMessage("Stop"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("Stopping VPN..."),
     "stopped": MessageLookupByLibrary.simpleMessage("Stopped"),
+    "strictRoute": MessageLookupByLibrary.simpleMessage("Strict Route"),
+    "strictRouteDesc": MessageLookupByLibrary.simpleMessage(
+      "Use TUN strict routing mode",
+    ),
     "style": MessageLookupByLibrary.simpleMessage("Style"),
     "styleSettings": MessageLookupByLibrary.simpleMessage("Style Settings"),
     "subRule": MessageLookupByLibrary.simpleMessage("Sub Rule"),

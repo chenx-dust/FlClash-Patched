@@ -77,7 +77,7 @@ final class PacketTunnelNetworkConfiguration {
       ? [ipv4DNS, ipv6DNS]
       : [ipv4DNS]
     let dnsSettings = NEDNSSettings(servers: dnsServers)
-    if options.dnsHijacking {
+    if options.captureDns {
       dnsSettings.matchDomains = [""]
     }
     settings.dnsSettings = dnsSettings
@@ -111,7 +111,7 @@ final class PacketTunnelNetworkConfiguration {
   }
 
   func tunDNS(for options: PacketTunnelVPNOptions) -> String {
-    if options.dnsHijacking {
+    if options.captureDns {
       return netAny
     }
     return options.ipv6 ? "\(ipv4DNS),\(ipv6DNS)" : ipv4DNS

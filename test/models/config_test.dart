@@ -214,13 +214,14 @@ void main() {
       expect(props.systemProxy, true);
       expect(props.ipv6, false);
       expect(props.allowBypass, true);
-      expect(props.dnsHijacking, false);
+      expect(props.captureDns, true);
       expect(props.accessControlProps.enable, false);
     });
 
     test('fromJson handles null', () {
       final props = VpnProps.fromJson(null);
       expect(props.enable, true);
+      expect(props.captureDns, true);
     });
 
     test('round-trip with custom values', () {
@@ -305,7 +306,13 @@ void main() {
         logLevel: LogLevel.debug,
         externalController: '0.0.0.0:9091',
         secret: 'test-secret',
-        tun: Tun(mtu: 1500),
+        tun: Tun(
+          mtu: 1500,
+          dnsHijack: [],
+          strictRoute: true,
+          disableIcmpForwarding: true,
+          endpointIndependentNat: true,
+        ),
         geodataLoader: GeodataLoader.memconservative,
         geositeMatcher: GeositeMatcher.mph,
         dns: Dns(
@@ -328,11 +335,25 @@ void main() {
       expect(restored.secret, 'test-secret');
       expect(restored.tun.mtu, 1500);
       expect(restored.tun.toJson(), containsPair('mtu', 1500));
+      expect(restored.tun.dnsHijack, isEmpty);
+      expect(restored.tun.strictRoute, true);
+      expect(restored.tun.disableIcmpForwarding, true);
+      expect(restored.tun.endpointIndependentNat, true);
       expect(restored.geodataLoader, GeodataLoader.memconservative);
       expect(restored.geositeMatcher, GeositeMatcher.mph);
       expect(restored.dns.proxyServerNameserverPolicy, {
         'geosite:cn': 'https://dns.alidns.com/dns-query',
       });
+    });
+
+    test('mobile route mode selects native VPN included routes', () {
+      const tun = Tun(routeAddress: ['203.0.113.0/24']);
+
+      expect(
+        tun.getMobileRouteAddress(RouteMode.bypassPrivate),
+        defaultBypassPrivateRouteAddress,
+      );
+      expect(tun.getMobileRouteAddress(RouteMode.config), ['203.0.113.0/24']);
     });
   });
 

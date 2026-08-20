@@ -306,14 +306,6 @@ abstract class SelectedProxyState with _$SelectedProxyState {
 }
 
 @freezed
-abstract class VpnState with _$VpnState {
-  const factory VpnState({
-    required TunStack stack,
-    required VpnProps vpnProps,
-  }) = _VpnState;
-}
-
-@freezed
 abstract class SharedState with _$SharedState {
   const factory SharedState({
     SetupParams? setupParams,

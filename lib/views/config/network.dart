@@ -61,6 +61,63 @@ ConfigToggleItem _networkToggle({
   );
 }
 
+ConfigToggleItem _tunToggle({
+  required ConfigLabel title,
+  required bool Function(Tun state) select,
+  required Tun Function(Tun state, bool value) update,
+  ConfigLabel? subtitle,
+}) {
+  return ConfigToggleItem(
+    title: title,
+    subtitle: subtitle,
+    selector: patchClashConfigProvider.select((state) => select(state.tun)),
+    onChanged: _tunWriter(
+      (state, value) => state.copyWith(tun: update(state.tun, value)),
+    ),
+  );
+}
+
+class NetworkResetButton extends ConsumerWidget {
+  const NetworkResetButton({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appLocalizations = context.appLocalizations;
+    return IconButton(
+      onPressed: () async {
+        final confirmed = await dialogs.showMessage(
+          context: context,
+          title: appLocalizations.reset,
+          message: TextSpan(text: appLocalizations.resetTip),
+        );
+        if (confirmed != true || !context.mounted) {
+          return;
+        }
+        ref
+            .read(networkSettingProvider.notifier)
+            .update(
+              (state) => defaultNetworkProps.copyWith(
+                appendSystemDns: state.appendSystemDns,
+              ),
+            );
+        ref
+            .read(vpnSettingProvider.notifier)
+            .update(
+              (state) => defaultVpnProps.copyWith(
+                networkSpeedNotification: state.networkSpeedNotification,
+                accessControlProps: state.accessControlProps,
+              ),
+            );
+        ref
+            .read(patchClashConfigProvider.notifier)
+            .update((state) => state.copyWith(tun: defaultTun));
+      },
+      tooltip: appLocalizations.reset,
+      icon: const Icon(Icons.replay),
+    );
+  }
+}
+
 class VPNItem extends ConsumerWidget {
   const VPNItem({super.key});
 
@@ -160,15 +217,73 @@ class AutoSetSystemDnsItem extends ConsumerWidget {
   }
 }
 
-class DNSHijackingItem extends ConsumerWidget {
-  const DNSHijackingItem({super.key});
+class CaptureDnsItem extends ConsumerWidget {
+  const CaptureDnsItem({super.key});
 
   @override
   Widget build(BuildContext context, ref) {
     return _vpnToggle(
-      title: (l) => l.dnsHijacking,
-      select: (state) => state.dnsHijacking,
-      update: (state, value) => state.copyWith(dnsHijacking: value),
+      title: (l) => l.captureDns,
+      subtitle: (l) => l.captureDnsDesc,
+      select: (state) => state.captureDns,
+      update: (state, value) => state.copyWith(captureDns: value),
+    );
+  }
+}
+
+class StrictRouteItem extends ConsumerWidget {
+  const StrictRouteItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    return _tunToggle(
+      title: (l) => l.strictRoute,
+      subtitle: (l) => l.strictRouteDesc,
+      select: (state) => state.strictRoute,
+      update: (state, value) => state.copyWith(strictRoute: value),
+    );
+  }
+}
+
+class IcmpForwardingItem extends ConsumerWidget {
+  const IcmpForwardingItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    return _tunToggle(
+      title: (l) => l.icmpForwarding,
+      subtitle: (l) => l.icmpForwardingDesc,
+      select: (state) => !state.disableIcmpForwarding,
+      update: (state, value) => state.copyWith(disableIcmpForwarding: !value),
+    );
+  }
+}
+
+class DnsHijackItem extends ConsumerWidget {
+  const DnsHijackItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    return _tunToggle(
+      title: (l) => l.dnsHijack,
+      subtitle: (l) => l.dnsHijackDesc,
+      select: (state) => state.dnsHijack.isNotEmpty,
+      update: (state, value) =>
+          state.copyWith(dnsHijack: value ? ['any:53', 'tcp://any:53'] : []),
+    );
+  }
+}
+
+class EndpointIndependentNatItem extends ConsumerWidget {
+  const EndpointIndependentNatItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    return _tunToggle(
+      title: (l) => l.endpointIndependentNat,
+      subtitle: (l) => l.endpointIndependentNatDesc,
+      select: (state) => state.endpointIndependentNat,
+      update: (state, value) => state.copyWith(endpointIndependentNat: value),
     );
   }
 }
@@ -460,7 +575,7 @@ class NetworkListView extends ConsumerWidget {
             const BypassDomainItem(),
             const AllowBypassItem(),
             const Ipv6Item(),
-            const DNSHijackingItem(),
+            const CaptureDnsItem(),
             if (system.isAndroid) const SuspendSupportItem(),
           ],
         ),
@@ -474,6 +589,10 @@ class NetworkListView extends ConsumerWidget {
         items: [
           if (system.isDesktop) const TUNItem(),
           if (system.isMacOS) const AutoSetSystemDnsItem(),
+          if (system.isDesktop) const StrictRouteItem(),
+          const IcmpForwardingItem(),
+          if (system.isDesktop) const DnsHijackItem(),
+          const EndpointIndependentNatItem(),
           if (!system.isIOS) const TunStackItem(),
           const TunMtuItem(),
           if (system.isAndroid || system.isIOS) ...[

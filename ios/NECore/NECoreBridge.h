@@ -26,10 +26,7 @@ struct sockaddr_ctl {
                      setupParams:(NSData *)setupParams
                           result:(NECoreResultHandler)result;
 + (BOOL)startTunWithFileDescriptor:(int)fileDescriptor
-                              stack:(NSString *)stack
-                            address:(NSString *)address
-                                dns:(NSString *)dns
-                                mtu:(int)mtu;
+                           options:(NSData *)options;
 + (void)stopTun;
 + (void)setSuspended:(BOOL)suspended;
 

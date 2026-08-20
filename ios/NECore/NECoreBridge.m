@@ -169,18 +169,9 @@ static void NECoreSystemLog(const char *level, const char *message) {
 }
 
 + (BOOL)startTunWithFileDescriptor:(int)fileDescriptor
-                              stack:(NSString *)stack
-                            address:(NSString *)address
-                                dns:(NSString *)dns
-                                mtu:(int)mtu {
+                           options:(NSData *)options {
   [self initializeBridge];
-  return startTUN(
-      NULL,
-      fileDescriptor,
-      strdup(stack.UTF8String),
-      strdup(address.UTF8String),
-      strdup(dns.UTF8String),
-      mtu);
+  return startTUN(NULL, fileDescriptor, NECoreCopyData(options));
 }
 
 + (void)stopTun {

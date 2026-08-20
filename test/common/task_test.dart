@@ -190,6 +190,12 @@ void main() {
             geoAutoUpdate: true,
             geoUpdateInterval: 12,
             hosts: {'router.local': '192.168.1.1,192.168.1.2'},
+            tun: Tun(
+              dnsHijack: [],
+              strictRoute: true,
+              disableIcmpForwarding: true,
+              endpointIndependentNat: true,
+            ),
           ),
           overrideDns: false,
           appendSystemDns: true,
@@ -213,6 +219,10 @@ void main() {
       expect(config['geo-auto-update'], true);
       expect(config['geo-update-interval'], 12);
       expect(config['global-ua'], 'FlClash-Test');
+      expect(config['tun']['dns-hijack'], isEmpty);
+      expect(config['tun']['strict-route'], true);
+      expect(config['tun']['disable-icmp-forwarding'], true);
+      expect(config['tun']['endpoint-independent-nat'], true);
       expect(config['profile']['store-selected'], false);
       expect(
         config['dns']['nameserver'],

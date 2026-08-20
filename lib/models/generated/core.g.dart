@@ -82,7 +82,7 @@ _VpnOptions _$VpnOptionsFromJson(Map<String, dynamic> json) => _VpnOptions(
   enable: json['enable'] as bool,
   port: (json['port'] as num).toInt(),
   ipv6: json['ipv6'] as bool,
-  dnsHijacking: json['dnsHijacking'] as bool,
+  captureDns: json['captureDns'] as bool,
   accessControlProps: AccessControlProps.fromJson(
     json['accessControlProps'] as Map<String, dynamic>,
   ),
@@ -99,6 +99,8 @@ _VpnOptions _$VpnOptionsFromJson(Map<String, dynamic> json) => _VpnOptions(
           ?.map((e) => e as String)
           .toList() ??
       const [],
+  disableIcmpForwarding: json['disableIcmpForwarding'] as bool? ?? false,
+  endpointIndependentNat: json['endpointIndependentNat'] as bool? ?? false,
   includeAllNetworks: json['includeAllNetworks'] as bool? ?? false,
   excludeLocalNetworks: json['excludeLocalNetworks'] as bool? ?? true,
   excludeAPNs: json['excludeAPNs'] as bool? ?? true,
@@ -113,7 +115,7 @@ Map<String, dynamic> _$VpnOptionsToJson(_VpnOptions instance) =>
       'enable': instance.enable,
       'port': instance.port,
       'ipv6': instance.ipv6,
-      'dnsHijacking': instance.dnsHijacking,
+      'captureDns': instance.captureDns,
       'accessControlProps': instance.accessControlProps,
       'allowBypass': instance.allowBypass,
       'systemProxy': instance.systemProxy,
@@ -122,6 +124,8 @@ Map<String, dynamic> _$VpnOptionsToJson(_VpnOptions instance) =>
       'stack': instance.stack,
       'mtu': instance.mtu,
       'routeAddress': instance.routeAddress,
+      'disableIcmpForwarding': instance.disableIcmpForwarding,
+      'endpointIndependentNat': instance.endpointIndependentNat,
       'includeAllNetworks': instance.includeAllNetworks,
       'excludeLocalNetworks': instance.excludeLocalNetworks,
       'excludeAPNs': instance.excludeAPNs,

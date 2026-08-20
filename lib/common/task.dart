@@ -176,6 +176,11 @@ Future<({String yaml, String md5})> _makeRealProfileTask(
   rawConfig['tun']['stack'] = realPatchConfig.tun.stack.name;
   rawConfig['tun']['route-address'] = realPatchConfig.tun.routeAddress;
   rawConfig['tun']['auto-route'] = realPatchConfig.tun.autoRoute;
+  rawConfig['tun']['strict-route'] = realPatchConfig.tun.strictRoute;
+  rawConfig['tun']['disable-icmp-forwarding'] =
+      realPatchConfig.tun.disableIcmpForwarding;
+  rawConfig['tun']['endpoint-independent-nat'] =
+      realPatchConfig.tun.endpointIndependentNat;
   rawConfig['geodata-loader'] = realPatchConfig.geodataLoader.name;
   rawConfig['geosite-matcher'] = system.isIOS
       ? GeositeMatcher.succinct.name

@@ -180,12 +180,15 @@ _Tun _$TunFromJson(Map<String, dynamic> json) => _Tun(
       (json['dns-hijack'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList() ??
-      const ['any:53'],
+      const [],
   routeAddress:
       (json['route-address'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList() ??
       const [],
+  strictRoute: json['strict-route'] as bool? ?? false,
+  disableIcmpForwarding: json['disable-icmp-forwarding'] as bool? ?? false,
+  endpointIndependentNat: json['endpoint-independent-nat'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$TunToJson(_Tun instance) => <String, dynamic>{
@@ -196,6 +199,9 @@ Map<String, dynamic> _$TunToJson(_Tun instance) => <String, dynamic>{
   'stack': _$TunStackEnumMap[instance.stack]!,
   'dns-hijack': instance.dnsHijack,
   'route-address': instance.routeAddress,
+  'strict-route': instance.strictRoute,
+  'disable-icmp-forwarding': instance.disableIcmpForwarding,
+  'endpoint-independent-nat': instance.endpointIndependentNat,
 };
 
 const _$TunStackEnumMap = {

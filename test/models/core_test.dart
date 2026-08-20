@@ -52,6 +52,33 @@ void main() {
     });
   });
 
+  group('VpnOptions', () {
+    test('serializes mobile TUN behavior flags', () {
+      final options = VpnOptions.fromJson({
+        'enable': true,
+        'port': 7890,
+        'ipv6': true,
+        'captureDns': true,
+        'accessControlProps': const AccessControlProps().toJson(),
+        'allowBypass': true,
+        'systemProxy': false,
+        'suspendSupport': true,
+        'bypassDomain': <String>[],
+        'stack': 'mixed',
+        'routeAddress': ['0.0.0.0/0'],
+        'disableIcmpForwarding': true,
+        'endpointIndependentNat': true,
+      });
+
+      expect(options.disableIcmpForwarding, true);
+      expect(options.endpointIndependentNat, true);
+      expect(options.captureDns, true);
+      expect(options.toJson()['captureDns'], true);
+      expect(options.toJson()['disableIcmpForwarding'], true);
+      expect(options.toJson()['endpointIndependentNat'], true);
+    });
+  });
+
   group('InitParams', () {
     test('fromJson and toJson', () {
       final json = {'home-dir': '/data/clash', 'version': 3};

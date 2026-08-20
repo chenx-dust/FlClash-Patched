@@ -12,7 +12,7 @@ private fun optionsWithRoutes(routeAddress: List<String>) = VpnOptions(
     enable = true,
     port = 7890,
     ipv6 = true,
-    dnsHijacking = false,
+    captureDns = false,
     accessControlProps = AccessControlProps(
         enable = false,
         mode = AccessControlMode.ACCEPT_SELECTED,
@@ -21,10 +21,13 @@ private fun optionsWithRoutes(routeAddress: List<String>) = VpnOptions(
     ),
     allowBypass = false,
     systemProxy = true,
-    dozeSuspend = true,
+    suspendSupport = true,
     bypassDomain = emptyList(),
     stack = "gvisor",
+    mtu = null,
     routeAddress = routeAddress,
+    disableIcmpForwarding = false,
+    endpointIndependentNat = false,
 )
 
 class ToCIDRTest {

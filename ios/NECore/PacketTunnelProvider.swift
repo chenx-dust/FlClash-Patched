@@ -29,7 +29,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
       return
     }
     logger.info(
-      "startTunnel options stack=\(vpnOptions.stack, privacy: .public) ipv6=\(vpnOptions.ipv6, privacy: .public) dnsHijacking=\(vpnOptions.dnsHijacking, privacy: .public) systemProxy=\(vpnOptions.systemProxy, privacy: .public) suspendSupport=\(vpnOptions.suspendSupport, privacy: .public)"
+      "startTunnel options stack=\(vpnOptions.stack, privacy: .public) ipv6=\(vpnOptions.ipv6, privacy: .public) captureDns=\(vpnOptions.captureDns, privacy: .public) systemProxy=\(vpnOptions.systemProxy, privacy: .public) suspendSupport=\(vpnOptions.suspendSupport, privacy: .public)"
     )
     suspendSupport = vpnOptions.suspendSupport
 
@@ -80,12 +80,22 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
           return
         }
         self.logger.info("quickSetup completed")
-        let started = NECoreBridge.startTun(
-          withFileDescriptor: tunnelFileDescriptor,
+        let coreTunOptions = CoreTunOptions(
           stack: vpnOptions.stack,
           address: self.networkConfiguration.tunAddress(for: vpnOptions),
           dns: self.networkConfiguration.tunDNS(for: vpnOptions),
-          mtu: Int32(vpnOptions.mtu)
+          mtu: vpnOptions.mtu,
+          disableIcmpForwarding: vpnOptions.disableIcmpForwarding,
+          endpointIndependentNat: vpnOptions.endpointIndependentNat
+        )
+        guard let coreTunOptionsData = try? JSONEncoder().encode(coreTunOptions)
+        else {
+          completionHandler(PacketTunnelProviderError.couldNotStartCoreTun)
+          return
+        }
+        let started = NECoreBridge.startTun(
+          withFileDescriptor: tunnelFileDescriptor,
+          options: coreTunOptionsData
         )
         self.logger.info(
           "NECoreBridge.startTun result=\(started, privacy: .public)"
@@ -227,6 +237,15 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
       )
     }
   }
+}
+
+private struct CoreTunOptions: Encodable {
+  let stack: String
+  let address: String
+  let dns: String
+  let mtu: Int
+  let disableIcmpForwarding: Bool
+  let endpointIndependentNat: Bool
 }
 
 private enum PacketTunnelProviderError: LocalizedError {

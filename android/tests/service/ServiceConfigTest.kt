@@ -14,7 +14,7 @@ private fun vpnOptions(port: Int) = VpnOptions(
     enable = true,
     port = port,
     ipv6 = false,
-    dnsHijacking = true,
+    captureDns = true,
     accessControlProps = AccessControlProps(
         enable = true,
         mode = AccessControlMode.REJECT_SELECTED,
@@ -23,10 +23,13 @@ private fun vpnOptions(port: Int) = VpnOptions(
     ),
     allowBypass = true,
     systemProxy = false,
-    dozeSuspend = true,
+    suspendSupport = true,
     bypassDomain = listOf("example.test"),
     stack = "system",
+    mtu = null,
     routeAddress = listOf("0.0.0.0/0"),
+    disableIcmpForwarding = false,
+    endpointIndependentNat = false,
 )
 
 class ServiceConfigTest {

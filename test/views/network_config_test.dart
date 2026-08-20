@@ -58,9 +58,31 @@ final _toggleCases = <_ToggleCase>[
     initial: true,
   ),
   _ToggleCase(
-    'dns hijacking',
-    const DNSHijackingItem(),
-    (c) => c.read(vpnSettingProvider).dnsHijacking,
+    'capture dns',
+    const CaptureDnsItem(),
+    (c) => c.read(vpnSettingProvider).captureDns,
+    initial: true,
+  ),
+  _ToggleCase(
+    'strict route',
+    const StrictRouteItem(),
+    (c) => c.read(patchClashConfigProvider).tun.strictRoute,
+  ),
+  _ToggleCase(
+    'icmp forwarding',
+    const IcmpForwardingItem(),
+    (c) => !c.read(patchClashConfigProvider).tun.disableIcmpForwarding,
+    initial: true,
+  ),
+  _ToggleCase(
+    'dns hijack',
+    const DnsHijackItem(),
+    (c) => c.read(patchClashConfigProvider).tun.dnsHijack.isNotEmpty,
+  ),
+  _ToggleCase(
+    'endpoint independent nat',
+    const EndpointIndependentNatItem(),
+    (c) => c.read(patchClashConfigProvider).tun.endpointIndependentNat,
   ),
 ];
 
