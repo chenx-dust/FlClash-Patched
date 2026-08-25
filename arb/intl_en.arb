@@ -138,7 +138,6 @@
   "backupSuccess": "Backup success",
   "noInfo": "No info",
   "pleaseBindWebDAV": "Please bind WebDAV",
-  "bind": "Bind",
   "connectivity": "Connectivity:",
   "webDAVConfiguration": "WebDAV configuration",
   "address": "Address",

@@ -183,6 +183,25 @@ void main() {
       expect(dav?.fileName, defaultDavFileName);
     });
 
+    testWidgets('stores an anonymous binding without credentials', (
+      tester,
+    ) async {
+      await pumpDialog(tester, const WebDAVFormDialog());
+
+      await tester.enterText(
+        find.widgetWithIcon(TextFormField, Icons.link),
+        'https://dav.example.com/public',
+      );
+      await tester.tap(find.widgetWithText(TextButton, 'Save'));
+      await tester.pumpAndSettle();
+
+      final dav = container.read(davSettingProvider);
+      expect(dav?.uri, 'https://dav.example.com/public');
+      expect(dav?.user, isEmpty);
+      expect(dav?.password, isEmpty);
+      expect(dav?.fileName, defaultDavFileName);
+    });
+
     testWidgets('editing preserves the previously chosen file name', (
       tester,
     ) async {

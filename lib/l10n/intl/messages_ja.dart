@@ -203,7 +203,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "batteryOptimizationStatusTip": MessageLookupByLibrary.simpleMessage(
       "システム制限のため、実行中はバッテリー最適化の状態を正確に取得できません。",
     ),
-    "bind": MessageLookupByLibrary.simpleMessage("バインド"),
     "blacklistMode": MessageLookupByLibrary.simpleMessage("ブラックリストモード"),
     "blockConnection": MessageLookupByLibrary.simpleMessage("接続をブロック"),
     "bypassDomain": MessageLookupByLibrary.simpleMessage("バイパスドメイン"),

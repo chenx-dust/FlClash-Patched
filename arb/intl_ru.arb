@@ -139,7 +139,6 @@
   "backupSuccess": "Резервное копирование успешно",
   "noInfo": "Нет информации",
   "pleaseBindWebDAV": "Пожалуйста, привяжите WebDAV",
-  "bind": "Привязать",
   "connectivity": "Связь：",
   "webDAVConfiguration": "Конфигурация WebDAV",
   "address": "Адрес",

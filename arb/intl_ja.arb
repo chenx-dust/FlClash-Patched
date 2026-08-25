@@ -138,7 +138,6 @@
   "backupSuccess": "バックアップ成功",
   "noInfo": "情報なし",
   "pleaseBindWebDAV": "WebDAV をバインドしてください",
-  "bind": "バインド",
   "connectivity": "接続性：",
   "webDAVConfiguration": "WebDAV 設定",
   "address": "アドレス",

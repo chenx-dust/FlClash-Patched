@@ -238,7 +238,7 @@ class _BackupAndRestoreState extends ConsumerState<BackupAndRestore>
                 onPressed: () {
                   _showAddWebDAV(dav);
                 },
-                child: Text(appLocalizations.bind),
+                child: Text(appLocalizations.signIn),
               ),
             )
           else ...[
@@ -246,7 +246,7 @@ class _BackupAndRestoreState extends ConsumerState<BackupAndRestore>
               leading: const Icon(Icons.account_box),
               title: TooltipText(
                 text: Text(
-                  dav.user,
+                  dav.user.isEmpty ? dav.uri : dav.user,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -257,6 +257,7 @@ class _BackupAndRestoreState extends ConsumerState<BackupAndRestore>
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(appLocalizations.connectivity),
+                    const SizedBox(width: 8),
                     _DavConnectionIndicator(connection: _davConnection),
                   ],
                 ),
@@ -592,12 +593,6 @@ class _WebDAVFormDialogState extends ConsumerState<WebDAVFormDialog> {
                 prefixIcon: const Icon(Icons.account_circle),
                 labelText: appLocalizations.account,
               ),
-              validator: (String? value) {
-                if (value == null || value.isEmpty) {
-                  return appLocalizations.emptyTip(appLocalizations.account);
-                }
-                return null;
-              },
             ),
             ValueListenableBuilder(
               valueListenable: _obscureController,
@@ -623,14 +618,6 @@ class _WebDAVFormDialogState extends ConsumerState<WebDAVFormDialog> {
                     ),
                     labelText: appLocalizations.password,
                   ),
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return appLocalizations.emptyTip(
-                        appLocalizations.password,
-                      );
-                    }
-                    return null;
-                  },
                 );
               },
             ),

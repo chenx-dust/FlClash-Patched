@@ -262,7 +262,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "batteryOptimizationStatusTip": MessageLookupByLibrary.simpleMessage(
       "Из-за системных ограничений статус оптимизации батареи не может быть точно получен во время работы.",
     ),
-    "bind": MessageLookupByLibrary.simpleMessage("Привязать"),
     "blacklistMode": MessageLookupByLibrary.simpleMessage(
       "Режим черного списка",
     ),

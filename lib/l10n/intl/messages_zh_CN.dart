@@ -189,7 +189,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "batteryOptimizationStatusTip": MessageLookupByLibrary.simpleMessage(
       "由于系统限制，运行状态下无法正确获取电池优化状态",
     ),
-    "bind": MessageLookupByLibrary.simpleMessage("绑定"),
     "blacklistMode": MessageLookupByLibrary.simpleMessage("黑名单模式"),
     "blockConnection": MessageLookupByLibrary.simpleMessage("阻止连接"),
     "bypassDomain": MessageLookupByLibrary.simpleMessage("排除域名"),

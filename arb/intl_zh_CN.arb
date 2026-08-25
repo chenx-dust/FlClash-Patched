@@ -138,7 +138,6 @@
   "backupSuccess": "备份成功",
   "noInfo": "暂无信息",
   "pleaseBindWebDAV": "请绑定 WebDAV",
-  "bind": "绑定",
   "connectivity": "连通性：",
   "webDAVConfiguration": "WebDAV 配置",
   "address": "地址",
