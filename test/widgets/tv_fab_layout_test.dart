@@ -1,7 +1,20 @@
+import 'package:fl_clash/l10n/l10n.dart';
+import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+Widget _app(Widget home) {
+  return MaterialApp(
+    localizationsDelegates: const [
+      AppLocalizations.delegate,
+      ...GlobalMaterialLocalizations.delegates,
+    ],
+    supportedLocales: AppLocalizations.delegate.supportedLocales,
+    home: home,
+  );
+}
 
 Widget _action() {
   return CommonFloatingActionButton(
@@ -36,9 +49,9 @@ bool _isActionFocused() {
 void main() {
   testWidgets('non-TV CommonScaffold keeps the Scaffold FAB', (tester) async {
     await tester.pumpWidget(
-      MaterialApp(
-        home: CommonScaffold(
-          appBar: AppBar(title: const Text('page')),
+      _app(
+        CommonScaffold(
+          title: 'page',
           isTV: false,
           floatingActionButton: _action(),
           body: _content(),
@@ -51,14 +64,15 @@ void main() {
     expect(scaffold.floatingActionButton, isNotNull);
   });
 
-  testWidgets('CommonScaffold pins the FAB above scrollable content on TV', (
+  testWidgets('CommonScaffold puts the TV FAB before search in the AppBar', (
     tester,
   ) async {
     await tester.pumpWidget(
-      MaterialApp(
-        home: CommonScaffold(
-          appBar: AppBar(title: const Text('page')),
+      _app(
+        CommonScaffold(
+          title: 'page',
           isTV: true,
+          searchState: AppBarSearchState(onSearch: (_) {}),
           floatingActionButton: _action(),
           body: _content(),
         ),
@@ -67,31 +81,35 @@ void main() {
 
     final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
     final action = find.byKey(const ValueKey('action'));
-    final firstItem = find.byKey(const ValueKey('item0'));
-    final initialActionTop = tester.getTopLeft(action).dy;
+    final search = find.byIcon(Icons.search);
 
     expect(scaffold.floatingActionButton, isNull);
-    expect(initialActionTop, lessThan(tester.getTopLeft(firstItem).dy));
+    expect(
+      find.ancestor(of: action, matching: find.byType(AppBar)),
+      findsOneWidget,
+    );
+    expect(tester.getCenter(action).dx, lessThan(tester.getCenter(search).dx));
 
-    await tester.drag(firstItem, const Offset(0, -300));
+    await tester.tap(search);
     await tester.pumpAndSettle();
 
-    expect(tester.getTopLeft(action).dy, initialActionTop);
+    expect(action, findsNothing);
+    expect(find.byType(TextField), findsOneWidget);
   });
 
-  testWidgets('TV top action is the first focus target in page content', (
+  testWidgets('TV AppBar action is the first focus target in page content', (
     tester,
   ) async {
     final outsideFocus = FocusNode();
     addTearDown(outsideFocus.dispose);
     await tester.pumpWidget(
-      MaterialApp(
-        home: Column(
+      _app(
+        Column(
           children: [
             Focus(focusNode: outsideFocus, child: const SizedBox()),
             Expanded(
               child: CommonScaffold(
-                appBar: AppBar(title: const Text('page')),
+                title: 'page',
                 isTV: true,
                 floatingActionButton: _action(),
                 body: _content(),
@@ -114,8 +132,8 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
+      _app(
+        Scaffold(
           body: FloatLayout(
             isTV: true,
             floatingWidget: _action(),

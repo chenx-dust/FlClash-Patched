@@ -330,6 +330,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
   List<Widget> _buildActions(
     AppBarSearchState? searchState,
     List<Widget> actions,
+    bool isTV,
   ) {
     if (_isSearch) {
       return genActions([
@@ -344,6 +345,14 @@ class CommonScaffoldState extends State<CommonScaffold> {
       ]);
     }
     return genActions([
+      if (isTV && widget.floatingActionButton != null)
+        SizedBox(
+          height: 48,
+          child: CommonScaffoldFabExtendedProvider(
+            isExtended: true,
+            child: widget.floatingActionButton!,
+          ),
+        ),
       if (searchState != null && widget.searchState?.autoAddSearch == true)
         IconButton(
           tooltip: context.appLocalizations.search,
@@ -364,7 +373,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
     return appBar;
   }
 
-  PreferredSizeWidget _buildAppBar(VoidCallback? backAction) {
+  PreferredSizeWidget _buildAppBar(VoidCallback? backAction, bool isTV) {
     final theme = Theme.of(context);
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -392,6 +401,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
                             state.actions.isNotEmpty
                                 ? state.actions
                                 : widget.actions ?? [],
+                            isTV,
                           ),
                         ),
                       ),
@@ -424,7 +434,9 @@ class CommonScaffoldState extends State<CommonScaffold> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (isTV && widget.floatingActionButton != null)
+          if (isTV &&
+              widget.appBar != null &&
+              widget.floatingActionButton != null)
             Padding(
               padding: const EdgeInsets.all(16),
               child: CommonScaffoldFabExtendedProvider(
@@ -485,7 +497,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
       child: widget.floatingActionButton,
     );
     return Scaffold(
-      appBar: _buildAppBar(backActionProvider?.backAction),
+      appBar: _buildAppBar(backActionProvider?.backAction, isTV),
       body: NotificationListener<UserScrollNotification>(
         child: hasFab
             ? BottomInsetScope(
