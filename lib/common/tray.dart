@@ -482,11 +482,13 @@ class Tray {
 
   Future<void> _copyEnv(int port) async {
     final url = 'http://127.0.0.1:$port';
-
     final cmdline = system.isWindows
-        ? 'set \$env:all_proxy=$url'
-        : 'export all_proxy=$url';
-
+        ? '\$env:http_proxy="$url"; \$env:https_proxy="$url"; '
+              '\$env:all_proxy="$url"; '
+              '\$env:no_proxy="localhost,::1,127.0.0.1"'
+        : 'export http_proxy="$url"; export https_proxy="$url"; '
+              'export all_proxy="$url"; '
+              'export no_proxy="localhost,::1,127.0.0.1"';
     await Clipboard.setData(ClipboardData(text: cmdline));
   }
 }
