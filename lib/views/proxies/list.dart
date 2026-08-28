@@ -19,6 +19,8 @@ const _enterStaggerLimit = 8;
 const _enterStaggerStep = Duration(milliseconds: 20);
 const _enterSlideBase = 32.0;
 const _enterSlideStep = 8.0;
+const _listHeaderFadeHeight = 22.0;
+const _listHeaderFadeOverflow = 8.0;
 final _enterWindow = commonDuration + _enterStaggerStep * _enterStaggerLimit;
 
 class ProxiesListView extends ConsumerStatefulWidget {
@@ -150,31 +152,46 @@ class ProxiesListViewState extends ConsumerState<ProxiesListView> {
   }) {
     final groupName = group.name;
     final isExpand = currentUnfoldSet.contains(groupName);
+    final headerHeight = getListHeaderHeight(listHeaderStyle);
+    final backgroundHeight = headerHeight + _listHeaderFadeOverflow;
+    final fadeStart = 1 - _listHeaderFadeHeight / backgroundHeight;
+    final surface = context.colorScheme.surface;
     final rows = isExpand
         ? group.all.chunks(columns).toList()
         : const <List<Proxy>>[];
     return SliverMainAxisGroup(
       slivers: [
         PinnedHeaderSliver(
-          child: ColoredBox(
-            color: context.colorScheme.surface,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
-              child: SizedBox(
-                height: getListHeaderHeight(listHeaderStyle),
-                child: ListHeader(
-                  enterAnimated: false,
-                  onScrollToSelected: (groupName) {
-                    _scrollToGroupSelected(groupName, columns);
-                  },
-                  key: ValueKey(groupName),
-                  listHeaderStyle: listHeaderStyle,
-                  isExpand: isExpand,
-                  group: group,
-                  onChange: (groupName) {
-                    _handleChange(currentUnfoldSet, groupName, listHeaderStyle);
-                  },
-                ),
+          child: Container(
+            key: ValueKey('$groupName.headerFade'),
+            height: backgroundHeight,
+            padding: const EdgeInsets.only(
+              left: 16,
+              right: 16,
+              bottom: _listHeaderFadeOverflow,
+            ),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [surface, surface, surface.opacity60, surface.opacity0],
+                stops: [0, fadeStart, fadeStart, 1],
+              ),
+            ),
+            child: SizedBox(
+              height: headerHeight,
+              child: ListHeader(
+                enterAnimated: false,
+                onScrollToSelected: (groupName) {
+                  _scrollToGroupSelected(groupName, columns);
+                },
+                key: ValueKey(groupName),
+                listHeaderStyle: listHeaderStyle,
+                isExpand: isExpand,
+                group: group,
+                onChange: (groupName) {
+                  _handleChange(currentUnfoldSet, groupName, listHeaderStyle);
+                },
               ),
             ),
           ),
