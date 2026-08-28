@@ -90,7 +90,7 @@ class CommonAction extends _$CommonAction {
           ? [
               TextSpan(text: '\n', style: textTheme.bodyMedium),
               for (final submit in parseReleaseBody(body))
-                TextSpan(text: '- $submit \n', style: textTheme.bodyMedium),
+                TextSpan(text: '• $submit \n', style: textTheme.bodyMedium),
             ]
           : _changelogSpans(context, version),
     );

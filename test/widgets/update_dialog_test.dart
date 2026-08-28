@@ -119,7 +119,7 @@ void main() {
         .checkUpdateResultHandle(data: release(_bulletsOnly));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('- Override scripts'), findsOneWidget);
+    expect(find.textContaining('• Override scripts'), findsOneWidget);
 
     await tapCancel(tester);
     await shown;
