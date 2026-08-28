@@ -67,15 +67,19 @@ class ApplicationState extends ConsumerState<Application> {
 
   PageTransitionsTheme _getPageTransitionsTheme({
     required bool predictiveBack,
+    required bool isMobile,
   }) {
+    final pageTransitions = isMobile
+        ? commonSharedXPageTransitions
+        : commonDesktopFadePageTransitions;
     return PageTransitionsTheme(
       builders: <TargetPlatform, PageTransitionsBuilder>{
         TargetPlatform.android: predictiveBack
             ? const PredictiveBackPageTransitionsBuilder()
-            : commonSharedXPageTransitions,
-        TargetPlatform.windows: commonSharedXPageTransitions,
-        TargetPlatform.linux: commonSharedXPageTransitions,
-        TargetPlatform.macOS: commonSharedXPageTransitions,
+            : pageTransitions,
+        TargetPlatform.windows: pageTransitions,
+        TargetPlatform.linux: pageTransitions,
+        TargetPlatform.macOS: pageTransitions,
       },
     );
   }
@@ -161,8 +165,10 @@ class ApplicationState extends ConsumerState<Application> {
         final supportsPredictiveBack = system.supportsPredictiveBack(
           ref.watch(versionProvider),
         );
+        final isMobile = ref.watch(isMobileViewProvider);
         final pageTransitionsTheme = _getPageTransitionsTheme(
           predictiveBack: supportsPredictiveBack && themeProps.predictiveBack,
+          isMobile: isMobile,
         );
         return ValueListenableBuilder<bool>(
           valueListenable: globalState.isBackground,

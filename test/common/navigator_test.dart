@@ -1,36 +1,29 @@
 import 'package:fl_clash/common/navigator.dart';
-import 'package:fl_clash/providers/app.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  late ProviderContainer container;
-
-  setUp(() => container = ProviderContainer());
-
-  tearDown(() => container.dispose());
-
-  void setViewWidth(double width) {
-    container.read(viewSizeProvider.notifier).value = Size(width, 900);
-  }
-
-  Future<void> pumpHost(WidgetTester tester) async {
+  Future<void> pumpHost(
+    WidgetTester tester, {
+    required PageTransitionsBuilder transitions,
+  }) async {
     await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: MaterialApp(
-          home: Builder(
-            builder: (context) => Scaffold(
-              body: TextButton(
-                onPressed: () => BaseNavigator.push(
-                  context,
-                  const Scaffold(body: Text('pushed page')),
-                ),
-                child: const Text('open'),
+      MaterialApp(
+        theme: ThemeData(
+          pageTransitionsTheme: PageTransitionsTheme(
+            builders: {TargetPlatform.android: transitions},
+          ),
+        ),
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: TextButton(
+              onPressed: () => BaseNavigator.push(
+                context,
+                const Scaffold(body: Text('pushed page')),
               ),
+              child: const Text('open'),
             ),
           ),
         ),
@@ -40,9 +33,8 @@ void main() {
   }
 
   group('BaseNavigator.push', () {
-    testWidgets('uses the fading desktop route on a wide view', (tester) async {
-      setViewWidth(1400);
-      await pumpHost(tester);
+    testWidgets('uses the fading desktop page transition', (tester) async {
+      await pumpHost(tester, transitions: commonDesktopFadePageTransitions);
 
       await tester.tap(find.text('open'));
       await tester.pump();
@@ -53,9 +45,8 @@ void main() {
       expect(find.text('pushed page'), findsOneWidget);
     });
 
-    testWidgets('uses the shared-axis route on a mobile view', (tester) async {
-      setViewWidth(400);
-      await pumpHost(tester);
+    testWidgets('uses the shared-axis mobile page transition', (tester) async {
+      await pumpHost(tester, transitions: commonSharedXPageTransitions);
 
       await tester.tap(find.text('open'));
       await tester.pumpAndSettle();
@@ -64,8 +55,7 @@ void main() {
     });
 
     testWidgets('pops back to the origin', (tester) async {
-      setViewWidth(1400);
-      await pumpHost(tester);
+      await pumpHost(tester, transitions: commonDesktopFadePageTransitions);
       await tester.tap(find.text('open'));
       await tester.pumpAndSettle();
 
@@ -79,15 +69,13 @@ void main() {
   });
 
   group('route configuration', () {
-    test('desktop route exposes a transparent barrier and keeps state', () {
-      final route = CommonDesktopRoute<void>(builder: (_) => const SizedBox());
-
-      expect(route.barrierColor, isNull);
-      expect(route.barrierLabel, isNull);
-      expect(route.maintainState, isTrue);
-      expect(route.transitionDuration, const Duration(milliseconds: 150));
+    test('desktop page transition uses short fade durations', () {
       expect(
-        route.reverseTransitionDuration,
+        commonDesktopFadePageTransitions.transitionDuration,
+        const Duration(milliseconds: 150),
+      );
+      expect(
+        commonDesktopFadePageTransitions.reverseTransitionDuration,
         const Duration(milliseconds: 100),
       );
     });
