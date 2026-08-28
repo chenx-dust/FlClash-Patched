@@ -13,6 +13,18 @@ import 'provider_reader.dart';
 import 'system.dart';
 import 'window.dart';
 
+@visibleForTesting
+String proxyEnvironmentCommand({required int port, required bool isWindows}) {
+  final url = 'http://127.0.0.1:$port';
+  return isWindows
+      ? '\$env:http_proxy="$url"; \$env:https_proxy="$url"; '
+            '\$env:all_proxy="$url"; '
+            '\$env:no_proxy="localhost,::1,127.0.0.1"'
+      : 'export http_proxy="$url"; export https_proxy="$url"; '
+            'export all_proxy="$url"; '
+            'export no_proxy="localhost,::1,127.0.0.1"';
+}
+
 class AppTray implements TrayPort {
   static AppTray? _instance;
 
@@ -206,12 +218,7 @@ class AppTray implements TrayPort {
   }
 
   Future<void> _copyEnv(int port) async {
-    final url = 'http://127.0.0.1:$port';
-
-    final cmdline = isWindows
-        ? 'set \$env:all_proxy=$url'
-        : 'export all_proxy=$url';
-
+    final cmdline = proxyEnvironmentCommand(port: port, isWindows: isWindows);
     await Clipboard.setData(ClipboardData(text: cmdline));
   }
 }

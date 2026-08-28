@@ -4,6 +4,28 @@ import 'package:fl_clash/common/tray.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('proxyEnvironmentCommand', () {
+    test('builds PowerShell proxy environment assignments', () {
+      expect(
+        proxyEnvironmentCommand(port: 7890, isWindows: true),
+        '\$env:http_proxy="http://127.0.0.1:7890"; '
+        '\$env:https_proxy="http://127.0.0.1:7890"; '
+        '\$env:all_proxy="http://127.0.0.1:7890"; '
+        '\$env:no_proxy="localhost,::1,127.0.0.1"',
+      );
+    });
+
+    test('builds POSIX proxy environment assignments', () {
+      expect(
+        proxyEnvironmentCommand(port: 7890, isWindows: false),
+        'export http_proxy="http://127.0.0.1:7890"; '
+        'export https_proxy="http://127.0.0.1:7890"; '
+        'export all_proxy="http://127.0.0.1:7890"; '
+        'export no_proxy="localhost,::1,127.0.0.1"',
+      );
+    });
+  });
+
   group('AppTray.getTrayIcon', () {
     final tray = AppTray();
     final suffix = tray.trayIconSuffix;
