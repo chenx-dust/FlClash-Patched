@@ -61,30 +61,31 @@ class Window implements WindowPort {
       final top = props.top;
       if (left == null || top == null) {
         await windowManager.setAlignment(Alignment.center);
-      } else {
-        final size = props.size;
-        final right = left + size.width;
-        final bottom = top + size.height;
-        final displays = await screenRetriever.getAllDisplays();
-        final isPositionValid = displays.any((display) {
-          final visiblePosition = display.visiblePosition;
-          if (visiblePosition == null) {
-            return false;
-          }
-          final displayBounds = Rect.fromLTWH(
-            visiblePosition.dx,
-            visiblePosition.dy,
-            display.size.width,
-            display.size.height,
-          );
-          return displayBounds.contains(Offset(left, top)) ||
-              displayBounds.contains(Offset(right, bottom));
-        });
-        if (isPositionValid) {
-          await windowManager.setPosition(Offset(left, top));
-        } else {
-          await windowManager.setAlignment(Alignment.center);
+        return;
+      }
+      final displays = await screenRetriever.getAllDisplays();
+      final isPositionValid = displays.any((display) {
+        final visiblePosition = display.visiblePosition;
+        if (visiblePosition == null) {
+          return false;
         }
+        final scaleFactor = display.scaleFactor ?? 1.0;
+        final logicalWidth =
+            display.visibleSize?.width ?? display.size.width / scaleFactor;
+        final logicalHeight =
+            display.visibleSize?.height ?? display.size.height / scaleFactor;
+        final displayBounds = Rect.fromLTWH(
+          visiblePosition.dx,
+          visiblePosition.dy,
+          logicalWidth,
+          logicalHeight,
+        );
+        return displayBounds.contains(Offset(left, top));
+      });
+      if (isPositionValid) {
+        await windowManager.setPosition(Offset(left, top));
+      } else {
+        await windowManager.setAlignment(Alignment.center);
       }
     }
   }
