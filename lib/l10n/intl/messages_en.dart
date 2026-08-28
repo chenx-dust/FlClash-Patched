@@ -423,11 +423,37 @@ class MessageLookup extends MessageLookupByLibrary {
     "editSsid": MessageLookupByLibrary.simpleMessage("Edit SSID"),
     "emptyTip": m6,
     "en": MessageLookupByLibrary.simpleMessage("English"),
+    "enforceRoutes": MessageLookupByLibrary.simpleMessage("Enforce Routes"),
+    "enforceRoutesDesc": MessageLookupByLibrary.simpleMessage(
+      "Ensure traffic is routed through the tunnel even when more specific routes exist",
+    ),
     "entries": MessageLookupByLibrary.simpleMessage(" entries"),
     "entriesCount": m7,
     "exclude": MessageLookupByLibrary.simpleMessage("Hidden from Recent Tasks"),
+    "excludeAPNs": MessageLookupByLibrary.simpleMessage("Exclude APNs"),
+    "excludeAPNsDesc": MessageLookupByLibrary.simpleMessage(
+      "Allow Apple Push Notification traffic to bypass the tunnel",
+    ),
+    "excludeCellularServices": MessageLookupByLibrary.simpleMessage(
+      "Exclude Cellular Services",
+    ),
+    "excludeCellularServicesDesc": MessageLookupByLibrary.simpleMessage(
+      "Allow cellular service traffic such as Wi-Fi Calling to bypass the tunnel",
+    ),
     "excludeDesc": MessageLookupByLibrary.simpleMessage(
       "When the app is in the background, the app is hidden from the recent task",
+    ),
+    "excludeDeviceCommunication": MessageLookupByLibrary.simpleMessage(
+      "Exclude Device Communication",
+    ),
+    "excludeDeviceCommunicationDesc": MessageLookupByLibrary.simpleMessage(
+      "Allow device-to-device traffic such as AirDrop and AirPlay to bypass the tunnel",
+    ),
+    "excludeLocalNetworks": MessageLookupByLibrary.simpleMessage(
+      "Exclude Local Networks",
+    ),
+    "excludeLocalNetworksDesc": MessageLookupByLibrary.simpleMessage(
+      "Allow direct access to devices on the local network",
     ),
     "excludeProxyFilter": MessageLookupByLibrary.simpleMessage(
       "Exclude proxy filter",
@@ -519,6 +545,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "hideFromList": MessageLookupByLibrary.simpleMessage("Hide from list"),
     "hidePassword": MessageLookupByLibrary.simpleMessage("Hide password"),
+    "hideUnavailable": MessageLookupByLibrary.simpleMessage("Hide Timeout"),
     "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage(
       "High Priority Auto Launch",
     ),
@@ -549,6 +576,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "importFile": MessageLookupByLibrary.simpleMessage("Import from file"),
     "importFromURL": MessageLookupByLibrary.simpleMessage("Import from URL"),
     "importUrl": MessageLookupByLibrary.simpleMessage("Import from URL"),
+    "includeAllNetworks": MessageLookupByLibrary.simpleMessage(
+      "Include All Networks",
+    ),
+    "includeAllNetworksDesc": MessageLookupByLibrary.simpleMessage(
+      "Route all network traffic through the tunnel, including local and cellular services",
+    ),
     "includeAllProxies": MessageLookupByLibrary.simpleMessage(
       "Include all proxies",
     ),
@@ -693,6 +726,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "networkException": MessageLookupByLibrary.simpleMessage(
       "Network exception, please check your connection and try again",
+    ),
+    "networkExtension": MessageLookupByLibrary.simpleMessage(
+      "Network Extension",
     ),
     "networkSpeed": MessageLookupByLibrary.simpleMessage("Network speed"),
     "networkSpeedNotification": MessageLookupByLibrary.simpleMessage(
@@ -1066,6 +1102,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "showLess": MessageLookupByLibrary.simpleMessage("Show less"),
     "showMore": MessageLookupByLibrary.simpleMessage("Show more"),
     "showPassword": MessageLookupByLibrary.simpleMessage("Show password"),
+    "showUnavailable": MessageLookupByLibrary.simpleMessage("Show Timeout"),
     "shrink": MessageLookupByLibrary.simpleMessage("Shrink"),
     "silentLaunch": MessageLookupByLibrary.simpleMessage("Silent Launch"),
     "silentLaunchDesc": MessageLookupByLibrary.simpleMessage(

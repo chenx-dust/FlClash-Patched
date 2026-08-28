@@ -336,11 +336,37 @@ class MessageLookup extends MessageLookupByLibrary {
     "editSsid": MessageLookupByLibrary.simpleMessage("SSID を編集"),
     "emptyTip": m6,
     "en": MessageLookupByLibrary.simpleMessage("英語"),
+    "enforceRoutes": MessageLookupByLibrary.simpleMessage("ルートを強制"),
+    "enforceRoutesDesc": MessageLookupByLibrary.simpleMessage(
+      "より具体的なルートが存在してもトラフィックをトンネル経由にする",
+    ),
     "entries": MessageLookupByLibrary.simpleMessage(" エントリ"),
     "entriesCount": m7,
     "exclude": MessageLookupByLibrary.simpleMessage("最近のタスクから非表示"),
+    "excludeAPNs": MessageLookupByLibrary.simpleMessage("APNs を除外"),
+    "excludeAPNsDesc": MessageLookupByLibrary.simpleMessage(
+      "Apple プッシュ通知トラフィックがトンネルをバイパスすることを許可する",
+    ),
+    "excludeCellularServices": MessageLookupByLibrary.simpleMessage(
+      "セルラーサービスを除外",
+    ),
+    "excludeCellularServicesDesc": MessageLookupByLibrary.simpleMessage(
+      "Wi-Fi 通話などのセルラーサービストラフィックがトンネルをバイパスすることを許可する",
+    ),
     "excludeDesc": MessageLookupByLibrary.simpleMessage(
       "アプリがバックグラウンド時に最近のタスクから非表示",
+    ),
+    "excludeDeviceCommunication": MessageLookupByLibrary.simpleMessage(
+      "デバイス間通信を除外",
+    ),
+    "excludeDeviceCommunicationDesc": MessageLookupByLibrary.simpleMessage(
+      "AirDrop や AirPlay などのデバイス間通信がトンネルをバイパスすることを許可する",
+    ),
+    "excludeLocalNetworks": MessageLookupByLibrary.simpleMessage(
+      "ローカルネットワークを除外",
+    ),
+    "excludeLocalNetworksDesc": MessageLookupByLibrary.simpleMessage(
+      "ローカルネットワーク上のデバイスへの直接アクセスを許可する",
     ),
     "excludeProxyFilter": MessageLookupByLibrary.simpleMessage("除外プロキシフィルター"),
     "excludeSsids": MessageLookupByLibrary.simpleMessage("除外 SSID"),
@@ -416,6 +442,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "hideFromList": MessageLookupByLibrary.simpleMessage("リストから隠す"),
     "hidePassword": MessageLookupByLibrary.simpleMessage("パスワードを非表示"),
+    "hideUnavailable": MessageLookupByLibrary.simpleMessage("タイムアウト非表示"),
     "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage("高優先度自動起動"),
     "highPriorityAutoLaunchDesc": MessageLookupByLibrary.simpleMessage(
       "Windows タスクスケジューラでより早く起動します",
@@ -442,6 +469,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "importFile": MessageLookupByLibrary.simpleMessage("ファイルからインポート"),
     "importFromURL": MessageLookupByLibrary.simpleMessage("URL からインポート"),
     "importUrl": MessageLookupByLibrary.simpleMessage("URL からインポート"),
+    "includeAllNetworks": MessageLookupByLibrary.simpleMessage("すべてのネットワークを含む"),
+    "includeAllNetworksDesc": MessageLookupByLibrary.simpleMessage(
+      "ローカルおよびセルラーサービスを含むすべてのネットワークトラフィックをトンネル経由にする",
+    ),
     "includeAllProxies": MessageLookupByLibrary.simpleMessage("すべてのプロキシを含める"),
     "includeAllProxiesTip": MessageLookupByLibrary.simpleMessage(
       "プロキシグループに含まれないすべてのプロキシをインポートします。下でさらにプロキシグループを追加できます",
@@ -550,6 +581,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "networkException": MessageLookupByLibrary.simpleMessage(
       "ネットワーク例外、接続を確認してもう一度お試しください",
     ),
+    "networkExtension": MessageLookupByLibrary.simpleMessage("ネットワーク拡張"),
     "networkSpeed": MessageLookupByLibrary.simpleMessage("ネットワーク速度"),
     "networkSpeedNotification": MessageLookupByLibrary.simpleMessage(
       "通知に速度を表示",
@@ -874,6 +906,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "showLess": MessageLookupByLibrary.simpleMessage("折りたたむ"),
     "showMore": MessageLookupByLibrary.simpleMessage("展開する"),
     "showPassword": MessageLookupByLibrary.simpleMessage("パスワードを表示"),
+    "showUnavailable": MessageLookupByLibrary.simpleMessage("タイムアウト表示"),
     "shrink": MessageLookupByLibrary.simpleMessage("縮小"),
     "silentLaunch": MessageLookupByLibrary.simpleMessage("バックグラウンド起動"),
     "silentLaunchDesc": MessageLookupByLibrary.simpleMessage("バックグラウンドで起動"),

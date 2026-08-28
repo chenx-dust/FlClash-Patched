@@ -96,6 +96,11 @@ static void release_jni_object_impl(void *obj) {
     del_global(static_cast<jobject>(obj));
 }
 
+static void *retain_jni_object_impl(void *obj) {
+    ATTACH_JNI();
+    return new_global(static_cast<jobject>(obj));
+}
+
 static void free_string_impl(char *str) {
     free(str);
 }
@@ -200,6 +205,7 @@ JNI_OnLoad(JavaVM *vm, void *) {
     resolve_package_func = &call_tun_interface_resolve_package_impl;
     result_func = &call_invoke_interface_result_impl;
     release_object_func = &release_jni_object_impl;
+    retain_object_func = &retain_jni_object_impl;
     free_string_func = &free_string_impl;
 
     return JNI_VERSION_1_6;

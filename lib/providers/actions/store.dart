@@ -15,7 +15,14 @@ class StoreAction extends _$StoreAction {
       profileIds: profileIds,
       scriptIds: scriptIds,
     ));
-    await Future.wait(pathsToDelete.map(safeDeletePath));
+    await Future.wait(
+      pathsToDelete.map((params) async {
+        final error = await _core.deleteManagedPath(params);
+        if (error.isNotEmpty) {
+          throw MessageException(error);
+        }
+      }),
+    );
   }
 
   void savePreferencesDebounce() {
@@ -34,7 +41,7 @@ class StoreAction extends _$StoreAction {
     if (await providersDir.exists()) {
       await for (final entity in providersDir.list(followLinks: false)) {
         if (entity is! Directory) continue;
-        final profileId = int.tryParse(basename(entity.path));
+        final profileId = int.tryParse(p.basename(entity.path));
         if (profileId != null && profileId > 0) {
           profileIds.add(profileId);
         }
@@ -56,7 +63,20 @@ class StoreAction extends _$StoreAction {
     commonPrint.log('clear preferences');
     await database.close();
     await File(await appPath.databasePath).safeDelete(recursive: true);
-    await Directory(await appPath.profilesPath).safeDelete(recursive: true);
+    final profilesDir = Directory(await appPath.profilesPath);
+    if (await profilesDir.exists()) {
+      await for (final entity in profilesDir.list(followLinks: false)) {
+        final error = await _core.deleteManagedPath(
+          DeleteManagedPathParams(
+            scope: ManagedPathScope.profiles,
+            relativePath: p.relative(entity.path, from: profilesDir.path),
+          ),
+        );
+        if (error.isNotEmpty) {
+          commonPrint.log(error, logLevel: LogLevel.warning);
+        }
+      }
+    }
     unawaited(ref.read(systemActionProvider.notifier).handleExit(false));
   }
 }

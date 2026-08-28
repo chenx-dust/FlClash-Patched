@@ -171,8 +171,8 @@ var methodHandlers = map[CoreMethod]methodHandler{
 	shutdownMethod: withoutArguments(func(response MethodResponse) {
 		response.success(handleShutdown())
 	}),
-	validateConfigMethod: withArguments(func(path *string, response MethodResponse) {
-		response.success(handleValidateConfig(*path))
+	validateConfigMethod: withArguments(func(data *string, response MethodResponse) {
+		response.success(handleValidateConfig(*data))
 	}),
 	decryptAgeConfigMethod: withArguments(func(params *DecryptAgeConfigParams, response MethodResponse) {
 		decrypted, err := handleDecryptAgeConfig(params)
@@ -211,8 +211,8 @@ var methodHandlers = map[CoreMethod]methodHandler{
 	setupConfigMethod: withDefaults(defaultSetupParams, func(params *SetupParams, response MethodResponse) {
 		response.success(handleSetupConfig(params))
 	}),
-	getConfigMethod: withArguments(func(path *string, response MethodResponse) {
-		rawConfig, err := handleGetConfig(*path)
+	getProfileConfigMethod: withArguments(func(profileID *int64, response MethodResponse) {
+		rawConfig, err := handleGetProfileConfig(*profileID)
 		if err != nil {
 			response.failure("core_error", err.Error(), nil)
 			return
@@ -304,6 +304,9 @@ var methodHandlers = map[CoreMethod]methodHandler{
 		safeGo(response, func() {
 			response.success(handleClearEffect(*profileId))
 		})
+	}),
+	deleteManagedPathMethod: withArguments(func(params *DeleteManagedPathParams, response MethodResponse) {
+		response.success(handleDeleteManagedPath(params))
 	}),
 }
 

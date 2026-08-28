@@ -11,7 +11,7 @@ import 'clash_config.dart';
 part 'generated/profile.freezed.dart';
 part 'generated/profile.g.dart';
 
-typedef ValidateConfig = Future<String> Function(String path);
+typedef ValidateConfig = Future<String> Function(String data);
 typedef DecryptAgeConfig = Future<String> Function(String data, String key);
 
 @freezed
@@ -220,13 +220,13 @@ extension ProfileExtension on Profile {
         }
       } catch (_) {}
     }
-    final path = await appPath.tempFilePath;
-    final tempFile = File(path);
-    await tempFile.safeWriteAsBytes(data);
-    final message = await validate(path);
+    final message = await validate(utf8.decode(data));
     if (message.isNotEmpty) {
       throw MessageException(message);
     }
+    final path = await appPath.tempFilePath;
+    final tempFile = File(path);
+    await tempFile.safeWriteAsBytes(data);
     final mFile = await file;
     await tempFile.copy(mFile.path);
     await tempFile.safeDelete();

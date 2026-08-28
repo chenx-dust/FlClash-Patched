@@ -260,14 +260,26 @@ func handleUpdateDns(value string) {
 }
 
 func (response MethodResponse) send() {
+	if response.callback != nil {
+		defer releaseObject(response.callback)
+	}
 	data, err := response.JSON()
 	if err != nil {
 		logError("MethodResponse marshal error: id=%s err=%v", response.ID, err)
-		releaseObject(response.callback)
-		return
+		data, err = (&MethodResponse{
+			ID: response.ID,
+			Error: &MethodError{
+				Code:    "serialization_error",
+				Message: "failed to serialize method response",
+				Details: err.Error(),
+			},
+		}).JSON()
+		if err != nil {
+			logError("Fallback MethodResponse marshal error: id=%s err=%v", response.ID, err)
+			return
+		}
 	}
 	invokeResult(response.callback, string(data))
-	releaseObject(response.callback)
 }
 
 func init() {
@@ -360,11 +372,14 @@ func marshalResult(value any) string {
 
 func deliverEvent(data []byte) {
 	eventListenerLock.RLock()
-	defer eventListenerLock.RUnlock()
 	if eventListener == nil {
+		eventListenerLock.RUnlock()
 		return
 	}
-	invokeResult(eventListener, string(data))
+	listener := retainObject(eventListener)
+	eventListenerLock.RUnlock()
+	defer releaseObject(listener)
+	invokeResult(listener, string(data))
 }
 
 //export stopTun

@@ -4,6 +4,8 @@
 
 extern void (*release_object_func)(void *obj);
 
+extern void *(*retain_object_func)(void *obj);
+
 extern void (*free_string_func)(char *data);
 
 extern int (*protect_func)(void *tun_interface, int fd);
@@ -22,6 +24,8 @@ extern int resolve_uid(void *tun_interface, int protocol, const char *source, co
 extern char* resolve_package(void *tun_interface, int uid);
 
 extern void release_object(void *obj);
+
+extern void *retain_object(void *obj);
 
 extern void free_string(char *data);
 

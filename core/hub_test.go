@@ -330,67 +330,32 @@ func TestDelayValue(t *testing.T) {
 	}
 }
 
-func TestProviderPathsStayUnderTheRoot(t *testing.T) {
-	home := filepath.Join("var", "home")
-	root, target := providerPaths(home, 1234567890123)
-
-	wantRoot := filepath.Join(home, "profiles", "providers")
-	if root != wantRoot {
-		t.Fatalf("root = %q, want %q", root, wantRoot)
+func TestResolveManagedPathAcceptsLocalPaths(t *testing.T) {
+	path, err := resolveManagedPath(filepath.Join("profile", "config.yaml"))
+	if err != nil {
+		t.Fatalf("resolveManagedPath error: %v", err)
 	}
-	wantTarget := filepath.Join(wantRoot, "1234567890123")
-	if target != wantTarget {
-		t.Fatalf("target = %q, want %q", target, wantTarget)
+	if path != filepath.Join("profile", "config.yaml") {
+		t.Fatalf("path = %q", path)
 	}
 }
 
-// The ID is an int64 rendered through strconv, so no caller-supplied value can
-// add a separator or climb out of the providers root.
-func TestProviderPathsCannotEscape(t *testing.T) {
-	home := t.TempDir()
-	ids := []int64{1, -1, 0, 1 << 62, -(1 << 62)}
-
-	for _, id := range ids {
-		root, target := providerPaths(home, id)
-		cleaned := filepath.Clean(target)
-		if !strings.HasPrefix(cleaned, root+string(filepath.Separator)) {
-			t.Errorf("providerPaths(%d) escaped: %q is outside %q", id, cleaned, root)
-		}
-		if filepath.Dir(cleaned) != root {
-			t.Errorf("providerPaths(%d) = %q, want a direct child of %q", id, cleaned, root)
+func TestResolveManagedPathRejectsEscapes(t *testing.T) {
+	for _, path := range []string{"", ".", "..", filepath.Join("..", "config.yaml")} {
+		if _, err := resolveManagedPath(path); err == nil {
+			t.Errorf("resolveManagedPath(%q) accepted an invalid path", path)
 		}
 	}
 }
 
-func TestHandleValidateConfigAcceptsAValidFile(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "config.yaml")
-	if err := os.WriteFile(path, []byte("mixed-port: 7890\n"), 0o600); err != nil {
-		t.Fatalf("write config: %v", err)
-	}
-
-	if got := handleValidateConfig(path); got != "" {
+func TestHandleValidateConfigAcceptsValidData(t *testing.T) {
+	if got := handleValidateConfig("mixed-port: 7890\n"); got != "" {
 		t.Fatalf("handleValidateConfig = %q, want no error", got)
 	}
 }
 
-func TestHandleValidateConfigReportsAMissingFile(t *testing.T) {
-	got := handleValidateConfig(filepath.Join(t.TempDir(), "absent.yaml"))
-
-	if got == "" {
-		t.Fatal("handleValidateConfig accepted a path that does not exist")
-	}
-	if !strings.Contains(got, "absent.yaml") {
-		t.Errorf("handleValidateConfig = %q, want it to name the missing file", got)
-	}
-}
-
 func TestHandleValidateConfigReportsMalformedYaml(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "config.yaml")
-	if err := os.WriteFile(path, []byte("proxies: [unterminated\n"), 0o600); err != nil {
-		t.Fatalf("write config: %v", err)
-	}
-
-	if got := handleValidateConfig(path); got == "" {
+	if got := handleValidateConfig("proxies: [unterminated\n"); got == "" {
 		t.Fatal("handleValidateConfig accepted malformed yaml")
 	}
 }

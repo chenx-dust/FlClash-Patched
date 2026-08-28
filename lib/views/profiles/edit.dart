@@ -99,8 +99,8 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
       final savedProfile = await globalState.safeRun(
         () => profile.saveFile(
           _fileData!,
-          validate: (path) =>
-              ref.read(coreHandlerProvider).validateConfig(path),
+          validate: (data) =>
+              ref.read(coreHandlerProvider).validateConfig(data),
           decryptAgeConfig: ref.read(coreHandlerProvider).decryptAgeConfig,
         ),
       );
@@ -133,9 +133,7 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
   }
 
   Future<void> _showAgeKeyGenerator() async {
-    await dialogs.showCommonDialog<void>(
-      child: const AgeKeyGeneratorDialog(),
-    );
+    await dialogs.showCommonDialog<void>(child: const AgeKeyGeneratorDialog());
   }
 
   Future<void> _handleSaveEdit(BuildContext context, String data) async {

@@ -59,7 +59,7 @@ void main() {
   final cases = <String, Future<String> Function()>{
     'setupConfig': () => core.setupConfig(_setupParams),
     'updateConfig': () => core.updateConfig(_updateParams),
-    'validateConfig': () => core.validateConfig('/tmp/config.yaml'),
+    'validateConfig': () => core.validateConfig('mode: rule'),
     'changeProxy': () => core.changeProxy(
       const ChangeProxyParams(groupName: 'G', proxyName: 'P'),
     ),
@@ -68,6 +68,12 @@ void main() {
     'sideLoadExternalProvider': () =>
         core.sideLoadExternalProvider(providerName: 'p', data: 'd'),
     'clearEffect': () => core.clearEffect(1),
+    'deleteManagedPath': () => core.deleteManagedPath(
+      const DeleteManagedPathParams(
+        scope: ManagedPathScope.providers,
+        relativePath: '1',
+      ),
+    ),
   };
 
   group('an unanswered call is not reported as an applied change', () {
@@ -90,10 +96,7 @@ void main() {
   test('an answered call still returns the core message verbatim', () async {
     final core = _AnsweringCore('nameserver is empty');
     expect(await core.setupConfig(_setupParams), 'nameserver is empty');
-    expect(
-      await core.validateConfig('/tmp/config.yaml'),
-      'nameserver is empty',
-    );
+    expect(await core.validateConfig('mode: rule'), 'nameserver is empty');
   });
 
   test('an empty answer still reads as success', () async {

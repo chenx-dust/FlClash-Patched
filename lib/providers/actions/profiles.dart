@@ -36,7 +36,7 @@ class ProfilesAction extends _$ProfilesAction {
   }
 
   Future<String> validateConfigWithData(String data) async {
-    return _core.validateConfigWithData(data);
+    return _core.validateConfig(data);
   }
 
   Future<void> autoUpdateProfiles() async {
@@ -79,7 +79,7 @@ class ProfilesAction extends _$ProfilesAction {
     try {
       ref.read(profilesProvider.notifier).put(profile);
       final newProfile = await profile.update(
-        validate: (path) => _core.validateConfig(path),
+        validate: (data) => _core.validateConfig(data),
         decryptAgeConfig: _core.decryptAgeConfig,
       );
       ref.read(profilesProvider.notifier).put(newProfile);
@@ -108,7 +108,7 @@ class ProfilesAction extends _$ProfilesAction {
       () async {
         return Profile.normal(
           label: platformFile.name,
-        ).saveFile(bytes, validate: (path) => _core.validateConfig(path));
+        ).saveFile(bytes, validate: (data) => _core.validateConfig(data));
       },
       title: currentAppLocalizations.addProfile,
     );
@@ -126,7 +126,7 @@ class ProfilesAction extends _$ProfilesAction {
       tag: LoadingTag.profiles,
       () async {
         return Profile.normal(url: url, ageSecretKey: ageSecretKey).update(
-          validate: (path) => _core.validateConfig(path),
+          validate: (data) => _core.validateConfig(data),
           decryptAgeConfig: _core.decryptAgeConfig,
         );
       },
@@ -155,11 +155,14 @@ class ProfilesAction extends _$ProfilesAction {
   }
 
   Future<void> clearEffect(int profileId) async {
-    final profilePath = await appPath.getProfilePath(profileId.toString());
-    final profileFile = File(profilePath);
-    final isExists = await profileFile.exists();
-    if (isExists) {
-      await profileFile.safeDelete(recursive: true);
+    final profileError = await _core.deleteManagedPath(
+      DeleteManagedPathParams(
+        scope: ManagedPathScope.profiles,
+        relativePath: '$profileId.yaml',
+      ),
+    );
+    if (profileError.isNotEmpty) {
+      commonPrint.log(profileError, logLevel: LogLevel.warning);
     }
     try {
       final error = await _core.clearEffect(profileId);

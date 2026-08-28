@@ -20,6 +20,19 @@ type DecryptAgeConfigParams struct {
 	AgeSecretKey string `json:"age-secret-key"`
 }
 
+type ManagedPathScope string
+
+const (
+	profilesPathScope  ManagedPathScope = "profiles"
+	providersPathScope ManagedPathScope = "providers"
+	scriptsPathScope   ManagedPathScope = "scripts"
+)
+
+type DeleteManagedPathParams struct {
+	Scope        ManagedPathScope `json:"scope"`
+	RelativePath string           `json:"relative-path"`
+}
+
 type SetupParams struct {
 	SelectedMap map[string]string `json:"selected-map"`
 	TestURL     string            `json:"test-url"`
@@ -116,8 +129,9 @@ const (
 	updateDnsMethod                CoreMethod = "updateDns"
 	crashMethod                    CoreMethod = "crash"
 	setupConfigMethod              CoreMethod = "setupConfig"
-	getConfigMethod                CoreMethod = "getConfig"
 	clearEffectMethod              CoreMethod = "clearEffect"
+	getProfileConfigMethod         CoreMethod = "getProfileConfig"
+	deleteManagedPathMethod        CoreMethod = "deleteManagedPath"
 	generateAgeKeyPairMethod       CoreMethod = "generateAgeKeyPair"
 	convertAgeSecretKeyMethod      CoreMethod = "convertAgeSecretKeyToPublicKey"
 	decryptAgeConfigMethod         CoreMethod = "decryptAgeConfig"

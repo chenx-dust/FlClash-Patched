@@ -625,5 +625,20 @@
   "iconSource": "アイコンソース",
   "onlyConfig": "設定のみ",
   "onlyEmoji": "絵文字のみ",
-  "closeAll": "すべて閉じる"
+  "closeAll": "すべて閉じる",
+  "networkExtension": "ネットワーク拡張",
+  "includeAllNetworks": "すべてのネットワークを含む",
+  "includeAllNetworksDesc": "ローカルおよびセルラーサービスを含むすべてのネットワークトラフィックをトンネル経由にする",
+  "excludeLocalNetworks": "ローカルネットワークを除外",
+  "excludeLocalNetworksDesc": "ローカルネットワーク上のデバイスへの直接アクセスを許可する",
+  "excludeAPNs": "APNs を除外",
+  "excludeAPNsDesc": "Apple プッシュ通知トラフィックがトンネルをバイパスすることを許可する",
+  "excludeCellularServices": "セルラーサービスを除外",
+  "excludeCellularServicesDesc": "Wi-Fi 通話などのセルラーサービストラフィックがトンネルをバイパスすることを許可する",
+  "enforceRoutes": "ルートを強制",
+  "enforceRoutesDesc": "より具体的なルートが存在してもトラフィックをトンネル経由にする",
+  "excludeDeviceCommunication": "デバイス間通信を除外",
+  "excludeDeviceCommunicationDesc": "AirDrop や AirPlay などのデバイス間通信がトンネルをバイパスすることを許可する",
+  "hideUnavailable": "タイムアウト非表示",
+  "showUnavailable": "タイムアウト表示"
 }

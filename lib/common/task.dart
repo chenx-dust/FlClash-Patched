@@ -288,7 +288,7 @@ Future<({String yaml, String md5})> _makeRealProfileTask(
   return (yaml: yaml, md5: yaml.toMd5());
 }
 
-Future<List<String>> shakingProfileTask(
+Future<List<DeleteManagedPathParams>> shakingProfileTask(
   ({Iterable<int> profileIds, Iterable<int> scriptIds}) data,
 ) async {
   return compute<
@@ -297,7 +297,7 @@ Future<List<String>> shakingProfileTask(
       Iterable<int> scriptIds,
       RootIsolateToken token,
     }),
-    List<String>
+    List<DeleteManagedPathParams>
   >(_shakingProfileTask, (
     profileIds: data.profileIds,
     scriptIds: data.scriptIds,
@@ -305,7 +305,7 @@ Future<List<String>> shakingProfileTask(
   ));
 }
 
-Future<List<String>> _shakingProfileTask(
+Future<List<DeleteManagedPathParams>> _shakingProfileTask(
   ({Iterable<int> profileIds, Iterable<int> scriptIds, RootIsolateToken token})
   data,
 ) async {
@@ -320,17 +320,18 @@ Future<List<String>> _shakingProfileTask(
 }
 
 @visibleForTesting
-List<String> shakeOrphanFiles({
+List<DeleteManagedPathParams> shakeOrphanFiles({
   required Iterable<int> profileIds,
   required Iterable<int> scriptIds,
   required String profilesDirPath,
   required String providersDirPath,
   required String scriptsDirPath,
 }) {
-  final List<String> targets = [];
+  final List<DeleteManagedPathParams> targets = [];
   void scanDirectory(
     Directory dir,
     Iterable<int> baseNames, {
+    required ManagedPathScope scope,
     bool includeDirectories = false,
   }) {
     if (!dir.existsSync()) return;
@@ -344,18 +345,32 @@ List<String> shakeOrphanFiles({
       }
       final id = basenameWithoutExtension(entity.path);
       if (!baseNames.contains(int.tryParse(id))) {
-        targets.add(entity.path);
+        targets.add(
+          DeleteManagedPathParams(
+            scope: scope,
+            relativePath: relative(entity.path, from: dir.path),
+          ),
+        );
       }
     }
   }
 
-  scanDirectory(Directory(profilesDirPath), profileIds);
+  scanDirectory(
+    Directory(profilesDirPath),
+    profileIds,
+    scope: ManagedPathScope.profiles,
+  );
   scanDirectory(
     Directory(providersDirPath),
     profileIds,
+    scope: ManagedPathScope.providers,
     includeDirectories: true,
   );
-  scanDirectory(Directory(scriptsDirPath), scriptIds);
+  scanDirectory(
+    Directory(scriptsDirPath),
+    scriptIds,
+    scope: ManagedPathScope.scripts,
+  );
   return targets;
 }
 
