@@ -1,9 +1,84 @@
 import 'dart:io';
 
 import 'package:fl_clash/common/tray.dart';
+import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/models/models.dart';
+import 'package:flutter/services.dart';
+import 'package:tray/tray.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('getTrayDelayPresentation', () {
+    test('maps loading, timeout and measured delays', () {
+      expect(
+        getTrayDelayPresentation(
+          0,
+          loadingLabel: '...',
+          timeoutLabel: 'Timeout',
+        ),
+        (label: '...', style: TrayMenuSublabelStyle.muted),
+      );
+      expect(
+        getTrayDelayPresentation(
+          -1,
+          loadingLabel: '...',
+          timeoutLabel: 'Timeout',
+        ),
+        (label: 'Timeout', style: TrayMenuSublabelStyle.destructive),
+      );
+      expect(
+        getTrayDelayPresentation(
+          42,
+          loadingLabel: '...',
+          timeoutLabel: 'Timeout',
+        ),
+        (label: '42 ms', style: TrayMenuSublabelStyle.badge),
+      );
+    });
+
+    test('leaves untested proxies without a sublabel', () {
+      expect(
+        getTrayDelayPresentation(
+          null,
+          loadingLabel: '...',
+          timeoutLabel: 'Timeout',
+        ).label,
+        isNull,
+      );
+    });
+  });
+
+  group('getTrayMenuShortcut', () {
+    test('maps a printable key and modifiers for macOS menus', () {
+      final shortcut = getTrayMenuShortcut(
+        HotKeyAction(
+          action: HotAction.view,
+          key: PhysicalKeyboardKey.keyK.usbHidUsage,
+          modifiers: const {KeyboardModifier.meta, KeyboardModifier.shift},
+        ),
+      );
+
+      expect(shortcut?.key, 'k');
+      expect(shortcut?.modifiers, {
+        TrayMenuModifier.command,
+        TrayMenuModifier.shift,
+      });
+    });
+
+    test('maps a special key for macOS menus', () {
+      final shortcut = getTrayMenuShortcut(
+        HotKeyAction(
+          action: HotAction.view,
+          key: PhysicalKeyboardKey.arrowUp.usbHidUsage,
+          modifiers: const {KeyboardModifier.control},
+        ),
+      );
+
+      expect(shortcut?.key, '\uF700');
+      expect(shortcut?.modifiers, {TrayMenuModifier.control});
+    });
+  });
+
   group('proxyEnvironmentCommand', () {
     test('builds PowerShell proxy environment assignments', () {
       expect(
@@ -33,7 +108,9 @@ void main() {
     test('returns idle icon when core is not started', () {
       expect(
         tray.getTrayIcon(isStart: false, tunEnable: false),
-        'assets/images/icon/status_1.$suffix',
+        Platform.isMacOS
+            ? 'assets/images/icon/flclash-disabled-symbolic.svg'
+            : 'assets/images/icon/status_1.$suffix',
       );
     });
 
@@ -41,7 +118,7 @@ void main() {
       expect(
         tray.getTrayIcon(isStart: true, tunEnable: false),
         Platform.isMacOS
-            ? 'assets/images/icon/status_1.$suffix'
+            ? 'assets/images/icon/flclash-symbolic.svg'
             : 'assets/images/icon/status_2.$suffix',
       );
     });
@@ -50,7 +127,7 @@ void main() {
       expect(
         tray.getTrayIcon(isStart: true, tunEnable: true),
         Platform.isMacOS
-            ? 'assets/images/icon/status_1.$suffix'
+            ? 'assets/images/icon/flclash-symbolic.svg'
             : 'assets/images/icon/status_3.$suffix',
       );
     });
@@ -74,7 +151,7 @@ void main() {
       );
       expect(
         macOSTray.getTrayIcon(isStart: true, tunEnable: true, monochrome: true),
-        'assets/images/icon/status_1.png',
+        'assets/images/icon/flclash-symbolic.svg',
       );
     });
   });

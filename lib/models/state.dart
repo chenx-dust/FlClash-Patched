@@ -117,6 +117,7 @@ abstract class TrayState with _$TrayState {
     required Map<String, String> selectedMap,
     required bool showTrayTitle,
     @Default(true) bool monochromeTrayIcon,
+    @Default(Brightness.light) Brightness brightness,
   }) = _TrayState;
 }
 

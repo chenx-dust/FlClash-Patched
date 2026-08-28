@@ -52,6 +52,7 @@ TrayState trayState(Ref ref) {
   final monochromeTrayIcon = ref.watch(
     themeSettingProvider.select((state) => state.monochromeTrayIcon),
   );
+  final brightness = ref.watch(systemBrightnessProvider);
 
   return TrayState(
     mode: clashConfig.mode,
@@ -64,6 +65,7 @@ TrayState trayState(Ref ref) {
     selectedMap: selectedMap,
     showTrayTitle: appSetting.showTrayTitle,
     monochromeTrayIcon: monochromeTrayIcon,
+    brightness: brightness,
   );
 }
 

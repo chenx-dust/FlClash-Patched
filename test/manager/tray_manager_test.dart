@@ -3,6 +3,7 @@ import 'package:fl_clash/manager/locale_manager.dart';
 import 'package:fl_clash/manager/tray_manager.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
+import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -63,6 +64,7 @@ void main() {
       ..setMockMethodCallHandler(_trayChannel, null)
       ..setMockMethodCallHandler(_windowChannel, null);
     container.dispose();
+    debugDefaultTargetPlatformOverride = null;
   });
 
   Future<void> emitTrayEvent(String event, [Object? arguments]) async {
@@ -133,6 +135,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(windowCalls, containsAll(<String>['show', 'focus']));
+  });
+
+  test('macOS icon activation selects the tray menu', () {
+    expect(trayIconActivationOpensMenu(TargetPlatform.macOS), isTrue);
+    expect(trayIconActivationOpensMenu(TargetPlatform.windows), isFalse);
   });
 
   testWidgets('a menu request is forwarded to the tray', (tester) async {

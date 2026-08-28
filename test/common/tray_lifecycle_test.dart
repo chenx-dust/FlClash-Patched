@@ -71,7 +71,11 @@ void main() {
       traffic: const Traffic(),
       read: container.read,
     );
-    await AppTray().updateTitle(showTrayTitle: true, traffic: const Traffic());
+    await AppTray().updateTitle(
+      showTrayTitle: true,
+      isStart: true,
+      traffic: const Traffic(),
+    );
 
     expect(calls, isEmpty);
   });

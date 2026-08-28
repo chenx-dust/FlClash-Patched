@@ -43,6 +43,7 @@ TrayState _trayState({
   bool showTrayTitle = false,
   Mode mode = Mode.rule,
   List<Group> groups = const [],
+  Map<String, String> selectedMap = const {},
 }) {
   return TrayState(
     mode: mode,
@@ -52,8 +53,9 @@ TrayState _trayState({
     tunEnable: tunEnable,
     isStart: isStart,
     groups: groups,
-    selectedMap: const {},
+    selectedMap: selectedMap,
     showTrayTitle: showTrayTitle,
+    brightness: Brightness.light,
   );
 }
 
@@ -157,6 +159,10 @@ void main() {
     expect(labels, contains(l10n.exit));
     expect(labels, isNot(contains(l10n.tun)));
     expect(labels, isNot(contains(l10n.systemProxy)));
+    final showItem = _items(
+      showCall(),
+    ).firstWhere((item) => item['label'] == l10n.show);
+    expect(showItem['activatesWindow'], isTrue);
   });
 
   test('adds TUN and system proxy toggles once the core is running', () async {
@@ -167,6 +173,10 @@ void main() {
     expect(labels, contains(l10n.stop), reason: 'start flips to stop');
     expect(labels, contains(l10n.tun));
     expect(labels, contains(l10n.systemProxy));
+    final startItem = _items(
+      showCall(),
+    ).firstWhere((item) => item['label'] == l10n.stop);
+    expect(startItem['checked'], isTrue);
   });
 
   test('offers every outbound mode as a menu entry', () async {
@@ -190,6 +200,7 @@ void main() {
     expect(arguments['menu'], isNotEmpty);
     expect((arguments['icon'] as Map)['bytes'], isNotEmpty);
     expect((arguments['icon'] as Map)['isTemplate'], isTrue);
+    expect(arguments['brightness'], 'light');
   });
 
   test('skips the platform call when the tray state is unchanged', () async {
@@ -223,6 +234,7 @@ void main() {
             all: [Proxy(name: 'A', type: 'Direct')],
           ),
         ],
+        selectedMap: const {'Proxy': 'A'},
       ),
     );
 
@@ -230,8 +242,33 @@ void main() {
       showCall(),
     ).firstWhere((item) => item['type'] == 'submenu');
     expect(submenu['label'], 'Proxy');
+    expect(submenu['sublabel'], 'A');
+    expect(submenu['sublabelStyle'], 'secondary');
     final children = (submenu['items'] as List).cast<Map<Object?, Object?>>();
+    expect(children.first['label'], currentAppLocalizations.delayTest);
+    expect(children.first['key'], 'delay-test:Proxy');
+    expect(children.first['keepsMenuOpen'], isTrue);
     expect(children.map((item) => item['label']), contains('A'));
+    final proxy = children.firstWhere((item) => item['label'] == 'A');
+    expect(proxy['key'], 'delay:Proxy:A');
+  });
+
+  test('clears the macOS tray title when the core stops', () async {
+    await update(_trayState(isStart: true));
+    await Tray.instance.setTitle('1 KB/s');
+    calls.clear();
+
+    await tray.updateTitle(
+      showTrayTitle: true,
+      isStart: false,
+      traffic: const Traffic(),
+    );
+
+    final titleCalls = calls
+        .where((call) => call.method == 'setTitle')
+        .toList();
+    expect(titleCalls, hasLength(1));
+    expect((titleCalls.single.arguments as Map)['title'], '');
   });
 
   group('a platform that is not macOS', () {
@@ -269,7 +306,11 @@ void main() {
     });
 
     test('never pushes a tray title', () async {
-      await windows.updateTitle(showTrayTitle: true, traffic: const Traffic());
+      await windows.updateTitle(
+        showTrayTitle: true,
+        isStart: true,
+        traffic: const Traffic(),
+      );
 
       expect(calls.where((call) => call.method == 'setTitle'), isEmpty);
     });

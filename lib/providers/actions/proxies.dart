@@ -13,9 +13,11 @@ class _DelayTestTarget {
 }
 
 class _DelayTestJob {
-  _DelayTestJob(Iterable<String> keys) : held = keys.toSet();
+  _DelayTestJob(Iterable<String> keys, this.onDelayChanged)
+    : held = keys.toSet();
 
   final Set<String> held;
+  final FutureOr<void> Function()? onDelayChanged;
   bool cancelled = false;
 }
 
@@ -291,8 +293,12 @@ class ProxiesAction extends _$ProxiesAction {
     return _runDelayTests([proxy], testUrl);
   }
 
-  Future<void> delayTest(List<Proxy> proxies, [String? testUrl]) async {
-    await _runDelayTests(proxies, testUrl);
+  Future<void> delayTest(
+    List<Proxy> proxies, [
+    String? testUrl,
+    FutureOr<void> Function()? onDelayChanged,
+  ]) async {
+    await _runDelayTests(proxies, testUrl, onDelayChanged);
     ref.read(sortNumProvider.notifier).add();
   }
 
@@ -332,15 +338,23 @@ class ProxiesAction extends _$ProxiesAction {
     return targets;
   }
 
-  Future<void> _runDelayTests(List<Proxy> proxies, String? testUrl) async {
+  Future<void> _runDelayTests(
+    List<Proxy> proxies,
+    String? testUrl, [
+    FutureOr<void> Function()? onDelayChanged,
+  ]) async {
     final targets = _resolveDelayTestTargets(proxies, testUrl);
     if (targets.isEmpty) {
       return;
     }
     final pending = ref.read(pendingDelayTestsProvider.notifier);
-    final job = _DelayTestJob(targets.map((target) => target.key));
+    final job = _DelayTestJob(
+      targets.map((target) => target.key),
+      onDelayChanged,
+    );
     _delayTestJobs.add(job);
     pending.acquire(job.held);
+    await onDelayChanged?.call();
     try {
       await Future.wait(
         targets.map(
@@ -376,6 +390,7 @@ class ProxiesAction extends _$ProxiesAction {
       if (job.held.remove(target.key)) {
         ref.read(pendingDelayTestsProvider.notifier).release([target.key]);
       }
+      await job.onDelayChanged?.call();
     }
   }
 

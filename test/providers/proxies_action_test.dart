@@ -470,6 +470,28 @@ void main() {
       expect(container.read(pendingDelayTestsProvider), isEmpty);
     });
 
+    test('reports live pending and completed delay changes', () async {
+      when(() => core.asyncTestDelay(_testUrl, any())).thenAnswer(
+        (invocation) async => Delay(
+          name: invocation.positionalArguments[1] as String,
+          url: _testUrl,
+          value: 10,
+        ),
+      );
+      final container = _delayContainer(buildContainer);
+      final pendingCounts = <int>[];
+
+      await actionOf(container).delayTest(
+        const [_proxy, Proxy(name: 'HK-02', type: 'ss')],
+        null,
+        () {
+          pendingCounts.add(container.read(pendingDelayTestsProvider).length);
+        },
+      );
+
+      expect(pendingCounts, [2, 1, 0]);
+    });
+
     test('probes a node that appears twice only once', () async {
       when(() => core.asyncTestDelay(_testUrl, 'HK-01')).thenAnswer(
         (_) async => const Delay(name: 'HK-01', url: _testUrl, value: 10),
