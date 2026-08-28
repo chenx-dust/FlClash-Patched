@@ -1394,7 +1394,7 @@ final class ProxyStateProvider
   }
 }
 
-String _$proxyStateHash() => r'76a71ab5da07dca9aeb351282c5c03ab222d0760';
+String _$proxyStateHash() => r'ad5c5080a9e05ae98b874432be09494f4b42e2bd';
 
 @ProviderFor(proxiesActionsState)
 final proxiesActionsStateProvider = ProxiesActionsStateProvider._();
