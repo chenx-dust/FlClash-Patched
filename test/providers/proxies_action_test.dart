@@ -186,33 +186,39 @@ void main() {
 
   group('changeProxy', () {
     setUp(() {
-      when(() => core.changeProxy(any())).thenAnswer((_) async => '');
-      when(core.closeConnections).thenAnswer((_) async => true);
-      when(core.resetConnections).thenAnswer((_) async => true);
-    });
-
-    test('closes connections and bumps the ip check when enabled', () async {
-      final container = buildContainer();
-      container.read(appSettingProvider.notifier).value = const AppSettingProps(
-        closeConnections: true,
-      );
-      final before = container.read(checkIpNumProvider);
-
-      await actionOf(
-        container,
-      ).changeProxy(groupName: 'Proxy', proxyName: 'HK-01');
-
-      verify(
+      when(
         () => core.changeProxy(
-          const ChangeProxyParams(groupName: 'Proxy', proxyName: 'HK-01'),
+          any(),
+          closeConnections: any(named: 'closeConnections'),
         ),
-      ).called(1);
-      verify(core.closeConnections).called(1);
-      verifyNever(core.resetConnections);
-      expect(container.read(checkIpNumProvider), before + 1);
+      ).thenAnswer((_) async => '');
     });
 
-    test('resets connections instead when the setting is off', () async {
+    test(
+      'requests selective close and bumps the ip check when enabled',
+      () async {
+        final container = buildContainer();
+        container.read(appSettingProvider.notifier).value =
+            const AppSettingProps(closeConnections: true);
+        final before = container.read(checkIpNumProvider);
+
+        await actionOf(
+          container,
+        ).changeProxy(groupName: 'Proxy', proxyName: 'HK-01');
+
+        verify(
+          () => core.changeProxy(
+            const ChangeProxyParams(groupName: 'Proxy', proxyName: 'HK-01'),
+            closeConnections: true,
+          ),
+        ).called(1);
+        verifyNever(core.closeConnections);
+        verifyNever(core.resetConnections);
+        expect(container.read(checkIpNumProvider), before + 1);
+      },
+    );
+
+    test('requests a connection reset when the setting is off', () async {
       final container = buildContainer();
       container.read(appSettingProvider.notifier).value = const AppSettingProps(
         closeConnections: false,
@@ -222,32 +228,23 @@ void main() {
         container,
       ).changeProxy(groupName: 'Proxy', proxyName: 'HK-01');
 
-      verify(core.resetConnections).called(1);
+      verify(
+        () => core.changeProxy(
+          const ChangeProxyParams(groupName: 'Proxy', proxyName: 'HK-01'),
+          closeConnections: false,
+        ),
+      ).called(1);
+      verifyNever(core.resetConnections);
       verifyNever(core.closeConnections);
     });
 
-    test('still bumps the ip check when the connection reset throws', () async {
-      when(core.closeConnections).thenThrow(
-        const CoreMethodException(
-          code: 'transport_disconnected',
-          message: 'Core RPC client is closed',
-        ),
-      );
-      final container = buildContainer();
-      container.read(appSettingProvider.notifier).value = const AppSettingProps(
-        closeConnections: true,
-      );
-      final before = container.read(checkIpNumProvider);
-
-      await actionOf(
-        container,
-      ).changeProxy(groupName: 'Proxy', proxyName: 'HK-01');
-
-      expect(container.read(checkIpNumProvider), before + 1);
-    });
-
     test('skips the connection reset when the switch itself fails', () async {
-      when(() => core.changeProxy(any())).thenThrow(StateError('core down'));
+      when(
+        () => core.changeProxy(
+          any(),
+          closeConnections: any(named: 'closeConnections'),
+        ),
+      ).thenThrow(StateError('core down'));
       final container = buildContainer();
       final before = container.read(checkIpNumProvider);
 
@@ -273,7 +270,12 @@ void main() {
     });
 
     test('rolls the selection back when the switch fails', () async {
-      when(() => core.changeProxy(any())).thenThrow(StateError('core down'));
+      when(
+        () => core.changeProxy(
+          any(),
+          closeConnections: any(named: 'closeConnections'),
+        ),
+      ).thenThrow(StateError('core down'));
       final container = buildContainer(profile: _selectedProfile('HK-00'));
 
       await actionOf(
@@ -306,6 +308,7 @@ void main() {
       verify(
         () => core.changeProxy(
           const ChangeProxyParams(groupName: 'Proxy', proxyName: ''),
+          closeConnections: false,
         ),
       ).called(1);
       expect(
@@ -317,7 +320,12 @@ void main() {
     test(
       'rolls back to the last selection the Core applied, not the last tap',
       () async {
-        when(() => core.changeProxy(any())).thenThrow(StateError('core down'));
+        when(
+          () => core.changeProxy(
+            any(),
+            closeConnections: any(named: 'closeConnections'),
+          ),
+        ).thenThrow(StateError('core down'));
         final container = buildContainer(profile: _selectedProfile('HK-00'));
         final action = actionOf(container);
 

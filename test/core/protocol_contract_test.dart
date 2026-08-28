@@ -158,6 +158,7 @@ void main() {
     );
     await handler.changeProxy(
       const ChangeProxyParams(groupName: 'GLOBAL', proxyName: 'DIRECT'),
+      closeConnections: true,
     );
     await handler.sideLoadExternalProvider(providerName: 'provider', data: 'x');
     await handler.asyncTestDelay('https://example.com', 'DIRECT');
@@ -194,6 +195,11 @@ void main() {
     });
     expect(handler.calls[CoreMethod.validateConfig], 'mode: rule');
     expect(handler.calls[CoreMethod.getProfileConfig], 7);
+    expect(handler.calls[CoreMethod.changeProxy], {
+      'group-name': 'GLOBAL',
+      'proxy-name': 'DIRECT',
+      'close-connections': true,
+    });
     expect(handler.calls[CoreMethod.deleteManagedPath], {
       'scope': 'providers',
       'relative-path': '7',

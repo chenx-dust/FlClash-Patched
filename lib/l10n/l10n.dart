@@ -1569,6 +1569,36 @@ class AppLocalizations {
     );
   }
 
+  /// `Close Connections Prompt`
+  String get promptCloseConnections {
+    return Intl.message(
+      'Close Connections Prompt',
+      name: 'promptCloseConnections',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ask whether to close connections after changing node`
+  String get promptCloseConnectionsDesc {
+    return Intl.message(
+      'Ask whether to close connections after changing node',
+      name: 'promptCloseConnectionsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Close connections using the previous proxy?`
+  String get closeConnectionsPrompt {
+    return Intl.message(
+      'Close connections using the previous proxy?',
+      name: 'closeConnectionsPrompt',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Only Statistics Proxy`
   String get onlyStatisticsProxy {
     return Intl.message(

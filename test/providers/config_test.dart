@@ -22,7 +22,8 @@ void main() {
       expect(value.onlyStatisticsProxy, false);
       expect(value.autoLaunch, false);
       expect(value.highPriorityAutoLaunch, false);
-      expect(value.closeConnections, true);
+      expect(value.closeConnections, false);
+      expect(value.promptCloseConnections, true);
       expect(value.isAnimateToPage, true);
       expect(value.isSwipeToPage, true);
       expect(value.ignoreCertificateErrors, false);
@@ -31,10 +32,16 @@ void main() {
     test('can update state', () {
       container
           .read(appSettingProvider.notifier)
-          .update((_) => const AppSettingProps(autoLaunch: true));
+          .update(
+            (_) => const AppSettingProps(
+              autoLaunch: true,
+              promptCloseConnections: false,
+            ),
+          );
       final value = container.read(appSettingProvider);
       expect(value.autoLaunch, true);
       expect(value.highPriorityAutoLaunch, false);
+      expect(value.promptCloseConnections, false);
     });
   });
 

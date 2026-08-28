@@ -54,7 +54,7 @@ extension BuildContextExtension on BuildContext {
     );
   }
 
-  void showSnackBar(String message, {SnackBarAction? action}) {
+  void showSnackBar(String message, {SnackBarAction? action, bool? persist}) {
     final width = MediaQuery.sizeOf(this).width;
     EdgeInsets margin;
     if (width < 600) {
@@ -62,9 +62,12 @@ extension BuildContextExtension on BuildContext {
     } else {
       margin = EdgeInsets.only(bottom: 16, left: 16, right: width - 316);
     }
-    ScaffoldMessenger.of(this).showSnackBar(
+    final messenger = ScaffoldMessenger.of(this);
+    messenger.removeCurrentSnackBar();
+    messenger.showSnackBar(
       SnackBar(
         action: action,
+        persist: persist,
         content: Text(message),
         behavior: SnackBarBehavior.floating,
         duration: const Duration(milliseconds: 1500),

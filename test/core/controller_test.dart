@@ -175,9 +175,15 @@ void main() {
   group('proxy methods', () {
     test('changeProxy delegates to interface', () async {
       const params = ChangeProxyParams(groupName: 'G1', proxyName: 'P1');
-      when(() => mock.changeProxy(params)).thenAnswer((_) async => 'ok');
-      final result = await controller.changeProxy(params);
+      when(
+        () => mock.changeProxy(params, closeConnections: true),
+      ).thenAnswer((_) async => 'ok');
+      final result = await controller.changeProxy(
+        params,
+        closeConnections: true,
+      );
       expect(result, 'ok');
+      verify(() => mock.changeProxy(params, closeConnections: true)).called(1);
     });
   });
 

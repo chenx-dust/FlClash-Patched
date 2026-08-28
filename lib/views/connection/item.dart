@@ -105,6 +105,7 @@ class TrackerInfoItem extends ConsumerWidget {
         : null;
     return ListItem(
       padding: const EdgeInsets.symmetric(horizontal: 16),
+      trailing: trailing,
       onTap: () async {
         await showExtend(
           context,

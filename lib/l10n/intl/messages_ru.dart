@@ -305,6 +305,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "closeConnections": MessageLookupByLibrary.simpleMessage(
       "Закрыть соединения",
     ),
+    "closeConnectionsPrompt": MessageLookupByLibrary.simpleMessage(
+      "Закрыть соединения, использующие предыдущий прокси?",
+    ),
     "collapse": MessageLookupByLibrary.simpleMessage("Свернуть"),
     "color": MessageLookupByLibrary.simpleMessage("Цвет"),
     "colorSchemes": MessageLookupByLibrary.simpleMessage("Цветовые схемы"),
@@ -949,6 +952,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "profiles": MessageLookupByLibrary.simpleMessage("Профили"),
     "profilesSort": MessageLookupByLibrary.simpleMessage("Сортировка профилей"),
     "project": MessageLookupByLibrary.simpleMessage("Проект"),
+    "promptCloseConnections": MessageLookupByLibrary.simpleMessage(
+      "Запрос на закрытие соединений",
+    ),
+    "promptCloseConnectionsDesc": MessageLookupByLibrary.simpleMessage(
+      "Спрашивать о закрытии соединений после смены узла",
+    ),
     "providers": MessageLookupByLibrary.simpleMessage("Провайдеры"),
     "proxies": MessageLookupByLibrary.simpleMessage("Прокси"),
     "proxiesCount": m23,

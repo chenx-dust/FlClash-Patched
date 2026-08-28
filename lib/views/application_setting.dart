@@ -47,6 +47,9 @@ class ApplicationSettingView extends ConsumerWidget {
     final showHighPriorityAutoLaunch =
         system.isWindows &&
         ref.watch(appSettingProvider.select((state) => state.autoLaunch));
+    final closeConnections = ref.watch(
+      appSettingProvider.select((state) => state.closeConnections),
+    );
     final items = <Widget>[
       _appSettingToggle(
         title: (l) => l.minimizeOnExit,
@@ -115,6 +118,14 @@ class ApplicationSettingView extends ConsumerWidget {
         select: (state) => state.closeConnections,
         update: (state, value) => state.copyWith(closeConnections: value),
       ),
+      if (!closeConnections)
+        _appSettingToggle(
+          title: (l) => l.promptCloseConnections,
+          subtitle: (l) => l.promptCloseConnectionsDesc,
+          select: (state) => state.promptCloseConnections,
+          update: (state, value) =>
+              state.copyWith(promptCloseConnections: value),
+        ),
       _appSettingToggle(
         title: (l) => l.onlyStatisticsProxy,
         subtitle: (l) => l.onlyStatisticsProxyDesc,

@@ -215,36 +215,43 @@ func lookupProxy(name string) constant.Proxy {
 	return allProxies()[name]
 }
 
-func selectableGroup(groupName string) (outboundgroup.SelectAble, error) {
+func selectableGroup(groupName string) (outboundgroup.SelectAble, outboundgroup.ProxyGroup, error) {
 	group := lookupProxy(groupName)
 	if group == nil {
-		return nil, errGroupNotFound
+		return nil, nil, errGroupNotFound
 	}
 	adapterProxy, ok := group.(*adapter.Proxy)
 	if !ok {
-		return nil, errGroupInvalidType
+		return nil, nil, errGroupInvalidType
 	}
 	selector, ok := adapterProxy.ProxyAdapter.(outboundgroup.SelectAble)
 	if !ok {
-		return nil, errGroupNotSelect
+		return nil, nil, errGroupNotSelect
 	}
-	return selector, nil
+	proxyGroup, ok := adapterProxy.ProxyAdapter.(outboundgroup.ProxyGroup)
+	if !ok {
+		return nil, nil, errGroupInvalidType
+	}
+	return selector, proxyGroup, nil
 }
 
 func handleChangeProxy(params *ChangeProxyParams) string {
 	selectMu.Lock()
 	defer selectMu.Unlock()
 
-	selector, err := selectableGroup(params.GroupName)
+	selector, proxyGroup, err := selectableGroup(params.GroupName)
 	if err != nil {
 		return err.Error()
 	}
 	if params.ProxyName == "" {
 		selector.ForceSet(params.ProxyName)
-		return ""
-	}
-	if err := selector.Set(params.ProxyName); err != nil {
+	} else if err := selector.Set(params.ProxyName); err != nil {
 		return err.Error()
+	}
+	if params.CloseConnections {
+		closeConnectionsForSelection(params.GroupName, proxyGroup.Now())
+	} else {
+		resolver.ResetConnection()
 	}
 	return ""
 }
@@ -357,6 +364,24 @@ func handleCloseConnections() bool {
 		return true
 	})
 	return true
+}
+
+func closeConnectionsForSelection(groupName string, proxyName string) {
+	statistic.DefaultManager.Range(func(c statistic.Tracker) bool {
+		if chainUsesOtherSelection(c.Info().Chain, groupName, proxyName) {
+			_ = c.Close()
+		}
+		return true
+	})
+}
+
+func chainUsesOtherSelection(chain constant.Chain, groupName string, proxyName string) bool {
+	for index, chainProxyName := range chain {
+		if chainProxyName == groupName {
+			return index == 0 || chain[index-1] != proxyName
+		}
+	}
+	return false
 }
 
 func handleResetConnections() bool {

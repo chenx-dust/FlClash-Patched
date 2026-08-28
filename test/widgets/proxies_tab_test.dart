@@ -5,6 +5,7 @@ import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/core/interface.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
+import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/providers/core.dart';
@@ -36,8 +37,12 @@ void main() {
 
   setUp(() {
     core = _MockCoreHandlerInterface();
-    when(() => core.changeProxy(any())).thenAnswer((_) async => '');
-    when(core.closeConnections).thenAnswer((_) async => true);
+    when(
+      () => core.changeProxy(
+        any(),
+        closeConnections: any(named: 'closeConnections'),
+      ),
+    ).thenAnswer((_) async => '');
     when(core.getProxies).thenAnswer((_) async => _proxiesData());
     final profile = Profile.normal().copyWith(
       currentGroupName: 'B',
@@ -117,8 +122,26 @@ void main() {
     verify(
       () => core.changeProxy(
         const ChangeProxyParams(groupName: 'B', proxyName: ''),
+        closeConnections: false,
       ),
     ).called(1);
+    expect(
+      find.text('Close connections using the previous proxy?'),
+      findsOneWidget,
+    );
+
+    await tester.pump(const Duration(milliseconds: 250));
+    await tester.tap(find.text('Close'));
+    await tester.pump();
+
+    verify(
+      () => core.changeProxy(
+        const ChangeProxyParams(groupName: 'B', proxyName: ''),
+        closeConnections: true,
+      ),
+    ).called(1);
+    verifyNever(core.closeConnections);
+    verify(core.getProxies).called(1);
   });
 
   testWidgets('long pressing a list header resets its proxy selection', (
@@ -146,8 +169,113 @@ void main() {
     verify(
       () => core.changeProxy(
         const ChangeProxyParams(groupName: 'A', proxyName: ''),
+        closeConnections: false,
       ),
     ).called(1);
+    expect(
+      find.text('Close connections using the previous proxy?'),
+      findsOneWidget,
+    );
+    expect(tester.widget<SnackBar>(find.byType(SnackBar)).persist, false);
+    verifyNever(
+      () => core.changeProxy(
+        const ChangeProxyParams(groupName: 'A', proxyName: ''),
+        closeConnections: true,
+      ),
+    );
+    verifyNever(core.closeConnections);
+    verify(core.getProxies).called(1);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 1));
+  });
+
+  testWidgets('disabled connection prompt does not show a snackbar', (
+    tester,
+  ) async {
+    final appSettingSubscription = globalContainer.listen(
+      appSettingProvider,
+      (_, _) {},
+    );
+    addTearDown(appSettingSubscription.close);
+    globalContainer
+        .read(appSettingProvider.notifier)
+        .update((state) => state.copyWith(promptCloseConnections: false));
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: globalContainer,
+        child: TestApp(
+          child: ListHeader(
+            group: _group('A'),
+            isExpand: false,
+            onChange: (_) {},
+            onScrollToSelected: (_) {},
+          ),
+          homeBuilder: (child) => Scaffold(body: child),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    await tester.longPress(find.byType(ListHeader));
+    await tester.pumpAndSettle();
+
+    verify(
+      () => core.changeProxy(
+        const ChangeProxyParams(groupName: 'A', proxyName: ''),
+        closeConnections: false,
+      ),
+    ).called(1);
+    expect(
+      find.text('Close connections using the previous proxy?'),
+      findsNothing,
+    );
+    verifyNever(
+      () => core.changeProxy(
+        const ChangeProxyParams(groupName: 'A', proxyName: ''),
+        closeConnections: true,
+      ),
+    );
+  });
+
+  testWidgets('selecting the current proxy does not show a close prompt', (
+    tester,
+  ) async {
+    final appSettingSubscription = globalContainer.listen(
+      appSettingProvider,
+      (_, _) {},
+    );
+    addTearDown(appSettingSubscription.close);
+    globalContainer
+        .read(appSettingProvider.notifier)
+        .update((state) => state.copyWith(closeConnections: true));
+    globalContainer.read(groupsProvider.notifier).value = [
+      const Group(type: GroupType.Selector, name: 'A', now: 'Node A'),
+    ];
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: globalContainer,
+        child: const TestApp(child: SizedBox()),
+      ),
+    );
+    await tester.pump();
+
+    await globalContainer
+        .read(proxiesActionProvider.notifier)
+        .changeProxy(groupName: 'A', proxyName: 'Node A');
+    await tester.pump();
+
+    verify(
+      () => core.changeProxy(
+        const ChangeProxyParams(groupName: 'A', proxyName: 'Node A'),
+        closeConnections: false,
+      ),
+    ).called(1);
+    expect(
+      find.text('Close connections using the previous proxy?'),
+      findsNothing,
+    );
   });
 
   testWidgets('list delay test deduplicates nodes shared by expanded groups', (

@@ -18,6 +18,8 @@ void main() {
       expect(appLocalizations.allData, isNotEmpty);
       expect(appLocalizations.resetSettingsData, isNotEmpty);
       expect(appLocalizations.resetProfilesAndScripts, isNotEmpty);
+      expect(appLocalizations.promptCloseConnections, isNotEmpty);
+      expect(appLocalizations.promptCloseConnectionsDesc, isNotEmpty);
     }
   });
 

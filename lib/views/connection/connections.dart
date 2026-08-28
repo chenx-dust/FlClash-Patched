@@ -253,7 +253,7 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView>
     );
   }
 
-  Future<void> _handleBlockConnection(String id) async {
+  Future<void> _handleCloseConnection(String id) async {
     await _core.closeConnection(id);
     await _refreshConnections();
   }
@@ -290,10 +290,9 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView>
               trailing: IconButton(
                 padding: EdgeInsets.zero,
                 visualDensity: VisualDensity.compact,
+                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
                 icon: const Icon(Icons.close),
-                onPressed: () {
-                  _handleBlockConnection(trackerInfo.id);
-                },
+                onPressed: () => _handleCloseConnection(trackerInfo.id),
               ),
               detailTitle: appLocalizations.details(
                 appLocalizations.connection,

@@ -133,8 +133,14 @@ class CoreController {
     );
   }
 
-  FutureOr<String> changeProxy(ChangeProxyParams changeProxyParams) async {
-    return await _interface.changeProxy(changeProxyParams);
+  FutureOr<String> changeProxy(
+    ChangeProxyParams changeProxyParams, {
+    bool closeConnections = false,
+  }) async {
+    return await _interface.changeProxy(
+      changeProxyParams,
+      closeConnections: closeConnections,
+    );
   }
 
   Future<List<TrackerInfo>> getConnections() async {

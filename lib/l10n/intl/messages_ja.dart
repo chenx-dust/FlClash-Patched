@@ -226,6 +226,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "close": MessageLookupByLibrary.simpleMessage("閉じる"),
     "closeAll": MessageLookupByLibrary.simpleMessage("すべて閉じる"),
     "closeConnections": MessageLookupByLibrary.simpleMessage("接続を閉じる"),
+    "closeConnectionsPrompt": MessageLookupByLibrary.simpleMessage(
+      "以前のプロキシを使用している接続を切断しますか？",
+    ),
     "collapse": MessageLookupByLibrary.simpleMessage("折りたたむ"),
     "color": MessageLookupByLibrary.simpleMessage("カラー"),
     "colorSchemes": MessageLookupByLibrary.simpleMessage("カラースキーム"),
@@ -733,6 +736,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "profiles": MessageLookupByLibrary.simpleMessage("プロファイル一覧"),
     "profilesSort": MessageLookupByLibrary.simpleMessage("プロファイルの並び替え"),
     "project": MessageLookupByLibrary.simpleMessage("プロジェクト"),
+    "promptCloseConnections": MessageLookupByLibrary.simpleMessage("接続終了の確認"),
+    "promptCloseConnectionsDesc": MessageLookupByLibrary.simpleMessage(
+      "ノード変更後に接続を切断するか確認します",
+    ),
     "providers": MessageLookupByLibrary.simpleMessage("プロバイダー"),
     "proxies": MessageLookupByLibrary.simpleMessage("プロキシ"),
     "proxiesCount": m23,

@@ -291,6 +291,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "closeConnections": MessageLookupByLibrary.simpleMessage(
       "Close connections",
     ),
+    "closeConnectionsPrompt": MessageLookupByLibrary.simpleMessage(
+      "Close connections using the previous proxy?",
+    ),
     "collapse": MessageLookupByLibrary.simpleMessage("Collapse"),
     "color": MessageLookupByLibrary.simpleMessage("Color"),
     "colorSchemes": MessageLookupByLibrary.simpleMessage("Color schemes"),
@@ -897,6 +900,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "profiles": MessageLookupByLibrary.simpleMessage("Profiles"),
     "profilesSort": MessageLookupByLibrary.simpleMessage("Profiles sort"),
     "project": MessageLookupByLibrary.simpleMessage("Project"),
+    "promptCloseConnections": MessageLookupByLibrary.simpleMessage(
+      "Close Connections Prompt",
+    ),
+    "promptCloseConnectionsDesc": MessageLookupByLibrary.simpleMessage(
+      "Ask whether to close connections after changing node",
+    ),
     "providers": MessageLookupByLibrary.simpleMessage("Providers"),
     "proxies": MessageLookupByLibrary.simpleMessage("Proxies"),
     "proxiesCount": m23,

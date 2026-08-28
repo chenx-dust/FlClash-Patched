@@ -68,8 +68,9 @@ type SideLoadParams struct {
 }
 
 type ChangeProxyParams struct {
-	GroupName string `json:"group-name"`
-	ProxyName string `json:"proxy-name"`
+	GroupName        string `json:"group-name"`
+	ProxyName        string `json:"proxy-name"`
+	CloseConnections bool   `json:"close-connections"`
 }
 
 type TestDelayParams struct {

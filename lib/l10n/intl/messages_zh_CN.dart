@@ -210,6 +210,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "close": MessageLookupByLibrary.simpleMessage("关闭"),
     "closeAll": MessageLookupByLibrary.simpleMessage("全部关闭"),
     "closeConnections": MessageLookupByLibrary.simpleMessage("关闭连接"),
+    "closeConnectionsPrompt": MessageLookupByLibrary.simpleMessage(
+      "是否关闭使用原代理的连接？",
+    ),
     "collapse": MessageLookupByLibrary.simpleMessage("折叠"),
     "color": MessageLookupByLibrary.simpleMessage("颜色"),
     "colorSchemes": MessageLookupByLibrary.simpleMessage("配色方案"),
@@ -655,6 +658,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "profiles": MessageLookupByLibrary.simpleMessage("配置"),
     "profilesSort": MessageLookupByLibrary.simpleMessage("配置排序"),
     "project": MessageLookupByLibrary.simpleMessage("项目"),
+    "promptCloseConnections": MessageLookupByLibrary.simpleMessage("关闭连接提示"),
+    "promptCloseConnectionsDesc": MessageLookupByLibrary.simpleMessage(
+      "切换节点后询问是否关闭连接",
+    ),
     "providers": MessageLookupByLibrary.simpleMessage("外部资源"),
     "proxies": MessageLookupByLibrary.simpleMessage("代理"),
     "proxiesCount": m23,

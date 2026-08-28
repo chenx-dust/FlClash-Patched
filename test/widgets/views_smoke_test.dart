@@ -127,6 +127,63 @@ void main() {
     });
   }
 
+  testWidgets('connection prompt setting follows auto close state', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1400, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    globalState.container = container;
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const TestApp(child: ApplicationSettingView()),
+      ),
+    );
+    await tester.pump();
+
+    final promptSetting = find.text('Close Connections Prompt');
+    await tester.scrollUntilVisible(
+      promptSetting,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+
+    expect(promptSetting, findsOneWidget);
+    final promptTile = find.ancestor(
+      of: promptSetting,
+      matching: find.byType(ListTile),
+    );
+    expect(
+      tester
+          .widget<Switch>(
+            find.descendant(of: promptTile, matching: find.byType(Switch)),
+          )
+          .value,
+      true,
+    );
+
+    await tester.tap(promptSetting);
+    await tester.pump();
+    expect(container.read(appSettingProvider).promptCloseConnections, false);
+
+    final autoCloseSetting = find.text('Auto Close Connections');
+    await tester.tap(autoCloseSetting);
+    await tester.pump();
+    expect(container.read(appSettingProvider).closeConnections, true);
+    expect(promptSetting, findsNothing);
+
+    await tester.tap(autoCloseSetting);
+    await tester.pump();
+    expect(container.read(appSettingProvider).closeConnections, false);
+    expect(promptSetting, findsOneWidget);
+  });
+
   testWidgets('backup and restore exposes clear data with confirmation', (
     tester,
   ) async {
