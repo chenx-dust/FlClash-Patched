@@ -8,6 +8,8 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path_provider_foundation/path_provider_foundation.dart';
 
+import 'portable_pref.dart';
+
 class AppPath {
   static AppPath? _instance;
   Completer<Directory> dataDir = Completer();
@@ -15,6 +17,7 @@ class AppPath {
   Completer<Directory> tempDir = Completer();
   Completer<Directory> cacheDir = Completer();
   late String appDirPath;
+  late final bool isPortable = isPortableDirectory(appDirPath);
 
   @visibleForTesting
   static Future<Directory> Function() supportDirectory =
@@ -35,12 +38,8 @@ class AppPath {
   AppPath._internal() {
     appDirPath = join(dirname(Platform.resolvedExecutable));
     _initDataDir();
-    temporaryDirectory().then((value) {
-      tempDir.complete(value);
-    });
-    cacheDirectory().then((value) {
-      cacheDir.complete(value);
-    });
+    _initTempDir();
+    _initCacheDir();
   }
 
   factory AppPath() {
@@ -49,6 +48,10 @@ class AppPath {
   }
 
   Future<void> _initDataDir() async {
+    if (isPortable) {
+      dataDir.complete(Directory(join(appDirPath, 'config')));
+      return;
+    }
     final supportDir = await supportDirectory();
     try {
       if (!system.isIOS) {
@@ -67,6 +70,29 @@ class AppPath {
     } catch (_) {
       dataDir.complete(supportDir);
     }
+  }
+
+  Future<void> _initCacheDir() async {
+    await dataDir.future;
+    if (isPortable) {
+      cacheDir.complete(Directory(join(await homeDirPath, '.cache')));
+      return;
+    }
+    final dir = await cacheDirectory();
+    cacheDir.complete(dir);
+  }
+
+  Future<void> _initTempDir() async {
+    await dataDir.future;
+    if (isPortable) {
+      final portableTmpDir = Directory(join(await homeDirPath, 'tmp'));
+      if (await portableTmpDir.exists()) {
+        tempDir.complete(portableTmpDir);
+        return;
+      }
+    }
+    final dir = await temporaryDirectory();
+    tempDir.complete(dir);
   }
 
   Future<String> _getIOSAppGroupPath() async {

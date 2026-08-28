@@ -48,6 +48,8 @@
         <tr>
             <td>Linux</td>
             <td>
+                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-amd64.zip"><img src="https://img.shields.io/badge/Zip-x64-FF6D00.svg?logo=linux&logoColor=f5f5f5"></a>
+                <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-arm64.zip"><img src="https://img.shields.io/badge/Zip-arm64-FF9100.svg?logo=linux&logoColor=f5f5f5"></a><br>
                 <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-amd64.AppImage"><img src="https://img.shields.io/badge/AppImage-x64-FF5252.svg?logo=linux&logoColor=f5f5f5"></a>
                 <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-arm64.AppImage"><img src="https://img.shields.io/badge/AppImage-arm64-D50000.svg?logo=linux&logoColor=f5f5f5"></a><br>
                 <a href="https://github.com/chenx-dust/FlClash-Patched/releases/download/vVERSION/FlClash-VERSION-linux-amd64.deb"><img src="https://img.shields.io/badge/DebPackage-x64-FF8A80.svg?logo=debian"></a>
