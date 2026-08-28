@@ -23,7 +23,6 @@ import (
 	"github.com/metacubex/mihomo/constant"
 	cp "github.com/metacubex/mihomo/constant/provider"
 	"github.com/metacubex/mihomo/log"
-	"github.com/metacubex/mihomo/tunnel"
 )
 
 func namedProxy(name string) constant.Proxy {
@@ -366,11 +365,11 @@ func TestLookupProxyPrefersTheProviderEntry(t *testing.T) {
 	base := namedProxy("shared")
 	fromProvider := newCachingProvider("subscription", "shared", "node-a")
 
-	tunnel.UpdateProxies(
+	replaceTunnelProxies(
 		map[string]constant.Proxy{"shared": base, "DIRECT": namedProxy("DIRECT")},
 		map[string]cp.ProxyProvider{"subscription": fromProvider},
 	)
-	t.Cleanup(func() { tunnel.UpdateProxies(nil, nil) })
+	t.Cleanup(func() { replaceTunnelProxies(nil, nil) })
 
 	if got := lookupProxy("shared"); got == base {
 		t.Error("lookupProxy(shared) returned the base entry, want the provider one")
@@ -517,11 +516,11 @@ func TestProxyTableReadsAreSerialisedAgainstAnApply(t *testing.T) {
 		defer wg.Done()
 		for round := 0; round < rounds; round++ {
 			name := "subscription-" + strconv.Itoa(round)
-			tunnel.UpdateProxies(
+			replaceTunnelProxies(
 				map[string]constant.Proxy{"DIRECT": namedProxy("DIRECT")},
 				map[string]cp.ProxyProvider{name: newCachingProvider(name, "node")},
 			)
-			tunnel.UpdateRules(nil, nil, map[string]cp.RuleProvider{
+			replaceTunnelRules(nil, nil, map[string]cp.RuleProvider{
 				name: &fakeRuleProvider{name: name, vehicle: cp.HTTP},
 			})
 		}
@@ -538,7 +537,7 @@ func TestProxyTableReadsAreSerialisedAgainstAnApply(t *testing.T) {
 					return
 				default:
 				}
-				tunnel.AllProxies()
+				allProxies()
 				externalProviders()
 				lookupExternalProvider("subscription-0")
 			}
@@ -729,9 +728,9 @@ func TestAllProxiesServesRepeatedCallsFromCache(t *testing.T) {
 	provider := newCachingProvider("subscription", "node-a", "node-b")
 	withTunnelProviders(t, map[string]cp.ProxyProvider{"subscription": provider}, nil)
 
-	first := tunnel.AllProxies()
+	first := allProxies()
 	reads := provider.readCount()
-	second := tunnel.AllProxies()
+	second := allProxies()
 
 	if provider.readCount() != reads {
 		t.Errorf("the provider list was walked again for an unchanged tunnel (%d -> %d reads)",
@@ -752,11 +751,11 @@ func TestAllProxiesPicksUpAProviderThatLoadsAfterTheApply(t *testing.T) {
 	loading := newCachingProvider("subscription")
 	base := map[string]constant.Proxy{"DIRECT": namedProxy("DIRECT")}
 
-	tunnel.UpdateProxies(base, map[string]cp.ProxyProvider{"subscription": loading})
-	t.Cleanup(func() { tunnel.UpdateProxies(nil, nil) })
+	replaceTunnelProxies(base, map[string]cp.ProxyProvider{"subscription": loading})
+	t.Cleanup(func() { replaceTunnelProxies(nil, nil) })
 
 	// A UI poll landing between the two executor steps.
-	during := proxyNamesOf(tunnel.AllProxies())
+	during := proxyNamesOf(allProxies())
 	if !slices.Equal(during, []string{"DIRECT"}) {
 		t.Fatalf("mid-apply AllProxies = %v, want only the base proxies", during)
 	}
@@ -764,7 +763,7 @@ func TestAllProxiesPicksUpAProviderThatLoadsAfterTheApply(t *testing.T) {
 	// Initial() finished parsing the subscription.
 	loading.setProxies("node-a", "node-b")
 
-	after := proxyNamesOf(tunnel.AllProxies())
+	after := proxyNamesOf(allProxies())
 	want := []string{"DIRECT", "node-a", "node-b"}
 	if !slices.Equal(after, want) {
 		t.Errorf("AllProxies = %v, want %v; a provider that loaded after the apply did not reach the tunnel", after, want)
@@ -778,16 +777,16 @@ func TestForceGCReleasesTheProxyCache(t *testing.T) {
 	provider := newCachingProvider("subscription", "node-a", "node-b")
 	withTunnelProviders(t, map[string]cp.ProxyProvider{"subscription": provider}, nil)
 
-	tunnel.AllProxies()
+	allProxies()
 	warm := provider.readCount()
-	tunnel.AllProxies()
+	allProxies()
 	if provider.readCount() != warm {
 		t.Fatal("the cache was not warm, so this proves nothing about releasing it")
 	}
 
 	handleForceGC()
 
-	tunnel.AllProxies()
+	allProxies()
 	if provider.readCount() == warm {
 		t.Error("AllProxies still answered from cache after a forced GC, so the replaced proxies stay pinned")
 	}
@@ -797,10 +796,10 @@ func TestAllProxiesFollowsAProviderUpdate(t *testing.T) {
 	provider := newCachingProvider("subscription", "node-a")
 	withTunnelProviders(t, map[string]cp.ProxyProvider{"subscription": provider}, nil)
 
-	tunnel.AllProxies()
+	allProxies()
 	provider.setProxies("node-b", "node-c")
 
-	got := proxyNamesOf(tunnel.AllProxies())
+	got := proxyNamesOf(allProxies())
 	if want := []string{"node-b", "node-c"}; !slices.Equal(got, want) {
 		t.Errorf("proxies = %v, want %v; a subscription refresh did not reach the tunnel", got, want)
 	}
@@ -812,19 +811,19 @@ func TestAllProxiesFollowsAProviderUpdate(t *testing.T) {
 // catches this.
 func TestAllProxiesFollowsAConfigApplyThatKeepsEveryVersion(t *testing.T) {
 	before := newCachingProvider("subscription", "old-node")
-	tunnel.UpdateProxies(nil, map[string]cp.ProxyProvider{"subscription": before})
-	t.Cleanup(func() { tunnel.UpdateProxies(nil, nil) })
+	replaceTunnelProxies(nil, map[string]cp.ProxyProvider{"subscription": before})
+	t.Cleanup(func() { replaceTunnelProxies(nil, nil) })
 
-	tunnel.AllProxies()
+	allProxies()
 
 	after := newCachingProvider("subscription", "new-node")
 	if after.Version() != before.Version() {
 		t.Fatalf("the two providers must share a version for this to test anything (%d vs %d)",
 			after.Version(), before.Version())
 	}
-	tunnel.UpdateProxies(nil, map[string]cp.ProxyProvider{"subscription": after})
+	replaceTunnelProxies(nil, map[string]cp.ProxyProvider{"subscription": after})
 
-	got := proxyNamesOf(tunnel.AllProxies())
+	got := proxyNamesOf(allProxies())
 	if want := []string{"new-node"}; !slices.Equal(got, want) {
 		t.Errorf("proxies = %v, want %v; the previous profile's nodes survived the apply", got, want)
 	}

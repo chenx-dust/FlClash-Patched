@@ -112,7 +112,7 @@ func handleGetIsInit() bool {
 
 func handleForceGC() {
 	log.Infoln("[APP] request force GC")
-	tunnel.InvalidateAllProxies()
+	invalidateProxyTable()
 	runtime.GC()
 	if features.Android || features.IOS {
 		debug.FreeOSMemory()
@@ -189,7 +189,7 @@ func proxyGroupNames(
 }
 
 func handleGetProxies() ProxiesData {
-	proxies := tunnel.AllProxies()
+	proxies := allProxies()
 
 	allNames := proxyGroupNames(config.GetProxyNameList(), func(name string) (constant.AdapterType, bool) {
 		p, ok := proxies[name]
@@ -212,7 +212,7 @@ var (
 )
 
 func lookupProxy(name string) constant.Proxy {
-	return tunnel.AllProxies()[name]
+	return allProxies()[name]
 }
 
 func selectableGroup(groupName string) (outboundgroup.SelectAble, error) {

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"sync"
 	"sync/atomic"
@@ -68,14 +69,137 @@ var (
 	errNotExternalProvider = errors.New("not external provider")
 )
 
+type proxyTableCache struct {
+	base             map[string]constant.Proxy
+	providers        map[string]cp.ProxyProvider
+	providerVersions map[string]uint32
+	all              map[string]constant.Proxy
+}
+
+var (
+	proxyTableMu    sync.Mutex
+	proxyTableState *proxyTableCache
+)
+
+func sameIdentity(left, right any) bool {
+	leftValue := reflect.ValueOf(left)
+	rightValue := reflect.ValueOf(right)
+	if !leftValue.IsValid() || !rightValue.IsValid() {
+		return !leftValue.IsValid() && !rightValue.IsValid()
+	}
+	if leftValue.Type() != rightValue.Type() || !leftValue.Comparable() {
+		return false
+	}
+	return leftValue.Interface() == rightValue.Interface()
+}
+
+func sameTable[T any](left, right map[string]T) bool {
+	if len(left) != len(right) {
+		return false
+	}
+	for name, leftValue := range left {
+		rightValue, exists := right[name]
+		if !exists || !sameIdentity(leftValue, rightValue) {
+			return false
+		}
+	}
+	return true
+}
+
+func proxyTableCacheMatches(
+	cache *proxyTableCache,
+	base map[string]constant.Proxy,
+	providers map[string]cp.ProxyProvider,
+) bool {
+	if cache == nil || !sameTable(cache.base, base) || !sameTable(cache.providers, providers) {
+		return false
+	}
+	for name, provider := range providers {
+		if cache.providerVersions[name] != provider.Version() {
+			return false
+		}
+	}
+	return true
+}
+
+func allProxies() map[string]constant.Proxy {
+	proxyTableMu.Lock()
+	defer proxyTableMu.Unlock()
+
+	base := tunnel.Proxies()
+	providers := tunnel.Providers()
+	if proxyTableCacheMatches(proxyTableState, base, providers) {
+		return proxyTableState.all
+	}
+
+	all := make(map[string]constant.Proxy, len(base))
+	baseSnapshot := make(map[string]constant.Proxy, len(base))
+	for name, proxy := range base {
+		all[name] = proxy
+		baseSnapshot[name] = proxy
+	}
+	providerSnapshot := make(map[string]cp.ProxyProvider, len(providers))
+	providerVersions := make(map[string]uint32, len(providers))
+	for name, provider := range providers {
+		providerSnapshot[name] = provider
+		providerVersions[name] = provider.Version()
+		for _, proxy := range provider.Proxies() {
+			all[proxy.Name()] = proxy
+		}
+	}
+	proxyTableState = &proxyTableCache{
+		base:             baseSnapshot,
+		providers:        providerSnapshot,
+		providerVersions: providerVersions,
+		all:              all,
+	}
+	return all
+}
+
+func invalidateProxyTable() {
+	proxyTableMu.Lock()
+	defer proxyTableMu.Unlock()
+	proxyTableState = nil
+}
+
+func replaceTunnelProxies(
+	proxies map[string]constant.Proxy,
+	providers map[string]cp.ProxyProvider,
+) {
+	proxyTableMu.Lock()
+	defer proxyTableMu.Unlock()
+	tunnel.UpdateProxies(proxies, providers)
+	proxyTableState = nil
+}
+
+func replaceTunnelRules(
+	rules []constant.Rule,
+	subRules map[string][]constant.Rule,
+	providers map[string]cp.RuleProvider,
+) {
+	proxyTableMu.Lock()
+	defer proxyTableMu.Unlock()
+	tunnel.UpdateRules(rules, subRules, providers)
+}
+
+func applyTunnelConfig(cfg *config.Config) {
+	proxyTableMu.Lock()
+	defer proxyTableMu.Unlock()
+	hub.ApplyConfig(cfg)
+	proxyTableState = nil
+}
+
 func externalProviders() map[string]cp.Provider {
+	proxyTableMu.Lock()
+	defer proxyTableMu.Unlock()
+
 	eps := make(map[string]cp.Provider)
-	for n, p := range tunnel.ProvidersSnapshot() {
+	for n, p := range tunnel.Providers() {
 		if p.VehicleType() != cp.Compatible {
 			eps[n] = p
 		}
 	}
-	for n, p := range tunnel.RuleProvidersSnapshot() {
+	for n, p := range tunnel.RuleProviders() {
 		if p.VehicleType() != cp.Compatible {
 			eps[n] = p
 		}
@@ -84,13 +208,8 @@ func externalProviders() map[string]cp.Provider {
 }
 
 func lookupExternalProvider(name string) (cp.Provider, bool) {
-	if p, exist := tunnel.RuleProvidersSnapshot()[name]; exist && p.VehicleType() != cp.Compatible {
-		return p, true
-	}
-	if p, exist := tunnel.ProvidersSnapshot()[name]; exist && p.VehicleType() != cp.Compatible {
-		return p, true
-	}
-	return nil, false
+	provider, exists := externalProviders()[name]
+	return provider, exists
 }
 
 func toExternalProvider(p cp.Provider) (*ExternalProvider, error) {
@@ -161,7 +280,7 @@ func updateListeners(cfg *config.Config) {
 func patchSelectGroup(mapping map[string]string) {
 	selectMu.Lock()
 	defer selectMu.Unlock()
-	for name, proxy := range tunnel.AllProxies() {
+	for name, proxy := range allProxies() {
 		outbound, ok := proxy.(*adapter.Proxy)
 		if !ok {
 			continue
@@ -375,7 +494,7 @@ func applyConfig(params *SetupParams) error {
 	}
 
 	currentConfig = cfg
-	hub.ApplyConfig(cfg)
+	applyTunnelConfig(cfg)
 	patchSelectGroup(params.SelectedMap)
 	updateListeners(cfg)
 	reconcileGeoUpdater()

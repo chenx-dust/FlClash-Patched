@@ -11,7 +11,6 @@ import (
 	"github.com/metacubex/mihomo/common/utils"
 	"github.com/metacubex/mihomo/constant"
 	cp "github.com/metacubex/mihomo/constant/provider"
-	"github.com/metacubex/mihomo/tunnel"
 )
 
 func TestDefaultSetupParams(t *testing.T) {
@@ -251,11 +250,11 @@ func withTunnelProviders(
 	ruleProviders map[string]cp.RuleProvider,
 ) {
 	t.Helper()
-	tunnel.UpdateProxies(nil, proxyProviders)
-	tunnel.UpdateRules(nil, nil, ruleProviders)
+	replaceTunnelProxies(nil, proxyProviders)
+	replaceTunnelRules(nil, nil, ruleProviders)
 	t.Cleanup(func() {
-		tunnel.UpdateProxies(nil, nil)
-		tunnel.UpdateRules(nil, nil, nil)
+		replaceTunnelProxies(nil, nil)
+		replaceTunnelRules(nil, nil, nil)
 	})
 }
 
@@ -281,16 +280,16 @@ func TestExternalProvidersSkipsInlineProviders(t *testing.T) {
 }
 
 func TestLookupExternalProviderFollowsAConfigReplacement(t *testing.T) {
-	tunnel.UpdateProxies(nil, map[string]cp.ProxyProvider{
+	replaceTunnelProxies(nil, map[string]cp.ProxyProvider{
 		"first": &fakeProxyProvider{name: "first", vehicle: cp.HTTP},
 	})
-	t.Cleanup(func() { tunnel.UpdateProxies(nil, nil) })
+	t.Cleanup(func() { replaceTunnelProxies(nil, nil) })
 
 	if _, exist := lookupExternalProvider("first"); !exist {
 		t.Fatal("the installed provider was not found")
 	}
 
-	tunnel.UpdateProxies(nil, map[string]cp.ProxyProvider{
+	replaceTunnelProxies(nil, map[string]cp.ProxyProvider{
 		"second": &fakeProxyProvider{name: "second", vehicle: cp.HTTP},
 	})
 
