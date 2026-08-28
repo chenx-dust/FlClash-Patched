@@ -211,6 +211,7 @@ class AutoSetSystemDnsItem extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     return _networkToggle(
       title: (l) => l.autoSetSystemDns,
+      subtitle: (l) => l.autoSetSystemDnsDesc,
       select: (state) => state.autoSetSystemDns,
       update: (state, value) => state.copyWith(autoSetSystemDns: value),
     );

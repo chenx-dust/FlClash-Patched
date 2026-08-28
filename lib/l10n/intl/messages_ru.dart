@@ -119,9 +119,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "action": MessageLookupByLibrary.simpleMessage("Действие"),
     "action_mode": MessageLookupByLibrary.simpleMessage("Переключить режим"),
     "action_proxy": MessageLookupByLibrary.simpleMessage("Системный прокси"),
-    "action_start": MessageLookupByLibrary.simpleMessage("Старт/Стоп"),
+    "action_start": MessageLookupByLibrary.simpleMessage("Старт/стоп"),
     "action_tun": MessageLookupByLibrary.simpleMessage("TUN"),
-    "action_view": MessageLookupByLibrary.simpleMessage("Показать/Скрыть"),
+    "action_view": MessageLookupByLibrary.simpleMessage("Показать/скрыть"),
     "add": MessageLookupByLibrary.simpleMessage("Добавить"),
     "addProfile": MessageLookupByLibrary.simpleMessage("Добавить профиль"),
     "addProxies": MessageLookupByLibrary.simpleMessage("Добавить прокси"),
@@ -231,6 +231,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "autoSetSystemDns": MessageLookupByLibrary.simpleMessage(
       "Автоматическая настройка системного DNS",
+    ),
+    "autoSetSystemDnsDesc": MessageLookupByLibrary.simpleMessage(
+      "Добавить резервный DNS-сервер в систему",
     ),
     "autoUpdate": MessageLookupByLibrary.simpleMessage("Автообновление"),
     "autoUpdateInterval": MessageLookupByLibrary.simpleMessage(
@@ -608,7 +611,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "global": MessageLookupByLibrary.simpleMessage("Глобальный"),
     "go": MessageLookupByLibrary.simpleMessage("Перейти"),
-    "goDownload": MessageLookupByLibrary.simpleMessage("Перейти к Загрузке"),
+    "goDownload": MessageLookupByLibrary.simpleMessage("Перейти к загрузке"),
     "goToConfigureScript": MessageLookupByLibrary.simpleMessage(
       "Перейти к настройке скрипта",
     ),
@@ -804,7 +807,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "mode": MessageLookupByLibrary.simpleMessage("Режим"),
     "monochromeScheme": MessageLookupByLibrary.simpleMessage("Монохром"),
     "monochromeTrayIcon": MessageLookupByLibrary.simpleMessage(
-      "Монохромный Значок в Трее",
+      "Монохромный значок в трее",
     ),
     "monthsAgo": m19,
     "more": MessageLookupByLibrary.simpleMessage("Еще"),
@@ -849,7 +852,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "networkType": MessageLookupByLibrary.simpleMessage("Тип сети"),
     "networking": MessageLookupByLibrary.simpleMessage("Оверлейные сети"),
     "networkingDesc": MessageLookupByLibrary.simpleMessage(
-      "Состояние P2P-узлов в текущей конфигурации",
+      "Просмотр состояния P2P-сетей",
     ),
     "networkingNoOutbounds": MessageLookupByLibrary.simpleMessage(
       "В текущей конфигурации нет исходящих P2P-подключений",
@@ -863,7 +866,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "noHotKey": MessageLookupByLibrary.simpleMessage("Нет горячей клавиши"),
     "noInfo": MessageLookupByLibrary.simpleMessage("Нет информации"),
     "noLongerRemind": MessageLookupByLibrary.simpleMessage(
-      "Больше Не Напоминать",
+      "Больше не напоминать",
     ),
     "noNetwork": MessageLookupByLibrary.simpleMessage("Нет сети"),
     "noNetworkApp": MessageLookupByLibrary.simpleMessage("Приложение без сети"),
@@ -1350,7 +1353,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "systemApp": MessageLookupByLibrary.simpleMessage("Системное приложение"),
     "systemProxy": MessageLookupByLibrary.simpleMessage("Системный прокси"),
     "systemProxyDesc": MessageLookupByLibrary.simpleMessage(
-      "Прикрепить HTTP-прокси к VpnService",
+      "Настроить системный HTTP-прокси",
     ),
     "tab": MessageLookupByLibrary.simpleMessage("Вкладка"),
     "tabAnimation": MessageLookupByLibrary.simpleMessage("Анимация вкладок"),
@@ -1406,11 +1409,11 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "textScale": MessageLookupByLibrary.simpleMessage("Масштабирование текста"),
     "theme": MessageLookupByLibrary.simpleMessage("Тема"),
-    "themeColor": MessageLookupByLibrary.simpleMessage("Цвет Темы"),
+    "themeColor": MessageLookupByLibrary.simpleMessage("Цвет темы"),
     "themeDesc": MessageLookupByLibrary.simpleMessage(
       "Установить темный режим, настроить цвет",
     ),
-    "themeMode": MessageLookupByLibrary.simpleMessage("Режим Темы"),
+    "themeMode": MessageLookupByLibrary.simpleMessage("Режим темы"),
     "tight": MessageLookupByLibrary.simpleMessage("Плотный"),
     "time": MessageLookupByLibrary.simpleMessage("Время"),
     "timeout": MessageLookupByLibrary.simpleMessage("Таймаут"),
@@ -1486,7 +1489,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "usedTraffic": MessageLookupByLibrary.simpleMessage(
       "Использованный трафик",
     ),
-    "userAgent": MessageLookupByLibrary.simpleMessage("Пользовательский агент"),
+    "userAgent": MessageLookupByLibrary.simpleMessage("User-Agent"),
     "value": MessageLookupByLibrary.simpleMessage("Значение"),
     "version": MessageLookupByLibrary.simpleMessage("Версия"),
     "vibrantScheme": MessageLookupByLibrary.simpleMessage("Яркие"),

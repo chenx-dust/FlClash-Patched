@@ -166,7 +166,7 @@
   "ipv6Desc": "有効化すると IPv6 トラフィックを受信可能",
   "app": "アプリ",
   "general": "一般",
-  "systemProxyDesc": "HTTP プロキシを VpnService に接続",
+  "systemProxyDesc": "システムの HTTP プロキシを設定",
   "userAgent": "ユーザーエージェント",
   "unifiedDelay": "統一遅延",
   "unifiedDelayDesc": "ハンドシェイクなどの余分な遅延を削除",
@@ -409,6 +409,7 @@
   "importFile": "ファイルからインポート",
   "importUrl": "URL からインポート",
   "autoSetSystemDns": "オートセットシステム DNS",
+  "autoSetSystemDnsDesc": "予備の DNS サーバーをシステムに追加",
   "details": "{label} 詳細",
   "creationTime": "作成時間",
   "process": "プロセス",
@@ -724,6 +725,6 @@
   "tailscaleHealthWarnings": "ヘルス警告",
   "tailscaleNeedsMachineAuth": "デバイスの承認が必要",
   "networking": "メッシュネットワーク",
-  "networkingDesc": "現在の設定に含まれる P2P ノードの状態",
+  "networkingDesc": "P2P ネットワークの状態を表示",
   "networkingNoOutbounds": "現在の設定に P2P アウトバウンドはありません"
 }

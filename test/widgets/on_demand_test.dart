@@ -169,13 +169,13 @@ void main() {
     await pumpView(tester, isAndroid: true);
 
     expect(find.text('Ignore battery optimization'), findsOneWidget);
-    expect(find.text('Location Permission'), findsOneWidget);
+    expect(find.text('Location permission'), findsOneWidget);
   });
 
   testWidgets('iOS exposes the always-on setting', (tester) async {
     await pumpView(tester, isIOS: true);
 
-    expect(find.text('Always On'), findsOneWidget);
+    expect(find.text('Always on'), findsOneWidget);
     expect(
       find.text('Keep VPN connected under any network conditions'),
       findsOneWidget,
@@ -254,7 +254,7 @@ void main() {
     await pumpView(tester);
 
     expect(find.text('Ignore battery optimization'), findsNothing);
-    expect(find.text('Location Permission'), findsNothing);
+    expect(find.text('Location permission'), findsNothing);
     expect(find.bySemanticsLabel('Tap to authorize'), findsNothing);
   });
 }

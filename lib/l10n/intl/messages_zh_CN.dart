@@ -167,6 +167,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "autoRun": MessageLookupByLibrary.simpleMessage("自动运行"),
     "autoRunDesc": MessageLookupByLibrary.simpleMessage("应用打开时自动运行"),
     "autoSetSystemDns": MessageLookupByLibrary.simpleMessage("自动设置系统 DNS"),
+    "autoSetSystemDnsDesc": MessageLookupByLibrary.simpleMessage(
+      "向系统添加备用 DNS 服务器",
+    ),
     "autoUpdate": MessageLookupByLibrary.simpleMessage("自动更新"),
     "autoUpdateInterval": MessageLookupByLibrary.simpleMessage("自动更新间隔（分钟）"),
     "back": MessageLookupByLibrary.simpleMessage("返回"),
@@ -594,7 +597,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "networkType": MessageLookupByLibrary.simpleMessage("网络类型"),
     "networking": MessageLookupByLibrary.simpleMessage("组网"),
-    "networkingDesc": MessageLookupByLibrary.simpleMessage("当前配置中的点对点组网节点状态"),
+    "networkingDesc": MessageLookupByLibrary.simpleMessage("查看点对点组网状态"),
     "networkingNoOutbounds": MessageLookupByLibrary.simpleMessage(
       "当前配置中没有点对点组网出站",
     ),
@@ -927,7 +930,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "system": MessageLookupByLibrary.simpleMessage("系统"),
     "systemApp": MessageLookupByLibrary.simpleMessage("系统应用"),
     "systemProxy": MessageLookupByLibrary.simpleMessage("系统代理"),
-    "systemProxyDesc": MessageLookupByLibrary.simpleMessage("设置系统代理"),
+    "systemProxyDesc": MessageLookupByLibrary.simpleMessage("设置系统的 HTTP 代理"),
     "tab": MessageLookupByLibrary.simpleMessage("标签页"),
     "tabAnimation": MessageLookupByLibrary.simpleMessage("选项卡动画"),
     "tabAnimationDesc": MessageLookupByLibrary.simpleMessage("仅在移动视图中有效"),

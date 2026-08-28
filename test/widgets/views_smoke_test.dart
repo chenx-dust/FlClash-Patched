@@ -654,7 +654,7 @@ void main() {
     );
     await tester.pump();
 
-    final promptSetting = find.text('Close Connections Prompt');
+    final promptSetting = find.text('Close connections prompt');
     await tester.scrollUntilVisible(
       promptSetting,
       300,
@@ -679,7 +679,7 @@ void main() {
     await tester.pump();
     expect(container.read(appSettingProvider).promptCloseConnections, false);
 
-    final autoCloseSetting = find.text('Auto Close Connections');
+    final autoCloseSetting = find.text('Auto close connections');
     await tester.tap(autoCloseSetting);
     await tester.pump();
     expect(container.read(appSettingProvider).closeConnections, true);
@@ -713,7 +713,7 @@ void main() {
     );
     await tester.pump();
 
-    final clearData = find.text('Clear Data');
+    final clearData = find.text('Clear data');
     await tester.scrollUntilVisible(
       clearData,
       300,
@@ -851,9 +851,9 @@ void main() {
 
   final toolDestinations = <String, Type>{
     'Theme': ThemeView,
-    'Backup and Restore': BackupAndRestore,
-    'Basic Configuration': ConfigView,
-    'Advanced Configuration': AdvancedConfigView,
+    'Backup and restore': BackupAndRestore,
+    'Basic configuration': ConfigView,
+    'Advanced configuration': AdvancedConfigView,
     'Application': ApplicationSettingView,
   };
 

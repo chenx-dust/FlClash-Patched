@@ -181,6 +181,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "autoRun": MessageLookupByLibrary.simpleMessage("自動実行"),
     "autoRunDesc": MessageLookupByLibrary.simpleMessage("アプリ起動時に自動実行"),
     "autoSetSystemDns": MessageLookupByLibrary.simpleMessage("オートセットシステム DNS"),
+    "autoSetSystemDnsDesc": MessageLookupByLibrary.simpleMessage(
+      "予備の DNS サーバーをシステムに追加",
+    ),
     "autoUpdate": MessageLookupByLibrary.simpleMessage("自動更新"),
     "autoUpdateInterval": MessageLookupByLibrary.simpleMessage("自動更新間隔（分）"),
     "back": MessageLookupByLibrary.simpleMessage("戻る"),
@@ -660,9 +663,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "networkType": MessageLookupByLibrary.simpleMessage("ネットワーク種別"),
     "networking": MessageLookupByLibrary.simpleMessage("メッシュネットワーク"),
-    "networkingDesc": MessageLookupByLibrary.simpleMessage(
-      "現在の設定に含まれる P2P ノードの状態",
-    ),
+    "networkingDesc": MessageLookupByLibrary.simpleMessage("P2P ネットワークの状態を表示"),
     "networkingNoOutbounds": MessageLookupByLibrary.simpleMessage(
       "現在の設定に P2P アウトバウンドはありません",
     ),
@@ -1058,7 +1059,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "systemApp": MessageLookupByLibrary.simpleMessage("システムアプリ"),
     "systemProxy": MessageLookupByLibrary.simpleMessage("システムプロキシ"),
     "systemProxyDesc": MessageLookupByLibrary.simpleMessage(
-      "HTTP プロキシを VpnService に接続",
+      "システムの HTTP プロキシを設定",
     ),
     "tab": MessageLookupByLibrary.simpleMessage("タブ"),
     "tabAnimation": MessageLookupByLibrary.simpleMessage("タブアニメーション"),
