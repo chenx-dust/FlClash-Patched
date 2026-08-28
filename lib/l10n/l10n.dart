@@ -3289,14 +3289,9 @@ class AppLocalizations {
     );
   }
 
-  /// `Connecting...`
+  /// `Connecting`
   String get connecting {
-    return Intl.message(
-      'Connecting...',
-      name: 'connecting',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Connecting', name: 'connecting', desc: '', args: []);
   }
 
   /// `Are you sure you want to restart the core?`
@@ -5653,6 +5648,296 @@ class AppLocalizations {
     return Intl.message(
       'Restore Hidden',
       name: 'restoreHiddenGroups',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Nodes`
+  String get nodes {
+    return Intl.message('Nodes', name: 'nodes', desc: '', args: []);
+  }
+
+  /// `Network ID`
+  String get networkId {
+    return Intl.message('Network ID', name: 'networkId', desc: '', args: []);
+  }
+
+  /// `Role`
+  String get role {
+    return Intl.message('Role', name: 'role', desc: '', args: []);
+  }
+
+  /// `Version`
+  String get version {
+    return Intl.message('Version', name: 'version', desc: '', args: []);
+  }
+
+  /// `Endpoints`
+  String get endpoints {
+    return Intl.message('Endpoints', name: 'endpoints', desc: '', args: []);
+  }
+
+  /// `Online`
+  String get online {
+    return Intl.message('Online', name: 'online', desc: '', args: []);
+  }
+
+  /// `Offline`
+  String get offline {
+    return Intl.message('Offline', name: 'offline', desc: '', args: []);
+  }
+
+  /// `Routes`
+  String get routes {
+    return Intl.message('Routes', name: 'routes', desc: '', args: []);
+  }
+
+  /// `Access denied`
+  String get accessDenied {
+    return Intl.message(
+      'Access denied',
+      name: 'accessDenied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Network not found`
+  String get networkNotFound {
+    return Intl.message(
+      'Network not found',
+      name: 'networkNotFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Relayed`
+  String get relayed {
+    return Intl.message('Relayed', name: 'relayed', desc: '', args: []);
+  }
+
+  /// `Sign in`
+  String get signIn {
+    return Intl.message('Sign in', name: 'signIn', desc: '', args: []);
+  }
+
+  /// `Signed in`
+  String get signedIn {
+    return Intl.message('Signed in', name: 'signedIn', desc: '', args: []);
+  }
+
+  /// `Sign out`
+  String get signOut {
+    return Intl.message('Sign out', name: 'signOut', desc: '', args: []);
+  }
+
+  /// `Sign-in required`
+  String get needsLogin {
+    return Intl.message(
+      'Sign-in required',
+      name: 'needsLogin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Uninitialized`
+  String get uninitialized {
+    return Intl.message(
+      'Uninitialized',
+      name: 'uninitialized',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Stopped`
+  String get stopped {
+    return Intl.message('Stopped', name: 'stopped', desc: '', args: []);
+  }
+
+  /// `Initialize`
+  String get initialize {
+    return Intl.message('Initialize', name: 'initialize', desc: '', args: []);
+  }
+
+  /// `Exit node`
+  String get tailscaleExitNode {
+    return Intl.message(
+      'Exit node',
+      name: 'tailscaleExitNode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exit node available`
+  String get tailscaleExitNodeAvailable {
+    return Intl.message(
+      'Exit node available',
+      name: 'tailscaleExitNodeAvailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Key expired`
+  String get tailscaleKeyExpired {
+    return Intl.message(
+      'Key expired',
+      name: 'tailscaleKeyExpired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `DNS name`
+  String get tailscaleDnsName {
+    return Intl.message(
+      'DNS name',
+      name: 'tailscaleDnsName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Key expiry`
+  String get tailscaleKeyExpiry {
+    return Intl.message(
+      'Key expiry',
+      name: 'tailscaleKeyExpiry',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last seen`
+  String get tailscaleLastSeen {
+    return Intl.message(
+      'Last seen',
+      name: 'tailscaleLastSeen',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Active`
+  String get tailscaleActive {
+    return Intl.message('Active', name: 'tailscaleActive', desc: '', args: []);
+  }
+
+  /// `Node key`
+  String get tailscaleNodeKey {
+    return Intl.message(
+      'Node key',
+      name: 'tailscaleNodeKey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tags`
+  String get tailscaleTags {
+    return Intl.message('Tags', name: 'tailscaleTags', desc: '', args: []);
+  }
+
+  /// `Subnets`
+  String get tailscaleSubnets {
+    return Intl.message(
+      'Subnets',
+      name: 'tailscaleSubnets',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Endpoints`
+  String get tailscaleEndpoints {
+    return Intl.message(
+      'Endpoints',
+      name: 'tailscaleEndpoints',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Current endpoint`
+  String get tailscaleCurrentEndpoint {
+    return Intl.message(
+      'Current endpoint',
+      name: 'tailscaleCurrentEndpoint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `DERP relay`
+  String get tailscaleRelay {
+    return Intl.message(
+      'DERP relay',
+      name: 'tailscaleRelay',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last handshake`
+  String get tailscaleLastHandshake {
+    return Intl.message(
+      'Last handshake',
+      name: 'tailscaleLastHandshake',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Health`
+  String get tailscaleHealth {
+    return Intl.message('Health', name: 'tailscaleHealth', desc: '', args: []);
+  }
+
+  /// `Health warnings`
+  String get tailscaleHealthWarnings {
+    return Intl.message(
+      'Health warnings',
+      name: 'tailscaleHealthWarnings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Device approval required`
+  String get tailscaleNeedsMachineAuth {
+    return Intl.message(
+      'Device approval required',
+      name: 'tailscaleNeedsMachineAuth',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Networking`
+  String get networking {
+    return Intl.message('Networking', name: 'networking', desc: '', args: []);
+  }
+
+  /// `Status of P2P nodes in the current configuration`
+  String get networkingDesc {
+    return Intl.message(
+      'Status of P2P nodes in the current configuration',
+      name: 'networkingDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No P2P outbound in the current configuration`
+  String get networkingNoOutbounds {
+    return Intl.message(
+      'No P2P outbound in the current configuration',
+      name: 'networkingNoOutbounds',
       desc: '',
       args: [],
     );

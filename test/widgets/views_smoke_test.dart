@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:fl_clash/common/color.dart';
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/core/interface.dart';
 import 'package:fl_clash/enum/enum.dart';
@@ -32,7 +33,9 @@ import 'package:fl_clash/widgets/paged_sheet.dart';
 import 'package:fl_clash/widgets/sheet.dart';
 import 'package:material_ui/material_ui.dart' as flutter;
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
@@ -47,12 +50,18 @@ Finder _portField(String label) =>
 class _MockCoreHandlerInterface extends Mock implements CoreHandlerInterface {}
 
 void main() {
+  setUpAll(() {
+    registerFallbackValue(const GetOverlayNetworkStatusParams(targets: []));
+    registerFallbackValue(OverlayNetworkKind.tailscale);
+  });
+
   final cases = <String, Widget>{
     'dashboard': const DashboardView(),
     'proxies': const ProxiesView(),
     'profiles': const ProfilesView(),
     'requests': const RequestsView(),
     'resources': const ResourcesView(),
+    'networking': const NetworkingView(),
     'logs': const LogsView(),
     'tools': const ToolsView(),
     'basic config': const ConfigView(),
@@ -91,16 +100,201 @@ void main() {
           PathProviderPlatform.instance = previousPathProvider;
         });
       }
+      _MockCoreHandlerInterface? networkingCoreHandler;
+      final networkingRequests = <GetOverlayNetworkStatusParams>[];
+      var tailscaleState = OverlayNetworkState.uninitialized;
+      var tailscaleHealth = <String>[];
+      var tailscaleAuthKeyConfigured = false;
+      var zeroTierState = OverlayNetworkState.needsLogin;
+      var zeroTierError = '';
+      var zeroTierNetworkName = 'example';
+      String? copiedText;
+      if (entry.key == 'networking') {
+        tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          (call) async {
+            if (call.method == 'Clipboard.setData') {
+              copiedText =
+                  (call.arguments as Map<Object?, Object?>)['text'] as String?;
+            }
+            return null;
+          },
+        );
+        addTearDown(
+          () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+            SystemChannels.platform,
+            null,
+          ),
+        );
+        final coreHandler = _MockCoreHandlerInterface();
+        networkingCoreHandler = coreHandler;
+        when(() => coreHandler.getOverlayNetworkStatus(any())).thenAnswer((
+          invocation,
+        ) async {
+          final params =
+              invocation.positionalArguments.single
+                  as GetOverlayNetworkStatusParams;
+          networkingRequests.add(params);
+          return [
+            for (final target in params.targets)
+              switch (target.kind) {
+                OverlayNetworkKind.tailscale => OverlayNetworkStatus(
+                  name: target.name,
+                  kind: target.kind,
+                  state: tailscaleState,
+                  rawState: switch (tailscaleState) {
+                    OverlayNetworkState.uninitialized => 'NoState',
+                    OverlayNetworkState.connected => 'Running',
+                    OverlayNetworkState.starting => 'Starting',
+                    OverlayNetworkState.needsApproval => 'NeedsMachineAuth',
+                    _ => 'NeedsLogin',
+                  },
+                  networkName: 'example.com',
+                  authUrl: tailscaleState == OverlayNetworkState.needsLogin
+                      ? 'https://login.tailscale.com/a/test'
+                      : '',
+                  error: '',
+                  tailscaleDetails:
+                      target.level == OverlayNetworkDetailLevel.details
+                      ? TailscaleNetworkDetails(
+                          magicDnsSuffix: 'example.com',
+                          authKeyConfigured: tailscaleAuthKeyConfigured,
+                          health: tailscaleHealth,
+                          nodes:
+                              tailscaleState ==
+                                      OverlayNetworkState.uninitialized ||
+                                  tailscaleState == OverlayNetworkState.stopped
+                              ? const []
+                              : const [
+                                  TailscaleNode(
+                                    id: 'node-1',
+                                    publicKey: 'nodekey:test',
+                                    hostName: 'host-device',
+                                    dnsName: 'device.example.com.',
+                                    os: 'windows',
+                                    ips: ['100.64.0.1'],
+                                    endpoints: ['192.0.2.1:41641'],
+                                    online: true,
+                                    active: true,
+                                    self: false,
+                                    exitNode: false,
+                                    exitNodeOption: true,
+                                    expired: false,
+                                  ),
+                                ],
+                        )
+                      : null,
+                ),
+                OverlayNetworkKind.zerotier => OverlayNetworkStatus(
+                  name: target.name,
+                  kind: target.kind,
+                  state: zeroTierState,
+                  rawState: zeroTierState == OverlayNetworkState.error
+                      ? 'access-denied'
+                      : 'authentication-required',
+                  networkName: zeroTierNetworkName,
+                  authUrl: zeroTierState == OverlayNetworkState.error
+                      ? ''
+                      : 'https://example.com/zerotier-login',
+                  error: zeroTierError,
+                  zeroTierDetails:
+                      target.level == OverlayNetworkDetailLevel.details
+                      ? const ZeroTierNetworkDetails(
+                          networkId: '8056c2e21c000001',
+                          node: 'abcdef1234',
+                          online: true,
+                          addresses: ['10.0.0.2/24'],
+                          routes: ['10.0.0.0/24'],
+                          dns: ['10.0.0.1:53'],
+                          mtu: 2800,
+                          peers: [
+                            ZeroTierPeer(
+                              address: '1234567890',
+                              role: 'leaf',
+                              version: '1.14.2',
+                              direct: true,
+                              endpoints: ['192.0.2.1:9993'],
+                              latencyMs: 12,
+                            ),
+                            ZeroTierPeer(
+                              address: 'abcdef0123',
+                              role: 'planet',
+                              version: '',
+                              direct: false,
+                              endpoints: [],
+                              latencyMs: 0,
+                            ),
+                          ],
+                        )
+                      : null,
+                ),
+              },
+          ];
+        });
+        when(
+          () => coreHandler.activateOverlayNetwork(any(), any()),
+        ).thenAnswer((invocation) async {
+          final name = invocation.positionalArguments.first as String;
+          final kind = invocation.positionalArguments[1] as OverlayNetworkKind;
+          if (kind == OverlayNetworkKind.tailscale) {
+            tailscaleState = OverlayNetworkState.needsLogin;
+          }
+          return OverlayNetworkStatus(
+            name: name,
+            kind: kind,
+            state: kind == OverlayNetworkKind.tailscale
+                ? tailscaleState
+                : OverlayNetworkState.needsLogin,
+            rawState: kind == OverlayNetworkKind.tailscale
+                ? 'NeedsLogin'
+                : 'authentication-required',
+            networkName: kind == OverlayNetworkKind.tailscale
+                ? 'example.com'
+                : 'example',
+            authUrl: kind == OverlayNetworkKind.tailscale
+                ? 'https://login.tailscale.com/a/test'
+                : 'https://example.com/zerotier-login',
+            error: '',
+          );
+        });
+        when(
+          () => coreHandler.pingTailscaleNode(any(), any()),
+        ).thenAnswer((_) async => const TailscalePingResult(latencyMs: 23));
+        when(() => coreHandler.logoutTailscale(any())).thenAnswer((_) async {
+          tailscaleState = OverlayNetworkState.needsLogin;
+          return true;
+        });
+      }
 
       final container = ProviderContainer(
         overrides: [
           profilesProvider.overrideWith(TestProfiles.new),
           scriptsProvider.overrideWith(TestScripts.new),
           globalRulesProvider.overrideWith(TestGlobalRules.new),
+          if (networkingCoreHandler != null)
+            coreHandlerProvider.overrideWithValue(
+              CoreController.scoped(networkingCoreHandler),
+            ),
         ],
       );
       addTearDown(container.dispose);
       globalState.container = container;
+      if (entry.key == 'networking') {
+        container
+            .read(groupsProvider.notifier)
+            .update(
+              (_) => const [
+                Group(
+                  name: 'Networking',
+                  type: GroupType.Selector,
+                  all: [
+                    Proxy(name: 'tailnet', type: 'Tailscale'),
+                    Proxy(name: 'zerotier', type: 'ZeroTier'),
+                  ],
+                ),
+              ],
+            );
+      }
 
       await tester.pumpWidget(
         UncontrolledProviderScope(
@@ -109,6 +303,319 @@ void main() {
         ),
       );
       await tester.pump();
+      if (entry.key == 'networking') {
+        expect(networkingCoreHandler, isNotNull);
+        await tester.pumpAndSettle();
+        expect(find.byType(flutter.ExpansionTile), findsNWidgets(2));
+        expect(find.byType(SvgPicture), findsNWidgets(2));
+        expect(
+          find.byKey(const ValueKey('networking-tailscale-icon')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const ValueKey('networking-zerotier-icon')),
+          findsOneWidget,
+        );
+        expect(find.text('tailnet'), findsOneWidget);
+        expect(find.text('zerotier'), findsOneWidget);
+        expect(find.text('device'), findsNothing);
+        expect(find.text('1234567890'), findsNothing);
+        expect(find.textContaining('example.com'), findsOneWidget);
+        expect(networkingRequests, hasLength(1));
+        expect(networkingRequests.single.targets, hasLength(2));
+        expect(
+          networkingRequests.single.targets.every(
+            (target) => target.level == OverlayNetworkDetailLevel.summary,
+          ),
+          isTrue,
+        );
+        networkingRequests.clear();
+        expect(find.byTooltip('Expand'), findsOneWidget);
+        await tester.tap(find.byTooltip('Expand'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(
+          tester
+              .widgetList<flutter.ExpansionTile>(
+                find.byType(flutter.ExpansionTile),
+              )
+              .every((tile) => tile.initiallyExpanded),
+          isTrue,
+        );
+        expect(find.byTooltip('Collapse'), findsOneWidget);
+        expect(networkingRequests, hasLength(1));
+        expect(networkingRequests.single.targets, hasLength(2));
+        expect(
+          networkingRequests.single.targets.every(
+            (target) => target.level == OverlayNetworkDetailLevel.details,
+          ),
+          isTrue,
+        );
+        await tester.tap(find.byTooltip('Collapse'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(
+          tester
+              .widgetList<flutter.ExpansionTile>(
+                find.byType(flutter.ExpansionTile),
+              )
+              .every((tile) => !tile.initiallyExpanded),
+          isTrue,
+        );
+        expect(find.byTooltip('Expand'), findsOneWidget);
+        networkingRequests.clear();
+        await tester.tap(find.text('tailnet'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(
+          find.widgetWithText(flutter.FilledButton, 'Initialize'),
+          findsOneWidget,
+        );
+        expect(find.text('Network'), findsNothing);
+        expect(find.text('device'), findsNothing);
+        verifyNever(
+          () => networkingCoreHandler!.activateOverlayNetwork(any(), any()),
+        );
+        await tester.tap(
+          find.widgetWithText(flutter.FilledButton, 'Initialize'),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        verify(
+          () => networkingCoreHandler!.activateOverlayNetwork(
+            'tailnet',
+            OverlayNetworkKind.tailscale,
+          ),
+        ).called(1);
+        expect(find.text('device'), findsOneWidget);
+        expect(find.byIcon(Icons.desktop_windows_outlined), findsOneWidget);
+        expect(find.byIcon(Icons.bolt), findsOneWidget);
+        await tester.tap(find.byIcon(Icons.bolt));
+        await tester.pumpAndSettle();
+        expect(find.text('23 ms'), findsOneWidget);
+        verify(
+          () =>
+              networkingCoreHandler!.pingTailscaleNode('tailnet', '100.64.0.1'),
+        ).called(1);
+        when(
+          () => networkingCoreHandler!.pingTailscaleNode(any(), any()),
+        ).thenThrow(StateError('unreachable'));
+        await tester.tap(find.text('23 ms'));
+        await tester.pump();
+        await tester.pump();
+        expect(find.textContaining('unreachable'), findsOneWidget);
+        expect(find.text('23 ms'), findsOneWidget);
+        verify(
+          () =>
+              networkingCoreHandler!.pingTailscaleNode('tailnet', '100.64.0.1'),
+        ).called(1);
+        await tester.tap(find.text('device'));
+        await tester.pumpAndSettle();
+        expect(find.text('device details'), findsOneWidget);
+        expect(
+          find.textContaining('DNS name: device.example.com.'),
+          findsNothing,
+        );
+        expect(find.text('Host'), findsOneWidget);
+        expect(find.text('DNS name'), findsOneWidget);
+        expect(find.text('Address'), findsOneWidget);
+        expect(find.text('System'), findsOneWidget);
+        expect(find.text('ID'), findsOneWidget);
+        expect(find.text('Node key'), findsOneWidget);
+        expect(find.text('Endpoints'), findsOneWidget);
+        expect(find.text('Status'), findsOneWidget);
+        expect(find.textContaining('Exit node available'), findsOneWidget);
+        expect(find.text('host-device'), findsOneWidget);
+        expect(find.text('device.example.com.'), findsOneWidget);
+        expect(find.text('100.64.0.1'), findsOneWidget);
+        expect(find.text('windows'), findsOneWidget);
+        expect(find.text('node-1'), findsOneWidget);
+        expect(find.text('nodekey:test'), findsOneWidget);
+        expect(find.text('192.0.2.1:41641'), findsOneWidget);
+        expect(find.byTooltip('Copy'), findsNWidgets(6));
+        await tester.tap(find.byTooltip('Copy').at(3));
+        await tester.pump();
+        expect(copiedText, '100.64.0.1');
+        globalState.navigatorKey.currentState!.pop();
+        await tester.pumpAndSettle();
+        expect(find.text('1234567890'), findsNothing);
+        expect(
+          find.widgetWithText(flutter.FilledButton, 'Sign in'),
+          findsOneWidget,
+        );
+        expect(networkingRequests, isNotEmpty);
+        expect(networkingRequests.last.targets, hasLength(1));
+        expect(
+          networkingRequests.last.targets.single.kind,
+          OverlayNetworkKind.tailscale,
+        );
+        expect(
+          networkingRequests.last.targets.single.level,
+          OverlayNetworkDetailLevel.details,
+        );
+        networkingRequests.clear();
+        await tester.pump(const Duration(seconds: 5));
+        await tester.pump();
+        expect(networkingRequests, isNotEmpty);
+        expect(
+          networkingRequests.last.targets.single.kind,
+          OverlayNetworkKind.tailscale,
+        );
+        networkingRequests.clear();
+        await tester.tap(find.text('tailnet'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(find.text('device'), findsNothing);
+        await tester.pump(const Duration(seconds: 5));
+        await tester.pump();
+        expect(networkingRequests, isEmpty);
+        await tester.tap(find.text('zerotier'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(find.text('1234567890'), findsOneWidget);
+        expect(networkingRequests, hasLength(1));
+        expect(
+          networkingRequests.single.targets.single.kind,
+          OverlayNetworkKind.zerotier,
+        );
+        expect(
+          networkingRequests.single.targets.single.level,
+          OverlayNetworkDetailLevel.details,
+        );
+        expect(find.text('Local'), findsOneWidget);
+        expect(find.text('abcdef1234'), findsOneWidget);
+        expect(find.text('10.0.0.2/24'), findsOneWidget);
+        expect(find.byIcon(Icons.device_hub), findsOneWidget);
+        expect(find.byIcon(Icons.public), findsOneWidget);
+        expect(find.text('leaf · 1.14.2 · Direct'), findsOneWidget);
+        expect(find.text('planet'), findsOneWidget);
+        expect(find.text('Relayed'), findsNothing);
+        expect(find.text('12 ms'), findsOneWidget);
+        expect(
+          tester.widget<Text>(find.text('12 ms')).style?.color,
+          getDelayColor(12),
+        );
+        expect(find.text('192.0.2.1:9993'), findsNothing);
+        await tester.tap(find.text('1234567890'));
+        await tester.pumpAndSettle();
+        expect(find.text('1234567890 details'), findsOneWidget);
+        expect(find.text('Role'), findsOneWidget);
+        expect(find.text('Version'), findsOneWidget);
+        expect(find.text('Delay'), findsOneWidget);
+        expect(find.text('Endpoints'), findsOneWidget);
+        expect(find.text('192.0.2.1:9993'), findsOneWidget);
+        globalState.navigatorKey.currentState!.pop();
+        await tester.pumpAndSettle();
+        zeroTierState = OverlayNetworkState.error;
+        zeroTierError = 'ZeroTier network access denied';
+        await tester.tap(find.byTooltip('Sync').first);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(find.text('Access denied'), findsOneWidget);
+        expect(find.text('ZeroTier network access denied'), findsOneWidget);
+        expect(find.text('abcdef1234'), findsOneWidget);
+        expect(find.text('1234567890'), findsOneWidget);
+        zeroTierState = OverlayNetworkState.needsLogin;
+        zeroTierError = '';
+        zeroTierNetworkName = '';
+        await tester.tap(find.byTooltip('Sync').first);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(find.text('8056c2e21c000001'), findsOneWidget);
+        networkingRequests.clear();
+        await tester.tap(find.text('tailnet'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(
+          find.widgetWithText(flutter.FilledButton, 'Sign in'),
+          findsNWidgets(2),
+        );
+        await tester.tap(
+          find.widgetWithText(flutter.FilledButton, 'Sign in').first,
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(
+          find.text('https://login.tailscale.com/a/test'),
+          findsNWidgets(2),
+        );
+        globalState.navigatorKey.currentState!.pop();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(find.text('1234567890'), findsOneWidget);
+        tailscaleState = OverlayNetworkState.uninitialized;
+        await tester.tap(find.byTooltip('Sync'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(find.text('Uninitialized'), findsOneWidget);
+        tailscaleState = OverlayNetworkState.connected;
+        tailscaleHealth = ['DERP unavailable'];
+        await tester.tap(find.byTooltip('Sync'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(
+          find.widgetWithText(flutter.FilledButton, 'Sign out'),
+          findsOneWidget,
+        );
+        expect(find.text('Health warnings'), findsOneWidget);
+        expect(find.text('DERP unavailable'), findsOneWidget);
+        tailscaleAuthKeyConfigured = true;
+        await tester.tap(find.byTooltip('Sync'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(
+          find.widgetWithText(flutter.FilledButton, 'Sign out'),
+          findsNothing,
+        );
+        tailscaleAuthKeyConfigured = false;
+        tailscaleState = OverlayNetworkState.needsApproval;
+        tailscaleHealth = [];
+        await tester.tap(find.byTooltip('Sync'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(
+          find.widgetWithText(flutter.FilledButton, 'Sign out'),
+          findsOneWidget,
+        );
+        tailscaleState = OverlayNetworkState.starting;
+        await tester.tap(find.byTooltip('Sync'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(
+          find.widgetWithText(flutter.FilledButton, 'Sign out'),
+          findsNothing,
+        );
+        expect(find.textContaining('Connecting'), findsOneWidget);
+        expect(find.text('Account'), findsNothing);
+        tailscaleState = OverlayNetworkState.connected;
+        await tester.tap(find.byTooltip('Sync'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        await tester.tap(find.widgetWithText(flutter.FilledButton, 'Sign out'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        verify(
+          () => networkingCoreHandler!.logoutTailscale('tailnet'),
+        ).called(1);
+        expect(
+          find.widgetWithText(flutter.FilledButton, 'Sign in'),
+          findsNWidgets(2),
+        );
+        tailscaleState = OverlayNetworkState.connected;
+        await tester.tap(find.byTooltip('Sync'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        when(
+          () => networkingCoreHandler!.logoutTailscale(any()),
+        ).thenThrow(StateError('logout failed'));
+        await tester.tap(find.widgetWithText(flutter.FilledButton, 'Sign out'));
+        await tester.pump();
+        expect(find.textContaining('logout failed'), findsOneWidget);
+        expect(
+          find.widgetWithText(flutter.FilledButton, 'Sign out'),
+          findsOneWidget,
+        );
+      }
       if (entry.key == 'access control') {
         await tester.pump(const Duration(milliseconds: 301));
       }

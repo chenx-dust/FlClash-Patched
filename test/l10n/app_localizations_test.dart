@@ -20,6 +20,21 @@ void main() {
       expect(appLocalizations.resetProfilesAndScripts, isNotEmpty);
       expect(appLocalizations.promptCloseConnections, isNotEmpty);
       expect(appLocalizations.promptCloseConnectionsDesc, isNotEmpty);
+      expect(appLocalizations.nodes, isNotEmpty);
+      expect(appLocalizations.networkId, isNotEmpty);
+      expect(appLocalizations.role, isNotEmpty);
+      expect(appLocalizations.version, isNotEmpty);
+      expect(appLocalizations.endpoints, isNotEmpty);
+      expect(appLocalizations.online, isNotEmpty);
+      expect(appLocalizations.offline, isNotEmpty);
+      expect(appLocalizations.routes, isNotEmpty);
+      expect(appLocalizations.signIn, isNotEmpty);
+      expect(appLocalizations.signOut, isNotEmpty);
+      expect(appLocalizations.tailscaleNodeKey, isNotEmpty);
+      expect(appLocalizations.tailscaleHealthWarnings, isNotEmpty);
+      expect(appLocalizations.networking, isNotEmpty);
+      expect(appLocalizations.networkingDesc, isNotEmpty);
+      expect(appLocalizations.networkingNoOutbounds, isNotEmpty);
     }
   });
 

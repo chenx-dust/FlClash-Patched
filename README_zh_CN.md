@@ -27,7 +27,7 @@
 - 修复原项目 Bug（启动时间、窗口定位、程序通知）
 - 能效优化（优化 Android Doze 支持、统一 UI 定时器休眠）
 - UI 优化（代理选择界面、日志与连接筛选排序）
-- 新增功能（Age-Key 加密支持、Windows 高优先级启动）
+- 新增功能（Age-Key 加密支持、Windows 高优先级启动、Tailscale 集成等）
 
 更多信息请查看 [Applied Patches (#1)](https://github.com/chenx-dust/FlClash-Patched/issues/1)
 

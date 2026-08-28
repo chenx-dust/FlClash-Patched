@@ -116,6 +116,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "accessControlSettings": MessageLookupByLibrary.simpleMessage(
       "Access Control Settings",
     ),
+    "accessDenied": MessageLookupByLibrary.simpleMessage("Access denied"),
     "account": MessageLookupByLibrary.simpleMessage("Account"),
     "action": MessageLookupByLibrary.simpleMessage("Action"),
     "action_mode": MessageLookupByLibrary.simpleMessage("Switch Mode"),
@@ -322,7 +323,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Existing data will be overwritten after confirmation",
     ),
     "connected": MessageLookupByLibrary.simpleMessage("Connected"),
-    "connecting": MessageLookupByLibrary.simpleMessage("Connecting..."),
+    "connecting": MessageLookupByLibrary.simpleMessage("Connecting"),
     "connection": MessageLookupByLibrary.simpleMessage("Connection"),
     "connections": MessageLookupByLibrary.simpleMessage("Connections"),
     "connectionsDesc": MessageLookupByLibrary.simpleMessage(
@@ -439,6 +440,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "enableExternalController": MessageLookupByLibrary.simpleMessage(
       "Enable External Controller",
     ),
+    "endpoints": MessageLookupByLibrary.simpleMessage("Endpoints"),
     "enforceRoutes": MessageLookupByLibrary.simpleMessage("Enforce Routes"),
     "enforceRoutesDesc": MessageLookupByLibrary.simpleMessage(
       "Ensure traffic is routed through the tunnel even when more specific routes exist",
@@ -636,6 +638,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "infiniteTime": MessageLookupByLibrary.simpleMessage("Long term effective"),
     "init": MessageLookupByLibrary.simpleMessage("Init"),
+    "initialize": MessageLookupByLibrary.simpleMessage("Initialize"),
     "inputCorrectHotkey": MessageLookupByLibrary.simpleMessage(
       "Please enter the correct hotkey",
     ),
@@ -763,6 +766,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "nameserverPolicyDesc": MessageLookupByLibrary.simpleMessage(
       "Specify the corresponding nameserver policy",
     ),
+    "needsLogin": MessageLookupByLibrary.simpleMessage("Sign-in required"),
     "network": MessageLookupByLibrary.simpleMessage("Network"),
     "networkDesc": MessageLookupByLibrary.simpleMessage(
       "Modify network-related settings",
@@ -776,6 +780,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "networkExtension": MessageLookupByLibrary.simpleMessage(
       "Network Extension",
     ),
+    "networkId": MessageLookupByLibrary.simpleMessage("Network ID"),
+    "networkNotFound": MessageLookupByLibrary.simpleMessage(
+      "Network not found",
+    ),
     "networkSpeed": MessageLookupByLibrary.simpleMessage("Network speed"),
     "networkSpeedNotification": MessageLookupByLibrary.simpleMessage(
       "Speed in Notification",
@@ -784,6 +792,13 @@ class MessageLookup extends MessageLookupByLibrary {
       "Show current speed in the notification bar; may slightly increase battery usage",
     ),
     "networkType": MessageLookupByLibrary.simpleMessage("Network type"),
+    "networking": MessageLookupByLibrary.simpleMessage("Networking"),
+    "networkingDesc": MessageLookupByLibrary.simpleMessage(
+      "Status of P2P nodes in the current configuration",
+    ),
+    "networkingNoOutbounds": MessageLookupByLibrary.simpleMessage(
+      "No P2P outbound in the current configuration",
+    ),
     "neutralScheme": MessageLookupByLibrary.simpleMessage("Neutral"),
     "nextMatch": MessageLookupByLibrary.simpleMessage("Next match"),
     "noData": MessageLookupByLibrary.simpleMessage("No data"),
@@ -802,6 +817,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "noResolveHostname": MessageLookupByLibrary.simpleMessage(
       "No resolve hostname",
     ),
+    "nodes": MessageLookupByLibrary.simpleMessage("Nodes"),
     "none": MessageLookupByLibrary.simpleMessage("None"),
     "notSelectedTip": MessageLookupByLibrary.simpleMessage(
       "The current proxy group cannot be selected.",
@@ -811,10 +827,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "nullTip": m20,
     "numberTip": m21,
+    "offline": MessageLookupByLibrary.simpleMessage("Offline"),
     "onDemand": MessageLookupByLibrary.simpleMessage("On Demand"),
     "onDemandDesc": MessageLookupByLibrary.simpleMessage(
       "Configure the program running state for specific scenarios",
     ),
+    "online": MessageLookupByLibrary.simpleMessage("Online"),
     "onlyConfig": MessageLookupByLibrary.simpleMessage("Config Only"),
     "onlyEmoji": MessageLookupByLibrary.simpleMessage("Emoji Only"),
     "onlyIcon": MessageLookupByLibrary.simpleMessage("Icon"),
@@ -961,6 +979,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "redirPort": MessageLookupByLibrary.simpleMessage("Redir port"),
     "redo": MessageLookupByLibrary.simpleMessage("Redo"),
     "regexSearch": MessageLookupByLibrary.simpleMessage("Regex search"),
+    "relayed": MessageLookupByLibrary.simpleMessage("Relayed"),
     "remote": MessageLookupByLibrary.simpleMessage("Remote"),
     "remoteBackupDesc": MessageLookupByLibrary.simpleMessage(
       "Backup local data to WebDAV",
@@ -1022,6 +1041,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Override",
     ),
     "restoreSuccess": MessageLookupByLibrary.simpleMessage("Restore success"),
+    "role": MessageLookupByLibrary.simpleMessage("Role"),
     "routeAddress": MessageLookupByLibrary.simpleMessage("Route Address"),
     "routeAddressDesc": MessageLookupByLibrary.simpleMessage(
       "Config listen route address",
@@ -1031,6 +1051,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Bypass private route address",
     ),
     "routeMode_config": MessageLookupByLibrary.simpleMessage("Use config"),
+    "routes": MessageLookupByLibrary.simpleMessage("Routes"),
     "ru": MessageLookupByLibrary.simpleMessage("Russian"),
     "rule": MessageLookupByLibrary.simpleMessage("Rule"),
     "ruleActionAndDesc": MessageLookupByLibrary.simpleMessage(
@@ -1174,6 +1195,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "showPassword": MessageLookupByLibrary.simpleMessage("Show password"),
     "showUnavailable": MessageLookupByLibrary.simpleMessage("Show Timeout"),
     "shrink": MessageLookupByLibrary.simpleMessage("Shrink"),
+    "signIn": MessageLookupByLibrary.simpleMessage("Sign in"),
+    "signOut": MessageLookupByLibrary.simpleMessage("Sign out"),
+    "signedIn": MessageLookupByLibrary.simpleMessage("Signed in"),
     "silentLaunch": MessageLookupByLibrary.simpleMessage("Silent Launch"),
     "silentLaunchDesc": MessageLookupByLibrary.simpleMessage(
       "Start in the background",
@@ -1204,6 +1228,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "stop": MessageLookupByLibrary.simpleMessage("Stop"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("Stopping VPN..."),
+    "stopped": MessageLookupByLibrary.simpleMessage("Stopped"),
     "style": MessageLookupByLibrary.simpleMessage("Style"),
     "styleSettings": MessageLookupByLibrary.simpleMessage("Style Settings"),
     "subRule": MessageLookupByLibrary.simpleMessage("Sub Rule"),
@@ -1235,6 +1260,33 @@ class MessageLookup extends MessageLookupByLibrary {
     "tabAnimationDesc": MessageLookupByLibrary.simpleMessage(
       "Effective only in mobile view",
     ),
+    "tailscaleActive": MessageLookupByLibrary.simpleMessage("Active"),
+    "tailscaleCurrentEndpoint": MessageLookupByLibrary.simpleMessage(
+      "Current endpoint",
+    ),
+    "tailscaleDnsName": MessageLookupByLibrary.simpleMessage("DNS name"),
+    "tailscaleEndpoints": MessageLookupByLibrary.simpleMessage("Endpoints"),
+    "tailscaleExitNode": MessageLookupByLibrary.simpleMessage("Exit node"),
+    "tailscaleExitNodeAvailable": MessageLookupByLibrary.simpleMessage(
+      "Exit node available",
+    ),
+    "tailscaleHealth": MessageLookupByLibrary.simpleMessage("Health"),
+    "tailscaleHealthWarnings": MessageLookupByLibrary.simpleMessage(
+      "Health warnings",
+    ),
+    "tailscaleKeyExpired": MessageLookupByLibrary.simpleMessage("Key expired"),
+    "tailscaleKeyExpiry": MessageLookupByLibrary.simpleMessage("Key expiry"),
+    "tailscaleLastHandshake": MessageLookupByLibrary.simpleMessage(
+      "Last handshake",
+    ),
+    "tailscaleLastSeen": MessageLookupByLibrary.simpleMessage("Last seen"),
+    "tailscaleNeedsMachineAuth": MessageLookupByLibrary.simpleMessage(
+      "Device approval required",
+    ),
+    "tailscaleNodeKey": MessageLookupByLibrary.simpleMessage("Node key"),
+    "tailscaleRelay": MessageLookupByLibrary.simpleMessage("DERP relay"),
+    "tailscaleSubnets": MessageLookupByLibrary.simpleMessage("Subnets"),
+    "tailscaleTags": MessageLookupByLibrary.simpleMessage("Tags"),
     "tapToAuthorize": MessageLookupByLibrary.simpleMessage("Tap to authorize"),
     "tcpConcurrent": MessageLookupByLibrary.simpleMessage("TCP Concurrent"),
     "tcpConcurrentDesc": MessageLookupByLibrary.simpleMessage(
@@ -1287,6 +1339,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "unifiedDelayDesc": MessageLookupByLibrary.simpleMessage(
       "Remove extra delays such as handshaking",
     ),
+    "uninitialized": MessageLookupByLibrary.simpleMessage("Uninitialized"),
     "unknown": MessageLookupByLibrary.simpleMessage("Unknown"),
     "unknownNetworkError": MessageLookupByLibrary.simpleMessage(
       "Unknown network error",
@@ -1314,6 +1367,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "usedTraffic": MessageLookupByLibrary.simpleMessage("Used traffic"),
     "userAgent": MessageLookupByLibrary.simpleMessage("User-Agent"),
     "value": MessageLookupByLibrary.simpleMessage("Value"),
+    "version": MessageLookupByLibrary.simpleMessage("Version"),
     "vibrantScheme": MessageLookupByLibrary.simpleMessage("Vibrant"),
     "view": MessageLookupByLibrary.simpleMessage("View"),
     "vpnConfigChangeDetected": MessageLookupByLibrary.simpleMessage(

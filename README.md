@@ -23,7 +23,7 @@ A soft fork of [FlClash](https://github.com/chen08209/FlClash), with several bug
 - Fixed bugs from upstream (startup time, window positioning, notifications)
 - Energy efficiency optimizations (improved Android Doze, unified UI timer suspend)
 - UI optimizations (proxy selection, log and connection filtering/sorting)
-- New features (Age-Key encryption support, Windows high-priority startup)
+- New features (Age-Key encryption support, Windows high-priority startup, Tailscale integration, etc.)
 
 For more information, please check the details in [Applied Patches (#1)](https://github.com/chenx-dust/FlClash-Patched/issues/1)
 

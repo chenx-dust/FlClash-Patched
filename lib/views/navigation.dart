@@ -11,6 +11,7 @@ class Navigation implements NavigationPort {
   List<NavigationItem> getItems({
     bool openLogs = false,
     bool hasProxies = false,
+    bool hasNetworking = false,
   }) {
     return [
       NavigationItem(
@@ -58,6 +59,14 @@ class Navigation implements NavigationPort {
         builder: (_) =>
             const ResourcesView(key: GlobalObjectKey(PageLabel.resources)),
         modes: [NavigationItemMode.more],
+      ),
+      NavigationItem(
+        icon: const Icon(Icons.hub),
+        label: PageLabel.networking,
+        description: 'networkingDesc',
+        builder: (_) =>
+            const NetworkingView(key: GlobalObjectKey(PageLabel.networking)),
+        modes: hasNetworking ? [NavigationItemMode.more] : [],
       ),
       NavigationItem(
         icon: const Icon(Icons.adb),

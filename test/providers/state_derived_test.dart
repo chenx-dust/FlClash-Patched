@@ -78,6 +78,57 @@ void main() {
   });
 
   test('navigation providers select items for width and current page', () {
+    NavigationItem networkingItem() => container
+        .read(navigationItemsStateProvider)
+        .value
+        .singleWhere((item) => item.label == PageLabel.networking);
+    bool showsNetworkingTool() => container
+        .read(moreToolsSelectorStateProvider)
+        .navigationItems
+        .any((item) => item.label == PageLabel.networking);
+
+    expect(networkingItem().modes, isEmpty);
+    expect(showsNetworkingTool(), isFalse);
+    container
+        .read(groupsProvider.notifier)
+        .update(
+          (_) => const [
+            Group(
+              name: 'Tailscale group',
+              type: GroupType.Selector,
+              all: [Proxy(name: 'tailnet', type: 'Tailscale')],
+            ),
+          ],
+        );
+    expect(networkingItem().modes, [NavigationItemMode.more]);
+    expect(showsNetworkingTool(), isTrue);
+    container
+        .read(groupsProvider.notifier)
+        .update(
+          (_) => const [
+            Group(
+              name: 'ZeroTier group',
+              type: GroupType.Selector,
+              all: [Proxy(name: 'zerotier', type: 'ZeroTier')],
+            ),
+          ],
+        );
+    expect(networkingItem().modes, [NavigationItemMode.more]);
+    expect(showsNetworkingTool(), isTrue);
+    container
+        .read(groupsProvider.notifier)
+        .update(
+          (_) => const [
+            Group(
+              name: 'Direct group',
+              type: GroupType.Selector,
+              all: [Proxy(name: 'DIRECT', type: 'Direct')],
+            ),
+          ],
+        );
+    expect(networkingItem().modes, isEmpty);
+    expect(showsNetworkingTool(), isFalse);
+
     container
         .read(viewSizeProvider.notifier)
         .update((_) => Size(maxMobileWidth.toDouble(), 800));

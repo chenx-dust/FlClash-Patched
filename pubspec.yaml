@@ -108,6 +108,7 @@ flutter:
     - assets/images/avatar/
     - assets/images/empty/
     - assets/images/icon/
+    - assets/images/networking/
   fonts:
     - family: JetBrainsMono
       fonts:
