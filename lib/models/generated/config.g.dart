@@ -100,6 +100,7 @@ const _$DashboardWidgetEnumMap = {
   DashboardWidget.intranetIp: 'intranetIp',
   DashboardWidget.memoryInfo: 'memoryInfo',
   DashboardWidget.goroutineInfo: 'goroutineInfo',
+  DashboardWidget.connectionInfo: 'connectionInfo',
 };
 
 _AccessControlProps _$AccessControlPropsFromJson(Map<String, dynamic> json) =>

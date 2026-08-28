@@ -48,6 +48,10 @@ extension DashboardWidgetView on DashboardWidget {
       crossAxisCellCount: 4,
       child: GoroutineInfo(),
     ),
+    DashboardWidget.connectionInfo => const GridItem(
+      crossAxisCellCount: 4,
+      child: ConnectionInfo(),
+    ),
   };
 }
 

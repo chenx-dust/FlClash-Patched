@@ -46,6 +46,7 @@ void main() {
       expect(appLocalizations.captureDns, isNotEmpty);
       expect(appLocalizations.captureDnsDesc, isNotEmpty);
       expect(appLocalizations.autoSetSystemDnsDesc, isNotEmpty);
+      expect(appLocalizations.connectionInfo, isNotEmpty);
     }
   });
 

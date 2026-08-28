@@ -312,7 +312,8 @@ enum DashboardWidget {
   systemProxyButton(platforms: desktopPlatforms),
   intranetIp,
   memoryInfo,
-  goroutineInfo;
+  goroutineInfo,
+  connectionInfo;
 
   final List<SupportPlatform> platforms;
 

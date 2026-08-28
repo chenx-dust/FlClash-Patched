@@ -9,50 +9,53 @@ import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
-class GoroutineInfo extends ConsumerStatefulWidget {
-  final Future<int> Function()? countReader;
+class ConnectionInfo extends ConsumerStatefulWidget {
+  final Future<int> Function()? connectionCountReader;
 
-  const GoroutineInfo({super.key, @visibleForTesting this.countReader});
+  const ConnectionInfo({
+    super.key,
+    @visibleForTesting this.connectionCountReader,
+  });
 
   @override
-  ConsumerState<GoroutineInfo> createState() => _GoroutineInfoState();
+  ConsumerState<ConnectionInfo> createState() => _ConnectionInfoState();
 }
 
-class _GoroutineInfoState extends ConsumerState<GoroutineInfo>
-    with WidgetsBindingObserver, ActivePollingMixin<GoroutineInfo> {
-  final _countNotifier = ValueNotifier<int>(0);
+class _ConnectionInfoState extends ConsumerState<ConnectionInfo>
+    with WidgetsBindingObserver, ActivePollingMixin<ConnectionInfo> {
+  final _connectionCountNotifier = ValueNotifier<int>(0);
 
   CoreController get _core => ref.read(coreHandlerProvider);
 
   @override
-  Duration get pollInterval => const Duration(seconds: 2);
+  Duration get pollInterval => const Duration(seconds: 1);
 
   @override
   void dispose() {
-    _countNotifier.dispose();
+    _connectionCountNotifier.dispose();
     super.dispose();
   }
 
   @override
   Future<void> poll(PollGuard isCurrent) async {
-    final count = await _readCount();
+    final count = await _readConnectionCount();
     if (count == null || !isCurrent()) {
       return;
     }
-    _countNotifier.value = count;
+    _connectionCountNotifier.value = count;
   }
 
-  Future<int?> _readCount() async {
+  Future<int?> _readConnectionCount() async {
     try {
-      final countReader = widget.countReader;
-      if (countReader != null) {
-        return await countReader();
+      final connectionCountReader = widget.connectionCountReader;
+      if (connectionCountReader != null) {
+        return await connectionCountReader();
       }
       final connected = ref.read(coreStatusProvider) == CoreStatus.connected;
-      return connected ? await _core.getGoroutineCount() : null;
+      return connected ? (await _core.getConnections()).length : null;
     } catch (error) {
       commonPrint.log(
-        'updateGoroutineCount error: $error',
+        'updateConnectionCount error: $error',
         logLevel: coreFailureLogLevel(error),
       );
       return null;
@@ -69,8 +72,8 @@ class _GoroutineInfoState extends ConsumerState<GoroutineInfo>
           radius: AppCorner.lg,
           onPressed: () {},
           info: Info(
-            iconData: Icons.account_tree_outlined,
-            label: appLocalizations.goroutineInfo,
+            iconData: Icons.link,
+            label: appLocalizations.connectionInfo,
           ),
           child: Container(
             padding: baseInfoEdgeInsets.copyWith(top: 0),
@@ -82,7 +85,7 @@ class _GoroutineInfoState extends ConsumerState<GoroutineInfo>
                 SizedBox(
                   height: globalState.measure.bodyMediumHeight + 2,
                   child: ValueListenableBuilder(
-                    valueListenable: _countNotifier,
+                    valueListenable: _connectionCountNotifier,
                     builder: (_, count, _) => Text(
                       '$count',
                       style: context.textTheme.bodyMedium?.toLight.adjustSize(

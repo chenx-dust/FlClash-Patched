@@ -329,6 +329,7 @@
   "copyEnvVar": "環境変数をコピー",
   "memoryInfo": "メモリ情報",
   "goroutineInfo": "ゴルーチン数",
+  "connectionInfo": "接続数",
   "cancel": "キャンセル",
   "fileIsUpdate": "ファイルが変更されました。保存しますか？",
   "profileHasUpdate": "プロファイルが変更されました。自動更新を無効化しますか？",

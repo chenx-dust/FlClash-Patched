@@ -1,3 +1,4 @@
+export 'connection_info.dart';
 export 'goroutine_info.dart';
 export 'intranet_ip.dart';
 export 'memory_info.dart';

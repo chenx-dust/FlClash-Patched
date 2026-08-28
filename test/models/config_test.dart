@@ -127,7 +127,10 @@ void main() {
     test('custom values survive round-trip', () {
       const props = AppSettingProps(
         locale: 'zh_CN',
-        dashboardWidgets: [DashboardWidget.goroutineInfo],
+        dashboardWidgets: [
+          DashboardWidget.goroutineInfo,
+          DashboardWidget.connectionInfo,
+        ],
         onlyStatisticsProxy: true,
         autoLaunch: true,
         highPriorityAutoLaunch: true,
@@ -145,7 +148,10 @@ void main() {
         AppSettingProps.fromJson,
       );
       expect(restored.locale, 'zh_CN');
-      expect(restored.dashboardWidgets, [DashboardWidget.goroutineInfo]);
+      expect(restored.dashboardWidgets, [
+        DashboardWidget.goroutineInfo,
+        DashboardWidget.connectionInfo,
+      ]);
       expect(restored.onlyStatisticsProxy, true);
       expect(restored.autoLaunch, true);
       expect(restored.highPriorityAutoLaunch, true);

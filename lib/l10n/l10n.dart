@@ -2604,6 +2604,16 @@ class AppLocalizations {
     );
   }
 
+  /// `Connection count`
+  String get connectionInfo {
+    return Intl.message(
+      'Connection count',
+      name: 'connectionInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Cancel`
   String get cancel {
     return Intl.message('Cancel', name: 'cancel', desc: '', args: []);
