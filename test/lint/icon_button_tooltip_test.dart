@@ -1,14 +1,18 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 /// The one button that carries its label on an enclosing [Tooltip] instead of
 /// its own `tooltip:`. Nesting a second tooltip inside would fight it.
 const _wrappedInTooltip = 'lib/views/dashboard/widgets/core_status_button.dart';
+const _wrappedInSemantics = 'lib/manager/status_manager.dart';
 
 final _iconButton = RegExp(
   r'\bIconButton(?:\.(?:filled|filledTonal|outlined))?\(',
 );
+
+String _repoPath(String path) => p.relative(path).replaceAll('\\', '/');
 
 Iterable<File> _dartFilesIn(String root) sync* {
   final directory = Directory(root);
@@ -20,7 +24,7 @@ Iterable<File> _dartFilesIn(String root) sync* {
         entity.path.endsWith('.dart') &&
         !entity.path.endsWith('.g.dart') &&
         !entity.path.endsWith('.freezed.dart') &&
-        !entity.path.contains('/generated/')) {
+        !_repoPath(entity.path).contains('/generated/')) {
       yield entity;
     }
   }
@@ -44,7 +48,8 @@ void main() {
 
     for (final file in _dartFilesIn('lib')) {
       final source = file.readAsStringSync();
-      if (file.path == _wrappedInTooltip) continue;
+      final path = _repoPath(file.path);
+      if (path == _wrappedInTooltip || path == _wrappedInSemantics) continue;
 
       for (final match in _iconButton.allMatches(source)) {
         final arguments = _arguments(source, match.end);
@@ -54,7 +59,7 @@ void main() {
 
         final line = '\n'.allMatches(source.substring(0, match.start)).length;
         unlabelled.add(
-          '${file.path}:${line + 1} — an icon has no accessible name, so '
+          '$path:${line + 1} — an icon has no accessible name, so '
           'TalkBack and VoiceOver announce nothing and the desktop build shows '
           'no hover hint.',
         );
@@ -75,5 +80,13 @@ void main() {
           'enclosing Tooltip labels it. That wrapper is gone; either restore it '
           'or give the button its own tooltip and drop the exemption.',
     );
+  });
+
+  test('the overlay-free message button gets its label from Semantics', () {
+    final source = File(_wrappedInSemantics).readAsStringSync();
+
+    expect(_iconButton.allMatches(source), hasLength(1));
+    expect(source, contains('Semantics('));
+    expect(source, contains('label: label'));
   });
 }

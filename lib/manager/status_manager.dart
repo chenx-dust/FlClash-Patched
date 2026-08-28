@@ -521,6 +521,7 @@ class _MessageContent extends StatelessWidget {
             if (showControls && actionState == null && message.allowCopy) ...[
               const SizedBox(width: 8),
               _MessageIconButton(
+                label: context.appLocalizations.copy,
                 icon: Icons.copy,
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: message.text));
@@ -530,6 +531,7 @@ class _MessageContent extends StatelessWidget {
             if (showControls) ...[
               const SizedBox(width: 4),
               _MessageIconButton(
+                label: context.appLocalizations.close,
                 icon: Icons.close,
                 onPressed: () => onDismiss(message.id),
               ),
@@ -542,24 +544,33 @@ class _MessageContent extends StatelessWidget {
 }
 
 class _MessageIconButton extends StatelessWidget {
-  const _MessageIconButton({required this.icon, required this.onPressed});
+  const _MessageIconButton({
+    required this.label,
+    required this.icon,
+    required this.onPressed,
+  });
 
+  final String label;
   final IconData icon;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      style: IconButton.styleFrom(
-        fixedSize: const Size.square(32),
-        padding: EdgeInsets.zero,
-        shape: const CircleBorder(),
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    return Semantics(
+      label: label,
+      button: true,
+      child: IconButton(
+        style: IconButton.styleFrom(
+          fixedSize: const Size.square(32),
+          padding: EdgeInsets.zero,
+          shape: const CircleBorder(),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        visualDensity: VisualDensity.compact,
+        iconSize: 20,
+        onPressed: onPressed,
+        icon: Icon(icon),
       ),
-      visualDensity: VisualDensity.compact,
-      iconSize: 20,
-      onPressed: onPressed,
-      icon: Icon(icon),
     );
   }
 }

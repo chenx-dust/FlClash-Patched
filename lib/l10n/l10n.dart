@@ -969,6 +969,11 @@ class AppLocalizations {
     return Intl.message('Show', name: 'show', desc: '', args: []);
   }
 
+  /// `Hide`
+  String get hide {
+    return Intl.message('Hide', name: 'hide', desc: '', args: []);
+  }
+
   /// `Exit`
   String get exit {
     return Intl.message('Exit', name: 'exit', desc: '', args: []);
@@ -1592,6 +1597,16 @@ class AppLocalizations {
   /// `Sort`
   String get sort {
     return Intl.message('Sort', name: 'sort', desc: '', args: []);
+  }
+
+  /// `Ascending`
+  String get ascending {
+    return Intl.message('Ascending', name: 'ascending', desc: '', args: []);
+  }
+
+  /// `Descending`
+  String get descending {
+    return Intl.message('Descending', name: 'descending', desc: '', args: []);
   }
 
   /// `Columns`

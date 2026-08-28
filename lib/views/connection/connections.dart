@@ -460,9 +460,11 @@ class _ConnectionSortView extends StatelessWidget {
   Widget _buildDirectionButton({
     required TrackerInfoSortType type,
     required bool ascending,
+    required String tooltip,
   }) {
     final selected = sortType == type && sortAscending == ascending;
     return IconButton.filledTonal(
+      tooltip: tooltip,
       isSelected: selected,
       onPressed: () {
         onSortChanged(type, ascending);
@@ -478,9 +480,21 @@ class _ConnectionSortView extends StatelessWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildDirectionButton(type: type, ascending: true),
+          _buildDirectionButton(
+            type: type,
+            ascending: true,
+            tooltip:
+                '${_getTextWithSortType(context, type)} · '
+                '${context.appLocalizations.ascending}',
+          ),
           const SizedBox(width: 8),
-          _buildDirectionButton(type: type, ascending: false),
+          _buildDirectionButton(
+            type: type,
+            ascending: false,
+            tooltip:
+                '${_getTextWithSortType(context, type)} · '
+                '${context.appLocalizations.descending}',
+          ),
         ],
       ),
     );

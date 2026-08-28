@@ -90,6 +90,9 @@ class NetworkDetection extends ConsumerWidget {
                     dimension: globalState.measure.titleSmallHeight + 16.ap,
                     child: ExcludeFocus(
                       child: IconButton(
+                        tooltip: networkDetection.isIpVisible
+                            ? appLocalizations.hide
+                            : appLocalizations.show,
                         padding: EdgeInsets.zero,
                         onPressed: ipInfo != null
                             ? ref
