@@ -24,6 +24,8 @@ public class TrayPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
             result(true)
         case "openMenu":
             result(openMenu())
+        case "updateMenuItem":
+            result(updateMenuItem(call.arguments as? [String: Any]))
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -79,6 +81,13 @@ public class TrayPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         }
         statusItem.openMenu(menu)
         return true
+    }
+
+    private func updateMenuItem(_ arguments: [String: Any]?) -> Bool {
+        guard let arguments else {
+            return false
+        }
+        return menu?.updateMenuItem(arguments) ?? false
     }
 
     private func makeStatusItem() -> TrayStatusItem? {

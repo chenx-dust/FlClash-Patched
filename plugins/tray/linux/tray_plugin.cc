@@ -11,19 +11,36 @@
 
 #include <cstring>
 
+#ifdef GDK_WINDOWING_X11
+#include <gdk/gdkx.h>
+#endif
+
+#ifdef GDK_WINDOWING_WAYLAND
+#include <gdk/gdkwayland.h>
+#endif
+
 #define TRAY_PLUGIN(obj) \
   (G_TYPE_CHECK_INSTANCE_CAST((obj), tray_plugin_get_type(), TrayPlugin))
 
 struct _TrayPlugin {
   GObject parent_instance;
+  FlPluginRegistrar* registrar;
   FlMethodChannel* channel;
   AppIndicator* indicator;
   GtkWidget* menu;
+  GDBusConnection* session_bus;
+  guint session_bus_filter_id;
+  gchar* pending_activation_token;
 };
 
 G_DEFINE_TYPE(TrayPlugin, tray_plugin, g_object_get_type())
 
 static TrayPlugin* active_plugin = nullptr;
+
+struct MenuActivation {
+  int id;
+  bool activates_window;
+};
 
 static FlMethodResponse* respond(bool value) {
   return FL_METHOD_RESPONSE(
@@ -49,13 +66,112 @@ static bool bool_value(FlValue* map, const char* key, bool fallback) {
   return fl_value_get_bool(value);
 }
 
-static void on_menu_item_activate(GtkMenuItem* item, gpointer user_data) {
+static GtkWindow* get_window(TrayPlugin* self) {
+  FlView* view = fl_plugin_registrar_get_view(self->registrar);
+  if (view == nullptr) {
+    return nullptr;
+  }
+  return GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(view)));
+}
+
+static guint32 get_activation_timestamp(TrayPlugin* self) {
+  guint32 timestamp = gtk_get_current_event_time();
+#ifdef GDK_WINDOWING_X11
+  if (timestamp == GDK_CURRENT_TIME) {
+    GtkWindow* window = get_window(self);
+    GdkWindow* gdk_window =
+        window == nullptr ? nullptr : gtk_widget_get_window(GTK_WIDGET(window));
+    if (gdk_window != nullptr && GDK_IS_X11_WINDOW(gdk_window)) {
+      timestamp = gdk_x11_get_server_time(gdk_window);
+    }
+  }
+#endif
+  return timestamp;
+}
+
+static void activate_window(TrayPlugin* self) {
+  GtkWindow* window = get_window(self);
+  if (window == nullptr) {
+    return;
+  }
+
+#ifdef GDK_WINDOWING_WAYLAND
+  GdkDisplay* display = gtk_widget_get_display(GTK_WIDGET(window));
+  if (self->pending_activation_token != nullptr &&
+      GDK_IS_WAYLAND_DISPLAY(display)) {
+    gdk_wayland_display_set_startup_notification_id(
+        display, self->pending_activation_token);
+    g_clear_pointer(&self->pending_activation_token, g_free);
+    gtk_window_present(window);
+    return;
+  }
+#endif
+
+  const guint32 timestamp = get_activation_timestamp(self);
+  if (timestamp == GDK_CURRENT_TIME) {
+    gtk_window_present(window);
+  } else {
+    gtk_window_present_with_time(window, timestamp);
+  }
+}
+
+static gboolean set_pending_activation_token(gpointer data) {
+  if (active_plugin != nullptr) {
+    const gchar* token = static_cast<const gchar*>(data);
+    g_free(active_plugin->pending_activation_token);
+    active_plugin->pending_activation_token =
+        *token == '\0' ? nullptr : g_strdup(token);
+  }
+  return G_SOURCE_REMOVE;
+}
+
+static GDBusMessage* session_bus_filter(GDBusConnection* connection,
+                                        GDBusMessage* message,
+                                        gboolean incoming,
+                                        gpointer) {
+  if (!incoming ||
+      g_dbus_message_get_message_type(message) !=
+          G_DBUS_MESSAGE_TYPE_METHOD_CALL ||
+      g_strcmp0(g_dbus_message_get_interface(message),
+                "org.kde.StatusNotifierItem") != 0 ||
+      g_strcmp0(g_dbus_message_get_member(message),
+                "ProvideXdgActivationToken") != 0) {
+    return message;
+  }
+
+  GVariant* body = g_dbus_message_get_body(message);
+  if (body == nullptr || !g_variant_is_of_type(body, G_VARIANT_TYPE("(s)"))) {
+    return message;
+  }
+
+  const gchar* token = nullptr;
+  g_variant_get(body, "(&s)", &token);
+  g_main_context_invoke_full(nullptr, G_PRIORITY_DEFAULT,
+                             set_pending_activation_token, g_strdup(token),
+                             g_free);
+
+  g_autoptr(GDBusMessage) reply = g_dbus_message_new_method_reply(message);
+  g_dbus_connection_send_message(connection, reply,
+                                 G_DBUS_SEND_MESSAGE_FLAGS_NONE, nullptr,
+                                 nullptr);
+  g_object_unref(message);
+  return nullptr;
+}
+
+static void free_menu_activation(gpointer data, GClosure*) {
+  g_free(data);
+}
+
+static void on_menu_item_activate(GtkMenuItem*, gpointer user_data) {
   if (active_plugin == nullptr) {
     return;
   }
+  const auto* activation = static_cast<MenuActivation*>(user_data);
+  if (activation->activates_window) {
+    activate_window(active_plugin);
+  }
   g_autoptr(FlValue) arguments = fl_value_new_map();
-  fl_value_set_string_take(arguments, "id",
-                           fl_value_new_int(GPOINTER_TO_INT(user_data)));
+  fl_value_set_string_take(arguments, "id", fl_value_new_int(activation->id));
   fl_method_channel_invoke_method(active_plugin->channel, "onMenuItemSelected",
                                   arguments, nullptr, nullptr, nullptr);
 }
@@ -111,9 +227,13 @@ static GtkWidget* build_menu(FlValue* items) {
     if (dispatches) {
       FlValue* id = fl_value_lookup_string(entry, "id");
       if (id != nullptr && fl_value_get_type(id) == FL_VALUE_TYPE_INT) {
-        g_signal_connect(G_OBJECT(item), "activate",
-                         G_CALLBACK(on_menu_item_activate),
-                         GINT_TO_POINTER(fl_value_get_int(id)));
+        auto* activation = g_new0(MenuActivation, 1);
+        activation->id = static_cast<int>(fl_value_get_int(id));
+        activation->activates_window =
+            bool_value(entry, "activatesWindow", false);
+        g_signal_connect_data(G_OBJECT(item), "activate",
+                              G_CALLBACK(on_menu_item_activate), activation,
+                              free_menu_activation, G_CONNECT_DEFAULT);
       }
     }
 
@@ -232,7 +352,15 @@ static void tray_plugin_dispose(GObject* object) {
   TrayPlugin* self = TRAY_PLUGIN(object);
 
   release_tray(self);
+  if (self->session_bus != nullptr && self->session_bus_filter_id != 0) {
+    g_dbus_connection_remove_filter(self->session_bus,
+                                    self->session_bus_filter_id);
+    self->session_bus_filter_id = 0;
+  }
+  g_clear_object(&self->session_bus);
+  g_clear_pointer(&self->pending_activation_token, g_free);
   g_clear_object(&self->channel);
+  g_clear_object(&self->registrar);
 
   if (active_plugin == self) {
     active_plugin = nullptr;
@@ -246,9 +374,13 @@ static void tray_plugin_class_init(TrayPluginClass* klass) {
 }
 
 static void tray_plugin_init(TrayPlugin* self) {
+  self->registrar = nullptr;
   self->channel = nullptr;
   self->indicator = nullptr;
   self->menu = nullptr;
+  self->session_bus = nullptr;
+  self->session_bus_filter_id = 0;
+  self->pending_activation_token = nullptr;
 }
 
 static void method_call_cb(FlMethodChannel* channel,
@@ -264,6 +396,7 @@ void tray_plugin_register_with_registrar(FlPluginRegistrar* registrar) {
 
   TrayPlugin* plugin =
       TRAY_PLUGIN(g_object_new(tray_plugin_get_type(), nullptr));
+  plugin->registrar = FL_PLUGIN_REGISTRAR(g_object_ref(registrar));
 
   g_autoptr(FlStandardMethodCodec) codec = fl_standard_method_codec_new();
   plugin->channel = fl_method_channel_new(
@@ -271,6 +404,12 @@ void tray_plugin_register_with_registrar(FlPluginRegistrar* registrar) {
       FL_METHOD_CODEC(codec));
   fl_method_channel_set_method_call_handler(
       plugin->channel, method_call_cb, g_object_ref(plugin), g_object_unref);
+
+  plugin->session_bus = g_bus_get_sync(G_BUS_TYPE_SESSION, nullptr, nullptr);
+  if (plugin->session_bus != nullptr) {
+    plugin->session_bus_filter_id = g_dbus_connection_add_filter(
+        plugin->session_bus, session_bus_filter, nullptr, nullptr);
+  }
 
   active_plugin = plugin;
 

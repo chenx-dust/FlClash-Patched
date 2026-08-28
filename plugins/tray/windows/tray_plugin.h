@@ -15,6 +15,8 @@
 
 namespace tray {
 
+class TrayWindow;
+
 class TrayPlugin : public flutter::Plugin {
  public:
   static void RegisterWithRegistrar(flutter::PluginRegistrarWindows* registrar);
@@ -44,18 +46,16 @@ class TrayPlugin : public flutter::Plugin {
                                           UINT message,
                                           WPARAM wparam,
                                           LPARAM lparam);
-  HWND MainWindow();
-
-  flutter::PluginRegistrarWindows* registrar_;
   std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> channel_;
+  std::unique_ptr<TrayWindow> tray_window_;
 
   NOTIFYICONDATAW icon_data_{};
   HMENU menu_ = nullptr;
   std::wstring tool_tip_;
   bool visible_ = false;
+  bool menu_is_dark_ = false;
 
   UINT taskbar_created_message_ = 0;
-  int window_proc_id_ = -1;
 };
 
 }  // namespace tray

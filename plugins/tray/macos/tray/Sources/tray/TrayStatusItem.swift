@@ -7,6 +7,7 @@ final class TrayStatusItem {
 
     init?(onActivate: @escaping () -> Void, onMenuRequested: @escaping () -> Void) {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        statusItem.autosaveName = "\(Bundle.main.bundleIdentifier ?? "tray").statusItem"
         contentView = TrayContentView(
             onActivate: onActivate,
             onMenuRequested: onMenuRequested
@@ -75,10 +76,15 @@ private final class TrayContentView: NSView {
     private let stackView: NSStackView = {
         let stack = NSStackView()
         stack.orientation = .horizontal
-        stack.spacing = 6
+        stack.spacing = 2
         stack.distribution = .equalSpacing
         return stack
     }()
+
+    private var stackLeadingConstraint: NSLayoutConstraint!
+    private var stackTrailingConstraint: NSLayoutConstraint!
+    private var stackTopConstraint: NSLayoutConstraint!
+    private var stackBottomConstraint: NSLayoutConstraint!
 
     init(onActivate: @escaping () -> Void, onMenuRequested: @escaping () -> Void) {
         self.onActivate = onActivate
@@ -88,11 +94,25 @@ private final class TrayContentView: NSView {
         titleView.isHidden = true
         addSubview(stackView)
         stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackLeadingConstraint = stackView.leadingAnchor.constraint(
+            equalTo: leadingAnchor,
+            constant: 6
+        )
+        stackTrailingConstraint = stackView.trailingAnchor.constraint(
+            equalTo: trailingAnchor,
+            constant: -6
+        )
+        stackTopConstraint = stackView.topAnchor.constraint(
+            equalTo: topAnchor
+        )
+        stackBottomConstraint = stackView.bottomAnchor.constraint(
+            equalTo: bottomAnchor
+        )
         NSLayoutConstraint.activate([
-            stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
-            stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
-            stackView.topAnchor.constraint(equalTo: topAnchor, constant: 2),
-            stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2),
+            stackLeadingConstraint,
+            stackTrailingConstraint,
+            stackTopConstraint,
+            stackBottomConstraint,
         ])
 
         applyPosition("leading")
@@ -121,7 +141,14 @@ private final class TrayContentView: NSView {
     }
 
     func setTitle(_ title: String) -> Bool {
-        titleView.setTitle(title)
+        let changed = titleView.setTitle(title)
+        updateInsets(hasTitle: !title.isEmpty)
+        return changed
+    }
+
+    private func updateInsets(hasTitle: Bool) {
+        stackLeadingConstraint.constant = hasTitle ? 4 : 6
+        stackTrailingConstraint.constant = hasTitle ? -8 : -6
     }
 
     private func applyPosition(_ position: String) {

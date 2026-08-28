@@ -11,14 +11,14 @@ final class TrayTitleView: NSView {
 
     private let attributes: [NSAttributedString.Key: Any] = {
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.maximumLineHeight = 9
-        paragraphStyle.minimumLineHeight = 9
+        paragraphStyle.maximumLineHeight = 9.5
+        paragraphStyle.minimumLineHeight = 9.5
         paragraphStyle.alignment = .right
         paragraphStyle.lineBreakMode = .byClipping
         return [
             .paragraphStyle: paragraphStyle,
-            .font: NSFont.systemFont(ofSize: 8.75),
-            .foregroundColor: NSColor.labelColor,
+            .font: NSFont.systemFont(ofSize: 9, weight: .medium),
+            .foregroundColor: NSColor.textColor,
         ]
     }()
 

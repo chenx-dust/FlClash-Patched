@@ -1,4 +1,5 @@
 #include "tray_plugin.h"
+#include "tray_window.h"
 
 #include <strsafe.h>
 
@@ -10,6 +11,52 @@ namespace {
 
 constexpr UINT kTrayCallbackMessage = WM_USER + 1;
 constexpr UINT kTrayIconId = 1;
+
+using SetPreferredAppModeFunc = int(WINAPI*)(int mode);
+using AllowDarkModeForWindowFunc = BOOL(WINAPI*)(HWND hwnd, BOOL allow);
+using FlushMenuThemesFunc = void(WINAPI*)();
+
+enum PreferredAppMode {
+  kDefaultAppMode = 0,
+  kAllowDarkAppMode = 1,
+};
+
+SetPreferredAppModeFunc set_preferred_app_mode = nullptr;
+AllowDarkModeForWindowFunc allow_dark_mode_for_window = nullptr;
+FlushMenuThemesFunc flush_menu_themes = nullptr;
+bool dark_mode_apis_initialized = false;
+bool last_menu_is_dark = false;
+bool has_menu_brightness = false;
+
+void ApplyMenuBrightness(HWND window, bool is_dark) {
+  if (!dark_mode_apis_initialized) {
+    const HMODULE ux_theme = ::LoadLibraryW(L"uxtheme.dll");
+    if (ux_theme != nullptr) {
+      set_preferred_app_mode = reinterpret_cast<SetPreferredAppModeFunc>(
+          ::GetProcAddress(ux_theme, MAKEINTRESOURCEA(135)));
+      allow_dark_mode_for_window =
+          reinterpret_cast<AllowDarkModeForWindowFunc>(
+              ::GetProcAddress(ux_theme, MAKEINTRESOURCEA(133)));
+      flush_menu_themes = reinterpret_cast<FlushMenuThemesFunc>(
+          ::GetProcAddress(ux_theme, MAKEINTRESOURCEA(136)));
+    }
+    dark_mode_apis_initialized = true;
+  }
+
+  const bool changed = !has_menu_brightness || last_menu_is_dark != is_dark;
+  if (changed && set_preferred_app_mode != nullptr) {
+    set_preferred_app_mode(is_dark ? kAllowDarkAppMode : kDefaultAppMode);
+  }
+  if (allow_dark_mode_for_window != nullptr && window != nullptr) {
+    allow_dark_mode_for_window(window, is_dark ? TRUE : FALSE);
+  }
+  if (changed && flush_menu_themes != nullptr) {
+    flush_menu_themes();
+  }
+
+  last_menu_is_dark = is_dark;
+  has_menu_brightness = true;
+}
 
 const flutter::EncodableValue* ValueAt(const flutter::EncodableMap& map,
                                        const char* key) {
@@ -73,25 +120,24 @@ void TrayPlugin::RegisterWithRegistrar(
 TrayPlugin::TrayPlugin(
     flutter::PluginRegistrarWindows* registrar,
     std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> channel)
-    : registrar_(registrar), channel_(std::move(channel)) {
+    : channel_(std::move(channel)),
+      tray_window_(std::make_unique<TrayWindow>(
+          [this](HWND window, UINT message, WPARAM wparam, LPARAM lparam) {
+            return HandleWindowProc(window, message, wparam, lparam);
+          })) {
   channel_->SetMethodCallHandler([this](const auto& call, auto result) {
     HandleMethodCall(call, std::move(result));
   });
 
-  window_proc_id_ = registrar_->RegisterTopLevelWindowProcDelegate(
-      [this](HWND window, UINT message, WPARAM wparam, LPARAM lparam) {
-        return HandleWindowProc(window, message, wparam, lparam);
-      });
+  if (!tray_window_->Create()) {
+    tray_window_.reset();
+  }
   taskbar_created_message_ = ::RegisterWindowMessageW(L"TaskbarCreated");
 }
 
 TrayPlugin::~TrayPlugin() {
   Hide();
-  registrar_->UnregisterTopLevelWindowProcDelegate(window_proc_id_);
-}
-
-HWND TrayPlugin::MainWindow() {
-  return ::GetAncestor(registrar_->GetView()->GetNativeWindow(), GA_ROOT);
+  tray_window_.reset();
 }
 
 void TrayPlugin::SendEvent(const char* name,
@@ -101,8 +147,11 @@ void TrayPlugin::SendEvent(const char* name,
 }
 
 bool TrayPlugin::ApplyIcon(bool add) {
+  if (tray_window_ == nullptr || tray_window_->hwnd() == nullptr) {
+    return false;
+  }
   icon_data_.cbSize = sizeof(NOTIFYICONDATAW);
-  icon_data_.hWnd = MainWindow();
+  icon_data_.hWnd = tray_window_->hwnd();
   icon_data_.uID = kTrayIconId;
   icon_data_.uCallbackMessage = kTrayCallbackMessage;
   icon_data_.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
@@ -183,6 +232,8 @@ bool TrayPlugin::Show(const flutter::EncodableMap& arguments) {
   if (tool_tip != nullptr) {
     tool_tip_ = Utf16FromUtf8(*tool_tip);
   }
+  const std::string* brightness = StringAt(arguments, "brightness");
+  menu_is_dark_ = brightness != nullptr && *brightness == "dark";
 
   bool applied = ApplyIcon(!visible_);
   if (!applied && visible_) {
@@ -227,10 +278,14 @@ bool TrayPlugin::OpenMenu() {
     return false;
   }
 
-  const HWND window = MainWindow();
+  if (tray_window_ == nullptr || tray_window_->hwnd() == nullptr) {
+    return false;
+  }
+  const HWND window = tray_window_->hwnd();
   POINT cursor;
   ::GetCursorPos(&cursor);
 
+  ApplyMenuBrightness(window, menu_is_dark_);
   ::SetForegroundWindow(window);
   const int command = ::TrackPopupMenu(
       menu_, TPM_BOTTOMALIGN | TPM_LEFTALIGN | TPM_RETURNCMD | TPM_RIGHTBUTTON,
@@ -241,6 +296,8 @@ bool TrayPlugin::OpenMenu() {
     flutter::EncodableMap arguments;
     arguments[flutter::EncodableValue("id")] = flutter::EncodableValue(command);
     SendEvent("onMenuItemSelected", flutter::EncodableValue(arguments));
+  } else {
+    ::Shell_NotifyIconW(NIM_SETFOCUS, &icon_data_);
   }
   return true;
 }
