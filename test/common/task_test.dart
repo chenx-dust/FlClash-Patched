@@ -295,7 +295,13 @@ void main() {
         profilesPath: '/profiles',
         profileId: 9,
         rawConfig: {},
-        realPatchConfig: PatchClashConfig(),
+        realPatchConfig: PatchClashConfig(
+          dns: Dns(
+            proxyServerNameserverPolicy: {
+              'geosite:cn': 'https://dns.alidns.com/dns-query, tls://1.1.1.1',
+            },
+          ),
+        ),
         overrideDns: true,
         appendSystemDns: false,
         proxyGroups: [
@@ -321,6 +327,10 @@ void main() {
 
     expect(config['dns']['enable'], true);
     expect(config['dns']['nameserver'], isNot(contains('system://')));
+    expect(config['dns']['proxy-server-nameserver-policy']['geosite:cn'], [
+      'https://dns.alidns.com/dns-query',
+      'tls://1.1.1.1',
+    ]);
     expect(config['proxy-groups'], hasLength(1));
     expect(config['rules'], ['DOMAIN,custom.example,DIRECT']);
   });

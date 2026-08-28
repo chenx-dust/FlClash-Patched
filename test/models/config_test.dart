@@ -262,6 +262,11 @@ void main() {
         externalController: ExternalControllerStatus.open,
         geodataLoader: GeodataLoader.memconservative,
         geositeMatcher: GeositeMatcher.mph,
+        dns: Dns(
+          proxyServerNameserverPolicy: {
+            'geosite:cn': 'https://dns.alidns.com/dns-query',
+          },
+        ),
       );
 
       final restored = roundTrip(
@@ -276,6 +281,9 @@ void main() {
       expect(restored.externalController, ExternalControllerStatus.open);
       expect(restored.geodataLoader, GeodataLoader.memconservative);
       expect(restored.geositeMatcher, GeositeMatcher.mph);
+      expect(restored.dns.proxyServerNameserverPolicy, {
+        'geosite:cn': 'https://dns.alidns.com/dns-query',
+      });
     });
   });
 

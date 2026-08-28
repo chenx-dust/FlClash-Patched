@@ -214,11 +214,17 @@ Future<({String yaml, String md5})> _makeRealProfileTask(
     for (final entry in dns.nameserverPolicy.entries) {
       nameserverPolicy[entry.key] = entry.value.splitByMultipleSeparators;
     }
+    final proxyServerNameserverPolicy = <String, dynamic>{};
+    for (final entry in dns.proxyServerNameserverPolicy.entries) {
+      proxyServerNameserverPolicy[entry.key] =
+          entry.value.splitByMultipleSeparators;
+    }
     // Merged, not assigned: the model only covers the keys FlClash can edit.
     rawConfig['dns'] = {
       ...rawDns,
       ...dns.toJson(),
       'nameserver-policy': nameserverPolicy,
+      'proxy-server-nameserver-policy': proxyServerNameserverPolicy,
     };
   }
   if (appendSystemDns) {
