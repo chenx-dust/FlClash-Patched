@@ -27,15 +27,17 @@ class SubscriptionInfoView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final info = subscriptionInfo;
-    if (info == null || info.total == 0) {
+    if (info == null) {
       return const SizedBox.shrink();
     }
     final use = info.upload + info.download;
     final total = info.total;
-    final progress = (use / total).clamp(0.0, 1.0).toDouble();
+    final progress = total == 0
+        ? 0.0
+        : (use / total).clamp(0.0, 1.0).toDouble();
 
     final useShow = use.traffic.show;
-    final totalShow = total.traffic.show;
+    final totalShow = total == 0 ? '∞' : total.traffic.show;
     final expireShow = info.expire != 0
         ? DateTime.fromMillisecondsSinceEpoch(info.expire * 1000).show
         : context.appLocalizations.infiniteTime;

@@ -19,7 +19,7 @@ class LogLevelItem extends ConsumerWidget {
       leading: const Icon(Icons.info_outline),
       title: (l) => l.logLevel,
       options: LogLevel.values,
-      textBuilder: (logLevel) => logLevel.name,
+      textBuilder: (logLevel) => logLevel.name.toUpperCase(),
       selector: patchClashConfigProvider.select((state) => state.logLevel),
       onChanged: (ref, value) => ref
           .read(patchClashConfigProvider.notifier)

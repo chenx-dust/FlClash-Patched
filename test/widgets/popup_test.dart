@@ -319,6 +319,54 @@ void main() {
     expect(find.text('run'), findsNothing);
   });
 
+  testWidgets('a selectable item toggles without closing the popup', (
+    tester,
+  ) async {
+    var pressed = 0;
+    final open = await pumpMenu(tester, [
+      CommonPopupMenuItem(
+        label: 'toggle',
+        closeOnPressed: false,
+        onPressed: () => pressed++,
+      ),
+    ]);
+    open();
+    await tester.pumpAndSettle();
+
+    expect(
+      tester
+          .widget<Opacity>(
+            find
+                .ancestor(
+                  of: find.byIcon(Icons.check),
+                  matching: find.byType(Opacity),
+                )
+                .first,
+          )
+          .opacity,
+      0,
+    );
+
+    await tester.tap(find.text('toggle'));
+    await tester.pumpAndSettle();
+
+    expect(pressed, 1);
+    expect(find.text('toggle'), findsOneWidget);
+    expect(
+      tester
+          .widget<Opacity>(
+            find
+                .ancestor(
+                  of: find.byIcon(Icons.check),
+                  matching: find.byType(Opacity),
+                )
+                .first,
+          )
+          .opacity,
+      1,
+    );
+  });
+
   testWidgets('a danger item keeps the error color off its background', (
     tester,
   ) async {

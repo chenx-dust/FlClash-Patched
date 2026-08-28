@@ -63,7 +63,9 @@ abstract class AppBarState with _$AppBarState {
 abstract class AppBarSearchState with _$AppBarSearchState {
   const factory AppBarSearchState({
     required Function(String) onSearch,
+    Function(bool)? onRegexChange,
     @Default(true) bool autoAddSearch,
+    @Default(false) bool useRegex,
     @Default(null) String? query,
   }) = _AppBarSearchState;
 }
@@ -97,6 +99,7 @@ abstract class NetworkDetectionState with _$NetworkDetectionState {
   const factory NetworkDetectionState({
     required bool isLoading,
     required IpInfo? ipInfo,
+    @Default(true) bool isIpVisible,
   }) = _NetworkDetectionState;
 }
 

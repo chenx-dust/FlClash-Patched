@@ -15,15 +15,39 @@ void main() {
     appLocalizations = await AppLocalizations.load(const Locale('en'));
   });
 
-  test('maps badResponse DioException to the network exception message', () {
+  test('includes status for a badResponse DioException', () {
     final message = networkErrorMessage(
       DioException(
         requestOptions: RequestOptions(path: '/'),
         type: DioExceptionType.badResponse,
+        response: Response(
+          requestOptions: RequestOptions(path: '/'),
+          statusCode: 503,
+        ),
       ),
       appLocalizations,
     );
-    expect(message, appLocalizations.networkException);
+    expect(message, '${appLocalizations.networkException} [503]');
+  });
+
+  test('includes a text response body for a badResponse DioException', () {
+    final options = RequestOptions(path: '/');
+    final message = networkErrorMessage(
+      DioException(
+        requestOptions: options,
+        type: DioExceptionType.badResponse,
+        response: Response(
+          requestOptions: options,
+          statusCode: 403,
+          data: 'access denied',
+        ),
+      ),
+      appLocalizations,
+    );
+    expect(
+      message,
+      '${appLocalizations.networkException} [403]\naccess denied',
+    );
   });
 
   test(

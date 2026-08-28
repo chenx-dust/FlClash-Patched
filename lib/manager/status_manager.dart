@@ -9,6 +9,7 @@ import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/state.dart';
 import 'package:fl_clash/widgets/theme.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const _actionMinDuration = Duration(seconds: 6);
@@ -441,18 +442,27 @@ class _MessageCard extends StatelessWidget {
           onDismiss(message.id, swiped: true);
         },
         child: Card(
+          clipBehavior: Clip.antiAlias,
           margin: EdgeInsets.zero,
           shape: AppShape.lg,
           elevation: 6,
           color: message.level.containerColor(context),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minHeight: _messageMinHeight,
-              maxWidth: _messageMaxWidth,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: _MessageContent(message: message, onDismiss: onDismiss),
+          child: InkWell(
+            onLongPress: () {
+              Clipboard.setData(ClipboardData(text: message.text));
+            },
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minHeight: _messageMinHeight,
+                maxWidth: _messageMaxWidth,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: _MessageContent(message: message, onDismiss: onDismiss),
+              ),
             ),
           ),
         ),
@@ -472,36 +482,80 @@ class _MessageContent extends StatelessWidget {
     final actionState = message.actionState;
     final level = message.level;
     final icon = level.icon;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (icon != null) ...[
-          Icon(icon, size: 20, color: level.iconColor(context)),
-          const SizedBox(width: 12),
-        ],
-        Flexible(
-          child: Text(
-            message.text,
-            maxLines: 3,
-            style: context.textTheme.labelLarge?.copyWith(
-              color: level.contentColor(context),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final showControls = constraints.maxWidth >= 440;
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 20, color: level.iconColor(context)),
+              const SizedBox(width: 12),
+            ],
+            Flexible(
+              child: Text(
+                message.text,
+                maxLines: 3,
+                style: context.textTheme.labelLarge?.copyWith(
+                  color: level.contentColor(context),
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        if (actionState != null) ...[
-          const SizedBox(width: 16),
-          CommonMinFilledButtonTheme(
-            child: FilledButton.tonal(
-              onPressed: () {
-                onDismiss(message.id);
-                actionState.action();
-              },
-              child: Text(actionState.actionText),
-            ),
-          ),
-        ],
-      ],
+            if (actionState != null) ...[
+              const SizedBox(width: 16),
+              CommonMinFilledButtonTheme(
+                child: FilledButton.tonal(
+                  onPressed: () {
+                    onDismiss(message.id);
+                    actionState.action();
+                  },
+                  child: Text(actionState.actionText),
+                ),
+              ),
+            ],
+            if (showControls && actionState == null) ...[
+              const SizedBox(width: 8),
+              _MessageIconButton(
+                icon: Icons.copy,
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: message.text));
+                },
+              ),
+            ],
+            if (showControls) ...[
+              const SizedBox(width: 4),
+              _MessageIconButton(
+                icon: Icons.close,
+                onPressed: () => onDismiss(message.id),
+              ),
+            ],
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _MessageIconButton extends StatelessWidget {
+  const _MessageIconButton({required this.icon, required this.onPressed});
+
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      style: IconButton.styleFrom(
+        fixedSize: const Size.square(32),
+        padding: EdgeInsets.zero,
+        shape: const CircleBorder(),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+      visualDensity: VisualDensity.compact,
+      iconSize: 20,
+      onPressed: onPressed,
+      icon: Icon(icon),
     );
   }
 }

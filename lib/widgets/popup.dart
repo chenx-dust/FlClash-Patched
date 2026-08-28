@@ -299,6 +299,8 @@ class CommonPopupMenuItem {
     this.icon,
     this.onPressed,
     this.danger = false,
+    this.selected = false,
+    this.closeOnPressed = true,
     this.subItems = const [],
   });
 
@@ -306,6 +308,8 @@ class CommonPopupMenuItem {
   final IconData? icon;
   final VoidCallback? onPressed;
   final bool danger;
+  final bool selected;
+  final bool closeOnPressed;
   final List<CommonPopupMenuItem> subItems;
 }
 
@@ -372,12 +376,23 @@ class _CommonPopupMenuState extends State<CommonPopupMenu>
   );
 
   final List<_MenuStep> _path = [];
+  final Set<CommonPopupMenuItem> _selectedItems = Set.identity();
   bool _closing = false;
 
   @override
   void initState() {
     super.initState();
+    _collectSelectedItems(widget.items);
     _controller.addStatusListener(_handleStatusChanged);
+  }
+
+  void _collectSelectedItems(List<CommonPopupMenuItem> items) {
+    for (final item in items) {
+      if (item.selected) {
+        _selectedItems.add(item);
+      }
+      _collectSelectedItems(item.subItems);
+    }
   }
 
   @override
@@ -488,8 +503,17 @@ class _CommonPopupMenuState extends State<CommonPopupMenu>
     _controller.reverse();
   }
 
-  void _select(VoidCallback onPressed) {
-    Navigator.of(context).pop();
+  void _select(CommonPopupMenuItem item, VoidCallback onPressed) {
+    if (item.closeOnPressed) {
+      Navigator.of(context).pop();
+      onPressed();
+      return;
+    }
+    setState(() {
+      if (!_selectedItems.remove(item)) {
+        _selectedItems.add(item);
+      }
+    });
     onPressed();
   }
 
@@ -503,6 +527,8 @@ class _CommonPopupMenuState extends State<CommonPopupMenu>
     final enabled = onTap != null;
     final color = item.danger ? colorScheme.error : colorScheme.onSurface;
     final foregroundColor = enabled ? color : color.opacity30;
+    final selectable = !item.closeOnPressed || item.selected;
+    final selected = _selectedItems.contains(item);
     Widget? arrow;
     if (item.subItems.isNotEmpty) {
       arrow = Icon(
@@ -525,6 +551,20 @@ class _CommonPopupMenuState extends State<CommonPopupMenu>
         padding: arrow != null ? _itemArrowPadding : _itemPadding,
         child: Row(
           children: [
+            if (selectable) ...[
+              SizedBox(
+                width: _itemIconSize,
+                child: Opacity(
+                  opacity: selected ? 1 : 0,
+                  child: Icon(
+                    Icons.check,
+                    size: _itemIconSize,
+                    color: foregroundColor,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+            ],
             if (item.icon != null) ...[
               Icon(item.icon, size: _itemIconSize, color: foregroundColor),
               const SizedBox(width: 12),
@@ -561,7 +601,7 @@ class _CommonPopupMenuState extends State<CommonPopupMenu>
     return _buildRow(
       context,
       item: item,
-      onTap: onPressed == null ? null : () => _select(onPressed),
+      onTap: onPressed == null ? null : () => _select(item, onPressed),
     );
   }
 

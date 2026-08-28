@@ -66,6 +66,28 @@ void main() {
     expect(_FakeInterface('en1', const []).includesIPv4, isFalse);
   });
 
+  group('interfaceType', () {
+    test('classifies physical interfaces', () {
+      for (final name in ['wlan0', 'Wi-Fi', 'Ethernet', 'en0', 'enp2s0']) {
+        expect(
+          _FakeInterface(name, const []).interfaceType,
+          NetworkInterfaceType.physical,
+          reason: name,
+        );
+      }
+    });
+
+    test('classifies known virtual interfaces', () {
+      for (final name in ['Clash', 'Meta', 'Tailscale', 'Docker', 'tap0']) {
+        expect(
+          _FakeInterface(name, const []).interfaceType,
+          NetworkInterfaceType.virtual,
+          reason: name,
+        );
+      }
+    });
+  });
+
   test('isIPv4 reads the address type', () {
     expect(_v4('10.0.0.2').isIPv4, isTrue);
     expect(_v6('fe80::1').isIPv4, isFalse);
@@ -126,6 +148,36 @@ void main() {
       await getLocalIpAddress();
 
       expect(asked, isFalse);
+    });
+  });
+
+  group('getLocalNetworkInterfaces', () {
+    test('sorts physical before unknown and virtual interfaces', () async {
+      listing([
+        _FakeInterface('tap0', [_v4('10.0.0.3')]),
+        _FakeInterface('utun0', [_v4('10.0.0.2')]),
+        _FakeInterface('Ethernet', [_v4('192.168.1.2')]),
+      ]);
+
+      final interfaces = await getLocalNetworkInterfaces();
+
+      expect(interfaces.map((interface) => interface.name), [
+        'Ethernet',
+        'utun0',
+        'tap0',
+      ]);
+    });
+
+    test('removes interfaces without addresses', () async {
+      listing([
+        _FakeInterface('Ethernet', const []),
+        _FakeInterface('wlan0', [_v4('192.168.1.2')]),
+      ]);
+
+      expect(
+        (await getLocalNetworkInterfaces()).map((interface) => interface.name),
+        ['wlan0'],
+      );
     });
   });
 }

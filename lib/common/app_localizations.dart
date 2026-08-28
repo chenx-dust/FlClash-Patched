@@ -1,9 +1,11 @@
+import 'dart:convert';
+import 'dart:typed_data';
+import 'dart:ui';
+
 import 'package:dio/dio.dart';
 import 'package:fl_clash/core/desktop/launch_policy.dart';
 import 'package:fl_clash/core/method.dart';
 import 'package:fl_clash/l10n/l10n.dart';
-
-import 'dart:ui';
 
 final currentAppLocalizations = AppLocalizations.current;
 
@@ -17,7 +19,11 @@ String? networkErrorMessage(Object error, AppLocalizations appLocalizations) {
   }
   if (error is DioException) {
     if (error.type == DioExceptionType.badResponse) {
-      return appLocalizations.networkException;
+      final response = error.response;
+      final statusCode = response?.statusCode ?? 0;
+      final body = _responseBody(response?.data);
+      final detail = body.isNotEmpty ? '[$statusCode]\n$body' : '[$statusCode]';
+      return '${appLocalizations.networkException} $detail';
     }
     final message = appLocalizations.unknownNetworkError;
     final detail = error.error?.toString().trim();
@@ -38,6 +44,18 @@ String? coreLaunchBlockedMessage(
       appLocalizations.coreBlockedBySmartAppControlTip,
     _ => appLocalizations.coreBlockedByPolicyTip(launchOsError(error)!),
   };
+}
+
+String _responseBody(Object? data) {
+  if (data == null) return '';
+  if (data is Uint8List) {
+    try {
+      return utf8.decode(data).trim();
+    } on FormatException {
+      return '';
+    }
+  }
+  return data.toString().trim();
 }
 
 String userFacingErrorMessage(Object error, AppLocalizations appLocalizations) {

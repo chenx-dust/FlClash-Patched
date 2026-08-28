@@ -1129,6 +1129,21 @@ class AppLocalizations {
     );
   }
 
+  /// `Filter`
+  String get filter {
+    return Intl.message('Filter', name: 'filter', desc: '', args: []);
+  }
+
+  /// `No filter conditions`
+  String get noFilterCondition {
+    return Intl.message(
+      'No filter conditions',
+      name: 'noFilterCondition',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Some apps can bypass VPN when turned on`
   String get allowBypassDesc {
     return Intl.message(
@@ -1572,6 +1587,11 @@ class AppLocalizations {
   /// `Source`
   String get source {
     return Intl.message('Source', name: 'source', desc: '', args: []);
+  }
+
+  /// `Level`
+  String get level {
+    return Intl.message('Level', name: 'level', desc: '', args: []);
   }
 
   /// `Action`

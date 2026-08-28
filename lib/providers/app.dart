@@ -7,7 +7,6 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/core.dart';
-import 'package:fl_clash/providers/state.dart';
 import 'package:flutter/services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:wifi_ssid/wifi_ssid.dart';
@@ -346,6 +345,14 @@ class Query extends _$Query with AutoDisposeNotifierMixin {
   }
 }
 
+@riverpod
+class SearchUseRegex extends _$SearchUseRegex with AutoDisposeNotifierMixin {
+  @override
+  bool build(QueryTag tag) {
+    return false;
+  }
+}
+
 @Riverpod(keepAlive: true)
 class Loading extends _$Loading with AutoDisposeNotifierMixin {
   DateTime? _start;
@@ -474,7 +481,6 @@ class NetworkDetection extends _$NetworkDetection
     with AutoDisposeNotifierMixin {
   static const _timeoutDisplayDelay = Duration(seconds: 2);
 
-  bool? _preIsStart;
   CancelToken? _cancelToken;
   Timer? _timeoutTimer;
   int _checkVersion = 0;
@@ -493,20 +499,19 @@ class NetworkDetection extends _$NetworkDetection
     }, duration: commonDuration);
   }
 
+  void toggleIpVisibility() {
+    state = state.copyWith(isIpVisible: !state.isIpVisible);
+  }
+
   Future<void> _checkIp() async {
     final isInit = ref.read(initProvider);
     if (!isInit) {
-      return;
-    }
-    final isStart = ref.read(isStartProvider);
-    if (!isStart && _preIsStart == false && state.ipInfo != null) {
       return;
     }
     final cancelToken = CancelToken();
     final version = _resetCheckSession(cancelToken);
     commonPrint.log('checkIp start');
     state = state.copyWith(isLoading: true, ipInfo: null);
-    _preIsStart = isStart;
     final res = await request.checkIp(cancelToken: cancelToken);
     commonPrint.log('checkIp res: $res');
 

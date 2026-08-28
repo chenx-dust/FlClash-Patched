@@ -297,7 +297,24 @@ void main() {
     await tester.pump();
 
     expect(find.text('plain'), findsOneWidget);
-    expect(find.byType(Icon), findsNothing);
+    expect(find.byIcon(Icons.error_outline), findsNothing);
+    expect(find.byIcon(Icons.warning_amber_rounded), findsNothing);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('a wide message exposes copy and close controls', (tester) async {
+    final state = await _pumpStatusManager(tester);
+    state.message('controlled');
+    await tester.pumpAndSettle();
+
+    expect(find.byIcon(Icons.copy), findsOneWidget);
+    expect(find.byIcon(Icons.close), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.close));
+    await tester.pumpAndSettle();
+
+    expect(find.text('controlled'), findsNothing);
 
     await tester.pumpWidget(const SizedBox.shrink());
   });

@@ -1682,7 +1682,7 @@ $AppBarEditStateCopyWith<$Res>? get editState {
 /// @nodoc
 mixin _$AppBarSearchState {
 
-  Function(String) get onSearch; bool get autoAddSearch; String? get query;
+  Function(String) get onSearch;  Function(bool)? get onRegexChange; bool get autoAddSearch; bool get useRegex; String? get query;
 /// Create a copy of AppBarSearchState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1693,16 +1693,16 @@ $AppBarSearchStateCopyWith<AppBarSearchState> get copyWith => _$AppBarSearchStat
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppBarSearchState&&(identical(other.onSearch, onSearch) || other.onSearch == onSearch)&&(identical(other.autoAddSearch, autoAddSearch) || other.autoAddSearch == autoAddSearch)&&(identical(other.query, query) || other.query == query));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppBarSearchState&&(identical(other.onSearch, onSearch) || other.onSearch == onSearch)&&(identical(other.onRegexChange, onRegexChange) || other.onRegexChange == onRegexChange)&&(identical(other.autoAddSearch, autoAddSearch) || other.autoAddSearch == autoAddSearch)&&(identical(other.useRegex, useRegex) || other.useRegex == useRegex)&&(identical(other.query, query) || other.query == query));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,onSearch,autoAddSearch,query);
+int get hashCode => Object.hash(runtimeType,onSearch,onRegexChange,autoAddSearch,useRegex,query);
 
 @override
 String toString() {
-  return 'AppBarSearchState(onSearch: $onSearch, autoAddSearch: $autoAddSearch, query: $query)';
+  return 'AppBarSearchState(onSearch: $onSearch, onRegexChange: $onRegexChange, autoAddSearch: $autoAddSearch, useRegex: $useRegex, query: $query)';
 }
 
 
@@ -1713,7 +1713,7 @@ abstract mixin class $AppBarSearchStateCopyWith<$Res>  {
   factory $AppBarSearchStateCopyWith(AppBarSearchState value, $Res Function(AppBarSearchState) _then) = _$AppBarSearchStateCopyWithImpl;
 @useResult
 $Res call({
-  Function(String) onSearch, bool autoAddSearch, String? query
+  Function(String) onSearch,  Function(bool)? onRegexChange, bool autoAddSearch, bool useRegex, String? query
 });
 
 
@@ -1730,10 +1730,12 @@ class _$AppBarSearchStateCopyWithImpl<$Res>
 
 /// Create a copy of AppBarSearchState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? onSearch = null,Object? autoAddSearch = null,Object? query = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? onSearch = null,Object? onRegexChange = freezed,Object? autoAddSearch = null,Object? useRegex = null,Object? query = freezed,}) {
   return _then(_self.copyWith(
 onSearch: null == onSearch ? _self.onSearch : onSearch // ignore: cast_nullable_to_non_nullable
-as  Function(String),autoAddSearch: null == autoAddSearch ? _self.autoAddSearch : autoAddSearch // ignore: cast_nullable_to_non_nullable
+as  Function(String),onRegexChange: freezed == onRegexChange ? _self.onRegexChange : onRegexChange // ignore: cast_nullable_to_non_nullable
+as  Function(bool)?,autoAddSearch: null == autoAddSearch ? _self.autoAddSearch : autoAddSearch // ignore: cast_nullable_to_non_nullable
+as bool,useRegex: null == useRegex ? _self.useRegex : useRegex // ignore: cast_nullable_to_non_nullable
 as bool,query: freezed == query ? _self.query : query // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
@@ -1820,10 +1822,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(  Function(String) onSearch,  bool autoAddSearch,  String? query)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(  Function(String) onSearch,   Function(bool)? onRegexChange,  bool autoAddSearch,  bool useRegex,  String? query)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AppBarSearchState() when $default != null:
-return $default(_that.onSearch,_that.autoAddSearch,_that.query);case _:
+return $default(_that.onSearch,_that.onRegexChange,_that.autoAddSearch,_that.useRegex,_that.query);case _:
   return orElse();
 
 }
@@ -1841,10 +1843,10 @@ return $default(_that.onSearch,_that.autoAddSearch,_that.query);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(  Function(String) onSearch,  bool autoAddSearch,  String? query)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(  Function(String) onSearch,   Function(bool)? onRegexChange,  bool autoAddSearch,  bool useRegex,  String? query)  $default,) {final _that = this;
 switch (_that) {
 case _AppBarSearchState():
-return $default(_that.onSearch,_that.autoAddSearch,_that.query);case _:
+return $default(_that.onSearch,_that.onRegexChange,_that.autoAddSearch,_that.useRegex,_that.query);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1861,10 +1863,10 @@ return $default(_that.onSearch,_that.autoAddSearch,_that.query);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(  Function(String) onSearch,  bool autoAddSearch,  String? query)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(  Function(String) onSearch,   Function(bool)? onRegexChange,  bool autoAddSearch,  bool useRegex,  String? query)?  $default,) {final _that = this;
 switch (_that) {
 case _AppBarSearchState() when $default != null:
-return $default(_that.onSearch,_that.autoAddSearch,_that.query);case _:
+return $default(_that.onSearch,_that.onRegexChange,_that.autoAddSearch,_that.useRegex,_that.query);case _:
   return null;
 
 }
@@ -1876,11 +1878,13 @@ return $default(_that.onSearch,_that.autoAddSearch,_that.query);case _:
 
 
 class _AppBarSearchState implements AppBarSearchState {
-  const _AppBarSearchState({required this.onSearch, this.autoAddSearch = true, this.query = null});
+  const _AppBarSearchState({required this.onSearch, this.onRegexChange, this.autoAddSearch = true, this.useRegex = false, this.query = null});
   
 
 @override final   Function(String) onSearch;
+@override final   Function(bool)? onRegexChange;
 @override@JsonKey() final  bool autoAddSearch;
+@override@JsonKey() final  bool useRegex;
 @override@JsonKey() final  String? query;
 
 /// Create a copy of AppBarSearchState
@@ -1893,16 +1897,16 @@ _$AppBarSearchStateCopyWith<_AppBarSearchState> get copyWith => __$AppBarSearchS
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppBarSearchState&&(identical(other.onSearch, onSearch) || other.onSearch == onSearch)&&(identical(other.autoAddSearch, autoAddSearch) || other.autoAddSearch == autoAddSearch)&&(identical(other.query, query) || other.query == query));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppBarSearchState&&(identical(other.onSearch, onSearch) || other.onSearch == onSearch)&&(identical(other.onRegexChange, onRegexChange) || other.onRegexChange == onRegexChange)&&(identical(other.autoAddSearch, autoAddSearch) || other.autoAddSearch == autoAddSearch)&&(identical(other.useRegex, useRegex) || other.useRegex == useRegex)&&(identical(other.query, query) || other.query == query));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,onSearch,autoAddSearch,query);
+int get hashCode => Object.hash(runtimeType,onSearch,onRegexChange,autoAddSearch,useRegex,query);
 
 @override
 String toString() {
-  return 'AppBarSearchState(onSearch: $onSearch, autoAddSearch: $autoAddSearch, query: $query)';
+  return 'AppBarSearchState(onSearch: $onSearch, onRegexChange: $onRegexChange, autoAddSearch: $autoAddSearch, useRegex: $useRegex, query: $query)';
 }
 
 
@@ -1913,7 +1917,7 @@ abstract mixin class _$AppBarSearchStateCopyWith<$Res> implements $AppBarSearchS
   factory _$AppBarSearchStateCopyWith(_AppBarSearchState value, $Res Function(_AppBarSearchState) _then) = __$AppBarSearchStateCopyWithImpl;
 @override @useResult
 $Res call({
-  Function(String) onSearch, bool autoAddSearch, String? query
+  Function(String) onSearch,  Function(bool)? onRegexChange, bool autoAddSearch, bool useRegex, String? query
 });
 
 
@@ -1930,10 +1934,12 @@ class __$AppBarSearchStateCopyWithImpl<$Res>
 
 /// Create a copy of AppBarSearchState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? onSearch = null,Object? autoAddSearch = null,Object? query = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? onSearch = null,Object? onRegexChange = freezed,Object? autoAddSearch = null,Object? useRegex = null,Object? query = freezed,}) {
   return _then(_AppBarSearchState(
 onSearch: null == onSearch ? _self.onSearch : onSearch // ignore: cast_nullable_to_non_nullable
-as  Function(String),autoAddSearch: null == autoAddSearch ? _self.autoAddSearch : autoAddSearch // ignore: cast_nullable_to_non_nullable
+as  Function(String),onRegexChange: freezed == onRegexChange ? _self.onRegexChange : onRegexChange // ignore: cast_nullable_to_non_nullable
+as  Function(bool)?,autoAddSearch: null == autoAddSearch ? _self.autoAddSearch : autoAddSearch // ignore: cast_nullable_to_non_nullable
+as bool,useRegex: null == useRegex ? _self.useRegex : useRegex // ignore: cast_nullable_to_non_nullable
 as bool,query: freezed == query ? _self.query : query // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
@@ -2731,7 +2737,7 @@ as int?,
 /// @nodoc
 mixin _$NetworkDetectionState {
 
- bool get isLoading; IpInfo? get ipInfo;
+ bool get isLoading; IpInfo? get ipInfo; bool get isIpVisible;
 /// Create a copy of NetworkDetectionState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -2742,16 +2748,16 @@ $NetworkDetectionStateCopyWith<NetworkDetectionState> get copyWith => _$NetworkD
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is NetworkDetectionState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.ipInfo, ipInfo) || other.ipInfo == ipInfo));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NetworkDetectionState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.ipInfo, ipInfo) || other.ipInfo == ipInfo)&&(identical(other.isIpVisible, isIpVisible) || other.isIpVisible == isIpVisible));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,ipInfo);
+int get hashCode => Object.hash(runtimeType,isLoading,ipInfo,isIpVisible);
 
 @override
 String toString() {
-  return 'NetworkDetectionState(isLoading: $isLoading, ipInfo: $ipInfo)';
+  return 'NetworkDetectionState(isLoading: $isLoading, ipInfo: $ipInfo, isIpVisible: $isIpVisible)';
 }
 
 
@@ -2762,7 +2768,7 @@ abstract mixin class $NetworkDetectionStateCopyWith<$Res>  {
   factory $NetworkDetectionStateCopyWith(NetworkDetectionState value, $Res Function(NetworkDetectionState) _then) = _$NetworkDetectionStateCopyWithImpl;
 @useResult
 $Res call({
- bool isLoading, IpInfo? ipInfo
+ bool isLoading, IpInfo? ipInfo, bool isIpVisible
 });
 
 
@@ -2779,11 +2785,12 @@ class _$NetworkDetectionStateCopyWithImpl<$Res>
 
 /// Create a copy of NetworkDetectionState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? ipInfo = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? ipInfo = freezed,Object? isIpVisible = null,}) {
   return _then(_self.copyWith(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,ipInfo: freezed == ipInfo ? _self.ipInfo : ipInfo // ignore: cast_nullable_to_non_nullable
-as IpInfo?,
+as IpInfo?,isIpVisible: null == isIpVisible ? _self.isIpVisible : isIpVisible // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 /// Create a copy of NetworkDetectionState
@@ -2880,10 +2887,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  IpInfo? ipInfo)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  IpInfo? ipInfo,  bool isIpVisible)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _NetworkDetectionState() when $default != null:
-return $default(_that.isLoading,_that.ipInfo);case _:
+return $default(_that.isLoading,_that.ipInfo,_that.isIpVisible);case _:
   return orElse();
 
 }
@@ -2901,10 +2908,10 @@ return $default(_that.isLoading,_that.ipInfo);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  IpInfo? ipInfo)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  IpInfo? ipInfo,  bool isIpVisible)  $default,) {final _that = this;
 switch (_that) {
 case _NetworkDetectionState():
-return $default(_that.isLoading,_that.ipInfo);case _:
+return $default(_that.isLoading,_that.ipInfo,_that.isIpVisible);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -2921,10 +2928,10 @@ return $default(_that.isLoading,_that.ipInfo);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  IpInfo? ipInfo)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  IpInfo? ipInfo,  bool isIpVisible)?  $default,) {final _that = this;
 switch (_that) {
 case _NetworkDetectionState() when $default != null:
-return $default(_that.isLoading,_that.ipInfo);case _:
+return $default(_that.isLoading,_that.ipInfo,_that.isIpVisible);case _:
   return null;
 
 }
@@ -2936,11 +2943,12 @@ return $default(_that.isLoading,_that.ipInfo);case _:
 
 
 class _NetworkDetectionState implements NetworkDetectionState {
-  const _NetworkDetectionState({required this.isLoading, required this.ipInfo});
+  const _NetworkDetectionState({required this.isLoading, required this.ipInfo, this.isIpVisible = true});
   
 
 @override final  bool isLoading;
 @override final  IpInfo? ipInfo;
+@override@JsonKey() final  bool isIpVisible;
 
 /// Create a copy of NetworkDetectionState
 /// with the given fields replaced by the non-null parameter values.
@@ -2952,16 +2960,16 @@ _$NetworkDetectionStateCopyWith<_NetworkDetectionState> get copyWith => __$Netwo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NetworkDetectionState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.ipInfo, ipInfo) || other.ipInfo == ipInfo));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NetworkDetectionState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.ipInfo, ipInfo) || other.ipInfo == ipInfo)&&(identical(other.isIpVisible, isIpVisible) || other.isIpVisible == isIpVisible));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,ipInfo);
+int get hashCode => Object.hash(runtimeType,isLoading,ipInfo,isIpVisible);
 
 @override
 String toString() {
-  return 'NetworkDetectionState(isLoading: $isLoading, ipInfo: $ipInfo)';
+  return 'NetworkDetectionState(isLoading: $isLoading, ipInfo: $ipInfo, isIpVisible: $isIpVisible)';
 }
 
 
@@ -2972,7 +2980,7 @@ abstract mixin class _$NetworkDetectionStateCopyWith<$Res> implements $NetworkDe
   factory _$NetworkDetectionStateCopyWith(_NetworkDetectionState value, $Res Function(_NetworkDetectionState) _then) = __$NetworkDetectionStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isLoading, IpInfo? ipInfo
+ bool isLoading, IpInfo? ipInfo, bool isIpVisible
 });
 
 
@@ -2989,11 +2997,12 @@ class __$NetworkDetectionStateCopyWithImpl<$Res>
 
 /// Create a copy of NetworkDetectionState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? ipInfo = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? ipInfo = freezed,Object? isIpVisible = null,}) {
   return _then(_NetworkDetectionState(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,ipInfo: freezed == ipInfo ? _self.ipInfo : ipInfo // ignore: cast_nullable_to_non_nullable
-as IpInfo?,
+as IpInfo?,isIpVisible: null == isIpVisible ? _self.isIpVisible : isIpVisible // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

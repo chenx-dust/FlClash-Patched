@@ -88,10 +88,9 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
-  testWidgets('TrackerInfoItem renders chains and forwards keyword clicks', (
+  testWidgets('TrackerInfoItem summarizes the active chain and shows details', (
     tester,
   ) async {
-    String? clicked;
     await tester.pumpWidget(
       TestApp(
         wrapInProviderScope: true,
@@ -99,19 +98,19 @@ void main() {
         child: TrackerInfoItem(
           trackerInfo: _tracker(chains: const ['Proxy A', 'Proxy B']),
           detailTitle: 'detail',
-          onClickKeyword: (keyword) => clicked = keyword,
         ),
       ),
     );
     await tester.pump();
 
+    expect(find.text('Proxy A'), findsNothing);
+    expect(find.textContaining('Proxy B'), findsOneWidget);
+
+    await tester.tap(find.textContaining('Proxy B'));
+    await tester.pumpAndSettle();
+
     expect(find.text('Proxy A'), findsOneWidget);
     expect(find.text('Proxy B'), findsOneWidget);
-
-    await tester.tap(find.text('Proxy A'));
-    await tester.pump();
-
-    expect(clicked, 'Proxy A');
 
     await tester.pumpWidget(const SizedBox.shrink());
   });

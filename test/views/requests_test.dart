@@ -1,4 +1,6 @@
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/core/controller.dart';
+import 'package:fl_clash/core/interface.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
@@ -7,9 +9,12 @@ import 'package:fl_clash/widgets/null_status.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
 import '../helpers/test_app.dart';
 import '../helpers/test_profiles.dart';
+
+class _MockCoreHandlerInterface extends Mock implements CoreHandlerInterface {}
 
 TrackerInfo _tracker({required String id, String host = 'example.com'}) {
   return TrackerInfo(
@@ -32,10 +37,18 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late ProviderContainer container;
+  late _MockCoreHandlerInterface core;
 
   setUp(() {
+    core = _MockCoreHandlerInterface();
+    when(
+      core.startRequestNotify,
+    ).thenAnswer((_) async => const <TrackerInfo>[]);
     container = ProviderContainer(
-      overrides: [profilesProvider.overrideWith(TestProfiles.new)],
+      overrides: [
+        profilesProvider.overrideWith(TestProfiles.new),
+        coreHandlerProvider.overrideWithValue(CoreController.scoped(core)),
+      ],
     );
     globalState.container = container;
     container
@@ -127,13 +140,13 @@ void main() {
 
     await pumpRequests(tester);
 
-    expect(find.byIcon(Icons.block), findsOneWidget);
-    expect(find.byIcon(Icons.vertical_align_top), findsNothing);
+    expect(find.byIcon(Icons.pause), findsOneWidget);
+    expect(find.byIcon(Icons.play_arrow), findsNothing);
 
     await tester.tap(find.byType(FloatingActionButton));
     await tester.pumpAndSettle();
 
-    expect(find.byIcon(Icons.vertical_align_top), findsOneWidget);
+    expect(find.byIcon(Icons.play_arrow), findsOneWidget);
 
     await teardownView(tester);
   });
