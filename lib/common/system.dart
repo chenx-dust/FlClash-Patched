@@ -61,6 +61,10 @@ class System {
       'macos' => (deviceInfo as MacOsDeviceInfo).majorVersion,
       'android' => (deviceInfo as AndroidDeviceInfo).version.sdkInt,
       'windows' => (deviceInfo as WindowsDeviceInfo).majorVersion,
+      'ios' => int.parse(
+        (deviceInfo as IosDeviceInfo).systemVersion.split('.').firstOrNull ??
+            '0',
+      ),
       String() => 0,
     };
   }
@@ -164,6 +168,12 @@ class System {
     return "'${value.replaceAll("'", "'\\''")}'";
   }
 
+  @visibleForTesting
+  static List<String> linuxPrivilegeArguments(String corePath) {
+    const shell = 'chown root:root -- "\$1" && chmod +sx -- "\$1"';
+    return ['/bin/sh', '-c', shell, 'sh', corePath];
+  }
+
   Future<AuthorizeCode> authorizeCore() async {
     if (system.isAndroid) {
       return AuthorizeCode.error;
@@ -188,8 +198,21 @@ class System {
         return AuthorizeCode.error;
       }
       return AuthorizeCode.success;
-    } else if (Platform.isLinux) {
-      final shell = Platform.environment['SHELL'] ?? 'bash';
+    }
+    if (Platform.isLinux) {
+      final arguments = linuxPrivilegeArguments(appPath.corePath);
+      try {
+        final result = await runProcess('pkexec', arguments);
+        switch (result.exitCode) {
+          case 0:
+            return AuthorizeCode.success;
+          case 127:
+            break;
+          default:
+            return AuthorizeCode.error;
+        }
+      } catch (_) {}
+
       final password = await dialogs.showCommonDialog<String>(
         child: InputDialog(
           obscureText: true,
@@ -201,17 +224,27 @@ class System {
       if (password == null || password.isEmpty) {
         return AuthorizeCode.error;
       }
-      final escapedPassword = _shellEscape(password);
-      final escapedCorePath = _shellEscape(appPath.corePath);
-      final arguments = [
-        '-c',
-        'echo $escapedPassword | sudo -S chown root:root $escapedCorePath && echo $escapedPassword | sudo -S chmod +sx $escapedCorePath',
-      ];
-      final result = await runProcess(shell, arguments);
-      if (result.exitCode != 0) {
+
+      try {
+        final process = await Process.start('sudo', [
+          '-S',
+          '-p',
+          '',
+          '--',
+          ...arguments,
+        ]);
+        final outputDone = Future.wait([
+          process.stdout.drain<void>(),
+          process.stderr.drain<void>(),
+        ]);
+        process.stdin.writeln(password);
+        await process.stdin.close();
+        final exitCode = await process.exitCode;
+        await outputDone;
+        return exitCode == 0 ? AuthorizeCode.success : AuthorizeCode.error;
+      } catch (_) {
         return AuthorizeCode.error;
       }
-      return AuthorizeCode.success;
     }
     return AuthorizeCode.error;
   }

@@ -224,6 +224,22 @@ void main() {
     });
   });
 
+  group('linuxPrivilegeArguments', () {
+    test('passes the core path as a positional argument', () {
+      const corePath = '/opt/Fl Clash/FlClashCore';
+      final arguments = System.linuxPrivilegeArguments(corePath);
+
+      expect(arguments, [
+        '/bin/sh',
+        '-c',
+        'chown root:root -- "\$1" && chmod +sx -- "\$1"',
+        'sh',
+        corePath,
+      ]);
+      expect(arguments[2], isNot(contains(corePath)));
+    });
+  });
+
   group('isPrivilegedStatOutput', () {
     test('accepts a root-owned setuid binary', () {
       expect(
@@ -276,19 +292,19 @@ void main() {
 
       expect(await system.checkIsAdmin(), isTrue);
       expect(processes.argumentsFor('stat').last, appPath.corePath);
-    });
+    }, skip: system.isWindows);
 
     test('reports a core that is not setuid root', () async {
       processes.stub('stat', 'alice:staff -rwxr-xr-x');
 
       expect(await system.checkIsAdmin(), isFalse);
-    });
+    }, skip: system.isWindows);
 
     test('reports a core stat could not find', () async {
       processes.stub('stat', '');
 
       expect(await system.checkIsAdmin(), isFalse);
-    });
+    }, skip: system.isWindows);
   });
 
   group('parseDefaultInterface', () {
