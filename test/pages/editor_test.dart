@@ -45,7 +45,7 @@ void main() {
     // flutter_test's mocked HttpClient answers with HTTP 400, which maps to
     // the localized network exception message in the snackbar.
     expect(
-      find.text(
+      find.textContaining(
         'Network exception, please check your connection and try again',
       ),
       findsOneWidget,

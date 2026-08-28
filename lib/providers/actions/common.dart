@@ -75,9 +75,17 @@ class CommonAction extends _$CommonAction {
 
   Future<bool> autoCheckUpdate() async {
     if (!ref.read(appSettingProvider).autoCheckUpdate) return false;
-    final res = await request.checkForUpdate();
-    await checkUpdateResultHandle(data: res);
-    return res != null;
+    try {
+      final data = await request.checkForUpdate();
+      await checkUpdateResultHandle(data: data);
+      return data != null;
+    } catch (error, stackTrace) {
+      commonPrint.log(
+        'autoCheckUpdate failed: $error\n$stackTrace',
+        logLevel: LogLevel.warning,
+      );
+      return false;
+    }
   }
 
   TextSpan _releaseSpan(BuildContext context, String tagName, String? body) {
@@ -146,11 +154,9 @@ class CommonAction extends _$CommonAction {
             .update((state) => state.copyWith(autoCheckUpdate: false));
       }
     } else if (isUser) {
-      unawaited(
-        dialogs.showMessage(
-          title: currentAppLocalizations.checkUpdate,
-          message: TextSpan(text: currentAppLocalizations.checkUpdateError),
-        ),
+      await dialogs.showMessage(
+        title: currentAppLocalizations.checkUpdate,
+        message: TextSpan(text: currentAppLocalizations.checkUpdateError),
       );
     }
   }

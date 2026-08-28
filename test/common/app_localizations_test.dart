@@ -40,6 +40,21 @@ void main() {
     },
   );
 
+  test('includes the underlying detail for an unknown network error', () {
+    final message = networkErrorMessage(
+      DioException(
+        requestOptions: RequestOptions(path: '/'),
+        type: DioExceptionType.connectionError,
+        error: 'connection refused',
+      ),
+      appLocalizations,
+    );
+    expect(
+      message,
+      '${appLocalizations.unknownNetworkError}\nconnection refused',
+    );
+  });
+
   test('returns null for non-Dio exceptions', () {
     expect(networkErrorMessage(StateError('boom'), appLocalizations), isNull);
   });

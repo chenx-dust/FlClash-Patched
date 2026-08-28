@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
+import 'package:fl_clash/common/request.dart';
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/core/interface.dart';
 import 'package:fl_clash/enum/enum.dart';
@@ -168,5 +171,31 @@ void main() {
         completion(isFalse),
       );
     });
+
+    test('logs a network failure and reports no update', () async {
+      final originalAdapter = request.dio.httpClientAdapter;
+      request.dio.httpClientAdapter = _FailingUpdateAdapter();
+      addTearDown(() => request.dio.httpClientAdapter = originalAdapter);
+      final container = buildContainer();
+
+      await expectLater(
+        container.read(commonActionProvider.notifier).autoCheckUpdate(),
+        completion(isFalse),
+      );
+    });
   });
+}
+
+class _FailingUpdateAdapter implements HttpClientAdapter {
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
+    return ResponseBody.fromString('unavailable', 503);
+  }
+
+  @override
+  void close({bool force = false}) {}
 }
