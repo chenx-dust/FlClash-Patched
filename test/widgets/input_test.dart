@@ -4,6 +4,7 @@ import 'package:fl_clash/models/common.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -352,6 +353,113 @@ void main() {
     expect(find.text('No data'), findsOneWidget);
   });
 
+  testWidgets('ListInputPage applies inverse start state to its drag range', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TestApp(
+        overrides: [_viewSizeOverride],
+        child: const ListInputPage(
+          title: 'Items',
+          items: ['a', 'b', 'c', 'd'],
+          titleBuilder: _textBuilder,
+        ),
+      ),
+    );
+
+    final checkboxes = find.byType(Checkbox);
+    final selectGesture = await tester.startGesture(
+      tester.getCenter(checkboxes.first),
+    );
+    await tester.pump(kLongPressTimeout);
+    await selectGesture.moveTo(tester.getCenter(checkboxes.last));
+    await tester.pump();
+
+    expect(
+      List.generate(
+        4,
+        (index) => tester.widget<Checkbox>(checkboxes.at(index)).value,
+      ),
+      [true, true, true, true],
+    );
+
+    await selectGesture.moveTo(tester.getCenter(checkboxes.at(1)));
+    await selectGesture.up();
+    await tester.pump();
+
+    expect(
+      List.generate(
+        4,
+        (index) => tester.widget<Checkbox>(checkboxes.at(index)).value,
+      ),
+      [true, true, false, false],
+    );
+
+    final mixedGesture = await tester.startGesture(
+      tester.getCenter(checkboxes.at(1)),
+    );
+    await tester.pump(kLongPressTimeout);
+    await mixedGesture.moveTo(tester.getCenter(checkboxes.at(2)));
+    await mixedGesture.up();
+    await tester.pump();
+
+    expect(
+      List.generate(
+        4,
+        (index) => tester.widget<Checkbox>(checkboxes.at(index)).value,
+      ),
+      [true, false, false, false],
+    );
+
+    final reverseGesture = await tester.startGesture(
+      tester.getCenter(checkboxes.at(1)),
+    );
+    await tester.pump(kLongPressTimeout);
+    await reverseGesture.moveTo(tester.getCenter(checkboxes.at(2)));
+    await reverseGesture.up();
+    await tester.pump();
+
+    expect(
+      List.generate(
+        4,
+        (index) => tester.widget<Checkbox>(checkboxes.at(index)).value,
+      ),
+      [true, true, true, false],
+    );
+  });
+
+  testWidgets('ListInputPage scrolls when dragging from a checkbox', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(400, 500);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      TestApp(
+        overrides: [_viewSizeOverride],
+        child: ListInputPage(
+          title: 'Items',
+          items: List.generate(20, (index) => 'item $index'),
+          titleBuilder: _textBuilder,
+        ),
+      ),
+    );
+
+    final scrollable = tester.state<ScrollableState>(
+      find.descendant(
+        of: find.byType(ReorderableListView),
+        matching: find.byType(Scrollable),
+      ),
+    );
+    await tester.drag(find.byType(Checkbox).first, const Offset(0, -200));
+    await tester.pumpAndSettle();
+
+    expect(scrollable.position.pixels, greaterThan(0));
+    expect(find.byIcon(Icons.delete), findsNothing);
+  });
+
   testWidgets('MapInputPage adds, reorders, selects, and deletes entries', (
     tester,
   ) async {
@@ -404,9 +512,37 @@ void main() {
     expect(find.text('No data'), findsOneWidget);
   });
 
-  testWidgets('MapInputPage adds a key before editing its value list', (
-    tester,
-  ) async {
+  testWidgets('MapInputPage drag-selects consecutive entries', (tester) async {
+    await tester.pumpWidget(
+      TestApp(
+        overrides: [_viewSizeOverride],
+        child: const MapInputPage(
+          title: 'Map',
+          map: {'a': '1', 'b': '2', 'c': '3', 'd': '4'},
+          titleBuilder: _entryTitle,
+        ),
+      ),
+    );
+
+    final checkboxes = find.byType(Checkbox);
+    final gesture = await tester.startGesture(
+      tester.getCenter(checkboxes.first),
+    );
+    await tester.pump(kLongPressTimeout);
+    await gesture.moveTo(tester.getCenter(checkboxes.at(2)));
+    await gesture.up();
+    await tester.pump();
+
+    expect(
+      List.generate(
+        4,
+        (index) => tester.widget<Checkbox>(checkboxes.at(index)).value,
+      ),
+      [true, true, true, false],
+    );
+  });
+
+  testWidgets('MapInputPage edits list values in one dialog', (tester) async {
     await tester.pumpWidget(
       TestApp(
         overrides: [_viewSizeOverride],
@@ -426,39 +562,80 @@ void main() {
     await tester.tap(find.text('example.com').first);
     await tester.pumpAndSettle();
 
+    expect(find.byType(MapEntryListDialog), findsOneWidget);
+    expect(find.byType(TextFormField), findsNWidgets(3));
     expect(find.text('1.1.1.1'), findsOneWidget);
     expect(find.text('8.8.8.8'), findsOneWidget);
-    expect(find.byType(TextFormField), findsNothing);
-
-    await tester.pageBack();
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Add'));
-    await tester.pumpAndSettle();
-    expect(find.byType(AddDialog), findsOneWidget);
-    await tester.enterText(find.byType(TextFormField), 'new.example.com');
-    await tester.tap(find.text('Confirm'));
-    await tester.pumpAndSettle();
-
-    expect(find.byType(TextFormField), findsNothing);
-    expect(find.text('No data'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(TextFormField).at(1),
+        matching: find.byIcon(Icons.delete_outline),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: find.byType(Form), matching: find.text('Add')),
+      findsNothing,
+    );
+    expect(
+      tester
+          .getCenter(
+            find.descendant(
+              of: find.byType(MapEntryListDialog),
+              matching: find.text('Add'),
+            ),
+          )
+          .dx,
+      lessThan(tester.getCenter(find.text('Cancel')).dx),
+    );
+    await tester.tap(
+      find
+          .descendant(
+            of: find.byType(MapEntryListDialog),
+            matching: find.byIcon(Icons.delete_outline),
+          )
+          .first,
+    );
+    await tester.pump();
+    expect(find.byType(TextFormField), findsNWidgets(2));
 
     await tester.tap(
       find.descendant(
-        of: find.byType(ListInputPage),
+        of: find.byType(MapEntryListDialog),
         matching: find.text('Add'),
       ),
     );
-    await tester.pumpAndSettle();
+    await tester.pump();
+    expect(find.byType(TextFormField), findsNWidgets(3));
     await tester.enterText(find.byType(TextFormField).last, '9.9.9.9');
     await tester.tap(find.text('Confirm'));
     await tester.pumpAndSettle();
 
-    await tester.pageBack();
+    expect(find.byType(MapEntryListDialog), findsNothing);
+    expect(find.text('8.8.8.8,9.9.9.9'), findsOneWidget);
+
+    await tester.tap(find.text('Add'));
+    await tester.pumpAndSettle();
+    expect(find.byType(MapEntryListDialog), findsOneWidget);
+    await tester.tap(find.text('Confirm'));
+    await tester.pump();
+    expect(find.byType(MapEntryListDialog), findsOneWidget);
+
+    final fields = find.byType(TextFormField);
+    await tester.enterText(fields.first, 'new.example.com');
+    await tester.enterText(fields.last, '4.4.4.4');
+    await tester.tap(find.text('Confirm'));
     await tester.pumpAndSettle();
 
     expect(find.text('new.example.com'), findsOneWidget);
-    expect(find.text('9.9.9.9'), findsOneWidget);
+    expect(find.text('4.4.4.4'), findsOneWidget);
+
+    await tester.tap(find.text('Add'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    expect(find.byType(MapEntryListDialog), findsNothing);
+    expect(find.text('new.example.com'), findsOneWidget);
   });
 
   test('NoInputBorder implements border geometry and interior painting', () {
