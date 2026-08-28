@@ -85,25 +85,29 @@ void main() {
       expect(route.barrierColor, isNull);
       expect(route.barrierLabel, isNull);
       expect(route.maintainState, isTrue);
-      expect(route.transitionDuration, const Duration(milliseconds: 200));
+      expect(route.transitionDuration, const Duration(milliseconds: 150));
       expect(
         route.reverseTransitionDuration,
-        const Duration(milliseconds: 200),
+        const Duration(milliseconds: 100),
       );
     });
 
-    test('mobile route uses the longer shared-axis duration', () {
-      final route = CommonRoute<void>(builder: (_) => const SizedBox());
+    test(
+      'mobile route uses the platform route and keeps its latest result',
+      () {
+        final route = CommonRoute<List<String>>(
+          builder: (_) => const SizedBox(),
+        );
 
-      expect(route.barrierColor, isNull);
-      expect(route.barrierLabel, isNull);
-      expect(route.maintainState, isTrue);
-      expect(route.transitionDuration, const Duration(milliseconds: 300));
-      expect(
-        route.reverseTransitionDuration,
-        const Duration(milliseconds: 300),
-      );
-    });
+        expect(route, isA<MaterialPageRoute<List<String>>>());
+        expect(route.maintainState, isTrue);
+        expect(route.currentResult, isNull);
+
+        route.updateCurrentResult(['edited']);
+
+        expect(route.currentResult, ['edited']);
+      },
+    );
   });
 
   group('CommonPageTransition', () {

@@ -386,7 +386,10 @@ class ListItem<T> extends ConsumerWidget {
               final predictiveBack = ref
                   .read(themeSettingProvider)
                   .predictiveBack;
-              if (!isMobile || kDebugMode || predictiveBack) {
+              if (!isMobile ||
+                  kDebugMode ||
+                  predictiveBack ||
+                  Theme.of(context).platform == TargetPlatform.iOS) {
                 final res = await showExtend(
                   context,
                   props: ExtendProps(

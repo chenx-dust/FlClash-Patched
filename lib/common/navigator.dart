@@ -1,8 +1,5 @@
 import 'package:animations/animations.dart';
 import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/providers/app.dart';
-import 'package:fl_clash/providers/config.dart';
-import 'package:fl_clash/state.dart';
 import 'package:material_ui/material_ui.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -13,15 +10,6 @@ class BaseNavigator {
       return Navigator.of(
         context,
       ).push<T>(CommonDesktopRoute(builder: (context) => child));
-    }
-    final themeProps = globalState.container.read(themeSettingProvider);
-    final supportsPredictiveBack = system.supportsPredictiveBack(
-      globalState.container.read(versionProvider),
-    );
-    if (themeProps.predictiveBack && supportsPredictiveBack || system.isIOS) {
-      return Navigator.of(
-        context,
-      ).push<T>(MaterialPageRoute(builder: (context) => child));
     }
     return Navigator.of(
       context,
@@ -69,45 +57,17 @@ class CommonDesktopRoute<T> extends PageRoute<T> {
   Duration get reverseTransitionDuration => const Duration(milliseconds: 100);
 }
 
-class CommonRoute<T> extends PageRoute<T> {
-  final Widget Function(BuildContext context) builder;
+class CommonRoute<T> extends MaterialPageRoute<T> {
+  T? _currentResult;
 
-  CommonRoute({required this.builder});
+  CommonRoute({required super.builder});
 
-  @override
-  Color? get barrierColor => null;
-
-  @override
-  String? get barrierLabel => null;
-
-  @override
-  bool get maintainState => true;
-
-  @override
-  Widget buildPage(
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-  ) {
-    final Widget result = builder(context);
-    return Semantics(
-      scopesRoute: true,
-      explicitChildNodes: true,
-      child: SharedAxisTransition(
-        animation: animation,
-        secondaryAnimation: secondaryAnimation,
-        transitionType: SharedAxisTransitionType.horizontal,
-        fillColor: context.colorScheme.surface,
-        child: result,
-      ),
-    );
+  void updateCurrentResult(Object? result) {
+    _currentResult = result as T?;
   }
 
   @override
-  Duration get transitionDuration => const Duration(milliseconds: 120);
-
-  @override
-  Duration get reverseTransitionDuration => const Duration(milliseconds: 80);
+  T? get currentResult => _currentResult ?? super.currentResult;
 }
 
 final Animatable<Offset> _kRightMiddleTween = Tween<Offset>(

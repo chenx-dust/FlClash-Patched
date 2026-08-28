@@ -420,6 +420,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
     final bottomInset = BottomInsetScope.of(context);
     final hasFab = !isTV && widget.floatingActionButton != null;
     final body = SafeArea(
+      bottom: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
