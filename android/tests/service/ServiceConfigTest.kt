@@ -36,6 +36,7 @@ class ServiceConfigTest {
         assertEquals("FlClash", defaults.title)
         assertEquals("STOP", defaults.stopText)
         assertEquals(false, defaults.onlyStatisticsProxy)
+        assertEquals(false, defaults.networkSpeedNotification)
     }
 
     @Test
@@ -55,6 +56,7 @@ class ServiceConfigTest {
             title = "Profile",
             stopText = "Halt",
             onlyStatisticsProxy = true,
+            networkSpeedNotification = true,
         )
 
         ServiceConfig.updateNotificationParams(params)

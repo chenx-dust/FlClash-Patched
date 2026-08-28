@@ -182,6 +182,7 @@ SharedState sharedState(Ref ref) {
   return SharedState(
     currentProfileName: currentProfileName,
     onlyStatisticsProxy: onlyStatisticsProxy,
+    networkSpeedNotification: vpnSetting.networkSpeedNotification,
     stopText: currentAppLocalizations.stop,
     stopTip: currentAppLocalizations.stopVpn,
     startTip: currentAppLocalizations.startVpn,

@@ -118,6 +118,7 @@ void main() {
             currentProfileName: 'profile',
             stopText: 'stop',
             onlyStatisticsProxy: false,
+            networkSpeedNotification: false,
           ),
         ),
         isEmpty,
@@ -132,6 +133,7 @@ void main() {
         currentProfileName: 'profile',
         stopText: 'stop',
         onlyStatisticsProxy: true,
+        networkSpeedNotification: true,
       );
 
       expect(await Service().syncState(state), 'ok');
@@ -139,6 +141,7 @@ void main() {
       final sent = json.decode(calls.single.arguments as String);
       expect(sent['currentProfileName'], 'profile');
       expect(sent['onlyStatisticsProxy'], isTrue);
+      expect(sent['networkSpeedNotification'], isTrue);
     });
   });
 

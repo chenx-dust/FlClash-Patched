@@ -338,6 +338,7 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
             title = state.currentProfileName,
             stopText = state.stopText,
             onlyStatisticsProxy = state.onlyStatisticsProxy,
+            networkSpeedNotification = state.networkSpeedNotification,
         )
     }
 }

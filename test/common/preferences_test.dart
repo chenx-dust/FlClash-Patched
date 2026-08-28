@@ -13,6 +13,7 @@ const _sharedState = SharedState(
   currentProfileName: 'profile',
   stopText: 'stopped',
   onlyStatisticsProxy: true,
+  networkSpeedNotification: true,
 );
 
 void main() {

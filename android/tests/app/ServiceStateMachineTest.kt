@@ -166,10 +166,11 @@ class ServiceStateMachineTest {
                 currentProfileName = "Work",
                 stopText = "Disconnect",
                 onlyStatisticsProxy = true,
+                networkSpeedNotification = true,
             ),
         )
 
-        assertEquals(NotificationParams("Work", "Disconnect", true), params)
+        assertEquals(NotificationParams("Work", "Disconnect", true, true), params)
     }
 
     @Test
@@ -527,10 +528,14 @@ class ServiceStateMachineTest {
                 currentProfileName = "Work",
                 stopText = "Disconnect",
                 onlyStatisticsProxy = true,
+                networkSpeedNotification = true,
             ),
         )
 
-        assertEquals(listOf(NotificationParams("Work", "Disconnect", true)), host.notificationParams)
+        assertEquals(
+            listOf(NotificationParams("Work", "Disconnect", true, true)),
+            host.notificationParams,
+        )
     }
 
     @Test

@@ -92,6 +92,7 @@ class SharedStateTest {
         assertEquals("FlClash", defaults.currentProfileName)
         assertEquals("Stop", defaults.stopText)
         assertEquals(false, defaults.onlyStatisticsProxy)
+        assertEquals(false, defaults.networkSpeedNotification)
         assertNull(defaults.vpnOptions)
         assertNull(defaults.setupParams)
     }

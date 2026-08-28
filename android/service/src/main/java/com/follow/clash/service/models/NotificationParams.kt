@@ -4,4 +4,5 @@ data class NotificationParams(
     val title: String = "FlClash",
     val stopText: String = "STOP",
     val onlyStatisticsProxy: Boolean = false,
+    val networkSpeedNotification: Boolean = false,
 )

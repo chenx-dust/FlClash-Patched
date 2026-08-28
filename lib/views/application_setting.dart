@@ -21,6 +21,22 @@ ConfigToggleItem _appSettingToggle({
   );
 }
 
+ConfigToggleItem _vpnSettingToggle({
+  required ConfigLabel title,
+  required ConfigLabel subtitle,
+  required bool Function(VpnProps state) select,
+  required VpnProps Function(VpnProps state, bool value) update,
+}) {
+  return ConfigToggleItem(
+    title: title,
+    subtitle: subtitle,
+    selector: vpnSettingProvider.select(select),
+    onChanged: (ref, value) => ref
+        .read(vpnSettingProvider.notifier)
+        .update((state) => update(state, value)),
+  );
+}
+
 class ApplicationSettingView extends StatelessWidget {
   const ApplicationSettingView({super.key});
 
@@ -84,6 +100,14 @@ class ApplicationSettingView extends StatelessWidget {
         select: (state) => state.onlyStatisticsProxy,
         update: (state, value) => state.copyWith(onlyStatisticsProxy: value),
       ),
+      if (system.isAndroid)
+        _vpnSettingToggle(
+          title: (l) => l.networkSpeedNotification,
+          subtitle: (l) => l.networkSpeedNotificationDesc,
+          select: (state) => state.networkSpeedNotification,
+          update: (state, value) =>
+              state.copyWith(networkSpeedNotification: value),
+        ),
       _appSettingToggle(
         title: (l) => l.autoCheckUpdate,
         subtitle: (l) => l.autoCheckUpdateDesc,
