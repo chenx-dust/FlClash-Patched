@@ -139,8 +139,12 @@ class Bootstrap {
       _container.read(profilesActionProvider.notifier).autoUpdateProfiles(),
     );
     unawaited(_container.read(commonActionProvider.notifier).autoCheckUpdate());
+    final appSetting = _container.read(appSettingProvider);
     unawaited(
-      autoLaunch?.updateStatus(_container.read(appSettingProvider).autoLaunch),
+      autoLaunch?.updateStatus(
+        isAutoLaunch: appSetting.autoLaunch,
+        isHighPriorityAutoLaunch: appSetting.highPriorityAutoLaunch,
+      ),
     );
     if (!_container.read(appSettingProvider).silentLaunch) {
       unawaited(window?.show());

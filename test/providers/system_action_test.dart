@@ -323,12 +323,19 @@ void main() {
       expect(container.read(networkSettingProvider).systemProxy, !before);
     });
 
-    test('updateAutoLaunch flips the auto launch flag', () {
-      final before = container.read(appSettingProvider).autoLaunch;
+    test('updateAutoLaunch disables both auto launch modes', () {
+      container
+          .read(appSettingProvider.notifier)
+          .update(
+            (state) =>
+                state.copyWith(autoLaunch: true, highPriorityAutoLaunch: true),
+          );
 
       container.read(systemActionProvider.notifier).updateAutoLaunch();
 
-      expect(container.read(appSettingProvider).autoLaunch, !before);
+      final appSetting = container.read(appSettingProvider);
+      expect(appSetting.autoLaunch, isFalse);
+      expect(appSetting.highPriorityAutoLaunch, isFalse);
     });
   });
 }

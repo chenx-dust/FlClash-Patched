@@ -89,6 +89,20 @@ const _serviceOrderOutput =
 ''';
 
 void main() {
+  test('scheduled task command line quotes paths containing spaces', () {
+    expect(
+      Windows.taskCommandLine([
+        '/Create',
+        '/TN',
+        'FlClash',
+        '/XML',
+        r'C:\Users\Example User\task.xml',
+        '/F',
+      ]),
+      r'/Create /TN FlClash /XML "C:\Users\Example User\task.xml" /F',
+    );
+  });
+
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late Directory root;

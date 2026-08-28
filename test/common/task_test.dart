@@ -357,12 +357,12 @@ void main() {
       const Log(
         logLevel: LogLevel.info,
         payload: 'first',
-        timestamp: 1785031200000,
+        dateTime: '2026-07-26 10:00:00',
       ),
       const Log(
         logLevel: LogLevel.error,
         payload: 'second',
-        timestamp: 1785031201000,
+        dateTime: '2026-07-26 10:00:01',
       ),
     ];
 

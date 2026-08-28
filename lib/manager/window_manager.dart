@@ -33,16 +33,24 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   @override
   void initState() {
     super.initState();
-    ref.listenManual(appSettingProvider.select((state) => state.autoLaunch), (
-      prev,
-      next,
-    ) {
-      if (prev != next) {
-        debouncer.call(FunctionTag.autoLaunch, () {
-          autoLaunch?.updateStatus(next);
-        });
-      }
-    });
+    ref.listenManual(
+      appSettingProvider.select(
+        (state) => (
+          autoLaunch: state.autoLaunch,
+          highPriorityAutoLaunch: state.highPriorityAutoLaunch,
+        ),
+      ),
+      (prev, next) {
+        if (prev != next) {
+          debouncer.call(FunctionTag.autoLaunch, () {
+            autoLaunch?.updateStatus(
+              isAutoLaunch: next.autoLaunch,
+              isHighPriorityAutoLaunch: next.highPriorityAutoLaunch,
+            );
+          });
+        }
+      },
+    );
     windowManager.addListener(this);
   }
 

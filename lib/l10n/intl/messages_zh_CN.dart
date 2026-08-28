@@ -345,6 +345,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "hideFromList": MessageLookupByLibrary.simpleMessage("从列表中隐藏"),
     "hidePassword": MessageLookupByLibrary.simpleMessage("隐藏密码"),
+    "highPriorityAutoLaunch": MessageLookupByLibrary.simpleMessage("高优先级自启动"),
+    "highPriorityAutoLaunchDesc": MessageLookupByLibrary.simpleMessage(
+      "使用 Windows 计划任务更早启动",
+    ),
     "host": MessageLookupByLibrary.simpleMessage("主机"),
     "hostsDesc": MessageLookupByLibrary.simpleMessage("追加Hosts"),
     "hotkeyConflict": MessageLookupByLibrary.simpleMessage("快捷键冲突"),

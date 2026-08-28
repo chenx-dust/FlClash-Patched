@@ -12,6 +12,8 @@ import 'package:fl_clash/plugins/app.dart';
 import 'package:fl_clash/widgets/input.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
+import 'package:path/path.dart';
+import 'package:xml/xml.dart';
 
 typedef ProcessRunner =
     Future<ProcessResult> Function(String executable, List<String> arguments);
@@ -229,6 +231,9 @@ class Windows {
   static Windows? _instance;
   late DynamicLibrary _shell32;
 
+  @visibleForTesting
+  ProcessRunner runProcess = Process.run;
+
   Windows._internal() {
     _shell32 = DynamicLibrary.open('shell32.dll');
   }
@@ -350,6 +355,98 @@ class Windows {
       await Future.delayed(delay < interval ? delay : interval);
     }
     return false;
+  }
+
+  Future<bool> isTaskRegistered(String appName) async {
+    final result = await _runTask(['/Query', '/TN', appName]);
+    return result?.exitCode == 0;
+  }
+
+  Future<bool> unregisterTask(String appName) async {
+    if (!await isTaskRegistered(appName)) {
+      return true;
+    }
+    final arguments = ['/Delete', '/TN', appName, '/F'];
+    final result = await _runTask(arguments);
+    if (result?.exitCode == 0) {
+      return true;
+    }
+    return runas('schtasks.exe', _taskCommandLine(arguments));
+  }
+
+  Future<bool> registerTask(String appName) async {
+    final executable = XmlText(Platform.resolvedExecutable).toXmlString();
+    final taskXml =
+        '''
+<?xml version="1.0" encoding="UTF-16"?>
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <Principals>
+    <Principal id="Author">
+      <LogonType>InteractiveToken</LogonType>
+    </Principal>
+  </Principals>
+  <Triggers>
+    <LogonTrigger>
+      <Delay>PT0S</Delay>
+    </LogonTrigger>
+  </Triggers>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <AllowHardTerminate>false</AllowHardTerminate>
+    <StartWhenAvailable>false</StartWhenAvailable>
+    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
+    <IdleSettings>
+      <StopOnIdleEnd>false</StopOnIdleEnd>
+      <RestartOnIdle>false</RestartOnIdle>
+    </IdleSettings>
+    <AllowStartOnDemand>true</AllowStartOnDemand>
+    <Enabled>true</Enabled>
+    <Hidden>false</Hidden>
+    <RunOnlyIfIdle>false</RunOnlyIfIdle>
+    <WakeToRun>false</WakeToRun>
+    <ExecutionTimeLimit>PT0S</ExecutionTimeLimit>
+    <Priority>7</Priority>
+  </Settings>
+  <Actions Context="Author">
+    <Exec>
+      <Command>$executable</Command>
+    </Exec>
+  </Actions>
+</Task>''';
+    final taskPath = join(await appPath.tempPath, 'task.xml');
+    await File(
+      taskPath,
+    ).writeAsBytes(taskXml.encodeUtf16LeWithBom, flush: true);
+    final arguments = ['/Create', '/TN', appName, '/XML', taskPath, '/F'];
+    final result = await _runTask(arguments);
+    if (result?.exitCode == 0) {
+      return true;
+    }
+    return runas('schtasks.exe', _taskCommandLine(arguments));
+  }
+
+  Future<ProcessResult?> _runTask(List<String> arguments) async {
+    try {
+      return await runProcess('schtasks.exe', arguments);
+    } catch (error) {
+      commonPrint.log(
+        'schtasks failed: ${compactError(error)}',
+        logLevel: LogLevel.warning,
+      );
+      return null;
+    }
+  }
+
+  @visibleForTesting
+  static String taskCommandLine(List<String> arguments) =>
+      _taskCommandLine(arguments);
+
+  static String _taskCommandLine(List<String> arguments) {
+    return arguments
+        .map((argument) => argument.contains(' ') ? '"$argument"' : argument)
+        .join(' ');
   }
 }
 

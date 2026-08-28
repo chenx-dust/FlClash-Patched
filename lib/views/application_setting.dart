@@ -37,11 +37,14 @@ ConfigToggleItem _vpnSettingToggle({
   );
 }
 
-class ApplicationSettingView extends StatelessWidget {
+class ApplicationSettingView extends ConsumerWidget {
   const ApplicationSettingView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final showHighPriorityAutoLaunch =
+        system.isWindows &&
+        ref.watch(appSettingProvider.select((state) => state.autoLaunch));
     final items = <Widget>[
       _appSettingToggle(
         title: (l) => l.minimizeOnExit,
@@ -54,8 +57,17 @@ class ApplicationSettingView extends StatelessWidget {
           title: (l) => l.autoLaunch,
           subtitle: (l) => l.autoLaunchDesc,
           select: (state) => state.autoLaunch,
-          update: (state, value) => state.copyWith(autoLaunch: value),
+          update: (state, value) =>
+              state.copyWith(autoLaunch: value, highPriorityAutoLaunch: false),
         ),
+        if (showHighPriorityAutoLaunch)
+          _appSettingToggle(
+            title: (l) => l.highPriorityAutoLaunch,
+            subtitle: (l) => l.highPriorityAutoLaunchDesc,
+            select: (state) => state.highPriorityAutoLaunch,
+            update: (state, value) =>
+                state.copyWith(autoLaunch: true, highPriorityAutoLaunch: value),
+          ),
         _appSettingToggle(
           title: (l) => l.silentLaunch,
           subtitle: (l) => l.silentLaunchDesc,
