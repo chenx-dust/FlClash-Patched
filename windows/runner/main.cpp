@@ -7,9 +7,16 @@
 
 namespace {
 
+#ifdef _DEBUG
 constexpr const wchar_t kSingleInstanceMutexName[] =
-    L"Local\\com.follow.clash.FlClash.SingleInstance";
+    L"Local\\com.follow.clash.debug.SingleInstance";
+constexpr const wchar_t kWindowClassName[] =
+    L"FLCLASH_DEBUG_RUNNER_WIN32_WINDOW";
+#else
+constexpr const wchar_t kSingleInstanceMutexName[] =
+    L"Local\\com.follow.clash.SingleInstance";
 constexpr const wchar_t kWindowClassName[] = L"FLCLASH_RUNNER_WIN32_WINDOW";
+#endif
 constexpr const wchar_t kActivateWindowMessageName[] =
     L"FlClash.ActivateWindow";
 

@@ -17,7 +17,12 @@ namespace {
 #define DWMWA_USE_IMMERSIVE_DARK_MODE 20
 #endif
 
+#ifdef _DEBUG
+constexpr const wchar_t kWindowClassName[] =
+    L"FLCLASH_DEBUG_RUNNER_WIN32_WINDOW";
+#else
 constexpr const wchar_t kWindowClassName[] = L"FLCLASH_RUNNER_WIN32_WINDOW";
+#endif
 constexpr const wchar_t kActivateWindowMessageName[] =
     L"FlClash.ActivateWindow";
 

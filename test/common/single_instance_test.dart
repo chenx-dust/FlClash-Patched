@@ -10,9 +10,12 @@ void main() {
     final window = _source('windows/runner/win32_window.cpp');
 
     expect(main, contains('CreateMutexW'));
+    expect(main, contains('com.follow.clash.debug.SingleInstance'));
+    expect(main, contains('FLCLASH_DEBUG_RUNNER_WIN32_WINDOW'));
     expect(main, contains('FlClash.ActivateWindow'));
     expect(main, contains('PostMessageW'));
     expect(window, contains('FlClash.ActivateWindow'));
+    expect(window, contains('FLCLASH_DEBUG_RUNNER_WIN32_WINDOW'));
     expect(window, contains('ShowWindowAsync'));
     expect(window, contains('AddTab'));
     expect(window, contains('SetForegroundWindow'));
