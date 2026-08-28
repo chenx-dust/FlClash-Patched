@@ -63,6 +63,7 @@
 
                 <data android:scheme="clash" />
                 <data android:scheme="clashmeta" />
+                <data android:scheme="mihomo" />
                 <data android:scheme="flclash" />
 
                 <data android:host="install-config" />

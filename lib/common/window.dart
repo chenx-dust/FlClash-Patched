@@ -27,6 +27,7 @@ class Window implements WindowPort {
     if (system.isWindows) {
       protocol.register('clash');
       protocol.register('clashmeta');
+      protocol.register('mihomo');
       protocol.register('flclash');
     }
     await windowManager.ensureInitialized();

@@ -4,13 +4,13 @@
 
 </div>
 
-## FlClash Patched
+# FlClash Patched
 
 [![Downloads](https://img.shields.io/github/downloads/chenx-dust/FlClash-Patched/total?style=flat-square&logo=github)](https://github.com/chenx-dust/FlClash-Patched/releases/)[![Last Version](https://img.shields.io/github/release/chenx-dust/FlClash-Patched/all.svg?style=flat-square)](https://github.com/chenx-dust/FlClash-Patched/releases/)[![License](https://img.shields.io/github/license/chenx-dust/FlClash-Patched?style=flat-square)](LICENSE)
 
 A soft fork of [FlClash](https://github.com/chen08209/FlClash), with several bug fixes, power efficiency improvements and new features.
 
-### Features
+## Features
 
 - Enhanced security (privileged behavior boundary restrictions, IPC security enhancements)
 - Support iOS platform (requires an Apple Developer account to build)
@@ -22,23 +22,13 @@ A soft fork of [FlClash](https://github.com/chen08209/FlClash), with several bug
 
 For more information, please check the details in [Applied Patches (#1)](https://github.com/chenx-dust/FlClash-Patched/issues/1)
 
-## Original Introduction
+# Original Introduction
 
-A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.
-
-on Desktop:
-<p style="text-align: center;">
-    <img alt="desktop" src="snapshots/desktop.gif">
-</p>
-
-on Mobile:
-<p style="text-align: center;">
-    <img alt="mobile" src="snapshots/mobile.gif">
-</p>
+A multi-platform proxy client based on mihomo, simple and easy to use, open-source and ad-free.
 
 ## Features
 
-✈️ Multi-platform: Android, Windows, macOS and Linux
+✈️ Multi-platform: Android, iOS, Windows, macOS and Linux
 
 💻 Adaptive multiple screen sizes, Multiple color themes available
 
@@ -135,12 +125,14 @@ Support the following actions
            dart setup.dart macos
            ```
 
-## Star
+    - iOS
 
-The easiest way to support developers is to click on the star (⭐) at the top of the page.
+        1. Requires a macOS client
 
-<p style="text-align: center;">
-    <a href="https://api.star-history.com/svg?repos=chenx-dust/FlClash-Patched&Date">
-        <img alt="start" width=50% src="https://api.star-history.com/svg?repos=chenx-dust/FlClash-Patched&Date"/>
-    </a>
-</p>
+        2. Configure Apple Developer capabilities, App Group and provisioning profiles for the app bundle and Network Extension bundle
+
+        3. Run build script
+
+           ```bash
+           dart setup.dart ios --ios-bundle-id com.example.flclash
+           ```
