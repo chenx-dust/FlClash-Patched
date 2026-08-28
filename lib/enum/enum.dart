@@ -289,7 +289,8 @@ enum DashboardWidget {
   vpnButton(platforms: [SupportPlatform.Android]),
   systemProxyButton(platforms: desktopPlatforms),
   intranetIp,
-  memoryInfo;
+  memoryInfo,
+  goroutineInfo;
 
   final List<SupportPlatform> platforms;
 

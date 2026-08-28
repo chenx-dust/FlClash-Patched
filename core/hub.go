@@ -639,6 +639,10 @@ func handleGetMemory() uint64 {
 	return memStats.StackInuse + memStats.HeapInuse + memStats.HeapIdle - memStats.HeapReleased
 }
 
+func handleGetGoroutineCount() int {
+	return runtime.NumGoroutine()
+}
+
 func managedPathComponents(scope ManagedPathScope) ([]string, error) {
 	switch scope {
 	case profilesPathScope:

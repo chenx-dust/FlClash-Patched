@@ -340,7 +340,7 @@ class NetworkListView extends StatelessWidget {
           if (system.isMacOS) const AutoSetSystemDnsItem(),
           if (!system.isIOS) const TunStackItem(),
           const TunMtuItem(),
-          if (system.isMobile) ...[
+          if (system.isAndroid || system.isIOS) ...[
             const RouteModeItem(),
             const RouteAddressItem(),
           ],

@@ -119,6 +119,7 @@ const (
 	getExternalProvidersMethod     CoreMethod = "getExternalProviders"
 	getExternalProviderMethod      CoreMethod = "getExternalProvider"
 	getMemoryMethod                CoreMethod = "getMemory"
+	getGoroutineCountMethod        CoreMethod = "getGoroutineCount"
 	updateGeoDataMethod            CoreMethod = "updateGeoData"
 	updateExternalProviderMethod   CoreMethod = "updateExternalProvider"
 	sideLoadExternalProviderMethod CoreMethod = "sideLoadExternalProvider"

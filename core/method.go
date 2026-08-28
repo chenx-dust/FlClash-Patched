@@ -300,6 +300,9 @@ var methodHandlers = map[CoreMethod]methodHandler{
 			response.success(handleGetMemory())
 		})
 	}),
+	getGoroutineCountMethod: withoutArguments(func(response MethodResponse) {
+		response.success(handleGetGoroutineCount())
+	}),
 	clearEffectMethod: withArguments(func(profileId *int64, response MethodResponse) {
 		safeGo(response, func() {
 			response.success(handleClearEffect(*profileId))

@@ -84,6 +84,7 @@ class _RecordingCoreHandler extends CoreHandlerInterface {
       CoreMethod.convertAgeSecretKeyToPublicKey => 'age1public',
       CoreMethod.decryptAgeConfig => 'mixed-port: 7890',
       CoreMethod.getMemory => 2048,
+      CoreMethod.getGoroutineCount => 42,
       _ => '',
     };
     return result as T;
@@ -263,6 +264,7 @@ void main() {
       'mixed-port: 7890',
     );
     expect(await handler.getMemory(), 2048);
+    expect(await handler.getGoroutineCount(), 42);
   });
 
   test('getProfileConfig preserves structured core errors', () async {

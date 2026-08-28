@@ -31,6 +31,7 @@ enum CoreMethod {
   startListener,
   stopListener,
   getMemory,
+  getGoroutineCount,
   crash,
   setupConfig,
   clearEffect,
