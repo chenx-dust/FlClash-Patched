@@ -18,6 +18,8 @@ const _forbiddenImports = <String, String>{
 
 const _generatedL10n = ['lib/l10n/l10n.dart', 'lib/l10n/intl/'];
 
+String _repoPath(String path) => p.relative(path).replaceAll('\\', '/');
+
 bool _isGenerated(String path) {
   return path.contains('/generated/') ||
       path.endsWith('.g.dart') ||
@@ -38,7 +40,7 @@ void main() {
         if (entity is! File || !entity.path.endsWith('.dart')) {
           continue;
         }
-        final relative = p.relative(entity.path);
+        final relative = _repoPath(entity.path);
         if (_isGenerated(relative)) {
           continue;
         }

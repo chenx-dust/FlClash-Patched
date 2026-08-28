@@ -12,6 +12,8 @@ const _forbidden = <String, String>{
       'reach Core through coreHandlerProvider, not the global singleton',
 };
 
+String _repoPath(String path) => p.relative(path).replaceAll('\\', '/');
+
 bool _isGenerated(String path) {
   return path.contains('/generated/') ||
       path.endsWith('.g.dart') ||
@@ -31,7 +33,7 @@ void main() {
         if (entity is! File || !entity.path.endsWith('.dart')) {
           continue;
         }
-        final relative = p.relative(entity.path);
+        final relative = _repoPath(entity.path);
         if (_isGenerated(relative)) {
           continue;
         }

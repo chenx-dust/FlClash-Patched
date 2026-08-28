@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:test/test.dart';
 
+String _repoPath(String path) => path.replaceAll('\\', '/');
+
 const _entryPoints = ['lib/main.dart'];
 
 /// Types, and the top level names a file publishes alongside them — the
@@ -22,10 +24,11 @@ Iterable<File> _dartFiles({required bool includeGenerated}) sync* {
     }
     for (final entity in directory.listSync(recursive: true)) {
       if (entity is! File || !entity.path.endsWith('.dart')) continue;
+      final path = _repoPath(entity.path);
       final generated =
-          entity.path.endsWith('.g.dart') ||
-          entity.path.endsWith('.freezed.dart') ||
-          entity.path.contains('/generated/');
+          path.endsWith('.g.dart') ||
+          path.endsWith('.freezed.dart') ||
+          path.contains('/generated/');
       if (generated && !includeGenerated) continue;
       yield entity;
     }
@@ -49,11 +52,11 @@ void main() {
     // notifier is reached through the provider its annotation generates.
     final consumers = {
       for (final file in _dartFiles(includeGenerated: true))
-        file.path: file.readAsStringSync(),
+        _repoPath(file.path): file.readAsStringSync(),
     };
     final sources = {
       for (final file in _dartFiles(includeGenerated: false))
-        file.path: consumers[file.path]!,
+        _repoPath(file.path): consumers[_repoPath(file.path)]!,
     };
     final barrels = {
       for (final MapEntry(key: path, value: source) in sources.entries)

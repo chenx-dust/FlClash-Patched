@@ -10,6 +10,8 @@ import 'package:flutter_test/flutter_test.dart';
 const _arbDir = 'arb';
 const _libDir = 'lib';
 
+String _repoPath(String path) => path.replaceAll('\\', '/');
+
 const _registeredSites = <String, Set<String>>{
   'lib/common/tray.dart': {'mode.name'},
   'lib/manager/app_manager.dart': {'item.label.name'},
@@ -75,7 +77,7 @@ Map<String, Set<String>> _messageSites() {
   final sites = <String, Set<String>>{};
   for (final entity in Directory(_libDir).listSync(recursive: true)) {
     if (entity is! File || !entity.path.endsWith('.dart')) continue;
-    final path = entity.path;
+    final path = _repoPath(entity.path);
     if (path.contains('/generated/') || path.contains('/l10n/')) continue;
     final source = entity.readAsStringSync();
     for (final match in RegExp(r'Intl\.message\(').allMatches(source)) {
