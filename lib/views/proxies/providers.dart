@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/common.dart';
@@ -12,6 +13,8 @@ import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'provider_editor.dart';
 
 class ProvidersView extends ConsumerStatefulWidget {
   const ProvidersView({super.key});
@@ -182,6 +185,45 @@ class ProviderItem extends ConsumerWidget {
     );
   }
 
+  Future<void> _handlePreview(BuildContext context) async {
+    if (provider.path == null) {
+      return;
+    }
+    await BaseNavigator.push<String>(
+      context,
+      ProviderEditorView(provider: provider),
+    );
+  }
+
+  Future<void> _handleEdit(BuildContext context) async {
+    if (provider.path == null) {
+      return;
+    }
+    await BaseNavigator.push<String>(
+      context,
+      ProviderEditorView(provider: provider, editable: true),
+    );
+  }
+
+  Future<void> _handleExportFile(BuildContext context) async {
+    final path = provider.path;
+    if (path == null) {
+      return;
+    }
+    final exported = await globalState.safeRun<bool>(() async {
+      final uri = await picker.saveFile(
+        provider.name,
+        await File(path).readAsBytes(),
+        type: FileType.custom,
+        allowedExtensions: const ['yaml', 'yml'],
+      );
+      return uri != null;
+    });
+    if (exported == true && context.mounted) {
+      context.showNotifier(context.appLocalizations.exportSuccess);
+    }
+  }
+
   Widget? _buildProviderMetadata(BuildContext context) {
     final countLabel = switch (provider.type) {
       'Proxy' => context.appLocalizations.proxiesCount(provider.count),
@@ -211,6 +253,7 @@ class ProviderItem extends ConsumerWidget {
   List<CommonPopupMenuItem> _menuItems(BuildContext context, WidgetRef ref) {
     final appLocalizations = context.appLocalizations;
     final subscriptionInfo = provider.subscriptionInfo;
+    final hasFile = provider.path != null;
     return [
       CommonPopupMenuItem(
         icon: Icons.upload_outlined,
@@ -227,6 +270,33 @@ class ProviderItem extends ConsumerWidget {
             _handleUpdateProvider(ref);
           },
         ),
+      CommonPopupMenuItem(
+        icon: Icons.visibility_outlined,
+        label: appLocalizations.preview,
+        onPressed: hasFile
+            ? () {
+                _handlePreview(context);
+              }
+            : null,
+      ),
+      CommonPopupMenuItem(
+        icon: Icons.edit_outlined,
+        label: appLocalizations.edit,
+        onPressed: hasFile
+            ? () {
+                _handleEdit(context);
+              }
+            : null,
+      ),
+      CommonPopupMenuItem(
+        icon: Icons.file_copy_outlined,
+        label: appLocalizations.exportFile,
+        onPressed: hasFile
+            ? () {
+                _handleExportFile(context);
+              }
+            : null,
+      ),
       if (subscriptionInfo != null && subscriptionInfo.total > 0)
         CommonPopupMenuItem(
           icon: Icons.data_usage_outlined,

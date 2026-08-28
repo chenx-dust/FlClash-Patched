@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/l10n/l10n.dart';
@@ -9,6 +11,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 part 'general/port_dialog.dart';
 part 'general/ua_dialog.dart';
+part 'general/external_controller_dialog.dart';
+
+List<String> _parseHostsValue(String value) {
+  return value.splitByMultipleSeparatorsList;
+}
+
+String _serializeHostsValue(List<String> values) {
+  return values.join(',');
+}
+
+Widget _buildHostsSubtitle(MapEntry<String, String> item) {
+  return Text(_parseHostsValue(item.value).join('\n'));
+}
 
 class LogLevelItem extends ConsumerWidget {
   const LogLevelItem({super.key});
@@ -190,16 +205,45 @@ class HostsItem extends ConsumerWidget {
       widget: MapInputPage(
         title: 'Hosts',
         map: hosts,
+        keyLabel: appLocalizations.domain,
         keyMaxLength: TextInputLimits.domain,
         valueMaxLength: TextInputLimits.hostValue,
+        valueParser: _parseHostsValue,
+        valueSerializer: _serializeHostsValue,
         titleBuilder: (item) => Text(item.key),
-        subtitleBuilder: (item) => Text(item.value),
+        subtitleBuilder: _buildHostsSubtitle,
       ),
       onChanged: (value) {
         ref
             .read(patchClashConfigProvider.notifier)
             .update((state) => state.copyWith(hosts: value));
       },
+    );
+  }
+}
+
+class ExternalControllerItem extends ConsumerWidget {
+  const ExternalControllerItem({super.key});
+
+  Future<void> _handleShowDialog() async {
+    await dialogs.showCommonDialog(child: const _ExternalControllerDialog());
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appLocalizations = context.appLocalizations;
+    final externalController = ref.watch(
+      patchClashConfigProvider.select((state) => state.externalController),
+    );
+    return ListItem(
+      leading: const Icon(Icons.api_outlined),
+      title: Text(appLocalizations.externalController),
+      subtitle: Text(
+        externalController.isNotEmpty
+            ? externalController
+            : appLocalizations.externalControllerDesc,
+      ),
+      onTap: _handleShowDialog,
     );
   }
 }
@@ -229,6 +273,7 @@ final generalItems = <Widget>[
   const TestUrlItem(),
   const PortItem(),
   const HostsItem(),
+  const ExternalControllerItem(),
   _clashToggle(
     icon: Icons.water_outlined,
     title: (l) => 'IPv6',
@@ -296,16 +341,4 @@ final generalItems = <Widget>[
         geositeMatcher: value ? GeositeMatcher.mph : GeositeMatcher.succinct,
       ),
     ),
-  _clashToggle(
-    icon: Icons.api_outlined,
-    title: (l) => l.externalController,
-    subtitle: (l) => l.externalControllerDesc,
-    select: (state) =>
-        state.externalController == ExternalControllerStatus.open,
-    update: (state, value) => state.copyWith(
-      externalController: value
-          ? ExternalControllerStatus.open
-          : ExternalControllerStatus.close,
-    ),
-  ),
 ].separated(const Divider(height: 0)).toList();

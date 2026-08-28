@@ -10,7 +10,11 @@ _ProxyGroup _$ProxyGroupFromJson(Map<String, dynamic> json) => _ProxyGroup(
   profileId: (json['profileId'] as num?)?.toInt(),
   id: Snowflake.buildId((json['id'] as num?)?.toInt()),
   name: json['name'] as String,
-  type: $enumDecode(_$GroupTypeEnumMap, json['type']),
+  type: $enumDecode(
+    _$GroupTypeEnumMap,
+    json['type'],
+    unknownValue: GroupType.Selector,
+  ),
   proxies: (json['proxies'] as List<dynamic>?)
       ?.map((e) => e as String)
       .toList(),
@@ -166,7 +170,12 @@ _Tun _$TunFromJson(Map<String, dynamic> json) => _Tun(
   mtu: (json['mtu'] as num?)?.toInt() ?? defaultTunMtu,
   autoRoute: json['auto-route'] as bool? ?? false,
   stack:
-      $enumDecodeNullable(_$TunStackEnumMap, json['stack']) ?? TunStack.mixed,
+      $enumDecodeNullable(
+        _$TunStackEnumMap,
+        json['stack'],
+        unknownValue: TunStack.mixed,
+      ) ??
+      TunStack.mixed,
   dnsHijack:
       (json['dns-hijack'] as List<dynamic>?)
           ?.map((e) => e as String)
@@ -234,7 +243,11 @@ _Dns _$DnsFromJson(Map<String, dynamic> json) => _Dns(
           .toList() ??
       const ['223.5.5.5'],
   enhancedMode:
-      $enumDecodeNullable(_$DnsModeEnumMap, json['enhanced-mode']) ??
+      $enumDecodeNullable(
+        _$DnsModeEnumMap,
+        json['enhanced-mode'],
+        unknownValue: DnsMode.fakeIp,
+      ) ??
       DnsMode.fakeIp,
   fakeIpRange: json['fake-ip-range'] as String? ?? '198.18.0.1/16',
   fakeIpFilter:
@@ -306,7 +319,11 @@ const _$DnsModeEnumMap = {
 _Rule _$RuleFromJson(Map<String, dynamic> json) => _Rule(
   id: (json['id'] as num?)?.toInt() ?? -1,
   ruleAction:
-      $enumDecodeNullable(_$RuleActionEnumMap, json['ruleAction']) ??
+      $enumDecodeNullable(
+        _$RuleActionEnumMap,
+        json['ruleAction'],
+        unknownValue: RuleAction.DOMAIN,
+      ) ??
       RuleAction.DOMAIN,
   content: json['content'] as String?,
   ruleTarget: json['ruleTarget'] as String?,
@@ -420,7 +437,11 @@ _PatchClashConfig _$PatchClashConfigFromJson(Map<String, dynamic> json) =>
           Mode.rule,
       allowLan: json['allow-lan'] as bool? ?? false,
       logLevel:
-          $enumDecodeNullable(_$LogLevelEnumMap, json['log-level']) ??
+          $enumDecodeNullable(
+            _$LogLevelEnumMap,
+            json['log-level'],
+            unknownValue: LogLevel.error,
+          ) ??
           LogLevel.error,
       ipv6: json['ipv6'] as bool? ?? false,
       findProcessMode:
@@ -445,7 +466,11 @@ _PatchClashConfig _$PatchClashConfigFromJson(Map<String, dynamic> json) =>
           ? defaultGeoXUrl
           : _geoXUrlFromJson(json['geox-url'] as Map<String, Object?>?),
       geodataLoader:
-          $enumDecodeNullable(_$GeodataLoaderEnumMap, json['geodata-loader']) ??
+          $enumDecodeNullable(
+            _$GeodataLoaderEnumMap,
+            json['geodata-loader'],
+            unknownValue: GeodataLoader.memconservative,
+          ) ??
           GeodataLoader.memconservative,
       geositeMatcher:
           $enumDecodeNullable(
@@ -455,12 +480,8 @@ _PatchClashConfig _$PatchClashConfigFromJson(Map<String, dynamic> json) =>
           ) ??
           GeositeMatcher.succinct,
       globalUa: json['global-ua'] as String?,
-      externalController:
-          $enumDecodeNullable(
-            _$ExternalControllerStatusEnumMap,
-            json['external-controller'],
-          ) ??
-          ExternalControllerStatus.close,
+      externalController: json['external-controller'] as String? ?? '',
+      secret: json['secret'] as String? ?? '',
       hosts:
           (json['hosts'] as Map<String, dynamic>?)?.map(
             (k, e) => MapEntry(k, e as String),
@@ -491,8 +512,8 @@ Map<String, dynamic> _$PatchClashConfigToJson(_PatchClashConfig instance) =>
       'geodata-loader': _$GeodataLoaderEnumMap[instance.geodataLoader]!,
       'geosite-matcher': _$GeositeMatcherEnumMap[instance.geositeMatcher]!,
       'global-ua': instance.globalUa,
-      'external-controller':
-          _$ExternalControllerStatusEnumMap[instance.externalController]!,
+      'external-controller': instance.externalController,
+      'secret': instance.secret,
       'hosts': instance.hosts,
       'geo-auto-update': instance.geoAutoUpdate,
       'geo-update-interval': instance.geoUpdateInterval,
@@ -525,9 +546,4 @@ const _$GeodataLoaderEnumMap = {
 const _$GeositeMatcherEnumMap = {
   GeositeMatcher.succinct: 'succinct',
   GeositeMatcher.mph: 'mph',
-};
-
-const _$ExternalControllerStatusEnumMap = {
-  ExternalControllerStatus.close: '',
-  ExternalControllerStatus.open: '127.0.0.1:9090',
 };

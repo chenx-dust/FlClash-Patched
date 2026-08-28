@@ -52,6 +52,21 @@ void main() {
     expect(ruleGroups.single.all.single.now, isEmpty);
 
     container
+        .read(proxiesStyleSettingProvider.notifier)
+        .update((state) => state.copyWith(showHiddenGroups: true));
+    expect(
+      container
+          .read(currentGroupsStateProvider)
+          .value
+          .map((group) => group.name),
+      ['Visible', 'Hidden'],
+    );
+
+    container
+        .read(proxiesStyleSettingProvider.notifier)
+        .update((state) => state.copyWith(showHiddenGroups: false));
+
+    container
         .read(patchClashConfigProvider.notifier)
         .update((state) => state.copyWith(mode: Mode.global));
     expect(container.read(currentGroupsStateProvider).value, hasLength(3));
@@ -159,6 +174,15 @@ void main() {
       final filtered = container.read(filterGroupsStateProvider('ALP')).value;
       expect(filtered, hasLength(1));
       expect(filtered.single.all.single.name, 'Alpha');
+
+      container
+          .read(delayDataSourceProvider.notifier)
+          .setDelay(const Delay(name: 'Beta', url: defaultTestUrl, value: -1));
+      container
+          .read(proxiesStyleSettingProvider.notifier)
+          .update((state) => state.copyWith(hideUnavailable: true));
+      final available = container.read(filterGroupsStateProvider('')).value;
+      expect(available.first.all.map((proxy) => proxy.name), ['Alpha']);
 
       container
           .read(queryProvider(QueryTag.proxies).notifier)

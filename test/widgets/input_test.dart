@@ -404,6 +404,63 @@ void main() {
     expect(find.text('No data'), findsOneWidget);
   });
 
+  testWidgets('MapInputPage adds a key before editing its value list', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TestApp(
+        overrides: [_viewSizeOverride],
+        child: const MapInputPage(
+          title: 'Policies',
+          map: {'example.com': '1.1.1.1,8.8.8.8'},
+          keyLabel: 'Domain',
+          valueLabel: 'Nameserver',
+          valueParser: _splitValues,
+          valueSerializer: _joinValues,
+          titleBuilder: _entryTitle,
+          subtitleBuilder: _entrySubtitle,
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('example.com').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('1.1.1.1'), findsOneWidget);
+    expect(find.text('8.8.8.8'), findsOneWidget);
+    expect(find.byType(TextFormField), findsNothing);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Add'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AddDialog), findsOneWidget);
+    await tester.enterText(find.byType(TextFormField), 'new.example.com');
+    await tester.tap(find.text('Confirm'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(TextFormField), findsNothing);
+    expect(find.text('No data'), findsOneWidget);
+
+    await tester.tap(
+      find.descendant(
+        of: find.byType(ListInputPage),
+        matching: find.text('Add'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField).last, '9.9.9.9');
+    await tester.tap(find.text('Confirm'));
+    await tester.pumpAndSettle();
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
+    expect(find.text('new.example.com'), findsOneWidget);
+    expect(find.text('9.9.9.9'), findsOneWidget);
+  });
+
   test('NoInputBorder implements border geometry and interior painting', () {
     const border = NoInputBorder();
     const rect = Rect.fromLTWH(1, 2, 30, 40);
@@ -433,6 +490,10 @@ Widget _textBuilder(String value) {
 Widget _entryTitle(MapEntry<String, String> value) => Text(value.key);
 
 Widget _entrySubtitle(MapEntry<String, String> value) => Text(value.value);
+
+List<String> _splitValues(String value) => value.split(',');
+
+String _joinValues(List<String> values) => values.join(',');
 
 double _top(WidgetTester tester, String text) {
   return tester.getTopLeft(find.text(text)).dy;

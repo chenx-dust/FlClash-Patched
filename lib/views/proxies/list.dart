@@ -8,6 +8,7 @@ import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sliver_tools/sliver_tools.dart';
 
 import 'card.dart';
 import 'common.dart';
@@ -24,10 +25,10 @@ class ProxiesListView extends ConsumerStatefulWidget {
   const ProxiesListView({super.key});
 
   @override
-  ConsumerState<ProxiesListView> createState() => _ProxiesListViewState();
+  ConsumerState<ProxiesListView> createState() => ProxiesListViewState();
 }
 
-class _ProxiesListViewState extends ConsumerState<ProxiesListView> {
+class ProxiesListViewState extends ConsumerState<ProxiesListView> {
   final _controller = ScrollController();
   GroupOffsets _groupOffsets = GroupOffsets.empty;
   double containerHeight = 0;
@@ -53,8 +54,12 @@ class _ProxiesListViewState extends ConsumerState<ProxiesListView> {
     _enterGroupName = null;
   }
 
-  void _handleChange(Set<String> currentUnfoldSet, String groupName) {
-    _autoScrollToGroup(groupName);
+  void _handleChange(
+    Set<String> currentUnfoldSet,
+    String groupName,
+    ProxiesListHeaderStyle listHeaderStyle,
+  ) {
+    _autoScrollToGroup(groupName, listHeaderStyle);
     final tempUnfoldSet = Set<String>.from(currentUnfoldSet);
     if (tempUnfoldSet.contains(groupName)) {
       tempUnfoldSet.remove(groupName);
@@ -73,13 +78,14 @@ class _ProxiesListViewState extends ConsumerState<ProxiesListView> {
     required int columns,
     required Set<String> currentUnfoldSet,
     required ProxyCardType cardType,
+    required ProxiesListHeaderStyle listHeaderStyle,
   }) {
     final offsets = <double>[];
     final rowExtent = getItemHeight(cardType) + 8;
     var currentOffset = 0.0;
     for (final group in groups) {
       offsets.add(currentOffset);
-      currentOffset += listHeaderHeight + 8;
+      currentOffset += getListHeaderHeight(listHeaderStyle) + 8;
       if (currentUnfoldSet.contains(group.name)) {
         final rowCount = (group.all.length + columns - 1) ~/ columns;
         currentOffset += rowCount * rowExtent;
@@ -140,6 +146,7 @@ class _ProxiesListViewState extends ConsumerState<ProxiesListView> {
     required Set<String> currentUnfoldSet,
     required int columns,
     required ProxyCardType cardType,
+    required ProxiesListHeaderStyle listHeaderStyle,
   }) {
     final groupName = group.name;
     final isExpand = currentUnfoldSet.contains(groupName);
@@ -154,25 +161,28 @@ class _ProxiesListViewState extends ConsumerState<ProxiesListView> {
             child: Padding(
               padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
               child: SizedBox(
-                height: listHeaderHeight,
+                height: getListHeaderHeight(listHeaderStyle),
                 child: ListHeader(
                   enterAnimated: false,
                   onScrollToSelected: (groupName) {
                     _scrollToGroupSelected(groupName, columns);
                   },
                   key: ValueKey(groupName),
+                  listHeaderStyle: listHeaderStyle,
                   isExpand: isExpand,
                   group: group,
                   onChange: (groupName) {
-                    _handleChange(currentUnfoldSet, groupName);
+                    _handleChange(currentUnfoldSet, groupName, listHeaderStyle);
                   },
                 ),
               ),
             ),
           ),
         ),
-        if (isExpand)
-          SliverFixedExtentList(
+        SliverAnimatedPaintExtent(
+          duration: Duration(milliseconds: isExpand ? 120 : 250),
+          curve: Curves.easeInOutCubic,
+          child: SliverFixedExtentList(
             itemExtent: getItemHeight(cardType) + 8,
             delegate: SliverChildBuilderDelegate(
               (_, index) => _buildProxyRow(
@@ -185,6 +195,7 @@ class _ProxiesListViewState extends ConsumerState<ProxiesListView> {
               childCount: rows.length,
             ),
           ),
+        ),
       ],
     );
   }
@@ -237,14 +248,17 @@ class _ProxiesListViewState extends ConsumerState<ProxiesListView> {
     _controller.jumpTo(targetScrollOffset);
   }
 
-  void _autoScrollToGroup(String groupName) {
+  void _autoScrollToGroup(
+    String groupName,
+    ProxiesListHeaderStyle listHeaderStyle,
+  ) {
     final pixels = _controller.position.pixels;
     final offset = _getGroupOffset(groupName);
     _scrollToMakeVisibleWithPadding(
       containerHeight: containerHeight,
       pixels: pixels,
       start: offset,
-      end: offset + listHeaderHeight,
+      end: offset + getListHeaderHeight(listHeaderStyle),
     );
   }
 
@@ -276,6 +290,20 @@ class _ProxiesListViewState extends ConsumerState<ProxiesListView> {
     }
   }
 
+  Future<void> delayTestUnfoldedGroups() async {
+    final state = ref.read(proxiesListStateProvider);
+    final expandedGroups = state.groups.where(
+      (group) => state.currentUnfoldSet.contains(group.name),
+    );
+    await Future.wait(
+      expandedGroups.map(
+        (group) => ref
+            .read(proxiesActionProvider.notifier)
+            .delayTest(group.all, group.testUrl),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
@@ -283,6 +311,9 @@ class _ProxiesListViewState extends ConsumerState<ProxiesListView> {
       builder: (_, ref, _) {
         final state = ref.watch(proxiesListStateProvider);
         ref.watch(themeSettingProvider.select((state) => state.textScale));
+        final headerStyle = ref.watch(
+          proxiesStyleSettingProvider.select((state) => state.listHeaderStyle),
+        );
         final proxiesLayout = ref.watch(
           proxiesStyleSettingProvider.select((state) => state.layout),
         );
@@ -303,6 +334,7 @@ class _ProxiesListViewState extends ConsumerState<ProxiesListView> {
               currentUnfoldSet: state.currentUnfoldSet,
               columns: columns,
               cardType: state.proxyCardType,
+              listHeaderStyle: headerStyle,
             );
             containerHeight = max(constraints.maxHeight - 16, 0);
             return CommonScrollBar(
@@ -324,6 +356,7 @@ class _ProxiesListViewState extends ConsumerState<ProxiesListView> {
                           currentUnfoldSet: state.currentUnfoldSet,
                           columns: columns,
                           cardType: state.proxyCardType,
+                          listHeaderStyle: headerStyle,
                         ),
                       SliverToBoxAdapter(
                         child: SizedBox(
@@ -351,9 +384,12 @@ class ListHeader extends ConsumerStatefulWidget {
 
   final bool enterAnimated;
 
+  final ProxiesListHeaderStyle listHeaderStyle;
+
   const ListHeader({
     super.key,
     this.enterAnimated = true,
+    this.listHeaderStyle = ProxiesListHeaderStyle.loose,
     required this.group,
     required this.onChange,
     required this.onScrollToSelected,
@@ -374,6 +410,39 @@ class _ListHeaderState extends ConsumerState<ListHeader> {
   String get groupType => widget.group.type.name;
 
   bool get isExpand => widget.isExpand;
+
+  double get _cardRadius => switch (widget.listHeaderStyle) {
+    ProxiesListHeaderStyle.loose => 18,
+    ProxiesListHeaderStyle.standard => 16,
+    ProxiesListHeaderStyle.tight => 22,
+  };
+
+  double get _iconSpacing => switch (widget.listHeaderStyle) {
+    ProxiesListHeaderStyle.loose => 16,
+    ProxiesListHeaderStyle.standard => 12,
+    ProxiesListHeaderStyle.tight => 8,
+  };
+
+  double get _iconRadius => switch (widget.listHeaderStyle) {
+    ProxiesListHeaderStyle.loose => 12,
+    ProxiesListHeaderStyle.standard => 11,
+    ProxiesListHeaderStyle.tight => 16,
+  };
+
+  EdgeInsets get _contentPadding => switch (widget.listHeaderStyle) {
+    ProxiesListHeaderStyle.loose => const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 12,
+    ),
+    ProxiesListHeaderStyle.standard => const EdgeInsets.symmetric(
+      horizontal: 10,
+      vertical: 8,
+    ),
+    ProxiesListHeaderStyle.tight => const EdgeInsets.symmetric(
+      horizontal: 6,
+      vertical: 6,
+    ),
+  };
 
   Future<void> _delayTest() async {
     if (isLock) return;
@@ -397,18 +466,30 @@ class _ListHeaderState extends ConsumerState<ListHeader> {
       enterActionsOnRight: true,
       enterAnimated: widget.enterAnimated,
       key: widget.key,
-      radius: AppCorner.xl.ap,
+      radius: _cardRadius.ap,
       type: CommonCardType.filled,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: _contentPadding,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
               child: Row(
                 children: [
-                  _GroupIcon(src: icon),
-                  Flexible(child: _GroupSummary(groupName: groupName)),
+                  _GroupIcon(
+                    src: icon,
+                    groupName: groupName,
+                    spacing: _iconSpacing,
+                    radius: _iconRadius,
+                  ),
+                  Flexible(
+                    child: _GroupSummary(
+                      groupName: groupName,
+                      groupType: groupType,
+                      style: widget.listHeaderStyle,
+                      configuredIcon: icon,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -429,25 +510,62 @@ class _ListHeaderState extends ConsumerState<ListHeader> {
       onPressed: () {
         _handleChange(groupName);
       },
+      onLongPress: () async {
+        await resetProxySelection(ref, groupName);
+      },
     );
   }
 }
 
 class _GroupIcon extends ConsumerWidget {
-  const _GroupIcon({required this.src});
+  const _GroupIcon({
+    required this.src,
+    required this.groupName,
+    required this.spacing,
+    required this.radius,
+  });
 
   final String src;
+  final String groupName;
+  final double spacing;
+  final double radius;
+
+  bool _shouldUseEmoji(ProxiesIconSource source) {
+    final emoji = getFirstEmoji(groupName);
+    return switch (source) {
+      ProxiesIconSource.standard => src.isEmpty && emoji.isNotEmpty,
+      ProxiesIconSource.config => false,
+      ProxiesIconSource.emoji => emoji.isNotEmpty,
+    };
+  }
+
+  Widget _buildContent(double size, ProxiesIconSource source) {
+    if (_shouldUseEmoji(source)) {
+      return EmojiText(
+        getFirstEmoji(groupName),
+        style: TextStyle(fontSize: size * 0.75, height: 1.2),
+      );
+    }
+    return IconTheme.merge(
+      data: IconThemeData(size: size),
+      child: CommonTargetIcon(
+        src: source == ProxiesIconSource.emoji ? '' : src,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final iconStyle = ref.watch(
-      proxiesStyleSettingProvider.select((state) => state.iconStyle),
+    final props = ref.watch(
+      proxiesStyleSettingProvider.select(
+        (state) => (style: state.iconStyle, source: state.iconSource),
+      ),
     );
-    return switch (iconStyle) {
+    return switch (props.style) {
       ProxiesIconStyle.standard => LayoutBuilder(
         builder: (_, constraints) {
           return Container(
-            margin: const EdgeInsets.only(right: 12),
+            margin: EdgeInsets.only(right: spacing),
             child: AspectRatio(
               aspectRatio: 1,
               child: Container(
@@ -455,14 +573,14 @@ class _GroupIcon extends ConsumerWidget {
                 width: constraints.maxWidth,
                 alignment: Alignment.center,
                 padding: EdgeInsets.all(6.ap),
-                decoration: ShapeDecoration(
+                decoration: BoxDecoration(
                   color: context.colorScheme.secondaryContainer,
-                  shape: AppShape.md,
+                  borderRadius: BorderRadius.circular(radius.ap),
                 ),
                 clipBehavior: Clip.antiAlias,
-                child: IconTheme.merge(
-                  data: IconThemeData(size: constraints.maxHeight - 12.ap),
-                  child: CommonTargetIcon(src: src),
+                child: _buildContent(
+                  constraints.maxHeight - 12.ap,
+                  props.source,
                 ),
               ),
             ),
@@ -470,13 +588,10 @@ class _GroupIcon extends ConsumerWidget {
         },
       ),
       ProxiesIconStyle.icon => Container(
-        margin: const EdgeInsets.only(right: 8),
+        margin: EdgeInsets.only(right: spacing),
         child: LayoutBuilder(
           builder: (_, constraints) {
-            return IconTheme.merge(
-              data: IconThemeData(size: constraints.maxHeight - 8.ap),
-              child: CommonTargetIcon(src: src),
-            );
+            return _buildContent(constraints.maxHeight - 8.ap, props.source);
           },
         ),
       ),
@@ -485,18 +600,78 @@ class _GroupIcon extends ConsumerWidget {
   }
 }
 
-class _GroupSummary extends StatelessWidget {
-  const _GroupSummary({required this.groupName});
+class _GroupSummary extends ConsumerWidget {
+  const _GroupSummary({
+    required this.groupName,
+    required this.groupType,
+    required this.style,
+    required this.configuredIcon,
+  });
 
   final String groupName;
+  final String groupType;
+  final ProxiesListHeaderStyle style;
+  final String configuredIcon;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final iconProps = ref.watch(
+      proxiesStyleSettingProvider.select(
+        (state) => (style: state.iconStyle, source: state.iconSource),
+      ),
+    );
+    final emoji = getFirstEmoji(groupName);
+    final usesEmoji =
+        iconProps.style != ProxiesIconStyle.none &&
+        switch (iconProps.source) {
+          ProxiesIconSource.standard =>
+            configuredIcon.isEmpty && emoji.isNotEmpty,
+          ProxiesIconSource.config => false,
+          ProxiesIconSource.emoji => emoji.isNotEmpty,
+        };
+    final displayName = usesEmoji
+        ? removeLeadingEmoji(groupName).takeFirstValid([groupName])
+        : groupName;
+    final titleStyle = switch (style) {
+      ProxiesListHeaderStyle.loose => context.textTheme.titleMedium,
+      ProxiesListHeaderStyle.standard => context.textTheme.titleSmall,
+      ProxiesListHeaderStyle.tight => context.textTheme.titleSmall,
+    };
+    if (style == ProxiesListHeaderStyle.tight) {
+      return Row(
+        children: [
+          Flexible(
+            flex: 2,
+            child: EmojiText(
+              displayName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: titleStyle,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Flexible(
+            flex: 3,
+            child: Text(
+              groupType,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: context.textTheme.labelSmall?.toLight,
+            ),
+          ),
+        ],
+      );
+    }
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        EmojiText(groupName, style: context.textTheme.titleMedium),
+        EmojiText(
+          displayName,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: titleStyle,
+        ),
         const SizedBox(height: 4),
         Flexible(flex: 1, child: _SelectedProxyName(groupName: groupName)),
       ],
@@ -576,8 +751,8 @@ class _GroupActions extends StatelessWidget {
         ],
         IconButton.filledTonal(
           tooltip: isExpand
-              ? context.appLocalizations.showLess
-              : context.appLocalizations.showMore,
+              ? context.appLocalizations.collapse
+              : context.appLocalizations.expand,
           visualDensity: VisualDensity.compact,
           padding: const EdgeInsets.all(2),
           iconSize: 24,

@@ -77,6 +77,30 @@ class ResourcesView extends ConsumerWidget {
 
     return CommonScaffold(
       title: context.appLocalizations.resources,
+      actions: [
+        Consumer(
+          builder: (_, ref, _) {
+            final isUpdating = [
+              for (final geoResource in geoResources)
+                ref.watch(isUpdatingProvider(geoResource.updatingKey)),
+            ].any((value) => value);
+            return IconButton(
+              tooltip: appLocalizations.sync,
+              onPressed: isUpdating
+                  ? null
+                  : () async {
+                      await globalState.safeRun<void>(
+                        ref
+                            .read(geoResourceActionProvider.notifier)
+                            .updateAllGeoResources,
+                        silence: false,
+                      );
+                    },
+              icon: const Icon(Icons.sync),
+            );
+          },
+        ),
+      ],
       body: ListView(
         padding: const EdgeInsets.symmetric(
           horizontal: 16,

@@ -54,11 +54,12 @@ extension StringExtension on String {
         uri.host.isNotEmpty;
   }
 
-  dynamic get splitByMultipleSeparators {
-    final parts = split(
-      RegExp(r'[, ;]+'),
-    ).where((part) => part.isNotEmpty).toList();
+  List<String> get splitByMultipleSeparatorsList {
+    return split(RegExp(r'[, ;]+')).where((part) => part.isNotEmpty).toList();
+  }
 
+  dynamic get splitByMultipleSeparators {
+    final parts = splitByMultipleSeparatorsList;
     return parts.length > 1 ? parts : this;
   }
 

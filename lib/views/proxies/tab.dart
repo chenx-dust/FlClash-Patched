@@ -226,14 +226,21 @@ class ProxiesTabViewState extends ConsumerState<ProxiesTabView>
                     tabAlignment: TabAlignment.start,
                     tabs: [
                       for (final group in groups)
-                        Tab(
-                          child: Builder(
-                            builder: (context) {
-                              return EmojiText(
-                                group.name,
-                                style: DefaultTextStyle.of(context).style,
-                              );
-                            },
+                        GestureDetector(
+                          key: ValueKey('proxy-group-tab-${group.name}'),
+                          behavior: HitTestBehavior.opaque,
+                          onLongPress: () async {
+                            await resetProxySelection(ref, group.name);
+                          },
+                          child: Tab(
+                            child: Builder(
+                              builder: (context) {
+                                return EmojiText(
+                                  group.name,
+                                  style: DefaultTextStyle.of(context).style,
+                                );
+                              },
+                            ),
                           ),
                         ),
                     ],

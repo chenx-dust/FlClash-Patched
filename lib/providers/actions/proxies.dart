@@ -71,10 +71,19 @@ class ProxiesAction extends _$ProxiesAction {
     return ref.read(currentProfileProvider)?.selectedMap[groupName] ?? '';
   }
 
+  Future<void> resetProxySelection(String groupName) async {
+    debouncer.cancel((FunctionTag.changeProxy, groupName));
+    debouncer.cancel(FunctionTag.updateGroups);
+    _pendingSelectedRollback.remove(groupName);
+    await changeProxy(groupName: groupName, proxyName: '');
+    await updateGroups();
+  }
+
   Future<void> updateGroups() async {
     try {
       commonPrint.log('updateGroups');
-      ref.read(groupsProvider.notifier).value = await retry(
+      final profileId = ref.read(currentProfileProvider)?.id;
+      final groups = await retry(
         task: () async {
           final sortType = ref.read(
             proxiesStyleSettingProvider.select((state) => state.sortType),
@@ -95,12 +104,41 @@ class ProxiesAction extends _$ProxiesAction {
         },
         retryIf: (res) => res.isEmpty,
       );
+      ref.read(groupsProvider.notifier).value = groups;
+      _removeUnavailableSelections(profileId: profileId, groups: groups);
     } catch (e) {
       commonPrint.log(
         'updateGroups error: $e',
         logLevel: coreFailureLogLevel(e),
       );
     }
+  }
+
+  void _removeUnavailableSelections({
+    required int? profileId,
+    required List<Group> groups,
+  }) {
+    final currentProfile = ref.read(currentProfileProvider);
+    if (currentProfile == null || currentProfile.id != profileId) {
+      return;
+    }
+    final availableProxies = {
+      for (final group in groups)
+        group.name: group.all.map((proxy) => proxy.name).toSet(),
+    };
+    final selectedMap = Map<String, String>.fromEntries(
+      currentProfile.selectedMap.entries.where(
+        (entry) =>
+            entry.value != compatibleProxyName &&
+            availableProxies[entry.key]?.contains(entry.value) == true,
+      ),
+    );
+    if (selectedMap.length == currentProfile.selectedMap.length) {
+      return;
+    }
+    ref
+        .read(profilesProvider.notifier)
+        .put(currentProfile.copyWith(selectedMap: selectedMap));
   }
 
   void updateCurrentGroupName(String groupName) {

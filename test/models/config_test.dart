@@ -106,6 +106,7 @@ void main() {
       expect(restored.closeConnections, true);
       expect(restored.isAnimateToPage, true);
       expect(restored.autoCheckUpdate, true);
+      expect(restored.ignoreCertificateErrors, false);
       expect(restored.showLabel, false);
       expect(restored.minimizeOnExit, true);
       expect(restored.restoreStrategy, RestoreStrategy.compatible);
@@ -121,6 +122,7 @@ void main() {
         autoLaunch: true,
         highPriorityAutoLaunch: true,
         closeConnections: false,
+        ignoreCertificateErrors: true,
         testUrl: 'https://custom.test',
         customUserAgent: 'CustomUA/1.0',
       );
@@ -134,6 +136,7 @@ void main() {
       expect(restored.autoLaunch, true);
       expect(restored.highPriorityAutoLaunch, true);
       expect(restored.closeConnections, false);
+      expect(restored.ignoreCertificateErrors, true);
       expect(restored.testUrl, 'https://custom.test');
       expect(restored.customUserAgent, 'CustomUA/1.0');
     });
@@ -244,13 +247,33 @@ void main() {
   });
 
   group('PatchClashConfig JSON round-trip', () {
+    test('DNS modes use their declared config values', () {
+      const values = {
+        DnsMode.normal: 'normal',
+        DnsMode.fakeIp: 'fake-ip',
+        DnsMode.redirHost: 'redir-host',
+        DnsMode.hosts: 'hosts',
+      };
+
+      for (final entry in values.entries) {
+        expect(entry.key.value, entry.value);
+        final dns = Dns(enhancedMode: entry.key);
+        expect(dns.toJson()['enhanced-mode'], entry.value);
+        expect(
+          Dns.fromJson({'enhanced-mode': entry.value}).enhancedMode,
+          entry.key,
+        );
+      }
+    });
+
     test('defaults match Clash patch defaults', () {
       const config = PatchClashConfig();
 
       expect(config.mixedPort, defaultMixedPort);
       expect(config.allowLan, false);
       expect(config.mode, Mode.rule);
-      expect(config.externalController, ExternalControllerStatus.close);
+      expect(config.externalController, '');
+      expect(config.secret, '');
       expect(config.geodataLoader, GeodataLoader.memconservative);
       expect(config.geositeMatcher, GeositeMatcher.succinct);
       expect(config.tun.mtu, defaultTunMtu);
@@ -262,7 +285,8 @@ void main() {
         allowLan: true,
         mode: Mode.rule,
         logLevel: LogLevel.debug,
-        externalController: ExternalControllerStatus.open,
+        externalController: '0.0.0.0:9091',
+        secret: 'test-secret',
         tun: Tun(mtu: 1500),
         geodataLoader: GeodataLoader.memconservative,
         geositeMatcher: GeositeMatcher.mph,
@@ -282,7 +306,8 @@ void main() {
       expect(restored.allowLan, true);
       expect(restored.mode, Mode.rule);
       expect(restored.logLevel, LogLevel.debug);
-      expect(restored.externalController, ExternalControllerStatus.open);
+      expect(restored.externalController, '0.0.0.0:9091');
+      expect(restored.secret, 'test-secret');
       expect(restored.tun.mtu, 1500);
       expect(restored.tun.toJson(), containsPair('mtu', 1500));
       expect(restored.geodataLoader, GeodataLoader.memconservative);
@@ -299,12 +324,18 @@ void main() {
       expect(props.type, ProxiesType.tab);
       expect(props.sortType, ProxiesSortType.none);
       expect(props.layout, ProxiesLayout.standard);
+      expect(props.iconSource, ProxiesIconSource.standard);
+      expect(props.hideUnavailable, false);
+      expect(props.showHiddenGroups, false);
     });
 
     test('round-trip with custom values', () {
       const props = ProxiesStyleProps(
         type: ProxiesType.list,
         sortType: ProxiesSortType.delay,
+        iconSource: ProxiesIconSource.emoji,
+        hideUnavailable: true,
+        showHiddenGroups: true,
       );
       final restored = roundTrip(
         () => props.toJson(),
@@ -312,6 +343,9 @@ void main() {
       );
       expect(restored.type, ProxiesType.list);
       expect(restored.sortType, ProxiesSortType.delay);
+      expect(restored.iconSource, ProxiesIconSource.emoji);
+      expect(restored.hideUnavailable, true);
+      expect(restored.showHiddenGroups, true);
     });
   });
 
@@ -320,7 +354,7 @@ void main() {
       const props = ThemeProps();
       expect(props.primaryColor, null);
       expect(props.primaryColors, defaultPrimaryColors);
-      expect(props.themeMode, ThemeMode.dark);
+      expect(props.themeMode, ThemeMode.system);
       expect(props.pureBlack, false);
       expect(props.monochromeTrayIcon, true);
       expect(props.predictiveBack, true);
@@ -329,7 +363,7 @@ void main() {
 
     test('safeFromJson returns default on null', () {
       final result = ThemeProps.safeFromJson(null);
-      expect(result.themeMode, ThemeMode.dark);
+      expect(result.themeMode, ThemeMode.system);
     });
 
     test('round-trip with custom values', () {

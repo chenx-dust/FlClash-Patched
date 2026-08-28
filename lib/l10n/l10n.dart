@@ -264,6 +264,16 @@ class AppLocalizations {
     return Intl.message('Settings', name: 'settings', desc: '', args: []);
   }
 
+  /// `Style Settings`
+  String get styleSettings {
+    return Intl.message(
+      'Style Settings',
+      name: 'styleSettings',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Language`
   String get language {
     return Intl.message('Language', name: 'language', desc: '', args: []);
@@ -489,21 +499,21 @@ class AppLocalizations {
     );
   }
 
-  /// `Verify TLS certificates`
-  String get checkCertificate {
+  /// `Ignore Certificate Validation`
+  String get ignoreCertificateErrors {
     return Intl.message(
-      'Verify TLS certificates',
-      name: 'checkCertificate',
+      'Ignore Certificate Validation',
+      name: 'ignoreCertificateErrors',
       desc: '',
       args: [],
     );
   }
 
-  /// `Reject untrusted certificates. Turning this off exposes subscriptions and backups to man-in-the-middle attacks`
-  String get checkCertificateDesc {
+  /// `Allow HTTPS connections with invalid certificates. This reduces security`
+  String get ignoreCertificateErrorsDesc {
     return Intl.message(
-      'Reject untrusted certificates. Turning this off exposes subscriptions and backups to man-in-the-middle attacks',
-      name: 'checkCertificateDesc',
+      'Allow HTTPS connections with invalid certificates. This reduces security',
+      name: 'ignoreCertificateErrorsDesc',
       desc: '',
       args: [],
     );
@@ -1179,14 +1189,59 @@ class AppLocalizations {
     );
   }
 
-  /// `Once enabled, the Clash kernel can be controlled on port 9090`
+  /// `Configure external access to the Clash core`
   String get externalControllerDesc {
     return Intl.message(
-      'Once enabled, the Clash kernel can be controlled on port 9090',
+      'Configure external access to the Clash core',
       name: 'externalControllerDesc',
       desc: '',
       args: [],
     );
+  }
+
+  /// `Enable External Controller`
+  String get enableExternalController {
+    return Intl.message(
+      'Enable External Controller',
+      name: 'enableExternalController',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow LAN Access`
+  String get allowLanAccess {
+    return Intl.message(
+      'Allow LAN Access',
+      name: 'allowLanAccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow access to the external controller from the LAN`
+  String get allowLanAccessDesc {
+    return Intl.message(
+      'Allow access to the external controller from the LAN',
+      name: 'allowLanAccessDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Listening Port`
+  String get listeningPort {
+    return Intl.message(
+      'Listening Port',
+      name: 'listeningPort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Random`
+  String get random {
+    return Intl.message('Random', name: 'random', desc: '', args: []);
   }
 
   /// `When turned on it will be able to receive IPv6 traffic`
@@ -1659,6 +1714,11 @@ class AppLocalizations {
     return Intl.message('Layout', name: 'layout', desc: '', args: []);
   }
 
+  /// `Header`
+  String get header {
+    return Intl.message('Header', name: 'header', desc: '', args: []);
+  }
+
   /// `Tight`
   String get tight {
     return Intl.message('Tight', name: 'tight', desc: '', args: []);
@@ -1824,11 +1884,26 @@ class AppLocalizations {
     );
   }
 
+  /// `Prefer HTTP/3`
+  String get preferH3 {
+    return Intl.message('Prefer HTTP/3', name: 'preferH3', desc: '', args: []);
+  }
+
   /// `Prioritize the use of DOH's http/3`
   String get preferH3Desc {
     return Intl.message(
       'Prioritize the use of DOH\'s http/3',
       name: 'preferH3Desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `When disabled, AAAA queries return an empty result`
+  String get dnsIPv6Desc {
+    return Intl.message(
+      'When disabled, AAAA queries return an empty result',
+      name: 'dnsIPv6Desc',
       desc: '',
       args: [],
     );
@@ -1879,6 +1954,16 @@ class AppLocalizations {
     );
   }
 
+  /// `Domains matched in Fake IP mode receive real IP addresses instead of Fake IP addresses`
+  String get fakeipFilterDesc {
+    return Intl.message(
+      'Domains matched in Fake IP mode receive real IP addresses instead of Fake IP addresses',
+      name: 'fakeipFilterDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Default Nameserver`
   String get defaultNameserver {
     return Intl.message(
@@ -1919,11 +2004,31 @@ class AppLocalizations {
     return Intl.message('Use hosts', name: 'useHosts', desc: '', args: []);
   }
 
+  /// `Checks the hosts entries in the configuration before querying upstream DNS servers`
+  String get useHostsDesc {
+    return Intl.message(
+      'Checks the hosts entries in the configuration before querying upstream DNS servers',
+      name: 'useHostsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Use system hosts`
   String get useSystemHosts {
     return Intl.message(
       'Use system hosts',
       name: 'useSystemHosts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Checks the operating system's hosts file when resolving domain names`
+  String get useSystemHostsDesc {
+    return Intl.message(
+      'Checks the operating system\'s hosts file when resolving domain names',
+      name: 'useSystemHostsDesc',
       desc: '',
       args: [],
     );
@@ -2014,9 +2119,29 @@ class AppLocalizations {
     );
   }
 
+  /// `Checks nameserver results against GeoIP Code; results outside that region use fallback`
+  String get fallbackGeoipDesc {
+    return Intl.message(
+      'Checks nameserver results against GeoIP Code; results outside that region use fallback',
+      name: 'fallbackGeoipDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `GeoIP code`
   String get geoipCode {
     return Intl.message('GeoIP code', name: 'geoipCode', desc: '', args: []);
+  }
+
+  /// `Domains matching these GeoSite categories use fallback directly`
+  String get fallbackGeositeDesc {
+    return Intl.message(
+      'Domains matching these GeoSite categories use fallback directly',
+      name: 'fallbackGeositeDesc',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `IP CIDR`
@@ -2024,9 +2149,29 @@ class AppLocalizations {
     return Intl.message('IP CIDR', name: 'ipcidr', desc: '', args: []);
   }
 
+  /// `Nameserver results matching these CIDR prefixes are replaced with fallback results`
+  String get fallbackIpcidrDesc {
+    return Intl.message(
+      'Nameserver results matching these CIDR prefixes are replaced with fallback results',
+      name: 'fallbackIpcidrDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Domain`
   String get domain {
     return Intl.message('Domain', name: 'domain', desc: '', args: []);
+  }
+
+  /// `Matching domains use fallback directly without querying nameserver`
+  String get fallbackDomainDesc {
+    return Intl.message(
+      'Matching domains use fallback directly without querying nameserver',
+      name: 'fallbackDomainDesc',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Reset`

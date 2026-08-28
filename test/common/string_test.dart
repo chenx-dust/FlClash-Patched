@@ -29,6 +29,11 @@ void main() {
   });
 
   group('StringExtension.splitByMultipleSeparators', () {
+    test('always returns a list from the typed variant', () {
+      expect('hello'.splitByMultipleSeparatorsList, ['hello']);
+      expect('a, b; c'.splitByMultipleSeparatorsList, ['a', 'b', 'c']);
+    });
+
     test('splits on comma', () {
       final result = 'a,b,c'.splitByMultipleSeparators;
       expect(result, ['a', 'b', 'c']);

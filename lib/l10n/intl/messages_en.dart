@@ -177,6 +177,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Some apps can bypass VPN when turned on",
     ),
     "allowLan": MessageLookupByLibrary.simpleMessage("Allow LAN"),
+    "allowLanAccess": MessageLookupByLibrary.simpleMessage("Allow LAN Access"),
+    "allowLanAccessDesc": MessageLookupByLibrary.simpleMessage(
+      "Allow access to the external controller from the LAN",
+    ),
     "allowLanDesc": MessageLookupByLibrary.simpleMessage(
       "Allow access proxy through the LAN",
     ),
@@ -269,12 +273,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "changelogFixes": MessageLookupByLibrary.simpleMessage("Bug fixes"),
     "changelogPerformance": MessageLookupByLibrary.simpleMessage("Performance"),
     "changelogReverts": MessageLookupByLibrary.simpleMessage("Reverts"),
-    "checkCertificate": MessageLookupByLibrary.simpleMessage(
-      "Verify TLS certificates",
-    ),
-    "checkCertificateDesc": MessageLookupByLibrary.simpleMessage(
-      "Reject untrusted certificates. Turning this off exposes subscriptions and backups to man-in-the-middle attacks",
-    ),
     "checkUpdate": MessageLookupByLibrary.simpleMessage("Check for updates"),
     "checkUpdateError": MessageLookupByLibrary.simpleMessage(
       "The current application is already the latest version",
@@ -402,6 +400,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Update DNS related settings",
     ),
     "dnsHijacking": MessageLookupByLibrary.simpleMessage("DNS hijacking"),
+    "dnsIPv6Desc": MessageLookupByLibrary.simpleMessage(
+      "When disabled, AAAA queries return an empty result",
+    ),
     "dnsMode": MessageLookupByLibrary.simpleMessage("DNS mode"),
     "doYouWantToPass": MessageLookupByLibrary.simpleMessage(
       "Do you want to pass",
@@ -424,6 +425,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "editSsid": MessageLookupByLibrary.simpleMessage("Edit SSID"),
     "emptyTip": m6,
     "en": MessageLookupByLibrary.simpleMessage("English"),
+    "enableExternalController": MessageLookupByLibrary.simpleMessage(
+      "Enable External Controller",
+    ),
     "enforceRoutes": MessageLookupByLibrary.simpleMessage("Enforce Routes"),
     "enforceRoutesDesc": MessageLookupByLibrary.simpleMessage(
       "Ensure traffic is routed through the tunnel even when more specific routes exist",
@@ -477,17 +481,32 @@ class MessageLookup extends MessageLookupByLibrary {
       "External Controller",
     ),
     "externalControllerDesc": MessageLookupByLibrary.simpleMessage(
-      "Once enabled, the Clash kernel can be controlled on port 9090",
+      "Configure external access to the Clash core",
     ),
     "externalFetch": MessageLookupByLibrary.simpleMessage("External fetch"),
     "externalLink": MessageLookupByLibrary.simpleMessage("External link"),
     "fakeipFilter": MessageLookupByLibrary.simpleMessage("Fakeip filter"),
+    "fakeipFilterDesc": MessageLookupByLibrary.simpleMessage(
+      "Domains matched in Fake IP mode receive real IP addresses instead of Fake IP addresses",
+    ),
     "fakeipRange": MessageLookupByLibrary.simpleMessage("Fakeip range"),
     "fallback": MessageLookupByLibrary.simpleMessage("Fallback"),
     "fallbackDesc": MessageLookupByLibrary.simpleMessage(
       "Generally use offshore DNS",
     ),
+    "fallbackDomainDesc": MessageLookupByLibrary.simpleMessage(
+      "Matching domains use fallback directly without querying nameserver",
+    ),
     "fallbackFilter": MessageLookupByLibrary.simpleMessage("Fallback filter"),
+    "fallbackGeoipDesc": MessageLookupByLibrary.simpleMessage(
+      "Checks nameserver results against GeoIP Code; results outside that region use fallback",
+    ),
+    "fallbackGeositeDesc": MessageLookupByLibrary.simpleMessage(
+      "Domains matching these GeoSite categories use fallback directly",
+    ),
+    "fallbackIpcidrDesc": MessageLookupByLibrary.simpleMessage(
+      "Nameserver results matching these CIDR prefixes are replaced with fallback results",
+    ),
     "fidelityScheme": MessageLookupByLibrary.simpleMessage("Fidelity"),
     "file": MessageLookupByLibrary.simpleMessage("File"),
     "fileDesc": MessageLookupByLibrary.simpleMessage("Directly upload profile"),
@@ -543,6 +562,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "hasCacheChange": MessageLookupByLibrary.simpleMessage(
       "Do you want to cache the changes?",
     ),
+    "header": MessageLookupByLibrary.simpleMessage("Header"),
     "helperCorruptTip": MessageLookupByLibrary.simpleMessage(
       "Helper service unavailable; TUN mode cannot be enabled. Reinstall FlClash to restore it.",
     ),
@@ -574,6 +594,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "iconUrl": MessageLookupByLibrary.simpleMessage("Icon URL"),
     "ignoreBatteryOptimization": MessageLookupByLibrary.simpleMessage(
       "Ignore battery optimization",
+    ),
+    "ignoreCertificateErrors": MessageLookupByLibrary.simpleMessage(
+      "Ignore Certificate Validation",
+    ),
+    "ignoreCertificateErrorsDesc": MessageLookupByLibrary.simpleMessage(
+      "Allow HTTPS connections with invalid certificates. This reduces security",
     ),
     "import": MessageLookupByLibrary.simpleMessage("Import"),
     "importFile": MessageLookupByLibrary.simpleMessage("Import from file"),
@@ -655,6 +681,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "light": MessageLookupByLibrary.simpleMessage("Light"),
     "list": MessageLookupByLibrary.simpleMessage("List"),
     "listen": MessageLookupByLibrary.simpleMessage("Listen"),
+    "listeningPort": MessageLookupByLibrary.simpleMessage("Listening Port"),
     "loading": MessageLookupByLibrary.simpleMessage("Loading..."),
     "local": MessageLookupByLibrary.simpleMessage("Local"),
     "localBackupDesc": MessageLookupByLibrary.simpleMessage(
@@ -824,6 +851,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "portTip": m22,
     "predictiveBack": MessageLookupByLibrary.simpleMessage("Predictive Back"),
+    "preferH3": MessageLookupByLibrary.simpleMessage("Prefer HTTP/3"),
     "preferH3Desc": MessageLookupByLibrary.simpleMessage(
       "Prioritize the use of DOH\'s http/3",
     ),
@@ -909,6 +937,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "quickFill": MessageLookupByLibrary.simpleMessage("Quick fill"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("Rainbow"),
+    "random": MessageLookupByLibrary.simpleMessage("Random"),
     "redirPort": MessageLookupByLibrary.simpleMessage("Redir port"),
     "redo": MessageLookupByLibrary.simpleMessage("Redo"),
     "regexSearch": MessageLookupByLibrary.simpleMessage("Regex search"),
@@ -1150,6 +1179,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "stop": MessageLookupByLibrary.simpleMessage("Stop"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("Stopping VPN..."),
     "style": MessageLookupByLibrary.simpleMessage("Style"),
+    "styleSettings": MessageLookupByLibrary.simpleMessage("Style Settings"),
     "subRule": MessageLookupByLibrary.simpleMessage("Sub Rule"),
     "subRuleEmpty": MessageLookupByLibrary.simpleMessage("Sub rule is empty"),
     "subRuleNotEmpty": MessageLookupByLibrary.simpleMessage(
@@ -1244,7 +1274,13 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "urlTip": m29,
     "useHosts": MessageLookupByLibrary.simpleMessage("Use hosts"),
+    "useHostsDesc": MessageLookupByLibrary.simpleMessage(
+      "Checks the hosts entries in the configuration before querying upstream DNS servers",
+    ),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("Use system hosts"),
+    "useSystemHostsDesc": MessageLookupByLibrary.simpleMessage(
+      "Checks the operating system\'s hosts file when resolving domain names",
+    ),
     "usedTraffic": MessageLookupByLibrary.simpleMessage("Used traffic"),
     "userAgent": MessageLookupByLibrary.simpleMessage("User-Agent"),
     "value": MessageLookupByLibrary.simpleMessage("Value"),

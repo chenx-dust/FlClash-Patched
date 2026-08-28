@@ -127,6 +127,61 @@ void main() {
         'Stale',
       ]);
     });
+
+    test('removes selections that are no longer available', () async {
+      const profile = Profile(
+        id: 1,
+        autoUpdateDuration: Duration.zero,
+        selectedMap: {
+          'Available': 'Node A',
+          'Changed': 'Removed Node',
+          'Removed Group': 'Node C',
+          'Empty': compatibleProxyName,
+        },
+      );
+      when(core.getProxies).thenAnswer(
+        (_) async => ProxiesData(
+          all: const [
+            'Available',
+            'Changed',
+            'Empty',
+            'Node A',
+            'Node B',
+            compatibleProxyName,
+          ],
+          proxies: Map<String, dynamic>.from({
+            'Available': {
+              'name': 'Available',
+              'type': 'Selector',
+              'all': ['Node A'],
+            },
+            'Changed': {
+              'name': 'Changed',
+              'type': 'Selector',
+              'all': ['Node B'],
+            },
+            'Empty': {
+              'name': 'Empty',
+              'type': 'Selector',
+              'all': [compatibleProxyName],
+            },
+            'Node A': {'name': 'Node A', 'type': 'Shadowsocks'},
+            'Node B': {'name': 'Node B', 'type': 'Shadowsocks'},
+            compatibleProxyName: {
+              'name': compatibleProxyName,
+              'type': 'Compatible',
+            },
+          }),
+        ),
+      );
+      final container = buildContainer(profile: profile);
+
+      await actionOf(container).updateGroups();
+
+      expect(container.read(currentProfileProvider)?.selectedMap, {
+        'Available': 'Node A',
+      });
+    });
   });
 
   group('changeProxy', () {
@@ -228,6 +283,35 @@ void main() {
       expect(container.read(currentProfileProvider)?.selectedMap, {
         'Proxy': 'HK-00',
       });
+    });
+
+    test('resets an explicit group selection', () async {
+      when(core.getProxies).thenAnswer(
+        (_) async => ProxiesData(
+          all: const ['Proxy', 'HK-01'],
+          proxies: Map<String, dynamic>.from({
+            'Proxy': {
+              'name': 'Proxy',
+              'type': 'Selector',
+              'all': ['HK-01'],
+            },
+            'HK-01': {'name': 'HK-01', 'type': 'ss'},
+          }),
+        ),
+      );
+      final container = buildContainer(profile: _selectedProfile('HK-01'));
+
+      await actionOf(container).resetProxySelection('Proxy');
+
+      verify(
+        () => core.changeProxy(
+          const ChangeProxyParams(groupName: 'Proxy', proxyName: ''),
+        ),
+      ).called(1);
+      expect(
+        container.read(currentProfileProvider)?.selectedMap,
+        isNot(contains('Proxy')),
+      );
     });
 
     test(

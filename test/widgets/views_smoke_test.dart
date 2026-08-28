@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
@@ -25,9 +27,11 @@ import 'package:fl_clash/views/views.dart';
 import 'package:fl_clash/widgets/inherited.dart';
 import 'package:fl_clash/widgets/paged_sheet.dart';
 import 'package:fl_clash/widgets/sheet.dart';
+import 'package:material_ui/material_ui.dart' as flutter;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 import '../helpers/test_app.dart';
 import '../helpers/test_database_providers.dart';
@@ -66,6 +70,13 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
+      if (entry.key == 'resources') {
+        final previousPathProvider = PathProviderPlatform.instance;
+        PathProviderPlatform.instance = _TestPathProvider();
+        addTearDown(() {
+          PathProviderPlatform.instance = previousPathProvider;
+        });
+      }
 
       final container = ProviderContainer(
         overrides: [
@@ -105,8 +116,8 @@ void main() {
   final toolDestinations = <String, Type>{
     'Theme': ThemeView,
     'Backup and Restore': BackupAndRestore,
-    'Basic configuration': ConfigView,
-    'Advanced configuration': AdvancedConfigView,
+    'Basic Configuration': ConfigView,
+    'Advanced Configuration': AdvancedConfigView,
     'Application': ApplicationSettingView,
   };
 
@@ -219,20 +230,20 @@ void main() {
     await tester.tap(find.byTooltip('Show more'));
     await tester.pumpAndSettle();
 
-    await tester.enterText(_portField('Socks Port'), '');
+    await tester.enterText(_portField('Socks port'), '');
     await tester.pumpAndSettle();
 
     await tester.tap(find.byTooltip('Show less'));
     await tester.pumpAndSettle();
-    expect(_portField('Socks Port'), findsNothing);
+    expect(_portField('Socks port'), findsNothing);
 
     await tester.tap(find.text('Submit'));
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), null);
     expect(container.read(patchClashConfigProvider), before);
-    expect(_portField('Socks Port'), findsOneWidget);
-    expect(find.text('Socks Port cannot be empty'), findsOneWidget);
+    expect(_portField('Socks port'), findsOneWidget);
+    expect(find.text('Socks port cannot be empty'), findsOneWidget);
   });
 
   testWidgets('DNS mode options update the patch configuration', (
@@ -262,9 +273,10 @@ void main() {
 
     await tester.tap(find.text('DNS mode'));
     await tester.pumpAndSettle();
-    expect(find.text('fakeIp'), findsWidgets);
+    expect(find.text('fake-ip'), findsWidgets);
+    expect(find.text('redir-host'), findsOneWidget);
 
-    await tester.tap(find.text('fakeIp').last);
+    await tester.tap(find.text('fake-ip').last);
     await tester.pumpAndSettle();
 
     expect(
@@ -292,11 +304,11 @@ void main() {
       ),
     );
     await tester.pump();
-    await tester.tap(find.text('Override Dns'));
+    await tester.tap(find.text('Override DNS'));
     await tester.pump();
     await tester.tap(find.text('Status'));
     await tester.pump();
-    await tester.tap(find.text('PreferH3'));
+    await tester.tap(find.text('Prefer HTTP/3'));
     await tester.pump();
     await tester.tap(find.text('IPv6'));
     await tester.pump();
@@ -533,6 +545,21 @@ void main() {
 
     await tester.pumpWidget(const SizedBox.shrink());
   });
+}
+
+class _TestPathProvider extends PathProviderPlatform {
+  @override
+  Future<String?> getApplicationCachePath() async => Directory.systemTemp.path;
+
+  @override
+  Future<String?> getApplicationSupportPath() async =>
+      Directory.systemTemp.path;
+
+  @override
+  Future<String?> getDownloadsPath() async => Directory.systemTemp.path;
+
+  @override
+  Future<String?> getTemporaryPath() async => Directory.systemTemp.path;
 }
 
 class _TestProfileCustomRules extends ProfileCustomRules {

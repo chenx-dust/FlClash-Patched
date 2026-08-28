@@ -28,9 +28,25 @@ class InfoHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    EdgeInsetsGeometry nextPadding = (padding ?? baseInfoEdgeInsets);
+    var nextPadding = padding ?? baseInfoEdgeInsets;
     if (actions.isNotEmpty) {
-      nextPadding = nextPadding.subtract(EdgeInsets.symmetric(vertical: 8.mAp));
+      final reduction = 8.mAp;
+      final bottomShortfall = nextPadding.bottom < reduction
+          ? reduction - nextPadding.bottom
+          : 0.0;
+      final topShortfall = nextPadding.top < reduction
+          ? reduction - nextPadding.top
+          : 0.0;
+      final topReduction = nextPadding.top < reduction + bottomShortfall
+          ? nextPadding.top
+          : reduction + bottomShortfall;
+      final bottomReduction = nextPadding.bottom < reduction + topShortfall
+          ? nextPadding.bottom
+          : reduction + topShortfall;
+      nextPadding = nextPadding.copyWith(
+        top: nextPadding.top - topReduction,
+        bottom: nextPadding.bottom - bottomReduction,
+      );
     }
     return Padding(
       padding: nextPadding,

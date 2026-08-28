@@ -133,10 +133,11 @@ class ApplicationSettingView extends ConsumerWidget {
         update: (state, value) => state.copyWith(autoCheckUpdate: value),
       ),
       _appSettingToggle(
-        title: (l) => l.checkCertificate,
-        subtitle: (l) => l.checkCertificateDesc,
-        select: (state) => state.checkCertificate,
-        update: (state, value) => state.copyWith(checkCertificate: value),
+        title: (l) => l.ignoreCertificateErrors,
+        subtitle: (l) => l.ignoreCertificateErrorsDesc,
+        select: (state) => state.ignoreCertificateErrors,
+        update: (state, value) =>
+            state.copyWith(ignoreCertificateErrors: value),
       ),
     ];
     return BaseScaffold(

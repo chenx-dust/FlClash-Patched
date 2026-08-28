@@ -6,6 +6,18 @@ import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+List<String> _parseNameserverPolicyValue(String value) {
+  return value.splitByMultipleSeparatorsList;
+}
+
+String _serializeNameserverPolicyValue(List<String> values) {
+  return values.join(',');
+}
+
+Widget _buildNameserverPolicySubtitle(MapEntry<String, String> item) {
+  return Text(_parseNameserverPolicyValue(item.value).join('\n'));
+}
+
 typedef _DnsUpdate<T> =
     PatchClashConfig Function(PatchClashConfig state, T value);
 
@@ -98,7 +110,7 @@ class PreferH3Item extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     return _dnsToggle(
-      title: (l) => 'PreferH3',
+      title: (l) => l.preferH3,
       subtitle: (l) => l.preferH3Desc,
       select: (dns) => dns.preferH3,
       update: (state, value) => state.copyWith.dns(preferH3: value),
@@ -113,6 +125,7 @@ class IPv6Item extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     return _dnsToggle(
       title: (l) => 'IPv6',
+      subtitle: (l) => l.dnsIPv6Desc,
       select: (dns) => dns.ipv6,
       update: (state, value) => state.copyWith.dns(ipv6: value),
     );
@@ -127,7 +140,7 @@ class DnsModeItem extends ConsumerWidget {
     return ConfigOptionsItem<DnsMode>(
       title: (l) => l.dnsMode,
       options: DnsMode.values,
-      textBuilder: (dnsMode) => dnsMode.name,
+      textBuilder: (dnsMode) => dnsMode.value,
       selector: _dnsSelector((dns) => dns.enhancedMode),
       onChanged: _dnsWriter(
         (state, value) => state.copyWith.dns(enhancedMode: value),
@@ -152,10 +165,14 @@ class NameserverPolicyItem extends ConsumerWidget {
       widget: MapInputPage(
         title: appLocalizations.nameserverPolicy,
         map: nameserverPolicy,
+        keyLabel: appLocalizations.domain,
+        valueLabel: appLocalizations.nameserver,
         keyMaxLength: TextInputLimits.domain,
         valueMaxLength: TextInputLimits.dnsServer,
+        valueParser: _parseNameserverPolicyValue,
+        valueSerializer: _serializeNameserverPolicyValue,
         titleBuilder: (item) => Text(item.key),
-        subtitleBuilder: (item) => Text(item.value),
+        subtitleBuilder: _buildNameserverPolicySubtitle,
       ),
       onChanged: (value) {
         ref
@@ -182,10 +199,14 @@ class ProxyServerNameserverPolicyItem extends ConsumerWidget {
       widget: MapInputPage(
         title: appLocalizations.proxyNameserverPolicy,
         map: proxyServerNameserverPolicy,
+        keyLabel: appLocalizations.domain,
+        valueLabel: appLocalizations.nameserver,
         keyMaxLength: TextInputLimits.domain,
         valueMaxLength: TextInputLimits.dnsServer,
+        valueParser: _parseNameserverPolicyValue,
+        valueSerializer: _serializeNameserverPolicyValue,
         titleBuilder: (item) => Text(item.key),
-        subtitleBuilder: (item) => Text(item.value),
+        subtitleBuilder: _buildNameserverPolicySubtitle,
       ),
       onChanged: (value) {
         ref
@@ -216,11 +237,13 @@ class DnsOptions extends StatelessWidget {
           ),
           _dnsToggle(
             title: (l) => l.useHosts,
+            subtitle: (l) => l.useHostsDesc,
             select: (dns) => dns.useHosts,
             update: (state, value) => state.copyWith.dns(useHosts: value),
           ),
           _dnsToggle(
             title: (l) => l.useSystemHosts,
+            subtitle: (l) => l.useSystemHostsDesc,
             select: (dns) => dns.useSystemHosts,
             update: (state, value) => state.copyWith.dns(useSystemHosts: value),
           ),
@@ -241,6 +264,7 @@ class DnsOptions extends StatelessWidget {
           ),
           _dnsList(
             title: (l) => l.fakeipFilter,
+            subtitle: (l) => l.fakeipFilterDesc,
             select: (dns) => dns.fakeIpFilter,
             update: (state, value) => state.copyWith.dns(fakeIpFilter: value),
             itemMaxLength: TextInputLimits.domain,
@@ -293,7 +317,8 @@ class FallbackFilterOptions extends StatelessWidget {
         title: context.appLocalizations.fallbackFilter,
         items: [
           _dnsToggle(
-            title: (l) => 'Geoip',
+            title: (l) => 'GeoIP',
+            subtitle: (l) => l.fallbackGeoipDesc,
             select: (dns) => dns.fallbackFilter.geoip,
             update: (state, value) =>
                 state.copyWith.dns.fallbackFilter(geoip: value),
@@ -306,7 +331,8 @@ class FallbackFilterOptions extends StatelessWidget {
             maxLength: TextInputLimits.geoIpCode,
           ),
           _dnsList(
-            title: (l) => 'Geosite',
+            title: (l) => 'GeoSite',
+            subtitle: (l) => l.fallbackGeositeDesc,
             select: (dns) => dns.fallbackFilter.geosite,
             update: (state, value) =>
                 state.copyWith.dns.fallbackFilter(geosite: value),
@@ -314,6 +340,7 @@ class FallbackFilterOptions extends StatelessWidget {
           ),
           _dnsList(
             title: (l) => l.ipcidr,
+            subtitle: (l) => l.fallbackIpcidrDesc,
             select: (dns) => dns.fallbackFilter.ipcidr,
             update: (state, value) =>
                 state.copyWith.dns.fallbackFilter(ipcidr: value),
@@ -321,6 +348,7 @@ class FallbackFilterOptions extends StatelessWidget {
           ),
           _dnsList(
             title: (l) => l.domain,
+            subtitle: (l) => l.fallbackDomainDesc,
             select: (dns) => dns.fallbackFilter.domain,
             update: (state, value) =>
                 state.copyWith.dns.fallbackFilter(domain: value),

@@ -25,6 +25,7 @@ void main() {
       expect(value.closeConnections, true);
       expect(value.isAnimateToPage, true);
       expect(value.isSwipeToPage, true);
+      expect(value.ignoreCertificateErrors, false);
     });
 
     test('can update state', () {

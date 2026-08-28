@@ -23,6 +23,8 @@ _AppSettingProps _$AppSettingPropsFromJson(Map<String, dynamic> json) =>
       isAnimateToPage: json['isAnimateToPage'] as bool? ?? true,
       isSwipeToPage: json['isSwipeToPage'] as bool? ?? true,
       autoCheckUpdate: json['autoCheckUpdate'] as bool? ?? true,
+      ignoreCertificateErrors:
+          json['ignoreCertificateErrors'] as bool? ?? false,
       showLabel: json['showLabel'] as bool? ?? false,
       disclaimerAccepted: json['disclaimerAccepted'] as bool? ?? false,
       minimizeOnExit: json['minimizeOnExit'] as bool? ?? true,
@@ -32,10 +34,10 @@ _AppSettingProps _$AppSettingPropsFromJson(Map<String, dynamic> json) =>
           $enumDecodeNullable(
             _$RestoreStrategyEnumMap,
             json['restoreStrategy'],
+            unknownValue: RestoreStrategy.compatible,
           ) ??
           RestoreStrategy.compatible,
       showTrayTitle: json['showTrayTitle'] as bool? ?? true,
-      checkCertificate: json['checkCertificate'] as bool? ?? true,
       customUserAgent: json['customUserAgent'] as String? ?? '',
     );
 
@@ -56,6 +58,7 @@ Map<String, dynamic> _$AppSettingPropsToJson(_AppSettingProps instance) =>
       'isAnimateToPage': instance.isAnimateToPage,
       'isSwipeToPage': instance.isSwipeToPage,
       'autoCheckUpdate': instance.autoCheckUpdate,
+      'ignoreCertificateErrors': instance.ignoreCertificateErrors,
       'showLabel': instance.showLabel,
       'disclaimerAccepted': instance.disclaimerAccepted,
       'minimizeOnExit': instance.minimizeOnExit,
@@ -63,7 +66,6 @@ Map<String, dynamic> _$AppSettingPropsToJson(_AppSettingProps instance) =>
       'developerMode': instance.developerMode,
       'restoreStrategy': _$RestoreStrategyEnumMap[instance.restoreStrategy]!,
       'showTrayTitle': instance.showTrayTitle,
-      'checkCertificate': instance.checkCertificate,
       'customUserAgent': instance.customUserAgent,
     };
 
@@ -90,7 +92,11 @@ _AccessControlProps _$AccessControlPropsFromJson(Map<String, dynamic> json) =>
     _AccessControlProps(
       enable: json['enable'] as bool? ?? false,
       mode:
-          $enumDecodeNullable(_$AccessControlModeEnumMap, json['mode']) ??
+          $enumDecodeNullable(
+            _$AccessControlModeEnumMap,
+            json['mode'],
+            unknownValue: AccessControlMode.rejectSelected,
+          ) ??
           AccessControlMode.rejectSelected,
       acceptList:
           (json['acceptList'] as List<dynamic>?)
@@ -103,7 +109,11 @@ _AccessControlProps _$AccessControlPropsFromJson(Map<String, dynamic> json) =>
               .toList() ??
           const [],
       sort:
-          $enumDecodeNullable(_$AccessSortTypeEnumMap, json['sort']) ??
+          $enumDecodeNullable(
+            _$AccessSortTypeEnumMap,
+            json['sort'],
+            unknownValue: AccessSortType.none,
+          ) ??
           AccessSortType.none,
       isFilterSystemApp: json['isFilterSystemApp'] as bool? ?? true,
       isFilterNonInternetApp: json['isFilterNonInternetApp'] as bool? ?? true,
@@ -181,7 +191,11 @@ _NetworkProps _$NetworkPropsFromJson(Map<String, dynamic> json) =>
               .toList() ??
           defaultBypassDomain,
       routeMode:
-          $enumDecodeNullable(_$RouteModeEnumMap, json['routeMode']) ??
+          $enumDecodeNullable(
+            _$RouteModeEnumMap,
+            json['routeMode'],
+            unknownValue: RouteMode.config,
+          ) ??
           RouteMode.config,
       autoSetSystemDns: json['autoSetSystemDns'] as bool? ?? true,
       appendSystemDns: json['appendSystemDns'] as bool? ?? false,
@@ -238,6 +252,13 @@ _ProxiesStyleProps _$ProxiesStylePropsFromJson(Map<String, dynamic> json) =>
             unknownValue: ProxiesIconStyle.standard,
           ) ??
           ProxiesIconStyle.standard,
+      iconSource:
+          $enumDecodeNullable(
+            _$ProxiesIconSourceEnumMap,
+            json['iconSource'],
+            unknownValue: ProxiesIconSource.standard,
+          ) ??
+          ProxiesIconSource.standard,
       cardType:
           $enumDecodeNullable(
             _$ProxyCardTypeEnumMap,
@@ -245,6 +266,8 @@ _ProxiesStyleProps _$ProxiesStylePropsFromJson(Map<String, dynamic> json) =>
             unknownValue: ProxyCardType.standard,
           ) ??
           ProxyCardType.standard,
+      hideUnavailable: json['hideUnavailable'] as bool? ?? false,
+      showHiddenGroups: json['showHiddenGroups'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$ProxiesStylePropsToJson(
@@ -255,7 +278,10 @@ Map<String, dynamic> _$ProxiesStylePropsToJson(
   'layout': _$ProxiesLayoutEnumMap[instance.layout]!,
   'listHeaderStyle': _$ProxiesListHeaderStyleEnumMap[instance.listHeaderStyle]!,
   'iconStyle': _$ProxiesIconStyleEnumMap[instance.iconStyle]!,
+  'iconSource': _$ProxiesIconSourceEnumMap[instance.iconSource]!,
   'cardType': _$ProxyCardTypeEnumMap[instance.cardType]!,
+  'hideUnavailable': instance.hideUnavailable,
+  'showHiddenGroups': instance.showHiddenGroups,
 };
 
 const _$ProxiesTypeEnumMap = {ProxiesType.tab: 'tab', ProxiesType.list: 'list'};
@@ -284,6 +310,12 @@ const _$ProxiesIconStyleEnumMap = {
   ProxiesIconStyle.icon: 'icon',
 };
 
+const _$ProxiesIconSourceEnumMap = {
+  ProxiesIconSource.standard: 'standard',
+  ProxiesIconSource.config: 'config',
+  ProxiesIconSource.emoji: 'emoji',
+};
+
 const _$ProxyCardTypeEnumMap = {
   ProxyCardType.standard: 'standard',
   ProxyCardType.shrink: 'shrink',
@@ -306,12 +338,17 @@ _ThemeProps _$ThemePropsFromJson(Map<String, dynamic> json) => _ThemeProps(
           .toList() ??
       defaultPrimaryColors,
   themeMode:
-      $enumDecodeNullable(_$ThemeModeEnumMap, json['themeMode']) ??
-      ThemeMode.dark,
+      $enumDecodeNullable(
+        _$ThemeModeEnumMap,
+        json['themeMode'],
+        unknownValue: ThemeMode.system,
+      ) ??
+      ThemeMode.system,
   schemeVariant:
       $enumDecodeNullable(
         _$DynamicSchemeVariantEnumMap,
         json['schemeVariant'],
+        unknownValue: DynamicSchemeVariant.content,
       ) ??
       DynamicSchemeVariant.content,
   pureBlack: json['pureBlack'] as bool? ?? false,

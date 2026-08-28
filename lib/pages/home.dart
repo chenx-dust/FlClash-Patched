@@ -416,6 +416,7 @@ class _HomePageViewState extends ConsumerState<_HomePageView> {
       appSettingProvider.select((state) => state.isSwipeToPage),
     );
     return PageView.builder(
+      scrollDirection: isMobile ? Axis.horizontal : Axis.vertical,
       controller: _pageController,
       physics: isMobile && isSwipeToPage
           ? null

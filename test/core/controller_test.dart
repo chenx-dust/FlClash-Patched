@@ -29,7 +29,8 @@ void main() {
         logLevel: LogLevel.info,
         ipv6: false,
         tcpConcurrent: false,
-        externalController: ExternalControllerStatus.close,
+        externalController: '',
+        secret: '',
         unifiedDelay: false,
       ),
     );
@@ -134,7 +135,8 @@ void main() {
         logLevel: LogLevel.info,
         ipv6: false,
         tcpConcurrent: false,
-        externalController: ExternalControllerStatus.close,
+        externalController: '',
+        secret: '',
         unifiedDelay: false,
       );
       when(() => mock.updateConfig(params)).thenAnswer((_) async => 'ok');
