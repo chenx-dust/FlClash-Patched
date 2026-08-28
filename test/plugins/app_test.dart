@@ -83,7 +83,6 @@ void main() {
     expect(await app.getPackageIcon('com.a'), isNull);
     expect(iconCallCount, 1);
   });
-
   test('reads the last process exit info from Android', () async {
     MethodCall? receivedCall;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
