@@ -86,6 +86,7 @@ class TUNButton extends StatelessWidget {
         if (system.isDesktop) const TUNItem(),
         if (system.isMacOS) const AutoSetSystemDnsItem(),
         const TunStackItem(),
+        const TunMtuItem(),
       ],
       selector: patchClashConfigProvider.select((state) => state.tun.enable),
       onChanged: (ref, value) {
@@ -124,7 +125,12 @@ class VpnButton extends StatelessWidget {
     return _QuickSwitchCard(
       label: 'VPN',
       iconData: Icons.stacked_line_chart,
-      items: const [VPNItem(), VpnSystemProxyItem(), TunStackItem()],
+      items: const [
+        VPNItem(),
+        VpnSystemProxyItem(),
+        TunStackItem(),
+        TunMtuItem(),
+      ],
       selector: vpnSettingProvider.select((state) => state.enable),
       onChanged: (ref, value) {
         ref
