@@ -9,6 +9,12 @@ keywords:
   - mihomo
   - Proxy
 
+supported_mime_type:
+  - x-scheme-handler/clash
+  - x-scheme-handler/clashmeta
+  - x-scheme-handler/mihomo
+  - x-scheme-handler/flclash
+
 generic_name: FlClash
 
 categories:

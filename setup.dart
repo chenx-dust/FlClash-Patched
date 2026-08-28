@@ -70,6 +70,7 @@ Future<void> main(List<String> args) async {
   final iosBundleId = results['ios-bundle-id'] as String?;
   final iosDevelopmentTeam = results['ios-development-team'] as String?;
   final iosNoSign = results['no-codesign'] as bool;
+  final skipDependencies = results['skip-dependencies'] as bool;
 
   if (iosNoSign && platform != 'ios') {
     stderr.writeln('--no-codesign is only supported for iOS builds.');
@@ -88,6 +89,7 @@ Future<void> main(List<String> args) async {
     iosBundleId: iosBundleId,
     iosDevelopmentTeam: iosDevelopmentTeam,
     iosNoSign: iosNoSign,
+    skipDependencies: skipDependencies,
     verbose: verbose,
   );
   exit(exitCode);
@@ -137,6 +139,12 @@ ArgParser createSetupArgParser() {
       'no-codesign',
       negatable: false,
       help: 'Build an IPA without Apple provisioning (iOS only)',
+    )
+    ..addFlag(
+      'skip-dependencies',
+      abbr: 's',
+      negatable: false,
+      help: 'Skip installing platform build dependencies',
     )
     ..addFlag(
       'verbose',
@@ -202,6 +210,7 @@ Future<int> _package(
   String? iosBundleId,
   String? iosDevelopmentTeam,
   required bool iosNoSign,
+  required bool skipDependencies,
   required bool verbose,
 }) async {
   await ensureGeoData(rootDir: rootDir);
@@ -227,8 +236,10 @@ Future<int> _package(
     descriptionArgs.addAll(['--description', arch]);
   }
 
-  final depExit = await _ensureDependencies(platform, arch);
-  if (depExit != 0) return depExit;
+  if (!skipDependencies) {
+    final depExit = await _ensureDependencies(platform, arch);
+    if (depExit != 0) return depExit;
+  }
 
   if (platform == 'ios' && iosNoSign) {
     return packageIOSNoSign(

@@ -28,6 +28,16 @@ void main() {
       expect(setup.createBuildEnvironment('dev'), {'APP_ENV': 'dev'});
     });
 
+    test('parses dependency installation opt-out', () {
+      final results = setup.createSetupArgParser().parse([
+        'linux',
+        '--skip-dependencies',
+      ]);
+
+      expect(results['skip-dependencies'], isTrue);
+      expect(results.rest, ['linux']);
+    });
+
     test('downloads geodata into the Flutter asset directory', () async {
       final tempDir = await Directory.systemTemp.createTemp(
         'flclash_geodata_test_',
