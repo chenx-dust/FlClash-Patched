@@ -100,6 +100,97 @@ type ProxiesData struct {
 	All     []string                  `json:"all"`
 }
 
+type TailscaleNode struct {
+	ID              string     `json:"id"`
+	PublicKey       string     `json:"public-key,omitempty"`
+	HostName        string     `json:"hostname"`
+	DNSName         string     `json:"dns-name"`
+	OS              string     `json:"os"`
+	IPs             []string   `json:"ips"`
+	Tags            []string   `json:"tags,omitempty"`
+	PrimaryRoutes   []string   `json:"primary-routes,omitempty"`
+	Endpoints       []string   `json:"endpoints,omitempty"`
+	CurrentEndpoint string     `json:"current-endpoint,omitempty"`
+	Relay           string     `json:"relay,omitempty"`
+	RxBytes         int64      `json:"rx-bytes,omitempty"`
+	TxBytes         int64      `json:"tx-bytes,omitempty"`
+	Online          bool       `json:"online"`
+	Active          bool       `json:"active"`
+	Self            bool       `json:"self"`
+	ExitNode        bool       `json:"exit-node"`
+	ExitNodeOption  bool       `json:"exit-node-option"`
+	Expired         bool       `json:"expired"`
+	LastSeen        *time.Time `json:"last-seen,omitempty"`
+	LastHandshake   *time.Time `json:"last-handshake,omitempty"`
+	KeyExpiry       *time.Time `json:"key-expiry,omitempty"`
+}
+
+type TailscaleNetworkDetails struct {
+	MagicDNSSuffix    string          `json:"magic-dns-suffix,omitempty"`
+	AuthKeyConfigured bool            `json:"auth-key-configured"`
+	Health            []string        `json:"health"`
+	Nodes             []TailscaleNode `json:"nodes"`
+}
+
+type ZeroTierPeer struct {
+	Address   string   `json:"address"`
+	Role      string   `json:"role"`
+	Version   string   `json:"version"`
+	Direct    bool     `json:"direct"`
+	Endpoints []string `json:"endpoints"`
+	LatencyMS int64    `json:"latency-ms"`
+}
+
+type ZeroTierNetworkDetails struct {
+	NetworkID string         `json:"network-id"`
+	Node      string         `json:"node"`
+	Online    bool           `json:"online"`
+	Addresses []string       `json:"addresses"`
+	Routes    []string       `json:"routes"`
+	DNS       []string       `json:"dns"`
+	MTU       uint32         `json:"mtu"`
+	Peers     []ZeroTierPeer `json:"peers"`
+}
+
+type OverlayNetworkTarget struct {
+	Name  string                    `json:"name"`
+	Kind  OverlayNetworkKind        `json:"kind"`
+	Level OverlayNetworkDetailLevel `json:"level"`
+}
+
+type GetOverlayNetworkStatusParams struct {
+	Targets []OverlayNetworkTarget `json:"targets"`
+}
+
+type ActivateOverlayNetworkParams struct {
+	Name string             `json:"name"`
+	Kind OverlayNetworkKind `json:"kind"`
+}
+
+type TailscalePingParams struct {
+	Name string `json:"name"`
+	IP   string `json:"ip"`
+}
+
+type TailscalePingResult struct {
+	LatencyMS int64 `json:"latency-ms"`
+}
+
+type TailscaleLogoutParams struct {
+	Name string `json:"name"`
+}
+
+type OverlayNetworkStatus struct {
+	Name        string              `json:"name"`
+	Kind        OverlayNetworkKind  `json:"kind"`
+	State       OverlayNetworkState `json:"state"`
+	RawState    string              `json:"raw-state,omitempty"`
+	NetworkName string              `json:"network-name,omitempty"`
+	AuthURL     string              `json:"auth-url,omitempty"`
+	Error       string              `json:"error,omitempty"`
+	Details     any                 `json:"details,omitempty"`
+}
+
 const (
 	messageMethod                  CoreMethod = "message"
 	initClashMethod                CoreMethod = "initClash"
@@ -120,6 +211,10 @@ const (
 	closeConnectionMethod          CoreMethod = "closeConnection"
 	getExternalProvidersMethod     CoreMethod = "getExternalProviders"
 	getExternalProviderMethod      CoreMethod = "getExternalProvider"
+	getOverlayNetworkStatusMethod  CoreMethod = "getOverlayNetworkStatus"
+	activateOverlayNetworkMethod   CoreMethod = "activateOverlayNetwork"
+	pingTailscaleNodeMethod        CoreMethod = "pingTailscaleNode"
+	logoutTailscaleMethod          CoreMethod = "logoutTailscale"
 	getMemoryMethod                CoreMethod = "getMemory"
 	getGoroutineCountMethod        CoreMethod = "getGoroutineCount"
 	updateGeoDataMethod            CoreMethod = "updateGeoData"
@@ -143,6 +238,33 @@ const (
 )
 
 type CoreMethod string
+
+type OverlayNetworkKind string
+
+const (
+	overlayNetworkTailscale OverlayNetworkKind = "tailscale"
+	overlayNetworkZeroTier  OverlayNetworkKind = "zerotier"
+)
+
+type OverlayNetworkDetailLevel string
+
+const (
+	overlayNetworkSummary OverlayNetworkDetailLevel = "summary"
+	overlayNetworkDetails OverlayNetworkDetailLevel = "details"
+)
+
+type OverlayNetworkState string
+
+const (
+	overlayNetworkUninitialized OverlayNetworkState = "uninitialized"
+	overlayNetworkStarting      OverlayNetworkState = "starting"
+	overlayNetworkConnected     OverlayNetworkState = "connected"
+	overlayNetworkNeedsLogin    OverlayNetworkState = "needs-login"
+	overlayNetworkNeedsApproval OverlayNetworkState = "needs-approval"
+	overlayNetworkStopped       OverlayNetworkState = "stopped"
+	overlayNetworkError         OverlayNetworkState = "error"
+	overlayNetworkUnknown       OverlayNetworkState = "unknown"
+)
 
 type MessageType string
 

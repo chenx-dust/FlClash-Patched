@@ -73,6 +73,72 @@ class _RecordingCoreHandler extends CoreHandlerInterface {
         'vehicle-type': 'HTTP',
         'update-at': '2024-01-01T00:00:00.000Z',
       },
+      CoreMethod.getOverlayNetworkStatus => [
+        {
+          'name': 'tailnet',
+          'kind': 'tailscale',
+          'state': 'connected',
+          'raw-state': 'Running',
+          'network-name': 'example.com',
+          'details': {
+            'magic-dns-suffix': 'example.com',
+            'auth-key-configured': true,
+            'health': <String>[],
+            'nodes': [
+              {
+                'id': 'node-1',
+                'public-key': 'nodekey:test',
+                'hostname': 'device',
+                'dns-name': 'device.example.com.',
+                'os': 'windows',
+                'ips': ['100.64.0.1'],
+                'endpoints': ['192.0.2.1:41641'],
+                'online': true,
+                'active': true,
+                'self': true,
+                'exit-node': false,
+                'exit-node-option': false,
+                'expired': false,
+              },
+            ],
+          },
+        },
+        {
+          'name': 'zerotier',
+          'kind': 'zerotier',
+          'state': 'connected',
+          'raw-state': 'ok',
+          'network-name': 'example',
+          'details': {
+            'network-id': '8056c2e21c000001',
+            'node': 'abcdef1234',
+            'online': true,
+            'addresses': ['10.0.0.2/24'],
+            'routes': ['10.0.0.0/24'],
+            'dns': ['10.0.0.1:53'],
+            'mtu': 2800,
+            'peers': [
+              {
+                'address': '1234567890',
+                'role': 'leaf',
+                'version': '1.14.2',
+                'direct': true,
+                'endpoints': ['192.0.2.1:9993'],
+                'latency-ms': 12,
+              },
+            ],
+          },
+        },
+      ],
+      CoreMethod.activateOverlayNetwork => {
+        'name': 'tailnet',
+        'kind': 'tailscale',
+        'state': 'connected',
+        'raw-state': 'Running',
+        'network-name': 'example.com',
+      },
+      CoreMethod.pingTailscaleNode => {'latency-ms': 23},
+      CoreMethod.logoutTailscale => true,
       CoreMethod.getProfileConfig => {
         'mode': 'rule',
         'rule': ['MATCH,DIRECT'],
@@ -253,6 +319,71 @@ void main() {
       (await handler.getExternalProvider('provider-1'))?.name,
       'provider-1',
     );
+    final overlayStatuses = await handler.getOverlayNetworkStatus(
+      const GetOverlayNetworkStatusParams(
+        targets: [
+          OverlayNetworkTarget(
+            name: 'tailnet',
+            kind: OverlayNetworkKind.tailscale,
+            level: OverlayNetworkDetailLevel.details,
+          ),
+          OverlayNetworkTarget(
+            name: 'zerotier',
+            kind: OverlayNetworkKind.zerotier,
+            level: OverlayNetworkDetailLevel.details,
+          ),
+        ],
+      ),
+    );
+    expect(overlayStatuses.first.state, OverlayNetworkState.connected);
+    expect(
+      overlayStatuses.first.tailscaleDetails?.magicDnsSuffix,
+      'example.com',
+    );
+    expect(overlayStatuses.first.tailscaleDetails?.nodes.single.ips, [
+      '100.64.0.1',
+    ]);
+    expect(
+      overlayStatuses.first.tailscaleDetails?.nodes.single.hostName,
+      'device',
+    );
+    expect(
+      overlayStatuses.first.tailscaleDetails?.nodes.single.dnsName,
+      'device.example.com.',
+    );
+    expect(
+      overlayStatuses.first.tailscaleDetails?.nodes.single.publicKey,
+      'nodekey:test',
+    );
+    expect(overlayStatuses.first.tailscaleDetails?.nodes.single.endpoints, [
+      '192.0.2.1:41641',
+    ]);
+    expect(overlayStatuses.last.zeroTierDetails?.peers.single.latencyMs, 12);
+    expect(handler.calls[CoreMethod.getOverlayNetworkStatus], {
+      'targets': [
+        {'name': 'tailnet', 'kind': 'tailscale', 'level': 'details'},
+        {'name': 'zerotier', 'kind': 'zerotier', 'level': 'details'},
+      ],
+    });
+    final activated = await handler.activateOverlayNetwork(
+      'tailnet',
+      OverlayNetworkKind.tailscale,
+    );
+    expect(activated.state, OverlayNetworkState.connected);
+    expect(handler.calls[CoreMethod.activateOverlayNetwork], {
+      'name': 'tailnet',
+      'kind': 'tailscale',
+    });
+    expect(
+      (await handler.pingTailscaleNode('tailnet', '100.64.0.1')).latencyMs,
+      23,
+    );
+    expect(handler.calls[CoreMethod.pingTailscaleNode], {
+      'name': 'tailnet',
+      'ip': '100.64.0.1',
+    });
+    expect(await handler.logoutTailscale('tailnet'), isTrue);
+    expect(handler.calls[CoreMethod.logoutTailscale], {'name': 'tailnet'});
     expect(await handler.getProfileConfig(7), {
       'mode': 'rule',
       'rule': ['MATCH,DIRECT'],

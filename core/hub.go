@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"net/netip"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -19,6 +20,7 @@ import (
 	"time"
 
 	"github.com/metacubex/mihomo/adapter"
+	"github.com/metacubex/mihomo/adapter/outbound"
 	"github.com/metacubex/mihomo/adapter/outboundgroup"
 	"github.com/metacubex/mihomo/common/observable"
 	"github.com/metacubex/mihomo/common/utils"
@@ -33,6 +35,7 @@ import (
 	"github.com/metacubex/mihomo/log"
 	"github.com/metacubex/mihomo/tunnel"
 	"github.com/metacubex/mihomo/tunnel/statistic"
+	"github.com/metacubex/tailscale/ipn/ipnstate"
 )
 
 var (
@@ -424,6 +427,318 @@ func handleGetExternalProvider(externalProviderName string) *ExternalProvider {
 		return nil
 	}
 	return externalProvider
+}
+
+func handleGetOverlayNetworkStatus(params *GetOverlayNetworkStatusParams) []OverlayNetworkStatus {
+	proxies := make(map[string]*adapter.Proxy)
+	for _, proxy := range allProxies() {
+		if proxy == nil || proxy.Type() != constant.Tailscale && proxy.Type() != constant.ZeroTier {
+			continue
+		}
+		if adapterProxy, ok := proxy.(*adapter.Proxy); ok {
+			proxies[proxy.Name()] = adapterProxy
+		}
+	}
+
+	statuses := make([]OverlayNetworkStatus, len(params.Targets))
+	var waitGroup sync.WaitGroup
+	for index, target := range params.Targets {
+		proxy := proxies[target.Name]
+		waitGroup.Add(1)
+		go func() {
+			defer waitGroup.Done()
+			statuses[index] = getOverlayNetworkStatus(target, proxy, false)
+		}()
+	}
+	waitGroup.Wait()
+	return statuses
+}
+
+func handleActivateOverlayNetwork(params *ActivateOverlayNetworkParams) OverlayNetworkStatus {
+	target := OverlayNetworkTarget{
+		Name:  params.Name,
+		Kind:  params.Kind,
+		Level: overlayNetworkSummary,
+	}
+	proxy, exists := allProxies()[params.Name]
+	if !exists || proxy == nil {
+		return getOverlayNetworkStatus(target, nil, true)
+	}
+	adapterProxy, ok := proxy.(*adapter.Proxy)
+	if !ok {
+		return getOverlayNetworkStatus(target, nil, true)
+	}
+	return getOverlayNetworkStatus(target, adapterProxy, true)
+}
+
+func handlePingTailscaleNode(params *TailscalePingParams) (*TailscalePingResult, error) {
+	proxy, exists := allProxies()[params.Name]
+	if !exists || proxy == nil || proxy.Type() != constant.Tailscale {
+		return nil, fmt.Errorf("Tailscale outbound %q not found", params.Name)
+	}
+	adapterProxy, ok := proxy.(*adapter.Proxy)
+	if !ok {
+		return nil, fmt.Errorf("Tailscale outbound %q is unavailable", params.Name)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	latency, err := outbound.PingTailscaleNode(ctx, adapterProxy.Adapter(), params.IP)
+	if err != nil {
+		return nil, err
+	}
+	return &TailscalePingResult{LatencyMS: latency.Milliseconds()}, nil
+}
+
+func handleLogoutTailscale(params *TailscaleLogoutParams) error {
+	proxy, exists := allProxies()[params.Name]
+	if !exists || proxy == nil || proxy.Type() != constant.Tailscale {
+		return fmt.Errorf("Tailscale outbound %q not found", params.Name)
+	}
+	adapterProxy, ok := proxy.(*adapter.Proxy)
+	if !ok {
+		return fmt.Errorf("Tailscale outbound %q is unavailable", params.Name)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	return outbound.LogoutTailscale(ctx, adapterProxy.Adapter())
+}
+
+func getOverlayNetworkStatus(target OverlayNetworkTarget, proxy *adapter.Proxy, activate bool) OverlayNetworkStatus {
+	status := OverlayNetworkStatus{
+		Name:  target.Name,
+		Kind:  target.Kind,
+		State: overlayNetworkUnknown,
+	}
+	if target.Level != overlayNetworkSummary && target.Level != overlayNetworkDetails {
+		status.State = overlayNetworkError
+		status.Error = fmt.Sprintf("invalid overlay network detail level %q", target.Level)
+		return status
+	}
+	if proxy == nil {
+		status.State = overlayNetworkError
+		status.Error = "overlay network outbound not found"
+		return status
+	}
+	includeDetails := target.Level == overlayNetworkDetails
+	switch target.Kind {
+	case overlayNetworkTailscale:
+		if proxy.Type() != constant.Tailscale {
+			status.State = overlayNetworkError
+			status.Error = fmt.Sprintf("proxy %q is not a Tailscale outbound", target.Name)
+			return status
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 35*time.Second)
+		defer cancel()
+		tailscaleStatus, err := outbound.GetTailscaleStatus(ctx, proxy.Adapter(), includeDetails, activate)
+		if err != nil {
+			status.State = overlayNetworkError
+			status.Error = err.Error()
+			return status
+		}
+		return toTailscaleOverlayNetworkStatus(
+			target,
+			tailscaleStatus,
+			outbound.TailscaleAuthKeyConfigured(proxy.Adapter()),
+		)
+	case overlayNetworkZeroTier:
+		if proxy.Type() != constant.ZeroTier {
+			status.State = overlayNetworkError
+			status.Error = fmt.Sprintf("proxy %q is not a ZeroTier outbound", target.Name)
+			return status
+		}
+		zeroTierStatus, err := outbound.GetZeroTierStatus(proxy.Adapter(), includeDetails, activate)
+		if err != nil {
+			status.State = overlayNetworkError
+			status.Error = err.Error()
+			return status
+		}
+		return toZeroTierOverlayNetworkStatus(target, zeroTierStatus)
+	default:
+		status.State = overlayNetworkError
+		status.Error = fmt.Sprintf("unsupported overlay network kind %q", target.Kind)
+		return status
+	}
+}
+
+func toTailscaleOverlayNetworkStatus(target OverlayNetworkTarget, status *ipnstate.Status, authKeyConfigured bool) OverlayNetworkStatus {
+	result := OverlayNetworkStatus{
+		Name:     target.Name,
+		Kind:     overlayNetworkTailscale,
+		State:    tailscaleOverlayNetworkState(status.BackendState),
+		RawState: status.BackendState,
+		AuthURL:  status.AuthURL,
+	}
+	magicDNSSuffix := ""
+	if status.CurrentTailnet != nil {
+		result.NetworkName = status.CurrentTailnet.Name
+		magicDNSSuffix = status.CurrentTailnet.MagicDNSSuffix
+	}
+	if target.Level != overlayNetworkDetails {
+		return result
+	}
+	nodes := make([]TailscaleNode, 0, len(status.Peer)+1)
+	if status.Self != nil {
+		nodes = append(nodes, toTailscaleNode(status.Self, true))
+	}
+	for _, peer := range status.Peer {
+		nodes = append(nodes, toTailscaleNode(peer, false))
+	}
+	slices.SortStableFunc(nodes, func(a, b TailscaleNode) int {
+		if a.Self != b.Self {
+			if a.Self {
+				return -1
+			}
+			return 1
+		}
+		if a.Online != b.Online {
+			if a.Online {
+				return -1
+			}
+			return 1
+		}
+		return cmp.Compare(a.DNSName, b.DNSName)
+	})
+	result.Details = TailscaleNetworkDetails{
+		MagicDNSSuffix:    magicDNSSuffix,
+		AuthKeyConfigured: authKeyConfigured,
+		Health:            append([]string{}, status.Health...),
+		Nodes:             nodes,
+	}
+	return result
+}
+
+func tailscaleOverlayNetworkState(rawState string) OverlayNetworkState {
+	switch rawState {
+	case "NoState", "":
+		return overlayNetworkUninitialized
+	case "Running":
+		return overlayNetworkConnected
+	case "Starting":
+		return overlayNetworkStarting
+	case "NeedsLogin":
+		return overlayNetworkNeedsLogin
+	case "NeedsMachineAuth":
+		return overlayNetworkNeedsApproval
+	case "Stopped":
+		return overlayNetworkStopped
+	default:
+		return overlayNetworkUnknown
+	}
+}
+
+func toTailscaleNode(peer *ipnstate.PeerStatus, self bool) TailscaleNode {
+	ips := make([]string, 0, len(peer.TailscaleIPs))
+	for _, ip := range peer.TailscaleIPs {
+		ips = append(ips, ip.String())
+	}
+	primaryRoutes := make([]string, 0)
+	if peer.PrimaryRoutes != nil {
+		peer.PrimaryRoutes.All()(func(_ int, prefix netip.Prefix) bool {
+			primaryRoutes = append(primaryRoutes, prefix.String())
+			return true
+		})
+	}
+	tags := make([]string, 0)
+	if peer.Tags != nil {
+		peer.Tags.All()(func(_ int, tag string) bool {
+			tags = append(tags, tag)
+			return true
+		})
+	}
+	publicKey := ""
+	if !peer.PublicKey.IsZero() {
+		publicKey = peer.PublicKey.String()
+	}
+	return TailscaleNode{
+		ID:              string(peer.ID),
+		PublicKey:       publicKey,
+		HostName:        peer.HostName,
+		DNSName:         peer.DNSName,
+		OS:              peer.OS,
+		IPs:             ips,
+		Tags:            tags,
+		PrimaryRoutes:   primaryRoutes,
+		Endpoints:       append([]string{}, peer.Addrs...),
+		CurrentEndpoint: peer.CurAddr,
+		Relay:           peer.Relay,
+		RxBytes:         peer.RxBytes,
+		TxBytes:         peer.TxBytes,
+		Online:          peer.Online,
+		Active:          peer.Active,
+		Self:            self,
+		ExitNode:        peer.ExitNode,
+		ExitNodeOption:  peer.ExitNodeOption,
+		Expired:         peer.Expired,
+		LastSeen:        nonZeroTime(peer.LastSeen),
+		LastHandshake:   nonZeroTime(peer.LastHandshake),
+		KeyExpiry:       peer.KeyExpiry,
+	}
+}
+
+func nonZeroTime(value time.Time) *time.Time {
+	if value.IsZero() {
+		return nil
+	}
+	return &value
+}
+
+func toZeroTierOverlayNetworkStatus(target OverlayNetworkTarget, status outbound.ZeroTierStatus) OverlayNetworkStatus {
+	result := OverlayNetworkStatus{
+		Name:        target.Name,
+		Kind:        overlayNetworkZeroTier,
+		State:       zeroTierOverlayNetworkState(status.Status, status.Error),
+		RawState:    status.Status,
+		NetworkName: status.Network,
+		AuthURL:     status.AuthURL,
+		Error:       status.Error,
+	}
+	if target.Level != overlayNetworkDetails {
+		return result
+	}
+	peers := make([]ZeroTierPeer, len(status.Peers))
+	for index, peer := range status.Peers {
+		peers[index] = ZeroTierPeer{
+			Address:   peer.Address,
+			Role:      peer.Role,
+			Version:   peer.Version,
+			Direct:    peer.Direct,
+			Endpoints: peer.Endpoints,
+			LatencyMS: peer.LatencyMS,
+		}
+	}
+	result.Details = ZeroTierNetworkDetails{
+		NetworkID: status.NetworkID,
+		Node:      status.Node,
+		Online:    status.Online,
+		Addresses: status.Addresses,
+		Routes:    status.Routes,
+		DNS:       status.DNS,
+		MTU:       status.MTU,
+		Peers:     peers,
+	}
+	return result
+}
+
+func zeroTierOverlayNetworkState(rawState string, statusError string) OverlayNetworkState {
+	if statusError != "" {
+		return overlayNetworkError
+	}
+	switch rawState {
+	case "":
+		return overlayNetworkUninitialized
+	case "ok":
+		return overlayNetworkConnected
+	case "requesting-configuration":
+		return overlayNetworkStarting
+	case "authentication-required":
+		return overlayNetworkNeedsLogin
+	case "stopped":
+		return overlayNetworkStopped
+	case "access-denied", "not-found":
+		return overlayNetworkError
+	default:
+		return overlayNetworkUnknown
+	}
 }
 
 var geoResourceUpdaters = map[string]func() error{

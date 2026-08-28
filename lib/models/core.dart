@@ -200,6 +200,330 @@ extension ExternalProviderExt on ExternalProvider {
       type != 'Rule' || format == 'YamlRule' || format == 'TextRule';
 }
 
+class TailscaleNode {
+  final String id;
+  final String publicKey;
+  final String hostName;
+  final String dnsName;
+  final String os;
+  final List<String> ips;
+  final List<String> tags;
+  final List<String> primaryRoutes;
+  final List<String> endpoints;
+  final String currentEndpoint;
+  final String relay;
+  final int rxBytes;
+  final int txBytes;
+  final bool online;
+  final bool active;
+  final bool self;
+  final bool exitNode;
+  final bool exitNodeOption;
+  final bool expired;
+  final DateTime? lastSeen;
+  final DateTime? lastHandshake;
+  final DateTime? keyExpiry;
+
+  const TailscaleNode({
+    required this.id,
+    this.publicKey = '',
+    required this.hostName,
+    required this.dnsName,
+    required this.os,
+    required this.ips,
+    this.tags = const [],
+    this.primaryRoutes = const [],
+    this.endpoints = const [],
+    this.currentEndpoint = '',
+    this.relay = '',
+    this.rxBytes = 0,
+    this.txBytes = 0,
+    required this.online,
+    required this.active,
+    required this.self,
+    required this.exitNode,
+    required this.exitNodeOption,
+    required this.expired,
+    this.lastSeen,
+    this.lastHandshake,
+    this.keyExpiry,
+  });
+
+  factory TailscaleNode.fromJson(Map<String, Object?> json) {
+    return TailscaleNode(
+      id: json['id'] as String? ?? '',
+      publicKey: json['public-key'] as String? ?? '',
+      hostName: json['hostname'] as String? ?? '',
+      dnsName: json['dns-name'] as String? ?? '',
+      os: json['os'] as String? ?? '',
+      ips: (json['ips'] as List<dynamic>? ?? const [])
+          .whereType<String>()
+          .toList(),
+      tags: (json['tags'] as List<dynamic>? ?? const [])
+          .whereType<String>()
+          .toList(),
+      primaryRoutes: (json['primary-routes'] as List<dynamic>? ?? const [])
+          .whereType<String>()
+          .toList(),
+      endpoints: (json['endpoints'] as List<dynamic>? ?? const [])
+          .whereType<String>()
+          .toList(),
+      currentEndpoint: json['current-endpoint'] as String? ?? '',
+      relay: json['relay'] as String? ?? '',
+      rxBytes: json['rx-bytes'] as int? ?? 0,
+      txBytes: json['tx-bytes'] as int? ?? 0,
+      online: json['online'] as bool? ?? false,
+      active: json['active'] as bool? ?? false,
+      self: json['self'] as bool? ?? false,
+      exitNode: json['exit-node'] as bool? ?? false,
+      exitNodeOption: json['exit-node-option'] as bool? ?? false,
+      expired: json['expired'] as bool? ?? false,
+      lastSeen: DateTime.tryParse(json['last-seen'] as String? ?? ''),
+      lastHandshake: DateTime.tryParse(json['last-handshake'] as String? ?? ''),
+      keyExpiry: DateTime.tryParse(json['key-expiry'] as String? ?? ''),
+    );
+  }
+}
+
+class TailscaleNetworkDetails {
+  final String magicDnsSuffix;
+  final bool authKeyConfigured;
+  final List<String> health;
+  final List<TailscaleNode> nodes;
+
+  const TailscaleNetworkDetails({
+    this.magicDnsSuffix = '',
+    this.authKeyConfigured = false,
+    required this.health,
+    required this.nodes,
+  });
+
+  factory TailscaleNetworkDetails.fromJson(Map<String, Object?> json) {
+    return TailscaleNetworkDetails(
+      magicDnsSuffix: json['magic-dns-suffix'] as String? ?? '',
+      authKeyConfigured: json['auth-key-configured'] as bool? ?? false,
+      health: (json['health'] as List<dynamic>? ?? const [])
+          .whereType<String>()
+          .toList(),
+      nodes: (json['nodes'] as List<dynamic>? ?? const [])
+          .whereType<Map>()
+          .map(
+            (item) => TailscaleNode.fromJson(Map<String, Object?>.from(item)),
+          )
+          .toList(),
+    );
+  }
+}
+
+class ZeroTierPeer {
+  final String address;
+  final String role;
+  final String version;
+  final bool direct;
+  final List<String> endpoints;
+  final int latencyMs;
+
+  const ZeroTierPeer({
+    required this.address,
+    required this.role,
+    required this.version,
+    required this.direct,
+    required this.endpoints,
+    required this.latencyMs,
+  });
+
+  factory ZeroTierPeer.fromJson(Map<String, Object?> json) {
+    return ZeroTierPeer(
+      address: json['address'] as String? ?? '',
+      role: json['role'] as String? ?? '',
+      version: json['version'] as String? ?? '',
+      direct: json['direct'] as bool? ?? false,
+      endpoints: (json['endpoints'] as List<dynamic>? ?? const [])
+          .whereType<String>()
+          .toList(),
+      latencyMs: json['latency-ms'] as int? ?? 0,
+    );
+  }
+}
+
+class ZeroTierNetworkDetails {
+  final String networkId;
+  final String node;
+  final bool online;
+  final List<String> addresses;
+  final List<String> routes;
+  final List<String> dns;
+  final int mtu;
+  final List<ZeroTierPeer> peers;
+
+  const ZeroTierNetworkDetails({
+    required this.networkId,
+    required this.node,
+    required this.online,
+    required this.addresses,
+    required this.routes,
+    required this.dns,
+    required this.mtu,
+    required this.peers,
+  });
+
+  factory ZeroTierNetworkDetails.fromJson(Map<String, Object?> json) {
+    return ZeroTierNetworkDetails(
+      networkId: json['network-id'] as String? ?? '',
+      node: json['node'] as String? ?? '',
+      online: json['online'] as bool? ?? false,
+      addresses: (json['addresses'] as List<dynamic>? ?? const [])
+          .whereType<String>()
+          .toList(),
+      routes: (json['routes'] as List<dynamic>? ?? const [])
+          .whereType<String>()
+          .toList(),
+      dns: (json['dns'] as List<dynamic>? ?? const [])
+          .whereType<String>()
+          .toList(),
+      mtu: json['mtu'] as int? ?? 0,
+      peers: (json['peers'] as List<dynamic>? ?? const [])
+          .whereType<Map>()
+          .map((item) => ZeroTierPeer.fromJson(Map<String, Object?>.from(item)))
+          .toList(),
+    );
+  }
+}
+
+enum OverlayNetworkKind { tailscale, zerotier }
+
+enum OverlayNetworkDetailLevel { summary, details }
+
+enum OverlayNetworkState {
+  uninitialized,
+  starting,
+  connected,
+  needsLogin,
+  needsApproval,
+  stopped,
+  error,
+  unknown,
+}
+
+class OverlayNetworkTarget {
+  final String name;
+  final OverlayNetworkKind kind;
+  final OverlayNetworkDetailLevel level;
+
+  const OverlayNetworkTarget({
+    required this.name,
+    required this.kind,
+    required this.level,
+  });
+
+  Map<String, Object?> toJson() {
+    return {'name': name, 'kind': kind.name, 'level': level.name};
+  }
+}
+
+class GetOverlayNetworkStatusParams {
+  final List<OverlayNetworkTarget> targets;
+
+  const GetOverlayNetworkStatusParams({required this.targets});
+
+  Map<String, Object?> toJson() {
+    return {'targets': targets.map((target) => target.toJson()).toList()};
+  }
+}
+
+class TailscalePingResult {
+  final int latencyMs;
+
+  const TailscalePingResult({required this.latencyMs});
+
+  factory TailscalePingResult.fromJson(Map<String, Object?> json) {
+    return TailscalePingResult(latencyMs: json['latency-ms'] as int? ?? 0);
+  }
+}
+
+class OverlayNetworkStatus {
+  final String name;
+  final OverlayNetworkKind kind;
+  final OverlayNetworkState state;
+  final String rawState;
+  final String networkName;
+  final String authUrl;
+  final String error;
+  final TailscaleNetworkDetails? tailscaleDetails;
+  final ZeroTierNetworkDetails? zeroTierDetails;
+
+  const OverlayNetworkStatus({
+    required this.name,
+    required this.kind,
+    required this.state,
+    required this.rawState,
+    required this.networkName,
+    required this.authUrl,
+    required this.error,
+    this.tailscaleDetails,
+    this.zeroTierDetails,
+  });
+
+  bool get hasDetails => tailscaleDetails != null || zeroTierDetails != null;
+
+  factory OverlayNetworkStatus.fromJson(Map<String, Object?> json) {
+    final kind = switch (json['kind']) {
+      'tailscale' => OverlayNetworkKind.tailscale,
+      'zerotier' => OverlayNetworkKind.zerotier,
+      _ => throw FormatException(
+        'Unknown overlay network kind: ${json['kind']}',
+      ),
+    };
+    final state = switch (json['state']) {
+      'uninitialized' => OverlayNetworkState.uninitialized,
+      'starting' => OverlayNetworkState.starting,
+      'connected' => OverlayNetworkState.connected,
+      'needs-login' => OverlayNetworkState.needsLogin,
+      'needs-approval' => OverlayNetworkState.needsApproval,
+      'stopped' => OverlayNetworkState.stopped,
+      'error' => OverlayNetworkState.error,
+      _ => OverlayNetworkState.unknown,
+    };
+    final details = json['details'];
+    final detailsMap = details is Map
+        ? Map<String, Object?>.from(details)
+        : null;
+    return OverlayNetworkStatus(
+      name: json['name'] as String? ?? '',
+      kind: kind,
+      state: state,
+      rawState: json['raw-state'] as String? ?? '',
+      networkName: json['network-name'] as String? ?? '',
+      authUrl: json['auth-url'] as String? ?? '',
+      error: json['error'] as String? ?? '',
+      tailscaleDetails:
+          kind == OverlayNetworkKind.tailscale && detailsMap != null
+          ? TailscaleNetworkDetails.fromJson(detailsMap)
+          : null,
+      zeroTierDetails: kind == OverlayNetworkKind.zerotier && detailsMap != null
+          ? ZeroTierNetworkDetails.fromJson(detailsMap)
+          : null,
+    );
+  }
+
+  OverlayNetworkStatus retainDetailsFrom(OverlayNetworkStatus previous) {
+    if (hasDetails || !previous.hasDetails || kind != previous.kind) {
+      return this;
+    }
+    return OverlayNetworkStatus(
+      name: name,
+      kind: kind,
+      state: state,
+      rawState: rawState,
+      networkName: networkName,
+      authUrl: authUrl,
+      error: error,
+      tailscaleDetails: previous.tailscaleDetails,
+      zeroTierDetails: previous.zeroTierDetails,
+    );
+  }
+}
+
 @freezed
 abstract class ProxiesData with _$ProxiesData {
   const factory ProxiesData({

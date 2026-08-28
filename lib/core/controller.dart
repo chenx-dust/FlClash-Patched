@@ -169,6 +169,27 @@ class CoreController {
     return _interface.getExternalProvider(externalProviderName);
   }
 
+  Future<List<OverlayNetworkStatus>> getOverlayNetworkStatus(
+    GetOverlayNetworkStatusParams params,
+  ) async {
+    return _interface.getOverlayNetworkStatus(params);
+  }
+
+  Future<OverlayNetworkStatus> activateOverlayNetwork(
+    String name,
+    OverlayNetworkKind kind,
+  ) {
+    return _interface.activateOverlayNetwork(name, kind);
+  }
+
+  Future<TailscalePingResult> pingTailscaleNode(String name, String ip) {
+    return _interface.pingTailscaleNode(name, ip);
+  }
+
+  Future<bool> logoutTailscale(String name) {
+    return _interface.logoutTailscale(name);
+  }
+
   Future<String> updateGeoData(String type) {
     return _interface.updateGeoData(type);
   }

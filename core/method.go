@@ -260,6 +260,27 @@ var methodHandlers = map[CoreMethod]methodHandler{
 	getExternalProviderMethod: withArguments(func(name *string, response MethodResponse) {
 		response.success(handleGetExternalProvider(*name))
 	}),
+	getOverlayNetworkStatusMethod: withArguments(func(params *GetOverlayNetworkStatusParams, response MethodResponse) {
+		response.success(handleGetOverlayNetworkStatus(params))
+	}),
+	activateOverlayNetworkMethod: withArguments(func(params *ActivateOverlayNetworkParams, response MethodResponse) {
+		response.success(handleActivateOverlayNetwork(params))
+	}),
+	pingTailscaleNodeMethod: withArguments(func(params *TailscalePingParams, response MethodResponse) {
+		result, err := handlePingTailscaleNode(params)
+		if err != nil {
+			response.failure("core_error", err.Error(), nil)
+			return
+		}
+		response.success(result)
+	}),
+	logoutTailscaleMethod: withArguments(func(params *TailscaleLogoutParams, response MethodResponse) {
+		if err := handleLogoutTailscale(params); err != nil {
+			response.failure("core_error", err.Error(), nil)
+			return
+		}
+		response.success(true)
+	}),
 	updateExternalProviderMethod: withArguments(func(name *string, response MethodResponse) {
 		safeGo(response, func() {
 			if err := handleUpdateExternalProvider(*name); err != nil {

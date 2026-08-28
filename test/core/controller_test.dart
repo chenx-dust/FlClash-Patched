@@ -40,6 +40,8 @@ void main() {
     registerFallbackValue(
       const UpdateGeoDataParams(geoType: 't', geoName: 'n'),
     );
+    registerFallbackValue(const GetOverlayNetworkStatusParams(targets: []));
+    registerFallbackValue(OverlayNetworkKind.tailscale);
   });
 
   setUp(() {
@@ -245,6 +247,83 @@ void main() {
       when(() => mock.getExternalProvider(any())).thenAnswer((_) async => null);
       final result = await controller.getExternalProvider('test');
       expect(result, isNull);
+    });
+
+    test('getOverlayNetworkStatus delegates structured batch', () async {
+      const status = OverlayNetworkStatus(
+        name: 'tailnet',
+        kind: OverlayNetworkKind.tailscale,
+        state: OverlayNetworkState.connected,
+        rawState: 'Running',
+        networkName: 'example.com',
+        authUrl: '',
+        error: '',
+      );
+      when(
+        () => mock.getOverlayNetworkStatus(any()),
+      ).thenAnswer((_) async => [status]);
+      const params = GetOverlayNetworkStatusParams(
+        targets: [
+          OverlayNetworkTarget(
+            name: 'tailnet',
+            kind: OverlayNetworkKind.tailscale,
+            level: OverlayNetworkDetailLevel.summary,
+          ),
+        ],
+      );
+
+      expect(await controller.getOverlayNetworkStatus(params), [status]);
+      verify(() => mock.getOverlayNetworkStatus(params)).called(1);
+    });
+
+    test('activateOverlayNetwork delegates target identity', () async {
+      const status = OverlayNetworkStatus(
+        name: 'tailnet',
+        kind: OverlayNetworkKind.tailscale,
+        state: OverlayNetworkState.connected,
+        rawState: 'Running',
+        networkName: 'example.com',
+        authUrl: '',
+        error: '',
+      );
+      when(
+        () => mock.activateOverlayNetwork(any(), any()),
+      ).thenAnswer((_) async => status);
+
+      expect(
+        await controller.activateOverlayNetwork(
+          'tailnet',
+          OverlayNetworkKind.tailscale,
+        ),
+        status,
+      );
+      verify(
+        () => mock.activateOverlayNetwork(
+          'tailnet',
+          OverlayNetworkKind.tailscale,
+        ),
+      ).called(1);
+    });
+
+    test('pingTailscaleNode delegates target and address', () async {
+      when(
+        () => mock.pingTailscaleNode(any(), any()),
+      ).thenAnswer((_) async => const TailscalePingResult(latencyMs: 23));
+
+      final result = await controller.pingTailscaleNode(
+        'tailnet',
+        '100.64.0.1',
+      );
+
+      expect(result.latencyMs, 23);
+      verify(() => mock.pingTailscaleNode('tailnet', '100.64.0.1')).called(1);
+    });
+
+    test('logoutTailscale delegates target name', () async {
+      when(() => mock.logoutTailscale(any())).thenAnswer((_) async => true);
+
+      expect(await controller.logoutTailscale('tailnet'), isTrue);
+      verify(() => mock.logoutTailscale('tailnet')).called(1);
     });
   });
 

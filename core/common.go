@@ -273,7 +273,7 @@ func updateListeners(cfg *config.Config) {
 	listener.ReCreateShadowSocks(general.ShadowSocksConfig, tunnel.Tunnel)
 	listener.ReCreateVmess(general.VmessConfig, tunnel.Tunnel)
 	listener.ReCreateTuic(general.TuicServer, tunnel.Tunnel)
-	if !features.Android {
+	if !features.Android && !features.IOS {
 		listener.ReCreateTun(general.Tun, tunnel.Tunnel)
 	}
 }

@@ -179,6 +179,129 @@ void main() {
     });
   });
 
+  group('Overlay network status', () {
+    test('parses uninitialized state', () {
+      final status = OverlayNetworkStatus.fromJson({
+        'name': 'tailnet',
+        'kind': 'tailscale',
+        'state': 'uninitialized',
+        'raw-state': 'NoState',
+      });
+
+      expect(status.state, OverlayNetworkState.uninitialized);
+    });
+
+    test('parses Tailscale summary and node details', () {
+      final status = OverlayNetworkStatus.fromJson({
+        'name': 'tailnet',
+        'kind': 'tailscale',
+        'state': 'connected',
+        'raw-state': 'Running',
+        'auth-url': 'https://login.tailscale.com/a/test',
+        'network-name': 'example.com',
+        'details': {
+          'magic-dns-suffix': 'example.com',
+          'auth-key-configured': true,
+          'health': ['warning'],
+          'nodes': [
+            {
+              'id': 'node-1',
+              'public-key': 'nodekey:test',
+              'hostname': 'device',
+              'dns-name': 'device.example.com.',
+              'os': 'linux',
+              'ips': ['100.64.0.1'],
+              'tags': ['tag:server'],
+              'endpoints': ['192.0.2.1:41641'],
+              'current-endpoint': '192.0.2.1:41641',
+              'relay': 'sfo',
+              'rx-bytes': 12,
+              'tx-bytes': 34,
+              'online': false,
+              'active': false,
+              'self': false,
+              'exit-node': true,
+              'exit-node-option': true,
+              'expired': false,
+              'last-seen': '2026-08-18T00:00:00Z',
+            },
+          ],
+        },
+      });
+
+      expect(status.name, 'tailnet');
+      expect(status.kind, OverlayNetworkKind.tailscale);
+      expect(status.state, OverlayNetworkState.connected);
+      expect(status.networkName, 'example.com');
+      expect(status.tailscaleDetails?.magicDnsSuffix, 'example.com');
+      expect(status.tailscaleDetails?.authKeyConfigured, isTrue);
+      expect(status.tailscaleDetails?.health, ['warning']);
+      expect(status.tailscaleDetails?.nodes.single.hostName, 'device');
+      expect(
+        status.tailscaleDetails?.nodes.single.dnsName,
+        'device.example.com.',
+      );
+      expect(status.tailscaleDetails?.nodes.single.exitNode, isTrue);
+      expect(status.tailscaleDetails?.nodes.single.publicKey, 'nodekey:test');
+      expect(status.tailscaleDetails?.nodes.single.tags, ['tag:server']);
+      expect(status.tailscaleDetails?.nodes.single.endpoints, [
+        '192.0.2.1:41641',
+      ]);
+      expect(status.tailscaleDetails?.nodes.single.rxBytes, 12);
+      expect(
+        status.tailscaleDetails?.nodes.single.lastSeen,
+        DateTime.utc(2026, 8, 18),
+      );
+    });
+
+    test('parses ZeroTier summary and peer details', () {
+      final status = OverlayNetworkStatus.fromJson({
+        'name': 'zerotier',
+        'kind': 'zerotier',
+        'state': 'needs-login',
+        'raw-state': 'authentication-required',
+        'network-name': 'example',
+        'auth-url': 'https://example.com/login',
+        'details': {
+          'network-id': '8056c2e21c000001',
+          'node': 'abcdef1234',
+          'online': true,
+          'addresses': ['10.0.0.2/24'],
+          'routes': ['10.0.0.0/24'],
+          'dns': ['10.0.0.1:53'],
+          'mtu': 2800,
+          'peers': [
+            {
+              'address': '1234567890',
+              'role': 'leaf',
+              'version': '1.14.2',
+              'direct': true,
+              'endpoints': ['192.0.2.1:9993'],
+              'latency-ms': 12,
+            },
+          ],
+        },
+      });
+
+      expect(status.state, OverlayNetworkState.needsLogin);
+      expect(status.authUrl, 'https://example.com/login');
+      expect(status.zeroTierDetails?.networkId, '8056c2e21c000001');
+      expect(status.zeroTierDetails?.peers.single.direct, isTrue);
+      expect(status.zeroTierDetails?.peers.single.latencyMs, 12);
+    });
+
+    test('keeps details distinct from an empty summary', () {
+      final summary = OverlayNetworkStatus.fromJson({
+        'name': 'tailnet',
+        'kind': 'tailscale',
+        'state': 'stopped',
+      });
+
+      expect(summary.hasDetails, isFalse);
+      expect(summary.tailscaleDetails, isNull);
+    });
+  });
+
   group('CoreEvent', () {
     test('fromJson with type and data', () {
       final event = CoreEvent.fromJson({'type': 'log', 'data': 'test log'});
