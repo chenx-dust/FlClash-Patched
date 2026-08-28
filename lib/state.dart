@@ -17,6 +17,7 @@ class GlobalState {
   GlobalKey<NavigatorState> get navigatorKey => rootNavigatorKey;
   late final String appEnv;
   late final PackageInfo packageInfo;
+  final isBackground = ValueNotifier<bool>(false);
   Function? updateCurrentDelayDebounce;
   late Measure measure;
   late CommonTheme theme;
@@ -46,6 +47,26 @@ class GlobalState {
   String get ua => container
       .read(patchClashConfigProvider.select((state) => state.globalUa))
       .takeFirstValid([packageInfo.ua]);
+
+  void handleBackground() {
+    commonPrint.log('background', logLevel: LogLevel.debug);
+    if (isBackground.value) {
+      return;
+    }
+    isBackground.value = true;
+    render?.pause();
+    foregroundTicker.pause();
+  }
+
+  void handleForeground() {
+    commonPrint.log('foreground', logLevel: LogLevel.debug);
+    foregroundTicker.resume();
+    if (!isBackground.value) {
+      return;
+    }
+    isBackground.value = false;
+    render?.resume();
+  }
 
   Future<T?> loadingRun<T>(
     FutureOr<T> Function() futureFunction, {

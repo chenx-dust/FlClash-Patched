@@ -8,6 +8,7 @@ import 'package:fl_clash/common/request.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
+import 'package:fl_clash/providers/config.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:riverpod/riverpod.dart';
@@ -43,6 +44,43 @@ void main() {
         container.read(authorizedTunEnableProvider),
         TunAuthorizationState.unauthorized,
       );
+    });
+  });
+
+  group('Logs provider', () {
+    Log log(LogLevel level, String payload) {
+      return Log.app(payload).copyWith(logLevel: level);
+    }
+
+    test('keeps logs at or above the configured log level', () {
+      container
+          .read(patchClashConfigProvider.notifier)
+          .update((state) => state.copyWith(logLevel: LogLevel.warning));
+
+      final notifier = container.read(logsProvider.notifier);
+      notifier.add(log(LogLevel.info, 'info'));
+      notifier.addLogs([
+        log(LogLevel.warning, 'warning'),
+        log(LogLevel.error, 'error'),
+      ]);
+
+      expect(container.read(logsProvider).list.map((item) => item.payload), [
+        'warning',
+        'error',
+      ]);
+    });
+
+    test('drops all logs when configured log level is silent', () {
+      container
+          .read(patchClashConfigProvider.notifier)
+          .update((state) => state.copyWith(logLevel: LogLevel.silent));
+
+      container.read(logsProvider.notifier).addLogs([
+        log(LogLevel.error, 'error'),
+        log(LogLevel.warning, 'warning'),
+      ]);
+
+      expect(container.read(logsProvider).list, isEmpty);
     });
   });
 
@@ -257,6 +295,9 @@ void main() {
   group('append-backed buffers notify on every arrival', () {
     test('Logs.add advances the generation and reaches listeners', () {
       container.read(logsProvider.notifier).value = FixedList(3);
+      container
+          .read(patchClashConfigProvider.notifier)
+          .update((state) => state.copyWith(logLevel: LogLevel.debug));
       final revisions = <int>[];
       final subscription = container.listen(
         logsProvider.select((state) => state.revision),

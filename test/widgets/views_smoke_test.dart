@@ -1,10 +1,13 @@
 import 'dart:io';
 
+import 'package:fl_clash/core/controller.dart';
+import 'package:fl_clash/core/interface.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/providers/database.dart';
+import 'package:fl_clash/providers/core.dart';
 import 'package:fl_clash/providers/state.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/config/advanced.dart';
@@ -31,6 +34,7 @@ import 'package:material_ui/material_ui.dart' as flutter;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 import '../helpers/test_app.dart';
@@ -39,6 +43,8 @@ import '../helpers/test_profiles.dart';
 
 Finder _portField(String label) =>
     find.ancestor(of: find.text(label), matching: find.byType(TextFormField));
+
+class _MockCoreHandlerInterface extends Mock implements CoreHandlerInterface {}
 
 void main() {
   final cases = <String, Widget>{
@@ -70,6 +76,14 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
+      final startsCoreListener = entry.key == 'requests' || entry.key == 'logs';
+      final wasBackground = globalState.isBackground.value;
+      if (startsCoreListener) {
+        globalState.isBackground.value = true;
+        addTearDown(() {
+          globalState.isBackground.value = wasBackground;
+        });
+      }
       if (entry.key == 'resources') {
         final previousPathProvider = PathProviderPlatform.instance;
         PathProviderPlatform.instance = _TestPathProvider();
@@ -110,6 +124,67 @@ void main() {
       expect(tester.takeException(), null);
 
       await tester.pumpWidget(const SizedBox.shrink());
+    });
+  }
+
+  final listenerCases = <String, Widget>{
+    'requests': const RequestsView(),
+    'logs': const LogsView(),
+  };
+
+  for (final entry in listenerCases.entries) {
+    testWidgets('${entry.key} follows foreground listener lifecycle', (
+      tester,
+    ) async {
+      final coreInterface = _MockCoreHandlerInterface();
+      when(
+        () => coreInterface.startLogNotify(),
+      ).thenAnswer((_) async => const <Log>[]);
+      when(() => coreInterface.stopLogNotify()).thenAnswer((_) {});
+      when(
+        () => coreInterface.startRequestNotify(),
+      ).thenAnswer((_) async => const <TrackerInfo>[]);
+      when(() => coreInterface.stopRequestNotify()).thenAnswer((_) {});
+
+      final wasBackground = globalState.isBackground.value;
+      globalState.isBackground.value = false;
+      addTearDown(() {
+        globalState.isBackground.value = wasBackground;
+      });
+
+      final container = ProviderContainer(
+        overrides: [
+          coreHandlerProvider.overrideWithValue(
+            CoreController.scoped(coreInterface),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      globalState.container = container;
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: TestApp(child: entry.value),
+        ),
+      );
+      await tester.pump();
+
+      if (entry.key == 'logs') {
+        verify(() => coreInterface.startLogNotify()).called(1);
+      } else {
+        verify(() => coreInterface.startRequestNotify()).called(1);
+      }
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+
+      if (entry.key == 'logs') {
+        verify(() => coreInterface.stopLogNotify()).called(1);
+      } else {
+        verify(() => coreInterface.stopRequestNotify()).called(1);
+      }
+      expect(tester.takeException(), null);
     });
   }
 

@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
+import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,6 +28,8 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
   TrackerInfoFilter _trackerFilter = const TrackerInfoFilter();
   bool _showFilterBar = false;
   late final ScrollController _scrollController;
+  late final CoreController _core;
+  bool _requestListening = false;
 
   void _onSearch(String value) {
     _requestsStateNotifier.value = _requestsStateNotifier.value.copyWith(
@@ -60,6 +66,7 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
   @override
   void initState() {
     super.initState();
+    _core = ref.read(coreHandlerProvider);
     _scrollController = ScrollController(initialScrollOffset: double.maxFinite);
     _requestsStateNotifier.value = _requestsStateNotifier.value.copyWith(
       trackerInfos: ref.read(requestsProvider).list,
@@ -70,13 +77,48 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
     ) {
       updateRequestsThrottler();
     });
+    globalState.isBackground.addListener(_syncListening);
+    _syncListening();
   }
 
   @override
   void dispose() {
+    globalState.isBackground.removeListener(_syncListening);
+    _stopListening();
     _requestsStateNotifier.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _syncListening() {
+    if (globalState.isBackground.value) {
+      _stopListening();
+      return;
+    }
+    _startListening();
+  }
+
+  void _startListening() {
+    if (_requestListening) {
+      return;
+    }
+    _requestListening = true;
+    unawaited(
+      _core.startRequestNotify().then((requests) {
+        if (!mounted || !_requestListening) {
+          return;
+        }
+        ref.read(requestsProvider.notifier).addRequests(requests);
+      }),
+    );
+  }
+
+  void _stopListening() {
+    if (!_requestListening) {
+      return;
+    }
+    _requestListening = false;
+    _core.stopRequestNotify();
   }
 
   void updateRequestsThrottler() {

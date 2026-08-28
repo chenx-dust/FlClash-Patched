@@ -8,12 +8,7 @@ void main() {
       LogLevel level,
       String payload, {
       LogSource source = LogSource.app,
-    }) => Log(
-      logLevel: level,
-      source: source,
-      payload: payload,
-      dateTime: '2024-01-01',
-    );
+    }) => Log(logLevel: level, source: source, payload: payload, timestamp: 0);
 
     test('returns all logs when no filters and empty query', () {
       final state = LogsState(

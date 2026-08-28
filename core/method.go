@@ -281,12 +281,18 @@ var methodHandlers = map[CoreMethod]methodHandler{
 	updateGeoDataMethod: withArguments(func(geoType *string, response MethodResponse) {
 		response.success(handleUpdateGeoData(*geoType))
 	}),
-	startLogMethod: withoutArguments(func(response MethodResponse) {
-		handleStartLog()
+	startLogNotifyMethod: withoutArguments(func(response MethodResponse) {
+		response.success(handleStartLogNotify())
+	}),
+	stopLogNotifyMethod: withoutArguments(func(response MethodResponse) {
+		handleStopLogNotify()
 		response.success(true)
 	}),
-	stopLogMethod: withoutArguments(func(response MethodResponse) {
-		handleStopLog()
+	startRequestNotifyMethod: withoutArguments(func(response MethodResponse) {
+		response.success(handleStartRequestNotify())
+	}),
+	stopRequestNotifyMethod: withoutArguments(func(response MethodResponse) {
+		handleStopRequestNotify()
 		response.success(true)
 	}),
 	startListenerMethod: withoutArguments(func(response MethodResponse) {

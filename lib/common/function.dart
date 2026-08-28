@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/common/constant.dart';
+import 'package:fl_clash/common/print.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:flutter/foundation.dart';
 

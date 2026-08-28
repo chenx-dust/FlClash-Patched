@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
+import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/providers/core.dart';
 import 'package:flutter/services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -30,10 +31,24 @@ class Logs extends _$Logs with AutoDisposeNotifierMixin {
   }
 
   void add(Log value) {
+    addLogs([value]);
+  }
+
+  void addLogs(List<Log> values) {
     if (!ref.mounted) {
       return;
     }
-    this.value = state.append(value);
+    final logLevel = ref.read(patchClashConfigProvider).logLevel;
+    var nextState = state;
+    for (final value in values) {
+      if (logLevel.allows(value.logLevel)) {
+        nextState = nextState.append(value);
+      }
+    }
+    if (nextState == state) {
+      return;
+    }
+    value = nextState;
   }
 
   Future<bool> exportLogs() async {
@@ -55,10 +70,21 @@ class Requests extends _$Requests with AutoDisposeNotifierMixin {
   }
 
   void addRequest(TrackerInfo value) {
+    addRequests([value]);
+  }
+
+  void addRequests(List<TrackerInfo> values) {
     if (!ref.mounted) {
       return;
     }
-    this.value = state.append(value);
+    var nextState = state;
+    for (final value in values) {
+      nextState = nextState.append(value);
+    }
+    if (nextState == state) {
+      return;
+    }
+    value = nextState;
   }
 }
 

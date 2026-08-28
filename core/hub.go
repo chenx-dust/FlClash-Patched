@@ -41,6 +41,33 @@ var (
 	logCancel     context.CancelFunc
 )
 
+var (
+	logNotifyMu      sync.Mutex
+	logNotifyEnabled bool
+	logNotifyCache   [maxCachedLogNotify]StampedLogEvent
+	logNotifyStart   int
+	logNotifyLen     int
+)
+
+var (
+	requestNotifyMu      sync.Mutex
+	requestNotifyEnabled bool
+	requestNotifyCache   [maxCachedRequestNotify]*statistic.TrackerInfo
+	requestNotifyStart   int
+	requestNotifyLen     int
+)
+
+const (
+	maxCachedLogNotify     = 100
+	maxCachedRequestNotify = 100
+)
+
+type StampedLogEvent struct {
+	LogLevel log.LogLevel
+	Payload  string
+	Time     int64
+}
+
 func handleInitClash(params *InitParams) bool {
 	configMu.Lock()
 	defer configMu.Unlock()
@@ -574,21 +601,11 @@ func shouldPublishDelay(delay uint16) bool {
 	return delay != 0 || !isSuspended.Load()
 }
 
-func handleStartLog() {
-	logMu.Lock()
-	if logCancel != nil {
-		logCancel()
-		logCancel = nil
-	}
-	if logSubscriber != nil {
-		log.UnSubscribe(logSubscriber)
-		logSubscriber = nil
-	}
+func startLogLocked() {
 	ctx, cancel := context.WithCancel(context.Background())
 	subscriber := log.Subscribe()
 	logSubscriber = subscriber
 	logCancel = cancel
-	logMu.Unlock()
 
 	go func() {
 		defer func() {
@@ -611,13 +628,48 @@ func handleStartLog() {
 				if logData.LogLevel < log.Level() {
 					continue
 				}
+				stampedLog := StampedLogEvent{
+					LogLevel: logData.LogLevel,
+					Payload:  logData.Payload,
+					Time:     time.Now().UnixMilli(),
+				}
+				logNotifyMu.Lock()
+				if !logNotifyEnabled {
+					cacheLog(stampedLog)
+					logNotifyMu.Unlock()
+					continue
+				}
+				logNotifyMu.Unlock()
 				sendMessage(Message{
 					Type: LogMessage,
-					Data: logData,
+					Data: stampedLog,
 				})
 			}
 		}
 	}()
+}
+
+func handleStartLog() {
+	logMu.Lock()
+	if logCancel != nil {
+		logCancel()
+		logCancel = nil
+	}
+	if logSubscriber != nil {
+		log.UnSubscribe(logSubscriber)
+		logSubscriber = nil
+	}
+	startLogLocked()
+	logMu.Unlock()
+}
+
+func ensureLogStarted() {
+	logMu.Lock()
+	defer logMu.Unlock()
+	if logSubscriber != nil {
+		return
+	}
+	startLogLocked()
 }
 
 func handleStopLog() {
@@ -631,6 +683,59 @@ func handleStopLog() {
 		log.UnSubscribe(logSubscriber)
 		logSubscriber = nil
 	}
+}
+
+func handleStartLogNotify() []StampedLogEvent {
+	ensureLogStarted()
+	logNotifyMu.Lock()
+	defer logNotifyMu.Unlock()
+	logs := make([]StampedLogEvent, logNotifyLen)
+	for i := 0; i < logNotifyLen; i++ {
+		index := (logNotifyStart + i) % maxCachedLogNotify
+		logs[i] = logNotifyCache[index]
+	}
+	logNotifyStart = 0
+	logNotifyLen = 0
+	logNotifyEnabled = true
+	return logs
+}
+
+func handleStopLogNotify() {
+	logNotifyMu.Lock()
+	defer logNotifyMu.Unlock()
+	logNotifyEnabled = false
+}
+
+func cacheLog(logData StampedLogEvent) {
+	if logNotifyLen < maxCachedLogNotify {
+		index := (logNotifyStart + logNotifyLen) % maxCachedLogNotify
+		logNotifyCache[index] = logData
+		logNotifyLen++
+		return
+	}
+	logNotifyCache[logNotifyStart] = logData
+	logNotifyStart = (logNotifyStart + 1) % maxCachedLogNotify
+}
+
+func handleStartRequestNotify() []*statistic.TrackerInfo {
+	requestNotifyMu.Lock()
+	defer requestNotifyMu.Unlock()
+	requests := make([]*statistic.TrackerInfo, requestNotifyLen)
+	for i := 0; i < requestNotifyLen; i++ {
+		index := (requestNotifyStart + i) % maxCachedRequestNotify
+		requests[i] = requestNotifyCache[index]
+		requestNotifyCache[index] = nil
+	}
+	requestNotifyStart = 0
+	requestNotifyLen = 0
+	requestNotifyEnabled = true
+	return requests
+}
+
+func handleStopRequestNotify() {
+	requestNotifyMu.Lock()
+	defer requestNotifyMu.Unlock()
+	requestNotifyEnabled = false
 }
 
 func handleGetMemory() uint64 {
@@ -814,6 +919,21 @@ func init() {
 		})
 	}
 	statistic.DefaultRequestNotify = func(c statistic.Tracker) {
+		requestNotifyMu.Lock()
+		if !requestNotifyEnabled {
+			request := c.Info()
+			if requestNotifyLen < maxCachedRequestNotify {
+				index := (requestNotifyStart + requestNotifyLen) % maxCachedRequestNotify
+				requestNotifyCache[index] = request
+				requestNotifyLen++
+			} else {
+				requestNotifyCache[requestNotifyStart] = request
+				requestNotifyStart = (requestNotifyStart + 1) % maxCachedRequestNotify
+			}
+			requestNotifyMu.Unlock()
+			return
+		}
+		requestNotifyMu.Unlock()
 		sendMessage(Message{
 			Type: RequestMessage,
 			Data: c,

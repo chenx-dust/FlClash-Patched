@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
@@ -20,10 +21,13 @@ class LogsView extends ConsumerStatefulWidget {
 class _LogsViewState extends ConsumerState<LogsView> {
   final _logsStateNotifier = ValueNotifier<LogsState>(const LogsState());
   late ScrollController _scrollController;
+  late final CoreController _core;
+  bool _logListening = false;
 
   @override
   void initState() {
     super.initState();
+    _core = ref.read(coreHandlerProvider);
     _scrollController = ScrollController(initialScrollOffset: double.maxFinite);
     _logsStateNotifier.value = _logsStateNotifier.value.copyWith(
       logs: ref.read(logsProvider).list,
@@ -31,6 +35,8 @@ class _LogsViewState extends ConsumerState<LogsView> {
     ref.listenManual(logsProvider.select((state) => state.revision), (_, _) {
       updateLogsThrottler();
     });
+    globalState.isBackground.addListener(_syncListening);
+    _syncListening();
   }
 
   List<Widget> _buildActions() {
@@ -80,9 +86,46 @@ class _LogsViewState extends ConsumerState<LogsView> {
 
   @override
   void dispose() {
+    globalState.isBackground.removeListener(_syncListening);
+    _stopListening();
     _logsStateNotifier.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _syncListening() {
+    if (globalState.isBackground.value) {
+      _stopListening();
+      return;
+    }
+    _startListening();
+  }
+
+  void _startListening() {
+    if (_logListening) {
+      return;
+    }
+    _logListening = true;
+    unawaited(
+      _core.startLogNotify().then((logs) {
+        if (!mounted || !_logListening) {
+          return;
+        }
+        ref
+            .read(logsProvider.notifier)
+            .addLogs(
+              logs.map((log) => log.copyWith(source: LogSource.core)).toList(),
+            );
+      }),
+    );
+  }
+
+  void _stopListening() {
+    if (!_logListening) {
+      return;
+    }
+    _logListening = false;
+    _core.stopLogNotify();
   }
 
   Future<void> _handleExport() async {
@@ -182,7 +225,10 @@ class _LogsViewState extends ConsumerState<LogsView> {
                   controller: _scrollController,
                   itemBuilder: (_, index) {
                     final log = logs[index];
-                    return LogItem(key: Key(log.dateTime), log: log);
+                    return LogItem(
+                      key: Key(log.timestamp.toString()),
+                      log: log,
+                    );
                   },
                   separatorBuilder: (_, _) => const Divider(height: 0),
                   itemCount: logs.length,
@@ -336,7 +382,9 @@ class LogItem extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    log.dateTime,
+                    DateTime.fromMillisecondsSinceEpoch(
+                      log.timestamp,
+                    ).toLocal().showFull,
                     style: itemContext.textTheme.bodySmall?.copyWith(
                       color: itemContext.colorScheme.onSurface.opacity80,
                     ),

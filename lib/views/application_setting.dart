@@ -5,6 +5,8 @@ import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+part 'foreground_ticker_dialog.dart';
+
 ConfigToggleItem _appSettingToggle({
   required ConfigLabel title,
   required ConfigLabel subtitle,
@@ -106,6 +108,7 @@ class ApplicationSettingView extends ConsumerWidget {
         select: (state) => state.openLogs,
         update: (state, value) => state.copyWith(openLogs: value),
       ),
+      const ForegroundTickerIntervalItem(),
       _appSettingToggle(
         title: (l) => l.autoCloseConnections,
         subtitle: (l) => l.autoCloseConnectionsDesc,

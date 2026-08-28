@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/core/interface.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
+import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/providers/core.dart';
 import 'package:fl_clash/providers/database.dart';
@@ -145,6 +148,73 @@ void main() {
         const ChangeProxyParams(groupName: 'A', proxyName: ''),
       ),
     ).called(1);
+  });
+
+  testWidgets('list delay test deduplicates nodes shared by expanded groups', (
+    tester,
+  ) async {
+    const testUrl = 'https://example.com/generate_204';
+    const proxy = Proxy(name: 'Node A', type: 'Shadowsocks');
+    const groups = [
+      Group(
+        type: GroupType.Selector,
+        name: 'A',
+        all: [proxy],
+        testUrl: testUrl,
+      ),
+      Group(
+        type: GroupType.Selector,
+        name: 'B',
+        all: [proxy],
+        testUrl: testUrl,
+      ),
+    ];
+    final profile = Profile.normal().copyWith(unfoldSet: {'A', 'B'});
+    final response = Completer<Delay>();
+    when(
+      () => core.asyncTestDelay(testUrl, proxy.name),
+    ).thenAnswer((_) => response.future);
+    currentProfileSubscription.close();
+    globalContainer.dispose();
+    globalContainer = ProviderContainer(
+      overrides: [
+        coreHandlerProvider.overrideWithValue(CoreController.scoped(core)),
+        currentProfileProvider.overrideWithValue(profile),
+        groupsProvider.overrideWithBuild((_, _) => groups),
+        proxiesListStateProvider.overrideWithValue(
+          const ProxiesListState(
+            groups: groups,
+            currentUnfoldSet: {'A', 'B'},
+            proxyCardType: ProxyCardType.standard,
+          ),
+        ),
+      ],
+    );
+    globalState.container = globalContainer;
+    currentProfileSubscription = globalContainer.listen(
+      currentProfileProvider,
+      (_, _) {},
+    );
+    final key = GlobalKey<ProxiesListViewState>();
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: globalContainer,
+        child: TestApp(
+          child: ProxiesListView(key: key),
+          homeBuilder: (child) => Scaffold(body: child),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final delayTestFuture = key.currentState!.delayTestUnfoldedGroups();
+    response.complete(const Delay(url: testUrl, name: 'Node A', value: 42));
+    await delayTestFuture;
+
+    verify(() => core.asyncTestDelay(testUrl, proxy.name)).called(1);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 1));
   });
 }
 

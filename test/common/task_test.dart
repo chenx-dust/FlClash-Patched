@@ -389,16 +389,8 @@ void main() {
 
   test('log and list tasks produce stable mapped output', () async {
     final logs = [
-      const Log(
-        logLevel: LogLevel.info,
-        payload: 'first',
-        dateTime: '2026-07-26 10:00:00',
-      ),
-      const Log(
-        logLevel: LogLevel.error,
-        payload: 'second',
-        dateTime: '2026-07-26 10:00:01',
-      ),
+      const Log(logLevel: LogLevel.info, payload: 'first', timestamp: 0),
+      const Log(logLevel: LogLevel.error, payload: 'second', timestamp: 1000),
     ];
 
     final encoded = await encodeLogsTask(logs);

@@ -20,7 +20,10 @@ const _allowed = {
   // `CoreEventManager` is a private-constructor singleton that fans core events
   // out for the whole run; closing its controller would end event delivery.
   'lib/core/event.dart#_controller',
+  'lib/state.dart#isBackground',
 };
+
+String _repoPath(String path) => p.relative(path).replaceAll('\\', '/');
 
 final _declaration = RegExp(
   r'^\s+(?:late\s+)?final\s+(?:[A-Za-z][\w<>,\s?]*\s+)?(_?[A-Za-z]\w*)\s*=\s*'
@@ -53,7 +56,7 @@ void main() {
       if (entity is! File || !entity.path.endsWith('.dart')) {
         continue;
       }
-      final relative = p.relative(entity.path);
+      final relative = _repoPath(entity.path);
       if (_isGenerated(relative)) {
         continue;
       }

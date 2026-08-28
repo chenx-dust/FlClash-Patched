@@ -13,6 +13,7 @@ import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:window_manager/window_manager.dart';
 
 class AppStateManager extends ConsumerStatefulWidget {
   final Widget child;
@@ -25,10 +26,35 @@ class AppStateManager extends ConsumerStatefulWidget {
 
 class _AppStateManagerState extends ConsumerState<AppStateManager>
     with WidgetsBindingObserver {
+  void _syncForegroundTickerSettings(AppSettingProps appSetting) {
+    foregroundTicker.updateSettings(
+      interval: Duration(seconds: appSetting.foregroundTickerInterval),
+      slowInterval: Duration(seconds: appSetting.foregroundTickerIdleInterval),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _syncForegroundTickerSettings(ref.read(appSettingProvider));
+    ref.listenManual(
+      appSettingProvider.select(
+        (state) => (
+          state.foregroundTickerInterval,
+          state.foregroundTickerIdleWhenUnfocused,
+          state.foregroundTickerIdleInterval,
+        ),
+      ),
+      (prev, next) {
+        final appSetting = ref.read(appSettingProvider);
+        _syncForegroundTickerSettings(appSetting);
+        if (!appSetting.foregroundTickerIdleWhenUnfocused &&
+            !globalState.isBackground.value) {
+          foregroundTicker.resume();
+        }
+      },
+    );
     ref.listenManual(checkIpProvider, (prev, next) {
       if (prev != next && next.isInit && next.containsDetection) {
         ref.read(networkDetectionProvider.notifier).startCheck();
@@ -74,16 +100,40 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    commonPrint.log('$state');
-    if (state == AppLifecycleState.resumed) {
-      permissions.check(ref.read);
-      render?.resume();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) {
-          return;
+    commonPrint.log('$state', logLevel: LogLevel.debug);
+    switch (state) {
+      case AppLifecycleState.inactive:
+        if (system.isDesktop) {
+          final isVisible = await windowManager.isVisible();
+          final isMinimized = await windowManager.isMinimized();
+          if (isVisible || !isMinimized) {
+            if (ref
+                .read(appSettingProvider)
+                .foregroundTickerIdleWhenUnfocused) {
+              foregroundTicker.slow();
+            } else {
+              foregroundTicker.resume();
+            }
+            break;
+          }
         }
-        ref.read(setupActionProvider.notifier).tryCheckIp();
-      });
+      case AppLifecycleState.paused:
+      case AppLifecycleState.hidden:
+        await preferences.saveConfig(ref.read(configProvider));
+        globalState.handleBackground();
+        break;
+      case AppLifecycleState.resumed:
+        permissions.check(ref.read);
+        globalState.handleForeground();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) {
+            return;
+          }
+          ref.read(setupActionProvider.notifier).tryCheckIp();
+        });
+        break;
+      default:
+        break;
     }
   }
 
@@ -94,12 +144,7 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
 
   @override
   Widget build(BuildContext context) {
-    return Listener(
-      onPointerHover: (_) {
-        render?.resume();
-      },
-      child: widget.child,
-    );
+    return widget.child;
   }
 }
 

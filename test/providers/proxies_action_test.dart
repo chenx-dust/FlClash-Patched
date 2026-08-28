@@ -392,6 +392,51 @@ void main() {
       expect(container.read(pendingDelayTestsProvider), isEmpty);
       verifyNever(() => core.asyncTestDelay(any(), any()));
     });
+
+    test('shares a matching request across overlapping runs', () async {
+      final response = Completer<Delay?>();
+      when(
+        () => core.asyncTestDelay(_testUrl, 'HK-01'),
+      ).thenAnswer((_) => response.future);
+      final container = _delayContainer(buildContainer);
+      final action = actionOf(container);
+
+      final first = action.proxyDelayTest(_proxy);
+      final second = action.proxyDelayTest(_proxy);
+      await Future<void>.delayed(Duration.zero);
+
+      verify(() => core.asyncTestDelay(_testUrl, 'HK-01')).called(1);
+      response.complete(const Delay(name: 'HK-01', url: _testUrl, value: 42));
+      await Future.wait([first, second]);
+
+      expect(container.read(delayDataSourceProvider)[_testUrl]?['HK-01'], 42);
+      expect(container.read(pendingDelayTestsProvider), isEmpty);
+    });
+
+    test(
+      'ignores streamed delay events while a manual test is pending',
+      () async {
+        final response = Completer<Delay?>();
+        when(
+          () => core.asyncTestDelay(_testUrl, 'HK-01'),
+        ).thenAnswer((_) => response.future);
+        final container = _delayContainer(buildContainer);
+        final action = actionOf(container);
+
+        final run = action.proxyDelayTest(_proxy);
+        await Future<void>.delayed(Duration.zero);
+        action.setDelay(const Delay(name: 'HK-01', url: _testUrl, value: -1));
+
+        expect(
+          container.read(delayDataSourceProvider)[_testUrl]?['HK-01'],
+          null,
+        );
+        response.complete(const Delay(name: 'HK-01', url: _testUrl, value: 42));
+        await run;
+
+        expect(container.read(delayDataSourceProvider)[_testUrl]?['HK-01'], 42);
+      },
+    );
   });
 
   group('delayTest', () {

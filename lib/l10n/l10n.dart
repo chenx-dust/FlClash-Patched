@@ -854,16 +854,6 @@ class AppLocalizations {
     return Intl.message('Selected', name: 'selected', desc: '', args: []);
   }
 
-  /// `Scroll to selected`
-  String get scrollToSelected {
-    return Intl.message(
-      'Scroll to selected',
-      name: 'scrollToSelected',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Collapse`
   String get collapse {
     return Intl.message('Collapse', name: 'collapse', desc: '', args: []);
@@ -1594,16 +1584,6 @@ class AppLocalizations {
     return Intl.message(
       'Monochrome Tray Icon',
       name: 'monochromeTrayIcon',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Predictive Back`
-  String get predictiveBack {
-    return Intl.message(
-      'Predictive Back',
-      name: 'predictiveBack',
       desc: '',
       args: [],
     );
@@ -2966,6 +2946,16 @@ class AppLocalizations {
       name: 'numberTip',
       desc: '',
       args: [label],
+    );
+  }
+
+  /// `Please enter an integer greater than 0`
+  String get positiveIntegerTip {
+    return Intl.message(
+      'Please enter an integer greater than 0',
+      name: 'positiveIntegerTip',
+      desc: '',
+      args: [],
     );
   }
 
@@ -5068,6 +5058,16 @@ class AppLocalizations {
     );
   }
 
+  /// `Scroll to selected`
+  String get scrollToSelected {
+    return Intl.message(
+      'Scroll to selected',
+      name: 'scrollToSelected',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Show more`
   String get showMore {
     return Intl.message('Show more', name: 'showMore', desc: '', args: []);
@@ -5353,6 +5353,16 @@ class AppLocalizations {
     return Intl.message(
       'Regex search',
       name: 'regexSearch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Predictive Back`
+  String get predictiveBack {
+    return Intl.message(
+      'Predictive Back',
+      name: 'predictiveBack',
       desc: '',
       args: [],
     );

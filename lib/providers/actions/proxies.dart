@@ -27,6 +27,8 @@ class ProxiesAction extends _$ProxiesAction {
 
   final List<_DelayTestJob> _delayTestJobs = [];
 
+  final Map<String, Future<Delay?>> _inFlightDelayTests = {};
+
   final Map<String, String> _pendingSelectedRollback = {};
 
   @override
@@ -43,6 +45,7 @@ class ProxiesAction extends _$ProxiesAction {
       job.cancelled = true;
       job.held.clear();
     }
+    _inFlightDelayTests.clear();
     ref.read(pendingDelayTestsProvider.notifier).clear();
   }
 
@@ -158,6 +161,14 @@ class ProxiesAction extends _$ProxiesAction {
   }
 
   void setDelay(Delay delay) {
+    final key = delayTestKey(delay.url, delay.name);
+    if (ref.read(pendingDelayTestsProvider).contains(key)) {
+      return;
+    }
+    _setDelay(delay);
+  }
+
+  void _setDelay(Delay delay) {
     ref.read(delayDataSourceProvider.notifier).setDelay(delay);
   }
 
@@ -330,9 +341,9 @@ class ProxiesAction extends _$ProxiesAction {
       return;
     }
     try {
-      final delay = await _core.getDelay(target.testUrl, target.proxyName);
+      final delay = await _sharedDelayTest(target);
       if (delay != null && !job.cancelled) {
-        setDelay(delay);
+        _setDelay(delay);
       }
     } catch (error) {
       if (error is CoreMethodException && error.isCoreUnavailable) {
@@ -347,5 +358,20 @@ class ProxiesAction extends _$ProxiesAction {
         ref.read(pendingDelayTestsProvider.notifier).release([target.key]);
       }
     }
+  }
+
+  Future<Delay?> _sharedDelayTest(_DelayTestTarget target) {
+    final pending = _inFlightDelayTests[target.key];
+    if (pending != null) {
+      return pending;
+    }
+    late final Future<Delay?> future;
+    future = _core.getDelay(target.testUrl, target.proxyName).whenComplete(() {
+      if (identical(_inFlightDelayTests[target.key], future)) {
+        _inFlightDelayTests.remove(target.key);
+      }
+    });
+    _inFlightDelayTests[target.key] = future;
+    return future;
   }
 }

@@ -694,6 +694,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "port": MessageLookupByLibrary.simpleMessage("ポート"),
     "portConflictTip": MessageLookupByLibrary.simpleMessage("別のポートを入力してください"),
     "portTip": m22,
+    "positiveIntegerTip": MessageLookupByLibrary.simpleMessage(
+      "0 より大きい整数を入力してください",
+    ),
     "predictiveBack": MessageLookupByLibrary.simpleMessage("予測型戻る"),
     "preferH3": MessageLookupByLibrary.simpleMessage("HTTP/3 を優先"),
     "preferH3Desc": MessageLookupByLibrary.simpleMessage("DoH の HTTP/3 を優先します"),

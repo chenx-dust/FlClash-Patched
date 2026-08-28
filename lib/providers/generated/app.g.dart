@@ -93,7 +93,7 @@ final class LogsProvider extends $NotifierProvider<Logs, FixedList<Log>> {
   }
 }
 
-String _$logsHash() => r'c23da391e9662e863990fc68039fbaf126f85b83';
+String _$logsHash() => r'fc294bde1b0c9934a66569cdc500543dd9f70cbd';
 
 abstract class _$Logs extends $Notifier<FixedList<Log>> {
   FixedList<Log> build();
@@ -145,7 +145,7 @@ final class RequestsProvider
   }
 }
 
-String _$requestsHash() => r'281a3333f8eca333d513e09b34cf5e568c44e07b';
+String _$requestsHash() => r'425cf74c412558e238d36d5c2ec74d526f07c6d7';
 
 abstract class _$Requests extends $Notifier<FixedList<TrackerInfo>> {
   FixedList<TrackerInfo> build();
