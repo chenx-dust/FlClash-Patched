@@ -44,6 +44,10 @@ func handleInitClash(params *InitParams) bool {
 	defer configMu.Unlock()
 	sdkVersion.Store(int32(params.Version))
 	constant.SetHomeDir(params.HomeDir)
+	constant.Path.MMDB()
+	constant.Path.ASN()
+	constant.Path.GeoIP()
+	constant.Path.GeoSite()
 	initOwnership(params.HomeDir)
 	isInit.Store(true)
 	return true
