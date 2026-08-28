@@ -95,11 +95,6 @@ class AppPath {
     return join(mTempDir.path, 'temp$uniqueId');
   }
 
-  Future<String> get lockFilePath async {
-    final homeDirPath = await appPath.homeDirPath;
-    return join(homeDirPath, 'FlClash.lock');
-  }
-
   Future<String> get configFilePath async {
     final mHomeDirPath = await homeDirPath;
     return join(mHomeDirPath, 'config.yaml');

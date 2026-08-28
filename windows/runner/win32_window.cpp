@@ -2,6 +2,7 @@
 
 #include <dwmapi.h>
 #include <flutter_windows.h>
+#include <shobjidl.h>
 
 #include "resource.h"
 
@@ -16,7 +17,9 @@ namespace {
 #define DWMWA_USE_IMMERSIVE_DARK_MODE 20
 #endif
 
-constexpr const wchar_t kWindowClassName[] = L"FLUTTER_RUNNER_WIN32_WINDOW";
+constexpr const wchar_t kWindowClassName[] = L"FLCLASH_RUNNER_WIN32_WINDOW";
+constexpr const wchar_t kActivateWindowMessageName[] =
+    L"FlClash.ActivateWindow";
 
 /// Registry key for app theme preference.
 ///
@@ -178,6 +181,23 @@ Win32Window::MessageHandler(HWND hwnd,
                             UINT const message,
                             WPARAM const wparam,
                             LPARAM const lparam) noexcept {
+  static const UINT activate_window_message =
+      ::RegisterWindowMessageW(kActivateWindowMessageName);
+  if (message == activate_window_message) {
+    ITaskbarList* taskbar = nullptr;
+    if (SUCCEEDED(::CoCreateInstance(CLSID_TaskbarList, nullptr,
+                                     CLSCTX_INPROC_SERVER,
+                                     IID_PPV_ARGS(&taskbar)))) {
+      taskbar->HrInit();
+      taskbar->AddTab(hwnd);
+      taskbar->Release();
+    }
+    ::ShowWindowAsync(hwnd, ::IsIconic(hwnd) ? SW_RESTORE : SW_SHOW);
+    ::SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+    ::SetForegroundWindow(hwnd);
+    return 0;
+  }
+
   switch (message) {
     case WM_DESTROY:
       window_handle_ = nullptr;

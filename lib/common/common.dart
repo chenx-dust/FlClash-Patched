@@ -23,7 +23,6 @@ export 'javascript.dart';
 export 'keyboard.dart';
 export 'layout.dart';
 export 'link.dart';
-export 'lock.dart';
 export 'measure.dart';
 export 'mixin.dart';
 export 'navigator.dart';
