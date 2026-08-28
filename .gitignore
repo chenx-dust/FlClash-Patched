@@ -62,6 +62,8 @@ docs/
 /android/core/**/includes/
 /android/core/**/cmake-build-*/
 /android/core/**/jniLibs/
+.gradle/
+problems-report.html
 
 #FlClash
 /libclash/
