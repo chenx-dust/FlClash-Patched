@@ -158,7 +158,6 @@ dart run tool/changelog.dart verify                  # what CI checks
 dart run tool/changelog.dart release --version 0.8.96
 dart run tool/changelog.dart build --unreleased      # changelog.json only, includes untagged work
 dart run tool/changelog.dart render release --out release.md
-dart run tool/changelog.dart render telegram --out telegram.md
 ```
 
 Releasing a stable version, in order:
@@ -197,10 +196,10 @@ in `CHANGELOG.md`, and are never regenerated.
 skipped and moves on instead of reporting drift that does not exist. Checking mere tag existence is what made every such
 branch fail on an unrelated release.
 
-Prerelease tags (`v0.8.96-pre.N`) skip the release commit, and CI renders their notes with `build --unreleased` for the
-Telegram post. They publish no GitHub release, so the update dialog never sees them. `build --unreleased` reads the
-version from `pubspec.yaml` rather than the tag, so the patch has to be bumped before the first `-pre.N` of a cycle:
-while `v<pubspec version>` is still tagged it refuses to collect anything and the release job fails.
+Prerelease tags (`v0.8.96-pre.N`) skip the release commit, and CI renders their notes with `build --unreleased` for a
+GitHub prerelease. `build --unreleased` reads the version from `pubspec.yaml` rather than the tag, so the patch has to be
+bumped before the first `-pre.N` of a cycle: while `v<pubspec version>` is still tagged it refuses to collect anything
+and the release job fails.
 
 ## Verify
 

@@ -21,8 +21,6 @@ const releaseEndMarker = '<!-- flclash:changelog:end -->';
 const releaseJsonBeginMarker = '<!-- flclash:changelog:json';
 const releaseJsonEndMarker = '-->';
 
-const telegramLimit = 900;
-
 const emptyVersionNote = 'Internal improvements only.';
 
 /// The structured part of `CHANGELOG.md`: title, versions, frozen marker.
@@ -87,48 +85,6 @@ String renderReleaseJson(ChangelogVersion version) {
     Changelog(versions: <ChangelogVersion>[version]).toJson(),
   ).replaceAll('>', r'\u003e');
   return '$releaseJsonBeginMarker\n$payload\n$releaseJsonEndMarker\n';
-}
-
-/// Escapes the three characters Telegram's HTML parse mode treats as markup.
-///
-/// The caption is sent with a parse mode, so entry text is markup, not text: a
-/// commit subject carrying a `<` used to be a malformed tag and Telegram
-/// rejected the whole upload. HTML rather than Markdown because it is the one
-/// Telegram parse mode with a defined escape — legacy Markdown has none, and a
-/// subject containing a lone `*` or `_` cannot be made safe in it.
-String escapeTelegramHtml(String value) => value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;');
-
-/// Telegram captions are capped at 1024 characters, so the text is truncated
-/// with a pointer to the full notes instead of failing the upload.
-String renderTelegram(ChangelogVersion version, {required String moreUrl}) {
-  final buffer = StringBuffer();
-  if (version.isEmpty) {
-    buffer.writeln('• ${escapeTelegramHtml(emptyVersionNote)}');
-  }
-  for (final group in version.groups) {
-    buffer.writeln('<b>${escapeTelegramHtml(group.type.title)}</b>');
-    for (final entry in group.entries) {
-      buffer.writeln('• ${escapeTelegramHtml(entry.text)}');
-    }
-    buffer.writeln();
-  }
-  final text = buffer.toString().trimRight();
-  if (text.length <= telegramLimit) {
-    return text;
-  }
-  final cut = text.substring(0, telegramLimit);
-  final lastBreak = cut.lastIndexOf('\n');
-  // Cut on a line break so the cut never lands inside a tag; the trailing
-  // pattern covers the one case that has no break to cut on, where the cut can
-  // still land halfway through an entity.
-  final kept = (lastBreak < 0 ? cut : cut.substring(0, lastBreak)).replaceAll(
-    RegExp(r'&[A-Za-z]*$|<[^>]*$'),
-    '',
-  );
-  return '$kept\n\n…\n$moreUrl';
 }
 
 /// Version headings stay the only `##` level; groups are bold lines because a

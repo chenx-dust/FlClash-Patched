@@ -7,8 +7,6 @@ import 'src/changelog/git.dart';
 import 'src/changelog/models.dart';
 import 'src/changelog/render.dart';
 
-const _repository = 'chen08209/FlClash';
-
 Future<void> main(List<String> arguments) async {
   final parser = ArgParser()
     ..addOption('root', help: 'Repository root, defaults to the cwd.');
@@ -105,7 +103,7 @@ int _build(String root, ArgResults command) {
 int _render(String root, ArgResults command) {
   final rest = command.rest;
   if (rest.isEmpty) {
-    _fail('render needs a target: release or telegram');
+    _fail('render needs a target: release');
   }
   final changelog = decodeChangelog(
     resolve(root, changelogDataPath).readAsStringSync(),
@@ -123,10 +121,6 @@ int _render(String root, ArgResults command) {
 
   final output = switch (rest.first) {
     'release' => renderRelease(version),
-    'telegram' => renderTelegram(
-      version,
-      moreUrl: 'https://github.com/$_repository/releases',
-    ),
     _ => _fail('Unknown render target: ${rest.first}'),
   };
 
@@ -271,7 +265,7 @@ Usage: dart run tool/changelog.dart <command> [options]
 Commands:
   release --version X   Rewrite CHANGELOG.md and changelog.json.
   build [--unreleased]  Rewrite changelog.json only.
-  render <release|telegram> [--tag vX] [--out file]
+  render release [--tag vX] [--out file]
   verify                Check the committed changelog against git.
 
 ${parser.usage}''';
