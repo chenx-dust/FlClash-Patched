@@ -67,7 +67,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m21(label) => "${label} は数字でなければなりません";
 
-  static String m22(label) => "${label} は 1024 から 49151 の間でなければなりません";
+  static String m22(label) => "${label} は 1024 から 49151 の間でなければなりません，0 は無効です";
 
   static String m23(count) => "${count} プロキシ";
 

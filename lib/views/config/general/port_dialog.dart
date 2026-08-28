@@ -6,13 +6,8 @@ const _maxPort = 49151;
 class _PortField {
   final TextEditingController controller;
   final String Function(AppLocalizations appLocalizations) label;
-  final bool allowDisabled;
 
-  const _PortField({
-    required this.controller,
-    required this.label,
-    this.allowDisabled = true,
-  });
+  const _PortField({required this.controller, required this.label});
 }
 
 class _PortDialog extends ConsumerStatefulWidget {
@@ -58,7 +53,6 @@ class _PortDialogState extends ConsumerState<_PortDialog> {
       _PortField(
         controller: _mixedPortController,
         label: (appLocalizations) => appLocalizations.mixedPort,
-        allowDisabled: false,
       ),
       _PortField(
         controller: _portController,
@@ -158,7 +152,7 @@ class _PortDialogState extends ConsumerState<_PortDialog> {
     if (port == null) {
       return appLocalizations.numberTip(label);
     }
-    if (field.allowDisabled && port == 0) {
+    if (port == 0) {
       return null;
     }
     if (port < _minPort || port > _maxPort) {

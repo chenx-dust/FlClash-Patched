@@ -71,7 +71,7 @@ void main() {
     expect(find.textContaining('1024'), findsWidgets);
   });
 
-  testWidgets('rejects zero for the mixed port but accepts it elsewhere', (
+  testWidgets('accepts zero for the mixed port and other ports', (
     tester,
   ) async {
     await _openPortDialog(tester);
@@ -80,18 +80,11 @@ void main() {
     final fields = find.byType(TextFormField);
     await tester.enterText(fields.at(1), '0');
     await tester.pumpAndSettle();
-    final errorsWithDisabledPort = find
-        .textContaining('1024')
-        .evaluate()
-        .length;
 
     await tester.enterText(fields.first, '0');
     await tester.pumpAndSettle();
 
-    expect(
-      find.textContaining('1024').evaluate().length,
-      greaterThan(errorsWithDisabledPort),
-    );
+    expect(find.textContaining('1024'), findsNothing);
   });
 
   testWidgets('reports a conflict when two ports share a value', (
