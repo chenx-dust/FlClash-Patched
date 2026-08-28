@@ -23,6 +23,12 @@ class _RecordingSystemAction extends SystemAction {
   static final exits = <bool>[];
 
   @override
+  Future<void> handleReset(Future<void> Function() clearData) async {
+    await clearData();
+    exits.add(false);
+  }
+
+  @override
   Future<void> handleExit([bool needSave = true]) async {
     exits.add(needSave);
   }
@@ -46,6 +52,12 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(0);
+    registerFallbackValue(
+      const DeleteManagedPathParams(
+        scope: ManagedPathScope.profiles,
+        relativePath: '',
+      ),
+    );
     home = Directory.systemTemp.createTempSync('flclash-store-');
     AppPath.supportDirectory = () async => home;
     AppPath.temporaryDirectory = () async => home;
@@ -62,6 +74,7 @@ void main() {
     await preferences.setVersion(7);
     core = _MockCoreHandlerInterface();
     when(() => core.clearEffect(any())).thenAnswer((_) async => '');
+    when(() => core.deleteManagedPath(any())).thenAnswer((_) async => '');
     testDatabase = db.Database(NativeDatabase.memory());
     db.database = testDatabase;
     _RecordingSystemAction.exits.clear();

@@ -14,6 +14,10 @@ void main() {
       expect(appLocalizations.hoursCount('2'), contains('2'));
       expect(appLocalizations.secondsCount('30'), contains('30'));
       expect(appLocalizations.geoUpdated('geoip'), contains('geoip'));
+      expect(appLocalizations.confirmClearSelectedData, isNotEmpty);
+      expect(appLocalizations.allData, isNotEmpty);
+      expect(appLocalizations.resetSettingsData, isNotEmpty);
+      expect(appLocalizations.resetProfilesAndScripts, isNotEmpty);
     }
   });
 

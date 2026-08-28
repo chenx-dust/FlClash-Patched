@@ -170,6 +170,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Приватный ключ Age (необязательно)",
     ),
     "agree": MessageLookupByLibrary.simpleMessage("Согласен"),
+    "allData": MessageLookupByLibrary.simpleMessage("Все данные"),
     "allowBypass": MessageLookupByLibrary.simpleMessage(
       "Разрешить приложениям обходить VPN",
     ),
@@ -315,6 +316,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "confirm": MessageLookupByLibrary.simpleMessage("Подтвердить"),
     "confirmClearAllData": MessageLookupByLibrary.simpleMessage(
       "Вы уверены, что хотите очистить все данные?",
+    ),
+    "confirmClearSelectedData": MessageLookupByLibrary.simpleMessage(
+      "Вы уверены, что хотите удалить выбранные данные?",
     ),
     "confirmDeleteProxyGroup": MessageLookupByLibrary.simpleMessage(
       "Вы уверены, что хотите удалить текущую группу прокси?",
@@ -1020,6 +1024,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "reset": MessageLookupByLibrary.simpleMessage("Сброс"),
     "resetPageChangesTip": MessageLookupByLibrary.simpleMessage(
       "На текущей странице есть изменения. Вы уверены, что хотите сбросить?",
+    ),
+    "resetProfilesAndScripts": MessageLookupByLibrary.simpleMessage(
+      "Профили и скрипты",
+    ),
+    "resetSettingsData": MessageLookupByLibrary.simpleMessage(
+      "Настройки приложения",
     ),
     "resetTip": MessageLookupByLibrary.simpleMessage(
       "Убедитесь, что хотите сбросить",

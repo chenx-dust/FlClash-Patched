@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:fl_clash/common/window.dart';
 import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/models/config.dart';
 import 'package:fl_clash/pages/error.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
@@ -53,6 +55,12 @@ void main() {
           ),
         );
       } catch (e, s) {
+        commonPrint.log(
+          'Failed to initialize: $e, $s',
+          logLevel: LogLevel.error,
+        );
+        await window?.init(0, const WindowProps());
+        await window?.show();
         runApp(
           MaterialApp(
             home: InitErrorScreen(error: e, stack: s),

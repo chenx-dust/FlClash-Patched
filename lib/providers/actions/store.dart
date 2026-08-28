@@ -31,8 +31,20 @@ class StoreAction extends _$StoreAction {
     });
   }
 
-  Future handleClear() async {
+  Future<void> handleClear([
+    Set<ResetDataType> types = allResetDataTypes,
+  ]) async {
     debouncer.cancel(FunctionTag.savePreferences);
+    if (types.contains(ResetDataType.allData) ||
+        types.contains(ResetDataType.profilesAndScripts)) {
+      await _clearProfileEffects();
+    }
+    await ref
+        .read(systemActionProvider.notifier)
+        .handleReset(() => clearApplicationData(types));
+  }
+
+  Future<void> _clearProfileEffects() async {
     final profileIds = ref
         .read(profilesProvider)
         .map((item) => item.id)
@@ -59,10 +71,6 @@ class StoreAction extends _$StoreAction {
     for (final error in clearResults.where((error) => error.isNotEmpty)) {
       commonPrint.log(error, logLevel: LogLevel.warning);
     }
-    await preferences.clearPreferences();
-    commonPrint.log('clear preferences');
-    await database.close();
-    await File(await appPath.databasePath).safeDelete(recursive: true);
     final profilesDir = Directory(await appPath.profilesPath);
     if (await profilesDir.exists()) {
       await for (final entity in profilesDir.list(followLinks: false)) {
@@ -77,6 +85,5 @@ class StoreAction extends _$StoreAction {
         }
       }
     }
-    unawaited(ref.read(systemActionProvider.notifier).handleExit(false));
   }
 }

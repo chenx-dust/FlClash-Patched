@@ -36,6 +36,8 @@ Read these only when the task touches their area:
   `// ignore:`-style directives, license headers, codegen markers, and vendored upstream comments. See
   [.agents/rules.md](.agents/rules.md) for what belongs in a test or in `.agents/` instead.
 - Use `flutter test`, not `dart test`, because models pull in Flutter types.
+- On Windows, run `dart` and `flutter` commands outside the sandbox because the default SDK environment is restricted
+  by sandboxing.
 - Run code generation after modifying models, providers, or database schema.
 - Do not manually edit generated files.
 - Preserve lifecycle ownership: desktop Core process convergence belongs to `lib/core/desktop/`; Android service intent
