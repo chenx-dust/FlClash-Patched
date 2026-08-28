@@ -268,8 +268,8 @@ class _AccessViewState extends ConsumerState<AccessView> {
         return child!;
       },
       child: CommonPopScope(
-        onPop: (_) {
-          _handleBack();
+        onPop: (_) async {
+          await _handleBack();
           return false;
         },
         child: CommonMinFilledButtonTheme(

@@ -62,6 +62,7 @@ class StatusManagerState extends ConsumerState<StatusManager> {
     String text, {
     MessageLevel level = MessageLevel.info,
     MessageActionState? actionState,
+    bool allowCopy = false,
   }) {
     if (text.isEmpty) {
       return;
@@ -72,6 +73,7 @@ class StatusManagerState extends ConsumerState<StatusManager> {
       level: level,
       duration: _resolveDuration(level, actionState),
       actionState: actionState,
+      allowCopy: allowCopy,
     );
     commonPrint.log('message: $text');
     if (_mergeMessage(commonMessage)) {
@@ -448,9 +450,11 @@ class _MessageCard extends StatelessWidget {
           elevation: 6,
           color: message.level.containerColor(context),
           child: InkWell(
-            onLongPress: () {
-              Clipboard.setData(ClipboardData(text: message.text));
-            },
+            onLongPress: message.allowCopy
+                ? () {
+                    Clipboard.setData(ClipboardData(text: message.text));
+                  }
+                : null,
             child: ConstrainedBox(
               constraints: const BoxConstraints(
                 minHeight: _messageMinHeight,
@@ -514,7 +518,7 @@ class _MessageContent extends StatelessWidget {
                 ),
               ),
             ],
-            if (showControls && actionState == null) ...[
+            if (showControls && actionState == null && message.allowCopy) ...[
               const SizedBox(width: 8),
               _MessageIconButton(
                 icon: Icons.copy,

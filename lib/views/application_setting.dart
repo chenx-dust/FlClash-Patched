@@ -95,6 +95,12 @@ class ApplicationSettingView extends ConsumerWidget {
         update: (state, value) => state.copyWith(isAnimateToPage: value),
       ),
       _appSettingToggle(
+        title: (l) => l.swipeToSwitchPage,
+        subtitle: (l) => l.tabAnimationDesc,
+        select: (state) => state.isSwipeToPage,
+        update: (state, value) => state.copyWith(isSwipeToPage: value),
+      ),
+      _appSettingToggle(
         title: (l) => l.logcat,
         subtitle: (l) => l.logcatDesc,
         select: (state) => state.openLogs,

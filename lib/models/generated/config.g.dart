@@ -21,6 +21,7 @@ _AppSettingProps _$AppSettingPropsFromJson(Map<String, dynamic> json) =>
       closeConnections: json['closeConnections'] as bool? ?? true,
       testUrl: json['testUrl'] as String? ?? defaultTestUrl,
       isAnimateToPage: json['isAnimateToPage'] as bool? ?? true,
+      isSwipeToPage: json['isSwipeToPage'] as bool? ?? true,
       autoCheckUpdate: json['autoCheckUpdate'] as bool? ?? true,
       showLabel: json['showLabel'] as bool? ?? false,
       disclaimerAccepted: json['disclaimerAccepted'] as bool? ?? false,
@@ -53,6 +54,7 @@ Map<String, dynamic> _$AppSettingPropsToJson(_AppSettingProps instance) =>
       'closeConnections': instance.closeConnections,
       'testUrl': instance.testUrl,
       'isAnimateToPage': instance.isAnimateToPage,
+      'isSwipeToPage': instance.isSwipeToPage,
       'autoCheckUpdate': instance.autoCheckUpdate,
       'showLabel': instance.showLabel,
       'disclaimerAccepted': instance.disclaimerAccepted,
@@ -202,30 +204,59 @@ const _$RouteModeEnumMap = {
 _ProxiesStyleProps _$ProxiesStylePropsFromJson(Map<String, dynamic> json) =>
     _ProxiesStyleProps(
       type:
-          $enumDecodeNullable(_$ProxiesTypeEnumMap, json['type']) ??
+          $enumDecodeNullable(
+            _$ProxiesTypeEnumMap,
+            json['type'],
+            unknownValue: ProxiesType.tab,
+          ) ??
           ProxiesType.tab,
       sortType:
-          $enumDecodeNullable(_$ProxiesSortTypeEnumMap, json['sortType']) ??
+          $enumDecodeNullable(
+            _$ProxiesSortTypeEnumMap,
+            json['sortType'],
+            unknownValue: ProxiesSortType.none,
+          ) ??
           ProxiesSortType.none,
       layout:
-          $enumDecodeNullable(_$ProxiesLayoutEnumMap, json['layout']) ??
+          $enumDecodeNullable(
+            _$ProxiesLayoutEnumMap,
+            json['layout'],
+            unknownValue: ProxiesLayout.standard,
+          ) ??
           ProxiesLayout.standard,
+      listHeaderStyle:
+          $enumDecodeNullable(
+            _$ProxiesListHeaderStyleEnumMap,
+            json['listHeaderStyle'],
+            unknownValue: ProxiesListHeaderStyle.loose,
+          ) ??
+          ProxiesListHeaderStyle.loose,
       iconStyle:
-          $enumDecodeNullable(_$ProxiesIconStyleEnumMap, json['iconStyle']) ??
+          $enumDecodeNullable(
+            _$ProxiesIconStyleEnumMap,
+            json['iconStyle'],
+            unknownValue: ProxiesIconStyle.standard,
+          ) ??
           ProxiesIconStyle.standard,
       cardType:
-          $enumDecodeNullable(_$ProxyCardTypeEnumMap, json['cardType']) ??
-          ProxyCardType.expand,
+          $enumDecodeNullable(
+            _$ProxyCardTypeEnumMap,
+            json['cardType'],
+            unknownValue: ProxyCardType.standard,
+          ) ??
+          ProxyCardType.standard,
     );
 
-Map<String, dynamic> _$ProxiesStylePropsToJson(_ProxiesStyleProps instance) =>
-    <String, dynamic>{
-      'type': _$ProxiesTypeEnumMap[instance.type]!,
-      'sortType': _$ProxiesSortTypeEnumMap[instance.sortType]!,
-      'layout': _$ProxiesLayoutEnumMap[instance.layout]!,
-      'iconStyle': _$ProxiesIconStyleEnumMap[instance.iconStyle]!,
-      'cardType': _$ProxyCardTypeEnumMap[instance.cardType]!,
-    };
+Map<String, dynamic> _$ProxiesStylePropsToJson(
+  _ProxiesStyleProps instance,
+) => <String, dynamic>{
+  'type': _$ProxiesTypeEnumMap[instance.type]!,
+  'sortType': _$ProxiesSortTypeEnumMap[instance.sortType]!,
+  'layout': _$ProxiesLayoutEnumMap[instance.layout]!,
+  'listHeaderStyle': _$ProxiesListHeaderStyleEnumMap[instance.listHeaderStyle]!,
+  'iconStyle': _$ProxiesIconStyleEnumMap[instance.iconStyle]!,
+  'cardType': _$ProxyCardTypeEnumMap[instance.cardType]!,
+};
 
 const _$ProxiesTypeEnumMap = {ProxiesType.tab: 'tab', ProxiesType.list: 'list'};
 
@@ -241,6 +272,12 @@ const _$ProxiesLayoutEnumMap = {
   ProxiesLayout.tight: 'tight',
 };
 
+const _$ProxiesListHeaderStyleEnumMap = {
+  ProxiesListHeaderStyle.loose: 'loose',
+  ProxiesListHeaderStyle.standard: 'standard',
+  ProxiesListHeaderStyle.tight: 'tight',
+};
+
 const _$ProxiesIconStyleEnumMap = {
   ProxiesIconStyle.none: 'none',
   ProxiesIconStyle.standard: 'standard',
@@ -248,7 +285,7 @@ const _$ProxiesIconStyleEnumMap = {
 };
 
 const _$ProxyCardTypeEnumMap = {
-  ProxyCardType.expand: 'expand',
+  ProxyCardType.standard: 'standard',
   ProxyCardType.shrink: 'shrink',
   ProxyCardType.min: 'min',
 };
@@ -279,6 +316,7 @@ _ThemeProps _$ThemePropsFromJson(Map<String, dynamic> json) => _ThemeProps(
       DynamicSchemeVariant.content,
   pureBlack: json['pureBlack'] as bool? ?? false,
   monochromeTrayIcon: json['monochromeTrayIcon'] as bool? ?? true,
+  predictiveBack: json['predictiveBack'] as bool? ?? true,
   textScale: json['textScale'] == null
       ? const TextScale()
       : TextScale.fromJson(json['textScale'] as Map<String, dynamic>),
@@ -292,6 +330,7 @@ Map<String, dynamic> _$ThemePropsToJson(_ThemeProps instance) =>
       'schemeVariant': _$DynamicSchemeVariantEnumMap[instance.schemeVariant]!,
       'pureBlack': instance.pureBlack,
       'monochromeTrayIcon': instance.monochromeTrayIcon,
+      'predictiveBack': instance.predictiveBack,
       'textScale': instance.textScale,
     };
 

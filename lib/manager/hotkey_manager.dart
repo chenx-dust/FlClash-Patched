@@ -5,7 +5,6 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/common.dart';
 import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/providers/config.dart';
-import 'package:fl_clash/state.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -92,17 +91,12 @@ class _HotKeyManagerState extends ConsumerState<HotKeyManager> {
       shortcuts: {
         controlSingleActivator(LogicalKeyboardKey.keyW):
             const CloseWindowIntent(),
-        const SingleActivator(LogicalKeyboardKey.escape):
-            const EscapeBackIntent(),
       },
       child: Actions(
         actions: {
           CloseWindowIntent: CallbackAction<CloseWindowIntent>(
             onInvoke: (_) =>
                 ref.read(systemActionProvider.notifier).handleClose(false),
-          ),
-          EscapeBackIntent: CallbackAction<EscapeBackIntent>(
-            onInvoke: (_) => globalState.navigatorKey.currentState?.maybePop(),
           ),
           DoNothingIntent: CallbackAction<DoNothingIntent>(
             onInvoke: (_) => null,

@@ -303,9 +303,11 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
-  testWidgets('a wide message exposes copy and close controls', (tester) async {
+  testWidgets('a wide copyable message exposes copy and close controls', (
+    tester,
+  ) async {
     final state = await _pumpStatusManager(tester);
-    state.message('controlled');
+    state.message('controlled', allowCopy: true);
     await tester.pumpAndSettle();
 
     expect(find.byIcon(Icons.copy), findsOneWidget);
@@ -315,6 +317,19 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('controlled'), findsNothing);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('a wide ordinary message exposes only the close control', (
+    tester,
+  ) async {
+    final state = await _pumpStatusManager(tester);
+    state.message('ordinary');
+    await tester.pumpAndSettle();
+
+    expect(find.byIcon(Icons.copy), findsNothing);
+    expect(find.byIcon(Icons.close), findsOneWidget);
 
     await tester.pumpWidget(const SizedBox.shrink());
   });

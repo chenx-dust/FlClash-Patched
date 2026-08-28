@@ -24,6 +24,7 @@ void main() {
       expect(value.highPriorityAutoLaunch, false);
       expect(value.closeConnections, true);
       expect(value.isAnimateToPage, true);
+      expect(value.isSwipeToPage, true);
     });
 
     test('can update state', () {

@@ -288,6 +288,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "closeConnections": MessageLookupByLibrary.simpleMessage(
       "Close connections",
     ),
+    "collapse": MessageLookupByLibrary.simpleMessage("Collapse"),
     "color": MessageLookupByLibrary.simpleMessage("Color"),
     "colorSchemes": MessageLookupByLibrary.simpleMessage("Color schemes"),
     "columns": MessageLookupByLibrary.simpleMessage("Columns"),
@@ -465,7 +466,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "excludeType": MessageLookupByLibrary.simpleMessage("Exclude type"),
     "existsTip": m8,
     "exit": MessageLookupByLibrary.simpleMessage("Exit"),
-    "expand": MessageLookupByLibrary.simpleMessage("Standard"),
+    "expand": MessageLookupByLibrary.simpleMessage("Expand"),
     "expectedStatus": MessageLookupByLibrary.simpleMessage("Expected status"),
     "expireTime": MessageLookupByLibrary.simpleMessage("Expiration time"),
     "exportFile": MessageLookupByLibrary.simpleMessage("Export File"),

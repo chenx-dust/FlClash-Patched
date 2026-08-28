@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
@@ -295,6 +296,8 @@ class ProfileItem extends ConsumerWidget {
       final value = await picker.saveFile(
         profile.realLabel,
         mFile.readAsBytesSync(),
+        type: FileType.custom,
+        allowedExtensions: const ['yaml', 'yml'],
       );
       if (value == null) return false;
       return true;
@@ -389,64 +392,68 @@ class ProfileItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return CommonCard(
-      enterActionsOnRight: true,
-      radius: AppCorner.xl,
-      isSelected: profile.id == groupValue,
-      onPressed: () {
-        onChanged(profile.id);
-      },
-      child: ListItem(
-        key: Key(profile.id.toString()),
-        horizontalTitleGap: 8,
-        minVerticalPadding: 12,
-        padding: const EdgeInsets.only(left: 16, right: 6),
-        trailing: SizedBox(
-          height: 40,
-          width: 40,
-          child: Consumer(
-            builder: (context, ref, _) {
-              final isUpdating = ref.watch(
-                isUpdatingProvider(profile.updatingKey),
-              );
-              return FadeThroughBox(
-                alignment: Alignment.center,
-                child: isUpdating
-                    ? const Padding(
-                        key: ValueKey('loading'),
-                        padding: EdgeInsets.all(8),
-                        child: CommonCircleLoading(),
-                      )
-                    : CommonPopupBox(
-                        key: const ValueKey('menu'),
-                        popupBuilder: (_) =>
-                            CommonPopupMenu(items: _menuItems(context, ref)),
-                        targetBuilder: (open) {
-                          return IconButton(
-                            style: IconButton.styleFrom(
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              visualDensity: VisualDensity.standard,
-                            ),
-                            tooltip: context.appLocalizations.more,
-                            onPressed: () {
-                              open();
-                            },
-                            icon: const Icon(Icons.more_vert),
-                          );
-                        },
-                      ),
-              );
+    PopupOpen? openMenu;
+    return GestureDetector(
+      onSecondaryTapDown: (_) => openMenu?.call(),
+      child: CommonCard(
+        enterActionsOnRight: true,
+        radius: AppCorner.xl,
+        isSelected: profile.id == groupValue,
+        onPressed: () {
+          onChanged(profile.id);
+        },
+        onLongPress: () => openMenu?.call(),
+        child: ListItem(
+          key: Key(profile.id.toString()),
+          horizontalTitleGap: 8,
+          minVerticalPadding: 12,
+          padding: const EdgeInsets.only(left: 16, right: 6),
+          trailing: SizedBox(
+            height: 40,
+            width: 40,
+            child: Consumer(
+              builder: (context, ref, _) {
+                final isUpdating = ref.watch(
+                  isUpdatingProvider(profile.updatingKey),
+                );
+                return FadeThroughBox(
+                  alignment: Alignment.center,
+                  child: isUpdating
+                      ? const Padding(
+                          key: ValueKey('loading'),
+                          padding: EdgeInsets.all(8),
+                          child: CommonCircleLoading(),
+                        )
+                      : CommonPopupBox(
+                          key: const ValueKey('menu'),
+                          popupBuilder: (_) =>
+                              CommonPopupMenu(items: _menuItems(context, ref)),
+                          targetBuilder: (open) {
+                            openMenu = open;
+                            return IconButton(
+                              style: IconButton.styleFrom(
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                visualDensity: VisualDensity.standard,
+                              ),
+                              tooltip: context.appLocalizations.more,
+                              onPressed: open,
+                              icon: const Icon(Icons.more_vert),
+                            );
+                          },
+                        ),
+                );
+              },
+            ),
+          ),
+          title: _ProfileCardTitle(
+            profile: profile,
+            info: switch (profile.type) {
+              ProfileType.file => _buildFileProfileInfo(context),
+              ProfileType.url => _buildUrlProfileInfo(context),
             },
           ),
+          tileTitleAlignment: ListTileTitleAlignment.top,
         ),
-        title: _ProfileCardTitle(
-          profile: profile,
-          info: switch (profile.type) {
-            ProfileType.file => _buildFileProfileInfo(context),
-            ProfileType.url => _buildUrlProfileInfo(context),
-          },
-        ),
-        tileTitleAlignment: ListTileTitleAlignment.top,
       ),
     );
   }

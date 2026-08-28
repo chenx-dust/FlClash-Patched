@@ -8,6 +8,7 @@ import 'package:flutter/gestures.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 part 'tab_segment.dart';
 part 'tab_render.dart';
 
@@ -28,7 +29,7 @@ const double _kMinSegmentedControlHeight = 28.0;
 
 const EdgeInsets _kSeparatorInset = EdgeInsets.symmetric(vertical: 5);
 
-const double _kSeparatorWidth = 1;
+const double _kSeparatorWidth = 4;
 
 const double _kMinThumbScale = 0.95;
 
@@ -39,6 +40,8 @@ const double _kTouchYDistanceThreshold = 50.0 * 50.0;
 const double _kContentPressedMinOpacity = 0.2;
 
 const double _kFontSize = 13.0;
+
+const int _kThumbHoverAlpha = 20;
 
 const FontWeight _kFontWeight = FontWeight.w500;
 
@@ -58,6 +61,8 @@ const Duration _kSpringAnimationDuration = Duration(milliseconds: 412);
 const Duration _kOpacityAnimationDuration = Duration(milliseconds: 470);
 
 const Duration _kHighlightAnimationDuration = Duration(milliseconds: 200);
+
+const Duration _kHoverAnimationDuration = Duration(milliseconds: 100);
 
 class CommonTabBar<T extends Object> extends StatefulWidget {
   CommonTabBar({
@@ -298,9 +303,23 @@ class _CommonTabBarState<T extends Object> extends State<CommonTabBar<T>>
     _startedOnSelectedSegment = null;
   }
 
+  void onSegmentActivate(T segment) {
+    if (widget.disabledChildren.contains(segment)) {
+      return;
+    }
+    onPressedChangedByGesture(null);
+    if (segment != widget.groupValue) {
+      widget.onValueChanged(segment);
+    }
+  }
+
   T? highlighted;
 
   T? pressed;
+
+  T? hovered;
+
+  T? focused;
 
   @override
   Widget build(BuildContext context) {
@@ -336,26 +355,50 @@ class _CommonTabBarState<T extends Object> extends State<CommonTabBar<T>>
         TextDirection.ltr || TextDirection.rtl => _SegmentLocation.inbetween,
       };
       children.add(
-        Semantics(
-          button: true,
-          onTap: () {
-            if (widget.disabledChildren.contains(entry.key)) {
-              return;
-            }
-            widget.onValueChanged(entry.key);
+        FocusableActionDetector(
+          enabled: !widget.disabledChildren.contains(entry.key),
+          descendantsAreFocusable: false,
+          shortcuts: const <ShortcutActivator, Intent>{
+            SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+            SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
           },
-          inMutuallyExclusiveGroup: true,
-          selected: widget.groupValue == entry.key,
-          child: MouseRegion(
-            cursor: kIsWeb ? SystemMouseCursors.click : MouseCursor.defer,
-            child: _Segment<T>(
-              key: ValueKey<T>(entry.key),
-              highlighted: isHighlighted,
-              pressed: pressed == entry.key,
-              isDragging: isThumbDragging,
-              enabled: !widget.disabledChildren.contains(entry.key),
-              segmentLocation: segmentLocation,
-              child: entry.value,
+          actions: <Type, Action<Intent>>{
+            ActivateIntent: CallbackAction<ActivateIntent>(
+              onInvoke: (_) {
+                onSegmentActivate(entry.key);
+                return null;
+              },
+            ),
+          },
+          onFocusChange: (value) {
+            setState(() {
+              focused = value ? entry.key : null;
+            });
+          },
+          onShowHoverHighlight: (value) {
+            setState(() {
+              hovered = value ? entry.key : null;
+            });
+          },
+          child: Semantics(
+            button: true,
+            onTap: widget.disabledChildren.contains(entry.key)
+                ? null
+                : () => onSegmentActivate(entry.key),
+            inMutuallyExclusiveGroup: true,
+            selected: widget.groupValue == entry.key,
+            child: MouseRegion(
+              cursor: kIsWeb ? SystemMouseCursors.click : MouseCursor.defer,
+              child: _Segment<T>(
+                key: ValueKey<T>(entry.key),
+                highlighted: isHighlighted,
+                focused: focused == entry.key,
+                pressed: pressed == entry.key,
+                isDragging: isThumbDragging,
+                enabled: !widget.disabledChildren.contains(entry.key),
+                segmentLocation: segmentLocation,
+                child: entry.value,
+              ),
             ),
           ),
         ),
@@ -388,21 +431,39 @@ class _CommonTabBarState<T extends Object> extends State<CommonTabBar<T>>
           ),
           color: widget.backgroundColor,
         ),
-        child: AnimatedBuilder(
-          animation: thumbScaleAnimation,
-          builder: (BuildContext context, Widget? child) {
-            return _CommonTabBarRenderWidget<T>(
-              proportionalWidth: widget.proportionalWidth,
-              key: segmentedControlRenderWidgetKey,
-              highlightedIndex: highlightedIndex,
-              thumbColor: widget.thumbColor,
-              thumbScale: thumbScaleAnimation.value,
-              state: this,
-              children: children,
+        child: TweenAnimationBuilder<Color?>(
+          duration: _kHoverAnimationDuration,
+          curve: Curves.ease,
+          tween: ColorTween(end: _getThumbColor(context)),
+          builder: (context, thumbColor, _) {
+            return AnimatedBuilder(
+              animation: thumbScaleAnimation,
+              builder: (BuildContext context, Widget? child) {
+                return _CommonTabBarRenderWidget<T>(
+                  proportionalWidth: widget.proportionalWidth,
+                  key: segmentedControlRenderWidgetKey,
+                  highlightedIndex: highlightedIndex,
+                  thumbColor: thumbColor ?? widget.thumbColor,
+                  thumbScale: thumbScaleAnimation.value,
+                  state: this,
+                  children: children,
+                );
+              },
             );
           },
         ),
       ),
+    );
+  }
+
+  Color _getThumbColor(BuildContext context) {
+    if (highlighted == null ||
+        hovered != highlighted && focused != highlighted && !isThumbDragging) {
+      return widget.thumbColor;
+    }
+    return Color.alphaBlend(
+      Theme.of(context).colorScheme.onSurface.withAlpha(_kThumbHoverAlpha),
+      widget.thumbColor,
     );
   }
 }

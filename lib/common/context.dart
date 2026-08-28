@@ -44,11 +44,13 @@ extension BuildContextExtension on BuildContext {
     String text, {
     MessageLevel level = MessageLevel.info,
     MessageActionState? actionState,
+    bool allowCopy = false,
   }) {
     return findAncestorStateOfType<StatusManagerState>()?.message(
       text,
       level: level,
       actionState: actionState,
+      allowCopy: allowCopy,
     );
   }
 

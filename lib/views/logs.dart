@@ -293,40 +293,59 @@ class LogItem extends StatelessWidget {
     final appLocalizations = context.appLocalizations;
     final sourceLabel = log.source.name.toUpperCase();
     final levelLabel = log.logLevel.name.toUpperCase();
-    return ListItem(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      onTap: () {
-        copyText(context, log.payload);
-      },
-      title: Text(
-        log.payload,
-        style: context.textTheme.bodyMedium?.copyWith(
-          color: log.logLevel.color(context),
-        ),
+    return CommonPopupBox(
+      popupBuilder: (_) => CommonPopupMenu(
+        items: [
+          CommonPopupMenuItem(
+            icon: Icons.copy,
+            label: appLocalizations.copy,
+            onPressed: () {
+              copyText(context, log.payload);
+            },
+          ),
+        ],
       ),
-      subtitle: Column(
-        children: [
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      targetBuilder: (open) => Builder(
+        builder: (itemContext) => ListItem(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          onTap: () {
+            copyText(itemContext, log.payload);
+          },
+          onLongPress: () {
+            copyText(itemContext, log.payload);
+          },
+          onSecondaryTapDown: (_) => open(targetContext: itemContext),
+          title: Text(
+            log.payload,
+            style: itemContext.textTheme.bodyMedium?.copyWith(
+              color: log.logLevel.color(itemContext),
+            ),
+          ),
+          subtitle: Column(
             children: [
-              Text(
-                '${appLocalizations.source} $sourceLabel · ${appLocalizations.level} $levelLabel',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: context.textTheme.labelMedium?.copyWith(
-                  color: context.colorScheme.onSurfaceVariant,
-                ),
-              ),
-              Text(
-                log.dateTime,
-                style: context.textTheme.bodySmall?.copyWith(
-                  color: context.colorScheme.onSurface.opacity80,
-                ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${appLocalizations.source} $sourceLabel · ${appLocalizations.level} $levelLabel',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: itemContext.textTheme.labelMedium?.copyWith(
+                      color: itemContext.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  Text(
+                    log.dateTime,
+                    style: itemContext.textTheme.bodySmall?.copyWith(
+                      color: itemContext.colorScheme.onSurface.opacity80,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }

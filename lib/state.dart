@@ -89,7 +89,11 @@ class GlobalState {
       );
       final message = userFacingErrorMessage(e, currentAppLocalizations);
       if (silence) {
-        dialogs.showNotifier(message, level: MessageLevel.error);
+        dialogs.showNotifier(
+          message,
+          level: MessageLevel.error,
+          allowCopy: true,
+        );
       } else {
         unawaited(
           dialogs.showMessage(

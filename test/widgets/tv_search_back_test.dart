@@ -1,6 +1,6 @@
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/l10n/l10n.dart';
-import 'package:fl_clash/manager/hotkey_manager.dart';
+import 'package:fl_clash/manager/back_manager.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/pages/home.dart';
 import 'package:fl_clash/providers/providers.dart';
@@ -31,7 +31,7 @@ void main() {
             ...GlobalMaterialLocalizations.delegates,
           ],
           supportedLocales: AppLocalizations.delegate.supportedLocales,
-          home: HotKeyManager(
+          home: BackManager(
             child: CommonScaffold(
               title: 'Logs',
               searchState: AppBarSearchState(onSearch: (_) {}),

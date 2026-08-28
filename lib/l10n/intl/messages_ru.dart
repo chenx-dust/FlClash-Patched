@@ -300,6 +300,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "closeConnections": MessageLookupByLibrary.simpleMessage(
       "Закрыть соединения",
     ),
+    "collapse": MessageLookupByLibrary.simpleMessage("Свернуть"),
     "color": MessageLookupByLibrary.simpleMessage("Цвет"),
     "colorSchemes": MessageLookupByLibrary.simpleMessage("Цветовые схемы"),
     "columns": MessageLookupByLibrary.simpleMessage("Столбцы"),
@@ -485,7 +486,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "excludeType": MessageLookupByLibrary.simpleMessage("Тип исключения"),
     "existsTip": m8,
     "exit": MessageLookupByLibrary.simpleMessage("Выход"),
-    "expand": MessageLookupByLibrary.simpleMessage("Стандартный"),
+    "expand": MessageLookupByLibrary.simpleMessage("Развернуть"),
     "expectedStatus": MessageLookupByLibrary.simpleMessage("Ожидаемый статус"),
     "expireTime": MessageLookupByLibrary.simpleMessage("Срок действия"),
     "exportFile": MessageLookupByLibrary.simpleMessage("Экспорт файла"),

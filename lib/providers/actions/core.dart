@@ -30,7 +30,11 @@ class CoreAction extends _$CoreAction {
       ref.read(coreStatusProvider.notifier).value = CoreStatus.connected;
     } catch (error) {
       ref.read(coreStatusProvider.notifier).value = CoreStatus.disconnected;
-      dialogs.showNotifier(error.toString(), level: MessageLevel.error);
+      dialogs.showNotifier(
+        error.toString(),
+        level: MessageLevel.error,
+        allowCopy: true,
+      );
     }
   }
 

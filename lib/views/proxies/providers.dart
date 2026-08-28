@@ -239,38 +239,46 @@ class ProviderItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isUpdating = ref.watch(isUpdatingProvider(provider.updatingKey));
-    return DecorationListItem(
-      minVerticalPadding: 8,
-      contentPadding: const EdgeInsets.only(left: 16, right: 0),
-      title: Text(provider.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-      subtitle: _buildProviderMetadata(context),
-      trailing: SizedBox.square(
-        dimension: kMinInteractiveDimension,
-        child: FadeThroughBox(
-          alignment: Alignment.center,
-          child: isUpdating
-              ? const SizedBox.square(
-                  key: ValueKey('loading'),
-                  dimension: kMinInteractiveDimension,
-                  child: Padding(
-                    padding: EdgeInsets.all(12),
-                    child: CommonCircleLoading(),
+    PopupOpen? openMenu;
+    return GestureDetector(
+      onSecondaryTapDown: (_) => openMenu?.call(),
+      onLongPress: () => openMenu?.call(),
+      child: DecorationListItem(
+        minVerticalPadding: 8,
+        contentPadding: const EdgeInsets.only(left: 16, right: 0),
+        title: Text(
+          provider.name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: _buildProviderMetadata(context),
+        trailing: SizedBox.square(
+          dimension: kMinInteractiveDimension,
+          child: FadeThroughBox(
+            alignment: Alignment.center,
+            child: isUpdating
+                ? const SizedBox.square(
+                    key: ValueKey('loading'),
+                    dimension: kMinInteractiveDimension,
+                    child: Padding(
+                      padding: EdgeInsets.all(12),
+                      child: CommonCircleLoading(),
+                    ),
+                  )
+                : CommonPopupBox(
+                    key: const ValueKey('menu'),
+                    popupBuilder: (_) =>
+                        CommonPopupMenu(items: _menuItems(context, ref)),
+                    targetBuilder: (open) {
+                      openMenu = open;
+                      return IconButton(
+                        tooltip: context.appLocalizations.more,
+                        onPressed: open,
+                        icon: const Icon(Icons.more_vert),
+                      );
+                    },
                   ),
-                )
-              : CommonPopupBox(
-                  key: const ValueKey('menu'),
-                  popupBuilder: (_) =>
-                      CommonPopupMenu(items: _menuItems(context, ref)),
-                  targetBuilder: (open) {
-                    return IconButton(
-                      tooltip: context.appLocalizations.more,
-                      onPressed: () {
-                        open();
-                      },
-                      icon: const Icon(Icons.more_vert),
-                    );
-                  },
-                ),
+          ),
         ),
       ),
     );

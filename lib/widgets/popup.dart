@@ -6,7 +6,7 @@ import 'package:material_ui/material_ui.dart';
 
 typedef PopupAnchorResolver = Rect? Function();
 
-typedef PopupOpen = void Function({Offset offset});
+typedef PopupOpen = void Function({Offset offset, BuildContext? targetContext});
 
 const _screenMargin = 16.0;
 
@@ -58,6 +58,10 @@ class CommonPopupRoute<T> extends PopupRoute<T> {
     if (isCurrent) {
       navigator?.pop();
     }
+  }
+
+  static void closeAll(BuildContext context) {
+    Navigator.of(context).popUntil((route) => route is! CommonPopupRoute);
   }
 
   @override
@@ -231,11 +235,12 @@ class CommonPopupBox extends StatefulWidget {
 }
 
 class _CommonPopupBoxState extends State<CommonPopupBox> {
-  Rect? _anchorOf(Offset offset) {
-    if (!mounted) {
+  Rect? _anchorOf(Offset offset, BuildContext? targetContext) {
+    final renderContext = targetContext ?? context;
+    if (!mounted || !renderContext.mounted) {
       return null;
     }
-    final renderBox = context.findRenderObject() as RenderBox?;
+    final renderBox = renderContext.findRenderObject() as RenderBox?;
     if (renderBox == null || !renderBox.attached || !renderBox.hasSize) {
       return null;
     }
@@ -245,14 +250,14 @@ class _CommonPopupBoxState extends State<CommonPopupBox> {
     return (origin & renderBox.size).shift(offset);
   }
 
-  void _open({Offset offset = Offset.zero}) {
+  void _open({Offset offset = Offset.zero, BuildContext? targetContext}) {
     Navigator.of(context).push(
       CommonPopupRoute<void>(
         barrierLabel: MaterialLocalizations.of(
           context,
         ).modalBarrierDismissLabel,
         builder: (context) => widget.popupBuilder(context),
-        anchorOf: () => _anchorOf(offset),
+        anchorOf: () => _anchorOf(offset, targetContext),
       ),
     );
   }

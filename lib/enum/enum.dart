@@ -211,7 +211,9 @@ enum ProxiesType { tab, list }
 
 enum ProxiesLayout { loose, standard, tight }
 
-enum ProxyCardType { expand, shrink, min }
+enum ProxiesListHeaderStyle { loose, standard, tight }
+
+enum ProxyCardType { standard, shrink, min }
 
 enum DnsMode {
   normal,
@@ -276,6 +278,7 @@ enum FunctionTag {
   changeProxy,
   checkIp,
   handleWill,
+  handleBack,
   updateDelay,
   vpnTip,
   autoLaunch,

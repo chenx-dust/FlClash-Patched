@@ -39,6 +39,7 @@ abstract class CommonMessage with _$CommonMessage {
     @Default(MessageLevel.info) MessageLevel level,
     @Default(Duration(seconds: 3)) Duration duration,
     MessageActionState? actionState,
+    @Default(false) bool allowCopy,
   }) = _CommonMessage;
 }
 

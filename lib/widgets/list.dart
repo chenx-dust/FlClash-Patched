@@ -1,10 +1,12 @@
 import 'package:collection/collection.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/inherited.dart';
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'card.dart';
 import 'input.dart';
@@ -105,7 +107,7 @@ final class _InputAction extends _ListItemAction {
   });
 }
 
-class ListItem<T> extends StatelessWidget {
+class ListItem<T> extends ConsumerWidget {
   final Widget? leading;
   final Widget title;
   final Widget? subtitle;
@@ -122,6 +124,8 @@ class ListItem<T> extends StatelessWidget {
   final double? minTileHeight;
   final VisualDensity? visualDensity;
   final void Function()? onTap;
+  final void Function()? onLongPress;
+  final void Function(TapDownDetails)? onSecondaryTapDown;
 
   const ListItem({
     super.key,
@@ -133,6 +137,8 @@ class ListItem<T> extends StatelessWidget {
     this.horizontalTitleGap,
     this.dense,
     this.onTap,
+    this.onLongPress,
+    this.onSecondaryTapDown,
     this.titleTextStyle,
     this.subtitleTextStyle,
     this.color,
@@ -170,7 +176,9 @@ class ListItem<T> extends StatelessWidget {
          forceFull: forceFull,
          onChanged: onChanged,
        ),
-       onTap = null;
+       onTap = null,
+       onLongPress = null,
+       onSecondaryTapDown = null;
 
   ListItem.next({
     super.key,
@@ -192,7 +200,9 @@ class ListItem<T> extends StatelessWidget {
     this.minVerticalPadding = 12,
     this.tileTitleAlignment = ListTileTitleAlignment.center,
   }) : _action = _NextAction(widget: widget, maxWidth: maxWidth, blur: blur),
-       onTap = null;
+       onTap = null,
+       onLongPress = null,
+       onSecondaryTapDown = null;
 
   ListItem.options({
     super.key,
@@ -222,7 +232,9 @@ class ListItem<T> extends StatelessWidget {
          textBuilder: textBuilder,
          onChanged: onChanged,
        ),
-       onTap = null;
+       onTap = null,
+       onLongPress = null,
+       onSecondaryTapDown = null;
 
   ListItem.input({
     super.key,
@@ -258,7 +270,9 @@ class ListItem<T> extends StatelessWidget {
          keyboardType: keyboardType,
          resetValue: resetValue,
        ),
-       onTap = null;
+       onTap = null,
+       onLongPress = null,
+       onSecondaryTapDown = null;
 
   ListItem.checkbox({
     super.key,
@@ -279,7 +293,9 @@ class ListItem<T> extends StatelessWidget {
     this.tileTitleAlignment = ListTileTitleAlignment.center,
   }) : _action = _CheckboxAction(value: value, onChanged: onChanged),
        trailing = null,
-       onTap = null;
+       onTap = null,
+       onLongPress = null,
+       onSecondaryTapDown = null;
 
   ListItem.toggle({
     super.key,
@@ -300,7 +316,9 @@ class ListItem<T> extends StatelessWidget {
     this.tileTitleAlignment = ListTileTitleAlignment.center,
   }) : _action = _ToggleAction(value: value, onChanged: onChanged),
        trailing = null,
-       onTap = null;
+       onTap = null,
+       onLongPress = null,
+       onSecondaryTapDown = null;
 
   ListItem.radio({
     super.key,
@@ -321,14 +339,16 @@ class ListItem<T> extends StatelessWidget {
     this.tileTitleAlignment = ListTileTitleAlignment.center,
   }) : _action = _RadioAction<T>(value: value, onTap: onTap),
        leading = null,
-       onTap = null;
+       onTap = null,
+       onLongPress = null,
+       onSecondaryTapDown = null;
 
   Widget _buildListTile({
     void Function()? onTap,
     Widget? trailing,
     Widget? leading,
   }) {
-    return ListTile(
+    final tile = ListTile(
       key: key,
       dense: dense,
       visualDensity: visualDensity,
@@ -343,13 +363,18 @@ class ListItem<T> extends StatelessWidget {
       subtitle: subtitle,
       titleAlignment: tileTitleAlignment,
       onTap: onTap,
+      onLongPress: onLongPress,
       trailing: trailing ?? this.trailing,
       contentPadding: padding,
     );
+    if (onSecondaryTapDown == null) {
+      return tile;
+    }
+    return GestureDetector(onSecondaryTapDown: onSecondaryTapDown, child: tile);
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     switch (_action) {
       case final _OpenAction openDelegate:
         final child = openDelegate.widget;
@@ -358,7 +383,10 @@ class ListItem<T> extends StatelessWidget {
           closedBuilder: (context, action) {
             Future<void> openAction() async {
               final isMobile = context.isMobileView;
-              if (!isMobile || kDebugMode) {
+              final predictiveBack = ref
+                  .read(themeSettingProvider)
+                  .predictiveBack;
+              if (!isMobile || kDebugMode || predictiveBack) {
                 final res = await showExtend(
                   context,
                   props: ExtendProps(

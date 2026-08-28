@@ -178,7 +178,7 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
         _handleSaveEdit(context, content);
       },
       onPop: (context, _, content) async {
-        if (content == _rawText) {
+        if (content == _rawText?.replaceAll('\r', '')) {
           return true;
         }
         final res = await dialogs.showMessage(
@@ -186,7 +186,7 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
           message: TextSpan(text: context.appLocalizations.hasCacheChange),
         );
         if (res == true && context.mounted) {
-          unawaited(_handleSaveEdit(context, content));
+          await _handleSaveEdit(context, content);
         } else {
           return true;
         }

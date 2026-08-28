@@ -180,8 +180,13 @@ class _SidebarRail extends StatelessWidget {
 
 class AppSidebarContainer extends ConsumerWidget {
   final Widget child;
+  final ValueChanged<PageLabel> onDestinationSelected;
 
-  const AppSidebarContainer({super.key, required this.child});
+  const AppSidebarContainer({
+    super.key,
+    required this.child,
+    required this.onDestinationSelected,
+  });
 
   Widget _buildBackground({
     required BuildContext context,
@@ -195,22 +200,6 @@ class AppSidebarContainer extends ConsumerWidget {
       ref.read(sideWidthProvider.notifier).value =
           ref.read(viewSizeProvider.select((state) => state.width)) -
           contentWidth;
-    });
-  }
-
-  void _handleToPage(WidgetRef ref, PageLabel pageLabel) {
-    final focusNode = FocusManager.instance.primaryFocus;
-    final preserveNavigationFocus =
-        focusNode?.context?.findAncestorWidgetOfExactType<NavigationRail>() !=
-        null;
-    ref.read(currentPageLabelProvider.notifier).toPage(pageLabel);
-    if (!preserveNavigationFocus || focusNode == null) {
-      return;
-    }
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (focusNode.context != null && focusNode.canRequestFocus) {
-        focusNode.requestFocus();
-      }
     });
   }
 
@@ -247,7 +236,7 @@ class AppSidebarContainer extends ConsumerWidget {
                           currentIndex: currentIndex,
                           showLabel: showLabel,
                           onSelected: (index) {
-                            _handleToPage(ref, navigationItems[index].label);
+                            onDestinationSelected(navigationItems[index].label);
                           },
                         ),
                       ),

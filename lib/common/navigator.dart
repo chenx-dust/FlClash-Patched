@@ -1,5 +1,8 @@
 import 'package:animations/animations.dart';
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/providers/app.dart';
+import 'package:fl_clash/providers/config.dart';
+import 'package:fl_clash/state.dart';
 import 'package:material_ui/material_ui.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -10,6 +13,15 @@ class BaseNavigator {
       return Navigator.of(
         context,
       ).push<T>(CommonDesktopRoute(builder: (context) => child));
+    }
+    final themeProps = globalState.container.read(themeSettingProvider);
+    final supportsPredictiveBack = system.supportsPredictiveBack(
+      globalState.container.read(versionProvider),
+    );
+    if (themeProps.predictiveBack && supportsPredictiveBack) {
+      return Navigator.of(
+        context,
+      ).push<T>(MaterialPageRoute(builder: (context) => child));
     }
     return Navigator.of(
       context,

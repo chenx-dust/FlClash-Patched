@@ -29,7 +29,7 @@ void main() {
           ProxiesTabState(
             groups: [_group('B'), _group('C')],
             currentGroupName: 'B',
-            proxyCardType: ProxyCardType.expand,
+            proxyCardType: ProxyCardType.standard,
           ),
         ),
       ],

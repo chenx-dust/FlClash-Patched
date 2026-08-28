@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
+import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
@@ -45,6 +46,7 @@ class ThemeView extends StatelessWidget {
           SliverToBoxAdapter(child: SizedBox(height: 16)),
           _PrueBlackItem(),
           _MonochromeTrayIconItem(),
+          _PredictiveBackItem(),
           SliverToBoxAdapter(child: SizedBox(height: 16)),
           _TextScaleFactorItem(),
           SliverToBoxAdapter(child: SizedBox(height: 32)),
@@ -542,6 +544,41 @@ class _MonochromeTrayIconItem extends ConsumerWidget {
           ref
               .read(themeSettingProvider.notifier)
               .update((state) => state.copyWith(monochromeTrayIcon: value));
+        },
+      ),
+    );
+  }
+}
+
+class _PredictiveBackItem extends ConsumerWidget {
+  const _PredictiveBackItem();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final supportsPredictiveBack = system.supportsPredictiveBack(
+      ref.watch(versionProvider),
+    );
+    if (!supportsPredictiveBack) {
+      return const SliverToBoxAdapter();
+    }
+    final predictiveBack = ref.watch(
+      themeSettingProvider.select((state) => state.predictiveBack),
+    );
+    return SliverToBoxAdapter(
+      child: ListItem.toggle(
+        leading: const Icon(Icons.swipe_right_alt),
+        horizontalTitleGap: 12,
+        title: Text(
+          context.appLocalizations.predictiveBack,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            color: context.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        value: predictiveBack,
+        onChanged: (value) {
+          ref
+              .read(themeSettingProvider.notifier)
+              .update((state) => state.copyWith(predictiveBack: value));
         },
       ),
     );

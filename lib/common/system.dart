@@ -74,6 +74,8 @@ class System {
     return app?.getLastExitInfo();
   }
 
+  bool supportsPredictiveBack(int version) => isAndroid && version >= 33;
+
   /// Arguments for the `stat` call behind [checkIsAdmin].
   ///
   /// [corePath] is handed to `Process.run` as an argv entry, so it must stay

@@ -362,7 +362,11 @@ class SetupAction extends _$SetupAction {
       );
       return res.yaml;
     } catch (e) {
-      dialogs.showNotifier(e.toString(), level: MessageLevel.error);
+      dialogs.showNotifier(
+        e.toString(),
+        level: MessageLevel.error,
+        allowCopy: true,
+      );
     }
     return '';
   }
