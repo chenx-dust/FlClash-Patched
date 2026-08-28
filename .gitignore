@@ -71,6 +71,8 @@ docs/
 /macos/build/
 /env.json
 /core_sha256.json
+/assets/data/*
+!/assets/data/.gitkeep
 /plugins/rust_api/.claude/
 /issue-triage/
 devtools_options.yaml
