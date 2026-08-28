@@ -162,6 +162,21 @@ void main() {
       );
       expect(provider.updatingKey, 'provider_MyProvider');
     });
+
+    test('allows only text rule providers to be edited as text', () {
+      final textRuleProvider = ExternalProvider(
+        name: 'TextRules',
+        type: 'Rule',
+        format: 'TextRule',
+        count: 5,
+        vehicleType: 'HTTP',
+        updateAt: DateTime.now(),
+      );
+      final mrsRuleProvider = textRuleProvider.copyWith(format: 'MrsRule');
+
+      expect(textRuleProvider.canEditAsText, isTrue);
+      expect(mrsRuleProvider.canEditAsText, isFalse);
+    });
   });
 
   group('CoreEvent', () {

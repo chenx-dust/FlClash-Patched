@@ -228,6 +228,7 @@ func toExternalProvider(p cp.Provider) (*ExternalProvider, error) {
 		return &ExternalProvider{
 			Name:        typed.Name(),
 			Type:        typed.Type().String(),
+			Format:      typed.Format().String(),
 			VehicleType: typed.VehicleType().String(),
 			Count:       typed.Count(),
 			UpdateAt:    typed.UpdatedAt(),

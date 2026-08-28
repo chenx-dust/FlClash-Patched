@@ -186,7 +186,7 @@ class ProviderItem extends ConsumerWidget {
   }
 
   Future<void> _handlePreview(BuildContext context) async {
-    if (provider.path == null) {
+    if (provider.path == null || !provider.canEditAsText) {
       return;
     }
     await BaseNavigator.push<String>(
@@ -196,7 +196,7 @@ class ProviderItem extends ConsumerWidget {
   }
 
   Future<void> _handleEdit(BuildContext context) async {
-    if (provider.path == null) {
+    if (provider.path == null || !provider.canEditAsText) {
       return;
     }
     await BaseNavigator.push<String>(
@@ -254,6 +254,7 @@ class ProviderItem extends ConsumerWidget {
     final appLocalizations = context.appLocalizations;
     final subscriptionInfo = provider.subscriptionInfo;
     final hasFile = provider.path != null;
+    final canEditAsText = hasFile && provider.canEditAsText;
     return [
       CommonPopupMenuItem(
         icon: Icons.upload_outlined,
@@ -273,7 +274,7 @@ class ProviderItem extends ConsumerWidget {
       CommonPopupMenuItem(
         icon: Icons.visibility_outlined,
         label: appLocalizations.preview,
-        onPressed: hasFile
+        onPressed: canEditAsText
             ? () {
                 _handlePreview(context);
               }
@@ -282,7 +283,7 @@ class ProviderItem extends ConsumerWidget {
       CommonPopupMenuItem(
         icon: Icons.edit_outlined,
         label: appLocalizations.edit,
-        onPressed: hasFile
+        onPressed: canEditAsText
             ? () {
                 _handleEdit(context);
               }

@@ -180,6 +180,7 @@ abstract class ExternalProvider with _$ExternalProvider {
   const factory ExternalProvider({
     required String name,
     required String type,
+    String? format,
     String? path,
     required int count,
     @JsonKey(name: 'subscription-info', fromJson: subscriptionInfoFormCore)
@@ -194,6 +195,9 @@ abstract class ExternalProvider with _$ExternalProvider {
 
 extension ExternalProviderExt on ExternalProvider {
   String get updatingKey => 'provider_$name';
+
+  bool get canEditAsText =>
+      type != 'Rule' || format == 'YamlRule' || format == 'TextRule';
 }
 
 @freezed

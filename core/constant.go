@@ -87,6 +87,7 @@ type Traffic struct {
 type ExternalProvider struct {
 	Name             string                     `json:"name"`
 	Type             string                     `json:"type"`
+	Format           string                     `json:"format,omitempty"`
 	VehicleType      string                     `json:"vehicle-type"`
 	Count            int                        `json:"count"`
 	Path             string                     `json:"path"`
