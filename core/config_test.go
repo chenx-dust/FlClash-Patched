@@ -189,7 +189,7 @@ func stubGeoUpdater(t *testing.T) *geoUpdaterCalls {
 	return calls
 }
 
-func TestSyncGeoUpdaterStopsTheUpdaterWhenDisabled(t *testing.T) {
+func TestSyncGeoUpdaterReconcilesTheUpdaterWhenDisabled(t *testing.T) {
 	calls := stubGeoUpdater(t)
 
 	updater.SetGeoAutoUpdate(true)
@@ -204,9 +204,9 @@ func TestSyncGeoUpdaterStopsTheUpdaterWhenDisabled(t *testing.T) {
 	if updater.GeoUpdateInterval() != 24 {
 		t.Errorf("GeoUpdateInterval = %d, want the configured 24 left untouched by the stop", updater.GeoUpdateInterval())
 	}
-	if calls.stopped != 1 || calls.registered != 0 {
+	if calls.registered != 1 || calls.stopped != 0 {
 		t.Errorf(
-			"updater calls = %d registered/%d stopped, want the running updater cancelled",
+			"updater calls = %d registered/%d stopped, want the updater reconciled",
 			calls.registered, calls.stopped,
 		)
 	}
@@ -236,21 +236,16 @@ func TestSyncGeoUpdaterIgnoresUnchangedParameters(t *testing.T) {
 	}
 }
 
-// A profile apply reloads the setting out of config.yaml, so the core can end
-// up with the updater running while the flag reads off. Reconciling only when
-// the flag says on left that goroutine downloading GEO databases forever: the
-// flag already matched what the app sent next, so syncGeoUpdater saw nothing to
-// change and never cancelled it.
-func TestReconcileGeoUpdaterStopsAnUpdaterTheProfileTurnedOff(t *testing.T) {
+func TestReconcileGeoUpdaterDelegatesWhenTheSettingIsOff(t *testing.T) {
 	calls := stubGeoUpdater(t)
 
 	updater.SetGeoAutoUpdate(false)
 
 	reconcileGeoUpdater()
 
-	if calls.stopped != 1 || calls.registered != 0 {
+	if calls.registered != 1 || calls.stopped != 0 {
 		t.Errorf(
-			"updater calls = %d registered/%d stopped, want the updater cancelled",
+			"updater calls = %d registered/%d stopped, want the updater reconciled",
 			calls.registered, calls.stopped,
 		)
 	}

@@ -330,12 +330,12 @@ func syncGeoUpdater(autoUpdate *bool, interval *int) {
 }
 
 var (
-	registerGeoUpdater = updater.RegisterGeoUpdaterWithCancel
+	registerGeoUpdater = updater.RegisterGeoUpdater
 	stopGeoUpdater     = updater.StopGeoUpdater
 )
 
 func reconcileGeoUpdater() {
-	if !features.WithLowMemory && updater.GeoAutoUpdate() {
+	if !features.WithLowMemory {
 		registerGeoUpdater()
 		return
 	}

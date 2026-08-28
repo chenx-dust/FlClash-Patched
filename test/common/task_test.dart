@@ -187,6 +187,8 @@ void main() {
             tproxyPort: 7894,
             allowLan: true,
             ipv6: true,
+            geoAutoUpdate: true,
+            geoUpdateInterval: 12,
             hosts: {'router.local': '192.168.1.1,192.168.1.2'},
           ),
           overrideDns: false,
@@ -208,6 +210,8 @@ void main() {
       expect(result.md5, hasLength(32));
       expect(config['mixed-port'], 7893);
       expect(config['allow-lan'], true);
+      expect(config['geo-auto-update'], true);
+      expect(config['geo-update-interval'], 12);
       expect(config['global-ua'], 'FlClash-Test');
       expect(config['profile']['store-selected'], false);
       expect(

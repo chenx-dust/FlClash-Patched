@@ -60,7 +60,7 @@ class CoreController {
 
   static Future<void> initGeo() async {
     final homePath = await appPath.homeDirPath;
-    const geoFileNameList = [MMDB, GEOIP, GEOSITE, ASN];
+    const geoFileNameList = [MMDB, GEOIP, GEOSITE, ASN, BUNDLE_MRS];
     try {
       for (final geoFileName in geoFileNameList) {
         final geoFile = File(join(homePath, geoFileName));
@@ -77,7 +77,6 @@ class CoreController {
         'Failed to initialize geo data: $e',
         logLevel: LogLevel.error,
       );
-      rethrow;
     }
   }
 
