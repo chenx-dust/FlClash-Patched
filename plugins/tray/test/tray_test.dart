@@ -135,6 +135,45 @@ void main() {
     expect(selected, 1);
   });
 
+  test('updates a visible menu item by its stable key', () async {
+    await Tray.instance.show(
+      _spec(
+        menu: const [TrayMenuAction(key: 'delay-test', label: 'Delay test')],
+      ),
+    );
+
+    expect(
+      await Tray.instance.updateMenuItem(
+        key: 'delay-test',
+        label: 'Retest',
+        enabled: false,
+        checked: true,
+        sublabel: '42 ms',
+        sublabelStyle: TrayMenuSublabelStyle.badge,
+      ),
+      isTrue,
+    );
+
+    final update = calls.last;
+    expect(update.method, 'updateMenuItem');
+    expect(update.arguments, {
+      'key': 'delay-test',
+      'label': 'Retest',
+      'enabled': false,
+      'checked': true,
+      'sublabel': '42 ms',
+      'sublabelStyle': 'badge',
+    });
+  });
+
+  test('does not update menu items while hidden', () async {
+    expect(
+      await Tray.instance.updateMenuItem(key: 'delay-test', enabled: false),
+      isFalse,
+    );
+    expect(calls, isEmpty);
+  });
+
   test('a rejected show keeps callbacks for the visible menu', () async {
     var oldSelected = 0;
     var newSelected = 0;

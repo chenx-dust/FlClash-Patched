@@ -2,6 +2,8 @@ import 'tray_menu.dart';
 
 enum TrayIconPosition { leading, trailing }
 
+enum TrayBrightness { light, dark }
+
 final class TrayIcon {
   const TrayIcon.asset(
     this.asset, {
@@ -17,9 +19,15 @@ final class TrayIcon {
 }
 
 final class TraySpec {
-  const TraySpec({required this.icon, this.toolTip = '', this.menu = const []});
+  const TraySpec({
+    required this.icon,
+    this.toolTip = '',
+    this.menu = const [],
+    this.brightness = TrayBrightness.light,
+  });
 
   final TrayIcon icon;
   final String toolTip;
   final List<TrayMenuItem> menu;
+  final TrayBrightness brightness;
 }

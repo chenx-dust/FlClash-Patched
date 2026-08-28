@@ -40,6 +40,7 @@ abstract final class TrayCodec {
         'icon': icon,
         'toolTip': spec.toolTip,
         'menu': menu,
+        'brightness': spec.brightness.name,
       }),
     );
   }
@@ -54,30 +55,108 @@ abstract final class TrayCodec {
       sink[id] = item;
       return switch (item) {
         TrayMenuSeparator() => <String, Object?>{'id': id, 'type': 'separator'},
-        TrayMenuAction(:final label, :final enabled) => <String, Object?>{
-          'id': id,
-          'type': 'action',
-          'label': label,
-          'enabled': enabled,
-        },
-        TrayMenuCheckbox(:final label, :final enabled, :final checked) =>
+        TrayMenuAction(
+          :final label,
+          :final key,
+          :final enabled,
+          :final sublabel,
+          :final sublabelStyle,
+          :final keepsMenuOpen,
+          :final shortcut,
+          :final activatesWindow,
+        ) =>
+          <String, Object?>{
+            'id': id,
+            'type': 'action',
+            'label': label,
+            'enabled': enabled,
+            ..._encodePresentation(
+              key: key,
+              sublabel: sublabel,
+              sublabelStyle: sublabelStyle,
+              keepsMenuOpen: keepsMenuOpen,
+            ),
+            'activatesWindow': activatesWindow,
+            ..._encodeShortcut(shortcut),
+          },
+        TrayMenuCheckbox(
+          :final label,
+          :final key,
+          :final enabled,
+          :final checked,
+          :final sublabel,
+          :final sublabelStyle,
+          :final keepsMenuOpen,
+          :final shortcut,
+        ) =>
           <String, Object?>{
             'id': id,
             'type': 'checkbox',
             'label': label,
             'enabled': enabled,
             'checked': checked,
+            ..._encodePresentation(
+              key: key,
+              sublabel: sublabel,
+              sublabelStyle: sublabelStyle,
+              keepsMenuOpen: keepsMenuOpen,
+            ),
+            ..._encodeShortcut(shortcut),
           },
-        TrayMenuSubmenu(:final label, :final enabled, :final items) =>
+        TrayMenuSubmenu(
+          :final label,
+          :final key,
+          :final enabled,
+          :final sublabel,
+          :final sublabelStyle,
+          :final items,
+        ) =>
           <String, Object?>{
             'id': id,
             'type': 'submenu',
             'label': label,
             'enabled': enabled,
+            ..._encodePresentation(
+              key: key,
+              sublabel: sublabel,
+              sublabelStyle: sublabelStyle,
+            ),
             'items': _encodeItems(items, sink, allocator),
           },
       };
     }).toList();
+  }
+
+  static Map<String, Object?> _encodeShortcut(TrayMenuShortcut? shortcut) {
+    if (shortcut == null) {
+      return const {};
+    }
+    return {
+      'keyEquivalent': shortcut.key,
+      'keyEquivalentModifiers': shortcut.modifiers
+          .map((modifier) => modifier.name)
+          .toList(),
+    };
+  }
+
+  static Map<String, Object?> _encodePresentation({
+    required String? key,
+    required String? sublabel,
+    required TrayMenuSublabelStyle sublabelStyle,
+    bool keepsMenuOpen = false,
+  }) {
+    final result = <String, Object?>{};
+    if (key != null) {
+      result['key'] = key;
+    }
+    if (sublabel != null) {
+      result['sublabel'] = sublabel;
+      result['sublabelStyle'] = sublabelStyle.name;
+    }
+    if (keepsMenuOpen) {
+      result['keepsMenuOpen'] = true;
+    }
+    return result;
   }
 }
 

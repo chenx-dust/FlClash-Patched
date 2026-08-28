@@ -16,6 +16,7 @@ const String _methodShow = 'show';
 const String _methodHide = 'hide';
 const String _methodSetTitle = 'setTitle';
 const String _methodOpenMenu = 'openMenu';
+const String _methodUpdateMenuItem = 'updateMenuItem';
 
 const String _eventIconActivated = 'onIconActivated';
 const String _eventMenuRequested = 'onMenuRequested';
@@ -64,6 +65,26 @@ final class Tray {
     return _serialize(_openMenu);
   }
 
+  Future<bool> updateMenuItem({
+    required String key,
+    String? label,
+    bool? enabled,
+    bool? checked,
+    String? sublabel,
+    TrayMenuSublabelStyle? sublabelStyle,
+  }) {
+    return _serialize(
+      () => _updateMenuItem(
+        key: key,
+        label: label,
+        enabled: enabled,
+        checked: checked,
+        sublabel: sublabel,
+        sublabelStyle: sublabelStyle,
+      ),
+    );
+  }
+
   @visibleForTesting
   void resetForTesting() {
     _itemsById = const {};
@@ -102,6 +123,7 @@ final class Tray {
           'toolTip': encoded.toolTip,
           'title': _title,
           'menu': encoded.menu,
+          'brightness': spec.brightness.name,
         });
     if (isApplied != true) {
       _signature = null;
@@ -142,6 +164,44 @@ final class Tray {
       return;
     }
     await _channel.invokeMethod(_methodOpenMenu);
+  }
+
+  Future<bool> _updateMenuItem({
+    required String key,
+    String? label,
+    bool? enabled,
+    bool? checked,
+    String? sublabel,
+    TrayMenuSublabelStyle? sublabelStyle,
+  }) async {
+    if (!_isVisible) {
+      return false;
+    }
+    final arguments = <String, Object?>{'key': key};
+    if (label != null) {
+      arguments['label'] = label;
+    }
+    if (enabled != null) {
+      arguments['enabled'] = enabled;
+    }
+    if (checked != null) {
+      arguments['checked'] = checked;
+    }
+    if (sublabel != null) {
+      arguments['sublabel'] = sublabel;
+    }
+    if (sublabelStyle != null) {
+      arguments['sublabelStyle'] = sublabelStyle.name;
+    }
+    final applied = await _channel.invokeMethod<bool>(
+      _methodUpdateMenuItem,
+      arguments,
+    );
+    if (applied == true) {
+      _signature = null;
+      return true;
+    }
+    return false;
   }
 
   Future<void> _onPlatformCall(MethodCall call) async {

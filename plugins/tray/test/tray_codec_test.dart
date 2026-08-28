@@ -6,8 +6,14 @@ TraySpec _spec({
   String asset = 'assets/icon.png',
   String toolTip = 'FlClash',
   List<TrayMenuItem> menu = const [],
+  TrayBrightness brightness = TrayBrightness.light,
 }) {
-  return TraySpec(icon: TrayIcon.asset(asset), toolTip: toolTip, menu: menu);
+  return TraySpec(
+    icon: TrayIcon.asset(asset),
+    toolTip: toolTip,
+    menu: menu,
+    brightness: brightness,
+  );
 }
 
 void main() {
@@ -64,6 +70,15 @@ void main() {
 
     expect(
       TrayCodec.encode(
+        _spec(
+          brightness: TrayBrightness.dark,
+          menu: const [TrayMenuCheckbox(label: 'a', checked: false)],
+        ),
+      ).signature,
+      isNot(base),
+    );
+    expect(
+      TrayCodec.encode(
         _spec(menu: const [TrayMenuCheckbox(label: 'a', checked: true)]),
       ).signature,
       isNot(base),
@@ -92,6 +107,58 @@ void main() {
       ).signature,
       isNot(base),
     );
+  });
+
+  test('serializes macOS menu shortcuts', () {
+    final encoded = TrayCodec.encode(
+      _spec(
+        menu: const [
+          TrayMenuAction(
+            label: 'show',
+            shortcut: TrayMenuShortcut(
+              key: 'k',
+              modifiers: {TrayMenuModifier.command, TrayMenuModifier.shift},
+            ),
+          ),
+        ],
+      ),
+    );
+
+    expect(encoded.menu.single, {
+      'id': 1024,
+      'type': 'action',
+      'label': 'show',
+      'enabled': true,
+      'activatesWindow': false,
+      'keyEquivalent': 'k',
+      'keyEquivalentModifiers': ['command', 'shift'],
+    });
+  });
+
+  test('serializes live macOS menu presentation', () {
+    final encoded = TrayCodec.encode(
+      _spec(
+        menu: const [
+          TrayMenuAction(
+            key: 'delay-test',
+            label: 'Delay test',
+            keepsMenuOpen: true,
+          ),
+          TrayMenuCheckbox(
+            key: 'delay:proxy',
+            label: 'Proxy',
+            checked: true,
+            sublabel: '42 ms',
+            sublabelStyle: TrayMenuSublabelStyle.badge,
+          ),
+        ],
+      ),
+    );
+
+    expect(encoded.menu[0], containsPair('key', 'delay-test'));
+    expect(encoded.menu[0], containsPair('keepsMenuOpen', true));
+    expect(encoded.menu[1], containsPair('sublabel', '42 ms'));
+    expect(encoded.menu[1], containsPair('sublabelStyle', 'badge'));
   });
 
   test('separators serialize without label or state', () {
