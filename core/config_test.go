@@ -749,8 +749,8 @@ func TestTestDelayDoesNotSpendTheProbeBudgetQueueing(t *testing.T) {
 		}
 	})
 
-	tunnel.UpdateProxies(map[string]constant.Proxy{"queued": namedProxy("queued")}, nil)
-	t.Cleanup(func() { tunnel.UpdateProxies(nil, nil) })
+	replaceTunnelProxies(map[string]constant.Proxy{"queued": namedProxy("queued")}, nil)
+	t.Cleanup(func() { replaceTunnelProxies(nil, nil) })
 
 	done := make(chan *Delay, 1)
 	start := time.Now()

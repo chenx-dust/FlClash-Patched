@@ -22,6 +22,7 @@ import (
 	"github.com/metacubex/mihomo/constant"
 	cp "github.com/metacubex/mihomo/constant/provider"
 	"github.com/metacubex/mihomo/log"
+	"github.com/metacubex/mihomo/tunnel"
 )
 
 func namedProxy(name string) constant.Proxy {
@@ -80,8 +81,8 @@ func groupNow(t *testing.T, proxy constant.Proxy) string {
 // break the group.
 func TestPatchSelectGroupRestoresASelectionWithoutValidatingIt(t *testing.T) {
 	group := selectorGroup(t, "group", "node-a", "node-b")
-	tunnel.UpdateProxies(map[string]constant.Proxy{"group": group}, nil)
-	t.Cleanup(func() { tunnel.UpdateProxies(nil, nil) })
+	replaceTunnelProxies(map[string]constant.Proxy{"group": group}, nil)
+	t.Cleanup(func() { replaceTunnelProxies(nil, nil) })
 
 	patchSelectGroup(map[string]string{"group": "node-b"})
 	if got := groupNow(t, group); got != "node-b" {
