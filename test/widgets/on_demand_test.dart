@@ -1,3 +1,4 @@
+import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/state.dart';
@@ -191,18 +192,12 @@ void main() {
       locale: const Locale('ru'),
       size: const Size(360, 800),
     );
+    final descText = currentAppLocalizations.locationPermissionDesc;
 
     final rowWidth = tester
         .getSize(find.byType(DecorationListItem).first)
         .width;
-    final descWidth = tester
-        .getSize(
-          find.text(
-            'Согласно требованиям системы для получения имени Wi-Fi '
-            'необходимо предоставить разрешение на геолокацию.',
-          ),
-        )
-        .width;
+    final descWidth = tester.getSize(find.text(descText)).width;
 
     expect(
       descWidth,
@@ -221,10 +216,8 @@ void main() {
       size: const Size(260, 800),
     );
 
-    final desc = find.text(
-      'Согласно требованиям системы для получения имени Wi-Fi необходимо '
-      'предоставить разрешение на геолокацию.',
-    );
+    final descText = currentAppLocalizations.locationPermissionDesc;
+    final desc = find.text(descText);
 
     final card = tester.getRect(find.byType(DecorationListItem).first);
     final button = tester.getRect(

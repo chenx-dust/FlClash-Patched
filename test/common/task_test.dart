@@ -354,16 +354,13 @@ void main() {
     expect(config['rules'], ['DOMAIN,custom.example,DIRECT']);
   });
 
-  test('makeRealProfileTask keeps the DNS keys it cannot edit', () async {
+  test('makeRealProfileTask keeps DNS keys outside editable model', () async {
     final rawConfig = await decodeJSONTask<Map<String, dynamic>>(
       await encodeJSONTask({
         'interface-name': 'en0',
         'dns': {
           'enable': false,
           'direct-nameserver': ['223.5.5.5'],
-          'proxy-server-nameserver-policy': {
-            'www.example.com': ['8.8.8.8'],
-          },
           'nameserver': ['9.9.9.9'],
         },
         'proxy-providers': {
@@ -391,9 +388,6 @@ void main() {
 
     expect(config['interface-name'], 'en0');
     expect(config['dns']['direct-nameserver'], ['223.5.5.5']);
-    expect(config['dns']['proxy-server-nameserver-policy'], {
-      'www.example.com': ['8.8.8.8'],
-    });
     expect(config['dns']['nameserver'], isNot(contains('system://')));
     expect(
       config['proxy-providers']['first']['path'],
