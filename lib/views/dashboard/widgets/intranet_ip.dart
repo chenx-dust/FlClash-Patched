@@ -27,24 +27,47 @@ class IntranetIP extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            InfoHeader(
+            Container(
+              height: globalState.measure.titleMediumHeight + 12,
               padding: baseInfoEdgeInsets.copyWith(bottom: 0),
-              info: Info(
-                label: appLocalizations.intranetIP,
-                iconData: Icons.devices,
-              ),
-              actions: [
-                IconButton(
-                  tooltip: appLocalizations.tip,
-                  padding: EdgeInsets.zero,
-                  onPressed: _showInterfaceIpDialog,
-                  icon: Icon(
-                    size: 16.ap,
-                    Icons.info_outline,
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Icon(
+                    Icons.devices,
                     color: context.colorScheme.onSurfaceVariant,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: TooltipText(
+                      text: Text(
+                        appLocalizations.intranetIP,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.textTheme.titleSmall?.copyWith(
+                          color: context.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  AspectRatio(
+                    aspectRatio: 1,
+                    child: ExcludeFocus(
+                      child: IconButton(
+                        tooltip: appLocalizations.tip,
+                        padding: EdgeInsets.zero,
+                        onPressed: _showInterfaceIpDialog,
+                        icon: Icon(
+                          size: 16.ap,
+                          Icons.info_outline,
+                          color: context.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             Container(
               padding: baseInfoEdgeInsets.copyWith(top: 0),

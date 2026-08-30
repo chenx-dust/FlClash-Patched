@@ -62,7 +62,7 @@ class NetworkDetection extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              height: globalState.measure.titleMediumHeight + 16,
+              height: globalState.measure.titleMediumHeight + 12,
               padding: baseInfoEdgeInsets.copyWith(bottom: 0),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
@@ -85,9 +85,9 @@ class NetworkDetection extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 2),
-                  SizedBox.square(
-                    dimension: globalState.measure.titleSmallHeight + 16.ap,
+                  const SizedBox(width: 4),
+                  AspectRatio(
+                    aspectRatio: 1,
                     child: ExcludeFocus(
                       child: IconButton(
                         tooltip: networkDetection.isIpVisible
@@ -106,27 +106,6 @@ class NetworkDetection extends ConsumerWidget {
                               : Icons.visibility_off_outlined,
                           color: context.colorScheme.onSurfaceVariant,
                         ),
-                      ),
-                    ),
-                  ),
-                  SizedBox.square(
-                    dimension: globalState.measure.titleSmallHeight + 16.ap,
-                    child: IconButton(
-                      tooltip: appLocalizations.tip,
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        dialogs.showMessage(
-                          title: appLocalizations.tip,
-                          message: TextSpan(
-                            text: appLocalizations.detectionTip,
-                          ),
-                          cancelable: false,
-                        );
-                      },
-                      icon: Icon(
-                        size: 16.ap,
-                        Icons.info_outline,
-                        color: context.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),

@@ -752,6 +752,9 @@ class _DeletableContainerState extends State<_DeletableContainer>
                   tooltip: context.appLocalizations.remove,
                   iconSize: 20,
                   padding: const EdgeInsets.all(2),
+                  style: IconButton.styleFrom(
+                    foregroundColor: context.colorScheme.inversePrimary,
+                  ),
                   onPressed: _handleDel,
                   icon: const Icon(Icons.close),
                 ),

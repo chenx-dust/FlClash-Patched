@@ -86,11 +86,15 @@ class _ConnectionInfoState extends ConsumerState<ConnectionInfo>
                   height: globalState.measure.bodyMediumHeight + 2,
                   child: ValueListenableBuilder(
                     valueListenable: _connectionCountNotifier,
-                    builder: (_, count, _) => Text(
-                      '$count',
-                      style: context.textTheme.bodyMedium?.toLight.adjustSize(
-                        1,
-                      ),
+                    builder: (_, count, _) => Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          '$count',
+                          style: context.textTheme.bodyMedium?.toLight
+                              .adjustSize(1),
+                        ),
+                      ],
                     ),
                   ),
                 ),
