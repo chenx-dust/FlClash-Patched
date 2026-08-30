@@ -49,7 +49,6 @@ class Window implements WindowPort {
       await _windowPosition(props);
     }
     await windowManager.setPreventClose(true);
-    singleInstanceLock.activationRequests.listen((_) => show());
   }
 
   Future<void> _windowPosition(WindowProps props) async {

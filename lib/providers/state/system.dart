@@ -210,7 +210,6 @@ SharedState sharedState(Ref ref) {
       allowBypass: vpnSetting.allowBypass,
       suspendSupport: vpnSetting.suspendSupport,
       bypassDomain: networkSetting.bypassDomain,
-      routeAddress: clashConfig.routeAddress,
       mtu: clashConfig.mtu,
       routeAddress: tun.getMobileRouteAddress(routeMode),
       disableIcmpForwarding: tun.disableIcmpForwarding,
