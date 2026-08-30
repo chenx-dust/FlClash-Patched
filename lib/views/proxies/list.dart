@@ -156,9 +156,15 @@ class ProxiesListViewState extends ConsumerState<ProxiesListView> {
     final backgroundHeight = headerHeight + _listHeaderFadeOverflow;
     final fadeStart = 1 - _listHeaderFadeHeight / backgroundHeight;
     final surface = context.colorScheme.surface;
+    final rowCount = (group.all.length + columns - 1) ~/ columns;
     final rows = isExpand
         ? group.all.chunks(columns).toList()
         : const <List<Proxy>>[];
+    final contentExtent = rowCount * (getItemHeight(cardType) + 8);
+    final animationMilliseconds = 100 + contentExtent * 0.25;
+    final animationDuration = Duration(
+      milliseconds: min(animationMilliseconds, isExpand ? 120 : 250).round(),
+    );
     return SliverMainAxisGroup(
       slivers: [
         PinnedHeaderSliver(
@@ -197,7 +203,7 @@ class ProxiesListViewState extends ConsumerState<ProxiesListView> {
           ),
         ),
         SliverAnimatedPaintExtent(
-          duration: Duration(milliseconds: isExpand ? 120 : 250),
+          duration: animationDuration,
           curve: Curves.easeInOutCubic,
           child: SliverFixedExtentList(
             itemExtent: getItemHeight(cardType) + 8,
