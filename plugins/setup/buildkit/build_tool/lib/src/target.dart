@@ -170,6 +170,7 @@ class Target {
   }
 
   @override
-  String toString() => '$goos/$goarch${abi != null ? ' ($abi)' : ''}'
+  String toString() =>
+      '$goos/$goarch${abi != null ? ' ($abi)' : ''}'
       '${lowMemory ? ' [lowmem]' : ''}';
 }

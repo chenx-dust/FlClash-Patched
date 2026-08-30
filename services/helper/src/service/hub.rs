@@ -248,7 +248,9 @@ fn launch_failure_response(error: &Error) -> warp::reply::Response {
         &ErrorResponse {
             code: "processLaunchFailed",
             message: error.to_string(),
-            details: error.raw_os_error().map(|os_error| ErrorDetails { os_error }),
+            details: error
+                .raw_os_error()
+                .map(|os_error| ErrorDetails { os_error }),
         },
         StatusCode::INTERNAL_SERVER_ERROR,
     )

@@ -524,10 +524,7 @@ class _AccessViewState extends ConsumerState<AccessView> {
           Expanded(
             child: needsInstalledAppsPermission
                 ? _buildInstalledAppsPermissionStatus()
-                : _buildContent(
-                    packages: viewPackages,
-                    valueList: valueList,
-                  ),
+                : _buildContent(packages: viewPackages, valueList: valueList),
           ),
         ],
       ),

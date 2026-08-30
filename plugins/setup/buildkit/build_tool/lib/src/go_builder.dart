@@ -71,15 +71,14 @@ String resolveIosCgoFlags({
   required String sdkPath,
   required String arch,
   String baseFlags = '',
-}) =>
-    [
-      baseFlags.trim(),
-      '-isysroot',
-      sdkPath,
-      '-miphoneos-version-min=14.0',
-      '-arch',
-      arch,
-    ].where((value) => value.isNotEmpty).join(' ');
+}) => [
+  baseFlags.trim(),
+  '-isysroot',
+  sdkPath,
+  '-miphoneos-version-min=14.0',
+  '-arch',
+  arch,
+].where((value) => value.isNotEmpty).join(' ');
 
 class GoBuilder {
   final String rootDir;
@@ -107,7 +106,7 @@ class GoBuilder {
 
     final fileName = target.isLib
         ? '${config.libName}${target.lowMemory ? '_lowmem' : ''}'
-            '${target.dynamicLibExtension}'
+              '${target.dynamicLibExtension}'
         : '${config.coreName}${target.executableExtension}';
     final outFile = p.join(outDir, fileName);
 
