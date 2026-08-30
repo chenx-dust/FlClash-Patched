@@ -31,7 +31,8 @@ await Tray.instance.hide();
   `capabilities.title` is false, and while no tray is visible.
 - `hide` is idempotent and returns native state to "`show` was never called", so a later `show`
   rebuilds the tray from scratch.
-- `openMenu` is a no-op where `capabilities.menuControl` is false.
+- `openMenu` is a no-op where `capabilities.menuControl` is false. On Windows,
+  `openMenu(bringAppToFront: true)` uses the Flutter window as the popup owner.
 
 Menu item ids are assigned by pre-order position, so an unchanged menu serializes identically across
 rebuilds and click dispatch stays stable while a menu is open.

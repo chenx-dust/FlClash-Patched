@@ -174,6 +174,97 @@ void main() {
     expect(calls, isEmpty);
   });
 
+  test(
+    'propagates a native unknown-key result without invalidating show',
+    () async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(_channel, (call) async {
+            calls.add(call);
+            return call.method == 'updateMenuItem' ? false : true;
+          });
+      final spec = _spec(
+        menu: const [TrayMenuAction(key: 'known', label: 'Known')],
+      );
+      await Tray.instance.show(spec);
+
+      expect(
+        await Tray.instance.updateMenuItem(key: 'missing', enabled: false),
+        isFalse,
+      );
+      await Tray.instance.show(spec);
+
+      expect(showCount(), 1);
+    },
+  );
+
+  test('openMenu encodes the optional Windows owner preference', () async {
+    await Tray.instance.show(_spec());
+
+    await Tray.instance.openMenu();
+    await Tray.instance.openMenu(bringAppToFront: true);
+
+    final openCalls = calls.where((call) => call.method == 'openMenu').toList();
+    expect(openCalls.map((call) => call.arguments), [
+      {'bringAppToFront': false},
+      {'bringAppToFront': true},
+    ]);
+  });
+
+  test('openMenu calls stay ordered behind an in-flight show', () async {
+    await Tray.instance.show(_spec());
+    final gate = Completer<void>();
+    showGate = gate;
+
+    final stalled = Tray.instance.show(
+      _spec(menu: const [TrayMenuAction(label: 'changed')]),
+    );
+    final defaultOwner = Tray.instance.openMenu();
+    final appOwner = Tray.instance.openMenu(bringAppToFront: true);
+    gate.complete();
+
+    await Future.wait([stalled, defaultOwner, appOwner]);
+    final orderedCalls = calls.skip(1).toList();
+    expect(orderedCalls.map((call) => call.method), [
+      'show',
+      'openMenu',
+      'openMenu',
+    ]);
+    expect(orderedCalls.skip(1).map((call) => call.arguments), [
+      {'bringAppToFront': false},
+      {'bringAppToFront': true},
+    ]);
+  });
+
+  test('an open macOS menu does not block live item updates', () async {
+    final menuClosed = Completer<void>();
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(_channel, (call) async {
+          calls.add(call);
+          if (call.method == 'openMenu') {
+            await menuClosed.future;
+          }
+          return true;
+        });
+    await Tray.instance.show(
+      _spec(
+        menu: const [TrayMenuAction(key: 'delay', label: 'Delay test')],
+      ),
+    );
+
+    final open = Tray.instance.openMenu();
+    await Future<void>.delayed(Duration.zero);
+    final update = Tray.instance.updateMenuItem(key: 'delay', enabled: false);
+    await update;
+
+    expect(calls.map((call) => call.method), [
+      'show',
+      'openMenu',
+      'updateMenuItem',
+    ]);
+    menuClosed.complete();
+    await open;
+  });
+
   test('a rejected show keeps callbacks for the visible menu', () async {
     var oldSelected = 0;
     var newSelected = 0;

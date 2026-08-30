@@ -23,6 +23,7 @@ final class TrayMenuAction extends TrayMenuItem {
     this.sublabel,
     this.sublabelStyle = TrayMenuSublabelStyle.badge,
     this.keepsMenuOpen = false,
+    this.usesCustomView = false,
     this.shortcut,
     this.activatesWindow = false,
     this.onSelected,
@@ -34,6 +35,7 @@ final class TrayMenuAction extends TrayMenuItem {
   final String? sublabel;
   final TrayMenuSublabelStyle sublabelStyle;
   final bool keepsMenuOpen;
+  final bool usesCustomView;
   final TrayMenuShortcut? shortcut;
   final bool activatesWindow;
   final TrayMenuItemSelectedCallback? onSelected;
@@ -48,6 +50,7 @@ final class TrayMenuCheckbox extends TrayMenuItem {
     this.sublabel,
     this.sublabelStyle = TrayMenuSublabelStyle.badge,
     this.keepsMenuOpen = false,
+    this.usesCustomView = false,
     this.shortcut,
     this.onSelected,
   });
@@ -59,6 +62,7 @@ final class TrayMenuCheckbox extends TrayMenuItem {
   final String? sublabel;
   final TrayMenuSublabelStyle sublabelStyle;
   final bool keepsMenuOpen;
+  final bool usesCustomView;
   final TrayMenuShortcut? shortcut;
   final TrayMenuItemSelectedCallback? onSelected;
 }
@@ -71,6 +75,7 @@ final class TrayMenuSubmenu extends TrayMenuItem {
     this.enabled = true,
     this.sublabel,
     this.sublabelStyle = TrayMenuSublabelStyle.secondary,
+    this.usesCustomView = false,
   });
 
   final String label;
@@ -79,6 +84,7 @@ final class TrayMenuSubmenu extends TrayMenuItem {
   final bool enabled;
   final String? sublabel;
   final TrayMenuSublabelStyle sublabelStyle;
+  final bool usesCustomView;
 }
 
 final class TrayMenuSeparator extends TrayMenuItem {

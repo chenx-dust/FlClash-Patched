@@ -7,6 +7,26 @@ private enum TrayMenuItemSublabelStyle: String {
     case secondary
 }
 
+private enum TrayMenuItemType: String {
+    case action
+    case checkbox
+    case submenu
+    case separator
+}
+
+private final class TrayNativeMenuItem: NSMenuItem {
+    let trayType: TrayMenuItemType
+
+    init(type: TrayMenuItemType) {
+        trayType = type
+        super.init(title: "", action: nil, keyEquivalent: "")
+    }
+
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
 private final class TrayMenuItemView: NSView {
     private enum Metrics {
         static let height: CGFloat = 24
@@ -29,8 +49,8 @@ private final class TrayMenuItemView: NSView {
     private var sublabel: String?
     private var sublabelStyle: TrayMenuItemSublabelStyle
     private var checked: Bool
-    private let keepsMenuOpen: Bool
-    private let hasSubmenu: Bool
+    private var keepsMenuOpen: Bool
+    private var hasSubmenu: Bool
     private var pointerInside = false
     private var trackingAreaReference: NSTrackingArea?
 
@@ -99,6 +119,24 @@ private final class TrayMenuItemView: NSView {
     }
 
     func update(
+        label: String,
+        sublabel: String?,
+        sublabelStyle: TrayMenuItemSublabelStyle,
+        checked: Bool,
+        keepsMenuOpen: Bool,
+        hasSubmenu: Bool
+    ) {
+        self.label = label
+        self.sublabel = sublabel
+        self.sublabelStyle = sublabelStyle
+        self.checked = checked
+        self.keepsMenuOpen = keepsMenuOpen
+        self.hasSubmenu = hasSubmenu
+        invalidateIntrinsicContentSize()
+        needsDisplay = true
+    }
+
+    func updateMenuItem(
         label: String?,
         sublabel: String?,
         sublabelStyle: TrayMenuItemSublabelStyle?,
@@ -418,6 +456,15 @@ final class TrayMenu: NSMenu {
     }
 
     @discardableResult
+    func update(items entries: [[String: Any]]) -> Bool {
+        guard isCompatible(with: entries) else {
+            return false
+        }
+        apply(entries)
+        return true
+    }
+
+    @discardableResult
     func updateMenuItem(_ arguments: [String: Any]) -> Bool {
         guard let key = arguments["key"] as? String else {
             return false
@@ -429,23 +476,39 @@ final class TrayMenu: NSMenu {
                 let style = (arguments["sublabelStyle"] as? String).flatMap(
                     TrayMenuItemSublabelStyle.init(rawValue:)
                 )
-                let checked = arguments["checked"] as? Bool
+                let nativeItem = item as? TrayNativeMenuItem
+                let checked = nativeItem?.trayType == .checkbox
+                    ? arguments["checked"] as? Bool
+                    : nil
                 if let label {
                     item.title = label
                 }
                 if let enabled = arguments["enabled"] as? Bool {
                     item.isEnabled = enabled
-                    item.action = enabled ? #selector(didSelectItem(_:)) : nil
+                    if nativeItem?.trayType != .submenu {
+                        item.action = enabled ? #selector(didSelectItem(_:)) : nil
+                    }
                 }
                 if let checked {
                     item.state = checked ? .on : .off
                 }
                 if let view = item.view as? TrayMenuItemView {
-                    view.update(
+                    view.updateMenuItem(
                         label: label,
                         sublabel: sublabel,
                         sublabelStyle: style,
                         checked: checked
+                    )
+                } else if let sublabel, !sublabel.isEmpty,
+                          let type = nativeItem?.trayType {
+                    item.view = TrayMenuItemView(
+                        label: item.title,
+                        sublabel: sublabel,
+                        sublabelStyle: style
+                            ?? (type == .submenu ? .secondary : .badge),
+                        checked: type == .checkbox && item.state == .on,
+                        keepsMenuOpen: false,
+                        hasSubmenu: type == .submenu
                     )
                 }
                 updateCustomViewWidths(
@@ -462,31 +525,37 @@ final class TrayMenu: NSMenu {
     }
 
     private func makeItem(_ entry: [String: Any]) -> NSMenuItem {
-        let type = entry["type"] as? String ?? ""
-        if type == "separator" {
+        guard let typeName = entry["type"] as? String,
+              let type = TrayMenuItemType(rawValue: typeName) else {
             return NSMenuItem.separator()
         }
-        let item = NSMenuItem()
+        if type == .separator {
+            return NSMenuItem.separator()
+        }
+        let item = TrayNativeMenuItem(type: type)
         item.title = entry["label"] as? String ?? ""
         item.tag = entry["id"] as? Int ?? 0
         item.representedObject = entry["key"] as? String
         item.isEnabled = entry["enabled"] as? Bool ?? true
         applyKeyboardShortcut(entry, to: item)
         switch type {
-        case "checkbox":
+        case .checkbox:
             item.state = (entry["checked"] as? Bool ?? false) ? .on : .off
             item.target = self
             item.action = item.isEnabled ? #selector(didSelectItem(_:)) : nil
-        case "submenu":
+        case .submenu:
             let children = entry["items"] as? [[String: Any]] ?? []
             setSubmenu(TrayMenu(items: children, onSelect: onSelect), for: item)
-        default:
+        case .action:
             item.target = self
             item.action = item.isEnabled ? #selector(didSelectItem(_:)) : nil
+        case .separator:
+            break
         }
         let sublabel = entry["sublabel"] as? String
         let keepsMenuOpen = entry["keepsMenuOpen"] as? Bool ?? false
-        if sublabel?.isEmpty == false || keepsMenuOpen {
+        let usesCustomView = entry["usesCustomView"] as? Bool ?? false
+        if usesCustomView || sublabel?.isEmpty == false || keepsMenuOpen {
             let styleName = entry["sublabelStyle"] as? String ?? "badge"
             item.view = TrayMenuItemView(
                 label: item.title,
@@ -496,16 +565,115 @@ final class TrayMenu: NSMenu {
                 ) ?? .badge,
                 checked: item.state == .on,
                 keepsMenuOpen: keepsMenuOpen,
-                hasSubmenu: type == "submenu"
+                hasSubmenu: type == .submenu
             )
         }
         return item
+    }
+
+    private func isCompatible(with entries: [[String: Any]]) -> Bool {
+        guard entries.count == items.count else {
+            return false
+        }
+        for (entry, item) in zip(entries, items) {
+            guard let typeName = entry["type"] as? String,
+                  let type = TrayMenuItemType(rawValue: typeName) else {
+                return false
+            }
+            if type == .separator {
+                guard item.isSeparatorItem else {
+                    return false
+                }
+                continue
+            }
+            guard let nativeItem = item as? TrayNativeMenuItem,
+                  nativeItem.trayType == type,
+                  !item.isSeparatorItem else {
+                return false
+            }
+            if type == .submenu {
+                guard let children = entry["items"] as? [[String: Any]],
+                      let submenu = item.submenu as? TrayMenu,
+                      submenu.isCompatible(with: children) else {
+                    return false
+                }
+            } else if item.submenu != nil {
+                return false
+            }
+        }
+        return true
+    }
+
+    private func apply(_ entries: [[String: Any]]) {
+        var customViews: [TrayMenuItemView] = []
+        for (entry, item) in zip(entries, items) {
+            guard let typeName = entry["type"] as? String,
+                  let type = TrayMenuItemType(rawValue: typeName),
+                  type != .separator else {
+                continue
+            }
+            let label = entry["label"] as? String ?? ""
+            let sublabel = entry["sublabel"] as? String
+            let styleName = entry["sublabelStyle"] as? String ?? "badge"
+            let style = TrayMenuItemSublabelStyle(rawValue: styleName) ?? .badge
+            let checked = entry["checked"] as? Bool ?? false
+            let keepsMenuOpen = entry["keepsMenuOpen"] as? Bool ?? false
+            let usesCustomView = entry["usesCustomView"] as? Bool ?? false
+
+            item.title = label
+            item.tag = entry["id"] as? Int ?? 0
+            item.representedObject = entry["key"] as? String
+            item.isEnabled = entry["enabled"] as? Bool ?? true
+            item.target = type == .submenu ? nil : self
+            item.action = type != .submenu && item.isEnabled
+                ? #selector(didSelectItem(_:))
+                : nil
+            item.state = type == .checkbox && checked ? .on : .off
+            applyKeyboardShortcut(entry, to: item)
+
+            if type == .submenu,
+               let children = entry["items"] as? [[String: Any]],
+               let submenu = item.submenu as? TrayMenu {
+                submenu.apply(children)
+            }
+
+            if usesCustomView || sublabel?.isEmpty == false || keepsMenuOpen {
+                let view: TrayMenuItemView
+                if let currentView = item.view as? TrayMenuItemView {
+                    view = currentView
+                    view.update(
+                        label: label,
+                        sublabel: sublabel,
+                        sublabelStyle: style,
+                        checked: checked,
+                        keepsMenuOpen: keepsMenuOpen,
+                        hasSubmenu: type == .submenu
+                    )
+                } else {
+                    view = TrayMenuItemView(
+                        label: label,
+                        sublabel: sublabel,
+                        sublabelStyle: style,
+                        checked: checked,
+                        keepsMenuOpen: keepsMenuOpen,
+                        hasSubmenu: type == .submenu
+                    )
+                    item.view = view
+                }
+                customViews.append(view)
+            } else {
+                item.view = nil
+            }
+        }
+        updateCustomViewWidths(customViews)
     }
 
     private func applyKeyboardShortcut(
         _ entry: [String: Any],
         to item: NSMenuItem
     ) {
+        item.keyEquivalent = ""
+        item.keyEquivalentModifierMask = []
         guard let keyEquivalent = entry["keyEquivalent"] as? String else {
             return
         }

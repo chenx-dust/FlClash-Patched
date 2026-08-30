@@ -117,6 +117,7 @@ void main() {
     expect(menuSource, contains('final class TrayMenuItemView: NSView'));
     expect(menuSource, contains('drawSublabel'));
     expect(menuSource, contains('func updateMenuItem'));
+    expect(menuSource, contains('entry["usesCustomView"]'));
     expect(pluginSource, contains('case "updateMenuItem"'));
     expect(menuSource, contains('arguments["label"] as? String'));
     expect(menuSource, contains('arguments["checked"] as? Bool'));
@@ -125,5 +126,168 @@ void main() {
   test('macOS delay tests keep the tracked menu open', () {
     expect(menuSource, contains('if !keepsMenuOpen'));
     expect(menuSource, contains('menuItem.menu?.cancelTracking()'));
+  });
+
+  test('macOS updates an attached menu only after full compatibility', () {
+    expect(pluginSource, contains('item.statusItem.menu === \$0'));
+    expect(
+      menuSource,
+      contains('''
+    func update(items entries: [[String: Any]]) -> Bool {
+        guard isCompatible(with: entries) else {
+            return false
+        }
+        apply(entries)'''),
+    );
+    expect(
+      menuSource,
+      contains('nativeItem.trayType == type'),
+      reason: 'action, checkbox and submenu transitions must rebuild',
+    );
+    expect(
+      menuSource,
+      contains('submenu.isCompatible(with: children)'),
+      reason: 'nested incompatibility must be found before any mutation',
+    );
+    expect(menuSource, contains('guard item.isSeparatorItem else'));
+    expect(
+      menuSource,
+      contains('''
+private enum TrayMenuItemType: String {
+    case action
+    case checkbox
+    case submenu
+    case separator
+}'''),
+      reason: 'all non-separator transitions need distinct native identities',
+    );
+
+    final compatibilityStart = menuSource.indexOf(
+      'private func isCompatible(with entries:',
+    );
+    final applyStart = menuSource.indexOf(
+      'private func apply(_ entries:',
+      compatibilityStart,
+    );
+    final compatibilityBody = menuSource.substring(
+      compatibilityStart,
+      applyStart,
+    );
+    expect(compatibilityBody, isNot(contains('item.title =')));
+    expect(compatibilityBody, isNot(contains('item.state =')));
+    expect(compatibilityBody, isNot(contains('submenu.apply(')));
+
+    expect(
+      pluginSource.indexOf('attachedMenu.update(items: items)'),
+      lessThan(pluginSource.indexOf('let built = TrayMenu(items: items)')),
+      reason: 'a type or recursive mismatch must fall through to a rebuild',
+    );
+  });
+
+  test('macOS full updates clear state that is no longer present', () {
+    expect(
+      menuSource,
+      contains('item.state = type == .checkbox && checked ? .on : .off'),
+    );
+    expect(menuSource, contains('item.keyEquivalent = ""'));
+    expect(menuSource, contains('item.keyEquivalentModifierMask = []'));
+    expect(menuSource, contains('item.view = nil'));
+  });
+
+  test('macOS incompatible tracking rebuild replaces the attached menu', () {
+    final showStart = pluginSource.indexOf('if let items = arguments["menu"]');
+    final showEnd = pluginSource.indexOf('\n        return true', showStart);
+    final showBody = pluginSource.substring(showStart, showEnd);
+
+    final assignIndex = showBody.indexOf('menu = built');
+    final cancelIndex = showBody.indexOf('attachedMenu.cancelTracking()');
+    final reopenIndex = showBody.indexOf('item.openMenu(built)');
+    expect(assignIndex, greaterThanOrEqualTo(0));
+    expect(cancelIndex, greaterThan(assignIndex));
+    expect(reopenIndex, greaterThan(cancelIndex));
+    expect(
+      showBody.indexOf('attachedMenu.update(items: items)'),
+      lessThan(showBody.indexOf('let built = TrayMenu(items: items)')),
+      reason: 'compatible attached menus must still update in place',
+    );
+
+    expect(
+      pluginSource,
+      contains('''
+    public func menuDidClose(_ closedMenu: NSMenu) {
+        guard statusItem?.statusItem.menu === closedMenu else {
+            return
+        }
+        statusItem?.closeMenu()
+    }'''),
+      reason: 'a delayed close from the old menu must preserve the replacement',
+    );
+  });
+
+  test('macOS keyed checked updates only affect checkbox items', () {
+    final updateStart = menuSource.indexOf('func updateMenuItem(_ arguments:');
+    final updateEnd = menuSource.indexOf(
+      '\n    private func makeItem',
+      updateStart,
+    );
+    final updateBody = menuSource.substring(updateStart, updateEnd);
+
+    expect(
+      updateBody,
+      contains('''
+                let checked = nativeItem?.trayType == .checkbox
+                    ? arguments["checked"] as? Bool
+                    : nil'''),
+    );
+    expect(
+      updateBody,
+      contains('if let checked {\n                    item.state'),
+    );
+    expect(updateBody, contains('checked: checked'));
+    expect(
+      updateBody.indexOf('let checked = nativeItem?.trayType == .checkbox'),
+      lessThan(updateBody.indexOf('checked: checked')),
+      reason: 'the custom view must receive the type-filtered checked value',
+    );
+  });
+
+  test('macOS keyed sublabel update creates a missing custom view', () {
+    final updateStart = menuSource.indexOf('func updateMenuItem(_ arguments:');
+    final updateEnd = menuSource.indexOf(
+      '\n    private func makeItem',
+      updateStart,
+    );
+    final updateBody = menuSource.substring(updateStart, updateEnd);
+    final createStart = updateBody.indexOf(
+      'else if let sublabel, !sublabel.isEmpty',
+    );
+    final resizeStart = updateBody.indexOf('updateCustomViewWidths(');
+
+    expect(createStart, greaterThanOrEqualTo(0));
+    expect(
+      updateBody.substring(createStart, resizeStart),
+      contains('''item.view = TrayMenuItemView(
+                        label: item.title,
+                        sublabel: sublabel'''),
+    );
+    expect(
+      updateBody.substring(createStart, resizeStart),
+      contains('?? (type == .submenu ? .secondary : .badge)'),
+      reason: 'new submenu views default to secondary presentation',
+    );
+    expect(
+      updateBody.substring(createStart, resizeStart),
+      contains('checked: type == .checkbox && item.state == .on'),
+      reason: 'actions and submenus must not gain a drawn checkmark',
+    );
+    expect(
+      updateBody.substring(createStart, resizeStart),
+      contains('hasSubmenu: type == .submenu'),
+    );
+    expect(
+      resizeStart,
+      greaterThan(createStart),
+      reason: 'the newly inserted view must participate in menu width layout',
+    );
   });
 }

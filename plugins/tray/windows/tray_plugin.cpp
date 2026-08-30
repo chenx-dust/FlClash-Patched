@@ -73,6 +73,10 @@ bool BoolAt(const flutter::EncodableMap& map, const char* key, bool fallback) {
   return value == nullptr ? fallback : *value;
 }
 
+const bool* BoolPointerAt(const flutter::EncodableMap& map, const char* key) {
+  return std::get_if<bool>(ValueAt(map, key));
+}
+
 int IntAt(const flutter::EncodableMap& map, const char* key, int fallback) {
   const auto* value = std::get_if<int>(ValueAt(map, key));
   return value == nullptr ? fallback : *value;
@@ -124,7 +128,8 @@ TrayPlugin::TrayPlugin(
       tray_window_(std::make_unique<TrayWindow>(
           [this](HWND window, UINT message, WPARAM wparam, LPARAM lparam) {
             return HandleWindowProc(window, message, wparam, lparam);
-          })) {
+          })),
+      registrar_(registrar) {
   channel_->SetMethodCallHandler([this](const auto& call, auto result) {
     HandleMethodCall(call, std::move(result));
   });
@@ -183,6 +188,7 @@ void TrayPlugin::RebuildMenu(HMENU menu, const flutter::EncodableList& items) {
 
     const std::string* label = StringAt(*entry, "label");
     const std::wstring text = Utf16FromUtf8(label == nullptr ? "" : *label);
+    const UINT position = static_cast<UINT>(::GetMenuItemCount(menu));
 
     UINT flags = MF_STRING;
     if (!BoolAt(*entry, "enabled", true)) {
@@ -205,6 +211,12 @@ void TrayPlugin::RebuildMenu(HMENU menu, const flutter::EncodableList& items) {
     }
 
     ::AppendMenuW(menu, flags, item_id, text.c_str());
+
+    const std::string* key = StringAt(*entry, "key");
+    if (key != nullptr) {
+      menu_items_.try_emplace(
+          *key, MenuItemLocation{menu, position, *type == "checkbox"});
+    }
   }
 }
 
@@ -223,9 +235,9 @@ bool TrayPlugin::Show(const flutter::EncodableMap& arguments) {
   if (loaded == nullptr) {
     return false;
   }
-  if (icon_data_.hIcon != nullptr) {
-    ::DestroyIcon(icon_data_.hIcon);
-  }
+  const HICON previous_icon = icon_data_.hIcon;
+  const std::wstring previous_tool_tip = tool_tip_;
+  const bool previous_menu_is_dark = menu_is_dark_;
   icon_data_.hIcon = loaded;
 
   const std::string* tool_tip = StringAt(arguments, "toolTip");
@@ -240,7 +252,14 @@ bool TrayPlugin::Show(const flutter::EncodableMap& arguments) {
     applied = ApplyIcon(true);
   }
   if (!applied) {
+    icon_data_.hIcon = previous_icon;
+    tool_tip_ = previous_tool_tip;
+    menu_is_dark_ = previous_menu_is_dark;
+    ::DestroyIcon(loaded);
     return false;
+  }
+  if (previous_icon != nullptr) {
+    ::DestroyIcon(previous_icon);
   }
   visible_ = true;
 
@@ -249,6 +268,7 @@ bool TrayPlugin::Show(const flutter::EncodableMap& arguments) {
     if (menu_ == nullptr) {
       menu_ = ::CreatePopupMenu();
     }
+    menu_items_.clear();
     RebuildMenu(menu_, *items);
   }
 
@@ -268,20 +288,28 @@ void TrayPlugin::Hide() {
     ::DestroyMenu(menu_);
     menu_ = nullptr;
   }
+  menu_items_.clear();
 
   tool_tip_.clear();
   visible_ = false;
 }
 
-bool TrayPlugin::OpenMenu() {
+bool TrayPlugin::OpenMenu(bool bring_app_to_front) {
   if (menu_ == nullptr || !visible_) {
     return false;
   }
 
-  if (tray_window_ == nullptr || tray_window_->hwnd() == nullptr) {
+  HWND window = nullptr;
+  if (bring_app_to_front) {
+    if (registrar_ != nullptr && registrar_->GetView() != nullptr) {
+      window = ::GetAncestor(registrar_->GetView()->GetNativeWindow(), GA_ROOT);
+    }
+  } else if (tray_window_ != nullptr) {
+    window = tray_window_->hwnd();
+  }
+  if (window == nullptr) {
     return false;
   }
-  const HWND window = tray_window_->hwnd();
   POINT cursor;
   ::GetCursorPos(&cursor);
 
@@ -300,6 +328,57 @@ bool TrayPlugin::OpenMenu() {
     ::Shell_NotifyIconW(NIM_SETFOCUS, &icon_data_);
   }
   return true;
+}
+
+bool TrayPlugin::UpdateMenuItem(
+    const flutter::EncodableMap& arguments) {
+  const std::string* key = StringAt(arguments, "key");
+  if (key == nullptr) {
+    return false;
+  }
+  const auto location = menu_items_.find(*key);
+  if (location == menu_items_.end()) {
+    return false;
+  }
+
+  const std::string* label = StringAt(arguments, "label");
+  const bool* enabled = BoolPointerAt(arguments, "enabled");
+  const bool* checked = BoolPointerAt(arguments, "checked");
+  if (label == nullptr && enabled == nullptr &&
+      (checked == nullptr || !location->second.checkbox)) {
+    return true;
+  }
+
+  MENUITEMINFOW info{};
+  info.cbSize = sizeof(info);
+  if (enabled != nullptr || (checked != nullptr && location->second.checkbox)) {
+    info.fMask = MIIM_STATE;
+    if (!::GetMenuItemInfoW(location->second.menu, location->second.position,
+                            TRUE, &info)) {
+      return false;
+    }
+    if (enabled != nullptr) {
+      info.fState &= ~(MFS_DISABLED | MFS_GRAYED);
+      if (!*enabled) {
+        info.fState |= MFS_DISABLED;
+      }
+    }
+    if (checked != nullptr && location->second.checkbox) {
+      info.fState &= ~MFS_CHECKED;
+      if (*checked) {
+        info.fState |= MFS_CHECKED;
+      }
+    }
+  }
+
+  std::wstring text;
+  if (label != nullptr) {
+    text = Utf16FromUtf8(*label);
+    info.fMask |= MIIM_STRING;
+    info.dwTypeData = text.data();
+  }
+  return ::SetMenuItemInfoW(location->second.menu, location->second.position,
+                            TRUE, &info) != FALSE;
 }
 
 std::optional<LRESULT> TrayPlugin::HandleWindowProc(HWND window,
@@ -351,7 +430,20 @@ void TrayPlugin::HandleMethodCall(
   }
 
   if (method == "openMenu") {
-    result->Success(flutter::EncodableValue(OpenMenu()));
+    const auto* arguments =
+        std::get_if<flutter::EncodableMap>(method_call.arguments());
+    const bool bring_app_to_front =
+        arguments != nullptr && BoolAt(*arguments, "bringAppToFront", false);
+    result->Success(flutter::EncodableValue(
+        OpenMenu(bring_app_to_front)));
+    return;
+  }
+
+  if (method == "updateMenuItem") {
+    const auto* arguments =
+        std::get_if<flutter::EncodableMap>(method_call.arguments());
+    result->Success(flutter::EncodableValue(
+        arguments != nullptr && UpdateMenuItem(*arguments)));
     return;
   }
 

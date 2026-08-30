@@ -51,11 +51,22 @@ public class TrayPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         item.setTitle(arguments["title"] as? String ?? "")
 
         if let items = arguments["menu"] as? [[String: Any]] {
+            let attachedMenu = menu.flatMap {
+                item.statusItem.menu === $0 ? $0 : nil
+            }
+            if let attachedMenu,
+               attachedMenu.update(items: items) {
+                return true
+            }
             let built = TrayMenu(items: items) { [weak self] id in
                 self?.channel.invokeMethod("onMenuItemSelected", arguments: ["id": id])
             }
             built.delegate = self
             menu = built
+            if let attachedMenu {
+                attachedMenu.cancelTracking()
+                item.openMenu(built)
+            }
         }
 
         return true
@@ -117,7 +128,10 @@ public class TrayPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         return image
     }
 
-    public func menuDidClose(_ menu: NSMenu) {
+    public func menuDidClose(_ closedMenu: NSMenu) {
+        guard statusItem?.statusItem.menu === closedMenu else {
+            return
+        }
         statusItem?.closeMenu()
     }
 }

@@ -61,8 +61,8 @@ final class Tray {
     return _serialize(_hide);
   }
 
-  Future<void> openMenu() {
-    return _serialize(_openMenu);
+  Future<void> openMenu({bool bringAppToFront = false}) {
+    return _dispatch(() => _openMenu(bringAppToFront));
   }
 
   Future<bool> updateMenuItem({
@@ -100,6 +100,18 @@ final class Tray {
     _queue = _queue.then((_) async {
       try {
         completer.complete(await action());
+      } catch (error, stackTrace) {
+        completer.completeError(error, stackTrace);
+      }
+    });
+    return completer.future;
+  }
+
+  Future<T> _dispatch<T>(Future<T> Function() action) {
+    final completer = Completer<T>();
+    _queue = _queue.then((_) {
+      try {
+        action().then(completer.complete, onError: completer.completeError);
       } catch (error, stackTrace) {
         completer.completeError(error, stackTrace);
       }
@@ -159,11 +171,13 @@ final class Tray {
     await _channel.invokeMethod(_methodHide);
   }
 
-  Future<void> _openMenu() async {
+  Future<void> _openMenu(bool bringAppToFront) async {
     if (!capabilities.menuControl || !_isVisible) {
       return;
     }
-    await _channel.invokeMethod(_methodOpenMenu);
+    await _channel.invokeMethod(_methodOpenMenu, <String, Object?>{
+      'bringAppToFront': bringAppToFront,
+    });
   }
 
   Future<bool> _updateMenuItem({

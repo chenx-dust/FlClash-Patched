@@ -62,6 +62,7 @@ abstract final class TrayCodec {
           :final sublabel,
           :final sublabelStyle,
           :final keepsMenuOpen,
+          :final usesCustomView,
           :final shortcut,
           :final activatesWindow,
         ) =>
@@ -75,6 +76,7 @@ abstract final class TrayCodec {
               sublabel: sublabel,
               sublabelStyle: sublabelStyle,
               keepsMenuOpen: keepsMenuOpen,
+              usesCustomView: usesCustomView,
             ),
             'activatesWindow': activatesWindow,
             ..._encodeShortcut(shortcut),
@@ -87,6 +89,7 @@ abstract final class TrayCodec {
           :final sublabel,
           :final sublabelStyle,
           :final keepsMenuOpen,
+          :final usesCustomView,
           :final shortcut,
         ) =>
           <String, Object?>{
@@ -100,6 +103,7 @@ abstract final class TrayCodec {
               sublabel: sublabel,
               sublabelStyle: sublabelStyle,
               keepsMenuOpen: keepsMenuOpen,
+              usesCustomView: usesCustomView,
             ),
             ..._encodeShortcut(shortcut),
           },
@@ -109,6 +113,7 @@ abstract final class TrayCodec {
           :final enabled,
           :final sublabel,
           :final sublabelStyle,
+          :final usesCustomView,
           :final items,
         ) =>
           <String, Object?>{
@@ -120,6 +125,7 @@ abstract final class TrayCodec {
               key: key,
               sublabel: sublabel,
               sublabelStyle: sublabelStyle,
+              usesCustomView: usesCustomView,
             ),
             'items': _encodeItems(items, sink, allocator),
           },
@@ -144,6 +150,7 @@ abstract final class TrayCodec {
     required String? sublabel,
     required TrayMenuSublabelStyle sublabelStyle,
     bool keepsMenuOpen = false,
+    bool usesCustomView = false,
   }) {
     final result = <String, Object?>{};
     if (key != null) {
@@ -155,6 +162,9 @@ abstract final class TrayCodec {
     }
     if (keepsMenuOpen) {
       result['keepsMenuOpen'] = true;
+    }
+    if (usesCustomView) {
+      result['usesCustomView'] = true;
     }
     return result;
   }

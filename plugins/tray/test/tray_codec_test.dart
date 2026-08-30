@@ -150,6 +150,7 @@ void main() {
             checked: true,
             sublabel: '42 ms',
             sublabelStyle: TrayMenuSublabelStyle.badge,
+            usesCustomView: true,
           ),
         ],
       ),
@@ -159,6 +160,7 @@ void main() {
     expect(encoded.menu[0], containsPair('keepsMenuOpen', true));
     expect(encoded.menu[1], containsPair('sublabel', '42 ms'));
     expect(encoded.menu[1], containsPair('sublabelStyle', 'badge'));
+    expect(encoded.menu[1], containsPair('usesCustomView', true));
   });
 
   test('separators serialize without label or state', () {

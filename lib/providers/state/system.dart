@@ -47,7 +47,15 @@ TrayState trayState(Ref ref) {
           (autoLaunch: state.autoLaunch, showTrayTitle: state.showTrayTitle),
     ),
   );
-  final groups = ref.watch(currentGroupsStateProvider).value;
+  final currentGroups = ref.watch(currentGroupsStateProvider).value;
+  final groupNowMap = ref.watch(
+    groupsProvider.select(
+      (groups) => {for (final group in groups) group.name: group.now},
+    ),
+  );
+  final groups = currentGroups
+      .map((group) => group.copyWith(now: groupNowMap[group.name]))
+      .toList();
   final selectedMap = ref.watch(selectedMapProvider);
   final monochromeTrayIcon = ref.watch(
     themeSettingProvider.select((state) => state.monochromeTrayIcon),

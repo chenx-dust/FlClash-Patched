@@ -12,6 +12,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <unordered_map>
 
 namespace tray {
 
@@ -31,13 +32,20 @@ class TrayPlugin : public flutter::Plugin {
   TrayPlugin& operator=(const TrayPlugin&) = delete;
 
  private:
+  struct MenuItemLocation {
+    HMENU menu;
+    UINT position;
+    bool checkbox;
+  };
+
   void HandleMethodCall(
       const flutter::MethodCall<flutter::EncodableValue>& method_call,
       std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
   bool Show(const flutter::EncodableMap& arguments);
   void Hide();
-  bool OpenMenu();
+  bool OpenMenu(bool bring_app_to_front);
+  bool UpdateMenuItem(const flutter::EncodableMap& arguments);
   bool ApplyIcon(bool add);
   void RebuildMenu(HMENU menu, const flutter::EncodableList& items);
   void SendEvent(const char* name, const flutter::EncodableValue& arguments);
@@ -48,9 +56,11 @@ class TrayPlugin : public flutter::Plugin {
                                           LPARAM lparam);
   std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> channel_;
   std::unique_ptr<TrayWindow> tray_window_;
+  flutter::PluginRegistrarWindows* registrar_;
 
   NOTIFYICONDATAW icon_data_{};
   HMENU menu_ = nullptr;
+  std::unordered_map<std::string, MenuItemLocation> menu_items_;
   std::wstring tool_tip_;
   bool visible_ = false;
   bool menu_is_dark_ = false;

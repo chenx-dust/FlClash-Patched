@@ -331,31 +331,53 @@ class AppTray implements TrayPort {
     }
     return [
       for (final group in trayState.groups)
-        TrayMenuSubmenu(
-          label: group.name,
-          sublabel: getTrayGroupSelectionLabel(group, trayState.selectedMap),
-          items: [
-            TrayMenuAction(
-              key: _trayDelayTestKey(group.name),
-              label: currentAppLocalizations.delayTest,
-              enabled: !_testingGroups.contains(group.name),
-              keepsMenuOpen: true,
-              onSelected: () {
-                unawaited(_testGroupDelay(group, read));
-              },
-            ),
-            const TrayMenuSeparator(),
-            for (final proxy in group.all)
-              _buildProxyMenuItem(group: group, proxy: proxy, read: read),
-          ],
+        _buildGroupMenuItem(
+          group: group,
+          selectedMap: trayState.selectedMap,
+          read: read,
         ),
       const TrayMenuSeparator(),
     ];
   }
 
+  TrayMenuSubmenu _buildGroupMenuItem({
+    required Group group,
+    required Map<String, String> selectedMap,
+    required ProviderReader read,
+  }) {
+    final selectedProxyName = group.getCurrentSelectedName(
+      selectedMap[group.name] ?? '',
+    );
+    return TrayMenuSubmenu(
+      label: group.name,
+      sublabel: getTrayGroupSelectionLabel(group, selectedMap),
+      usesCustomView: true,
+      items: [
+        TrayMenuAction(
+          key: _trayDelayTestKey(group.name),
+          label: currentAppLocalizations.delayTest,
+          enabled: !_testingGroups.contains(group.name),
+          keepsMenuOpen: true,
+          onSelected: () {
+            unawaited(_testGroupDelay(group, read));
+          },
+        ),
+        const TrayMenuSeparator(),
+        for (final proxy in group.all)
+          _buildProxyMenuItem(
+            group: group,
+            proxy: proxy,
+            selectedProxyName: selectedProxyName,
+            read: read,
+          ),
+      ],
+    );
+  }
+
   TrayMenuCheckbox _buildProxyMenuItem({
     required Group group,
     required Proxy proxy,
+    required String? selectedProxyName,
     required ProviderReader read,
   }) {
     final pending = read(
@@ -374,7 +396,8 @@ class AppTray implements TrayPort {
       label: proxy.name,
       sublabel: presentation.label,
       sublabelStyle: presentation.style,
-      checked: read(selectedProxyNameProvider(group.name)) == proxy.name,
+      usesCustomView: true,
+      checked: selectedProxyName == proxy.name,
       onSelected: () {
         read(
           proxiesActionProvider.notifier,
