@@ -53,7 +53,7 @@ void main() {
     tester,
   ) async {
     final container = _containerFor(tester);
-    String? popped;
+    ({String url, String? ageSecretKey})? popped;
 
     await tester.pumpWidget(
       UncontrolledProviderScope(
@@ -63,10 +63,11 @@ void main() {
             body: Builder(
               builder: (context) => TextButton(
                 onPressed: () async {
-                  popped = await showDialog<String>(
-                    context: context,
-                    builder: (_) => const URLFormDialog(),
-                  );
+                  popped =
+                      await showDialog<({String url, String? ageSecretKey})>(
+                        context: context,
+                        builder: (_) => const URLFormDialog(),
+                      );
                 },
                 child: const Text('open'),
               ),
@@ -95,7 +96,7 @@ void main() {
 
   testWidgets('URL import dialog returns the entered value', (tester) async {
     final container = _containerFor(tester);
-    String? popped;
+    ({String url, String? ageSecretKey})? popped;
 
     await tester.pumpWidget(
       UncontrolledProviderScope(
@@ -105,10 +106,11 @@ void main() {
             body: Builder(
               builder: (context) => TextButton(
                 onPressed: () async {
-                  popped = await showDialog<String>(
-                    context: context,
-                    builder: (_) => const URLFormDialog(),
-                  );
+                  popped =
+                      await showDialog<({String url, String? ageSecretKey})>(
+                        context: context,
+                        builder: (_) => const URLFormDialog(),
+                      );
                 },
                 child: const Text('open'),
               ),
@@ -123,14 +125,15 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.enterText(
-      find.byType(TextField),
+      find.byType(TextFormField).first,
       'https://example.com/profile',
     );
     await tester.tap(find.text(currentAppLocalizations.submit));
     await tester.pumpAndSettle();
 
     expect(find.byType(URLFormDialog), findsNothing);
-    expect(popped, 'https://example.com/profile');
+    expect(popped?.url, 'https://example.com/profile');
+    expect(popped?.ageSecretKey, isNull);
     expect(tester.takeException(), null);
   });
 }

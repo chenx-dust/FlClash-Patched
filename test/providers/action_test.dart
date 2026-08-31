@@ -158,6 +158,7 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           coreHandlerProvider.overrideWithValue(CoreController.scoped(core)),
+          setupActionProvider.overrideWith(_TestSetupAction.new),
         ],
       );
       addTearDown(container.dispose);
@@ -176,6 +177,7 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           coreHandlerProvider.overrideWithValue(CoreController.scoped(core)),
+          setupActionProvider.overrideWith(_TestSetupAction.new),
         ],
       );
       addTearDown(container.dispose);

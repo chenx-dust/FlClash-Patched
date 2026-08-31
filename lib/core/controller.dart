@@ -60,7 +60,7 @@ class CoreController {
 
   static Future<void> initGeo() async {
     final homePath = await appPath.homeDirPath;
-    const geoFileNameList = [MMDB, GEOIP, GEOSITE, ASN];
+    const geoFileNameList = [MMDB, GEOIP, GEOSITE, ASN, BUNDLE_MRS];
     try {
       for (final geoFileName in geoFileNameList) {
         final geoFile = File(join(homePath, geoFileName));
@@ -90,18 +90,17 @@ class CoreController {
 
   FutureOr<bool> get isInit => _interface.isInit;
 
-  Future<String> validateConfig(String path) async {
-    final res = await _interface.validateConfig(path);
+  Future<String> validateConfig(String data) async {
+    final res = await _interface.validateConfig(data);
     return res;
   }
 
   Future<String> validateConfigWithData(String data) async {
-    final path = await appPath.tempFilePath;
-    final file = File(path);
-    await file.safeWriteAsString(data);
-    final res = await _interface.validateConfig(path);
-    await File(path).safeDelete();
-    return res;
+    return validateConfig(data);
+  }
+
+  Future<String> decryptAgeConfig(String data, String ageSecretKey) {
+    return _interface.decryptAgeConfig(data, ageSecretKey);
   }
 
   Future<String> updateConfig(UpdateParams updateParams) async {
@@ -255,6 +254,14 @@ class CoreController {
 
   Future<String> deleteManagedPath(DeleteManagedPathParams params) async {
     return _interface.deleteManagedPath(params);
+  }
+
+  Future<Map<String, String>> generateAgeKeyPair() {
+    return _interface.generateAgeKeyPair();
+  }
+
+  Future<String> convertAgeSecretKeyToPublicKey(String secretKey) {
+    return _interface.convertAgeSecretKeyToPublicKey(secretKey);
   }
 }
 

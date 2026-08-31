@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:fl_clash/common/migration.dart';
+import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -37,7 +38,10 @@ void main() {
         );
         final davProps = configMap['davProps']! as Map<String, Object?>;
         davProps['password'] = 'secret';
-        final store = _FakeMigrationStore(configMap: configMap, version: 1);
+        final store = _FakeMigrationStore(
+          configMap: configMap,
+          version: Migration.currentVersion,
+        );
 
         final config = await Migration(store: store).run();
 
@@ -54,6 +58,46 @@ void main() {
         expect(savedDavProps['password'], isNot(contains('secret')));
       },
     );
+
+    test('upgrades fork v1 settings without discarding local data', () async {
+      final configMap = _createConfigMap();
+      final appSettingProps =
+          configMap['appSettingProps']! as Map<String, Object?>;
+      appSettingProps
+        ..remove('checkCertificate')
+        ..['ignoreCertificateErrors'] = true;
+      final vpnProps = configMap['vpnProps']! as Map<String, Object?>;
+      vpnProps
+        ..remove('dnsHijacking')
+        ..['captureDns'] = true;
+      final proxiesStyleProps =
+          configMap['proxiesStyleProps']! as Map<String, Object?>;
+      proxiesStyleProps['cardType'] = 'expand';
+      final store = _FakeMigrationStore(configMap: configMap, version: 1);
+
+      final config = await Migration(store: store).run();
+
+      expect(config.appSettingProps.checkCertificate, isFalse);
+      expect(config.vpnProps.dnsHijacking, isTrue);
+      expect(config.proxiesStyleProps.cardType, ProxyCardType.standard);
+      expect(store.savedConfig, config);
+      expect(store.version, Migration.currentVersion);
+      expect(store.events, [
+        'getConfigMap',
+        'getVersion',
+        'restore',
+        'saveConfig',
+        'setVersion',
+      ]);
+      final saved =
+          jsonDecode(jsonEncode(store.savedConfig)) as Map<String, Object?>;
+      expect(
+        (saved['appSettingProps']! as Map)['ignoreCertificateErrors'],
+        isNull,
+      );
+      expect((saved['vpnProps']! as Map)['captureDns'], isNull);
+      expect((saved['proxiesStyleProps']! as Map)['cardType'], 'standard');
+    });
 
     test(
       'commits v0 cleanup and version only after migrated data is saved',

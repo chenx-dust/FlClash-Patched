@@ -22,6 +22,7 @@ import (
 	"github.com/metacubex/mihomo/adapter/outboundgroup"
 	"github.com/metacubex/mihomo/common/observable"
 	"github.com/metacubex/mihomo/common/utils"
+	"github.com/metacubex/mihomo/component/age"
 	"github.com/metacubex/mihomo/component/resolver"
 	"github.com/metacubex/mihomo/component/updater"
 	"github.com/metacubex/mihomo/config"
@@ -128,15 +129,19 @@ func handleShutdown() bool {
 	return true
 }
 
-func handleValidateConfig(path string) string {
-	buf, err := os.ReadFile(path)
-	if err != nil {
-		return err.Error()
-	}
-	if _, err = config.UnmarshalRawConfig(buf); err != nil {
+func handleValidateConfig(data string) string {
+	if _, err := config.UnmarshalRawConfig([]byte(data)); err != nil {
 		return err.Error()
 	}
 	return ""
+}
+
+func handleDecryptAgeConfig(params *DecryptAgeConfigParams) string {
+	decrypted, err := age.DecryptBytes([]byte(params.Data), params.AgeSecretKey)
+	if err != nil {
+		return ""
+	}
+	return string(decrypted)
 }
 
 const globalProxyName = "GLOBAL"

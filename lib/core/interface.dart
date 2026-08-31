@@ -21,9 +21,15 @@ mixin CoreInterface {
 
   Future<bool> forceGc();
 
-  Future<String> validateConfig(String path);
+  Future<String> validateConfig(String data);
+
+  Future<String> decryptAgeConfig(String data, String ageSecretKey);
 
   Future<Map<String, dynamic>> getProfileConfig(int profileId);
+
+  Future<Map<String, String>> generateAgeKeyPair();
+
+  Future<String> convertAgeSecretKeyToPublicKey(String secretKey);
 
   Future<Delay?> asyncTestDelay(String url, String proxyName);
 
@@ -155,8 +161,16 @@ abstract class CoreHandlerInterface with CoreInterface {
   }
 
   @override
-  Future<String> validateConfig(String path) async {
-    return _invokeMessage(method: CoreMethod.validateConfig, arguments: path);
+  Future<String> validateConfig(String data) async {
+    return _invokeMessage(method: CoreMethod.validateConfig, arguments: data);
+  }
+
+  @override
+  Future<String> decryptAgeConfig(String data, String ageSecretKey) async {
+    return _invokeMessage(
+      method: CoreMethod.decryptAgeConfig,
+      arguments: {'data': data, 'age-secret-key': ageSecretKey},
+    );
   }
 
   @override
@@ -180,6 +194,22 @@ abstract class CoreHandlerInterface with CoreInterface {
       );
     }
     return result;
+  }
+
+  @override
+  Future<Map<String, String>> generateAgeKeyPair() async {
+    final result = await _invokeMethod<Map<String, dynamic>>(
+      method: CoreMethod.generateAgeKeyPair,
+    );
+    return Map<String, String>.from(result ?? const {});
+  }
+
+  @override
+  Future<String> convertAgeSecretKeyToPublicKey(String secretKey) async {
+    return _invokeMessage(
+      method: CoreMethod.convertAgeSecretKeyToPublicKey,
+      arguments: secretKey,
+    );
   }
 
   @override

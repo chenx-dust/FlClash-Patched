@@ -123,6 +123,11 @@ bool _isTextFieldFocused() {
   return context?.findAncestorWidgetOfExactType<EditableText>() != null;
 }
 
+bool _isSwitchFocused() {
+  final context = FocusManager.instance.primaryFocus?.context;
+  return context?.findAncestorWidgetOfExactType<Switch>() != null;
+}
+
 void main() {
   late Directory tempDir;
 
@@ -137,7 +142,7 @@ void main() {
     } catch (_) {}
   });
 
-  testWidgets('tabbing into the edit page starts with the form', (
+  testWidgets('tabbing into the edit page focuses the Save FAB first', (
     tester,
   ) async {
     final outsideFocus = await pumpEditProfile(tester);
@@ -146,7 +151,44 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.pump();
 
+    expect(_isFabFocused(), isTrue);
+  });
+
+  testWidgets('tabbing reaches every form control after the Save FAB', (
+    tester,
+  ) async {
+    await pumpEditProfile(tester);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(_isFabFocused(), isTrue);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
     expect(_isTextFieldFocused(), isTrue);
-    expect(_isFabFocused(), isFalse);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(_isTextFieldFocused(), isTrue);
+
+    for (var i = 0; i < 8 && !_isSwitchFocused(); i++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+    }
+    expect(_isSwitchFocused(), isTrue);
+  });
+
+  testWidgets('tabbing past the last control escapes to the enclosing scope', (
+    tester,
+  ) async {
+    final outsideFocus = await pumpEditProfile(tester);
+
+    var escaped = false;
+    for (var i = 0; i < 30 && !escaped; i++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+      escaped = FocusManager.instance.primaryFocus == outsideFocus;
+    }
+    expect(escaped, isTrue);
   });
 }
