@@ -138,15 +138,24 @@ class ProxiesAction extends _$ProxiesAction {
     required String groupName,
     required String proxyName,
   }) async {
+    final appSetting = ref.read(appSettingProvider);
+    final currentProxyName = ref
+        .read(groupsProvider)
+        .getGroup(groupName)
+        ?.realNow;
+    final isSameProxy = proxyName.isNotEmpty && currentProxyName == proxyName;
+    final closeConnections = appSetting.closeConnections && !isSameProxy;
+    final params = ChangeProxyParams(
+      groupName: groupName,
+      proxyName: proxyName,
+    );
     final profilesAction = ref.read(profilesActionProvider.notifier);
     final rollbackName =
         _pendingSelectedRollback.remove(groupName) ??
         _currentSelectedName(groupName);
     profilesAction.updateCurrentSelectedMap(groupName, proxyName);
     try {
-      await _core.changeProxy(
-        ChangeProxyParams(groupName: groupName, proxyName: proxyName),
-      );
+      await _core.changeProxy(params, closeConnections: closeConnections);
     } catch (error) {
       commonPrint.log(
         'changeProxy($groupName -> $proxyName) failed: $error',
@@ -159,19 +168,26 @@ class ProxiesAction extends _$ProxiesAction {
       );
       return;
     }
-    try {
-      if (ref.read(appSettingProvider).closeConnections) {
-        await _core.closeConnections();
-      } else {
-        await _core.resetConnections();
-      }
-    } catch (error) {
-      commonPrint.log(
-        'changeProxy($groupName -> $proxyName) connection reset failed: $error',
-        logLevel: coreFailureLogLevel(error),
-      );
+    if (!isSameProxy &&
+        !closeConnections &&
+        appSetting.promptCloseConnections) {
+      _showCloseConnectionsSnackBar(params);
     }
     ref.read(checkIpNumProvider.notifier).add();
+  }
+
+  void _showCloseConnectionsSnackBar(ChangeProxyParams params) {
+    final context = globalState.navigatorKey.currentContext;
+    if (context == null || !context.mounted) return;
+    context.showSnackBar(
+      currentAppLocalizations.closeConnectionsPrompt,
+      action: SnackBarAction(
+        label: MaterialLocalizations.of(context).closeButtonTooltip,
+        onPressed: () async {
+          await _core.changeProxy(params, closeConnections: true);
+        },
+      ),
+    );
   }
 
   Future<String> updateProvider(

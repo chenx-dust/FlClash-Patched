@@ -107,12 +107,15 @@ Map<String, dynamic> _$TrackerInfoToJson(_TrackerInfo instance) =>
 _Log _$LogFromJson(Map<String, dynamic> json) => _Log(
   logLevel:
       $enumDecodeNullable(_$LogLevelEnumMap, json['LogLevel']) ?? LogLevel.info,
+  source:
+      $enumDecodeNullable(_$LogSourceEnumMap, json['source']) ?? LogSource.app,
   payload: json['Payload'] as String? ?? '',
   dateTime: _logDateTime(json['dateTime']),
 );
 
 Map<String, dynamic> _$LogToJson(_Log instance) => <String, dynamic>{
   'LogLevel': _$LogLevelEnumMap[instance.logLevel]!,
+  'source': _$LogSourceEnumMap[instance.source]!,
   'Payload': instance.payload,
   'dateTime': instance.dateTime,
 };
@@ -124,6 +127,8 @@ const _$LogLevelEnumMap = {
   LogLevel.error: 'error',
   LogLevel.silent: 'silent',
 };
+
+const _$LogSourceEnumMap = {LogSource.app: 'app', LogSource.core: 'core'};
 
 _DAVProps _$DAVPropsFromJson(Map<String, dynamic> json) => _DAVProps(
   uri: json['uri'] as String,

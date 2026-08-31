@@ -104,6 +104,19 @@ void main() {
     await teardownView(tester);
   });
 
+  testWidgets('opens stored requests at the newest entry', (tester) async {
+    seedRequests(
+      List.generate(200, (i) => _tracker(id: '$i', host: 'host-$i.test')),
+    );
+
+    await pumpRequests(tester);
+
+    expect(find.textContaining('host-199.test'), findsWidgets);
+    expect(find.textContaining('host-0.test'), findsNothing);
+
+    await teardownView(tester);
+  });
+
   testWidgets('a request arriving after mount reaches the list', (
     tester,
   ) async {
@@ -188,13 +201,13 @@ void main() {
 
     await pumpRequests(tester);
 
-    expect(find.byIcon(Icons.block), findsOneWidget);
-    expect(find.byIcon(Icons.vertical_align_top), findsNothing);
+    expect(find.byIcon(Icons.pause), findsOneWidget);
+    expect(find.byIcon(Icons.play_arrow), findsNothing);
 
     await tester.tap(find.byType(FloatingActionButton));
     await tester.pumpAndSettle();
 
-    expect(find.byIcon(Icons.vertical_align_top), findsOneWidget);
+    expect(find.byIcon(Icons.play_arrow), findsOneWidget);
 
     await teardownView(tester);
   });

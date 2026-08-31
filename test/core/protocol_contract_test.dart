@@ -224,6 +224,7 @@ void main() {
     );
     await handler.changeProxy(
       const ChangeProxyParams(groupName: 'GLOBAL', proxyName: 'DIRECT'),
+      closeConnections: true,
     );
     await handler.sideLoadExternalProvider(providerName: 'provider', data: 'x');
     await handler.asyncTestDelay('https://example.com', 'DIRECT');
@@ -243,6 +244,11 @@ void main() {
     }
     expect(handler.calls[CoreMethod.clearEffect], 42);
     expect(handler.calls[CoreMethod.validateConfig], 'mode: rule');
+    expect(handler.calls[CoreMethod.changeProxy], {
+      'group-name': 'GLOBAL',
+      'proxy-name': 'DIRECT',
+      'close-connections': true,
+    });
     expect(handler.calls[CoreMethod.decryptAgeConfig], {
       'data': 'encrypted',
       'age-secret-key': 'AGE-SECRET-KEY-1',

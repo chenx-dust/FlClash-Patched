@@ -21,11 +21,14 @@ ConfigToggleItem _appSettingToggle({
   );
 }
 
-class ApplicationSettingView extends StatelessWidget {
+class ApplicationSettingView extends ConsumerWidget {
   const ApplicationSettingView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final closeConnections = ref.watch(
+      appSettingProvider.select((state) => state.closeConnections),
+    );
     final items = <Widget>[
       _appSettingToggle(
         title: (l) => l.minimizeOnExit,
@@ -78,6 +81,14 @@ class ApplicationSettingView extends StatelessWidget {
         select: (state) => state.closeConnections,
         update: (state, value) => state.copyWith(closeConnections: value),
       ),
+      if (!closeConnections)
+        _appSettingToggle(
+          title: (l) => l.promptCloseConnections,
+          subtitle: (l) => l.promptCloseConnectionsDesc,
+          select: (state) => state.promptCloseConnections,
+          update: (state, value) =>
+              state.copyWith(promptCloseConnections: value),
+        ),
       _appSettingToggle(
         title: (l) => l.onlyStatisticsProxy,
         subtitle: (l) => l.onlyStatisticsProxyDesc,
