@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/config.dart';
+import 'package:fl_clash/state.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:window_manager/window_manager.dart';
@@ -75,23 +76,24 @@ class Window implements WindowPort {
       if (left == null || top == null) {
         await windowManager.setAlignment(Alignment.center);
       } else {
-        final size = props.size;
-        final right = left + size.width;
-        final bottom = top + size.height;
         final displays = await screenRetriever.getAllDisplays();
         final isPositionValid = displays.any((display) {
           final visiblePosition = display.visiblePosition;
           if (visiblePosition == null) {
             return false;
           }
+          final scaleFactor = display.scaleFactor ?? 1.0;
+          final logicalWidth =
+              display.visibleSize?.width ?? display.size.width / scaleFactor;
+          final logicalHeight =
+              display.visibleSize?.height ?? display.size.height / scaleFactor;
           final displayBounds = Rect.fromLTWH(
             visiblePosition.dx,
             visiblePosition.dy,
-            display.size.width,
-            display.size.height,
+            logicalWidth,
+            logicalHeight,
           );
-          return displayBounds.contains(Offset(left, top)) ||
-              displayBounds.contains(Offset(right, bottom));
+          return displayBounds.contains(Offset(left, top));
         });
         if (isPositionValid) {
           await windowManager.setPosition(Offset(left, top));
@@ -161,13 +163,13 @@ class Window implements WindowPort {
   Future<void> toggle() => _visibility.toggle();
 
   Future<void> _showWindow() async {
-    render?.resume();
+    globalState.handleForeground();
     await windowManager.show();
     await windowManager.focus();
   }
 
   Future<void> _hideWindow() async {
-    render?.pause();
+    globalState.handleBackground();
     await windowManager.hide();
   }
 

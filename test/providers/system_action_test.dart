@@ -79,7 +79,10 @@ class _GeometryWindowPort implements WindowPort {
   Future<void> toggle() async {}
 
   @override
-  Future<void> show() async {}
+  Future<void> show({
+    int? activationTimestamp,
+    String? activationToken,
+  }) async {}
 }
 
 void main() {

@@ -19,6 +19,9 @@ struct _TrayPlugin {
   FlMethodChannel* channel;
   AppIndicator* indicator;
   GtkWidget* menu;
+  GDBusConnection* session_bus;
+  guint session_bus_filter_id;
+  gchar* pending_activation_token;
 };
 
 G_DEFINE_TYPE(TrayPlugin, tray_plugin, g_object_get_type())
@@ -49,6 +52,48 @@ static bool bool_value(FlValue* map, const char* key, bool fallback) {
   return fl_value_get_bool(value);
 }
 
+static gboolean set_pending_activation_token(gpointer data) {
+  if (active_plugin != nullptr) {
+    const gchar* activation_token = static_cast<const gchar*>(data);
+    g_free(active_plugin->pending_activation_token);
+    active_plugin->pending_activation_token =
+        *activation_token == '\0' ? nullptr : g_strdup(activation_token);
+  }
+  return G_SOURCE_REMOVE;
+}
+
+static GDBusMessage* session_bus_filter(GDBusConnection* connection,
+                                        GDBusMessage* message,
+                                        gboolean incoming,
+                                        gpointer) {
+  if (!incoming ||
+      g_dbus_message_get_message_type(message) !=
+          G_DBUS_MESSAGE_TYPE_METHOD_CALL ||
+      g_strcmp0(g_dbus_message_get_interface(message),
+                "org.kde.StatusNotifierItem") != 0 ||
+      g_strcmp0(g_dbus_message_get_member(message),
+                "ProvideXdgActivationToken") != 0) {
+    return message;
+  }
+
+  GVariant* body = g_dbus_message_get_body(message);
+  if (body == nullptr || !g_variant_is_of_type(body, G_VARIANT_TYPE("(s)"))) {
+    return message;
+  }
+
+  const gchar* activation_token = nullptr;
+  g_variant_get(body, "(&s)", &activation_token);
+  g_main_context_invoke_full(nullptr, G_PRIORITY_DEFAULT,
+                             set_pending_activation_token,
+                             g_strdup(activation_token), g_free);
+
+  g_autoptr(GDBusMessage) reply = g_dbus_message_new_method_reply(message);
+  g_dbus_connection_send_message(
+      connection, reply, G_DBUS_SEND_MESSAGE_FLAGS_NONE, nullptr, nullptr);
+  g_object_unref(message);
+  return nullptr;
+}
+
 static void on_menu_item_activate(GtkMenuItem* item, gpointer user_data) {
   if (active_plugin == nullptr) {
     return;
@@ -56,6 +101,17 @@ static void on_menu_item_activate(GtkMenuItem* item, gpointer user_data) {
   g_autoptr(FlValue) arguments = fl_value_new_map();
   fl_value_set_string_take(arguments, "id",
                            fl_value_new_int(GPOINTER_TO_INT(user_data)));
+  const guint32 timestamp = gtk_get_current_event_time();
+  if (timestamp != GDK_CURRENT_TIME) {
+    fl_value_set_string_take(arguments, "activationTimestamp",
+                             fl_value_new_int(timestamp));
+  }
+  if (active_plugin->pending_activation_token != nullptr) {
+    fl_value_set_string_take(
+        arguments, "activationToken",
+        fl_value_new_string(active_plugin->pending_activation_token));
+    g_clear_pointer(&active_plugin->pending_activation_token, g_free);
+  }
   fl_method_channel_invoke_method(active_plugin->channel, "onMenuItemSelected",
                                   arguments, nullptr, nullptr, nullptr);
 }
@@ -232,6 +288,13 @@ static void tray_plugin_dispose(GObject* object) {
   TrayPlugin* self = TRAY_PLUGIN(object);
 
   release_tray(self);
+  if (self->session_bus != nullptr && self->session_bus_filter_id != 0) {
+    g_dbus_connection_remove_filter(self->session_bus,
+                                    self->session_bus_filter_id);
+    self->session_bus_filter_id = 0;
+  }
+  g_clear_object(&self->session_bus);
+  g_clear_pointer(&self->pending_activation_token, g_free);
   g_clear_object(&self->channel);
 
   if (active_plugin == self) {
@@ -249,6 +312,9 @@ static void tray_plugin_init(TrayPlugin* self) {
   self->channel = nullptr;
   self->indicator = nullptr;
   self->menu = nullptr;
+  self->session_bus = nullptr;
+  self->session_bus_filter_id = 0;
+  self->pending_activation_token = nullptr;
 }
 
 static void method_call_cb(FlMethodChannel* channel,
@@ -271,6 +337,16 @@ void tray_plugin_register_with_registrar(FlPluginRegistrar* registrar) {
       FL_METHOD_CODEC(codec));
   fl_method_channel_set_method_call_handler(
       plugin->channel, method_call_cb, g_object_ref(plugin), g_object_unref);
+
+  g_autoptr(GError) error = nullptr;
+  plugin->session_bus = g_bus_get_sync(G_BUS_TYPE_SESSION, nullptr, &error);
+  if (plugin->session_bus != nullptr) {
+    plugin->session_bus_filter_id = g_dbus_connection_add_filter(
+        plugin->session_bus, session_bus_filter, nullptr, nullptr);
+  } else {
+    g_warning("Failed to connect to the session bus: %s",
+              error == nullptr ? "unknown error" : error->message);
+  }
 
   active_plugin = plugin;
 

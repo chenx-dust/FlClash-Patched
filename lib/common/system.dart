@@ -11,6 +11,8 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/plugins/app.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
+import 'package:path/path.dart' as path;
+import 'package:xml/xml.dart';
 
 typedef ProcessRunner =
     Future<ProcessResult> Function(String executable, List<String> arguments);
@@ -177,7 +179,7 @@ class System {
   }
 
   Future<AuthorizeCode> authorizeCore() async {
-    if (system.isAndroid) {
+    if (system.isMobile) {
       return AuthorizeCode.error;
     }
     if (system.isWindows) {
@@ -241,12 +243,14 @@ class System {
 
   Future<void> back() async {
     await app?.moveTaskToBack();
+    await windowPort?.hide();
   }
 
   Future<void> exit() async {
-    if (system.isAndroid) {
+    if (system.isMobile) {
       await SystemNavigator.pop();
     }
+    windowPort?.forceExit();
   }
 }
 
@@ -318,6 +322,57 @@ class Windows {
     return registerHelperService(
       () async => runas(appPath.helperPath, 'install'),
     );
+  }
+  Future<bool> isTaskRegistered(String appName) async {
+    final result = await Process.run('schtasks.exe', [
+      '/Query',
+      '/TN',
+      appName,
+    ]);
+    return result.exitCode == 0 && result.stdout.toString().contains(appName);
+  }
+
+  Future<bool> unregisterTask(String appName) async {
+    if (!await isTaskRegistered(appName)) {
+      return true;
+    }
+    final result = await Process.run('schtasks.exe', [
+      '/Delete',
+      '/TN',
+      appName,
+      '/F',
+    ]);
+    return result.exitCode == 0;
+  }
+
+  Future<bool> registerTask(String appName) async {
+    final executable = XmlText(Platform.resolvedExecutable).toXmlString();
+    final taskXml =
+        '''
+<?xml version="1.0" encoding="UTF-16"?>
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <Principals><Principal id="Author"><LogonType>InteractiveToken</LogonType></Principal></Principals>
+  <Triggers><LogonTrigger><Delay>PT0S</Delay></LogonTrigger></Triggers>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <AllowHardTerminate>false</AllowHardTerminate>
+    <StartWhenAvailable>false</StartWhenAvailable>
+    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
+    <AllowStartOnDemand>true</AllowStartOnDemand>
+    <Enabled>true</Enabled><Hidden>false</Hidden><RunOnlyIfIdle>false</RunOnlyIfIdle>
+    <WakeToRun>false</WakeToRun><ExecutionTimeLimit>PT0S</ExecutionTimeLimit><Priority>7</Priority>
+  </Settings>
+  <Actions Context="Author"><Exec><Command>$executable</Command></Exec></Actions>
+</Task>''';
+    final taskPath = path.join(await appPath.tempPath, 'task.xml');
+    await File(
+      taskPath,
+    ).writeAsBytes(taskXml.encodeUtf16LeWithBom, flush: true);
+    final arguments = ['/Create', '/TN', appName, '/XML', taskPath, '/F'];
+    final result = await Process.run('schtasks.exe', arguments);
+    return result.exitCode == 0 || runas('schtasks.exe', arguments.join(' '));
   }
 }
 
@@ -433,6 +488,8 @@ class Linux {
     }
     return false;
   }
+
+
 }
 
 final linux = system.isLinux && system.hasHelperService ? Linux() : null;

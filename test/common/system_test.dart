@@ -302,7 +302,7 @@ void main() {
 
       expect(await Linux().installService(), isFalse);
     });
-  });
+  }, skip: Platform.isWindows);
 
   group('parseDefaultInterface', () {
     test('reads the interface off route output', () {
