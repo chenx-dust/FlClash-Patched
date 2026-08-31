@@ -1,4 +1,5 @@
 import 'package:fl_clash/application.dart';
+import 'package:fl_clash/common/navigator.dart';
 import 'package:fl_clash/manager/hotkey_manager.dart';
 import 'package:fl_clash/manager/manager.dart';
 import 'package:material_ui/material_ui.dart';
@@ -12,6 +13,7 @@ Widget? _childOf(Widget widget) {
     LocaleManager(:final child) => child,
     StatusManager(:final child) => child,
     ThemeManager(:final child) => child,
+    BackManager(:final child) => child,
     WindowManager(:final child) => child,
     TrayManager(:final child) => child,
     HotKeyManager(:final child) => child,
@@ -47,21 +49,55 @@ Widget? _innermostChildOf(Widget root) {
   return current ?? previous;
 }
 
-Widget _stack({required bool isDesktop}) {
+Widget _stack({required bool isDesktop, bool isAndroid = false}) {
   return buildManagerStack(
     isDesktop: isDesktop,
+    isAndroid: isAndroid,
     onConnectivityChanged: (_) async {},
     child: _leaf,
   );
 }
 
 void main() {
+  test('page transitions follow platform and view capabilities', () {
+    final mobile = buildPageTransitionsTheme(
+      predictiveBack: false,
+      isMobile: true,
+    );
+    final desktop = buildPageTransitionsTheme(
+      predictiveBack: false,
+      isMobile: false,
+    );
+    final predictive = buildPageTransitionsTheme(
+      predictiveBack: true,
+      isMobile: true,
+    );
+
+    expect(
+      mobile.builders[TargetPlatform.android],
+      same(commonSharedXPageTransitions),
+    );
+    expect(
+      desktop.builders[TargetPlatform.windows],
+      same(commonDesktopFadePageTransitions),
+    );
+    expect(
+      predictive.builders[TargetPlatform.android],
+      isA<PredictiveBackPageTransitionsBuilder>(),
+    );
+    expect(
+      mobile.builders[TargetPlatform.iOS],
+      same(commonCupertinoPageTransitions),
+    );
+  });
+
   test('the desktop manager stack nests in ownership order', () {
     expect(_chainFrom(_stack(isDesktop: true)), [
       AppEnvManager,
       LocaleManager,
       StatusManager,
       ThemeManager,
+      BackManager,
       WindowManager,
       TrayManager,
       HotKeyManager,
@@ -74,11 +110,12 @@ void main() {
   });
 
   test('the mobile manager stack nests in ownership order', () {
-    expect(_chainFrom(_stack(isDesktop: false)), [
+    expect(_chainFrom(_stack(isDesktop: false, isAndroid: true)), [
       AppEnvManager,
       LocaleManager,
       StatusManager,
       ThemeManager,
+      BackManager,
       MobileManager,
       TileManager,
       AppStateManager,
@@ -89,7 +126,7 @@ void main() {
   });
 
   test('desktop-only managers never appear on mobile', () {
-    final mobile = _chainFrom(_stack(isDesktop: false));
+    final mobile = _chainFrom(_stack(isDesktop: false, isAndroid: true));
 
     expect(
       mobile,
@@ -120,9 +157,18 @@ void main() {
     );
   });
 
+  test('iOS uses mobile managers without the Android VPN manager', () {
+    final ios = _chainFrom(_stack(isDesktop: false));
+
+    expect(ios, containsAllInOrder([MobileManager, TileManager]));
+    expect(ios, isNot(contains(VpnManager)));
+  });
+
   test('Core is mounted before the connectivity callback can fire', () {
     for (final isDesktop in [true, false]) {
-      final chain = _chainFrom(_stack(isDesktop: isDesktop));
+      final chain = _chainFrom(
+        _stack(isDesktop: isDesktop, isAndroid: !isDesktop),
+      );
 
       expect(
         chain.indexOf(CoreManager),
@@ -135,7 +181,7 @@ void main() {
   test('the app content stays the innermost child', () {
     for (final isDesktop in [true, false]) {
       expect(
-        _innermostChildOf(_stack(isDesktop: isDesktop)),
+        _innermostChildOf(_stack(isDesktop: isDesktop, isAndroid: !isDesktop)),
         same(_leaf),
         reason: 'every manager must wrap the app content, not replace it',
       );

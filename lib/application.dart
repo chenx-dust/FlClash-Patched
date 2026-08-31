@@ -19,13 +19,16 @@ import 'pages/pages.dart';
 
 Widget buildManagerStack({
   required bool isDesktop,
+  required bool isAndroid,
   required Future<void> Function(List<ConnectivityResult> results)
   onConnectivityChanged,
   required Widget child,
 }) {
-  final platformApp = isDesktop
-      ? WindowHeaderContainer(child: child)
-      : VpnManager(child: child);
+  final platformApp = switch ((isDesktop, isAndroid)) {
+    (true, _) => WindowHeaderContainer(child: child),
+    (false, true) => VpnManager(child: child),
+    _ => child,
+  };
   final state = AppStateManager(
     child: CoreManager(
       child: ConnectivityManager(
@@ -43,8 +46,30 @@ Widget buildManagerStack({
       : MobileManager(child: TileManager(child: state));
   return AppEnvManager(
     child: LocaleManager(
-      child: StatusManager(child: ThemeManager(child: platformState)),
+      child: StatusManager(
+        child: ThemeManager(child: BackManager(child: platformState)),
+      ),
     ),
+  );
+}
+
+PageTransitionsTheme buildPageTransitionsTheme({
+  required bool predictiveBack,
+  required bool isMobile,
+}) {
+  final pageTransitions = isMobile
+      ? commonSharedXPageTransitions
+      : commonDesktopFadePageTransitions;
+  return PageTransitionsTheme(
+    builders: <TargetPlatform, PageTransitionsBuilder>{
+      TargetPlatform.android: predictiveBack
+          ? const PredictiveBackPageTransitionsBuilder()
+          : pageTransitions,
+      TargetPlatform.windows: pageTransitions,
+      TargetPlatform.linux: pageTransitions,
+      TargetPlatform.macOS: pageTransitions,
+      TargetPlatform.iOS: commonCupertinoPageTransitions,
+    },
   );
 }
 
@@ -58,15 +83,6 @@ class Application extends ConsumerStatefulWidget {
 class ApplicationState extends ConsumerState<Application> {
   Timer? _autoUpdateProfilesTaskTimer;
   bool _preHasVpn = false;
-
-  final _pageTransitionsTheme = const PageTransitionsTheme(
-    builders: <TargetPlatform, PageTransitionsBuilder>{
-      TargetPlatform.android: commonSharedXPageTransitions,
-      TargetPlatform.windows: commonSharedXPageTransitions,
-      TargetPlatform.linux: commonSharedXPageTransitions,
-      TargetPlatform.macOS: commonSharedXPageTransitions,
-    },
-  );
 
   ColorScheme _getAppColorScheme({required Brightness brightness}) {
     return ref.read(genColorSchemeProvider(brightness));
@@ -133,7 +149,8 @@ class ApplicationState extends ConsumerState<Application> {
     unawaited(systemDnsCoordinator?.resync() ?? Future.value());
     unawaited(ref.read(systemActionProvider.notifier).updateLocalIp());
     final hasVpn = results.contains(ConnectivityResult.vpn);
-    if (_preHasVpn == hasVpn) {
+    final isStart = ref.read(isStartProvider);
+    if (_preHasVpn == hasVpn && !isStart) {
       ref.read(checkIpNumProvider.notifier).add();
     }
     _preHasVpn = hasVpn;
@@ -147,42 +164,58 @@ class ApplicationState extends ConsumerState<Application> {
           appSettingProvider.select((state) => state.locale),
         );
         final themeProps = ref.watch(themeSettingProvider);
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          navigatorKey: globalState.navigatorKey,
-          onNavigationNotification: (_) => true,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            ...GlobalMaterialLocalizations.delegates,
-          ],
-          builder: (_, child) {
-            // ignore: deprecated_member_use
-            return MaterialUiCompatibilityBridge(
-              child: buildManagerStack(
-                isDesktop: system.isDesktop,
-                onConnectivityChanged: _handleConnectivityChanged,
-                child: child!,
+        final supportsPredictiveBack = system.supportsPredictiveBack(
+          ref.watch(versionProvider),
+        );
+        final pageTransitionsTheme = buildPageTransitionsTheme(
+          predictiveBack: supportsPredictiveBack && themeProps.predictiveBack,
+          isMobile: ref.watch(isMobileViewProvider),
+        );
+        return ValueListenableBuilder<bool>(
+          valueListenable: globalState.isBackground,
+          builder: (_, isBackground, _) {
+            return TickerMode(
+              enabled: !isBackground,
+              child: MaterialApp(
+                debugShowCheckedModeBanner: false,
+                navigatorKey: globalState.navigatorKey,
+                onNavigationNotification: (_) => true,
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  ...GlobalMaterialLocalizations.delegates,
+                ],
+                builder: (_, child) {
+                  // ignore: deprecated_member_use
+                  return MaterialUiCompatibilityBridge(
+                    child: buildManagerStack(
+                      isDesktop: system.isDesktop,
+                      isAndroid: system.isAndroid,
+                      onConnectivityChanged: _handleConnectivityChanged,
+                      child: child!,
+                    ),
+                  );
+                },
+                scrollBehavior: BaseScrollBehavior(),
+                title: appName,
+                locale: getLocaleForString(locale),
+                supportedLocales: AppLocalizations.delegate.supportedLocales,
+                themeMode: themeProps.themeMode,
+                theme: ThemeData(
+                  useMaterial3: true,
+                  pageTransitionsTheme: pageTransitionsTheme,
+                  colorScheme: _getAppColorScheme(brightness: Brightness.light),
+                ).withAppShapes,
+                darkTheme: ThemeData(
+                  useMaterial3: true,
+                  pageTransitionsTheme: pageTransitionsTheme,
+                  colorScheme: _getAppColorScheme(
+                    brightness: Brightness.dark,
+                  ).toPureBlack(themeProps.pureBlack),
+                ).withAppShapes,
+                home: child!,
               ),
             );
           },
-          scrollBehavior: BaseScrollBehavior(),
-          title: appName,
-          locale: getLocaleForString(locale),
-          supportedLocales: AppLocalizations.delegate.supportedLocales,
-          themeMode: themeProps.themeMode,
-          theme: ThemeData(
-            useMaterial3: true,
-            pageTransitionsTheme: _pageTransitionsTheme,
-            colorScheme: _getAppColorScheme(brightness: Brightness.light),
-          ).withAppShapes,
-          darkTheme: ThemeData(
-            useMaterial3: true,
-            pageTransitionsTheme: _pageTransitionsTheme,
-            colorScheme: _getAppColorScheme(
-              brightness: Brightness.dark,
-            ).toPureBlack(themeProps.pureBlack),
-          ).withAppShapes,
-          home: child!,
         );
       },
       child: const HomePage(),

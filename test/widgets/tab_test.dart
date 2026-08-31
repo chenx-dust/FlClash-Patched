@@ -1,5 +1,6 @@
 import 'package:fl_clash/widgets/tab.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -111,6 +112,37 @@ void main() {
 
     expect(selected, 0);
     expect(tester.takeException(), null);
+  });
+
+  testWidgets('CommonTabBar activates the focused segment from the keyboard', (
+    tester,
+  ) async {
+    var selected = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: StatefulBuilder(
+            builder: (context, setState) {
+              return CommonTabBar<int>(
+                groupValue: selected,
+                thumbColor: Colors.blue,
+                children: const {0: Text('One'), 1: Text('Two')},
+                onValueChanged: (value) {
+                  setState(() => selected = value!);
+                },
+              );
+            },
+          ),
+        ),
+      ),
+    );
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.sendKeyEvent(LogicalKeyboardKey.space);
+    await tester.pump();
+
+    expect(selected, 1);
   });
 
   testWidgets('CommonTabBar lays out proportional RTL segments and updates', (

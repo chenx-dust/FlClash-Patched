@@ -1,5 +1,6 @@
 import 'package:fl_clash/pages/editor.dart';
 import 'package:fl_clash/providers/app.dart';
+import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -10,6 +11,40 @@ final _viewSizeOverride = viewSizeProvider.overrideWithBuild(
 );
 
 void main() {
+  testWidgets('allows predictive pop only without a save guard', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TestApp(
+        overrides: [_viewSizeOverride],
+        child: const EditorPage(title: 'Editor', content: ''),
+      ),
+    );
+    await tester.pump();
+
+    expect(
+      tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
+      isTrue,
+    );
+
+    await tester.pumpWidget(
+      TestApp(
+        overrides: [_viewSizeOverride],
+        child: EditorPage(
+          title: 'Editor',
+          content: '',
+          onPop: (context, title, content) async => true,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(
+      tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
+      isFalse,
+    );
+  });
+
   testWidgets('import from URL shows a translated network error message', (
     tester,
   ) async {

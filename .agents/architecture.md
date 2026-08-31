@@ -373,28 +373,29 @@ Generated Drift output lives in `lib/database/generated/database.g.dart`. After 
 Managers are nested `InheritedWidget`/`StatefulWidget` components built by `buildManagerStack()` in `lib/application.dart`:
 
 ```text
-AppEnvManager > StatusManager > ThemeManager
+AppEnvManager > LocaleManager > StatusManager > ThemeManager > BackManager
   > [Desktop: WindowManager > TrayManager > HotKeyManager > ProxyManager]
-    [Mobile:  AndroidManager > TileManager]
+    [Mobile: MobileManager > TileManager]
   > AppStateManager > CoreManager > ConnectivityManager
-  > [Desktop: WindowHeaderContainer] [Mobile: VpnManager]
+  > [Desktop: WindowHeaderContainer] [Android: VpnManager]
   > app content
 ```
 
 Each manager in `lib/manager/` handles a specific platform concern. The
-platform slots are exclusive: no desktop manager appears on mobile and no mobile
-manager appears on desktop.
+platform slots are exclusive: no desktop manager appears on mobile, no mobile
+manager appears on desktop, and the Android-only `VpnManager` never wraps iOS.
 
 The order is an ownership contract, not a layout detail. `ConnectivityManager`
 sits below `CoreManager` because its `onConnectivityChanged` callback reads
-Core-backed state, so Core must already be mounted when it fires. `StatusManager`
-and `ThemeManager` sit above the platform managers so a platform manager can
-surface a message or read the theme.
+Core-backed state, so Core must already be mounted when it fires. `StatusManager`,
+`ThemeManager`, and `BackManager` sit above the platform managers so every
+platform can surface messages, read the theme, and route keyboard, gamepad, and
+mouse back actions through Flutter's pop route handling.
 
-`buildManagerStack()` is a pure function of `isDesktop`, the connectivity
-callback, and the app content, so `test/application_test.dart` asserts the whole
-order by constructing the stack without mounting it. Changing the nesting means
-updating both this diagram and that test.
+`buildManagerStack()` is a pure function of `isDesktop`, `isAndroid`, the
+connectivity callback, and the app content, so `test/application_test.dart`
+asserts the whole order by constructing the stack without mounting it. Changing
+the nesting means updating both this diagram and that test.
 
 ## Core Controller and Actions
 
@@ -438,9 +439,9 @@ Desktop:
 
 Mobile:
 
-- `AndroidManager`
+- `MobileManager`
 - `TileManager`
-- `VpnManager`
+- `VpnManager` (Android only)
 
 Shared:
 
@@ -449,6 +450,7 @@ Shared:
 - `AppStateManager`
 - `StatusManager`
 - `ThemeManager`
+- `BackManager`
 
 ## Build System
 

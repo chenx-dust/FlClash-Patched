@@ -6,6 +6,7 @@ class _Segment<T> extends StatefulWidget {
     required this.child,
     required this.pressed,
     required this.highlighted,
+    required this.focused,
     required this.isDragging,
     required this.enabled,
     required this.segmentLocation,
@@ -15,6 +16,7 @@ class _Segment<T> extends StatefulWidget {
 
   final bool pressed;
   final bool highlighted;
+  final bool focused;
   final bool enabled;
   final _SegmentLocation segmentLocation;
   final bool isDragging;
@@ -81,42 +83,52 @@ class _SegmentState<T> extends State<_Segment<T>>
 
     return MetaData(
       behavior: HitTestBehavior.opaque,
-      child: IndexedStack(
-        alignment: Alignment.center,
-        children: <Widget>[
-          AnimatedOpacity(
-            opacity: widget.shouldFadeoutContent
-                ? _kContentPressedMinOpacity
-                : 1,
-            duration: _kOpacityAnimationDuration,
-            curve: Curves.ease,
-            child: AnimatedDefaultTextStyle(
-              style: DefaultTextStyle.of(context).style.merge(
-                TextStyle(
-                  fontWeight: widget.highlighted
-                      ? _kHighlightedFontWeight
-                      : _kFontWeight,
-                  fontSize: _kFontSize,
-                  color: widget.enabled ? null : _kDisabledContentColor,
+      child: DecoratedBox(
+        decoration: ShapeDecoration(
+          shape: RoundedSuperellipseBorder(
+            borderRadius: const BorderRadius.all(_kThumbRadius),
+            side: widget.focused
+                ? BorderSide(color: Theme.of(context).colorScheme.primary)
+                : BorderSide.none,
+          ),
+        ),
+        child: IndexedStack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            AnimatedOpacity(
+              opacity: widget.shouldFadeoutContent
+                  ? _kContentPressedMinOpacity
+                  : 1,
+              duration: _kOpacityAnimationDuration,
+              curve: Curves.ease,
+              child: AnimatedDefaultTextStyle(
+                style: DefaultTextStyle.of(context).style.merge(
+                  TextStyle(
+                    fontWeight: widget.highlighted
+                        ? _kHighlightedFontWeight
+                        : _kFontWeight,
+                    fontSize: _kFontSize,
+                    color: widget.enabled ? null : _kDisabledContentColor,
+                  ),
+                ),
+                duration: _kHighlightAnimationDuration,
+                curve: Curves.ease,
+                child: ScaleTransition(
+                  alignment: scaleAlignment,
+                  scale: highlightPressScaleAnimation,
+                  child: widget.child,
                 ),
               ),
-              duration: _kHighlightAnimationDuration,
-              curve: Curves.ease,
-              child: ScaleTransition(
-                alignment: scaleAlignment,
-                scale: highlightPressScaleAnimation,
-                child: widget.child,
+            ),
+            DefaultTextStyle.merge(
+              style: const TextStyle(
+                fontWeight: _kHighlightedFontWeight,
+                fontSize: _kFontSize,
               ),
+              child: widget.child,
             ),
-          ),
-          DefaultTextStyle.merge(
-            style: const TextStyle(
-              fontWeight: _kHighlightedFontWeight,
-              fontSize: _kFontSize,
-            ),
-            child: widget.child,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

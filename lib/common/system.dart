@@ -79,6 +79,8 @@ class System {
     return app?.getLastExitInfo();
   }
 
+  bool supportsPredictiveBack(int version) => isAndroid && version >= 33;
+
   /// [corePath] is handed to `Process.run` as an argv entry, so it must stay
   /// verbatim. Shell-quoting or escaping it here reaches `stat` as part of the
   /// file name and turns every path containing a space into a miss.

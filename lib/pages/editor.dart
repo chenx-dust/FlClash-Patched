@@ -152,7 +152,16 @@ class _EditorPageState extends ConsumerState<EditorPage> {
       if (!mounted) {
         return;
       }
-      _controller.text = res.data ?? '';
+      final content = res.data;
+      if (content == null) {
+        context.showNotifier(
+          appLocalizations.nullTip(appLocalizations.content),
+          level: MessageLevel.warning,
+        );
+        return;
+      }
+      _controller.text = content;
+      widget.onRemoteDownload?.call(url);
     } catch (e) {
       if (!mounted) {
         return;
@@ -177,6 +186,7 @@ class _EditorPageState extends ConsumerState<EditorPage> {
   @override
   Widget build(BuildContext context) {
     return CommonPopScope(
+      canPop: widget.onPop == null,
       onPop: _handlePop,
       child: CommonScaffold(
         appBar: AppBar(

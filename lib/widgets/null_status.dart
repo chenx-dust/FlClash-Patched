@@ -23,32 +23,34 @@ class NullStatus extends StatelessWidget {
     final action = this.action;
     return Align(
       alignment: const Alignment(0.0, -0.25),
-      child: Wrap(
-        direction: Axis.vertical,
-        runAlignment: WrapAlignment.center,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          illustration,
-          const SizedBox(height: 16),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.titleMedium?.toBold.toLight,
-          ),
-          if (description != null) ...[
-            const SizedBox(height: 8),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 280),
-              child: Text(
-                description,
-                textAlign: TextAlign.center,
-                style: context.textTheme.bodyMedium?.copyWith(
-                  color: context.colorScheme.onSurfaceVariant,
+      child: Focus(
+        child: Wrap(
+          direction: Axis.vertical,
+          runAlignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            illustration,
+            const SizedBox(height: 16),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.titleMedium?.toBold.toLight,
+            ),
+            if (description != null) ...[
+              const SizedBox(height: 8),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 280),
+                child: Text(
+                  description,
+                  textAlign: TextAlign.center,
+                  style: context.textTheme.bodyMedium?.copyWith(
+                    color: context.colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
-            ),
+            ],
+            if (action != null) ...[const SizedBox(height: 24), action],
           ],
-          if (action != null) ...[const SizedBox(height: 24), action],
-        ],
+        ),
       ),
     );
   }

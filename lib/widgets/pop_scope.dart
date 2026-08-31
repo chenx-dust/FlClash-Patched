@@ -4,41 +4,52 @@ import 'package:flutter/widgets.dart';
 
 import 'inherited.dart';
 
+class CommonPopScopeAttemptNotification extends Notification {
+  final Future<void> completion;
+
+  const CommonPopScopeAttemptNotification(this.completion);
+}
+
 class CommonPopScope extends StatelessWidget {
   final Widget child;
+  final bool? canPop;
   final FutureOr<bool> Function(BuildContext context)? onPop;
   final FutureOr<void> Function()? onPopSuccess;
 
   const CommonPopScope({
     super.key,
     required this.child,
+    this.canPop,
     this.onPop,
     this.onPopSuccess,
   });
+
+  Future<void> _handlePop(BuildContext context) async {
+    final res = await onPop!(context);
+    if (!context.mounted || !res) {
+      return;
+    }
+    Navigator.of(context).pop();
+    if (onPopSuccess != null) {
+      await onPopSuccess!();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final route = ModalRoute.of(context);
     final hasBackLayer = route?.willHandlePopInternally == true;
     return PopScope(
-      canPop: onPop == null || hasBackLayer,
+      canPop: canPop ?? (onPop == null || hasBackLayer),
       onPopInvokedWithResult: onPop == null
           ? null
           : (didPop, _) async {
               if (didPop) {
                 return;
               }
-              final res = await onPop!(context);
-              if (!context.mounted) {
-                return;
-              }
-              if (!res) {
-                return;
-              }
-              Navigator.of(context).pop();
-              if (onPopSuccess != null) {
-                await onPopSuccess!();
-              }
+              final completion = _handlePop(context);
+              CommonPopScopeAttemptNotification(completion).dispatch(context);
+              await completion;
             },
       child: child,
     );

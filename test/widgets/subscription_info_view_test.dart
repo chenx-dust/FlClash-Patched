@@ -8,6 +8,31 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
 void main() {
+  testWidgets('shows zero-total subscriptions as unlimited', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: [
+          AppLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        supportedLocales: AppLocalizations.delegate.supportedLocales,
+        home: const Scaffold(
+          body: SubscriptionInfoView(
+            subscriptionInfo: SubscriptionInfo(upload: 1024),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('1KB / ∞'), findsOneWidget);
+    expect(
+      tester
+          .widget<LinearProgressIndicator>(find.byType(LinearProgressIndicator))
+          .value,
+      0,
+    );
+  });
+
   testWidgets('hides expiry when both values do not fit', (tester) async {
     const trafficLabel = '1KB / 1GB';
 

@@ -141,11 +141,13 @@ class Dialogs {
     String text, {
     MessageLevel level = MessageLevel.info,
     MessageActionState? actionState,
+    bool allowCopy = false,
   }) {
     rootNavigatorKey.currentContext?.showNotifier(
       text,
       level: level,
       actionState: actionState,
+      allowCopy: allowCopy,
     );
   }
 

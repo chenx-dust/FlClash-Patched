@@ -127,6 +127,36 @@ void main() {
     });
   });
 
+  group('SearchMatcher', () {
+    test('validates regular expressions', () {
+      expect(SearchMatcher.isValidRegex(r'\d+'), isTrue);
+      expect(SearchMatcher.isValidRegex(r'['), isFalse);
+    });
+
+    test('matches plain text case insensitively', () {
+      final matcher = SearchMatcher('proxy');
+      expect(matcher.hasMatch('Proxy Group'), isTrue);
+      expect(matcher.hasMatch('Rule Group'), isFalse);
+    });
+
+    test('matches regular expressions case insensitively', () {
+      final matcher = SearchMatcher(r'^hk-\d+$', useRegex: true);
+      expect(matcher.hasMatch('HK-01'), isTrue);
+      expect(matcher.hasMatch('US-01'), isFalse);
+    });
+
+    test('treats invalid regular expressions as no match', () {
+      final matcher = SearchMatcher(r'[', useRegex: true);
+      expect(matcher.hasMatch('anything'), isFalse);
+    });
+
+    test('matches any field', () {
+      final matcher = SearchMatcher(r'\d+$', useRegex: true);
+      expect(matcher.hasAnyMatch(['proxy', 'node-01']), isTrue);
+      expect(matcher.hasAnyMatch(['proxy', 'node']), isFalse);
+    });
+  });
+
   group('StringExtension.toMd5', () {
     test('produces consistent hash', () {
       final hash1 = 'hello'.toMd5();
