@@ -46,7 +46,7 @@ void main() {
     final offenders = <String>[];
     for (final entity in Directory(_libDir).listSync(recursive: true)) {
       if (entity is! File || !entity.path.endsWith('.dart')) continue;
-      final path = entity.path;
+      final path = entity.path.replaceAll('\\', '/');
       if (path.contains('/generated/') || path.contains('/l10n/')) continue;
       if (entity.readAsStringSync().contains('Intl.message(')) {
         offenders.add(path);

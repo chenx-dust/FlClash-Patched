@@ -98,6 +98,7 @@ final class CoreBuilder implements Builder {
     final code = input.config.code;
     final platform = switch (code.targetOS) {
       OS.android => 'android',
+      OS.iOS => 'ios',
       OS.linux => 'linux',
       OS.macOS => 'macos',
       OS.windows => 'windows',
