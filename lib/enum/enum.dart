@@ -97,6 +97,8 @@ enum ViewMode { mobile, laptop, desktop }
 
 enum LogLevel { debug, info, warning, error, silent }
 
+enum LogSource { app, core }
+
 extension LogLevelExt on LogLevel {
   bool allows(LogLevel level) {
     return this != LogLevel.silent &&
@@ -170,6 +172,20 @@ enum NavigationItemMode { mobile, desktop, more }
 enum Network { tcp, udp }
 
 enum ProxiesSortType { none, delay, name }
+
+enum TrackerInfoSortType {
+  start,
+  uploadTraffic,
+  downloadTraffic,
+  uploadSpeed,
+  downloadSpeed,
+  destination,
+  process,
+  port,
+  network,
+  rule,
+  proxyChains,
+}
 
 enum TunStack { gvisor, system, mixed }
 

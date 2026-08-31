@@ -4,10 +4,18 @@ import 'package:test/test.dart';
 
 void main() {
   group('LogsState.list', () {
-    Log log(LogLevel level, String payload) =>
-        Log(logLevel: level, payload: payload, dateTime: '2024-01-01');
+    Log log(
+      LogLevel level,
+      String payload, {
+      LogSource source = LogSource.app,
+    }) => Log(
+      logLevel: level,
+      source: source,
+      payload: payload,
+      dateTime: '2024-01-01',
+    );
 
-    test('returns all logs when no keywords and empty query', () {
+    test('returns all logs when no filters and empty query', () {
       final state = LogsState(
         logs: [
           log(LogLevel.info, 'test message'),
@@ -17,16 +25,48 @@ void main() {
       expect(state.list.length, 2);
     });
 
-    test('filters by keyword matching log level', () {
+    test('filters by selected log level', () {
       final state = LogsState(
         logs: [
           log(LogLevel.info, 'info msg'),
           log(LogLevel.error, 'error msg'),
+          log(LogLevel.debug, 'debug msg'),
         ],
-        keywords: ['error'],
+        levels: {LogLevel.info, LogLevel.debug},
+      );
+      expect(state.list.length, 2);
+      expect(state.list[0].logLevel, LogLevel.info);
+      expect(state.list[1].logLevel, LogLevel.debug);
+    });
+
+    test('filters by selected log source', () {
+      final state = LogsState(
+        logs: [
+          log(LogLevel.info, 'app msg'),
+          log(LogLevel.info, 'core msg', source: LogSource.core),
+        ],
+        sources: {LogSource.core},
+      );
+      expect(state.list.length, 1);
+      expect(state.list[0].source, LogSource.core);
+    });
+
+    test('combines selected filters with query', () {
+      final state = LogsState(
+        logs: [
+          log(LogLevel.info, 'timeout', source: LogSource.core),
+          log(LogLevel.error, 'timeout', source: LogSource.core),
+          log(LogLevel.error, 'connected', source: LogSource.core),
+          log(LogLevel.error, 'timeout', source: LogSource.app),
+        ],
+        sources: {LogSource.core},
+        levels: {LogLevel.error},
+        query: 'timeout',
       );
       expect(state.list.length, 1);
       expect(state.list[0].logLevel, LogLevel.error);
+      expect(state.list[0].source, LogSource.core);
+      expect(state.list[0].payload, 'timeout');
     });
 
     test('filters by query matching payload', () {
@@ -47,15 +87,6 @@ void main() {
         query: 'connection',
       );
       expect(state.list.length, 1);
-    });
-
-    test('query also matches log level name', () {
-      final state = LogsState(
-        logs: [log(LogLevel.info, 'test'), log(LogLevel.error, 'test')],
-        query: 'error',
-      );
-      expect(state.list.length, 1);
-      expect(state.list[0].logLevel, LogLevel.error);
     });
 
     test('empty result when no match', () {

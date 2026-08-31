@@ -41,7 +41,7 @@ class DeveloperView extends ConsumerWidget {
                   .add(
                     Log.app(
                       '[$i]${generateRandomString(maxLength: 200, minLength: 20)}',
-                    ),
+                    ).copyWith(logLevel: LogLevel.error),
                   );
             }
           },

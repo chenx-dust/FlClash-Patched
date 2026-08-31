@@ -21,16 +21,23 @@ void main() {
       final value = container.read(appSettingProvider);
       expect(value.onlyStatisticsProxy, false);
       expect(value.autoLaunch, false);
-      expect(value.closeConnections, true);
+      expect(value.closeConnections, false);
+      expect(value.promptCloseConnections, true);
       expect(value.isAnimateToPage, true);
     });
 
     test('can update state', () {
       container
           .read(appSettingProvider.notifier)
-          .update((_) => const AppSettingProps(autoLaunch: true));
+          .update(
+            (_) => const AppSettingProps(
+              autoLaunch: true,
+              promptCloseConnections: false,
+            ),
+          );
       final value = container.read(appSettingProvider);
       expect(value.autoLaunch, true);
+      expect(value.promptCloseConnections, false);
     });
   });
 

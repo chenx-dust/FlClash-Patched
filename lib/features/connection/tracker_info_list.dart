@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
 import 'tracker_info_item.dart';
+import 'tracker_info_filter.dart';
 
 class TrackerInfoListController extends ValueNotifier<TrackerInfosState> {
   TrackerInfoListController() : super(const TrackerInfosState());
@@ -15,6 +16,10 @@ class TrackerInfoListController extends ValueNotifier<TrackerInfosState> {
 
   void updateKeywords(List<String> keywords) {
     value = value.copyWith(keywords: keywords);
+  }
+
+  void setUseRegex(bool useRegex) {
+    value = value.copyWith(useRegex: useRegex);
   }
 
   void setTrackerInfos(List<TrackerInfo> trackerInfos) {
@@ -50,6 +55,9 @@ class TrackerInfoList extends StatelessWidget {
   final ScrollPhysics? physics;
   final EdgeInsetsGeometry? padding;
   final Widget? Function(TrackerInfo trackerInfo)? trailingBuilder;
+  final TrackerInfoFilter filter;
+  final void Function(TrackerInfoFilterType type, String value)? onClickFilter;
+  final VoidCallback? onDetailClosed;
 
   const TrackerInfoList({
     super.key,
@@ -61,6 +69,9 @@ class TrackerInfoList extends StatelessWidget {
     this.physics,
     this.padding,
     this.trailingBuilder,
+    this.filter = const TrackerInfoFilter(),
+    this.onClickFilter,
+    this.onDetailClosed,
   });
 
   @override
@@ -78,6 +89,9 @@ class TrackerInfoList extends StatelessWidget {
         trackerInfos[index],
         detailTitle: detailTitle,
         trailingBuilder: trailingBuilder,
+        filter: filter,
+        onClickFilter: onClickFilter,
+        onDetailClosed: onDetailClosed,
       ),
     );
   }
@@ -91,6 +105,9 @@ class TrackerInfoAnimatedList extends StatelessWidget {
   final ScrollController? controller;
   final EdgeInsetsGeometry? padding;
   final Widget? Function(TrackerInfo trackerInfo)? trailingBuilder;
+  final TrackerInfoFilter filter;
+  final void Function(TrackerInfoFilterType type, String value)? onClickFilter;
+  final VoidCallback? onDetailClosed;
 
   const TrackerInfoAnimatedList({
     super.key,
@@ -99,6 +116,9 @@ class TrackerInfoAnimatedList extends StatelessWidget {
     this.controller,
     this.padding,
     this.trailingBuilder,
+    this.filter = const TrackerInfoFilter(),
+    this.onClickFilter,
+    this.onDetailClosed,
   });
 
   @override
@@ -114,6 +134,9 @@ class TrackerInfoAnimatedList extends StatelessWidget {
         trackerInfo,
         detailTitle: detailTitle,
         trailingBuilder: trailingBuilder,
+        filter: filter,
+        onClickFilter: onClickFilter,
+        onDetailClosed: onDetailClosed,
       ),
     );
   }
@@ -124,6 +147,10 @@ Widget _buildTrackerInfoItem(
   TrackerInfo trackerInfo, {
   required String detailTitle,
   required Widget? Function(TrackerInfo trackerInfo)? trailingBuilder,
+  required TrackerInfoFilter filter,
+  required void Function(TrackerInfoFilterType type, String value)?
+  onClickFilter,
+  required VoidCallback? onDetailClosed,
 }) {
   return TrackerInfoItem(
     key: Key(trackerInfo.id),
@@ -133,5 +160,8 @@ Widget _buildTrackerInfoItem(
     },
     trailing: trailingBuilder?.call(trackerInfo),
     detailTitle: detailTitle,
+    filter: filter,
+    onClickFilter: onClickFilter,
+    onDetailClosed: onDetailClosed,
   );
 }
