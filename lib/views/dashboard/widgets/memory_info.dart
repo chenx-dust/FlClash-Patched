@@ -1,10 +1,6 @@
-import 'dart:io';
-
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/core/method.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/core.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
@@ -47,7 +43,9 @@ class _MemoryInfoState extends ConsumerState<MemoryInfo>
   Future<num?> _readMemory() async {
     try {
       final memoryReader = widget.memoryReader;
-      return memoryReader != null ? await memoryReader() : await _readTotal();
+      return memoryReader != null
+          ? await memoryReader()
+          : await _core.getMemory();
     } catch (error) {
       commonPrint.log(
         'updateMemory error: $error',
@@ -55,15 +53,6 @@ class _MemoryInfoState extends ConsumerState<MemoryInfo>
       );
       return null;
     }
-  }
-
-  Future<num> _readTotal() async {
-    final rss = ProcessInfo.currentRss;
-    final coreConnected = ref.read(coreStatusProvider) == CoreStatus.connected;
-    if (system.isDesktop && coreConnected) {
-      return await _core.getMemory() + rss;
-    }
-    return rss;
   }
 
   @override

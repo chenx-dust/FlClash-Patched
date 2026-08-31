@@ -180,7 +180,7 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
-  testWidgets('the default reader adds Core memory while connected', (
+  testWidgets('the default reader reads Core memory while connected', (
     tester,
   ) async {
     final coreInterface = _MockCoreHandlerInterface();
@@ -203,28 +203,29 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
-  testWidgets('the default reader skips Core memory while disconnected', (
-    tester,
-  ) async {
-    final coreInterface = _MockCoreHandlerInterface();
-    when(() => coreInterface.getMemory()).thenAnswer((_) async => 4096);
-    final container = _containerWith(coreInterface, CoreStatus.disconnected);
-    addTearDown(container.dispose);
+  testWidgets(
+    'the default reader still reports Core memory while disconnected',
+    (tester) async {
+      final coreInterface = _MockCoreHandlerInterface();
+      when(() => coreInterface.getMemory()).thenAnswer((_) async => 4096);
+      final container = _containerWith(coreInterface, CoreStatus.disconnected);
+      addTearDown(container.dispose);
 
-    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: const TestApp(homeBuilder: _scaffoldBody, child: MemoryInfo()),
-      ),
-    );
-    await tester.pump();
-    await tester.pump();
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const TestApp(homeBuilder: _scaffoldBody, child: MemoryInfo()),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
 
-    verifyNever(() => coreInterface.getMemory());
+      verify(() => coreInterface.getMemory()).called(greaterThanOrEqualTo(1));
 
-    await tester.pumpWidget(const SizedBox.shrink());
-  });
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
 
   testWidgets('a remounted card never reuses a disposed notifier', (
     tester,

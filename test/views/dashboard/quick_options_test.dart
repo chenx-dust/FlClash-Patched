@@ -137,4 +137,17 @@ void main() {
       );
     }
   });
+
+  for (final testCase in _cardCases.where(
+    (testCase) => testCase.name == 'TUN' || testCase.name == 'VPN',
+  )) {
+    testWidgets('${testCase.name} options include MTU', (tester) async {
+      await pumpCard(tester, testCase.widget);
+
+      await tester.tap(find.text(currentAppLocalizations.options));
+      await tester.pumpAndSettle();
+
+      expect(find.text(currentAppLocalizations.mtu), findsOneWidget);
+    });
+  }
 }

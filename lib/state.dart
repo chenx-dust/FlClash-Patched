@@ -17,6 +17,7 @@ class GlobalState {
   GlobalKey<NavigatorState> get navigatorKey => rootNavigatorKey;
   late final String appEnv;
   late final PackageInfo packageInfo;
+  final isBackground = ValueNotifier<bool>(false);
   Function? updateCurrentDelayDebounce;
   late Measure measure;
   late CommonTheme theme;

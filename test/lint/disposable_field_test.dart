@@ -20,6 +20,8 @@ const _allowed = {
   // `CoreEventManager` is a private-constructor singleton that fans core events
   // out for the whole run; closing its controller would end event delivery.
   'lib/core/event.dart#_controller',
+  // `GlobalState` is process-scoped and owns foreground state until exit.
+  'lib/state.dart#isBackground',
 };
 
 final _declaration = RegExp(
@@ -53,7 +55,7 @@ void main() {
       if (entity is! File || !entity.path.endsWith('.dart')) {
         continue;
       }
-      final relative = p.relative(entity.path);
+      final relative = p.relative(entity.path).replaceAll('\\', '/');
       if (_isGenerated(relative)) {
         continue;
       }
