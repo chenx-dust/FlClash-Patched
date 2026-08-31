@@ -17,12 +17,12 @@ void main() {
   setUp(() {
     container = ProviderContainer();
     globalState.container = container;
-    globalState.lastVpnState = null;
+    globalState.lastVpnOptions = null;
   });
 
   tearDown(() {
     container.dispose();
-    globalState.lastVpnState = null;
+    globalState.lastVpnOptions = null;
   });
 
   Future<void> pumpVpnManager(WidgetTester tester) async {
@@ -51,7 +51,7 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   }
 
-  testWidgets('shows a tip when the vpn state changes while started', (
+  testWidgets('shows a tip when the vpn options change while started', (
     tester,
   ) async {
     await pumpVpnManager(tester);
@@ -84,7 +84,9 @@ void main() {
     await drainTimers(tester);
   });
 
-  testWidgets('does not repeat the tip for the same vpn state', (tester) async {
+  testWidgets('does not repeat the tip for the same vpn options', (
+    tester,
+  ) async {
     await pumpVpnManager(tester);
     container.read(runTimeProvider.notifier).value = 1;
 
@@ -103,7 +105,7 @@ void main() {
       findsNothing,
     );
 
-    globalState.lastVpnState = container.read(vpnStateProvider);
+    globalState.lastVpnOptions = container.read(vpnOptionsProvider);
     container
         .read(vpnSettingProvider.notifier)
         .update((_) => const VpnProps(enable: true));
@@ -112,6 +114,24 @@ void main() {
     expect(
       find.text(currentAppLocalizations.vpnConfigChangeDetected),
       findsNothing,
+    );
+    await drainTimers(tester);
+  });
+
+  testWidgets('detects a TUN option outside the legacy vpn state', (
+    tester,
+  ) async {
+    await pumpVpnManager(tester);
+    container.read(runTimeProvider.notifier).value = 1;
+
+    container
+        .read(patchClashConfigProvider.notifier)
+        .update((state) => state.copyWith.tun(mtu: state.tun.mtu + 1));
+    await tester.pump();
+
+    expect(
+      find.text(currentAppLocalizations.vpnConfigChangeDetected),
+      findsOneWidget,
     );
     await drainTimers(tester);
   });

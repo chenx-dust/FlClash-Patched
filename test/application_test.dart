@@ -16,7 +16,7 @@ Widget? _childOf(Widget widget) {
     TrayManager(:final child) => child,
     HotKeyManager(:final child) => child,
     ProxyManager(:final child) => child,
-    AndroidManager(:final child) => child,
+    MobileManager(:final child) => child,
     TileManager(:final child) => child,
     AppStateManager(:final child) => child,
     CoreManager(:final child) => child,
@@ -79,7 +79,7 @@ void main() {
       LocaleManager,
       StatusManager,
       ThemeManager,
-      AndroidManager,
+      MobileManager,
       TileManager,
       AppStateManager,
       CoreManager,
@@ -112,7 +112,7 @@ void main() {
       desktop,
       isNot(
         anyOf(
-          contains(AndroidManager),
+          contains(MobileManager),
           contains(TileManager),
           contains(VpnManager),
         ),

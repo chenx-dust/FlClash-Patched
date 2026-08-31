@@ -20,18 +20,19 @@ class _VpnContainerState extends ConsumerState<VpnManager> {
   @override
   void initState() {
     super.initState();
-    ref.listenManual(vpnStateProvider, (prev, next) {
+    ref.listenManual(vpnOptionsProvider, (prev, next) {
       if (prev != next) {
         showTip(next);
       }
     });
   }
 
-  void showTip(VpnState state) {
+  void showTip(VpnOptions? options) {
     throttler.call(
       FunctionTag.vpnTip,
       () {
-        if (!ref.read(isStartProvider) || state == globalState.lastVpnState) {
+        if (!ref.read(isStartProvider) ||
+            options == globalState.lastVpnOptions) {
           return;
         }
         dialogs.showNotifier(

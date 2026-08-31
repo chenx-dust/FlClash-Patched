@@ -45,6 +45,15 @@ void main() {
 
   late List<MethodCall> calls;
 
+  const sharedState = SharedState(
+    stopTip: 'stopTip',
+    startTip: 'startTip',
+    currentProfileName: 'profile',
+    stopText: 'stop',
+    onlyStatisticsProxy: false,
+    crashlytics: false,
+  );
+
   void mockChannel(Future<Object?>? Function(MethodCall call) handler) {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
@@ -82,15 +91,17 @@ void main() {
     test('start and stop report the platform result', () async {
       mockChannel((call) async => call.method == 'start');
 
-      expect(await Service().start(), isTrue);
+      expect(await Service().start(sharedState), isTrue);
       expect(await Service().stop(), isFalse);
       expect(calls.map((call) => call.method), ['start', 'stop']);
+      final sent = json.decode(calls.first.arguments as String);
+      expect(sent['currentProfileName'], 'profile');
     });
 
     test('an absent start or stop result is treated as failure', () async {
       mockChannel((_) async => null);
 
-      expect(await Service().start(), isFalse);
+      expect(await Service().start(sharedState), isFalse);
       expect(await Service().stop(), isFalse);
     });
 

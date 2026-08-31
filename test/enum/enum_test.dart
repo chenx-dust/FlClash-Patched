@@ -3,6 +3,20 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  group('SupportPlatform', () {
+    test('includes iOS in general dashboard availability', () {
+      expect(SupportPlatform.values, contains(SupportPlatform.IOS));
+      expect(
+        DashboardWidget.networkSpeed.platforms,
+        contains(SupportPlatform.IOS),
+      );
+      expect(
+        DashboardWidget.vpnButton.platforms,
+        isNot(contains(SupportPlatform.IOS)),
+      );
+    });
+  });
+
   group('GroupType', () {
     test('parses clash group type aliases case-insensitively', () {
       expect(GroupType.parse('url-test'), GroupType.URLTest);
