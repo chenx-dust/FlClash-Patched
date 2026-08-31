@@ -1,7 +1,9 @@
+import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/views.dart';
+import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,15 +20,30 @@ void main() {
     (i) => Log(payload: 'log $i', dateTime: '2024-01-01 12:00:$i'),
   );
 
-  Future<void> pumpLogsView(WidgetTester tester) async {
+  Future<void> pumpLogsView(
+    WidgetTester tester, {
+    bool seedBeforeMount = false,
+  }) async {
     tester.view.physicalSize = const Size(1400, 1000);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    container = ProviderContainer();
+    container = ProviderContainer(
+      overrides: [
+        patchClashConfigProvider.overrideWithValue(
+          const PatchClashConfig(logLevel: LogLevel.debug),
+        ),
+      ],
+    );
     addTearDown(container.dispose);
     globalState.container = container;
+    final notifier = container.read(logsProvider.notifier);
+    if (seedBeforeMount) {
+      for (final log in seedLogs()) {
+        notifier.add(log);
+      }
+    }
 
     await tester.pumpWidget(
       UncontrolledProviderScope(
@@ -34,9 +51,10 @@ void main() {
         child: const TestApp(child: LogsView()),
       ),
     );
-    final notifier = container.read(logsProvider.notifier);
-    for (final log in seedLogs()) {
-      notifier.add(log);
+    if (!seedBeforeMount) {
+      for (final log in seedLogs()) {
+        notifier.add(log);
+      }
     }
     await tester.pump(const Duration(milliseconds: 301));
     await tester.pumpAndSettle();
@@ -45,6 +63,13 @@ void main() {
   const hintKey = ValueKey('scrollbarHintPill');
 
   Finder hintFinder() => find.byKey(hintKey);
+
+  testWidgets('opens stored logs at the newest entry', (tester) async {
+    await pumpLogsView(tester, seedBeforeMount: true);
+
+    expect(find.text('log 199'), findsOneWidget);
+    expect(find.text('log 0'), findsNothing);
+  });
 
   testWidgets('dragging the list floats the time hint next to the scrollbar', (
     tester,
@@ -112,6 +137,24 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(hintFinder(), findsNothing);
+  });
+
+  testWidgets('uses the save icon and plain body text for log rows', (
+    tester,
+  ) async {
+    await pumpLogsView(tester);
+
+    expect(find.byIcon(Icons.save_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.save_as_outlined), findsNothing);
+    expect(find.byType(CommonChip), findsNothing);
+    expect(find.byType(SelectableText), findsNothing);
+    final payload = tester.widget<Text>(find.text('log 199'));
+    expect(
+      payload.style?.fontSize,
+      Theme.of(
+        tester.element(find.text('log 199')),
+      ).textTheme.bodyMedium?.fontSize,
+    );
   });
 
   group('LogListController', () {
