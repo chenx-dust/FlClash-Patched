@@ -2,6 +2,7 @@ package com.follow.clash.service.modules
 
 import android.app.Service
 import android.content.Intent
+import android.os.Build
 import android.os.PowerManager
 import androidx.core.content.getSystemService
 import com.follow.clash.common.receiveBroadcastFlow
@@ -15,33 +16,65 @@ internal class SuspendModule(
     private val service: Service,
     private val scope: CoroutineScope,
 ) : ServiceModule {
-    private fun isScreenOn() =
-        service.getSystemService<PowerManager>()?.isInteractive ?: true
+    private var isSuspended = false
 
-    private val isDeviceIdle: Boolean
-        get() = service.getSystemService<PowerManager>()?.isDeviceIdleMode ?: true
+    private val powerManager: PowerManager? by lazy {
+        service.getSystemService<PowerManager>()
+    }
 
-    private fun updateSuspension(screenOn: Boolean) {
-        Core.suspended(!screenOn && isDeviceIdle)
+    private fun isScreenOn(): Boolean = powerManager?.isInteractive ?: true
+
+    private val isDeviceIdleMode: Boolean
+        get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+            powerManager?.isDeviceIdleMode == true
+
+    private val shouldSuspend: Boolean
+        get() = !isScreenOn() && isDeviceIdleMode
+
+    private fun updateSuspendState() {
+        val shouldSuspendNow = shouldSuspend
+        when {
+            shouldSuspendNow && !isSuspended -> {
+                Core.suspended(true)
+                isSuspended = true
+            }
+
+            !shouldSuspendNow && isSuspended -> resumeIfSuspended()
+        }
+    }
+
+    private fun resumeIfSuspended() {
+        if (!isSuspended) return
+        Core.suspended(false)
+        isSuspended = false
     }
 
     override fun start() {
+        isSuspended = false
         scope.launch {
             val screenFlow = service.receiveBroadcastFlow {
                 addAction(Intent.ACTION_SCREEN_ON)
                 addAction(Intent.ACTION_SCREEN_OFF)
-                addAction(PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    addAction(PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED)
+                }
             }.map {
-                isScreenOn()
+                it.action
             }.onStart {
-                emit(isScreenOn())
+                emit(null)
             }
 
-            screenFlow.collect(::updateSuspension)
+            screenFlow.collect { action ->
+                if (action == Intent.ACTION_SCREEN_ON) {
+                    resumeIfSuspended()
+                } else {
+                    updateSuspendState()
+                }
+            }
         }
     }
 
     override fun stop() {
-        Core.suspended(false)
+        resumeIfSuspended()
     }
 }
