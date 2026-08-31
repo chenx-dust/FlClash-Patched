@@ -16,11 +16,12 @@ Iterable<File> _dartFilesIn(String root) sync* {
     fail('$root no longer exists; update this test.');
   }
   for (final entity in directory.listSync(recursive: true)) {
+    final path = entity.path.replaceAll('\\', '/');
     if (entity is File &&
-        entity.path.endsWith('.dart') &&
-        !entity.path.endsWith('.g.dart') &&
-        !entity.path.endsWith('.freezed.dart') &&
-        !entity.path.contains('/generated/')) {
+        path.endsWith('.dart') &&
+        !path.endsWith('.g.dart') &&
+        !path.endsWith('.freezed.dart') &&
+        !path.contains('/generated/')) {
       yield entity;
     }
   }
@@ -43,7 +44,8 @@ void main() {
 
     for (final file in _dartFilesIn('lib')) {
       final source = file.readAsStringSync();
-      if (file.path == _wrappedInTooltip) continue;
+      final path = file.path.replaceAll('\\', '/');
+      if (path == _wrappedInTooltip) continue;
 
       for (final match in _iconButton.allMatches(source)) {
         final arguments = _arguments(source, match.end);

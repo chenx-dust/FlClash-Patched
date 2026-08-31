@@ -61,7 +61,7 @@ class BuildReport {
 Future<BuildReport> buildPlatform(BuildRequest request) async {
   final stopwatch = Stopwatch()..start();
   final target = request.target;
-  if (target.isLib && request.androidToolchain == null) {
+  if (target.goos == 'android' && request.androidToolchain == null) {
     throw BuildException('Android target $target needs an NDK toolchain');
   }
   final rootDir = request.rootDir;
@@ -81,6 +81,16 @@ Future<BuildReport> buildPlatform(BuildRequest request) async {
     harnessInputs: harnessInputs,
     androidToolchain: request.androidToolchain,
   ).build(target);
+  if (target.goos == 'ios') {
+    final lowMemoryCore = await GoBuilder(
+      rootDir: rootDir,
+      config: config,
+      cache: cache,
+      notice: notice,
+      harnessInputs: harnessInputs,
+    ).build(Target.iosArm64LowMem);
+    return _report([core, lowMemoryCore]);
+  }
   if (!target.hasHelper) {
     _log.info('Done in ${stopwatch.elapsed}: ${core.primaryOutput}');
     return _report([core]);

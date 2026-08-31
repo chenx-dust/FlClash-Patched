@@ -25,7 +25,7 @@ void main() {
         throwsA(isA<BuildException>()),
       );
       expect(
-        () => Target.resolve(platform: 'ios', goarch: 'arm64'),
+        () => Target.resolve(platform: 'ios', goarch: 'amd64'),
         throwsA(isA<BuildException>()),
       );
     });

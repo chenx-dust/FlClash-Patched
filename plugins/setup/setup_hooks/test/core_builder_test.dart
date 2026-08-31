@@ -75,7 +75,7 @@ void main() {
   }
 
   group('requestFor', () {
-    test('has nothing to build without code assets or on iOS', () {
+    test('has nothing to build without code assets', () {
       const builder = CoreBuilder();
 
       expect(
@@ -89,10 +89,12 @@ void main() {
         isNull,
       );
       expect(
-        builder.requestFor(
-          buildInput(os: OS.iOS, architecture: Architecture.arm64),
-        ),
-        isNull,
+        builder
+            .requestFor(
+              buildInput(os: OS.iOS, architecture: Architecture.arm64),
+            )
+            ?.target,
+        Target.iosArm64,
       );
     });
 
@@ -226,7 +228,7 @@ void main() {
       final output = BuildOutputBuilder();
 
       await builder.run(
-        input: buildInput(os: OS.iOS, architecture: Architecture.arm64),
+        input: buildInput(os: OS.iOS, architecture: Architecture.arm64, codeAssets: false),
         output: output,
       );
 

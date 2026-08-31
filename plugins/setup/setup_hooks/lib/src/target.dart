@@ -1,11 +1,17 @@
 import 'error.dart';
 
 class Target {
-  const Target({required this.goos, required this.goarch, this.abi});
+  const Target({
+    required this.goos,
+    required this.goarch,
+    this.abi,
+    this.lowMemory = false,
+  });
 
   final String goos;
   final String goarch;
   final String? abi;
+  final bool lowMemory;
 
   static const androidArm = Target(
     goos: 'android',
@@ -23,6 +29,14 @@ class Target {
     abi: 'x86_64',
   );
 
+  static const iosArm64 = Target(goos: 'ios', goarch: 'arm64', abi: 'arm64');
+  static const iosArm64LowMem = Target(
+    goos: 'ios',
+    goarch: 'arm64',
+    abi: 'arm64',
+    lowMemory: true,
+  );
+
   static const macosArm64 = Target(goos: 'darwin', goarch: 'arm64');
   static const macosAmd64 = Target(goos: 'darwin', goarch: 'amd64');
 
@@ -36,6 +50,8 @@ class Target {
     androidArm,
     androidArm64,
     androidAmd64,
+    iosArm64,
+    iosArm64LowMem,
     macosArm64,
     macosAmd64,
     linuxArm64,
@@ -55,6 +71,8 @@ class Target {
   }
 
   bool get isLib => abi != null;
+
+  String get dynamicLibExtension => goos == 'ios' ? '.a' : '.so';
 
   bool get hasHelper => goos == 'linux' || goos == 'windows';
 
