@@ -49,6 +49,19 @@ mixin CoreInterface {
 
   Future<ExternalProvider?> getExternalProvider(String externalProviderName);
 
+  Future<List<OverlayNetworkStatus>> getOverlayNetworkStatus(
+    GetOverlayNetworkStatusParams params,
+  );
+
+  Future<OverlayNetworkStatus> activateOverlayNetwork(
+    String name,
+    OverlayNetworkKind kind,
+  );
+
+  Future<TailscalePingResult> pingTailscaleNode(String name, String ip);
+
+  Future<bool> logoutTailscale(String name);
+
   Future<String> updateGeoData(String type);
 
   Future<String> sideLoadExternalProvider({
@@ -63,6 +76,8 @@ mixin CoreInterface {
   FutureOr<Traffic> getTotalTraffic(bool onlyStatisticsProxy);
 
   FutureOr<int> getMemory();
+
+  FutureOr<int> getGoroutineCount();
 
   FutureOr<void> resetTraffic();
 
@@ -270,6 +285,67 @@ abstract class CoreHandlerInterface with CoreInterface {
   }
 
   @override
+  Future<List<OverlayNetworkStatus>> getOverlayNetworkStatus(
+    GetOverlayNetworkStatusParams params,
+  ) async {
+    final data = await _invokeMethod<List<dynamic>>(
+      method: CoreMethod.getOverlayNetworkStatus,
+      arguments: params.toJson(),
+    );
+    return data
+            ?.whereType<Map>()
+            .map(
+              (item) => OverlayNetworkStatus.fromJson(
+                Map<String, Object?>.from(item),
+              ),
+            )
+            .toList() ??
+        [];
+  }
+
+  @override
+  Future<OverlayNetworkStatus> activateOverlayNetwork(
+    String name,
+    OverlayNetworkKind kind,
+  ) async {
+    final data = await _invokeMethod<Map<String, dynamic>>(
+      method: CoreMethod.activateOverlayNetwork,
+      arguments: {'name': name, 'kind': kind.name},
+    );
+    if (data == null) {
+      throw const CoreMethodException(
+        code: 'invalid_response',
+        message: 'Missing overlay network activation result',
+      );
+    }
+    return OverlayNetworkStatus.fromJson(data);
+  }
+
+  @override
+  Future<TailscalePingResult> pingTailscaleNode(String name, String ip) async {
+    final data = await _invokeMethod<Map<String, dynamic>>(
+      method: CoreMethod.pingTailscaleNode,
+      arguments: {'name': name, 'ip': ip},
+    );
+    if (data == null) {
+      throw const CoreMethodException(
+        code: 'invalid_response',
+        message: 'Missing Tailscale ping result',
+      );
+    }
+    return TailscalePingResult.fromJson(data);
+  }
+
+  @override
+  Future<bool> logoutTailscale(String name) async {
+    return await _invokeMethod<bool>(
+          method: CoreMethod.logoutTailscale,
+          arguments: {'name': name},
+        ) ??
+        false;
+  }
+
+  @override
   Future<String> updateGeoData(String type) async {
     return _invokeMessage(method: CoreMethod.updateGeoData, arguments: type);
   }
@@ -431,5 +507,10 @@ abstract class CoreHandlerInterface with CoreInterface {
   @override
   Future<int> getMemory() async {
     return await _invokeMethod<int>(method: CoreMethod.getMemory) ?? 0;
+  }
+
+  @override
+  Future<int> getGoroutineCount() async {
+    return await _invokeMethod<int>(method: CoreMethod.getGoroutineCount) ?? 0;
   }
 }

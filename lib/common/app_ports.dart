@@ -26,7 +26,11 @@ abstract interface class TrayPort {
 }
 
 abstract interface class NavigationPort {
-  List<NavigationItem> getItems({bool openLogs, bool hasProxies});
+  List<NavigationItem> getItems({
+    bool openLogs,
+    bool hasProxies,
+    bool hasNetworking,
+  });
 }
 
 WindowPort? windowPort;

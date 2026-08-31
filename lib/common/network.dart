@@ -45,6 +45,19 @@ extension NetworkInterfaceExt on NetworkInterface {
   bool get includesIPv4 {
     return addresses.any((addr) => addr.isIPv4);
   }
+
+  List<InternetAddress> get sortedAddresses {
+    return List<InternetAddress>.from(addresses)..sort((a, b) {
+      if (a.isIPv4 && !b.isIPv4) return -1;
+      if (!a.isIPv4 && b.isIPv4) return 1;
+      return 0;
+    });
+  }
+
+  InternetAddress? get preferredAddress {
+    final addresses = sortedAddresses;
+    return addresses.isEmpty ? null : addresses.first;
+  }
 }
 
 extension InternetAddressExt on InternetAddress {
@@ -53,7 +66,7 @@ extension InternetAddressExt on InternetAddress {
   }
 }
 
-Future<String?> getLocalIpAddress() async {
+Future<List<NetworkInterface>> getLocalNetworkInterfaces() async {
   final List<NetworkInterface> interfaces =
       await listNetworkInterfaces(includeLoopback: false)
         ..sort((a, b) {
@@ -65,17 +78,12 @@ Future<String?> getLocalIpAddress() async {
           if (!a.includesIPv4 && b.includesIPv4) return 1;
           return 0;
         });
-  for (final interface in interfaces) {
-    final addresses = interface.addresses;
-    if (addresses.isEmpty) {
-      continue;
-    }
-    addresses.sort((a, b) {
-      if (a.isIPv4 && !b.isIPv4) return -1;
-      if (!a.isIPv4 && b.isIPv4) return 1;
-      return 0;
-    });
-    return addresses.first.address;
-  }
-  return '';
+  return interfaces
+      .where((interface) => interface.preferredAddress != null)
+      .toList();
+}
+
+Future<String?> getLocalIpAddress() async {
+  final interfaces = await getLocalNetworkInterfaces();
+  return interfaces.isEmpty ? '' : interfaces.first.preferredAddress?.address;
 }
