@@ -6,6 +6,7 @@ import 'package:fl_clash/common/launch.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/config.dart';
 import 'package:fl_clash/providers/providers.dart';
+import 'package:fl_clash/state.dart';
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,16 +36,24 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   @override
   void initState() {
     super.initState();
-    ref.listenManual(appSettingProvider.select((state) => state.autoLaunch), (
-      prev,
-      next,
-    ) {
-      if (prev != next) {
-        debouncer.call(FunctionTag.autoLaunch, () {
-          autoLaunch?.updateStatus(next);
-        });
-      }
-    });
+    ref.listenManual(
+      appSettingProvider.select(
+        (state) => (
+          autoLaunch: state.autoLaunch,
+          highPriority: state.highPriorityAutoLaunch,
+        ),
+      ),
+      (prev, next) {
+        if (prev != next) {
+          debouncer.call(FunctionTag.autoLaunch, () {
+            autoLaunch?.updateStatus(
+              isAutoLaunch: next.autoLaunch,
+              isHighPriorityAutoLaunch: next.highPriority,
+            );
+          });
+        }
+      },
+    );
     windowManager.addListener(this);
   }
 
@@ -58,7 +67,7 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   void onWindowFocus() {
     super.onWindowFocus();
     commonPrint.log('focus');
-    render?.resume();
+    globalState.handleForeground();
   }
 
   /// Another launch, or a Dock reopen, asked for the window; showing it from
@@ -171,14 +180,14 @@ class _WindowContainerState extends ConsumerState<WindowManager>
     _invalidateWindowGeometryCapture();
     ref.read(storeActionProvider.notifier).savePreferencesDebounce();
     commonPrint.log('minimize');
-    render?.pause();
+    globalState.handleBackground();
     super.onWindowMinimize();
   }
 
   @override
   void onWindowRestore() {
     commonPrint.log('restore');
-    render?.resume();
+    globalState.handleForeground();
     super.onWindowRestore();
     _scheduleWindowGeometryCapture();
   }

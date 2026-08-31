@@ -1,4 +1,5 @@
 import 'tray_menu.dart';
+import 'package:flutter/foundation.dart';
 
 enum TrayIconPosition { leading, trailing }
 
@@ -17,9 +18,15 @@ final class TrayIcon {
 }
 
 final class TraySpec {
-  const TraySpec({required this.icon, this.toolTip = '', this.menu = const []});
+  const TraySpec({
+    required this.icon,
+    this.toolTip = '',
+    this.menu = const [],
+    this.brightness,
+  });
 
   final TrayIcon icon;
   final String toolTip;
   final List<TrayMenuItem> menu;
+  final Brightness? brightness;
 }

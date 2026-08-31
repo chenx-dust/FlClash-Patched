@@ -104,6 +104,7 @@ void main() {
       ],
     );
     globalState.container = container;
+    globalState.isBackground.value = false;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_windowChannel, (call) async {
           windowCalls.add(call);
@@ -162,12 +163,25 @@ void main() {
   testWidgets('a terminate request is delegated to the system action', (
     tester,
   ) async {
-    final listener = await pumpWindowManager(tester);
+    await pumpWindowManager(tester);
+    final listener =
+        tester.state(find.byType(WindowManager)) as WindowListener;
 
-    listener.onWindowShouldTerminate();
+    await listener.onWindowShouldTerminate();
     await tester.pumpAndSettle();
 
     expect(_RecordingSystemAction.calls, ['exit']);
+  });
+
+  testWidgets('a native activation request shows the window', (tester) async {
+    await pumpWindowManager(tester);
+    final listener =
+        tester.state(find.byType(WindowManager)) as WindowListener;
+
+    listener.onWindowActivate();
+    await tester.pump();
+
+    expect(window.shows, 1);
   });
 
   testWidgets('moving the window records its new position', (tester) async {
@@ -200,8 +214,12 @@ void main() {
     final listener = await pumpWindowManager(tester);
 
     listener.onWindowMinimize();
+    expect(globalState.isBackground.value, isTrue);
     listener.onWindowRestore();
+    expect(globalState.isBackground.value, isFalse);
+    globalState.handleBackground();
     listener.onWindowFocus();
+    expect(globalState.isBackground.value, isFalse);
     await tester.pump(const Duration(seconds: 1));
     await tester.pumpAndSettle();
 

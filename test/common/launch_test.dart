@@ -77,8 +77,8 @@ void main() {
       reason: 'flutter test runs in debug; the guard below assumes it.',
     );
 
-    await autoLaunch.updateStatus(true);
-    await autoLaunch.updateStatus(false);
+    await autoLaunch.updateStatus(isAutoLaunch: true);
+    await autoLaunch.updateStatus(isAutoLaunch: false);
 
     expect(
       launcher.calls,

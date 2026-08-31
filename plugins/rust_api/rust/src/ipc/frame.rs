@@ -33,7 +33,10 @@ pub fn validate_frame_len(len: usize) -> io::Result<u32> {
 pub fn is_expected_disconnect_error(error: &io::Error) -> bool {
     matches!(
         error.kind(),
-        io::ErrorKind::UnexpectedEof | io::ErrorKind::ConnectionReset | io::ErrorKind::BrokenPipe
+        io::ErrorKind::UnexpectedEof
+            | io::ErrorKind::ConnectionReset
+            | io::ErrorKind::BrokenPipe
+            | io::ErrorKind::Interrupted
     )
 }
 
@@ -273,6 +276,7 @@ mod tests {
             io::ErrorKind::UnexpectedEof,
             io::ErrorKind::ConnectionReset,
             io::ErrorKind::BrokenPipe,
+            io::ErrorKind::Interrupted,
         ] {
             assert!(is_expected_disconnect_error(&io::Error::from(kind)));
         }

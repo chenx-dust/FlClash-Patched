@@ -100,6 +100,7 @@ final class Tray {
           'id': _stableId,
           'icon': await _resolveIcon(spec.icon),
           'toolTip': encoded.toolTip,
+          'brightness': spec.brightness?.name,
           'title': _title,
           'menu': encoded.menu,
         });
@@ -160,10 +161,23 @@ final class Tray {
         if (item == null) {
           return;
         }
+        final timestamp = arguments['activationTimestamp'];
+        final token = arguments['activationToken'];
+        final details = TrayMenuSelectionDetails(
+          activationTimestamp: timestamp is int && timestamp > 0
+              ? timestamp
+              : null,
+          activationToken: token is String && token.isNotEmpty ? token : null,
+        );
         switch (item) {
-          case TrayMenuAction(:final onSelected):
+          case TrayMenuAction(:final onSelected, :final onSelectedWithDetails):
+            onSelectedWithDetails?.call(details);
             onSelected?.call();
-          case TrayMenuCheckbox(:final onSelected):
+          case TrayMenuCheckbox(
+            :final onSelected,
+            :final onSelectedWithDetails,
+          ):
+            onSelectedWithDetails?.call(details);
             onSelected?.call();
           case TrayMenuSubmenu():
           case TrayMenuSeparator():
