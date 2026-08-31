@@ -155,6 +155,16 @@ void main() {
     });
   });
 
+  group('AlwaysOn provider', () {
+    test('is persisted through configProvider', () {
+      expect(container.read(alwaysOnProvider), false);
+
+      container.read(alwaysOnProvider.notifier).value = true;
+
+      expect(container.read(configProvider).alwaysOn, true);
+    });
+  });
+
   group('HotKeyActions provider', () {
     test('default is empty list', () {
       expect(container.read(hotKeyActionsProvider), isEmpty);
@@ -206,6 +216,7 @@ void main() {
       expect(config.hotKeyActions, isEmpty);
       expect(config.patchClashConfig, const PatchClashConfig());
       expect(config.excludeSSIDs, isEmpty);
+      expect(config.alwaysOn, false);
     });
 
     test('reflects updated sub-provider values', () {
@@ -217,12 +228,14 @@ void main() {
       container
           .read(excludeSSIDsProvider.notifier)
           .update((_) => ['Office Wi-Fi']);
+      container.read(alwaysOnProvider.notifier).value = true;
 
       final config = container.read(configProvider);
       expect(config.currentProfileId, 99);
       expect(config.overrideDns, true);
       expect(config.patchClashConfig.mixedPort, 7890);
       expect(config.excludeSSIDs, ['Office Wi-Fi']);
+      expect(config.alwaysOn, true);
     });
   });
 
@@ -234,7 +247,7 @@ void main() {
         overrideDns: true,
       );
       final overrides = buildConfigOverrides(config);
-      expect(overrides.length, 12);
+      expect(overrides.length, 13);
 
       final overrideContainer = ProviderContainer(overrides: overrides);
       addTearDown(overrideContainer.dispose);
@@ -246,6 +259,7 @@ void main() {
         config.patchClashConfig,
       );
       expect(overrideContainer.read(excludeSSIDsProvider), config.excludeSSIDs);
+      expect(overrideContainer.read(alwaysOnProvider), config.alwaysOn);
       expect(
         overrideContainer.read(appSettingProvider).onlyStatisticsProxy,
         false,

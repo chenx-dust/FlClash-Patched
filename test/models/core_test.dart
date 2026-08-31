@@ -39,6 +39,7 @@ void main() {
         'ipv6': false,
         'tcp-concurrent': false,
         'external-controller': '',
+        'secret': '',
         'unified-delay': false,
       };
       final params = UpdateParams.fromJson(json);

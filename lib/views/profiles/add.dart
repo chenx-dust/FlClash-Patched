@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/pages/scan.dart';
 import 'package:fl_clash/providers/action.dart';
+import 'package:fl_clash/views/profiles/age_key_generator.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,27 +33,17 @@ class AddProfileView extends ConsumerWidget {
 
   Future<void> _toAdd(WidgetRef ref) async {
     final profilesAction = ref.read(profilesActionProvider.notifier);
-    final appLocalizations = context.appLocalizations;
-    final url = await dialogs.showCommonDialog<String>(
-      child: InputDialog(
-        autovalidateMode: AutovalidateMode.onUnfocus,
-        title: appLocalizations.importFromURL,
-        labelText: appLocalizations.url,
-        value: '',
-        inputFormatters: TextInputLimits.limit(TextInputLimits.url),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return appLocalizations.emptyTip('').trim();
-          }
-          if (!value.isUrl) {
-            return appLocalizations.urlTip('').trim();
-          }
-          return null;
-        },
-      ),
-    );
-    if (url != null) {
-      unawaited(profilesAction.addProfileFormURL(url));
+    final result = await dialogs
+        .showCommonDialog<({String url, String? ageSecretKey})>(
+          child: const URLFormDialog(),
+        );
+    if (result != null) {
+      unawaited(
+        profilesAction.addProfileFormURL(
+          result.url,
+          ageSecretKey: result.ageSecretKey,
+        ),
+      );
     }
   }
 
@@ -93,16 +84,27 @@ class URLFormDialog extends StatefulWidget {
 
 class _URLFormDialogState extends State<URLFormDialog> {
   final _urlController = TextEditingController();
+  final _ageSecretKeyController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  bool _obscureAgeSecretKey = true;
 
-  Future<void> _handleAddProfileFormURL() async {
-    final url = _urlController.value.text;
-    if (url.isEmpty) return;
-    Navigator.of(context).pop<String>(url);
+  void _handleAddProfileFormURL() {
+    if (!_formKey.currentState!.validate()) return;
+    final ageSecretKey = _ageSecretKeyController.text.trim();
+    Navigator.of(context).pop<({String url, String? ageSecretKey})>((
+      url: _urlController.text.trim(),
+      ageSecretKey: ageSecretKey.isEmpty ? null : ageSecretKey,
+    ));
+  }
+
+  Future<void> _showAgeKeyGenerator() async {
+    await dialogs.showCommonDialog<void>(child: const AgeKeyGeneratorDialog());
   }
 
   @override
   void dispose() {
     _urlController.dispose();
+    _ageSecretKeyController.dispose();
     super.dispose();
   }
 
@@ -112,6 +114,15 @@ class _URLFormDialogState extends State<URLFormDialog> {
     return CommonDialog(
       title: appLocalizations.importFromURL,
       actions: [
+        IconButton(
+          tooltip: appLocalizations.ageKeyGenerateTitle,
+          onPressed: _showAgeKeyGenerator,
+          icon: const Icon(Icons.key),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(appLocalizations.cancel),
+        ),
         TextButton(
           onPressed: _handleAddProfileFormURL,
           child: Text(appLocalizations.submit),
@@ -119,22 +130,59 @@ class _URLFormDialogState extends State<URLFormDialog> {
       ],
       child: SizedBox(
         width: 300,
-        child: Wrap(
-          runSpacing: 16,
-          children: [
-            TextField(
-              keyboardType: TextInputType.url,
-              minLines: 1,
-              maxLines: 5,
-              inputFormatters: TextInputLimits.limit(TextInputLimits.url),
-              onSubmitted: (_) {
-                _handleAddProfileFormURL();
-              },
-              onEditingComplete: _handleAddProfileFormURL,
-              controller: _urlController,
-              decoration: InputDecoration(labelText: appLocalizations.url),
-            ),
-          ],
+        child: Form(
+          key: _formKey,
+          child: Wrap(
+            runSpacing: 16,
+            children: [
+              TextFormField(
+                keyboardType: TextInputType.url,
+                minLines: 1,
+                maxLines: 5,
+                inputFormatters: TextInputLimits.limit(TextInputLimits.url),
+                controller: _urlController,
+                decoration: InputDecoration(labelText: appLocalizations.url),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return appLocalizations.emptyTip('').trim();
+                  }
+                  if (!value.isUrl) {
+                    return appLocalizations.urlTip('').trim();
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _ageSecretKeyController,
+                obscureText: _obscureAgeSecretKey,
+                decoration: InputDecoration(
+                  labelText: appLocalizations.ageSecretKeyOptional,
+                  suffixIcon: IconButton(
+                    tooltip: _obscureAgeSecretKey
+                        ? appLocalizations.showPassword
+                        : appLocalizations.hidePassword,
+                    onPressed: () {
+                      setState(() {
+                        _obscureAgeSecretKey = !_obscureAgeSecretKey;
+                      });
+                    },
+                    icon: Icon(
+                      _obscureAgeSecretKey
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                  ),
+                ),
+                validator: (value) {
+                  if (value?.isNotEmpty == true &&
+                      !value!.startsWith('AGE-SECRET-KEY-')) {
+                    return appLocalizations.ageSecretKeyInvalidValidationDesc;
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

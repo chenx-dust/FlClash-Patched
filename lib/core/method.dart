@@ -38,6 +38,9 @@ enum CoreMethod {
   clearEffect,
   deleteManagedPath,
   updateDns,
+  generateAgeKeyPair,
+  convertAgeSecretKeyToPublicKey,
+  decryptAgeConfig,
 }
 
 class CoreMethodCall {

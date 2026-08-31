@@ -6,6 +6,8 @@ import (
 	"runtime"
 	"sync/atomic"
 	"unsafe"
+
+	"github.com/metacubex/mihomo/component/age"
 )
 
 type MethodCall struct {
@@ -169,8 +171,11 @@ var methodHandlers = map[CoreMethod]methodHandler{
 	shutdownMethod: withoutArguments(func(response MethodResponse) {
 		response.success(handleShutdown())
 	}),
-	validateConfigMethod: withArguments(func(path *string, response MethodResponse) {
-		response.success(handleValidateConfig(*path))
+	validateConfigMethod: withArguments(func(data *string, response MethodResponse) {
+		response.success(handleValidateConfig(*data))
+	}),
+	decryptAgeConfigMethod: withArguments(func(params *DecryptAgeConfigParams, response MethodResponse) {
+		response.success(handleDecryptAgeConfig(params))
 	}),
 	updateConfigMethod: withArguments(func(params *UpdateParams, response MethodResponse) {
 		response.success(handleUpdateConfig(params))
@@ -280,6 +285,29 @@ var methodHandlers = map[CoreMethod]methodHandler{
 	}),
 	deleteManagedPathMethod: withArguments(func(params *DeleteManagedPathParams, response MethodResponse) {
 		response.success(handleDeleteManagedPath(params))
+	}),
+	generateAgeKeyPairMethod: withoutArguments(func(response MethodResponse) {
+		secretKey, publicKey, err := age.GenX25519KeyPair()
+		if err != nil {
+			response.failure("core_error", err.Error(), nil)
+			return
+		}
+		response.success(map[string]string{
+			"secret-key": secretKey,
+			"public-key": publicKey,
+		})
+	}),
+	convertAgeSecretKeyToPublicKeyMethod: withArguments(func(secretKey *string, response MethodResponse) {
+		publicKeys, err := age.ToPublicKeys(*secretKey)
+		if err != nil {
+			response.failure("core_error", err.Error(), nil)
+			return
+		}
+		if len(publicKeys) == 0 {
+			response.failure("core_error", "no public keys found", nil)
+			return
+		}
+		response.success(publicKeys[0])
 	}),
 }
 

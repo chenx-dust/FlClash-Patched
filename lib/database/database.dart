@@ -34,7 +34,7 @@ class Database extends _$Database {
   Database([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   static LazyDatabase _openConnection() {
     return LazyDatabase(() async {
@@ -53,29 +53,24 @@ class Database extends _$Database {
           await _resetOrders();
           await _migrateRules(m);
         }
-        if (from < 3) {
-          await _addColumnIfMissing(m, profiles, profiles.matchTarget);
+        if (from < 4) {
+          await _migrateProfileColumns(m);
         }
       },
     );
   }
 
-  /// Drift rewinds user_version on downgrade but keeps the columns it added.
-  Future<void> _addColumnIfMissing(
-    Migrator m,
-    TableInfo table,
-    GeneratedColumn column,
-  ) async {
-    final tableInfo = await customSelect(
-      'PRAGMA table_info(${table.actualTableName})',
-    ).get();
-    final exists = tableInfo.any(
-      (row) => row.read<String>('name') == column.name,
-    );
-    if (exists) {
-      return;
+  Future<void> _migrateProfileColumns(Migrator m) async {
+    final tableInfo = await customSelect('PRAGMA table_info(profiles)').get();
+    final columnNames = tableInfo
+        .map((row) => row.read<String>('name'))
+        .toSet();
+    if (!columnNames.contains('match_target')) {
+      await m.addColumn(profiles, profiles.matchTarget);
     }
-    await m.addColumn(table, column);
+    if (!columnNames.contains('age_secret_key')) {
+      await m.addColumn(profiles, profiles.ageSecretKey);
+    }
   }
 
   Future<void> _migrateRules(Migrator m) async {

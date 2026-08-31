@@ -17,6 +17,16 @@ class GeoResourceAction extends _$GeoResourceAction {
     });
   }
 
+  Future<void> updateAllGeoResources() async {
+    await _applyProfileBeforeUpdate();
+    await Future.wait(GeoResource.values.map(_updateGeoResource));
+  }
+
+  Future<void> _applyProfileBeforeUpdate() async {
+    debouncer.cancel(FunctionTag.applyProfile);
+    await ref.read(setupActionProvider.notifier).applyProfile(silence: true);
+  }
+
   int _startUpdating(GeoResource geoResource) {
     return _operations.putIfAbsent(
       geoResource,
@@ -41,6 +51,11 @@ class GeoResourceAction extends _$GeoResourceAction {
   /// Completion arrives as a geo-update event through [handleCoreUpdate];
   /// callers that need it watch [isUpdatingProvider] for the key to clear.
   Future<void> updateGeoResource(GeoResource geoResource) async {
+    await _applyProfileBeforeUpdate();
+    await _updateGeoResource(geoResource);
+  }
+
+  Future<void> _updateGeoResource(GeoResource geoResource) async {
     _manualUpdates.add(geoResource);
     final operation = _startUpdating(geoResource);
     try {

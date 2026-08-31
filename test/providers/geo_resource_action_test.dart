@@ -16,6 +16,15 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockCoreHandlerInterface extends Mock implements CoreHandlerInterface {}
 
+class _NoopSetupAction extends SetupAction {
+  @override
+  Future<bool> applyProfile({
+    bool silence = false,
+    bool force = false,
+    Future<void> Function()? preloadInvoke,
+  }) async => true;
+}
+
 Future<ProviderContainer> _pumpGeoResourceAction(
   WidgetTester tester,
   CoreHandlerInterface coreInterface,
@@ -25,6 +34,7 @@ Future<ProviderContainer> _pumpGeoResourceAction(
       coreHandlerProvider.overrideWithValue(
         CoreController.scoped(coreInterface),
       ),
+      setupActionProvider.overrideWith(() => _NoopSetupAction()),
     ],
   );
   addTearDown(container.dispose);

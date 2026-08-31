@@ -138,6 +138,7 @@ class ProviderItem extends ConsumerWidget {
   }
 
   Future<void> _handleSideLoadProvider(WidgetRef ref) async {
+    if (!provider.canEditAsText) return;
     final proxiesAction = ref.read(proxiesActionProvider.notifier);
     await globalState.safeRun<void>(() async {
       final platformFile = await picker.pickerFile();
@@ -204,13 +205,14 @@ class ProviderItem extends ConsumerWidget {
     final appLocalizations = context.appLocalizations;
     final subscriptionInfo = provider.subscriptionInfo;
     return [
-      CommonPopupMenuItem(
-        icon: Icons.upload_outlined,
-        label: appLocalizations.upload,
-        onPressed: () {
-          _handleSideLoadProvider(ref);
-        },
-      ),
+      if (provider.canEditAsText)
+        CommonPopupMenuItem(
+          icon: Icons.upload_outlined,
+          label: appLocalizations.upload,
+          onPressed: () {
+            _handleSideLoadProvider(ref);
+          },
+        ),
       if (provider.vehicleType == 'HTTP')
         CommonPopupMenuItem(
           icon: Icons.sync,

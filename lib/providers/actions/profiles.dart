@@ -39,6 +39,24 @@ class ProfilesAction extends _$ProfilesAction {
     return _core.validateConfigWithData(data);
   }
 
+  Future<String> prepareProfileConfig(
+    String content,
+    String? ageSecretKey,
+  ) async {
+    var prepared = content;
+    if (ageSecretKey?.isNotEmpty == true) {
+      final decrypted = await _core.decryptAgeConfig(content, ageSecretKey!);
+      if (decrypted.isNotEmpty) {
+        prepared = decrypted;
+      }
+    }
+    final message = await _core.validateConfig(prepared);
+    if (message.isNotEmpty) {
+      throw MessageException(message);
+    }
+    return prepared;
+  }
+
   Future<void> autoUpdateProfiles() async {
     for (final profile in ref.read(profilesProvider)) {
       if (!profile.autoUpdate) continue;
@@ -78,9 +96,7 @@ class ProfilesAction extends _$ProfilesAction {
         : null;
     try {
       ref.read(profilesProvider.notifier).put(profile);
-      final newProfile = await profile.update(
-        validate: (path) => _core.validateConfig(path),
-      );
+      final newProfile = await profile.update(prepare: prepareProfileConfig);
       ref.read(profilesProvider.notifier).put(newProfile);
       if (profile.id == ref.read(currentProfileIdProvider)) {
         ref
@@ -107,7 +123,7 @@ class ProfilesAction extends _$ProfilesAction {
       () async {
         return Profile.normal(
           label: platformFile.name,
-        ).saveFile(bytes, validate: (path) => _core.validateConfig(path));
+        ).saveFile(bytes, prepare: prepareProfileConfig);
       },
       title: currentAppLocalizations.addProfile,
     );
@@ -116,7 +132,7 @@ class ProfilesAction extends _$ProfilesAction {
     }
   }
 
-  Future<void> addProfileFormURL(String url) async {
+  Future<void> addProfileFormURL(String url, {String? ageSecretKey}) async {
     if (globalState.navigatorKey.currentState?.canPop() ?? false) {
       globalState.navigatorKey.currentState?.popUntil((route) => route.isFirst);
     }
@@ -126,7 +142,8 @@ class ProfilesAction extends _$ProfilesAction {
       () async {
         return Profile.normal(
           url: url,
-        ).update(validate: (path) => _core.validateConfig(path));
+          ageSecretKey: ageSecretKey,
+        ).update(prepare: prepareProfileConfig);
       },
       title: currentAppLocalizations.addProfile,
     );

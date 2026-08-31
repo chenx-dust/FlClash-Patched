@@ -46,16 +46,54 @@ void main() {
         interfaces;
   }
 
-  group('isWifi', () {
-    test('recognises the usual wireless interface names', () {
-      for (final name in ['wlan0', 'Wi-Fi', 'WLAN1', 'en0', 'eth0', 'ETH0']) {
-        expect(_FakeInterface(name, const []).isWifi, isTrue, reason: name);
+  group('interfaceType', () {
+    test('recognises physical interface names', () {
+      for (final name in [
+        'wlan0',
+        'Wi-Fi',
+        'WLAN1',
+        'Ethernet 2',
+        'en0',
+        'enp3s0',
+        'ens5',
+        'enx001122',
+        'eth0',
+        'ETH1',
+      ]) {
+        expect(
+          _FakeInterface(name, const []).interfaceType,
+          NetworkInterfaceType.physical,
+          reason: name,
+        );
       }
     });
 
-    test('does not match an unrelated or suffixed interface', () {
-      for (final name in ['en1', 'eth1', 'utun3', 'lo0', '']) {
-        expect(_FakeInterface(name, const []).isWifi, isFalse, reason: name);
+    test('recognises common virtual interface names', () {
+      for (final name in [
+        'FlClash',
+        'Meta Tunnel',
+        'tailscale0',
+        'ZeroTier One',
+        'netbird0',
+        'easytier',
+        'docker0',
+        'tap0',
+      ]) {
+        expect(
+          _FakeInterface(name, const []).interfaceType,
+          NetworkInterfaceType.virtual,
+          reason: name,
+        );
+      }
+    });
+
+    test('leaves unrecognised interface names as unknown', () {
+      for (final name in ['utun3', 'lo0', 'ppp0', '']) {
+        expect(
+          _FakeInterface(name, const []).interfaceType,
+          NetworkInterfaceType.unknown,
+          reason: name,
+        );
       }
     });
   });
@@ -92,6 +130,22 @@ void main() {
         expect(await getLocalIpAddress(), '10.9.0.1');
       },
     );
+
+    test('sorts physical, unknown, then virtual interfaces', () async {
+      listing([
+        _FakeInterface('tailscale0', [_v4('100.64.0.1')]),
+        _FakeInterface('utun0', [_v4('10.9.0.1')]),
+        _FakeInterface('en1', [_v4('192.168.1.20')]),
+      ]);
+
+      final interfaces = await getLocalNetworkInterfaces();
+
+      expect(interfaces.map((interface) => interface.name), [
+        'en1',
+        'utun0',
+        'tailscale0',
+      ]);
+    });
 
     test('prefers the IPv4 address inside the chosen interface', () async {
       listing([

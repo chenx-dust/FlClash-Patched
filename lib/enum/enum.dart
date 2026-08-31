@@ -302,6 +302,8 @@ enum DashboardWidget {
 
 enum GeodataLoader { standard, memconservative }
 
+enum GeositeMatcher { succinct, mph }
+
 enum GeoResource {
   @JsonValue('mmdb')
   MMDB,

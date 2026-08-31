@@ -72,7 +72,7 @@ class Migration {
     : _store = store,
       _migrateV0 = migrateV0 ?? oldToNowTask;
 
-  static const currentVersion = 1;
+  static const currentVersion = 2;
 
   Future<Config> run() async {
     final configMap = await _store.getConfigMap();
