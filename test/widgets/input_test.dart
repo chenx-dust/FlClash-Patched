@@ -4,6 +4,7 @@ import 'package:fl_clash/models/common.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -370,6 +371,97 @@ void main() {
     expect(find.text('No data'), findsOneWidget);
   });
 
+  testWidgets('ListInputPage applies inverse start state to its drag range', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: TestApp(
+          child: ListInputPage(
+            title: 'Items',
+            items: ['a', 'b', 'c', 'd'],
+            titleBuilder: _textBuilder,
+          ),
+        ),
+      ),
+    );
+    final checkboxes = find.byType(Checkbox);
+
+    final selectGesture = await tester.startGesture(
+      tester.getCenter(checkboxes.first),
+    );
+    await tester.pump(kLongPressTimeout);
+    await selectGesture.moveTo(tester.getCenter(checkboxes.last));
+    await selectGesture.up();
+    await tester.pump();
+    expect(
+      List.generate(
+        4,
+        (index) => tester.widget<Checkbox>(checkboxes.at(index)).value,
+      ),
+      everyElement(isTrue),
+    );
+
+    final mixedGesture = await tester.startGesture(
+      tester.getCenter(checkboxes.at(1)),
+    );
+    await tester.pump(kLongPressTimeout);
+    await mixedGesture.moveTo(tester.getCenter(checkboxes.at(2)));
+    await mixedGesture.up();
+    await tester.pump();
+    expect(
+      List.generate(
+        4,
+        (index) => tester.widget<Checkbox>(checkboxes.at(index)).value,
+      ),
+      [true, false, false, true],
+    );
+
+    final reverseGesture = await tester.startGesture(
+      tester.getCenter(checkboxes.at(2)),
+    );
+    await tester.pump(kLongPressTimeout);
+    await reverseGesture.moveTo(tester.getCenter(checkboxes.at(1)));
+    await reverseGesture.up();
+    await tester.pump();
+    expect(
+      List.generate(
+        4,
+        (index) => tester.widget<Checkbox>(checkboxes.at(index)).value,
+      ),
+      everyElement(isTrue),
+    );
+  });
+
+  testWidgets('ListInputPage scrolls when dragging from a checkbox', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(400, 500);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: TestApp(
+          child: ListInputPage(
+            title: 'Items',
+            items: List.generate(20, (index) => '$index'),
+            titleBuilder: _textBuilder,
+          ),
+        ),
+      ),
+    );
+    final scrollable = tester.state<ScrollableState>(
+      find.byType(Scrollable).last,
+    );
+    await tester.drag(find.byType(Checkbox).first, const Offset(0, -200));
+    await tester.pumpAndSettle();
+
+    expect(scrollable.position.pixels, greaterThan(0));
+    expect(find.byIcon(Icons.delete), findsNothing);
+  });
+
   testWidgets('MapInputPage adds, reorders, selects, and deletes entries', (
     tester,
   ) async {
@@ -422,6 +514,79 @@ void main() {
     expect(find.text('No data'), findsOneWidget);
   });
 
+  testWidgets('MapInputPage drag-selects consecutive entries', (tester) async {
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: TestApp(
+          child: MapInputPage(
+            title: 'Map',
+            map: {'a': '1', 'b': '2', 'c': '3', 'd': '4'},
+            titleBuilder: _entryTitle,
+          ),
+        ),
+      ),
+    );
+    final checkboxes = find.byType(Checkbox);
+    final gesture = await tester.startGesture(
+      tester.getCenter(checkboxes.first),
+    );
+    await tester.pump(kLongPressTimeout);
+    await gesture.moveTo(tester.getCenter(checkboxes.at(2)));
+    await gesture.up();
+    await tester.pump();
+
+    expect(
+      List.generate(
+        4,
+        (index) => tester.widget<Checkbox>(checkboxes.at(index)).value,
+      ),
+      [true, true, true, false],
+    );
+  });
+
+  testWidgets('MapInputPage edits multiple values in one dialog', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        child: TestApp(
+          overrides: [_viewSizeOverride],
+          child: const MapInputPage(
+            title: 'Policies',
+            map: {'example.com': '1.1.1.1,8.8.8.8'},
+            keyLabel: 'Domain',
+            valueLabel: 'Nameserver',
+            valueParser: _splitValues,
+            valueSerializer: _joinValues,
+            titleBuilder: _entryTitle,
+            subtitleBuilder: _entrySubtitle,
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('example.com').first);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MapEntryListDialog), findsOneWidget);
+    expect(find.byType(TextFormField), findsNWidgets(3));
+    await tester.tap(find.byIcon(Icons.remove_circle_outline).first);
+    await tester.pump();
+    await tester.tap(
+      find.descendant(
+        of: find.byType(MapEntryListDialog),
+        matching: find.text('Add'),
+      ),
+    );
+    await tester.pump();
+    await tester.enterText(find.byType(TextFormField).last, '9.9.9.9');
+    await tester.tap(find.text('Confirm'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MapEntryListDialog), findsNothing);
+    expect(find.text('8.8.8.8,9.9.9.9'), findsOneWidget);
+  });
+
   test('NoInputBorder implements border geometry and interior painting', () {
     const border = NoInputBorder();
     const rect = Rect.fromLTWH(1, 2, 30, 40);
@@ -451,6 +616,10 @@ Widget _textBuilder(String value) {
 Widget _entryTitle(MapEntry<String, String> value) => Text(value.key);
 
 Widget _entrySubtitle(MapEntry<String, String> value) => Text(value.value);
+
+List<String> _splitValues(String value) => value.split(',');
+
+String _joinValues(List<String> values) => values.join(',');
 
 double _top(WidgetTester tester, String text) {
   return tester.getTopLeft(find.text(text)).dy;

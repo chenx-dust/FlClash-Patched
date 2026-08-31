@@ -10,6 +10,7 @@ import 'package:fl_clash/providers/state.dart';
 import 'package:fl_clash/widgets/theme.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
 
 const _actionMinDuration = Duration(seconds: 6);
 const _maxBufferedMessages = 8;
@@ -61,6 +62,7 @@ class StatusManagerState extends ConsumerState<StatusManager> {
     String text, {
     MessageLevel level = MessageLevel.info,
     MessageActionState? actionState,
+    bool allowCopy = false,
   }) {
     if (text.isEmpty) {
       return;
@@ -71,6 +73,7 @@ class StatusManagerState extends ConsumerState<StatusManager> {
       level: level,
       duration: _resolveDuration(level, actionState),
       actionState: actionState,
+      allowCopy: allowCopy,
     );
     commonPrint.log('message: $text');
     if (_mergeMessage(commonMessage)) {
@@ -445,14 +448,24 @@ class _MessageCard extends StatelessWidget {
           shape: AppShape.lg,
           elevation: 6,
           color: message.level.containerColor(context),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minHeight: _messageMinHeight,
-              maxWidth: _messageMaxWidth,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: _MessageContent(message: message, onDismiss: onDismiss),
+          child: InkWell(
+            onLongPress: message.allowCopy
+                ? () {
+                    Clipboard.setData(ClipboardData(text: message.text));
+                  }
+                : null,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minHeight: _messageMinHeight,
+                maxWidth: _messageMaxWidth,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: _MessageContent(message: message, onDismiss: onDismiss),
+              ),
             ),
           ),
         ),

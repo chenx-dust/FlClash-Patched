@@ -44,29 +44,26 @@ extension BuildContextExtension on BuildContext {
     String text, {
     MessageLevel level = MessageLevel.info,
     MessageActionState? actionState,
+    bool allowCopy = false,
   }) {
     return findAncestorStateOfType<StatusManagerState>()?.message(
       text,
       level: level,
       actionState: actionState,
+      allowCopy: allowCopy,
     );
   }
 
-  void showSnackBar(String message, {SnackBarAction? action}) {
-    final width = MediaQuery.sizeOf(this).width;
-    EdgeInsets margin;
-    if (width < 600) {
-      margin = const EdgeInsets.only(bottom: 16, right: 16, left: 16);
-    } else {
-      margin = EdgeInsets.only(bottom: 16, left: 16, right: width - 316);
-    }
-    ScaffoldMessenger.of(this).showSnackBar(
+  void showSnackBar(String message, {SnackBarAction? action, bool? persist}) {
+    final messenger = ScaffoldMessenger.of(this);
+    messenger.removeCurrentSnackBar();
+    messenger.showSnackBar(
       SnackBar(
         action: action,
+        persist: persist,
         content: Text(message),
-        behavior: SnackBarBehavior.floating,
+        behavior: SnackBarBehavior.fixed,
         duration: const Duration(milliseconds: 1500),
-        margin: margin,
       ),
     );
   }

@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/rendering.dart';
 
 import 'chip.dart';
+import 'focus.dart';
 import 'inherited.dart';
 
 typedef OnKeywordsUpdateCallback = void Function(List<String> keywords);
@@ -49,6 +50,9 @@ class CommonScaffold extends StatefulWidget {
 }
 
 class CommonScaffoldState extends State<CommonScaffold> {
+  static const _normalAppBarKey = ValueKey('normalAppBar');
+  static const _searchAppBarKey = ValueKey('searchAppBar');
+
   late final ValueNotifier<AppBarState> _appBarState;
   final ValueNotifier<bool> _loadingNotifier = ValueNotifier(false);
   final ValueNotifier<bool> _isFabExtendedNotifier = ValueNotifier(true);
@@ -108,6 +112,21 @@ class CommonScaffoldState extends State<CommonScaffold> {
     );
   }
 
+  Widget _buildAppBarTransition(Widget child) {
+    return AnimatedSwitcher(
+      duration: midDuration,
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeInCubic,
+      transitionBuilder: (child, animation) {
+        return FadeTransition(opacity: animation, child: child);
+      },
+      child: KeyedSubtree(
+        key: _isSearch ? _searchAppBarKey : _normalAppBarKey,
+        child: child,
+      ),
+    );
+  }
+
   @override
   void didUpdateWidget(CommonScaffold oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -117,8 +136,11 @@ class CommonScaffoldState extends State<CommonScaffold> {
       );
     }
     if (oldWidget.searchState != widget.searchState) {
+      final currentSearchState = _appBarState.value.searchState;
       _appBarState.value = _appBarState.value.copyWith(
-        searchState: widget.searchState,
+        searchState: widget.searchState?.copyWith(
+          query: currentSearchState?.query,
+        ),
       );
     }
     if (oldWidget.isLoading != widget.isLoading) {
@@ -131,14 +153,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
     if (_appBarState.value.searchState != null) {
       _appBarState.value.searchState!.onSearch('');
     }
-  }
-
-  void _handleClear() {
-    if (_textController.text.isNotEmpty) {
-      _handleClearInput();
-      return;
-    }
-    _popAppBarLayer();
+    _updateSearchState((state) => state?.copyWith(query: ''));
   }
 
   void handleExitSearching() {
@@ -217,16 +232,24 @@ class CommonScaffoldState extends State<CommonScaffold> {
 
   Widget _buildTitle(AppBarSearchState? startState) {
     final appLocalizations = context.appLocalizations;
+    final query = startState?.query ?? '';
+    final isInvalidRegex =
+        startState?.useRegex == true &&
+        query.isNotEmpty &&
+        !SearchMatcher.isValidRegex(query);
     return _isSearch
         ? TextField(
             autofocus: true,
             controller: _textController,
             inputFormatters: TextInputLimits.limit(TextInputLimits.search),
-            style: context.textTheme.titleLarge,
+            style: context.textTheme.titleLarge?.copyWith(
+              color: isInvalidRegex ? context.colorScheme.error : null,
+            ),
             onChanged: (value) {
               if (startState != null) {
                 startState.onSearch(value);
               }
+              _updateSearchState((state) => state?.copyWith(query: value));
             },
             decoration: InputDecoration(hintText: appLocalizations.search),
           )
@@ -239,18 +262,62 @@ class CommonScaffoldState extends State<CommonScaffold> {
           );
   }
 
-  List<Widget> _buildActions(bool hasSearch, List<Widget> actions) {
+  void _toggleRegexSearch(AppBarSearchState searchState) {
+    final useRegex = !searchState.useRegex;
+    searchState.onRegexChange?.call(useRegex);
+    _updateSearchState((state) => state?.copyWith(useRegex: useRegex));
+  }
+
+  Widget _buildRegexSearchButton(AppBarSearchState searchState) {
+    final icon = searchState.useRegex ? Icons.code : Icons.code_outlined;
+    final button = IconButton(
+      tooltip: context.appLocalizations.regexSearch,
+      onPressed: () => _toggleRegexSearch(searchState),
+      icon: Icon(icon),
+    );
+    return searchState.useRegex
+        ? IconButtonTheme(
+            data: IconButtonThemeData(
+              style: IconButton.styleFrom(
+                backgroundColor: context.colorScheme.secondaryContainer,
+                foregroundColor: context.colorScheme.onSecondaryContainer,
+              ),
+            ),
+            child: button,
+          )
+        : button;
+  }
+
+  List<Widget> _buildActions(
+    AppBarSearchState? searchState,
+    List<Widget> actions,
+    bool isTV,
+  ) {
     if (_isSearch) {
       return genActions([
-        IconButton(
-          tooltip: context.appLocalizations.clearSearch,
-          onPressed: _handleClear,
-          icon: const Icon(Icons.close),
-        ),
+        if (_textController.text.isNotEmpty)
+          IconButton(
+            tooltip: context.appLocalizations.clear,
+            onPressed: _handleClearInput,
+            icon: const Icon(Icons.close),
+          ),
+        if (searchState?.onRegexChange != null)
+          _buildRegexSearchButton(searchState!),
       ]);
     }
     return genActions([
-      if (hasSearch && widget.searchState?.autoAddSearch == true)
+      if (isTV && widget.floatingActionButton != null)
+        FocusTraversalOrder(
+          order: const PrimaryFocusOrder(),
+          child: SizedBox(
+            height: 48,
+            child: CommonScaffoldFabExtendedProvider(
+              isExtended: true,
+              child: widget.floatingActionButton!,
+            ),
+          ),
+        ),
+      if (searchState != null && widget.searchState?.autoAddSearch == true)
         IconButton(
           tooltip: context.appLocalizations.search,
           onPressed: () {
@@ -270,7 +337,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
     return appBar;
   }
 
-  PreferredSizeWidget _buildAppBar(VoidCallback? backAction) {
+  PreferredSizeWidget _buildAppBar(VoidCallback? backAction, bool isTV) {
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
       child: Stack(
@@ -280,20 +347,23 @@ class CommonScaffoldState extends State<CommonScaffold> {
               ValueListenableBuilder<AppBarState>(
                 valueListenable: _appBarState,
                 builder: (_, state, _) {
-                  return _buildAppBarWrap(
-                    AppBar(
-                      automaticallyImplyLeading: backAction != null
-                          ? false
-                          : true,
-                      animateColor: true,
-                      centerTitle: widget.centerTitle ?? false,
-                      leading: _buildLeading(backAction),
-                      title: _buildTitle(state.searchState),
-                      actions: _buildActions(
-                        state.searchState != null,
-                        state.actions.isNotEmpty
-                            ? state.actions
-                            : widget.actions ?? [],
+                  return _buildAppBarTransition(
+                    _buildAppBarWrap(
+                      AppBar(
+                        automaticallyImplyLeading: backAction != null
+                            ? false
+                            : true,
+                        animateColor: true,
+                        centerTitle: widget.centerTitle ?? false,
+                        leading: _buildLeading(backAction),
+                        title: _buildTitle(state.searchState),
+                        actions: _buildActions(
+                          state.searchState,
+                          state.actions.isNotEmpty
+                              ? state.actions
+                              : widget.actions ?? [],
+                          isTV,
+                        ),
                       ),
                     ),
                   );
@@ -320,15 +390,21 @@ class CommonScaffoldState extends State<CommonScaffold> {
     final bottomInset = BottomInsetScope.of(context);
     final hasFab = !isTV && widget.floatingActionButton != null;
     final body = SafeArea(
+      bottom: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (isTV && widget.floatingActionButton != null)
+          if (isTV &&
+              widget.appBar != null &&
+              widget.floatingActionButton != null)
             Padding(
               padding: const EdgeInsets.all(16),
-              child: CommonScaffoldFabExtendedProvider(
-                isExtended: true,
-                child: widget.floatingActionButton!,
+              child: FocusTraversalOrder(
+                order: const PrimaryFocusOrder(),
+                child: CommonScaffoldFabExtendedProvider(
+                  isExtended: true,
+                  child: widget.floatingActionButton!,
+                ),
               ),
             ),
           ValueListenableBuilder(
@@ -378,7 +454,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
       child: widget.floatingActionButton,
     );
     return Scaffold(
-      appBar: _buildAppBar(backActionProvider?.backAction),
+      appBar: _buildAppBar(backActionProvider?.backAction, isTV),
       body: NotificationListener<UserScrollNotification>(
         child: hasFab
             ? BottomInsetScope(

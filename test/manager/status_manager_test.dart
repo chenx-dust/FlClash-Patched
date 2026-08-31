@@ -3,6 +3,7 @@ import 'package:fl_clash/manager/status_manager.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/test_app.dart';
@@ -299,6 +300,38 @@ void main() {
     expect(find.text('plain'), findsOneWidget);
     expect(find.byType(Icon), findsNothing);
 
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('a copyable message copies its text on long press', (
+    tester,
+  ) async {
+    String? copiedText;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'Clipboard.setData') {
+          copiedText =
+              (call.arguments as Map<Object?, Object?>)['text'] as String?;
+        }
+        return null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
+
+    final state = await _pumpStatusManager(tester);
+    state.message('copy me', allowCopy: true);
+    await tester.pumpAndSettle();
+
+    await tester.longPress(find.text('copy me'));
+    await tester.pump();
+
+    expect(copiedText, 'copy me');
     await tester.pumpWidget(const SizedBox.shrink());
   });
 

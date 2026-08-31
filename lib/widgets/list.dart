@@ -1,10 +1,11 @@
 import 'package:collection/collection.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/inherited.dart';
-import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'card.dart';
 import 'input.dart';
@@ -105,7 +106,7 @@ final class _InputAction extends _ListItemAction {
   });
 }
 
-class ListItem<T> extends StatelessWidget {
+class ListItem<T> extends ConsumerWidget {
   final Widget? leading;
   final Widget title;
   final Widget? subtitle;
@@ -349,16 +350,23 @@ class ListItem<T> extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     switch (_action) {
       case final _OpenAction openDelegate:
         final child = openDelegate.widget;
         final onChanged = openDelegate.onChanged;
+        final platform = Theme.of(context).platform;
         return OpenContainer<dynamic>(
+          tappable: false,
           closedBuilder: (context, action) {
             Future<void> openAction() async {
               final isMobile = context.isMobileView;
-              if (!isMobile || kDebugMode) {
+              final predictiveBack = ref
+                  .read(themeSettingProvider)
+                  .predictiveBack;
+              if (!isMobile ||
+                  platform == TargetPlatform.iOS ||
+                  platform == TargetPlatform.android && predictiveBack) {
                 final res = await showExtend(
                   context,
                   props: ExtendProps(

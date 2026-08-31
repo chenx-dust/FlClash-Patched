@@ -4,6 +4,7 @@ import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/providers/database.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/theme.dart';
+import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -84,16 +85,38 @@ void main() {
     });
   });
 
+  group('tray icon', () {
+    testWidgets('toggles monochrome tray icons', (tester) async {
+      await pumpThemeView(tester);
+
+      expect(find.text('Monochrome tray icon'), findsOneWidget);
+      expect(readTheme().monochromeTrayIcon, isTrue);
+
+      await tester.tap(find.text('Monochrome tray icon'));
+      await tester.pumpAndSettle();
+
+      expect(readTheme().monochromeTrayIcon, isFalse);
+    });
+  });
+
   group('text scale', () {
-    testWidgets('is disabled until its toggle is enabled', (tester) async {
+    testWidgets('adds and removes the slider with its toggle', (tester) async {
       await pumpThemeView(tester);
 
       expect(readTheme().textScale.enable, isFalse);
+      expect(find.byType(Slider), findsNothing);
 
       await tester.tap(find.byType(Switch).last);
       await tester.pumpAndSettle();
 
       expect(readTheme().textScale.enable, isTrue);
+      expect(find.byType(Slider), findsOneWidget);
+
+      await tester.tap(find.byType(Switch).last);
+      await tester.pumpAndSettle();
+
+      expect(readTheme().textScale.enable, isFalse);
+      expect(find.byType(Slider), findsNothing);
     });
 
     testWidgets('the slider writes a new scale once enabled', (tester) async {
@@ -121,5 +144,19 @@ void main() {
 
       expect(find.text('120%'), findsOneWidget);
     });
+  });
+
+  testWidgets('color removal mode blocks route popping', (tester) async {
+    await pumpThemeView(tester);
+
+    CommonPopScope popScope() =>
+        tester.widget<CommonPopScope>(find.byType(CommonPopScope));
+
+    expect(popScope().canPop, isTrue);
+
+    await tester.longPress(find.byType(ColorSchemeBox).at(1));
+    await tester.pump();
+
+    expect(popScope().canPop, isFalse);
   });
 }

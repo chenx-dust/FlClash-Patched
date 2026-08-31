@@ -205,10 +205,48 @@ void main() {
     expect(find.byType(TextField), findsOneWidget);
 
     await tester.binding.handlePopRoute();
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.byType(TextField), findsNothing);
     expect(rootBackCount, 0);
+  });
+
+  testWidgets('regex search toggles and marks invalid expressions', (
+    tester,
+  ) async {
+    bool? useRegex;
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        supportedLocales: AppLocalizations.delegate.supportedLocales,
+        home: CommonScaffold(
+          title: 'Search',
+          searchState: AppBarSearchState(
+            onSearch: (_) {},
+            onRegexChange: (value) => useRegex = value,
+          ),
+          body: const SizedBox(),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byIcon(Icons.search));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.code_outlined));
+    await tester.pumpAndSettle();
+
+    expect(useRegex, isTrue);
+    expect(find.byIcon(Icons.code), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField), '[');
+    await tester.pump();
+
+    final textField = tester.widget<TextField>(find.byType(TextField));
+    final context = tester.element(find.byType(TextField));
+    expect(textField.style?.color, Theme.of(context).colorScheme.error);
   });
 
   testWidgets('inactive page scope exits the kept search layer', (
