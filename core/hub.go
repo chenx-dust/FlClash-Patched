@@ -4,6 +4,8 @@ import (
 	"cmp"
 	"context"
 	"errors"
+	"fmt"
+	"io"
 	"net"
 	"net/url"
 	"os"
@@ -38,12 +40,43 @@ var (
 	logCancel     context.CancelFunc
 )
 
+var (
+	logNotifyMu      sync.Mutex
+	logNotifyEnabled bool
+	logNotifyCache   [maxCachedLogNotify]StampedLogEvent
+	logNotifyStart   int
+	logNotifyLen     int
+)
+
+var (
+	requestNotifyMu      sync.Mutex
+	requestNotifyEnabled bool
+	requestNotifyCache   [maxCachedRequestNotify]*statistic.TrackerInfo
+	requestNotifyStart   int
+	requestNotifyLen     int
+)
+
+const (
+	maxCachedLogNotify     = 100
+	maxCachedRequestNotify = 100
+)
+
+type StampedLogEvent struct {
+	LogLevel log.LogLevel
+	Payload  string
+	Time     int64
+}
+
 func handleInitClash(params *InitParams) bool {
+	ensureLogStarted()
 	configMu.Lock()
 	defer configMu.Unlock()
 	sdkVersion.Store(int32(params.Version))
 	constant.SetHomeDir(params.HomeDir)
 	initOwnership(params.HomeDir)
+	if features.IOS && !features.WithLowMemory {
+		constant.SetSaveMatcherCache(true)
+	}
 	isInit.Store(true)
 	return true
 }
@@ -74,7 +107,7 @@ func handleForceGC() {
 	log.Infoln("[APP] request force GC")
 	tunnel.InvalidateAllProxies()
 	runtime.GC()
-	if features.Android {
+	if features.Android || features.IOS {
 		debug.FreeOSMemory()
 	}
 }
@@ -561,21 +594,11 @@ func shouldPublishDelay(delay uint16) bool {
 	return delay != 0 || !isSuspended.Load()
 }
 
-func handleStartLog() {
-	logMu.Lock()
-	if logCancel != nil {
-		logCancel()
-		logCancel = nil
-	}
-	if logSubscriber != nil {
-		log.UnSubscribe(logSubscriber)
-		logSubscriber = nil
-	}
+func startLogLocked() {
 	ctx, cancel := context.WithCancel(context.Background())
 	subscriber := log.Subscribe()
 	logSubscriber = subscriber
 	logCancel = cancel
-	logMu.Unlock()
 
 	go func() {
 		defer func() {
@@ -598,13 +621,49 @@ func handleStartLog() {
 				if logData.LogLevel < log.Level() {
 					continue
 				}
+				stampedLog := StampedLogEvent{
+					LogLevel: logData.LogLevel,
+					Payload:  logData.Payload,
+					Time:     time.Now().UnixMilli(),
+				}
+				writeSystemLog(logData.LogLevel.String(), logData.Payload)
+				logNotifyMu.Lock()
+				if !logNotifyEnabled {
+					cacheLog(stampedLog)
+					logNotifyMu.Unlock()
+					continue
+				}
+				logNotifyMu.Unlock()
 				sendMessage(Message{
 					Type: LogMessage,
-					Data: logData,
+					Data: stampedLog,
 				})
 			}
 		}
 	}()
+}
+
+func handleStartLog() {
+	logMu.Lock()
+	if logCancel != nil {
+		logCancel()
+		logCancel = nil
+	}
+	if logSubscriber != nil {
+		log.UnSubscribe(logSubscriber)
+		logSubscriber = nil
+	}
+	startLogLocked()
+	logMu.Unlock()
+}
+
+func ensureLogStarted() {
+	logMu.Lock()
+	defer logMu.Unlock()
+	if logSubscriber != nil {
+		return
+	}
+	startLogLocked()
 }
 
 func handleStopLog() {
@@ -620,12 +679,158 @@ func handleStopLog() {
 	}
 }
 
+func handleStartLogNotify() []StampedLogEvent {
+	ensureLogStarted()
+	logNotifyMu.Lock()
+	defer logNotifyMu.Unlock()
+	logs := make([]StampedLogEvent, logNotifyLen)
+	for i := 0; i < logNotifyLen; i++ {
+		index := (logNotifyStart + i) % maxCachedLogNotify
+		logs[i] = logNotifyCache[index]
+	}
+	logNotifyStart = 0
+	logNotifyLen = 0
+	logNotifyEnabled = true
+	return logs
+}
+
+func handleStopLogNotify() {
+	logNotifyMu.Lock()
+	defer logNotifyMu.Unlock()
+	logNotifyEnabled = false
+}
+
+func cacheLog(logData StampedLogEvent) {
+	if logNotifyLen < maxCachedLogNotify {
+		index := (logNotifyStart + logNotifyLen) % maxCachedLogNotify
+		logNotifyCache[index] = logData
+		logNotifyLen++
+		return
+	}
+	logNotifyCache[logNotifyStart] = logData
+	logNotifyStart = (logNotifyStart + 1) % maxCachedLogNotify
+}
+
+func handleStartRequestNotify() []*statistic.TrackerInfo {
+	requestNotifyMu.Lock()
+	defer requestNotifyMu.Unlock()
+	requests := make([]*statistic.TrackerInfo, requestNotifyLen)
+	for i := 0; i < requestNotifyLen; i++ {
+		index := (requestNotifyStart + i) % maxCachedRequestNotify
+		requests[i] = requestNotifyCache[index]
+		requestNotifyCache[index] = nil
+	}
+	requestNotifyStart = 0
+	requestNotifyLen = 0
+	requestNotifyEnabled = true
+	return requests
+}
+
+func handleStopRequestNotify() {
+	requestNotifyMu.Lock()
+	defer requestNotifyMu.Unlock()
+	requestNotifyEnabled = false
+}
+
 func handleGetMemory() uint64 {
 	return statistic.DefaultManager.Memory()
 }
 
-func handleGetConfig(path string) (*config.RawConfig, error) {
-	buf, err := os.ReadFile(path)
+func managedPathComponents(scope ManagedPathScope) ([]string, error) {
+	switch scope {
+	case profilesPathScope:
+		return []string{"profiles"}, nil
+	case providersPathScope:
+		return []string{"profiles", "providers"}, nil
+	case scriptsPathScope:
+		return []string{"scripts"}, nil
+	default:
+		return nil, fmt.Errorf("invalid managed path scope: %s", scope)
+	}
+}
+
+func resolveManagedPath(relativePath string) (string, error) {
+	if relativePath == "" || relativePath == "." || !filepath.IsLocal(relativePath) {
+		return "", fmt.Errorf("invalid managed relative path: %s", relativePath)
+	}
+	cleanPath := filepath.Clean(relativePath)
+	if cleanPath == "." || !filepath.IsLocal(cleanPath) {
+		return "", fmt.Errorf("invalid managed relative path: %s", relativePath)
+	}
+	return cleanPath, nil
+}
+
+func openManagedRoot(scope ManagedPathScope) (*os.Root, error) {
+	components, err := managedPathComponents(scope)
+	if err != nil {
+		return nil, err
+	}
+	root, err := os.OpenRoot(constant.Path.HomeDir())
+	if err != nil {
+		return nil, err
+	}
+	for _, component := range components {
+		nextRoot, err := root.OpenRoot(component)
+		if err != nil {
+			_ = root.Close()
+			return nil, err
+		}
+		openedInfo, err := nextRoot.Stat(".")
+		if err != nil {
+			_ = nextRoot.Close()
+			_ = root.Close()
+			return nil, err
+		}
+		pathInfo, err := root.Lstat(component)
+		if err != nil {
+			_ = nextRoot.Close()
+			_ = root.Close()
+			return nil, err
+		}
+		if !pathInfo.IsDir() || pathInfo.Mode()&os.ModeSymlink != 0 || !os.SameFile(openedInfo, pathInfo) {
+			_ = nextRoot.Close()
+			_ = root.Close()
+			return nil, fmt.Errorf("managed path scope is not a stable directory: %s", scope)
+		}
+		_ = root.Close()
+		root = nextRoot
+	}
+	return root, nil
+}
+
+func readManagedConfig(root *os.Root, path string) ([]byte, error) {
+	file, err := root.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	fileInfo, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
+	if !fileInfo.Mode().IsRegular() {
+		return nil, fmt.Errorf("config is not a regular file")
+	}
+	return io.ReadAll(file)
+}
+
+func handleGetProfileConfig(profileID int64) (*config.RawConfig, error) {
+	if !isInit.Load() {
+		return nil, fmt.Errorf("not initialized")
+	}
+	if profileID <= 0 {
+		return nil, fmt.Errorf("invalid profile id: %d", profileID)
+	}
+	path, err := resolveManagedPath(strconv.FormatInt(profileID, 10) + ".yaml")
+	if err != nil {
+		return nil, err
+	}
+	root, err := openManagedRoot(profilesPathScope)
+	if err != nil {
+		return nil, err
+	}
+	defer root.Close()
+	buf, err := readManagedConfig(root, path)
 	if err != nil {
 		return nil, err
 	}
@@ -643,28 +848,37 @@ func handleUpdateConfig(params *UpdateParams) string {
 	return ""
 }
 
-// The profile ID is an int64 rendered through strconv, so the last element can
-// never carry a separator or a `..` — that is what keeps handleClearEffect from
-// becoming a general-purpose privileged file deletion API.
-func providerPaths(homeDir string, profileId int64) (root string, target string) {
-	root = filepath.Join(homeDir, "profiles", "providers")
-	return root, filepath.Join(root, strconv.FormatInt(profileId, 10))
-}
-
 // handleClearEffect derives the provider directory from a profile ID so the
 // method cannot be used as a general-purpose privileged file deletion API.
 func handleClearEffect(profileId int64) string {
-	if !isInit.Load() {
-		return "not initialized"
-	}
 	if profileId <= 0 {
 		return "invalid profile id"
 	}
-	providersRoot, providersPath := providerPaths(constant.Path.HomeDir(), profileId)
-	if err := os.RemoveAll(providersPath); err != nil {
+	return handleDeleteManagedPath(&DeleteManagedPathParams{
+		Scope:        providersPathScope,
+		RelativePath: strconv.FormatInt(profileId, 10),
+	})
+}
+
+func handleDeleteManagedPath(params *DeleteManagedPathParams) string {
+	if !isInit.Load() {
+		return "not initialized"
+	}
+	path, err := resolveManagedPath(params.RelativePath)
+	if err != nil {
 		return err.Error()
 	}
-	_ = os.Remove(providersRoot)
+	root, err := openManagedRoot(params.Scope)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return ""
+		}
+		return err.Error()
+	}
+	defer root.Close()
+	if err := root.RemoveAll(path); err != nil {
+		return err.Error()
+	}
 	return ""
 }
 
@@ -695,6 +909,21 @@ func init() {
 		})
 	}
 	statistic.DefaultRequestNotify = func(c statistic.Tracker) {
+		requestNotifyMu.Lock()
+		if !requestNotifyEnabled {
+			request := c.Info()
+			if requestNotifyLen < maxCachedRequestNotify {
+				index := (requestNotifyStart + requestNotifyLen) % maxCachedRequestNotify
+				requestNotifyCache[index] = request
+				requestNotifyLen++
+			} else {
+				requestNotifyCache[requestNotifyStart] = request
+				requestNotifyStart = (requestNotifyStart + 1) % maxCachedRequestNotify
+			}
+			requestNotifyMu.Unlock()
+			return
+		}
+		requestNotifyMu.Unlock()
 		sendMessage(Message{
 			Type: RequestMessage,
 			Data: c,

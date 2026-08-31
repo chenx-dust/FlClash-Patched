@@ -21,7 +21,8 @@ TrayState _trayState({bool isStart = false}) {
     isStart: isStart,
     groups: const [],
     selectedMap: const {},
-    showTrayTitle: false,
+    showNetworkSpeed: false,
+    monochromeTrayIcon: false,
   );
 }
 
@@ -71,7 +72,11 @@ void main() {
       traffic: const Traffic(),
       read: container.read,
     );
-    await AppTray().updateTitle(showTrayTitle: true, traffic: const Traffic());
+    await AppTray().updateTitle(
+      showNetworkSpeed: true,
+      isStart: true,
+      traffic: const Traffic(),
+    );
 
     expect(calls, isEmpty);
   });

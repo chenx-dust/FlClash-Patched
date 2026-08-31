@@ -7,12 +7,12 @@ import 'package:path/path.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 import 'package:shared_preferences_platform_interface/types.dart';
 
-import 'path.dart' show appPath;
+import 'path.dart' show appPath, isPortableMode;
 
 const _defaultPrefix = 'flutter.';
 
 void configurePortablePreferences() {
-  if (!appPath.isPortable) {
+  if (!isPortableMode) {
     return;
   }
   SharedPreferencesStorePlatform.instance = PortableSharedPreferencesStore(

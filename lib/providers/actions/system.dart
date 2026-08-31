@@ -35,6 +35,15 @@ class SystemAction extends _$SystemAction {
     return coordinator.exit(cleanup: () => cleanupExitResources(needSave));
   }
 
+  Future<void> handleReset(ExitStep clearData) async {
+    await closeCore();
+    try {
+      await clearData();
+    } finally {
+      await handleExit(false);
+    }
+  }
+
   @protected
   Duration get exitWatchdogDuration => const Duration(seconds: 3);
 

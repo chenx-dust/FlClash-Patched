@@ -30,7 +30,10 @@ GroupsState currentGroupsState(Ref ref) {
 
 @riverpod
 ProxyState proxyState(Ref ref) {
-  final suspend = ref.watch(suspendProvider);
+  final suspend = resolveProxySuspended(
+    isIOS: system.isIOS,
+    suspend: ref.watch(suspendProvider),
+  );
   final isStart = ref.watch(runTimeProvider.select((state) => state != null));
   final systemProxySelector = ref.watch(
     networkSettingProvider.select(
@@ -49,6 +52,11 @@ ProxyState proxyState(Ref ref) {
     bassDomain: systemProxySelector.bypassDomain,
     port: mixedPort,
   );
+}
+
+@visibleForTesting
+bool resolveProxySuspended({required bool isIOS, required bool suspend}) {
+  return !isIOS && suspend;
 }
 
 @riverpod

@@ -272,27 +272,47 @@ void main() {
     await transport.close();
   });
 
-  test('close fails pending requests and is idempotent', () async {
+  test('close cancels pending requests without an exception', () async {
     final transport = FakeDesktopCoreTransport.connected();
     final client = CoreRpcClient(transport);
     final invocation = client.invoke<bool>(method: CoreMethod.getIsInit);
     await _sentRequest(transport);
 
-    final failure = expectLater(
-      invocation,
-      throwsA(
-        isA<CoreMethodException>().having(
-          (error) => error.code,
-          'code',
-          'transport_disconnected',
-        ),
-      ),
-    );
     await client.close();
     await client.close();
 
-    await failure;
+    expect(await invocation, isNull);
     expect(client.pendingCount, 0);
+    await transport.close();
+  });
+
+  test('shutdown ignores new requests without sending them', () async {
+    final transport = FakeDesktopCoreTransport.connected();
+    final client = CoreRpcClient(transport);
+
+    client.beginShutdown();
+
+    expect(await client.invoke<bool>(method: CoreMethod.getIsInit), isNull);
+    expect(transport.sentMessages, isEmpty);
+    await client.close();
+    await transport.close();
+  });
+
+  test('shutdown suppresses a send failure already in flight', () async {
+    final transport = FakeDesktopCoreTransport.connected();
+    final sendGate = Completer<void>();
+    transport.sendGate = sendGate;
+    final client = CoreRpcClient(transport);
+    final invocation = client.invoke<bool>(method: CoreMethod.getIsInit);
+    await pumpEventQueue();
+
+    client.beginShutdown();
+    transport.sendError = StateError('pipe is closing');
+    sendGate.complete();
+
+    expect(await invocation, isNull);
+    expect(client.pendingCount, 0);
+    await client.close();
     await transport.close();
   });
 

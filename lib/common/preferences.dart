@@ -8,6 +8,8 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'portable_pref.dart';
+
 class Preferences {
   static Preferences? _instance;
   Completer<SharedPreferences?> sharedPreferencesCompleter = Completer();
@@ -16,6 +18,7 @@ class Preferences {
       await sharedPreferencesCompleter.future != null;
 
   Preferences._internal() {
+    configurePortablePreferences();
     SharedPreferences.getInstance()
         .then((value) => sharedPreferencesCompleter.complete(value))
         .onError((_, _) => sharedPreferencesCompleter.complete(null));
