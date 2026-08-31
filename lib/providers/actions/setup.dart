@@ -83,8 +83,14 @@ class SetupAction extends _$SetupAction {
   }
 
   Future<void> _updateStartTime() async {
-    _startTime = await service?.getRunTime();
+    _startTime = await readServiceRunTime();
   }
+
+  @protected
+  bool get shouldRestoreServiceRunTime => system.isMobile;
+
+  @protected
+  Future<DateTime?> readServiceRunTime() async => service?.getRunTime();
 
   Future<void> initStatus() async {
     if (!globalState.needInitStatus) {
@@ -92,7 +98,7 @@ class SetupAction extends _$SetupAction {
       return;
     }
     commonPrint.log('init status');
-    if (system.isAndroid) {
+    if (shouldRestoreServiceRunTime) {
       await _updateStartTime();
     }
     final shouldRun = _isRunning || ref.read(appSettingProvider).autoRun;
@@ -472,7 +478,7 @@ class SetupAction extends _$SetupAction {
       return _SetupTaskResult.completed;
     }
     if (system.isAndroid) {
-      globalState.lastVpnState = ref.read(vpnStateProvider);
+      globalState.lastVpnOptions = ref.read(vpnOptionsProvider);
       final sharedState = ref.read(sharedStateProvider);
       await preferences.saveShareState(sharedState);
     }

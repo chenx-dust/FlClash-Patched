@@ -16,15 +16,6 @@ import (
 	"github.com/metacubex/mihomo/tunnel"
 )
 
-type Options struct {
-	Stack                  string `json:"stack"`
-	Address                string `json:"address"`
-	DNS                    string `json:"dns"`
-	MTU                    uint32 `json:"mtu"`
-	DisableICMPForwarding  bool   `json:"disableIcmpForwarding"`
-	EndpointIndependentNAT bool   `json:"endpointIndependentNat"`
-}
-
 // Start takes ownership of fd. dupFd is handed to sing_tun.New, which only
 // takes ownership of it once tunNew succeeds inside New; from that point
 // Listener.Close (run by New's own deferred cleanup on error) closes dupFd,

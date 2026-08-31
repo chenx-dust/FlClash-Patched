@@ -38,6 +38,10 @@ class System {
 
   bool get isAndroid => Platform.isAndroid;
 
+  bool get isIOS => Platform.isIOS;
+
+  bool get isMobile => isAndroid || isIOS;
+
   bool get isLinux => Platform.isLinux;
 
   bool get isTV => _isTV;
@@ -57,14 +61,16 @@ class System {
       'macos' => (deviceInfo as MacOsDeviceInfo).majorVersion,
       'android' => (deviceInfo as AndroidDeviceInfo).version.sdkInt,
       'windows' => (deviceInfo as WindowsDeviceInfo).majorVersion,
+      'ios' =>
+        int.tryParse(
+              (deviceInfo as IosDeviceInfo).systemVersion.split('.').first,
+            ) ??
+            0,
       String() => 0,
     };
   }
 
-  Future<bool> didCrashOnPreviousExecution() async {
-    if (!isAndroid) return false;
-    return await app?.didCrashOnPreviousExecution() ?? false;
-  }
+  Future<bool> didCrashOnPreviousExecution() => Future.value(false);
 
   Future<AppExitInfo?> lastExitInfo() async {
     if (!isAndroid) return null;

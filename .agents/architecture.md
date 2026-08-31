@@ -581,8 +581,8 @@ returns the JSON the script produced. Nothing about the script runs in Dart.
 
 - QuickJS is compiled from source for the target being built, which is what removed the prebuilt `quickjs-c-bridge`
   binaries: `flutter_js` shipped x64 Windows and desktop-only libraries, so Windows ARM64 could not start (#2361).
-- `rquickjs` carries pre-generated bindings for every target this project builds except the Android ones, so Android
-  builds enable its `bindgen` feature. That needs the NDK's own libclang and sysroot;
+- `rquickjs` does not carry pre-generated bindings for Android or iOS, so those targets enable its `bindgen` feature.
+  Android needs the NDK's own libclang and sysroot;
   `cargokit/build_tool/lib/src/android_environment.dart` exports `LIBCLANG_PATH` and `BINDGEN_EXTRA_CLANG_ARGS` for it,
   which is a local change to vendored Cargokit.
 - Evaluation is bounded: a 10-second interrupt deadline and a memory ceiling, because a script that never returns would

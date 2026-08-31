@@ -1,5 +1,9 @@
 part of '../state.dart';
 
+final vpnOptionsProvider = Provider<VpnOptions?>((ref) {
+  return ref.watch(sharedStateProvider.select((state) => state.vpnOptions));
+});
+
 @riverpod
 UpdateParams updateParams(Ref ref) {
   final routeMode = ref.watch(

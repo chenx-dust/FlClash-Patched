@@ -127,6 +127,14 @@ func ShouldBlockConnection() bool {
 	return blocked
 }
 
+func RequiresProtectCallback() bool {
+	return true
+}
+
+func CloseRejectedTunDescriptor(fd int) {
+	_ = syscall.Close(fd)
+}
+
 func probeFdPressure() bool {
 	fd, err := syscall.Dup(nullFd)
 	if err != nil {

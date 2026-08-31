@@ -1,4 +1,4 @@
-//go:build android && cgo
+//go:build ios && cgo
 
 package main
 
@@ -37,6 +37,14 @@ func retainObject(callback unsafe.Pointer) unsafe.Pointer {
 }
 
 func writeSystemLog(level, message string) {
+	l := C.CString(level)
+	defer C.free(unsafe.Pointer(l))
+	m := C.CString(message)
+	defer C.free(unsafe.Pointer(m))
+	C.system_log(l, m)
+}
+
+func handleUpdateDns(value string) {
 }
 
 func takeCString(s *C.char) string {

@@ -45,7 +45,7 @@ class _FakeService implements Service {
   }
 
   @override
-  Future<bool> start() async {
+  Future<bool> start(SharedState state) async {
     calls.add('start');
     return startResult;
   }
@@ -237,6 +237,26 @@ void main() {
 
       expect(await lib.stopListener(), isTrue);
       expect(service.calls, ['stop', 'invokeMethod:stopListener']);
+    });
+
+    test('service-owned listener starts only through the service', () async {
+      lib = CoreLib.scoped(service, listenerManagedByService: true);
+      await lib.start();
+      service.calls.clear();
+
+      expect(await lib.startListener(), isTrue);
+      expect(service.calls, ['start']);
+      expect(service.invokedCalls, isEmpty);
+    });
+
+    test('service-owned listener stops only through the service', () async {
+      lib = CoreLib.scoped(service, listenerManagedByService: true);
+      await lib.start();
+      service.calls.clear();
+
+      expect(await lib.stopListener(), isTrue);
+      expect(service.calls, ['stop']);
+      expect(service.invokedCalls, isEmpty);
     });
   });
 

@@ -1,4 +1,4 @@
-//go:build android && cgo
+//go:build (android || ios) && cgo
 
 package main
 
@@ -14,7 +14,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"strings"
 	"sync"
 	"sync/atomic"
 	"syscall"
@@ -23,7 +22,6 @@ import (
 	"github.com/metacubex/mihomo/component/dialer"
 	"github.com/metacubex/mihomo/component/process"
 	"github.com/metacubex/mihomo/constant"
-	"github.com/metacubex/mihomo/dns"
 	"github.com/metacubex/mihomo/listener/sing_tun"
 	"github.com/metacubex/mihomo/log"
 )
@@ -92,7 +90,7 @@ func (th *TunHandler) handleProtect(fd int) error {
 	th.mu.RLock()
 	defer th.mu.RUnlock()
 
-	if th.listener == nil || th.callback == nil {
+	if th.listener == nil || (th.callback == nil && platform.RequiresProtectCallback()) {
 		// The tun routes are already live at this point (Android establishes
 		// them before it hands the fd over), so an unprotected socket would be
 		// routed straight back into the tunnel and hang until it times out.
@@ -240,25 +238,6 @@ func handleStartTun(callback unsafe.Pointer, fd int, options t.Options) bool {
 	return false
 }
 
-var (
-	dnsUpdateMu  sync.Mutex
-	dnsUpdateSeq atomic.Uint64
-)
-
-func handleUpdateDns(value string) {
-	seq := dnsUpdateSeq.Add(1)
-	safeGoDetached("updateDns", func() {
-		dnsUpdateMu.Lock()
-		defer dnsUpdateMu.Unlock()
-		if seq != dnsUpdateSeq.Load() {
-			return
-		}
-		log.Infoln("[DNS] updateDns %s", value)
-		dns.UpdateSystemDNS(strings.Split(value, ","))
-		dns.FlushCacheWithDefaultResolver()
-	})
-}
-
 func (response MethodResponse) send() {
 	if response.callback != nil {
 		defer releaseObject(response.callback)
@@ -308,7 +287,7 @@ func startTUN(callback unsafe.Pointer, fd C.int, optionsChar *C.char) bool {
 		if callback != nil {
 			releaseObject(callback)
 		}
-		_ = syscall.Close(int(fd))
+		platform.CloseRejectedTunDescriptor(int(fd))
 		return false
 	}
 	started := handleStartTun(callback, int(fd), options)

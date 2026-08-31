@@ -15,9 +15,9 @@ rquickjs = { version = "0.12", default-features = false }
 [target.'cfg(not(target_os = "android"))'.dependencies]
 interprocess = "2"
 
-# rquickjs ships pre-generated bindings for every target this project builds
-# except the Android ones, which have to be generated during the build.
-[target.'cfg(target_os = "android")'.dependencies]
+# rquickjs does not ship pre-generated bindings for Android or iOS, so generate
+# them from the target SDK headers during the build.
+[target.'cfg(any(target_os = "android", target_os = "ios"))'.dependencies]
 rquickjs = { version = "0.12", default-features = false, features = ["bindgen"] }
 
 [target.'cfg(windows)'.dependencies]
