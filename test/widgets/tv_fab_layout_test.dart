@@ -1,7 +1,20 @@
+import 'package:fl_clash/l10n/l10n.dart';
+import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+Widget _localizedApp(Widget home) {
+  return MaterialApp(
+    localizationsDelegates: const [
+      AppLocalizations.delegate,
+      ...GlobalMaterialLocalizations.delegates,
+    ],
+    supportedLocales: AppLocalizations.delegate.supportedLocales,
+    home: home,
+  );
+}
 
 Widget _action() {
   return CommonFloatingActionButton(
@@ -77,6 +90,39 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.getTopLeft(action).dy, initialActionTop);
+  });
+
+  testWidgets('generated TV AppBar puts the primary action before search', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _localizedApp(
+        CommonScaffold(
+          title: 'page',
+          isTV: true,
+          searchState: AppBarSearchState(onSearch: (_) {}),
+          floatingActionButton: _action(),
+          body: _content(),
+        ),
+      ),
+    );
+
+    final action = find.byKey(const ValueKey('action'));
+    final search = find.byIcon(Icons.search);
+    final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+
+    expect(scaffold.floatingActionButton, isNull);
+    expect(
+      find.ancestor(of: action, matching: find.byType(AppBar)),
+      findsOneWidget,
+    );
+    expect(tester.getCenter(action).dx, lessThan(tester.getCenter(search).dx));
+
+    await tester.tap(search);
+    await tester.pumpAndSettle();
+
+    expect(action, findsNothing);
+    expect(find.byType(TextField), findsOneWidget);
   });
 
   testWidgets('TV top action is the first focus target in page content', (

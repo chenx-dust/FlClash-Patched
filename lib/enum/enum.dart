@@ -207,23 +207,16 @@ enum ProxiesLayout { loose, standard, tight }
 enum ProxyCardType { expand, shrink, min }
 
 enum DnsMode {
-  normal,
+  normal('normal'),
   @JsonValue('fake-ip')
-  fakeIp,
+  fakeIp('fake-ip'),
   @JsonValue('redir-host')
-  redirHost,
-  hosts,
-}
-
-enum ExternalControllerStatus {
-  @JsonValue('')
-  close(''),
-  @JsonValue('127.0.0.1:9090')
-  open('127.0.0.1:9090');
+  redirHost('redir-host'),
+  hosts('hosts');
 
   final String value;
 
-  const ExternalControllerStatus(this.value);
+  const DnsMode(this.value);
 }
 
 enum KeyboardModifier {
@@ -272,7 +265,6 @@ enum FunctionTag {
   updateDelay,
   vpnTip,
   autoLaunch,
-  renderPause,
   updatePageIndex,
   pageChange,
   proxiesTabChange,
@@ -284,6 +276,7 @@ enum FunctionTag {
   removeProxy,
   suspend,
   coreErrorNotifier,
+  handleBack,
 }
 
 enum DashboardWidget {

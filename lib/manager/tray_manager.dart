@@ -99,7 +99,7 @@ class _TrayManagerState extends ConsumerState<TrayManager> {
       case TrayMenuRequested():
         _openMenu();
       case TrayMenuItemSelected():
-        render?.active();
+        break;
     }
   }
 

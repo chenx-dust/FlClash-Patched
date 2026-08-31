@@ -1,36 +1,21 @@
 import 'package:fl_clash/common/navigator.dart';
-import 'package:fl_clash/providers/app.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  late ProviderContainer container;
-
-  setUp(() => container = ProviderContainer());
-
-  tearDown(() => container.dispose());
-
-  void setViewWidth(double width) {
-    container.read(viewSizeProvider.notifier).value = Size(width, 900);
-  }
-
   Future<void> pumpHost(WidgetTester tester) async {
     await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: MaterialApp(
-          home: Builder(
-            builder: (context) => Scaffold(
-              body: TextButton(
-                onPressed: () => BaseNavigator.push(
-                  context,
-                  const Scaffold(body: Text('pushed page')),
-                ),
-                child: const Text('open'),
+      MaterialApp(
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: TextButton(
+              onPressed: () => BaseNavigator.push(
+                context,
+                const Scaffold(body: Text('pushed page')),
               ),
+              child: const Text('open'),
             ),
           ),
         ),
@@ -40,31 +25,18 @@ void main() {
   }
 
   group('BaseNavigator.push', () {
-    testWidgets('uses the fading desktop route on a wide view', (tester) async {
-      setViewWidth(1400);
-      await pumpHost(tester);
-
-      await tester.tap(find.text('open'));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
-
-      expect(find.byType(FadeTransition), findsWidgets);
-      await tester.pumpAndSettle();
-      expect(find.text('pushed page'), findsOneWidget);
-    });
-
-    testWidgets('uses the shared-axis route on a mobile view', (tester) async {
-      setViewWidth(400);
+    testWidgets('uses the app-themed material route', (tester) async {
       await pumpHost(tester);
 
       await tester.tap(find.text('open'));
       await tester.pumpAndSettle();
 
       expect(find.text('pushed page'), findsOneWidget);
+      final route = ModalRoute.of(tester.element(find.text('pushed page')));
+      expect(route, isA<CommonRoute<void>>());
     });
 
     testWidgets('pops back to the origin', (tester) async {
-      setViewWidth(1400);
       await pumpHost(tester);
       await tester.tap(find.text('open'));
       await tester.pumpAndSettle();
@@ -79,30 +51,12 @@ void main() {
   });
 
   group('route configuration', () {
-    test('desktop route exposes a transparent barrier and keeps state', () {
-      final route = CommonDesktopRoute<void>(builder: (_) => const SizedBox());
+    test('CommonRoute can update the predictive-back pop result', () {
+      final route = CommonRoute<int>(builder: (_) => const SizedBox());
 
-      expect(route.barrierColor, isNull);
-      expect(route.barrierLabel, isNull);
-      expect(route.maintainState, isTrue);
-      expect(route.transitionDuration, const Duration(milliseconds: 200));
-      expect(
-        route.reverseTransitionDuration,
-        const Duration(milliseconds: 200),
-      );
-    });
-
-    test('mobile route uses the longer shared-axis duration', () {
-      final route = CommonRoute<void>(builder: (_) => const SizedBox());
-
-      expect(route.barrierColor, isNull);
-      expect(route.barrierLabel, isNull);
-      expect(route.maintainState, isTrue);
-      expect(route.transitionDuration, const Duration(milliseconds: 300));
-      expect(
-        route.reverseTransitionDuration,
-        const Duration(milliseconds: 300),
-      );
+      expect(route.currentResult, isNull);
+      route.updateCurrentResult(7);
+      expect(route.currentResult, 7);
     });
   });
 

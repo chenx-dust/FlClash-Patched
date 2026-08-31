@@ -1,12 +1,11 @@
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/l10n/l10n.dart';
-import 'package:fl_clash/manager/hotkey_manager.dart';
+import 'package:fl_clash/manager/back_manager.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/pages/home.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
-import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,7 +15,6 @@ void main() {
   testWidgets('desktop escape runs the back flow and exits search', (
     tester,
   ) async {
-    debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
     final container = ProviderContainer();
     addTearDown(container.dispose);
     globalState.container = container;
@@ -31,7 +29,7 @@ void main() {
             ...GlobalMaterialLocalizations.delegates,
           ],
           supportedLocales: AppLocalizations.delegate.supportedLocales,
-          home: HotKeyManager(
+          home: BackManager(
             child: CommonScaffold(
               title: 'Logs',
               searchState: AppBarSearchState(onSearch: (_) {}),
@@ -70,7 +68,6 @@ void main() {
       findsNothing,
       reason: 'escape must exit search through the back flow',
     );
-    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets('TV back exits search on the desktop nested route', (
@@ -128,7 +125,7 @@ void main() {
             ...GlobalMaterialLocalizations.delegates,
           ],
           supportedLocales: AppLocalizations.delegate.supportedLocales,
-          home: const HomePage(),
+          home: const BackManager(child: HomePage()),
         ),
       ),
     );
