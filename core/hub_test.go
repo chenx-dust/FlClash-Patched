@@ -328,34 +328,23 @@ func TestDelayValue(t *testing.T) {
 	}
 }
 
-func TestProviderPathsStayUnderTheRoot(t *testing.T) {
-	home := filepath.Join("var", "home")
-	root, target := providerPaths(home, 1234567890123)
-
-	wantRoot := filepath.Join(home, "profiles", "providers")
-	if root != wantRoot {
-		t.Fatalf("root = %q, want %q", root, wantRoot)
-	}
-	wantTarget := filepath.Join(wantRoot, "1234567890123")
-	if target != wantTarget {
-		t.Fatalf("target = %q, want %q", target, wantTarget)
+func TestResolveManagedPathAcceptsLocalChildren(t *testing.T) {
+	for _, path := range []string{"1234567890123", "nested/file.yaml"} {
+		got, err := resolveManagedPath(path)
+		if err != nil {
+			t.Fatalf("resolveManagedPath(%q): %v", path, err)
+		}
+		if got != filepath.Clean(path) {
+			t.Fatalf("resolveManagedPath(%q) = %q", path, got)
+		}
 	}
 }
 
-// The ID is an int64 rendered through strconv, so no caller-supplied value can
-// add a separator or climb out of the providers root.
-func TestProviderPathsCannotEscape(t *testing.T) {
-	home := t.TempDir()
-	ids := []int64{1, -1, 0, 1 << 62, -(1 << 62)}
-
-	for _, id := range ids {
-		root, target := providerPaths(home, id)
-		cleaned := filepath.Clean(target)
-		if !strings.HasPrefix(cleaned, root+string(filepath.Separator)) {
-			t.Errorf("providerPaths(%d) escaped: %q is outside %q", id, cleaned, root)
-		}
-		if filepath.Dir(cleaned) != root {
-			t.Errorf("providerPaths(%d) = %q, want a direct child of %q", id, cleaned, root)
+func TestResolveManagedPathRejectsEscapes(t *testing.T) {
+	paths := []string{"", ".", "..", "../outside", filepath.Join(t.TempDir(), "outside")}
+	for _, path := range paths {
+		if got, err := resolveManagedPath(path); err == nil {
+			t.Errorf("resolveManagedPath(%q) = %q, want error", path, got)
 		}
 	}
 }
@@ -466,6 +455,57 @@ func TestHandleShutdownTearsDownBackgroundWork(t *testing.T) {
 	}
 	if !cancelled {
 		t.Error("shutdown never cancelled the log pump")
+	}
+}
+
+func TestHandleInitClashRestartsLogPumpAfterShutdown(t *testing.T) {
+	handleStopLog()
+	t.Cleanup(func() {
+		handleStopLog()
+		isInit.Store(false)
+	})
+
+	params := &InitParams{HomeDir: t.TempDir()}
+	if !handleInitClash(params) {
+		t.Fatal("handleInitClash returned false")
+	}
+
+	logMu.Lock()
+	firstSubscriber := logSubscriber
+	firstCancel := logCancel
+	logMu.Unlock()
+	if firstSubscriber == nil || firstCancel == nil {
+		t.Fatal("handleInitClash did not start the log pump")
+	}
+
+	handleInitClash(params)
+	logMu.Lock()
+	reusedSubscriber := logSubscriber
+	logMu.Unlock()
+	if reusedSubscriber != firstSubscriber {
+		t.Error("repeated initialization replaced the active log subscription")
+	}
+
+	handleShutdown()
+	logMu.Lock()
+	stoppedSubscriber, stoppedCancel := logSubscriber, logCancel
+	logMu.Unlock()
+	if stoppedSubscriber != nil || stoppedCancel != nil {
+		t.Fatal("shutdown left the log pump active")
+	}
+
+	if !handleInitClash(params) {
+		t.Fatal("handleInitClash returned false after shutdown")
+	}
+	logMu.Lock()
+	restartedSubscriber := logSubscriber
+	restartedCancel := logCancel
+	logMu.Unlock()
+	if restartedSubscriber == nil || restartedCancel == nil {
+		t.Fatal("handleInitClash did not restart the log pump after shutdown")
+	}
+	if restartedSubscriber == firstSubscriber {
+		t.Error("handleInitClash reused the closed log subscription after shutdown")
 	}
 }
 

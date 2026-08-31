@@ -201,9 +201,8 @@ class CoreController {
   }
 
   Future<Map<String, dynamic>> getConfig(int id) async {
-    final profilePath = await appPath.getProfilePath(id.toString());
     final data = Map<String, dynamic>.from(
-      await _interface.getConfig(profilePath),
+      await _interface.getProfileConfig(id),
     );
     data['rules'] = data['rule'];
     data.remove('rule');
@@ -226,12 +225,20 @@ class CoreController {
     _interface.resetTraffic();
   }
 
-  void startLog() {
-    _interface.startLog();
+  Future<List<Log>> startLogNotify() async {
+    return _interface.startLogNotify();
   }
 
-  void stopLog() {
-    _interface.stopLog();
+  void stopLogNotify() {
+    _interface.stopLogNotify();
+  }
+
+  Future<List<TrackerInfo>> startRequestNotify() async {
+    return _interface.startRequestNotify();
+  }
+
+  void stopRequestNotify() {
+    _interface.stopRequestNotify();
   }
 
   Future<void> requestGc() async {
@@ -244,6 +251,10 @@ class CoreController {
 
   Future<String> clearEffect(int profileId) async {
     return _interface.clearEffect(profileId);
+  }
+
+  Future<String> deleteManagedPath(DeleteManagedPathParams params) async {
+    return _interface.deleteManagedPath(params);
   }
 }
 

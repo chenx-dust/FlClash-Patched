@@ -97,7 +97,24 @@ void main() {
 
     expect(await first, same(result));
     expect(await second, same(result));
+    verify(() => rpcClient.beginShutdown()).called(1);
     verify(() => lifecycle.close()).called(1);
+    verify(() => rpcClient.close()).called(1);
+  });
+
+  test('close keeps RPC subscriptions until Core shutdown finishes', () async {
+    final lifecycleClose = Completer<CoreLifecycleResult>();
+    when(() => lifecycle.close()).thenAnswer((_) => lifecycleClose.future);
+
+    final closing = service.close();
+    await pumpEventQueue();
+
+    verify(() => rpcClient.beginShutdown()).called(1);
+    verify(() => lifecycle.close()).called(1);
+    verifyNever(() => rpcClient.close());
+
+    lifecycleClose.complete(result);
+    expect(await closing, same(result));
     verify(() => rpcClient.close()).called(1);
   });
 }

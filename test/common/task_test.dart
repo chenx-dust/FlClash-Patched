@@ -10,6 +10,17 @@ import 'package:yaml/yaml.dart';
 int _double(int value) => value * 2;
 
 void main() {
+  test('effectiveGeositeMatcher forces succinct only on iOS', () {
+    expect(
+      effectiveGeositeMatcher(configured: GeositeMatcher.mph, isIOS: true),
+      GeositeMatcher.succinct,
+    );
+    expect(
+      effectiveGeositeMatcher(configured: GeositeMatcher.mph, isIOS: false),
+      GeositeMatcher.mph,
+    );
+  });
+
   test('encoding helpers round-trip structured data', () async {
     final encoded = await encodeJSONTask({
       'name': 'FlClash',

@@ -4,6 +4,8 @@
 
 extern void (*release_object_func)(void *obj);
 
+extern void *(*retain_object_func)(void *obj);
+
 extern void (*free_string_func)(char *data);
 
 extern int (*protect_func)(void *tun_interface, int fd);
@@ -14,6 +16,8 @@ extern char* (*resolve_package_func)(void *tun_interface, int uid);
 
 extern void (*result_func)(void *invoke_Interface, const char *data);
 
+extern void (*system_log_func)(const char *level, const char *message);
+
 extern int protect(void *tun_interface, int fd);
 
 // Returns -1 when the system will not name the owner of the connection.
@@ -23,6 +27,10 @@ extern char* resolve_package(void *tun_interface, int uid);
 
 extern void release_object(void *obj);
 
+extern void *retain_object(void *obj);
+
 extern void free_string(char *data);
 
 extern void result(void *invoke_Interface,  const char *data);
+
+extern void system_log(const char *level, const char *message);

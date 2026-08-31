@@ -48,16 +48,6 @@ class _CoreContainerState extends ConsumerState<CoreManager>
         ref.read(setupActionProvider.notifier).updateConfigDebounce();
       }
     });
-    ref.listenManual(appSettingProvider.select((state) => state.openLogs), (
-      prev,
-      next,
-    ) {
-      if (next) {
-        _core.startLog();
-      } else {
-        _core.stopLog();
-      }
-    }, fireImmediately: true);
   }
 
   @override

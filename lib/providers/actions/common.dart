@@ -24,8 +24,12 @@ class CommonAction extends _$CommonAction {
 
   void updateSpeedStatistics() {
     ref
-        .read(appSettingProvider.notifier)
-        .update((state) => state.copyWith(showTrayTitle: !state.showTrayTitle));
+        .read(vpnSettingProvider.notifier)
+        .update(
+          (state) => state.copyWith(
+            networkSpeedNotification: !state.networkSpeedNotification,
+          ),
+        );
   }
 
   void updateMode() {

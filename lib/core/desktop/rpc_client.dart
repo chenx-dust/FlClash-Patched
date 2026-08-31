@@ -25,6 +25,8 @@ abstract interface class CoreRpcChannel {
     Duration? timeout,
   });
 
+  void beginShutdown();
+
   Future<void> close();
 }
 
@@ -36,6 +38,7 @@ final class CoreRpcClient implements CoreRpcChannel {
   late final StreamSubscription<DesktopTransportEvent> _eventSubscription;
 
   int _methodCallId = 0;
+  bool _shutdownRequested = false;
   Future<void>? _closeOperation;
 
   /// Time since Core last answered any request. A method timeout is a liveness
@@ -64,11 +67,8 @@ final class CoreRpcClient implements CoreRpcChannel {
     Object? arguments,
     Duration? timeout,
   }) async {
-    if (_closeOperation != null) {
-      throw const CoreMethodException(
-        code: 'transport_disconnected',
-        message: 'Core RPC client is closed',
-      );
+    if (_shutdownRequested) {
+      return null;
     }
     final id = '${++_methodCallId}';
     final completer = Completer<Object?>();
@@ -114,6 +114,9 @@ final class CoreRpcClient implements CoreRpcChannel {
       rethrow;
     } catch (error) {
       _removePending(id, completer);
+      if (_shutdownRequested) {
+        return null;
+      }
       throw CoreMethodException(
         code: 'transport_error',
         message: 'Unable to send ${method.name} to Core',
@@ -265,18 +268,32 @@ final class CoreRpcClient implements CoreRpcChannel {
     }
   }
 
+  void _completePending() {
+    final completers = _pending.values.toList(growable: false);
+    _pending.clear();
+    for (final completer in completers) {
+      if (!completer.isCompleted) {
+        completer.complete(null);
+      }
+    }
+  }
+
+  @override
+  void beginShutdown() {
+    if (_shutdownRequested) {
+      return;
+    }
+    _shutdownRequested = true;
+    _completePending();
+  }
+
   @override
   Future<void> close() {
     return _closeOperation ??= _close();
   }
 
   Future<void> _close() async {
-    _failPending(
-      const CoreMethodException(
-        code: 'transport_disconnected',
-        message: 'Core RPC client is closed',
-      ),
-    );
+    beginShutdown();
     await _frameSubscription.cancel();
     await _eventSubscription.cancel();
   }

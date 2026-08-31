@@ -39,6 +39,7 @@ abstract class CommonMessage with _$CommonMessage {
     @Default(MessageLevel.info) MessageLevel level,
     @Default(Duration(seconds: 3)) Duration duration,
     MessageActionState? actionState,
+    @Default(false) bool allowCopy,
   }) = _CommonMessage;
 }
 
@@ -111,16 +112,9 @@ abstract class TrayState with _$TrayState {
     required bool isStart,
     required List<Group> groups,
     required Map<String, String> selectedMap,
-    required bool showTrayTitle,
+    required bool showNetworkSpeed,
+    required bool monochromeTrayIcon,
   }) = _TrayState;
-}
-
-@freezed
-abstract class TrayTitleState with _$TrayTitleState {
-  const factory TrayTitleState({
-    required Traffic traffic,
-    required bool showTrayTitle,
-  }) = _TrayTitleState;
 }
 
 @freezed

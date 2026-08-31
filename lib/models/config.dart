@@ -86,7 +86,6 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default(false) bool hidden,
     @Default(false) bool developerMode,
     @Default(RestoreStrategy.compatible) RestoreStrategy restoreStrategy,
-    @Default(true) bool showTrayTitle,
     @Default(true) bool checkCertificate,
     @Default('') String customUserAgent,
   }) = _AppSettingProps;
@@ -161,6 +160,7 @@ abstract class VpnProps with _$VpnProps {
     @Default(false) bool ipv6,
     @Default(true) bool allowBypass,
     @Default(false) bool dnsHijacking,
+    @Default(false) bool networkSpeedNotification,
     @Default(defaultAccessControlProps) AccessControlProps accessControlProps,
   }) = _VpnProps;
 
@@ -236,6 +236,7 @@ abstract class ThemeProps with _$ThemeProps {
     @Default(ThemeMode.dark) ThemeMode themeMode,
     @Default(DynamicSchemeVariant.content) DynamicSchemeVariant schemeVariant,
     @Default(false) bool pureBlack,
+    @Default(true) bool monochromeTrayIcon,
     @Default(TextScale()) TextScale textScale,
   }) = _ThemeProps;
 

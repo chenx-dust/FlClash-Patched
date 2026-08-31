@@ -175,4 +175,40 @@ void main() {
 
     await expectLater(appPath.ensureProviderDirs(9), completes);
   });
+
+  test('migrates missing iOS app-group data without overwriting it', () async {
+    final source = Directory(join(root.path, 'legacy'))..createSync();
+    final target = Directory(join(root.path, 'app-group'))..createSync();
+    File(join(source.path, 'config.yaml')).writeAsStringSync('legacy');
+    final sourceProfiles = Directory(join(source.path, 'profiles'))
+      ..createSync();
+    File(join(sourceProfiles.path, '1.yaml')).writeAsStringSync('profile');
+    File(join(target.path, 'config.yaml')).writeAsStringSync('current');
+
+    final resolved = await migrateIOSDataDirectory(
+      supportDirectory: source,
+      appGroupPath: target.path,
+    );
+
+    expect(resolved.path, target.path);
+    expect(
+      File(join(target.path, 'config.yaml')).readAsStringSync(),
+      'current',
+    );
+    expect(
+      File(join(target.path, 'profiles', '1.yaml')).readAsStringSync(),
+      'profile',
+    );
+  });
+
+  test('uses application support when no iOS app-group is available', () async {
+    final source = Directory(join(root.path, 'support'))..createSync();
+
+    final resolved = await migrateIOSDataDirectory(
+      supportDirectory: source,
+      appGroupPath: '',
+    );
+
+    expect(resolved.path, source.path);
+  });
 }

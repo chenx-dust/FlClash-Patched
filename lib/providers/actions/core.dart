@@ -29,7 +29,11 @@ class CoreAction extends _$CoreAction {
       await _applyLifecycleResult(result);
     } catch (error) {
       ref.read(coreStatusProvider.notifier).value = CoreStatus.disconnected;
-      dialogs.showNotifier(error.toString(), level: MessageLevel.error);
+      dialogs.showNotifier(
+        error.toString(),
+        level: MessageLevel.error,
+        allowCopy: true,
+      );
     }
   }
 

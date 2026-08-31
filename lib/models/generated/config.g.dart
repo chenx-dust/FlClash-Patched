@@ -36,7 +36,6 @@ _AppSettingProps _$AppSettingPropsFromJson(Map<String, dynamic> json) =>
             json['restoreStrategy'],
           ) ??
           RestoreStrategy.compatible,
-      showTrayTitle: json['showTrayTitle'] as bool? ?? true,
       checkCertificate: json['checkCertificate'] as bool? ?? true,
       customUserAgent: json['customUserAgent'] as String? ?? '',
     );
@@ -65,7 +64,6 @@ Map<String, dynamic> _$AppSettingPropsToJson(_AppSettingProps instance) =>
       'hidden': instance.hidden,
       'developerMode': instance.developerMode,
       'restoreStrategy': _$RestoreStrategyEnumMap[instance.restoreStrategy]!,
-      'showTrayTitle': instance.showTrayTitle,
       'checkCertificate': instance.checkCertificate,
       'customUserAgent': instance.customUserAgent,
     };
@@ -154,6 +152,7 @@ _VpnProps _$VpnPropsFromJson(Map<String, dynamic> json) => _VpnProps(
   ipv6: json['ipv6'] as bool? ?? false,
   allowBypass: json['allowBypass'] as bool? ?? true,
   dnsHijacking: json['dnsHijacking'] as bool? ?? false,
+  networkSpeedNotification: json['networkSpeedNotification'] as bool? ?? false,
   accessControlProps: json['accessControlProps'] == null
       ? defaultAccessControlProps
       : AccessControlProps.fromJson(
@@ -167,6 +166,7 @@ Map<String, dynamic> _$VpnPropsToJson(_VpnProps instance) => <String, dynamic>{
   'ipv6': instance.ipv6,
   'allowBypass': instance.allowBypass,
   'dnsHijacking': instance.dnsHijacking,
+  'networkSpeedNotification': instance.networkSpeedNotification,
   'accessControlProps': instance.accessControlProps,
 };
 
@@ -299,6 +299,7 @@ _ThemeProps _$ThemePropsFromJson(Map<String, dynamic> json) => _ThemeProps(
       ) ??
       DynamicSchemeVariant.content,
   pureBlack: json['pureBlack'] as bool? ?? false,
+  monochromeTrayIcon: json['monochromeTrayIcon'] as bool? ?? true,
   textScale: json['textScale'] == null
       ? const TextScale()
       : TextScale.fromJson(json['textScale'] as Map<String, dynamic>),
@@ -311,6 +312,7 @@ Map<String, dynamic> _$ThemePropsToJson(_ThemeProps instance) =>
       'themeMode': _$ThemeModeEnumMap[instance.themeMode]!,
       'schemeVariant': _$DynamicSchemeVariantEnumMap[instance.schemeVariant]!,
       'pureBlack': instance.pureBlack,
+      'monochromeTrayIcon': instance.monochromeTrayIcon,
       'textScale': instance.textScale,
     };
 

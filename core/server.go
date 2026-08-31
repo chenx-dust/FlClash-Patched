@@ -56,6 +56,9 @@ func deliverEvent(data []byte) {
 	send(data)
 }
 
+func writeSystemLog(level, message string) {
+}
+
 func writeFrame(w io.Writer, data []byte) (int, error) {
 	if len(data) > maxIPCFrameSize {
 		return 0, fmt.Errorf("IPC frame exceeds %d bytes", maxIPCFrameSize)
