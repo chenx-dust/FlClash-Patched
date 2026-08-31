@@ -83,6 +83,18 @@ class TestSetupAction extends SetupAction {
   Error? coreRunningError;
   int authorizeCalls = 0;
   AuthorizeCode authorizeResult = AuthorizeCode.none;
+  bool restoreServiceRunTime = false;
+  DateTime? serviceRunTime;
+  int serviceRunTimeReads = 0;
+
+  @override
+  bool get shouldRestoreServiceRunTime => restoreServiceRunTime;
+
+  @override
+  Future<DateTime?> readServiceRunTime() async {
+    serviceRunTimeReads++;
+    return serviceRunTime;
+  }
 
   @override
   Future<AuthorizeCode> authorizeCore() async {
@@ -344,6 +356,19 @@ void main() {
 
       expect(action.coreRunningCalls, [true]);
       expect(globalState.needInitStatus, isFalse);
+    });
+
+    test('restores a running mobile service before applying autoRun', () async {
+      action.restoreServiceRunTime = true;
+      action.serviceRunTime = DateTime.now().subtract(
+        const Duration(minutes: 1),
+      );
+
+      await container.read(setupActionProvider.notifier).initStatus();
+
+      expect(action.serviceRunTimeReads, 1);
+      expect(action.coreRunningCalls, [true]);
+      expect(container.read(runTimeProvider), isNotNull);
     });
 
     test('only applies the profile when autoRun is disabled', () async {
