@@ -64,10 +64,11 @@ const animateDuration = Duration(milliseconds: 100);
 const midDuration = Duration(milliseconds: 200);
 const commonDuration = Duration(milliseconds: 300);
 const defaultUpdateDuration = Duration(days: 1);
-const MMDB = 'GEOIP.metadb';
+const MMDB = 'GeoIP.metadb';
 const ASN = 'ASN.mmdb';
-const GEOIP = 'GEOIP.dat';
-const GEOSITE = 'GEOSITE.dat';
+const GEOIP = 'GeoIP.dat';
+const GEOSITE = 'GeoSite.dat';
+const BUNDLE_MRS = 'BundleMRS.7z';
 final double kHeaderHeight = getWindowHeaderHeight(
   isDesktop: system.isDesktop,
   isMacOS: system.isMacOS,

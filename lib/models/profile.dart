@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -10,7 +11,8 @@ import 'clash_config.dart';
 part 'generated/profile.freezed.dart';
 part 'generated/profile.g.dart';
 
-typedef ValidateConfig = Future<String> Function(String path);
+typedef PrepareProfileConfig =
+    Future<String> Function(String content, String? ageSecretKey);
 
 @freezed
 abstract class SubscriptionInfo with _$SubscriptionInfo {
@@ -54,22 +56,30 @@ abstract class Profile with _$Profile {
     @Default(true) bool autoUpdate,
     @Default({}) Map<String, String> selectedMap,
     @Default({}) Set<String> unfoldSet,
-    @Default(OverwriteType.standard) OverwriteType overwriteType,
+    @Default(OverwriteType.standard)
+    @JsonKey(unknownEnumValue: OverwriteType.standard)
+    OverwriteType overwriteType,
     int? scriptId,
     String? matchTarget,
     int? order,
+    String? ageSecretKey,
   }) = _Profile;
 
   factory Profile.fromJson(Map<String, Object?> json) =>
       _$ProfileFromJson(json);
 
-  factory Profile.normal({String? label, String url = ''}) {
+  factory Profile.normal({
+    String? label,
+    String url = '',
+    String? ageSecretKey,
+  }) {
     final id = snowflake.id;
     return Profile(
       label: label ?? '',
       url: url,
       id: id,
       autoUpdateDuration: defaultUpdateDuration,
+      ageSecretKey: ageSecretKey,
     );
   }
 }
@@ -152,14 +162,14 @@ extension ProfileExtension on Profile {
   String get updatingKey => 'profile_$id';
 
   Future<Profile?> checkAndUpdateAndCopy({
-    required ValidateConfig validate,
+    required PrepareProfileConfig prepare,
   }) async {
     final mFile = await _getFile(false);
     final isExists = await mFile.exists();
     if (isExists || url.isEmpty) {
       return null;
     }
-    return update(validate: validate);
+    return update(prepare: prepare);
   }
 
   Future<File> _getFile([bool autoCreate = true]) async {
@@ -176,30 +186,28 @@ extension ProfileExtension on Profile {
     return _getFile();
   }
 
-  Future<Profile> update({required ValidateConfig validate}) async {
+  Future<Profile> update({required PrepareProfileConfig prepare}) async {
     final response = await request.getFileResponseForUrl(url);
     final disposition = response.headers.value('content-disposition');
     final userinfo = response.headers.value('subscription-userinfo');
     return copyWith(
       label: label.takeFirstValid([
         getFileNameForDisposition(disposition),
+        getFileNameFromUrl(url),
         id.toString(),
       ]),
       subscriptionInfo: SubscriptionInfo.formHString(userinfo),
-    ).saveFile(response.data ?? Uint8List.fromList([]), validate: validate);
+    ).saveFile(response.data ?? Uint8List.fromList([]), prepare: prepare);
   }
 
   Future<Profile> saveFile(
     Uint8List bytes, {
-    required ValidateConfig validate,
+    required PrepareProfileConfig prepare,
   }) async {
+    final content = await prepare(utf8.decode(bytes), ageSecretKey);
     final path = await appPath.tempFilePath;
     final tempFile = File(path);
-    await tempFile.safeWriteAsBytes(bytes);
-    final message = await validate(path);
-    if (message.isNotEmpty) {
-      throw MessageException(message);
-    }
+    await tempFile.safeWriteAsString(content);
     final mFile = await file;
     await tempFile.copy(mFile.path);
     await tempFile.safeDelete();

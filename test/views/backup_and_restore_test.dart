@@ -1,3 +1,4 @@
+import 'package:fl_clash/common/reset.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
@@ -104,6 +105,57 @@ void main() {
         await openAndChoose(tester, 'Restore all data'),
         RestoreOption.all,
       );
+    });
+  });
+
+  group('ResetDataOptionsDialog', () {
+    Future<Set<ResetDataType>?> openAndChoose(
+      WidgetTester tester,
+      String label,
+    ) async {
+      Set<ResetDataType>? chosen;
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: TestApp(
+            child: Builder(
+              builder: (context) => Scaffold(
+                body: TextButton(
+                  onPressed: () async {
+                    chosen = await showDialog<Set<ResetDataType>>(
+                      context: context,
+                      builder: (_) => const ResetDataOptionsDialog(),
+                    );
+                  },
+                  child: const Text('open'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+
+      final confirm = find.widgetWithText(TextButton, 'Confirm');
+      expect(tester.widget<TextButton>(confirm).onPressed, isNull);
+      await tester.tap(find.text(label));
+      await tester.pump();
+      expect(tester.widget<TextButton>(confirm).onPressed, isNotNull);
+      await tester.tap(confirm);
+      await tester.pumpAndSettle();
+      return chosen;
+    }
+
+    testWidgets('returns one selected data group', (tester) async {
+      expect(await openAndChoose(tester, 'Application settings'), {
+        ResetDataType.settings,
+      });
+    });
+
+    testWidgets('returns every reset type for all data', (tester) async {
+      expect(await openAndChoose(tester, 'All data'), allResetDataTypes);
     });
   });
 

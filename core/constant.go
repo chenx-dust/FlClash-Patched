@@ -15,6 +15,11 @@ type InitParams struct {
 	Version int    `json:"version"`
 }
 
+type DecryptAgeConfigParams struct {
+	Data         string `json:"data"`
+	AgeSecretKey string `json:"age-secret-key"`
+}
+
 type ManagedPathScope string
 
 const (
@@ -81,6 +86,7 @@ type Traffic struct {
 type ExternalProvider struct {
 	Name             string                     `json:"name"`
 	Type             string                     `json:"type"`
+	Format           string                     `json:"format,omitempty"`
 	VehicleType      string                     `json:"vehicle-type"`
 	Count            int                        `json:"count"`
 	Path             string                     `json:"path"`
@@ -94,41 +100,44 @@ type ProxiesData struct {
 }
 
 const (
-	messageMethod                  CoreMethod = "message"
-	initClashMethod                CoreMethod = "initClash"
-	getIsInitMethod                CoreMethod = "getIsInit"
-	forceGcMethod                  CoreMethod = "forceGc"
-	shutdownMethod                 CoreMethod = "shutdown"
-	validateConfigMethod           CoreMethod = "validateConfig"
-	updateConfigMethod             CoreMethod = "updateConfig"
-	getProxiesMethod               CoreMethod = "getProxies"
-	changeProxyMethod              CoreMethod = "changeProxy"
-	getTrafficMethod               CoreMethod = "getTraffic"
-	getTotalTrafficMethod          CoreMethod = "getTotalTraffic"
-	resetTrafficMethod             CoreMethod = "resetTraffic"
-	asyncTestDelayMethod           CoreMethod = "asyncTestDelay"
-	getConnectionsMethod           CoreMethod = "getConnections"
-	closeConnectionsMethod         CoreMethod = "closeConnections"
-	resetConnectionsMethod         CoreMethod = "resetConnections"
-	closeConnectionMethod          CoreMethod = "closeConnection"
-	getExternalProvidersMethod     CoreMethod = "getExternalProviders"
-	getExternalProviderMethod      CoreMethod = "getExternalProvider"
-	getMemoryMethod                CoreMethod = "getMemory"
-	updateGeoDataMethod            CoreMethod = "updateGeoData"
-	updateExternalProviderMethod   CoreMethod = "updateExternalProvider"
-	sideLoadExternalProviderMethod CoreMethod = "sideLoadExternalProvider"
-	startLogNotifyMethod           CoreMethod = "startLogNotify"
-	stopLogNotifyMethod            CoreMethod = "stopLogNotify"
-	startRequestNotifyMethod       CoreMethod = "startRequestNotify"
-	stopRequestNotifyMethod        CoreMethod = "stopRequestNotify"
-	startListenerMethod            CoreMethod = "startListener"
-	stopListenerMethod             CoreMethod = "stopListener"
-	updateDnsMethod                CoreMethod = "updateDns"
-	crashMethod                    CoreMethod = "crash"
-	setupConfigMethod              CoreMethod = "setupConfig"
-	getProfileConfigMethod         CoreMethod = "getProfileConfig"
-	clearEffectMethod              CoreMethod = "clearEffect"
-	deleteManagedPathMethod        CoreMethod = "deleteManagedPath"
+	messageMethod                        CoreMethod = "message"
+	initClashMethod                      CoreMethod = "initClash"
+	getIsInitMethod                      CoreMethod = "getIsInit"
+	forceGcMethod                        CoreMethod = "forceGc"
+	shutdownMethod                       CoreMethod = "shutdown"
+	validateConfigMethod                 CoreMethod = "validateConfig"
+	updateConfigMethod                   CoreMethod = "updateConfig"
+	getProxiesMethod                     CoreMethod = "getProxies"
+	changeProxyMethod                    CoreMethod = "changeProxy"
+	getTrafficMethod                     CoreMethod = "getTraffic"
+	getTotalTrafficMethod                CoreMethod = "getTotalTraffic"
+	resetTrafficMethod                   CoreMethod = "resetTraffic"
+	asyncTestDelayMethod                 CoreMethod = "asyncTestDelay"
+	getConnectionsMethod                 CoreMethod = "getConnections"
+	closeConnectionsMethod               CoreMethod = "closeConnections"
+	resetConnectionsMethod               CoreMethod = "resetConnections"
+	closeConnectionMethod                CoreMethod = "closeConnection"
+	getExternalProvidersMethod           CoreMethod = "getExternalProviders"
+	getExternalProviderMethod            CoreMethod = "getExternalProvider"
+	getMemoryMethod                      CoreMethod = "getMemory"
+	updateGeoDataMethod                  CoreMethod = "updateGeoData"
+	updateExternalProviderMethod         CoreMethod = "updateExternalProvider"
+	sideLoadExternalProviderMethod       CoreMethod = "sideLoadExternalProvider"
+	startLogNotifyMethod                 CoreMethod = "startLogNotify"
+	stopLogNotifyMethod                  CoreMethod = "stopLogNotify"
+	startRequestNotifyMethod             CoreMethod = "startRequestNotify"
+	stopRequestNotifyMethod              CoreMethod = "stopRequestNotify"
+	startListenerMethod                  CoreMethod = "startListener"
+	stopListenerMethod                   CoreMethod = "stopListener"
+	updateDnsMethod                      CoreMethod = "updateDns"
+	crashMethod                          CoreMethod = "crash"
+	setupConfigMethod                    CoreMethod = "setupConfig"
+	getProfileConfigMethod               CoreMethod = "getProfileConfig"
+	clearEffectMethod                    CoreMethod = "clearEffect"
+	deleteManagedPathMethod              CoreMethod = "deleteManagedPath"
+	generateAgeKeyPairMethod             CoreMethod = "generateAgeKeyPair"
+	convertAgeSecretKeyToPublicKeyMethod CoreMethod = "convertAgeSecretKeyToPublicKey"
+	decryptAgeConfigMethod               CoreMethod = "decryptAgeConfig"
 )
 
 type CoreMethod string

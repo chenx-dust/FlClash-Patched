@@ -193,6 +193,7 @@ Future<({String yaml, String md5})> _makeRealProfileTask(
   }
   rawConfig['tun']['enable'] = realPatchConfig.tun.enable;
   rawConfig['tun']['device'] = realPatchConfig.tun.device;
+  rawConfig['tun']['mtu'] = realPatchConfig.tun.mtu;
   rawConfig['tun']['dns-hijack'] = realPatchConfig.tun.dnsHijack;
   rawConfig['tun']['stack'] = realPatchConfig.tun.stack.name;
   rawConfig['tun']['route-address'] = realPatchConfig.tun.routeAddress;
@@ -220,6 +221,9 @@ Future<({String yaml, String md5})> _makeRealProfileTask(
   rawConfig['profile']['store-selected'] = false;
   rawConfig['geox-url'] = realPatchConfig.geoXUrl.raw;
   rawConfig['global-ua'] = realPatchConfig.globalUa ?? defaultUA;
+  rawConfig['external-controller'] = realPatchConfig.externalController;
+  rawConfig['secret'] = realPatchConfig.secret;
+  rawConfig['external-ui'] = '';
   if (rawConfig['hosts'] == null) {
     rawConfig['hosts'] = {};
   }
@@ -238,11 +242,17 @@ Future<({String yaml, String md5})> _makeRealProfileTask(
     for (final entry in dns.nameserverPolicy.entries) {
       nameserverPolicy[entry.key] = entry.value.splitByMultipleSeparators;
     }
+    final proxyServerNameserverPolicy = <String, dynamic>{};
+    for (final entry in dns.proxyServerNameserverPolicy.entries) {
+      proxyServerNameserverPolicy[entry.key] =
+          entry.value.splitByMultipleSeparators;
+    }
     // Merged, not assigned: the model only covers the keys FlClash can edit.
     rawConfig['dns'] = {
       ...rawDns,
       ...dns.toJson(),
       'nameserver-policy': nameserverPolicy,
+      'proxy-server-nameserver-policy': proxyServerNameserverPolicy,
     };
   }
   if (appendSystemDns) {

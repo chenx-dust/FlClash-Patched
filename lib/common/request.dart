@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -78,7 +79,6 @@ class Request {
             options: Options(responseType: ResponseType.json),
           )
           .timeout(const Duration(seconds: 10));
-      if (response.statusCode != 200) return null;
       final data = response.data as Map<String, dynamic>;
       final remoteVersion = data['tag_name'];
       final version = globalState.packageInfo.version;
@@ -87,9 +87,56 @@ class Request {
       if (!hasUpdate) return null;
       return data;
     } catch (e) {
-      commonPrint.log('checkForUpdate failed', logLevel: LogLevel.warning);
-      return null;
+      commonPrint.log(
+        'checkForUpdate failed: ${compactError(e)}',
+        logLevel: LogLevel.warning,
+      );
+      throw _requestException(e);
     }
+  }
+
+  MessageException _requestException(Object error) {
+    if (error is MessageException) {
+      return error;
+    }
+    if (error is DioException) {
+      if (error.type == DioExceptionType.badResponse) {
+        final response = error.response;
+        final statusCode = response?.statusCode ?? 0;
+        final body = _responseBody(response);
+        final detail = body.isEmpty ? '[$statusCode]' : '[$statusCode]\n$body';
+        return MessageException(
+          '${currentAppLocalizations.networkException} $detail',
+        );
+      }
+      final detail = error.error?.toString().trim();
+      if (detail != null && detail.isNotEmpty) {
+        return MessageException(
+          '${currentAppLocalizations.unknownNetworkError}\n$detail',
+        );
+      }
+    }
+    return MessageException(
+      '${currentAppLocalizations.unknownNetworkError}\n$error',
+    );
+  }
+
+  String _responseBody(Response<dynamic>? response) {
+    final data = response?.data;
+    if (data == null) {
+      return '';
+    }
+    if (data is Uint8List) {
+      try {
+        return utf8.decode(data).trim();
+      } catch (_) {
+        return '';
+      }
+    }
+    if (data is Map || data is List) {
+      return jsonEncode(data).trim();
+    }
+    return data.toString().trim();
   }
 
   final Map<String, IpInfo Function(Map<String, dynamic>)> _ipInfoSources = {
@@ -171,4 +218,22 @@ String? getFileNameForDisposition(String? disposition) {
   );
   if (fileNameKey.isEmpty) return null;
   return parameters[fileNameKey];
+}
+
+String? getFileNameFromUrl(String? url) {
+  final realUrl = url?.trim();
+  if (realUrl == null || realUrl.isEmpty) return null;
+  final uri = Uri.tryParse(realUrl);
+  if (uri == null || uri.pathSegments.isEmpty) return null;
+  final fileName = uri.pathSegments
+      .lastWhere((segment) => segment.trim().isNotEmpty, orElse: () => '')
+      .trim();
+  if (fileName.isEmpty || fileName.contains('/') || fileName.contains(r'\')) {
+    return null;
+  }
+  final dotIndex = fileName.lastIndexOf('.');
+  if (dotIndex <= 0 || dotIndex == fileName.length - 1) {
+    return null;
+  }
+  return fileName;
 }

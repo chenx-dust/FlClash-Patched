@@ -32,6 +32,8 @@ class Profiles extends Table {
 
   TextColumn get unfoldSet => text().map(const StringSetConverter())();
 
+  TextColumn get ageSecretKey => text().nullable()();
+
   IntColumn get order => integer().nullable()();
 
   @override
@@ -123,6 +125,7 @@ extension RawProfilExt on RawProfile {
       scriptId: scriptId,
       matchTarget: matchTarget,
       order: order,
+      ageSecretKey: ageSecretKey,
     );
   }
 }
@@ -144,6 +147,7 @@ extension ProfilesCompanionExt on Profile {
       scriptId: Value(scriptId),
       matchTarget: Value(matchTarget),
       order: Value(order ?? this.order),
+      ageSecretKey: Value(ageSecretKey),
     );
   }
 }

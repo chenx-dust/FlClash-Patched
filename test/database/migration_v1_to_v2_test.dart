@@ -28,8 +28,21 @@ void _downgradeToV1(Database raw) {
 
 /// Schema version 2 had no `match_target` on `profiles`.
 void _downgradeToV2(Database raw) {
+  raw.execute('ALTER TABLE profiles DROP COLUMN age_secret_key');
   raw.execute('ALTER TABLE profiles DROP COLUMN match_target');
   raw.execute('PRAGMA user_version = 2');
+}
+
+/// Upstream schema version 3 had no `age_secret_key` on `profiles`.
+void _downgradeToUpstreamV3(Database raw) {
+  raw.execute('ALTER TABLE profiles DROP COLUMN age_secret_key');
+  raw.execute('PRAGMA user_version = 3');
+}
+
+/// Fork schema version 3 had no `match_target` on `profiles`.
+void _downgradeToForkV3(Database raw) {
+  raw.execute('ALTER TABLE profiles DROP COLUMN match_target');
+  raw.execute('PRAGMA user_version = 3');
 }
 
 Set<String> _columnsOf(Database raw, String table) => {
@@ -76,17 +89,59 @@ void main() {
 
     await openAndMigrate();
 
-    expect(_userVersion(raw), 3);
+    expect(_userVersion(raw), 4);
   });
 
-  test('the v3 upgrade adds match_target to profiles', () async {
+  test('the v2 upgrade adds both profile columns', () async {
     _downgradeToV2(raw);
+    expect(_columnsOf(raw, 'profiles'), isNot(contains('match_target')));
+    expect(_columnsOf(raw, 'profiles'), isNot(contains('age_secret_key')));
+
+    await openAndMigrate();
+
+    expect(_columnsOf(raw, 'profiles'), contains('match_target'));
+    expect(_columnsOf(raw, 'profiles'), contains('age_secret_key'));
+    expect(_userVersion(raw), 4);
+  });
+
+  test('the upstream v3 upgrade adds age_secret_key to profiles', () async {
+    _downgradeToUpstreamV3(raw);
+    expect(_columnsOf(raw, 'profiles'), isNot(contains('age_secret_key')));
+
+    await openAndMigrate();
+
+    expect(_columnsOf(raw, 'profiles'), contains('age_secret_key'));
+    expect(_userVersion(raw), 4);
+  });
+
+  test('the fork v3 upgrade adds match_target and keeps age data', () async {
+    _downgradeToForkV3(raw);
+    raw.execute('''
+      INSERT INTO profiles (
+        id,
+        label,
+        url,
+        overwrite_type,
+        auto_update_duration_millis,
+        auto_update,
+        selected_map,
+        unfold_set,
+        age_secret_key
+      ) VALUES (1, 'profile', '', 'none', 0, 0, '{}', '[]', 'AGE-SECRET-KEY-test')
+    ''');
     expect(_columnsOf(raw, 'profiles'), isNot(contains('match_target')));
 
     await openAndMigrate();
 
     expect(_columnsOf(raw, 'profiles'), contains('match_target'));
-    expect(_userVersion(raw), 3);
+    expect(_columnsOf(raw, 'profiles'), contains('age_secret_key'));
+    expect(
+      raw
+          .select('SELECT age_secret_key FROM profiles WHERE id = 1')
+          .single['age_secret_key'],
+      'AGE-SECRET-KEY-test',
+    );
+    expect(_userVersion(raw), 4);
   });
 
   test('the upgrade creates the tables v2 added', () async {
@@ -160,17 +215,20 @@ void main() {
 
     final database = await openAndMigrate();
 
-    expect(_userVersion(raw), 3);
+    expect(_userVersion(raw), 4);
     expect(await database.customSelect('SELECT * FROM rules').get(), isEmpty);
   });
 
-  test('opening a database already at v2 changes nothing', () async {
-    final before = _columnsOf(raw, 'rules');
+  test(
+    'opening a database already at the current schema changes nothing',
+    () async {
+      final before = _columnsOf(raw, 'rules');
 
-    await openAndMigrate();
+      await openAndMigrate();
 
-    expect(_columnsOf(raw, 'rules'), before);
-    expect(_userVersion(raw), 3);
-    expect(_hasTable(raw, 'proxy_groups'), isTrue);
-  });
+      expect(_columnsOf(raw, 'rules'), before);
+      expect(_userVersion(raw), 4);
+      expect(_hasTable(raw, 'proxy_groups'), isTrue);
+    },
+  );
 }

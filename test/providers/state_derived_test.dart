@@ -401,15 +401,44 @@ void main() {
         .read(patchClashConfigProvider.notifier)
         .update(
           (state) => state.copyWith(
-            tun: state.tun.copyWith(routeAddress: const ['10.0.0.0/8']),
+            tun: state.tun.copyWith(
+              mtu: 1500,
+              routeAddress: const ['10.0.0.0/8'],
+              disableIcmpForwarding: true,
+              endpointIndependentNat: true,
+            ),
           ),
         );
     container
         .read(networkSettingProvider.notifier)
         .update((state) => state.copyWith(routeMode: RouteMode.config));
+    container
+        .read(vpnSettingProvider.notifier)
+        .update(
+          (state) => state.copyWith(
+            suspendSupport: false,
+            networkSpeedNotification: true,
+            includeAllNetworks: true,
+            excludeLocalNetworks: false,
+          ),
+        );
+    container.read(alwaysOnProvider.notifier).value = true;
+    container
+        .read(excludeSSIDsProvider.notifier)
+        .update((_) => const ['Office']);
+    final sharedState = container.read(sharedStateProvider);
     expect(container.read(sharedStateProvider).vpnOptions?.routeAddress, [
       '10.0.0.0/8',
     ]);
+    expect(sharedState.vpnOptions?.mtu, 1500);
+    expect(sharedState.vpnOptions?.disableIcmpForwarding, true);
+    expect(sharedState.vpnOptions?.endpointIndependentNat, true);
+    expect(sharedState.vpnOptions?.suspendSupport, false);
+    expect(sharedState.vpnOptions?.includeAllNetworks, true);
+    expect(sharedState.vpnOptions?.excludeLocalNetworks, false);
+    expect(sharedState.networkSpeedNotification, true);
+    expect(sharedState.alwaysOn, true);
+    expect(sharedState.excludeSSIDs, ['Office']);
 
     container
         .read(networkSettingProvider.notifier)

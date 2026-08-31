@@ -77,6 +77,30 @@ class ResourcesView extends ConsumerWidget {
 
     return CommonScaffold(
       title: context.appLocalizations.resources,
+      actions: [
+        Consumer(
+          builder: (_, ref, _) {
+            final isUpdating = [
+              for (final geoResource in geoResources)
+                ref.watch(isUpdatingProvider(geoResource.updatingKey)),
+            ].any((value) => value);
+            return IconButton(
+              tooltip: appLocalizations.sync,
+              onPressed: isUpdating
+                  ? null
+                  : () async {
+                      await globalState.safeRun<void>(
+                        ref
+                            .read(geoResourceActionProvider.notifier)
+                            .updateAllGeoResources,
+                        silence: false,
+                      );
+                    },
+              icon: const Icon(Icons.sync),
+            );
+          },
+        ),
+      ],
       body: ListView(
         padding: const EdgeInsets.symmetric(
           horizontal: 16,
@@ -203,24 +227,6 @@ class _GeoResourceListItemState extends ConsumerState<_GeoResourceListItem> {
     });
   }
 
-  List<CommonPopupMenuItem> _menuItems(BuildContext context, String url) {
-    final appLocalizations = context.appLocalizations;
-    return [
-      CommonPopupMenuItem(
-        icon: Icons.edit_outlined,
-        label: appLocalizations.edit,
-        onPressed: () {
-          _updateUrl(url);
-        },
-      ),
-      CommonPopupMenuItem(
-        icon: Icons.sync,
-        label: appLocalizations.sync,
-        onPressed: _handleUpdateGeoDataItem,
-      ),
-    ];
-  }
-
   @override
   Widget build(BuildContext context) {
     final isUpdating = ref.watch(isUpdatingProvider(widget.type.updatingKey));
@@ -233,7 +239,12 @@ class _GeoResourceListItemState extends ConsumerState<_GeoResourceListItem> {
         final fileInfo = snapshot.data;
         return DecorationListItem(
           minVerticalPadding: 8,
-          contentPadding: const EdgeInsets.only(left: 16, right: 0),
+          contentPadding: const EdgeInsets.only(left: 16, right: 8),
+          onPressed: url == null
+              ? null
+              : () {
+                  _updateUrl(url);
+                },
           title: Text(widget.type.name),
           subtitle: fileInfo == null
               ? null
@@ -253,36 +264,26 @@ class _GeoResourceListItemState extends ConsumerState<_GeoResourceListItem> {
                     ],
                   ),
                 ),
-          trailing: url == null
-              ? null
-              : SizedBox.square(
-                  dimension: kMinInteractiveDimension,
-                  child: FadeThroughBox(
-                    alignment: Alignment.center,
-                    child: isUpdating
-                        ? const SizedBox.square(
-                            key: ValueKey('loading'),
-                            dimension: kMinInteractiveDimension,
-                            child: Padding(
-                              padding: EdgeInsets.all(12),
-                              child: CommonCircleLoading(),
-                            ),
-                          )
-                        : CommonPopupBox(
-                            key: const ValueKey('menu'),
-                            popupBuilder: (_) => CommonPopupMenu(
-                              items: _menuItems(context, url),
-                            ),
-                            targetBuilder: (open) {
-                              return IconButton(
-                                tooltip: context.appLocalizations.more,
-                                onPressed: open,
-                                icon: const Icon(Icons.more_vert),
-                              );
-                            },
-                          ),
-                  ),
-                ),
+          trailing: SizedBox.square(
+            dimension: kMinInteractiveDimension,
+            child: FadeThroughBox(
+              alignment: Alignment.center,
+              child: isUpdating
+                  ? const SizedBox.square(
+                      key: ValueKey('loading'),
+                      dimension: kMinInteractiveDimension,
+                      child: Padding(
+                        padding: EdgeInsets.all(12),
+                        child: CommonCircleLoading(),
+                      ),
+                    )
+                  : IconButton(
+                      tooltip: context.appLocalizations.sync,
+                      onPressed: _handleUpdateGeoDataItem,
+                      icon: const Icon(Icons.sync),
+                    ),
+            ),
+          ),
         );
       },
     );

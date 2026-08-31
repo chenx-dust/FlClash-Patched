@@ -46,7 +46,11 @@ void main() {
       final bytes = Uint8List.fromList(utf8.encode('bad: ['));
 
       await expectLater(
-        profile.saveFile(bytes, validate: (_) async => 'invalid config'),
+        profile.saveFile(
+          bytes,
+          prepare: (_, _) async =>
+              throw const MessageException('invalid config'),
+        ),
         throwsA(
           isA<MessageException>().having(
             (e) => e.message,
@@ -64,7 +68,10 @@ void main() {
       final profile = Profile.normal(label: 'p');
       final bytes = Uint8List.fromList(utf8.encode('proxies: []'));
 
-      final saved = await profile.saveFile(bytes, validate: (_) async => '');
+      final saved = await profile.saveFile(
+        bytes,
+        prepare: (content, _) async => content,
+      );
 
       expect(saved.lastUpdateDate, isNotNull);
       final savedFile = await profile.file;

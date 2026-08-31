@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 	"path/filepath"
 	"slices"
 	"strconv"
@@ -349,35 +348,14 @@ func TestResolveManagedPathRejectsEscapes(t *testing.T) {
 	}
 }
 
-func TestHandleValidateConfigAcceptsAValidFile(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "config.yaml")
-	if err := os.WriteFile(path, []byte("mixed-port: 7890\n"), 0o600); err != nil {
-		t.Fatalf("write config: %v", err)
-	}
-
-	if got := handleValidateConfig(path); got != "" {
+func TestHandleValidateConfigAcceptsValidContent(t *testing.T) {
+	if got := handleValidateConfig("mixed-port: 7890\n"); got != "" {
 		t.Fatalf("handleValidateConfig = %q, want no error", got)
 	}
 }
 
-func TestHandleValidateConfigReportsAMissingFile(t *testing.T) {
-	got := handleValidateConfig(filepath.Join(t.TempDir(), "absent.yaml"))
-
-	if got == "" {
-		t.Fatal("handleValidateConfig accepted a path that does not exist")
-	}
-	if !strings.Contains(got, "absent.yaml") {
-		t.Errorf("handleValidateConfig = %q, want it to name the missing file", got)
-	}
-}
-
 func TestHandleValidateConfigReportsMalformedYaml(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "config.yaml")
-	if err := os.WriteFile(path, []byte("proxies: [unterminated\n"), 0o600); err != nil {
-		t.Fatalf("write config: %v", err)
-	}
-
-	if got := handleValidateConfig(path); got == "" {
+	if got := handleValidateConfig("proxies: [unterminated\n"); got == "" {
 		t.Fatal("handleValidateConfig accepted malformed yaml")
 	}
 }

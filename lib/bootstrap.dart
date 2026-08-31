@@ -80,6 +80,14 @@ class Bootstrap {
   ) async {
     globalState.packageInfo = await PackageInfo.fromPlatform();
     var config = await migration.run();
+    foregroundTicker.updateSettings(
+      interval: Duration(
+        seconds: config.appSettingProps.foregroundTickerInterval,
+      ),
+      slowInterval: Duration(
+        seconds: config.appSettingProps.foregroundTickerIdleInterval,
+      ),
+    );
     _bootDecision = await bootGuard.evaluate(
       profileId: config.currentProfileId,
       crashlyticsEnabled: config.appSettingProps.crashlytics,

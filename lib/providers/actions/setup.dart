@@ -444,7 +444,7 @@ class SetupAction extends _$SetupAction {
     // A refresh failure is surfaced by safeRun; setup keeps the old profile.
     final nextProfile = await globalState.safeRun(
       () => profile?.checkAndUpdateAndCopy(
-        validate: (path) => _core.validateConfig(path),
+        prepare: ref.read(profilesActionProvider.notifier).prepareProfileConfig,
       ),
     );
     if (nextProfile != null) {

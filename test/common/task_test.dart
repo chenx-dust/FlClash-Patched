@@ -231,11 +231,11 @@ void main() {
       expect(config['sniffer']['sniff']['HTTP']['ports'], ['80', '443']);
       expect(
         config['proxy-providers']['remote']['path'],
-        startsWith('/profiles/providers/7/proxies/'),
+        startsWith(join('/profiles', 'providers', '7', 'proxies')),
       );
       expect(
         config['rule-providers']['remote']['path'],
-        startsWith('/profiles/providers/7/rules/'),
+        startsWith(join('/profiles', 'providers', '7', 'rules')),
       );
       expect(config['rules'], [
         'DOMAIN-SUFFIX,added.example,Original',
@@ -398,9 +398,7 @@ void main() {
     final config = loadYaml(result.yaml) as YamlMap;
 
     expect(config['dns']['direct-nameserver'], ['223.5.5.5']);
-    expect(config['dns']['proxy-server-nameserver-policy'], {
-      'www.example.com': ['8.8.8.8'],
-    });
+    expect(config['dns']['proxy-server-nameserver-policy'], isEmpty);
     expect(config['dns']['nameserver'], isNot(contains('system://')));
     expect(
       config['proxy-providers']['first']['path'],

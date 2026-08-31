@@ -34,7 +34,7 @@ class Database extends _$Database {
   Database([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   static LazyDatabase _openConnection() {
     return LazyDatabase(() async {
@@ -53,11 +53,24 @@ class Database extends _$Database {
           await _resetOrders();
           await _migrateRules(m);
         }
-        if (from < 3) {
-          await m.addColumn(profiles, profiles.matchTarget);
+        if (from < 4) {
+          await _migrateProfileColumns(m);
         }
       },
     );
+  }
+
+  Future<void> _migrateProfileColumns(Migrator m) async {
+    final tableInfo = await customSelect('PRAGMA table_info(profiles)').get();
+    final columnNames = tableInfo
+        .map((row) => row.read<String>('name'))
+        .toSet();
+    if (!columnNames.contains('match_target')) {
+      await m.addColumn(profiles, profiles.matchTarget);
+    }
+    if (!columnNames.contains('age_secret_key')) {
+      await m.addColumn(profiles, profiles.ageSecretKey);
+    }
   }
 
   Future<void> _migrateRules(Migrator m) async {

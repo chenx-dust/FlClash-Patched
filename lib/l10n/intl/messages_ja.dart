@@ -126,6 +126,19 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "advancedConfig": MessageLookupByLibrary.simpleMessage("詳細設定"),
     "advancedConfigDesc": MessageLookupByLibrary.simpleMessage("多彩な設定項目を提供します"),
+    "ageKeyGenerateTitle": MessageLookupByLibrary.simpleMessage("Age キー生成"),
+    "ageKeyPairGeneratedSuccess": MessageLookupByLibrary.simpleMessage(
+      "X25519 キーペアを生成しました。安全に保管してください",
+    ),
+    "agePrivateKeyLabel": MessageLookupByLibrary.simpleMessage("Age 秘密鍵"),
+    "agePrivateKeyRequired": MessageLookupByLibrary.simpleMessage(
+      "先に正しい Age 秘密鍵を入力してください",
+    ),
+    "agePublicKeyLabel": MessageLookupByLibrary.simpleMessage("Age 公開鍵"),
+    "ageSecretKeyInvalidValidationDesc": MessageLookupByLibrary.simpleMessage(
+      "有効な Age 秘密鍵を入力してください（AGE-SECRET-KEY-で始まる必要があります）",
+    ),
+    "ageSecretKeyOptional": MessageLookupByLibrary.simpleMessage("Age 秘密鍵（任意）"),
     "agree": MessageLookupByLibrary.simpleMessage("同意する"),
     "allowBypass": MessageLookupByLibrary.simpleMessage("アプリによるVPNバイパスを許可"),
     "allowBypassDesc": MessageLookupByLibrary.simpleMessage(
@@ -378,6 +391,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "fruitSaladScheme": MessageLookupByLibrary.simpleMessage("フルーツサラダ"),
     "general": MessageLookupByLibrary.simpleMessage("一般"),
+    "generateFromPrivateKey": MessageLookupByLibrary.simpleMessage(
+      "Age 秘密鍵から生成",
+    ),
+    "generateSecret": MessageLookupByLibrary.simpleMessage("生成"),
     "geoAutoUpdate": MessageLookupByLibrary.simpleMessage("自動更新"),
     "geoAutoUpdateInterval": MessageLookupByLibrary.simpleMessage("自動更新間隔"),
     "geoAutoUpdateIntervalTip": MessageLookupByLibrary.simpleMessage(

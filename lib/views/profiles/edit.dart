@@ -8,7 +8,6 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/pages/editor.dart';
 import 'package:fl_clash/providers/action.dart';
-import 'package:fl_clash/providers/core.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
@@ -32,7 +31,9 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
   late final TextEditingController _labelController;
   late final TextEditingController _urlController;
   late final TextEditingController _autoUpdateDurationController;
+  late final TextEditingController _ageSecretKeyController;
   late bool _autoUpdate;
+  bool _obscureAgeSecretKey = true;
   String? _rawText;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _fileInfoNotifier = ValueNotifier<FileInfo?>(null);
@@ -47,6 +48,9 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
     _autoUpdate = widget.profile.autoUpdate;
     _autoUpdateDurationController = TextEditingController(
       text: widget.profile.autoUpdateDuration.inMinutes.toString(),
+    );
+    _ageSecretKeyController = TextEditingController(
+      text: widget.profile.ageSecretKey,
     );
     _setupAction = ref.read(setupActionProvider.notifier);
     _updateFileInfo();
@@ -70,6 +74,9 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
       autoUpdateDuration: Duration(
         minutes: int.parse(_autoUpdateDurationController.text),
       ),
+      ageSecretKey: _ageSecretKeyController.text.trim().isEmpty
+          ? null
+          : _ageSecretKeyController.text.trim(),
     );
     final profilesAction = ref.read(profilesActionProvider.notifier);
     final hasUpdate = widget.profile.url != profile.url;
@@ -87,8 +94,7 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
       final savedProfile = await globalState.safeRun(
         () => profile.saveFile(
           _fileData!,
-          validate: (path) =>
-              ref.read(coreHandlerProvider).validateConfig(path),
+          prepare: profilesAction.prepareProfileConfig,
         ),
       );
       if (savedProfile == null) {
@@ -222,6 +228,7 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
     _urlController.dispose();
     _fileInfoNotifier.dispose();
     _autoUpdateDurationController.dispose();
+    _ageSecretKeyController.dispose();
     super.dispose();
     _setupAction.autoApplyProfile();
   }
@@ -233,6 +240,37 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
       _ProfileNameField(controller: _labelController),
       if (widget.profile.type == ProfileType.url) ...[
         _ProfileUrlField(controller: _urlController),
+        ListItem(
+          title: TextFormField(
+            controller: _ageSecretKeyController,
+            obscureText: _obscureAgeSecretKey,
+            decoration: InputDecoration(
+              labelText: appLocalizations.ageSecretKeyOptional,
+              suffixIcon: IconButton(
+                tooltip: _obscureAgeSecretKey
+                    ? appLocalizations.showPassword
+                    : appLocalizations.hidePassword,
+                onPressed: () {
+                  setState(() {
+                    _obscureAgeSecretKey = !_obscureAgeSecretKey;
+                  });
+                },
+                icon: Icon(
+                  _obscureAgeSecretKey
+                      ? Icons.visibility
+                      : Icons.visibility_off,
+                ),
+              ),
+            ),
+            validator: (value) {
+              if (value?.isNotEmpty == true &&
+                  !value!.startsWith('AGE-SECRET-KEY-')) {
+                return appLocalizations.ageSecretKeyInvalidValidationDesc;
+              }
+              return null;
+            },
+          ),
+        ),
         ListItem.toggle(
           title: Text(appLocalizations.autoUpdate),
           value: _autoUpdate,
@@ -260,10 +298,13 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
           },
           child: FloatLayout(
             floatingWidget: FloatWrapper(
-              child: CommonFloatingActionButton(
-                onPressed: _handleConfirm,
-                icon: const Icon(Icons.save),
-                label: appLocalizations.save,
+              child: FocusTraversalOrder(
+                order: const PrimaryFocusOrder(),
+                child: CommonFloatingActionButton(
+                  onPressed: _handleConfirm,
+                  icon: const Icon(Icons.save),
+                  label: appLocalizations.save,
+                ),
               ),
             ),
             child: Form(

@@ -28,8 +28,8 @@ abstract class UpdateParams with _$UpdateParams {
     @JsonKey(name: 'log-level') required LogLevel logLevel,
     required bool ipv6,
     @JsonKey(name: 'tcp-concurrent') required bool tcpConcurrent,
-    @JsonKey(name: 'external-controller')
-    required ExternalControllerStatus externalController,
+    @JsonKey(name: 'external-controller') required String externalController,
+    required String secret,
     @JsonKey(name: 'unified-delay') required bool unifiedDelay,
     @Default(false) @JsonKey(name: 'geo-auto-update') bool geoAutoUpdate,
     @Default(24) @JsonKey(name: 'geo-update-interval') int geoUpdateInterval,
@@ -45,13 +45,23 @@ abstract class VpnOptions with _$VpnOptions {
     required bool enable,
     required int port,
     required bool ipv6,
-    required bool dnsHijacking,
+    required bool captureDns,
     required AccessControlProps accessControlProps,
     required bool allowBypass,
     required bool systemProxy,
+    required bool suspendSupport,
     required List<String> bypassDomain,
     required String stack,
+    @Default(defaultTunMtu) int mtu,
     @Default([]) List<String> routeAddress,
+    @Default(false) bool disableIcmpForwarding,
+    @Default(false) bool endpointIndependentNat,
+    @Default(false) bool includeAllNetworks,
+    @Default(true) bool excludeLocalNetworks,
+    @Default(true) bool excludeAPNs,
+    @Default(true) bool excludeCellularServices,
+    @Default(false) bool enforceRoutes,
+    @Default(true) bool excludeDeviceCommunication,
   }) = _VpnOptions;
 
   factory VpnOptions.fromJson(Map<String, Object?> json) =>
@@ -163,6 +173,7 @@ abstract class ExternalProvider with _$ExternalProvider {
   const factory ExternalProvider({
     required String name,
     required String type,
+    String? format,
     String? path,
     required int count,
     @JsonKey(name: 'subscription-info', fromJson: subscriptionInfoFormCore)
@@ -177,6 +188,9 @@ abstract class ExternalProvider with _$ExternalProvider {
 
 extension ExternalProviderExt on ExternalProvider {
   String get updatingKey => 'provider_$name';
+
+  bool get canEditAsText =>
+      type != 'Rule' || format == 'YamlRule' || format == 'TextRule';
 }
 
 @freezed

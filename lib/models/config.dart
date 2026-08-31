@@ -8,25 +8,7 @@ import 'models.dart';
 part 'generated/config.freezed.dart';
 part 'generated/config.g.dart';
 
-const defaultBypassDomain = [
-  '*zhihu.com',
-  '*zhimg.com',
-  '*jd.com',
-  '100ime-iat-api.xfyun.cn',
-  '*360buyimg.com',
-  'localhost',
-  '*.local',
-  '127.*',
-  '10.*',
-  '172.16.*',
-  '172.17.*',
-  '172.18.*',
-  '172.19.*',
-  '172.2*',
-  '172.30.*',
-  '172.31.*',
-  '192.168.*',
-];
+const defaultBypassDomain = ['localhost', '*.local', '*.lan'];
 
 const defaultAppSettingProps = AppSettingProps();
 const defaultVpnProps = VpnProps();
@@ -35,6 +17,44 @@ const defaultProxiesStyleProps = ProxiesStyleProps();
 const defaultWindowProps = WindowProps();
 const defaultAccessControlProps = AccessControlProps();
 const defaultThemeProps = ThemeProps(primaryColor: defaultPrimaryColor);
+const defaultForegroundTickerInterval = 1;
+const defaultForegroundTickerIdleInterval = 2;
+
+Map<String, Object?> _normalizeConfigJson(Map<String, Object?> json) {
+  final normalized = Map<String, Object?>.from(json);
+
+  final appSettingProps = json['appSettingProps'];
+  if (appSettingProps is Map) {
+    final settings = Map<String, Object?>.from(appSettingProps);
+    final ignoreCertificateErrors = settings['ignoreCertificateErrors'];
+    if (!settings.containsKey('checkCertificate') &&
+        ignoreCertificateErrors is bool) {
+      settings['checkCertificate'] = !ignoreCertificateErrors;
+    }
+    normalized['appSettingProps'] = settings;
+  }
+
+  final vpnProps = json['vpnProps'];
+  if (vpnProps is Map) {
+    final settings = Map<String, Object?>.from(vpnProps);
+    final captureDns = settings['captureDns'];
+    if (!settings.containsKey('dnsHijacking') && captureDns is bool) {
+      settings['dnsHijacking'] = captureDns;
+    }
+    normalized['vpnProps'] = settings;
+  }
+
+  final proxiesStyleProps = json['proxiesStyleProps'];
+  if (proxiesStyleProps is Map) {
+    final settings = Map<String, Object?>.from(proxiesStyleProps);
+    if (settings['cardType'] == 'expand') {
+      settings['cardType'] = 'standard';
+    }
+    normalized['proxiesStyleProps'] = settings;
+  }
+
+  return normalized;
+}
 
 const List<DashboardWidget> defaultDashboardWidgets = [
   DashboardWidget.networkSpeed,
@@ -69,12 +89,15 @@ abstract class AppSettingProps with _$AppSettingProps {
     List<DashboardWidget> dashboardWidgets,
     @Default(false) bool onlyStatisticsProxy,
     @Default(false) bool autoLaunch,
+    @Default(false) bool highPriorityAutoLaunch,
     @Default(false) bool silentLaunch,
     @Default(false) bool autoRun,
     @Default(false) bool openLogs,
-    @Default(true) bool closeConnections,
+    @Default(false) bool closeConnections,
+    @Default(true) bool promptCloseConnections,
     @Default(defaultTestUrl) String testUrl,
     @Default(true) bool isAnimateToPage,
+    @Default(true) bool isSwipeToPage,
     @Default(true) bool autoCheckUpdate,
     @Default(false) bool showLabel,
     @Default(false) bool disclaimerAccepted,
@@ -83,9 +106,15 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default(true) bool minimizeOnExit,
     @Default(false) bool hidden,
     @Default(false) bool developerMode,
-    @Default(RestoreStrategy.compatible) RestoreStrategy restoreStrategy,
+    @Default(RestoreStrategy.compatible)
+    @JsonKey(unknownEnumValue: RestoreStrategy.compatible)
+    RestoreStrategy restoreStrategy,
     @Default(true) bool checkCertificate,
     @Default('') String customUserAgent,
+    @Default(defaultForegroundTickerInterval) int foregroundTickerInterval,
+    @Default(true) bool foregroundTickerIdleWhenUnfocused,
+    @Default(defaultForegroundTickerIdleInterval)
+    int foregroundTickerIdleInterval,
   }) = _AppSettingProps;
 
   factory AppSettingProps.fromJson(Map<String, Object?> json) =>
@@ -107,10 +136,14 @@ abstract class AppSettingProps with _$AppSettingProps {
 abstract class AccessControlProps with _$AccessControlProps {
   const factory AccessControlProps({
     @Default(false) bool enable,
-    @Default(AccessControlMode.rejectSelected) AccessControlMode mode,
+    @Default(AccessControlMode.rejectSelected)
+    @JsonKey(unknownEnumValue: AccessControlMode.rejectSelected)
+    AccessControlMode mode,
     @Default([]) List<String> acceptList,
     @Default([]) List<String> rejectList,
-    @Default(AccessSortType.none) AccessSortType sort,
+    @Default(AccessSortType.none)
+    @JsonKey(unknownEnumValue: AccessSortType.none)
+    AccessSortType sort,
     @Default(true) bool isFilterSystemApp,
     @Default(true) bool isFilterNonInternetApp,
   }) = _AccessControlProps;
@@ -147,7 +180,7 @@ abstract class WindowProps with _$WindowProps {
 extension WindowPropsExt on WindowProps {
   Size get _size => Size(width, height);
 
-  Size get size => _size.isEmpty ? const Size(680, 580) : _size;
+  Size get size => _size.isEmpty ? const Size(700, 580) : _size;
 }
 
 @freezed
@@ -157,8 +190,15 @@ abstract class VpnProps with _$VpnProps {
     @Default(true) bool systemProxy,
     @Default(false) bool ipv6,
     @Default(true) bool allowBypass,
-    @Default(false) bool dnsHijacking,
+    @Default(true) bool dnsHijacking,
+    @Default(true) bool suspendSupport,
     @Default(false) bool networkSpeedNotification,
+    @Default(false) bool includeAllNetworks,
+    @Default(true) bool excludeLocalNetworks,
+    @Default(true) bool excludeAPNs,
+    @Default(true) bool excludeCellularServices,
+    @Default(false) bool enforceRoutes,
+    @Default(true) bool excludeDeviceCommunication,
     @Default(defaultAccessControlProps) AccessControlProps accessControlProps,
   }) = _VpnProps;
 
@@ -171,7 +211,9 @@ abstract class NetworkProps with _$NetworkProps {
   const factory NetworkProps({
     @Default(true) bool systemProxy,
     @Default(defaultBypassDomain) List<String> bypassDomain,
-    @Default(RouteMode.config) RouteMode routeMode,
+    @Default(RouteMode.config)
+    @JsonKey(unknownEnumValue: RouteMode.config)
+    RouteMode routeMode,
     @Default(true) bool autoSetSystemDns,
     @Default(false) bool appendSystemDns,
   }) = _NetworkProps;
@@ -183,11 +225,29 @@ abstract class NetworkProps with _$NetworkProps {
 @freezed
 abstract class ProxiesStyleProps with _$ProxiesStyleProps {
   const factory ProxiesStyleProps({
-    @Default(ProxiesType.tab) ProxiesType type,
-    @Default(ProxiesSortType.none) ProxiesSortType sortType,
-    @Default(ProxiesLayout.standard) ProxiesLayout layout,
-    @Default(ProxiesIconStyle.standard) ProxiesIconStyle iconStyle,
-    @Default(ProxyCardType.expand) ProxyCardType cardType,
+    @Default(ProxiesType.tab)
+    @JsonKey(unknownEnumValue: ProxiesType.tab)
+    ProxiesType type,
+    @Default(ProxiesSortType.none)
+    @JsonKey(unknownEnumValue: ProxiesSortType.none)
+    ProxiesSortType sortType,
+    @Default(ProxiesLayout.standard)
+    @JsonKey(unknownEnumValue: ProxiesLayout.standard)
+    ProxiesLayout layout,
+    @Default(ProxiesListHeaderStyle.loose)
+    @JsonKey(unknownEnumValue: ProxiesListHeaderStyle.loose)
+    ProxiesListHeaderStyle listHeaderStyle,
+    @Default(ProxiesIconStyle.standard)
+    @JsonKey(unknownEnumValue: ProxiesIconStyle.standard)
+    ProxiesIconStyle iconStyle,
+    @Default(ProxiesIconSource.standard)
+    @JsonKey(unknownEnumValue: ProxiesIconSource.standard)
+    ProxiesIconSource iconSource,
+    @Default(ProxyCardType.standard)
+    @JsonKey(unknownEnumValue: ProxyCardType.standard)
+    ProxyCardType cardType,
+    @Default(false) bool hideUnavailable,
+    @Default(false) bool showHiddenGroups,
   }) = _ProxiesStyleProps;
 
   factory ProxiesStyleProps.fromJson(Map<String, Object?>? json) => json == null
@@ -211,10 +271,15 @@ abstract class ThemeProps with _$ThemeProps {
   const factory ThemeProps({
     int? primaryColor,
     @Default(defaultPrimaryColors) List<int> primaryColors,
-    @Default(ThemeMode.dark) ThemeMode themeMode,
-    @Default(DynamicSchemeVariant.content) DynamicSchemeVariant schemeVariant,
+    @Default(ThemeMode.system)
+    @JsonKey(unknownEnumValue: ThemeMode.system)
+    ThemeMode themeMode,
+    @Default(DynamicSchemeVariant.content)
+    @JsonKey(unknownEnumValue: DynamicSchemeVariant.content)
+    DynamicSchemeVariant schemeVariant,
     @Default(false) bool pureBlack,
     @Default(true) bool monochromeTrayIcon,
+    @Default(true) bool predictiveBack,
     @Default(TextScale()) TextScale textScale,
   }) = _ThemeProps;
 
@@ -250,14 +315,16 @@ abstract class Config with _$Config {
     @Default(defaultWindowProps) WindowProps windowProps,
     @Default(defaultClashConfig) PatchClashConfig patchClashConfig,
     @Default([]) List<String> excludeSSIDs,
+    @Default(false) bool alwaysOn,
   }) = _Config;
 
-  factory Config.fromJson(Map<String, Object?> json) => _$ConfigFromJson(json);
+  factory Config.fromJson(Map<String, Object?> json) =>
+      _$ConfigFromJson(_normalizeConfigJson(json));
 
   factory Config.realFromJson(Map<String, Object?>? json) {
     if (json == null) {
       return const Config(themeProps: defaultThemeProps);
     }
-    return _$ConfigFromJson(json);
+    return Config.fromJson(json);
   }
 }

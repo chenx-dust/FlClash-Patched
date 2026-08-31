@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
+import 'package:fl_clash/views/profiles/age_key_generator.dart';
 import 'package:fl_clash/views/profiles/overwrite/overwrite.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -260,6 +262,17 @@ class ProfileItem extends ConsumerWidget {
       context,
       builder: (context) => AdaptiveSheetScaffold(
         title: context.appLocalizations.edit,
+        actions: [
+          IconButtonData(
+            icon: Icons.key_outlined,
+            tooltip: context.appLocalizations.ageKeyGenerateTitle,
+            onPressed: () {
+              dialogs.showCommonDialog<void>(
+                child: const AgeKeyGeneratorDialog(),
+              );
+            },
+          ),
+        ],
         body: EditProfileView(profile: profile, context: context),
       ),
     );
@@ -305,6 +318,8 @@ class ProfileItem extends ConsumerWidget {
       final value = await picker.saveFile(
         profile.realLabel,
         mFile.readAsBytesSync(),
+        type: FileType.custom,
+        allowedExtensions: const ['yaml', 'yml'],
       );
       if (value == null) return false;
       return true;
@@ -399,65 +414,82 @@ class ProfileItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return CommonCard(
-      enterActionsOnRight: true,
-      radius: AppCorner.xl,
-      isSelected: profile.id == groupValue,
-      onPressed: () {
-        onChanged(profile.id);
-      },
-      child: ListItem(
-        key: Key(profile.id.toString()),
-        horizontalTitleGap: 8,
-        minVerticalPadding: 12,
-        padding: const EdgeInsets.only(left: 16, right: 6),
-        trailing: SizedBox(
-          height: 40,
-          width: 40,
-          child: Consumer(
-            builder: (context, ref, _) {
-              final isUpdating = ref.watch(
-                isUpdatingProvider(profile.updatingKey),
-              );
-              return FadeThroughBox(
-                alignment: Alignment.center,
-                child: isUpdating
-                    ? const Padding(
-                        key: ValueKey('loading'),
-                        padding: EdgeInsets.all(8),
-                        child: CommonCircleLoading(),
-                      )
-                    : CommonPopupBox(
-                        key: const ValueKey('menu'),
-                        popupBuilder: (_) =>
-                            CommonPopupMenu(items: _menuItems(context, ref)),
-                        targetBuilder: (open) {
-                          return IconButton(
-                            style: IconButton.styleFrom(
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              visualDensity: VisualDensity.standard,
-                            ),
-                            tooltip: context.appLocalizations.more,
-                            onPressed: () {
-                              open();
-                            },
-                            icon: const Icon(Icons.more_vert),
-                          );
-                        },
-                      ),
-              );
-            },
-          ),
-        ),
-        title: _ProfileCardTitle(
-          profile: profile,
-          info: switch (profile.type) {
-            ProfileType.file => _buildFileProfileInfo(context),
-            ProfileType.url => _buildUrlProfileInfo(context),
+    return CommonPopupBox(
+      key: const ValueKey('menu'),
+      popupBuilder: (_) => CommonPopupMenu(items: _menuItems(context, ref)),
+      targetBuilder: (open) {
+        BuildContext? menuButtonContext;
+
+        void openMenu() {
+          open(targetContext: menuButtonContext);
+        }
+
+        return GestureDetector(
+          onSecondaryTapDown: (_) {
+            openMenu();
           },
-        ),
-        tileTitleAlignment: ListTileTitleAlignment.top,
-      ),
+          child: CommonCard(
+            enterActionsOnRight: true,
+            radius: AppCorner.xl,
+            isSelected: profile.id == groupValue,
+            onPressed: () {
+              onChanged(profile.id);
+            },
+            onLongPress: openMenu,
+            child: ListItem(
+              key: Key(profile.id.toString()),
+              horizontalTitleGap: 8,
+              minVerticalPadding: 12,
+              padding: const EdgeInsets.only(left: 16, right: 6),
+              trailing: SizedBox(
+                height: 40,
+                width: 40,
+                child: Consumer(
+                  builder: (context, ref, _) {
+                    final isUpdating = ref.watch(
+                      isUpdatingProvider(profile.updatingKey),
+                    );
+                    return FadeThroughBox(
+                      alignment: Alignment.center,
+                      child: isUpdating
+                          ? const Padding(
+                              key: ValueKey('loading'),
+                              padding: EdgeInsets.all(8),
+                              child: CommonCircleLoading(),
+                            )
+                          : Builder(
+                              builder: (buttonContext) {
+                                menuButtonContext = buttonContext;
+                                return IconButton(
+                                  style: IconButton.styleFrom(
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                    visualDensity: VisualDensity.standard,
+                                  ),
+                                  tooltip: context.appLocalizations.more,
+                                  onPressed: () {
+                                    open(targetContext: buttonContext);
+                                  },
+                                  icon: const Icon(Icons.more_vert),
+                                );
+                              },
+                            ),
+                    );
+                  },
+                ),
+              ),
+              title: _ProfileCardTitle(
+                profile: profile,
+                info: switch (profile.type) {
+                  ProfileType.file => _buildFileProfileInfo(context),
+                  ProfileType.url => _buildUrlProfileInfo(context),
+                },
+              ),
+              tileTitleAlignment: ListTileTitleAlignment.top,
+            ),
+          ),
+        );
+      },
     );
   }
 }

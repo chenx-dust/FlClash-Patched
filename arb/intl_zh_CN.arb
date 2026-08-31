@@ -607,5 +607,14 @@
   "authorize": "授权",
   "installedAppsPermissionRequired": "需要读取应用列表权限",
   "installedAppsPermissionDesc": "当前系统在授权前不会提供已安装的应用列表，授权后即可配置分应用代理。",
-  "installedAppsPermissionDeniedMessage": "读取应用列表权限已被拒绝，无法获取已安装的应用。请前往系统设置手动开启。"
+  "installedAppsPermissionDeniedMessage": "读取应用列表权限已被拒绝，无法获取已安装的应用。请前往系统设置手动开启。",
+  "ageSecretKeyOptional": "Age 私钥 (可选)",
+  "ageSecretKeyInvalidValidationDesc": "请输入有效的 Age 私钥 (必须以 AGE-SECRET-KEY- 开头)",
+  "ageKeyGenerateTitle": "Age Key 生成",
+  "agePrivateKeyLabel": "Age 私钥",
+  "agePublicKeyLabel": "Age 公钥",
+  "generateFromPrivateKey": "从 Age 私钥生成",
+  "ageKeyPairGeneratedSuccess": "已生成 X25519 密钥对，请妥善保存",
+  "agePrivateKeyRequired": "请先输入正确的 Age 私钥",
+  "generateSecret": "生成"
 }

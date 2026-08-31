@@ -9,6 +9,7 @@ import 'package:fl_clash/views/config/scripts.dart';
 import 'package:fl_clash/views/profiles/overwrite/standard.dart';
 import 'package:fl_clash/views/proxies/setting.dart';
 import 'package:fl_clash/widgets/inherited.dart';
+import 'package:fl_clash/widgets/pop_scope.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -279,7 +280,19 @@ void main() {
 
     expect(find.byType(StandardContent), findsOneWidget);
     expect(find.text('added0.com'), findsOneWidget);
+    expect(
+      tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
+      isTrue,
+    );
     expect(tester.takeException(), null);
+
+    await tester.tap(find.byType(CommonCheckBox).first);
+    await tester.pump();
+
+    expect(
+      tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
+      isFalse,
+    );
 
     final scrollables = find.byType(Scrollable);
     if (scrollables.evaluate().isNotEmpty) {

@@ -23,6 +23,7 @@ const defaultGeoXUrl = {
 
 const defaultMixedPort = 7890;
 const defaultKeepAliveInterval = 30;
+const defaultTunMtu = 9000;
 
 const defaultBypassPrivateRouteAddress = [
   '1.0.0.0/8',
@@ -115,7 +116,7 @@ abstract class ProxyGroup with _$ProxyGroup {
     int? profileId,
     @JsonKey(fromJson: Snowflake.buildId) required int id,
     required String name,
-    required GroupType type,
+    @JsonKey(unknownEnumValue: GroupType.Selector) required GroupType type,
     List<String>? proxies,
     List<String>? use,
     int? interval,
@@ -249,10 +250,20 @@ abstract class Tun with _$Tun {
   const factory Tun({
     @Default(false) bool enable,
     @Default(appName) String device,
+    @Default(defaultTunMtu) int mtu,
     @JsonKey(name: 'auto-route') @Default(false) bool autoRoute,
-    @Default(TunStack.mixed) TunStack stack,
-    @JsonKey(name: 'dns-hijack') @Default(['any:53']) List<String> dnsHijack,
+    @Default(TunStack.mixed)
+    @JsonKey(unknownEnumValue: TunStack.mixed)
+    TunStack stack,
+    @JsonKey(name: 'dns-hijack') @Default([]) List<String> dnsHijack,
     @JsonKey(name: 'route-address') @Default([]) List<String> routeAddress,
+    @JsonKey(name: 'strict-route') @Default(false) bool strictRoute,
+    @JsonKey(name: 'disable-icmp-forwarding')
+    @Default(false)
+    bool disableIcmpForwarding,
+    @JsonKey(name: 'endpoint-independent-nat')
+    @Default(false)
+    bool endpointIndependentNat,
   }) = _Tun;
 
   factory Tun.fromJson(Map<String, Object?> json) => _$TunFromJson(json);
@@ -316,24 +327,23 @@ abstract class Dns with _$Dns {
     @JsonKey(name: 'default-nameserver')
     List<String> defaultNameserver,
     @Default(DnsMode.fakeIp)
-    @JsonKey(name: 'enhanced-mode')
+    @JsonKey(name: 'enhanced-mode', unknownEnumValue: DnsMode.fakeIp)
     DnsMode enhancedMode,
     @Default('198.18.0.1/16')
     @JsonKey(name: 'fake-ip-range')
     String fakeIpRange,
-    @Default(['*.lan', 'localhost.ptlogin2.qq.com'])
+    @Default(['+.local', '+.lan'])
     @JsonKey(name: 'fake-ip-filter')
     List<String> fakeIpFilter,
-    @Default({
-      'www.baidu.com': '114.114.114.114',
-      '+.internal.crop.com': '10.0.0.1',
-      'geosite:cn': 'https://doh.pub/dns-query',
-    })
+    @Default({'geosite:cn': 'https://doh.pub/dns-query'})
     @JsonKey(name: 'nameserver-policy')
     Map<String, String> nameserverPolicy,
     @Default(['https://doh.pub/dns-query', 'https://dns.alidns.com/dns-query'])
     List<String> nameserver,
     @Default(['tls://8.8.4.4', 'tls://1.1.1.1']) List<String> fallback,
+    @Default({})
+    @JsonKey(name: 'proxy-server-nameserver-policy')
+    Map<String, String> proxyServerNameserverPolicy,
     @Default(['https://doh.pub/dns-query'])
     @JsonKey(name: 'proxy-server-nameserver')
     List<String> proxyServerNameserver,
@@ -357,7 +367,9 @@ abstract class Dns with _$Dns {
 abstract class Rule with _$Rule {
   const factory Rule({
     @Default(-1) int id,
-    @Default(RuleAction.DOMAIN) RuleAction ruleAction,
+    @Default(RuleAction.DOMAIN)
+    @JsonKey(unknownEnumValue: RuleAction.DOMAIN)
+    RuleAction ruleAction,
     String? content,
     String? ruleTarget,
     String? ruleProvider,
@@ -531,9 +543,11 @@ abstract class PatchClashConfig with _$PatchClashConfig {
     @Default(0) @JsonKey(name: 'port') int port,
     @Default(0) @JsonKey(name: 'redir-port') int redirPort,
     @Default(0) @JsonKey(name: 'tproxy-port') int tproxyPort,
-    @Default(Mode.rule) Mode mode,
+    @Default(Mode.rule) @JsonKey(unknownEnumValue: Mode.rule) Mode mode,
     @Default(false) @JsonKey(name: 'allow-lan') bool allowLan,
-    @Default(LogLevel.error) @JsonKey(name: 'log-level') LogLevel logLevel,
+    @Default(LogLevel.error)
+    @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error)
+    LogLevel logLevel,
     @Default(false) bool ipv6,
     @Default(FindProcessMode.always)
     @JsonKey(
@@ -563,12 +577,19 @@ abstract class PatchClashConfig with _$PatchClashConfig {
     )
     Map<GeoResource, String> geoXUrl,
     @Default(GeodataLoader.memconservative)
-    @JsonKey(name: 'geodata-loader')
+    @JsonKey(
+      name: 'geodata-loader',
+      unknownEnumValue: GeodataLoader.memconservative,
+    )
     GeodataLoader geodataLoader,
+    @Default(GeositeMatcher.succinct)
+    @JsonKey(name: 'geosite-matcher', unknownEnumValue: GeositeMatcher.succinct)
+    GeositeMatcher geositeMatcher,
     @JsonKey(name: 'global-ua') String? globalUa,
-    @Default(ExternalControllerStatus.close)
+    @Default('')
     @JsonKey(name: 'external-controller')
-    ExternalControllerStatus externalController,
+    String externalController,
+    @Default('') String secret,
     @Default({}) Map<String, String> hosts,
     @Default(false) @JsonKey(name: 'geo-auto-update') bool geoAutoUpdate,
     @Default(24) @JsonKey(name: 'geo-update-interval') int geoUpdateInterval,

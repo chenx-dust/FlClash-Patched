@@ -102,35 +102,56 @@ void main() {
       expect(restored.silentLaunch, false);
       expect(restored.autoRun, false);
       expect(restored.openLogs, false);
-      expect(restored.closeConnections, true);
+      expect(restored.closeConnections, false);
+      expect(restored.promptCloseConnections, true);
       expect(restored.isAnimateToPage, true);
+      expect(restored.isSwipeToPage, true);
       expect(restored.autoCheckUpdate, true);
       expect(restored.showLabel, false);
       expect(restored.minimizeOnExit, true);
       expect(restored.restoreStrategy, RestoreStrategy.compatible);
       expect(restored.customUserAgent, '');
       expect(restored.testUrl, defaultTestUrl);
+      expect(restored.foregroundTickerInterval, 1);
+      expect(restored.foregroundTickerIdleWhenUnfocused, true);
+      expect(restored.foregroundTickerIdleInterval, 2);
     });
 
     test('custom values survive round-trip', () {
       const props = AppSettingProps(
         locale: 'zh_CN',
+        dashboardWidgets: [
+          DashboardWidget.goroutineInfo,
+          DashboardWidget.connectionInfo,
+        ],
         onlyStatisticsProxy: true,
         autoLaunch: true,
         closeConnections: false,
+        promptCloseConnections: false,
         testUrl: 'https://custom.test',
         customUserAgent: 'CustomUA/1.0',
+        foregroundTickerInterval: 3,
+        foregroundTickerIdleWhenUnfocused: false,
+        foregroundTickerIdleInterval: 8,
       );
       final restored = roundTrip(
         () => props.toJson(),
         AppSettingProps.fromJson,
       );
       expect(restored.locale, 'zh_CN');
+      expect(restored.dashboardWidgets, [
+        DashboardWidget.goroutineInfo,
+        DashboardWidget.connectionInfo,
+      ]);
       expect(restored.onlyStatisticsProxy, true);
       expect(restored.autoLaunch, true);
       expect(restored.closeConnections, false);
+      expect(restored.promptCloseConnections, false);
       expect(restored.testUrl, 'https://custom.test');
       expect(restored.customUserAgent, 'CustomUA/1.0');
+      expect(restored.foregroundTickerInterval, 3);
+      expect(restored.foregroundTickerIdleWhenUnfocused, false);
+      expect(restored.foregroundTickerIdleInterval, 8);
     });
 
     test('safeFromJson returns default on null', () {
@@ -159,9 +180,9 @@ void main() {
       expect(props.width, 0);
     });
 
-    test('size extension defaults to 680x580 when empty', () {
+    test('size extension defaults to 700x580 when empty', () {
       const props = WindowProps();
-      expect(props.size.width, 680);
+      expect(props.size.width, 700);
       expect(props.size.height, 580);
     });
 
@@ -188,7 +209,15 @@ void main() {
       expect(props.systemProxy, true);
       expect(props.ipv6, false);
       expect(props.allowBypass, true);
-      expect(props.dnsHijacking, false);
+      expect(props.dnsHijacking, true);
+      expect(props.suspendSupport, true);
+      expect(props.networkSpeedNotification, false);
+      expect(props.includeAllNetworks, false);
+      expect(props.excludeLocalNetworks, true);
+      expect(props.excludeAPNs, true);
+      expect(props.excludeCellularServices, true);
+      expect(props.enforceRoutes, false);
+      expect(props.excludeDeviceCommunication, true);
       expect(props.accessControlProps.enable, false);
     });
 
@@ -206,12 +235,22 @@ void main() {
         enable: false,
         systemProxy: false,
         ipv6: true,
+        suspendSupport: false,
+        networkSpeedNotification: true,
+        includeAllNetworks: true,
+        excludeLocalNetworks: false,
+        enforceRoutes: true,
         accessControlProps: accessControl,
       );
       final restored = roundTrip(() => props.toJson(), VpnProps.fromJson);
       expect(restored.enable, false);
       expect(restored.systemProxy, false);
       expect(restored.ipv6, true);
+      expect(restored.suspendSupport, false);
+      expect(restored.networkSpeedNotification, true);
+      expect(restored.includeAllNetworks, true);
+      expect(restored.excludeLocalNetworks, false);
+      expect(restored.enforceRoutes, true);
     });
   });
 
@@ -220,6 +259,7 @@ void main() {
       const props = NetworkProps();
       expect(props.systemProxy, true);
       expect(props.bypassDomain, defaultBypassDomain);
+      expect(props.bypassDomain, ['localhost', '*.local', '*.lan']);
       expect(props.routeMode, RouteMode.config);
       expect(props.autoSetSystemDns, true);
       expect(props.appendSystemDns, false);
@@ -245,10 +285,21 @@ void main() {
       expect(config.mixedPort, defaultMixedPort);
       expect(config.allowLan, false);
       expect(config.mode, Mode.rule);
-      expect(config.externalController, ExternalControllerStatus.close);
+      expect(config.externalController, isEmpty);
+      expect(config.secret, isEmpty);
       expect(config.geodataLoader, GeodataLoader.memconservative);
+      expect(config.geositeMatcher, GeositeMatcher.succinct);
+      expect(config.tun.mtu, defaultTunMtu);
+      expect(config.tun.dnsHijack, isEmpty);
+      expect(config.tun.strictRoute, false);
+      expect(config.tun.disableIcmpForwarding, false);
+      expect(config.tun.endpointIndependentNat, false);
       expect(config.interfaceNameMode, InterfaceNameMode.clear);
       expect(config.interfaceName, '');
+      expect(config.dns.fakeIpFilter, ['+.local', '+.lan']);
+      expect(config.dns.nameserverPolicy, {
+        'geosite:cn': 'https://doh.pub/dns-query',
+      });
     });
 
     test('custom values survive round-trip', () {
@@ -257,8 +308,16 @@ void main() {
         allowLan: true,
         mode: Mode.rule,
         logLevel: LogLevel.debug,
-        externalController: ExternalControllerStatus.open,
+        externalController: '127.0.0.1:9090',
+        secret: 'controller-secret',
         geodataLoader: GeodataLoader.memconservative,
+        geositeMatcher: GeositeMatcher.mph,
+        tun: Tun(
+          mtu: 1500,
+          strictRoute: true,
+          disableIcmpForwarding: true,
+          endpointIndependentNat: true,
+        ),
         interfaceNameMode: InterfaceNameMode.custom,
         interfaceName: 'eth0',
       );
@@ -272,8 +331,14 @@ void main() {
       expect(restored.allowLan, true);
       expect(restored.mode, Mode.rule);
       expect(restored.logLevel, LogLevel.debug);
-      expect(restored.externalController, ExternalControllerStatus.open);
+      expect(restored.externalController, '127.0.0.1:9090');
+      expect(restored.secret, 'controller-secret');
       expect(restored.geodataLoader, GeodataLoader.memconservative);
+      expect(restored.geositeMatcher, GeositeMatcher.mph);
+      expect(restored.tun.mtu, 1500);
+      expect(restored.tun.strictRoute, true);
+      expect(restored.tun.disableIcmpForwarding, true);
+      expect(restored.tun.endpointIndependentNat, true);
       expect(restored.interfaceNameMode, InterfaceNameMode.custom);
       expect(restored.interfaceName, 'eth0');
     });
@@ -285,6 +350,25 @@ void main() {
 
       expect(restored.interfaceNameMode, InterfaceNameMode.clear);
     });
+
+    test('proxy nameserver policy survives round-trip', () {
+      const config = PatchClashConfig(
+        dns: Dns(
+          proxyServerNameserverPolicy: {
+            'geosite:cn': 'https://doh.pub/dns-query',
+          },
+        ),
+      );
+
+      final restored = roundTrip(
+        () => config.toJson(),
+        PatchClashConfig.fromJson,
+      );
+
+      expect(restored.dns.proxyServerNameserverPolicy, {
+        'geosite:cn': 'https://doh.pub/dns-query',
+      });
+    });
   });
 
   group('ProxiesStyleProps JSON round-trip', () {
@@ -293,12 +377,21 @@ void main() {
       expect(props.type, ProxiesType.tab);
       expect(props.sortType, ProxiesSortType.none);
       expect(props.layout, ProxiesLayout.standard);
+      expect(props.listHeaderStyle, ProxiesListHeaderStyle.loose);
+      expect(props.iconSource, ProxiesIconSource.standard);
+      expect(props.cardType, ProxyCardType.standard);
+      expect(props.hideUnavailable, false);
+      expect(props.showHiddenGroups, false);
     });
 
     test('round-trip with custom values', () {
       const props = ProxiesStyleProps(
         type: ProxiesType.list,
         sortType: ProxiesSortType.delay,
+        listHeaderStyle: ProxiesListHeaderStyle.tight,
+        iconSource: ProxiesIconSource.emoji,
+        hideUnavailable: true,
+        showHiddenGroups: true,
       );
       final restored = roundTrip(
         () => props.toJson(),
@@ -306,6 +399,10 @@ void main() {
       );
       expect(restored.type, ProxiesType.list);
       expect(restored.sortType, ProxiesSortType.delay);
+      expect(restored.listHeaderStyle, ProxiesListHeaderStyle.tight);
+      expect(restored.iconSource, ProxiesIconSource.emoji);
+      expect(restored.hideUnavailable, true);
+      expect(restored.showHiddenGroups, true);
     });
   });
 
@@ -314,14 +411,14 @@ void main() {
       const props = ThemeProps();
       expect(props.primaryColor, null);
       expect(props.primaryColors, defaultPrimaryColors);
-      expect(props.themeMode, ThemeMode.dark);
+      expect(props.themeMode, ThemeMode.system);
       expect(props.pureBlack, false);
       expect(props.textScale.scale, 1.0);
     });
 
     test('safeFromJson returns default on null', () {
       final result = ThemeProps.safeFromJson(null);
-      expect(result.themeMode, ThemeMode.dark);
+      expect(result.themeMode, ThemeMode.system);
     });
 
     test('round-trip with custom values', () {
@@ -358,6 +455,89 @@ void main() {
         rejectList: ['app3', 'app4'],
       );
       expect(props.currentList, ['app3', 'app4']);
+    });
+  });
+
+  group('unknown enum compatibility', () {
+    test('app settings enums fall back field by field', () {
+      expect(
+        AppSettingProps.fromJson({'restoreStrategy': 'future'}).restoreStrategy,
+        RestoreStrategy.compatible,
+      );
+      final access = AccessControlProps.fromJson({
+        'mode': 'future',
+        'sort': 'future',
+      });
+      expect(access.mode, AccessControlMode.rejectSelected);
+      expect(access.sort, AccessSortType.none);
+      expect(
+        NetworkProps.fromJson({'routeMode': 'future'}).routeMode,
+        RouteMode.config,
+      );
+    });
+
+    test('proxy style enums fall back field by field', () {
+      final props = ProxiesStyleProps.fromJson({
+        'type': 'future',
+        'sortType': 'future',
+        'layout': 'future',
+        'listHeaderStyle': 'future',
+        'iconStyle': 'future',
+        'iconSource': 'future',
+        'cardType': 'future',
+      });
+
+      expect(props.type, ProxiesType.tab);
+      expect(props.sortType, ProxiesSortType.none);
+      expect(props.layout, ProxiesLayout.standard);
+      expect(props.listHeaderStyle, ProxiesListHeaderStyle.loose);
+      expect(props.iconStyle, ProxiesIconStyle.standard);
+      expect(props.iconSource, ProxiesIconSource.standard);
+      expect(props.cardType, ProxyCardType.standard);
+    });
+
+    test('theme enums fall back field by field', () {
+      final props = ThemeProps.fromJson({
+        'themeMode': 'future',
+        'schemeVariant': 'future',
+      });
+
+      expect(props.themeMode, ThemeMode.system);
+      expect(props.schemeVariant, DynamicSchemeVariant.content);
+    });
+
+    test('Clash patch enums fall back field by field', () {
+      final patch = PatchClashConfig.fromJson({
+        'mode': 'future',
+        'log-level': 'future',
+        'find-process-mode': 'future',
+        'interface-name-mode': 'future',
+        'geodata-loader': 'future',
+        'geosite-matcher': 'future',
+        'tun': {'stack': 'future'},
+        'dns': {'enhanced-mode': 'future'},
+      });
+
+      expect(patch.mode, Mode.rule);
+      expect(patch.logLevel, LogLevel.error);
+      expect(patch.findProcessMode, FindProcessMode.always);
+      expect(patch.interfaceNameMode, InterfaceNameMode.clear);
+      expect(patch.geodataLoader, GeodataLoader.memconservative);
+      expect(patch.geositeMatcher, GeositeMatcher.succinct);
+      expect(patch.tun.stack, TunStack.mixed);
+      expect(patch.dns.enhancedMode, DnsMode.fakeIp);
+    });
+
+    test('profile and rule enums fall back field by field', () {
+      final group = ProxyGroup.fromJson({
+        'id': 1,
+        'name': 'group',
+        'type': 'future',
+      });
+      final rule = Rule.fromJson({'ruleAction': 'future'});
+
+      expect(group.type, GroupType.Selector);
+      expect(rule.ruleAction, RuleAction.DOMAIN);
     });
   });
 
@@ -410,6 +590,7 @@ void main() {
       expect(restored.networkProps.systemProxy, true);
       expect(restored.vpnProps.enable, true);
       expect(restored.hotKeyActions, isEmpty);
+      expect(restored.alwaysOn, false);
     });
 
     test('realFromJson handles null', () {
@@ -425,6 +606,7 @@ void main() {
         appSettingProps: AppSettingProps(locale: 'en', autoLaunch: true),
         networkProps: NetworkProps(systemProxy: false),
         vpnProps: VpnProps(enable: false),
+        alwaysOn: true,
         themeProps: ThemeProps(
           primaryColor: 0xFF00FF00,
           themeMode: ThemeMode.system,
@@ -438,6 +620,7 @@ void main() {
       expect(restored.appSettingProps.autoLaunch, true);
       expect(restored.networkProps.systemProxy, false);
       expect(restored.vpnProps.enable, false);
+      expect(restored.alwaysOn, true);
       expect(restored.windowProps.width, 1280);
       expect(restored.windowProps.height, 720);
     });

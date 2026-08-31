@@ -1,4 +1,3 @@
-import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
@@ -14,7 +13,7 @@ import '../helpers/test_app.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('uses decorated sections without displaying resource URLs', (
+  testWidgets('edits a resource by row and keeps sync as a separate action', (
     tester,
   ) async {
     const size = Size(1000, 1000);
@@ -39,7 +38,7 @@ void main() {
     expect(find.byType(DecorationListItem), findsNWidgets(6));
     expect(find.byType(ItemPositionProvider), findsNWidgets(4));
     expect(find.byType(Switch), findsOneWidget);
-    expect(find.byIcon(Icons.more_vert), findsNWidgets(4));
+    expect(find.byIcon(Icons.sync), findsNWidgets(5));
     expect(find.byType(FutureBuilder<FileInfo?>), findsNWidgets(4));
     for (final url in defaultGeoXUrl.values) {
       expect(find.text(url), findsNothing);
@@ -49,13 +48,11 @@ void main() {
       of: find.text(GeoResource.MMDB.name),
       matching: find.byType(DecorationListItem),
     );
-    await tester.tap(
-      find.descendant(of: mmdbItem, matching: find.byIcon(Icons.more_vert)),
-    );
+    await tester.tap(mmdbItem);
     await tester.pumpAndSettle();
 
-    expect(find.text(currentAppLocalizations.edit), findsOneWidget);
-    expect(find.text(currentAppLocalizations.sync), findsOneWidget);
+    expect(find.byType(UpdateGeoUrlFormDialog), findsOneWidget);
+    expect(find.text(GeoResource.MMDB.name), findsNWidgets(2));
     expect(tester.takeException(), null);
 
     await tester.pumpWidget(const SizedBox.shrink());

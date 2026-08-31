@@ -6,6 +6,7 @@ import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/profiles/profiles.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:flutter/gestures.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
@@ -132,5 +133,23 @@ void main() {
     expect(find.byType(CommonDialog), findsOneWidget);
     expect(find.byType(SubscriptionInfoDetailView), findsOneWidget);
     expect(find.text(currentAppLocalizations.subscriptionInfo), findsOneWidget);
+  });
+
+  testWidgets('right-click and long press open the whole-card menu', (
+    tester,
+  ) async {
+    final profile = urlProfile('url');
+    await pumpProfiles(tester, profiles: [profile]);
+    final profileItem = find.byKey(Key(profile.id.toString())).first;
+
+    await tester.tap(profileItem, buttons: kSecondaryButton);
+    await tester.pumpAndSettle();
+    expect(find.text(currentAppLocalizations.edit), findsOneWidget);
+
+    await tester.tapAt(const Offset(8, 8));
+    await tester.pumpAndSettle();
+    await tester.longPress(profileItem);
+    await tester.pumpAndSettle();
+    expect(find.text(currentAppLocalizations.edit), findsOneWidget);
   });
 }

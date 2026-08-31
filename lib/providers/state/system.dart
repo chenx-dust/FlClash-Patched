@@ -16,6 +16,7 @@ UpdateParams updateParams(Ref ref) {
         ipv6: state.ipv6,
         tcpConcurrent: state.tcpConcurrent,
         externalController: state.externalController,
+        secret: state.secret,
         unifiedDelay: state.unifiedDelay,
         mixedPort: state.mixedPort,
         geoAutoUpdate: state.geoAutoUpdate,
@@ -162,6 +163,7 @@ SharedState sharedState(Ref ref) {
       (state) => (
         stack: state.tun.stack.name,
         mixedPort: state.mixedPort,
+        mtu: state.tun.mtu,
         routeAddress: state.tun.resolveRouteAddress(networkSetting.routeMode),
       ),
     ),
@@ -179,6 +181,9 @@ SharedState sharedState(Ref ref) {
     onlyStatisticsProxy: onlyStatisticsProxy,
     stopText: currentAppLocalizations.stop,
     crashlytics: crashlytics,
+    networkSpeedNotification: vpnSetting.networkSpeedNotification,
+    excludeSSIDs: ref.watch(excludeSSIDsProvider),
+    alwaysOn: ref.watch(alwaysOnProvider),
     stopTip: currentAppLocalizations.stopVpn,
     startTip: currentAppLocalizations.startVpn,
     setupParams: SetupParams(selectedMap: selectedMap, testUrl: testUrl),
@@ -188,11 +193,29 @@ SharedState sharedState(Ref ref) {
       systemProxy: vpnSetting.systemProxy,
       port: port,
       ipv6: vpnSetting.ipv6,
-      dnsHijacking: vpnSetting.dnsHijacking,
+      captureDns: vpnSetting.dnsHijacking,
       accessControlProps: vpnSetting.accessControlProps,
       allowBypass: vpnSetting.allowBypass,
+      suspendSupport: vpnSetting.suspendSupport,
       bypassDomain: networkSetting.bypassDomain,
+      mtu: clashConfig.mtu,
       routeAddress: clashConfig.routeAddress,
+      disableIcmpForwarding: ref.watch(
+        patchClashConfigProvider.select(
+          (state) => state.tun.disableIcmpForwarding,
+        ),
+      ),
+      endpointIndependentNat: ref.watch(
+        patchClashConfigProvider.select(
+          (state) => state.tun.endpointIndependentNat,
+        ),
+      ),
+      includeAllNetworks: vpnSetting.includeAllNetworks,
+      excludeLocalNetworks: vpnSetting.excludeLocalNetworks,
+      excludeAPNs: vpnSetting.excludeAPNs,
+      excludeCellularServices: vpnSetting.excludeCellularServices,
+      enforceRoutes: vpnSetting.enforceRoutes,
+      excludeDeviceCommunication: vpnSetting.excludeDeviceCommunication,
     ),
   );
 }
