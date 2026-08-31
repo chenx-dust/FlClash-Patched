@@ -32,6 +32,7 @@
         android:name=".FlClashApplication"
         android:banner="@mipmap/ic_banner"
         android:hardwareAccelerated="true"
+        android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name">
         <activity
@@ -63,6 +64,7 @@
 
                 <data android:scheme="clash" />
                 <data android:scheme="clashmeta" />
+                <data android:scheme="mihomo" />
                 <data android:scheme="flclash" />
 
                 <data android:host="install-config" />

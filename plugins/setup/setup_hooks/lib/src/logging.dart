@@ -24,7 +24,11 @@ void initLogging({Level level = Level.INFO, String? logFile}) {
       if (line.isEmpty) continue;
       final text = '${record.level.name}: $line';
       toStderr ? stderr.writeln(text) : stdout.writeln(text);
-      file?.writeStringSync('$text\n');
+      try {
+        file?.writeStringSync('$text\n');
+      } on FileSystemException {
+        // Cache cleanup must not interrupt the build's console logging.
+      }
     }
   });
 }
