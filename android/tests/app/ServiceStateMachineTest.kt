@@ -22,7 +22,7 @@ private fun vpnOptions(enable: Boolean = true) = VpnOptions(
     enable = enable,
     port = 7890,
     ipv6 = false,
-    dnsHijacking = false,
+    captureDns = false,
     accessControlProps = AccessControlProps(
         enable = false,
         mode = AccessControlMode.ACCEPT_SELECTED,
@@ -31,9 +31,13 @@ private fun vpnOptions(enable: Boolean = true) = VpnOptions(
     ),
     allowBypass = false,
     systemProxy = true,
+    suspendSupport = null,
     bypassDomain = emptyList(),
     stack = "gvisor",
+    mtu = null,
     routeAddress = emptyList(),
+    disableIcmpForwarding = false,
+    endpointIndependentNat = false,
 )
 
 private fun configuredState(enable: Boolean = true) = SharedState(
@@ -97,11 +101,12 @@ private class FakeHost(override val scope: CoroutineScope) : ServiceStateHost {
     override var runTimeMillis = 0L
     override val homeDirPath = "/data/user/0/com.follow.clash/files"
     override val sdkInt = 34
+    override var startMessage = "Start VPN"
+    override var stopMessage = "Stop VPN"
 
     val toasts = mutableListOf<String>()
     val logs = mutableListOf<String>()
     val notificationParams = mutableListOf<NotificationParams>()
-    val crashlytics = mutableListOf<Boolean>()
     var setupCalls = 0
     var startCalls = 0
     var stopCalls = 0
@@ -114,10 +119,6 @@ private class FakeHost(override val scope: CoroutineScope) : ServiceStateHost {
 
     override fun showToast(message: String) {
         toasts += message
-    }
-
-    override fun setCrashlytics(enabled: Boolean) {
-        crashlytics += enabled
     }
 
     override fun updateNotificationParams(params: NotificationParams) {
@@ -169,12 +170,12 @@ class ServiceStateMachineTest {
         val params = ServiceStateMachine.notificationParams(
             SharedState(
                 currentProfileName = "Work",
-                stopText = "Disconnect",
                 onlyStatisticsProxy = true,
+                networkSpeedNotification = true,
             ),
         )
 
-        assertEquals(NotificationParams("Work", "Disconnect", true), params)
+        assertEquals(NotificationParams("Work", true, true), params)
     }
 
     @Test
@@ -476,7 +477,8 @@ class ServiceStateMachineTest {
     fun `handleStopAction announces itself before stopping`() = runTest {
         val host = FakeHost(backgroundScope)
         val machine = ServiceStateMachine(host)
-        machine.syncSharedState(configuredState().copy(stopTip = "Stopping..."))
+        host.stopMessage = "Stopping..."
+        machine.syncSharedState(configuredState())
         machine.requestStart().await()
 
         machine.handleStopAction()
@@ -523,21 +525,19 @@ class ServiceStateMachineTest {
     }
 
     @Test
-    fun `syncSharedState pushes crashlytics and the notification straight through`() = runTest {
+    fun `syncSharedState pushes the notification straight through`() = runTest {
         val host = FakeHost(backgroundScope)
         val machine = ServiceStateMachine(host)
 
         machine.syncSharedState(
             SharedState(
-                crashlytics = false,
                 currentProfileName = "Work",
-                stopText = "Disconnect",
                 onlyStatisticsProxy = true,
+                networkSpeedNotification = true,
             ),
         )
 
-        assertEquals(listOf(false), host.crashlytics)
-        assertEquals(listOf(NotificationParams("Work", "Disconnect", true)), host.notificationParams)
+        assertEquals(listOf(NotificationParams("Work", true, true)), host.notificationParams)
     }
 
     @Test

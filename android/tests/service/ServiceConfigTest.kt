@@ -14,7 +14,7 @@ private fun vpnOptions(port: Int) = VpnOptions(
     enable = true,
     port = port,
     ipv6 = false,
-    dnsHijacking = true,
+    captureDns = true,
     accessControlProps = AccessControlProps(
         enable = true,
         mode = AccessControlMode.REJECT_SELECTED,
@@ -23,19 +23,23 @@ private fun vpnOptions(port: Int) = VpnOptions(
     ),
     allowBypass = true,
     systemProxy = false,
+    suspendSupport = null,
     bypassDomain = listOf("example.test"),
     stack = "system",
+    mtu = null,
     routeAddress = listOf("0.0.0.0/0"),
+    disableIcmpForwarding = false,
+    endpointIndependentNat = false,
 )
 
 class ServiceConfigTest {
     @Test
-    fun `notification params default to the app name and stop label`() {
+    fun `notification params default to the app name and disabled traffic details`() {
         val defaults = NotificationParams()
 
         assertEquals("FlClash", defaults.title)
-        assertEquals("STOP", defaults.stopText)
         assertEquals(false, defaults.onlyStatisticsProxy)
+        assertEquals(false, defaults.networkSpeedNotification)
     }
 
     @Test
@@ -53,8 +57,8 @@ class ServiceConfigTest {
     fun `updateNotificationParams emits through the state flow`() = runTest {
         val params = NotificationParams(
             title = "Profile",
-            stopText = "Halt",
             onlyStatisticsProxy = true,
+            networkSpeedNotification = true,
         )
 
         ServiceConfig.updateNotificationParams(params)

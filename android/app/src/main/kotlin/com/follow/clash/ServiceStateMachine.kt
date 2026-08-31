@@ -102,7 +102,7 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
             tile.handleStop()
             return
         }
-        host.showToast(sharedState.stopTip)
+        host.showToast(host.stopMessage)
         requestStop().await()
     }
 
@@ -177,13 +177,12 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
     }
 
     private fun applySharedState() {
-        host.setCrashlytics(sharedState.crashlytics)
         host.updateNotificationParams(notificationParams(sharedState))
     }
 
     private suspend fun setupCore(): Boolean {
         applySharedState()
-        host.showToast(sharedState.startTip)
+        host.showToast(host.startMessage)
         return host.quickSetup(
             initParams(host.homeDirPath, host.sdkInt),
             Gson().toJson(sharedState.setupParams),
@@ -335,8 +334,8 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
 
         fun notificationParams(state: SharedState): NotificationParams = NotificationParams(
             title = state.currentProfileName,
-            stopText = state.stopText,
             onlyStatisticsProxy = state.onlyStatisticsProxy,
+            networkSpeedNotification = state.networkSpeedNotification,
         )
     }
 }

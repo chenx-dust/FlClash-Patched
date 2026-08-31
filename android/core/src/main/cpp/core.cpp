@@ -11,9 +11,9 @@
 extern "C"
 JNIEXPORT jboolean JNICALL
 Java_com_follow_clash_core_Core_startTun(JNIEnv *env, jobject thiz, jint fd, jobject cb,
-                                         jstring stack, jstring address, jstring dns) {
+                                         jstring options) {
     const auto interface = new_global(cb);
-    return startTUN(interface, fd, get_string(stack), get_string(address), get_string(dns))
+    return startTUN(interface, fd, get_string(options))
            ? JNI_TRUE
            : JNI_FALSE;
 }
@@ -94,6 +94,11 @@ static jmethodID m_invoke_interface_result;
 static void release_jni_object_impl(void *obj) {
     ATTACH_JNI();
     del_global(static_cast<jobject>(obj));
+}
+
+static void *retain_jni_object_impl(void *obj) {
+    ATTACH_JNI();
+    return new_global(static_cast<jobject>(obj));
 }
 
 static void free_string_impl(char *str) {
@@ -200,6 +205,7 @@ JNI_OnLoad(JavaVM *vm, void *) {
     resolve_package_func = &call_tun_interface_resolve_package_impl;
     result_func = &call_invoke_interface_result_impl;
     release_object_func = &release_jni_object_impl;
+    retain_object_func = &retain_jni_object_impl;
     free_string_func = &free_string_impl;
 
     return JNI_VERSION_1_6;
@@ -208,7 +214,7 @@ JNI_OnLoad(JavaVM *vm, void *) {
 extern "C"
 JNIEXPORT jboolean JNICALL
 Java_com_follow_clash_core_Core_startTun(JNIEnv *env, jobject thiz, jint fd, jobject cb,
-                                         jstring stack, jstring address, jstring dns) {
+                                         jstring options) {
     return JNI_FALSE;
 }
 

@@ -16,6 +16,15 @@ import (
 	"github.com/metacubex/mihomo/tunnel"
 )
 
+type Options struct {
+	Stack                  string `json:"stack"`
+	Address                string `json:"address"`
+	DNS                    string `json:"dns"`
+	MTU                    uint32 `json:"mtu"`
+	DisableICMPForwarding  bool   `json:"disableIcmpForwarding"`
+	EndpointIndependentNAT bool   `json:"endpointIndependentNat"`
+}
+
 // Start takes ownership of fd. dupFd is handed to sing_tun.New, which only
 // takes ownership of it once tunNew succeeds inside New; from that point
 // Listener.Close (run by New's own deferred cleanup on error) closes dupFd,
@@ -23,14 +32,14 @@ import (
 // whether tunNew was reached; the options built below never enable the
 // tun features whose validation runs before tunNew, so New cannot fail
 // before taking ownership of dupFd.
-func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
+func Start(fd int, config Options) *sing_tun.Listener {
 	var prefix4 []netip.Prefix
 	var prefix6 []netip.Prefix
-	tunStack, ok := constant.StackTypeMapping[strings.ToLower(stack)]
+	tunStack, ok := constant.StackTypeMapping[strings.ToLower(config.Stack)]
 	if !ok {
 		tunStack = constant.TunSystem
 	}
-	for _, a := range strings.Split(address, ",") {
+	for _, a := range strings.Split(config.Address, ",") {
 		a = strings.TrimSpace(a)
 		if len(a) == 0 {
 			continue
@@ -49,7 +58,7 @@ func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
 	}
 
 	var dnsHijack []string
-	for _, d := range strings.Split(dns, ",") {
+	for _, d := range strings.Split(config.DNS, ",") {
 		d = strings.TrimSpace(d)
 		if len(d) == 0 {
 			continue
@@ -72,16 +81,18 @@ func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
 	defer func() { _ = syscall.Close(fd) }()
 
 	options := LC.Tun{
-		Enable:              true,
-		Device:              "FlClash",
-		Stack:               tunStack,
-		DNSHijack:           dnsHijack,
-		AutoRoute:           false,
-		AutoDetectInterface: false,
-		Inet4Address:        prefix4,
-		Inet6Address:        prefix6,
-		MTU:                 9000,
-		FileDescriptor:      dupFd,
+		Enable:                 true,
+		Device:                 "FlClash",
+		Stack:                  tunStack,
+		DNSHijack:              dnsHijack,
+		AutoRoute:              false,
+		AutoDetectInterface:    false,
+		Inet4Address:           prefix4,
+		Inet6Address:           prefix6,
+		MTU:                    config.MTU,
+		FileDescriptor:         dupFd,
+		DisableICMPForwarding:  config.DisableICMPForwarding,
+		EndpointIndependentNat: config.EndpointIndependentNAT,
 	}
 
 	listener, err := sing_tun.New(options, tunnel.Tunnel)
