@@ -57,12 +57,12 @@ void main() {
       expect(getTimeText(3661000), '01:01:01');
     });
 
-    test('formats three digit hours', () {
-      expect(getTimeText(100 * 3600 * 1000), '100:00:00');
+    test('formats multi-day durations', () {
+      expect(getTimeText(100 * 3600 * 1000), '4d 04:00:00');
     });
 
-    test('caps at 999:59:59', () {
-      expect(getTimeText(1000 * 3600 * 1000), '999:59:59');
+    test('formats durations beyond 999 hours', () {
+      expect(getTimeText(1000 * 3600 * 1000), '41d 16:00:00');
     });
   });
 
