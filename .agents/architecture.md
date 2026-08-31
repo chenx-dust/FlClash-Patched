@@ -24,8 +24,8 @@ Desktop core mode:
 - `lib/core/desktop/transport.dart` converts native IPC frames into ready, connected, disconnected, failed, and data
   events. A replaceable binding keeps RPC subscriptions stable when a failed or stale transport must be rebuilt.
 - `lib/core/desktop/rpc_client.dart` owns request IDs and pending completers, waits up to 10 seconds for a connection,
-  applies a three-minute default method timeout, unwraps `CoreMethodResponse`, and fails all pending calls when transport
-  disconnects or closes.
+  applies a three-minute default method timeout, unwraps `CoreMethodResponse`, fails pending calls on unexpected transport
+  loss, and cancels them without errors during planned application shutdown.
 - `lib/core/desktop/lifecycle.dart` serializes process intents and owns the authoritative desktop state machine.
 - `lib/core/desktop/launcher.dart` abstracts direct child-process and Windows Helper ownership through idempotent process
   leases. `lib/core/desktop/helper_client.dart` is the typed loopback HTTP client for the privileged Helper.
@@ -454,9 +454,10 @@ Shared:
 
 `setup.dart` is the release build orchestrator:
 
-1. Writes `env.json` (`APP_ENV`).
-2. Activates `flutter_distributor` for packaging.
-3. Relies on the platform build hook to build the required Core artifacts before
+1. Downloads ignored GeoData files before Flutter assembles the asset bundle.
+2. Writes `env.json` (`APP_ENV`).
+3. Activates `flutter_distributor` for packaging.
+4. Relies on the platform build hook to build the required Core artifacts before
    the native application is linked.
 
 Go core building is handled by `build_tool`, a standalone Dart CLI in `plugins/setup/buildkit/build_tool/`.
@@ -496,7 +497,7 @@ Platform outputs remain explicit:
 The hooks follow rust_api/Cargokit's phony-output scheduling pattern, but setup uses its own cache because it builds both a
 Go core and, on Windows, a separate Rust helper. Per-target records live under `.dart_tool/setup_build_cache/v1/`:
 
-- Go fingerprints cover the target-specific `go list -deps` inputs inside `core/` and `Clash.Meta`, module files, effective
+- Go fingerprints cover the target-specific `go list -deps` inputs inside `core/` and `mihomo`, module files, effective
   build configuration, build-tool sources, target flags, Go environment/toolchain, and Android NDK compiler details.
 - Windows helper fingerprints cover its Rust sources and manifests, Cargo/Rust
   toolchains and flags, and the expected Core SHA256.

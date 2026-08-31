@@ -1,5 +1,5 @@
 name: fl_clash
-description: A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.
+description: A multi-platform proxy client based on mihomo, simple and easy to use, open-source and ad-free.
 publish_to: 'none'
 version: 0.8.97+2026090101
 environment:
@@ -11,8 +11,10 @@ dependencies:
   material_ui: ^1.0.1
   intl: any
   path_provider: ^2.1.5
+  path_provider_foundation: ^2.6.0
   path: ^1.9.0
   shared_preferences: ^2.5.3
+  shared_preferences_platform_interface: ^2.4.2
   window_manager:
     git:
       url: https://github.com/chen08209/window_manager
@@ -62,6 +64,7 @@ dependencies:
   flutter_svg: ^2.1.0
   flutter_cache_manager: ^3.4.1
   crypto: ^3.0.3
+  xml: ^6.6.1
   yaml_writer:
     git:
       url: https://github.com/chen08209/yaml_writer

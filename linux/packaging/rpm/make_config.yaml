@@ -2,25 +2,36 @@ display_name: FlClash
 
 packager: chen08209
 packagerEmail: chen08209@gmail.com
-license: Other
+license: GPL-3.0-or-later
 
-priority: optional
-section: x11
-installed_size: 6604
-essential: false
 icon: ./assets/images/icon.png
 
+auto_req: false
+
 requires:
+  - libayatana-appindicator-gtk3
+  - keybinder3
   - libsecret
 
 keywords:
   - FlClash
   - Clash
   - ClashMeta
+  - mihomo
   - Proxy
 
+supported_mime_type:
+  - x-scheme-handler/clash
+  - x-scheme-handler/clashmeta
+  - x-scheme-handler/mihomo
+  - x-scheme-handler/flclash
+
 generic_name: FlClash
+
+categories:
+  - Network
 
 group: Applications/Internet
 
 startup_notify: true
+startup_wm_class: com.follow.clash

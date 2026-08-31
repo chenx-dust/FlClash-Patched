@@ -4,37 +4,50 @@
 
 </div>
 
-## FlClash
+# FlClash Patched
 
-[![Downloads](https://img.shields.io/github/downloads/chen08209/FlClash/total?style=flat-square&logo=github)](https://github.com/chen08209/FlClash/releases/)[![Last Version](https://img.shields.io/github/release/chen08209/FlClash/all.svg?style=flat-square)](https://github.com/chen08209/FlClash/releases/)[![License](https://img.shields.io/github/license/chen08209/FlClash?style=flat-square)](LICENSE)
+[![Downloads](https://img.shields.io/github/downloads/chenx-dust/FlClash-Patched/total?style=flat-square&logo=github)](https://github.com/chenx-dust/FlClash-Patched/releases/)[![Last Version](https://img.shields.io/github/release/chenx-dust/FlClash-Patched/all.svg?style=flat-square)](https://github.com/chenx-dust/FlClash-Patched/releases/)[![License](https://img.shields.io/github/license/chenx-dust/FlClash-Patched?style=flat-square)](LICENSE)
 
-[![Channel](https://img.shields.io/badge/Telegram-Channel-blue?style=flat-square&logo=telegram)](https://t.me/FlClash)
+[FlClash](https://github.com/chen08209/FlClash) 的软分支版本，修复数个 bug，提升效能，增加功能。
 
-基于ClashMeta的多平台代理客户端，简单易用，开源无广告。
+## 免责声明
 
-on Desktop:
-<p style="text-align: center;">
-    <img alt="desktop" src="snapshots/desktop.gif">
-</p>
+> [!CAUTION]
+> 如果您是中华人民共和国公民或者长期居住在中华人民共和国境内，请在使用前仔细阅读并理解以下内容。下载、安装或使用本项目即表示您同意以下条款，并承担由此产生的全部责任。
 
-on Mobile:
-<p style="text-align: center;">
-    <img alt="mobile" src="snapshots/mobile.gif">
-</p>
+本软件是个人维护的、在 FlClash 基础上补充完善相关功能的开源软件，目的在于提供易用且高度自定义的网络七层代理与分流功能。用户在使用本软件时必须遵守中华人民共和国的相关法律法规，不得利用本软件从事任何违法犯罪活动。我们有权拒绝为任何涉及或可能涉及网络犯罪或规避监管制度的用途提供技术支持，不对因使用本软件而导致的任何法律责任、经济损失或其他后果承担任何责任。
 
-## Features
+## 特性
+
+> [!WARNING]
+> 本分叉版本的维护有较强个人色彩，您可以提出建议，但不一定被采纳。版本分发节奏较快，且代码强制推送，保持最新可能会遇到问题，不保证与原项目的兼容性，请做好备份措施。
+
+- 支持 iOS 平台（需使用 Apple 开发者账号自行编译安装）
+- 优化 Linux 平台体验（Pacman 包分发、修复 RPM 依赖、WM_CLASS 问题）
+- 修复原项目 Bug（启动时间、窗口定位、程序通知）
+- 能效优化（优化 Android Doze 支持、统一 UI 定时器休眠）
+- UI 优化（代理选择界面、日志与连接筛选排序）
+- 新增功能（Age-Key 加密支持、Windows 高优先级启动、Tailscale 集成等）
+
+更多信息请查看 [Applied Patches (#1)](https://github.com/chenx-dust/FlClash-Patched/issues/1)
+
+# 原介绍
+
+基于 mihomo 的多平台代理客户端，简单易用，开源无广告。
+
+## 特性
 
 ✈️ 多平台: Android, Windows, macOS and Linux
 
 💻 自适应多个屏幕尺寸,多种颜色主题可供选择
 
-💡 基本 Material You 设计, 类[Surfboard](https://github.com/getsurfboard/surfboard)用户界面
+💡 基于 Material You 设计，采用类似 [Surfboard](https://github.com/getsurfboard/surfboard) 的用户界面
 
-☁️ 支持通过WebDAV同步数据
+☁️ 支持通过 WebDAV 同步数据
 
-✨ 支持一键导入订阅, 深色模式
+✨ 支持一键导入订阅、深色模式
 
-## Use
+## 使用
 
 ### Linux
 
@@ -57,18 +70,11 @@ on Mobile:
     com.follow.clash.action.TOGGLE
    ```
 
-## Download
+## 下载
 
-<a href="https://chen08209.github.io/FlClash-fdroid-repo/repo?fingerprint=789D6D32668712EF7672F9E58DEEB15FBD6DCEEC5AE7A4371EA72F2AAE8A12FD"><img alt="Get it on F-Droid" src="snapshots/get-it-on-fdroid.svg" width="200px"/></a> <a href="https://github.com/chen08209/FlClash/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
+<a href="https://github.com/chenx-dust/FlClash-Patched/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
 
-### Homebrew
-
-```bash
-brew tap chen08209/tap
-brew install --cask flclash
-```
-
-## Build
+## 构建
 
 1. 更新 submodules
    ```bash
@@ -128,12 +134,14 @@ brew install --cask flclash
            dart setup.dart macos
            ```
 
-## Star
+    - iOS
 
-支持开发者的最简单方式是点击页面顶部的星标（⭐）。
+        1. 你需要一个macOS客户端
 
-<p style="text-align: center;">
-    <a href="https://api.star-history.com/svg?repos=chen08209/FlClash&Date">
-        <img alt="start" width=50% src="https://api.star-history.com/svg?repos=chen08209/FlClash&Date"/>
-    </a>
-</p>
+        2. 为 App Bundle 和 Network Extension Bundle 配置 Apple Developer capabilities、App Group 以及描述文件
+
+        3. 运行构建脚本
+
+           ```bash
+           dart setup.dart ios --ios-bundle-id com.example.flclash
+           ```

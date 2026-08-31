@@ -5,21 +5,27 @@ maintainer:
   email: chen08209@gmail.com
 
 priority: optional
-section: x11
-installed_size: 6604
+section: net
 essential: false
 icon: ./assets/images/icon.png
 
 dependencies:
-  - libayatana-appindicator3-dev
-  - libkeybinder-3.0-dev
+  - libayatana-appindicator3-1
+  - libkeybinder-3.0-0
   - libsecret-1-0
 
 keywords:
   - FlClash
   - Clash
   - ClashMeta
+  - mihomo
   - Proxy
+
+supported_mime_type:
+  - x-scheme-handler/clash
+  - x-scheme-handler/clashmeta
+  - x-scheme-handler/mihomo
+  - x-scheme-handler/flclash
 
 generic_name: FlClash
 
@@ -27,3 +33,4 @@ categories:
   - Network
 
 startup_notify: true
+startup_wm_class: com.follow.clash

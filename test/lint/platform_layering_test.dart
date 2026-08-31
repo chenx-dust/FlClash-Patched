@@ -61,9 +61,10 @@ Iterable<File> _dartFilesIn(String root) sync* {
     fail('$root no longer exists; update this test.');
   }
   for (final entity in directory.listSync(recursive: true)) {
+    final path = entity.path.replaceAll('\\', '/');
     if (entity is File &&
-        entity.path.endsWith('.dart') &&
-        !entity.path.contains('/generated/')) {
+        path.endsWith('.dart') &&
+        !path.contains('/generated/')) {
       yield entity;
     }
   }
@@ -92,7 +93,7 @@ void main() {
 
     for (final root in ['lib/common', 'lib/enum', 'lib/models']) {
       for (final file in _dartFilesIn(root)) {
-        final relative = p.relative(file.path);
+        final relative = p.relative(file.path).replaceAll('\\', '/');
         if (_platformModules.contains(relative)) {
           continue;
         }

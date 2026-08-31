@@ -4,27 +4,36 @@
 
 </div>
 
-## FlClash
+# FlClash Patched
 
-[![Downloads](https://img.shields.io/github/downloads/chen08209/FlClash/total?style=flat-square&logo=github)](https://github.com/chen08209/FlClash/releases/)[![Last Version](https://img.shields.io/github/release/chen08209/FlClash/all.svg?style=flat-square)](https://github.com/chen08209/FlClash/releases/)[![License](https://img.shields.io/github/license/chen08209/FlClash?style=flat-square)](LICENSE)
+[![Downloads](https://img.shields.io/github/downloads/chenx-dust/FlClash-Patched/total?style=flat-square&logo=github)](https://github.com/chenx-dust/FlClash-Patched/releases/)[![Last Version](https://img.shields.io/github/release/chenx-dust/FlClash-Patched/all.svg?style=flat-square)](https://github.com/chenx-dust/FlClash-Patched/releases/)[![License](https://img.shields.io/github/license/chenx-dust/FlClash-Patched?style=flat-square)](LICENSE)
 
-[![Channel](https://img.shields.io/badge/Telegram-Channel-blue?style=flat-square&logo=telegram)](https://t.me/FlClash)
+A soft fork of [FlClash](https://github.com/chen08209/FlClash), with several bug fixes, power efficiency improvements and new features.
 
-A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.
-
-on Desktop:
-<p style="text-align: center;">
-    <img alt="desktop" src="snapshots/desktop.gif">
-</p>
-
-on Mobile:
-<p style="text-align: center;">
-    <img alt="mobile" src="snapshots/mobile.gif">
-</p>
+> [!CAUTION]
+> 如果您是中华人民共和国公民或者长期居住在中华人民共和国境内，请在使用前仔细阅读并理解 [免责声明](./README_zh_CN.md#免责声明) 中的内容。下载、安装或使用本项目即表示您同意免责声明中的条款，并承担由此产生的全部责任。
 
 ## Features
 
-✈️ Multi-platform: Android, Windows, macOS and Linux
+> [!WARNING]
+> This fork is maintained with a strong personal taste. Suggestions are welcome, but may not be adopted. The release cadence is relatively fast with force pushes, so staying up to date may come with issues, and compatibility with the original project is not guaranteed. Please ensure you have backup measures in place.
+
+- Support iOS platform (requires an Apple Developer account to build)
+- Optimized experience on Linux (Pacman package distribution, fixed RPM dependencies, WM_CLASS issues)
+- Fixed bugs from upstream (startup time, window positioning, notifications)
+- Energy efficiency optimizations (improved Android Doze, unified UI timer suspend)
+- UI optimizations (proxy selection, log and connection filtering/sorting)
+- New features (Age-Key encryption support, Windows high-priority startup, Tailscale integration, etc.)
+
+For more information, please check the details in [Applied Patches (#1)](https://github.com/chenx-dust/FlClash-Patched/issues/1)
+
+# Original Introduction
+
+A multi-platform proxy client based on mihomo, simple and easy to use, open-source and ad-free.
+
+## Features
+
+✈️ Multi-platform: Android, iOS, Windows, macOS and Linux
 
 💻 Adaptive multiple screen sizes, Multiple color themes available
 
@@ -59,14 +68,7 @@ Support the following actions
 
 ## Download
 
-<a href="https://chen08209.github.io/FlClash-fdroid-repo/repo?fingerprint=789D6D32668712EF7672F9E58DEEB15FBD6DCEEC5AE7A4371EA72F2AAE8A12FD"><img alt="Get it on F-Droid" src="snapshots/get-it-on-fdroid.svg" width="200px"/></a> <a href="https://github.com/chen08209/FlClash/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
-
-### Homebrew
-
-```bash
-brew tap chen08209/tap
-brew install --cask flclash
-```
+<a href="https://github.com/chenx-dust/FlClash-Patched/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
 
 ## Build
 
@@ -128,12 +130,14 @@ brew install --cask flclash
            dart setup.dart macos
            ```
 
-## Star
+    - iOS
 
-The easiest way to support developers is to click on the star (⭐) at the top of the page.
+        1. Requires a macOS client
 
-<p style="text-align: center;">
-    <a href="https://api.star-history.com/svg?repos=chen08209/FlClash&Date">
-        <img alt="start" width=50% src="https://api.star-history.com/svg?repos=chen08209/FlClash&Date"/>
-    </a>
-</p>
+        2. Configure Apple Developer capabilities, App Group and provisioning profiles for the app bundle and Network Extension bundle
+
+        3. Run build script
+
+           ```bash
+           dart setup.dart ios --ios-bundle-id com.example.flclash
+           ```

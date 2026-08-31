@@ -1,6 +1,18 @@
 display_name: FlClash
+package_name: flclash
+maintainer:
+  name: chen08209
+  email: chen08209@gmail.com
+
+licenses:
+  - GPL-3.0-or-later
 
 icon: ./assets/images/icon.png
+
+dependencies:
+  - libayatana-appindicator
+  - libkeybinder3
+  - libsecret
 
 keywords:
   - FlClash
@@ -22,5 +34,3 @@ categories:
 
 startup_notify: true
 startup_wm_class: com.follow.clash
-
-include: []
