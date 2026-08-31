@@ -49,9 +49,15 @@ public class TrayPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         item.setTitle(arguments["title"] as? String ?? "")
 
         if let items = arguments["menu"] as? [[String: Any]] {
-            let built = TrayMenu(items: items) { [weak self] id in
-                self?.channel.invokeMethod("onMenuItemSelected", arguments: ["id": id])
+            let built = TrayMenu(items: items) { [weak self] id, keepsMenuOpen in
+                self?.sendSelection(id: id)
+                if keepsMenuOpen {
+                    DispatchQueue.main.async {
+                        self?.reopenMenu()
+                    }
+                }
             }
+            built.appearance = menuAppearance(arguments["brightness"] as? String)
             built.delegate = self
             menu = built
         }
@@ -106,6 +112,27 @@ public class TrayPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         image.size = NSSize(width: size, height: size)
         image.isTemplate = icon["isTemplate"] as? Bool ?? false
         return image
+    }
+
+    private func sendSelection(id: Int) {
+        var arguments: [String: Any] = ["id": id]
+        if let event = NSApp.currentEvent {
+            arguments["activationTimestamp"] = Int(event.timestamp * 1000)
+        }
+        channel.invokeMethod("onMenuItemSelected", arguments: arguments)
+    }
+
+    private func reopenMenu() {
+        guard let statusItem = statusItem, let menu = menu else { return }
+        statusItem.openMenu(menu)
+    }
+
+    private func menuAppearance(_ brightness: String?) -> NSAppearance? {
+        switch brightness {
+        case "dark": return NSAppearance(named: .darkAqua)
+        case "light": return NSAppearance(named: .aqua)
+        default: return nil
+        }
     }
 
     public func menuDidClose(_ menu: NSMenu) {

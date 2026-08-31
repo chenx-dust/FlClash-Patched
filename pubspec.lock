@@ -1798,15 +1798,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.3"
+  window_ext:
+    dependency: "direct main"
+    description:
+      path: "plugins/window_ext"
+      relative: true
+    source: path
+    version: "0.0.1"
   window_manager:
     dependency: "direct main"
     description:
       path: "packages/window_manager"
-      ref: "v0.5.1-flclash.2"
-      resolved-ref: "3f2e35e9c2912df7dabd6a1bf5f401715d1ef5cd"
-      url: "https://github.com/chen08209/window_manager"
+      ref: main
+      resolved-ref: "26643a14f7064f33842ffc0eeddb1822e828a645"
+      url: "https://github.com/chenx-dust/window_manager.git"
     source: git
-    version: "0.5.1"
+    version: "0.5.2"
   windows_file_picker:
     dependency: transitive
     description:

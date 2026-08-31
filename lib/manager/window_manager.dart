@@ -5,8 +5,10 @@ import 'package:fl_clash/common/launch.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/config.dart';
 import 'package:fl_clash/providers/providers.dart';
+import 'package:fl_clash/state.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:window_ext/window_ext.dart';
 import 'package:window_manager/window_manager.dart';
 
 const _windowGeometryDelay = Duration(milliseconds: 120);
@@ -21,7 +23,7 @@ class WindowManager extends ConsumerStatefulWidget {
 }
 
 class _WindowContainerState extends ConsumerState<WindowManager>
-    with WindowListener {
+    with WindowListener, WindowExtListener {
   Timer? _windowGeometryTimer;
   int _windowGeometryRevision = 0;
 
@@ -33,16 +35,25 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   @override
   void initState() {
     super.initState();
-    ref.listenManual(appSettingProvider.select((state) => state.autoLaunch), (
-      prev,
-      next,
-    ) {
-      if (prev != next) {
-        debouncer.call(FunctionTag.autoLaunch, () {
-          autoLaunch?.updateStatus(next);
-        });
-      }
-    });
+    ref.listenManual(
+      appSettingProvider.select(
+        (state) => (
+          autoLaunch: state.autoLaunch,
+          highPriority: state.highPriorityAutoLaunch,
+        ),
+      ),
+      (prev, next) {
+        if (prev != next) {
+          debouncer.call(FunctionTag.autoLaunch, () {
+            autoLaunch?.updateStatus(
+              isAutoLaunch: next.autoLaunch,
+              isHighPriorityAutoLaunch: next.highPriority,
+            );
+          });
+        }
+      },
+    );
+    windowExtManager.addListener(this);
     windowManager.addListener(this);
   }
 
@@ -56,13 +67,19 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   void onWindowFocus() {
     super.onWindowFocus();
     commonPrint.log('focus');
-    render?.resume();
+    globalState.handleForeground();
   }
 
   @override
-  Future<void> onWindowShouldTerminate() async {
+  Future<void> onWindowActivated() async {
+    await windowPort?.show();
+    await super.onWindowActivated();
+  }
+
+  @override
+  Future<void> onShouldTerminate() async {
     await ref.read(systemActionProvider.notifier).handleExit();
-    super.onWindowShouldTerminate();
+    await super.onShouldTerminate();
   }
 
   void _scheduleWindowGeometryCapture() {
@@ -155,14 +172,14 @@ class _WindowContainerState extends ConsumerState<WindowManager>
     _invalidateWindowGeometryCapture();
     ref.read(storeActionProvider.notifier).savePreferencesDebounce();
     commonPrint.log('minimize');
-    render?.pause();
+    globalState.handleBackground();
     super.onWindowMinimize();
   }
 
   @override
   void onWindowRestore() {
     commonPrint.log('restore');
-    render?.resume();
+    globalState.handleForeground();
     super.onWindowRestore();
     _scheduleWindowGeometryCapture();
   }
@@ -171,6 +188,7 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   void dispose() {
     _invalidateWindowGeometryCapture();
     windowManager.removeListener(this);
+    windowExtManager.removeListener(this);
     super.dispose();
   }
 }
@@ -273,12 +291,12 @@ class _WindowHeaderState extends ConsumerState<WindowHeader> {
     if (isMaximized) {
       await windowManager.unmaximize();
       if (system.isWindows) {
-        unawaited(windowManager.setWindowCornerPreference(round: true));
+        unawaited(windowExtManager.setWindowCornerPreference(round: true));
       }
     } else {
       await windowManager.maximize();
       if (system.isWindows) {
-        unawaited(windowManager.setWindowCornerPreference(round: false));
+        unawaited(windowExtManager.setWindowCornerPreference(round: false));
       }
     }
     final res = await windowManager.isMaximized();

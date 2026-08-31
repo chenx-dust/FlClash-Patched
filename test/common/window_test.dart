@@ -1,5 +1,6 @@
 import 'package:fl_clash/common/window.dart';
 import 'package:fl_clash/models/config.dart';
+import 'package:fl_clash/state.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -22,6 +23,7 @@ void main() {
     isFullScreen = false;
     isMinimized = false;
     bounds = const Rect.fromLTWH(20, 30, 1000, 800);
+    globalState.isBackground.value = false;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_windowChannel, (call) async {
           calls.add(call.method);
@@ -51,16 +53,19 @@ void main() {
   });
 
   test('show raises the window and puts it back on the taskbar', () async {
+    globalState.handleBackground();
     await Window().show();
 
     expect(calls, containsAllInOrder(<String>['show', 'focus']));
     expect(calls, contains('setSkipTaskbar'));
+    expect(globalState.isBackground.value, isFalse);
   });
 
   test('hide drops the window off the taskbar', () async {
     await Window().hide();
 
     expect(calls, containsAllInOrder(<String>['hide', 'setSkipTaskbar']));
+    expect(globalState.isBackground.value, isTrue);
   });
 
   test('close asks the platform to close the window', () async {

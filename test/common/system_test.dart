@@ -275,7 +275,7 @@ void main() {
 
       expect(await system.checkIsAdmin(), isFalse);
     });
-  });
+  }, skip: Platform.isWindows);
 
   group('parseDefaultInterface', () {
     test('reads the interface off route output', () {

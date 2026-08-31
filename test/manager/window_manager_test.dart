@@ -11,6 +11,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:window_ext/window_ext.dart';
 import 'package:window_manager/window_manager.dart' show WindowListener;
 
 import '../helpers/test_app.dart';
@@ -37,6 +38,7 @@ class _RecordingWindowPort implements WindowPort {
   Completer<void>? geometryGate;
   bool isNormal = true;
   bool supportsPosition = true;
+  int showCount = 0;
 
   @override
   Future<WindowProps?> captureNormalGeometry(WindowProps current) async {
@@ -68,7 +70,9 @@ class _RecordingWindowPort implements WindowPort {
   Future<bool> get isVisible async => true;
 
   @override
-  Future<void> show() async {}
+  Future<void> show({int? activationTimestamp, String? activationToken}) async {
+    showCount++;
+  }
 }
 
 void main() {
@@ -92,6 +96,7 @@ void main() {
       ],
     );
     globalState.container = container;
+    globalState.isBackground.value = false;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_windowChannel, (call) async {
           if (call.method == 'isMaximized' || call.method == 'isAlwaysOnTop') {
@@ -144,12 +149,24 @@ void main() {
   testWidgets('a terminate request is delegated to the system action', (
     tester,
   ) async {
-    final listener = await pumpWindowManager(tester);
+    await pumpWindowManager(tester);
+    final listener =
+        tester.state(find.byType(WindowManager)) as WindowExtListener;
 
-    listener.onWindowShouldTerminate();
+    await listener.onShouldTerminate();
     await tester.pumpAndSettle();
 
     expect(_RecordingSystemAction.calls, ['exit']);
+  });
+
+  testWidgets('a native activation request shows the window', (tester) async {
+    await pumpWindowManager(tester);
+    final listener =
+        tester.state(find.byType(WindowManager)) as WindowExtListener;
+
+    await listener.onWindowActivated();
+
+    expect(window.showCount, 1);
   });
 
   testWidgets('moving the window records its new position', (tester) async {
@@ -182,8 +199,12 @@ void main() {
     final listener = await pumpWindowManager(tester);
 
     listener.onWindowMinimize();
+    expect(globalState.isBackground.value, isTrue);
     listener.onWindowRestore();
+    expect(globalState.isBackground.value, isFalse);
+    globalState.handleBackground();
     listener.onWindowFocus();
+    expect(globalState.isBackground.value, isFalse);
     await tester.pump(const Duration(seconds: 1));
     await tester.pumpAndSettle();
 

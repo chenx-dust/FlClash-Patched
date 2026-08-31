@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/config.dart';
+import 'package:fl_clash/state.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:window_manager/window_manager.dart';
@@ -19,14 +20,10 @@ class Window implements WindowPort {
   }
 
   Future<void> init(int version, WindowProps props) async {
-    final acquire = await singleInstanceLock.acquire();
-    if (!acquire) {
-      await singleInstanceLock.requestActivation();
-      exit(0);
-    }
     if (system.isWindows) {
       protocol.register('clash');
       protocol.register('clashmeta');
+      protocol.register('mihomo');
       protocol.register('flclash');
     }
     await windowManager.ensureInitialized();
@@ -52,7 +49,6 @@ class Window implements WindowPort {
       await _windowPosition(props);
     }
     await windowManager.setPreventClose(true);
-    singleInstanceLock.activationRequests.listen((_) => show());
   }
 
   Future<void> _windowPosition(WindowProps props) async {
@@ -62,23 +58,24 @@ class Window implements WindowPort {
       if (left == null || top == null) {
         await windowManager.setAlignment(Alignment.center);
       } else {
-        final size = props.size;
-        final right = left + size.width;
-        final bottom = top + size.height;
         final displays = await screenRetriever.getAllDisplays();
         final isPositionValid = displays.any((display) {
           final visiblePosition = display.visiblePosition;
           if (visiblePosition == null) {
             return false;
           }
+          final scaleFactor = display.scaleFactor ?? 1.0;
+          final logicalWidth =
+              display.visibleSize?.width ?? display.size.width / scaleFactor;
+          final logicalHeight =
+              display.visibleSize?.height ?? display.size.height / scaleFactor;
           final displayBounds = Rect.fromLTWH(
             visiblePosition.dx,
             visiblePosition.dy,
-            display.size.width,
-            display.size.height,
+            logicalWidth,
+            logicalHeight,
           );
-          return displayBounds.contains(Offset(left, top)) ||
-              displayBounds.contains(Offset(right, bottom));
+          return displayBounds.contains(Offset(left, top));
         });
         if (isPositionValid) {
           await windowManager.setPosition(Offset(left, top));
@@ -139,9 +136,12 @@ class Window implements WindowPort {
   }
 
   @override
-  Future<void> show() async {
-    render?.resume();
-    await windowManager.show();
+  Future<void> show({int? activationTimestamp, String? activationToken}) async {
+    globalState.handleForeground();
+    await windowManager.show(
+      activationTimestamp: activationTimestamp,
+      activationToken: activationToken,
+    );
     await windowManager.focus();
     await windowManager.setSkipTaskbar(false);
   }
@@ -165,7 +165,7 @@ class Window implements WindowPort {
 
   @override
   Future<void> hide() async {
-    render?.pause();
+    globalState.handleBackground();
     await windowManager.hide();
     await windowManager.setSkipTaskbar(true);
   }

@@ -197,7 +197,7 @@ fn io_loop(name: String, sink: StreamSink<Vec<u8>, SseCodec>) {
                     Ok(data) => {
                         pending_bytes.fetch_sub(data.len(), Ordering::SeqCst);
                         if let Err(e) = frame::write_frame(&mut sender, &data, &is_running) {
-                            if e.kind() != io::ErrorKind::Interrupted {
+                            if is_running() && !frame::is_expected_disconnect_error(&e) {
                                 error = Some(format!("write error: {e}"));
                             }
                             break;
@@ -242,7 +242,9 @@ fn io_loop(name: String, sink: StreamSink<Vec<u8>, SseCodec>) {
             state.sender = None;
         }
         if let Ok(Some(message)) = writer.join() {
-            report_error(&sink, message);
+            if server_active() {
+                report_error(&sink, message);
+            }
         }
         if server_active() && sink.add(frame::make_frame(TYPE_DISCONNECTED, &[])).is_err() {
             break;

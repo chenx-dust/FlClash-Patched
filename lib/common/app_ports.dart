@@ -4,7 +4,7 @@ import 'package:fl_clash/models/models.dart';
 abstract interface class WindowPort {
   Future<WindowProps?> captureNormalGeometry(WindowProps current);
 
-  Future<void> show();
+  Future<void> show({int? activationTimestamp, String? activationToken});
 
   Future<void> hide();
 

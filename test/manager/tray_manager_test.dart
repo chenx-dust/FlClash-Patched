@@ -1,6 +1,8 @@
 import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/manager/locale_manager.dart';
 import 'package:fl_clash/manager/tray_manager.dart';
+import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:material_ui/material_ui.dart';
@@ -77,6 +79,8 @@ void main() {
   Future<void> pumpTrayManager(
     WidgetTester tester, {
     SystemAction Function()? systemAction,
+    bool? isMacOS,
+    Future<void> Function()? openMenu,
   }) async {
     container = ProviderContainer(
       overrides: [
@@ -90,7 +94,13 @@ void main() {
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: const MaterialApp(home: TrayManager(child: SizedBox.shrink())),
+        child: MaterialApp(
+          home: TrayManager(
+            isMacOS: isMacOS,
+            openMenu: openMenu,
+            child: const SizedBox.shrink(),
+          ),
+        ),
       ),
     );
     await tester.pump();
@@ -126,13 +136,32 @@ void main() {
   });
 
   testWidgets('activating the icon brings the window back', (tester) async {
-    await pumpTrayManager(tester);
+    await pumpTrayManager(tester, isMacOS: false);
+    windowCalls.clear();
+
+    await emitTrayEvent('onIconActivated');
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(windowCalls, containsAll(<String>['show', 'focus']));
+  });
+
+  testWidgets('activating the icon opens the menu on macOS', (tester) async {
+    var openMenuCount = 0;
+    await pumpTrayManager(
+      tester,
+      isMacOS: true,
+      openMenu: () async {
+        openMenuCount++;
+      },
+    );
     windowCalls.clear();
 
     await emitTrayEvent('onIconActivated');
     await tester.pumpAndSettle();
 
-    expect(windowCalls, containsAll(<String>['show', 'focus']));
+    expect(openMenuCount, 1);
+    expect(windowCalls, isEmpty);
   });
 
   testWidgets('a menu request is forwarded to the tray', (tester) async {
@@ -168,6 +197,21 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(_RecordingSystemAction.updateTrayCount, 0);
+  });
+
+  testWidgets('a hotkey change pushes the tray forward', (tester) async {
+    await pumpTrayManager(tester);
+    _RecordingSystemAction.updateTrayCount = 0;
+
+    container.read(hotKeyActionsProvider.notifier).value = [
+      HotKeyAction(
+        action: HotAction.start,
+        key: PhysicalKeyboardKey.keyS.usbHidUsage,
+      ),
+    ];
+    await tester.pumpAndSettle();
+
+    expect(_RecordingSystemAction.updateTrayCount, 1);
   });
 
   testWidgets('a failed tray update is reported instead of thrown', (

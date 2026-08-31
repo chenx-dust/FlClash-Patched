@@ -239,6 +239,11 @@ bool TrayPlugin::OpenMenu() {
   if (command != 0) {
     flutter::EncodableMap arguments;
     arguments[flutter::EncodableValue("id")] = flutter::EncodableValue(command);
+    const LONG timestamp = ::GetMessageTime();
+    if (timestamp >= 0) {
+      arguments[flutter::EncodableValue("activationTimestamp")] =
+          flutter::EncodableValue(static_cast<int>(timestamp));
+    }
     SendEvent("onMenuItemSelected", flutter::EncodableValue(arguments));
   }
   return true;

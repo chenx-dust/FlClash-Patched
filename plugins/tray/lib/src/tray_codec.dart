@@ -39,6 +39,7 @@ abstract final class TrayCodec {
       signature: jsonEncode(<String, Object?>{
         'icon': icon,
         'toolTip': spec.toolTip,
+        'brightness': spec.brightness?.name,
         'menu': menu,
       }),
     );
@@ -54,26 +55,66 @@ abstract final class TrayCodec {
       sink[id] = item;
       return switch (item) {
         TrayMenuSeparator() => <String, Object?>{'id': id, 'type': 'separator'},
-        TrayMenuAction(:final label, :final enabled) => <String, Object?>{
-          'id': id,
-          'type': 'action',
-          'label': label,
-          'enabled': enabled,
-        },
-        TrayMenuCheckbox(:final label, :final enabled, :final checked) =>
+        TrayMenuAction(
+          :final label,
+          :final enabled,
+          :final sublabel,
+          :final sublabelStyle,
+          :final keepsMenuOpen,
+          :final keyEquivalent,
+          :final keyEquivalentModifiers,
+        ) =>
+          <String, Object?>{
+            'id': id,
+            'type': 'action',
+            'label': label,
+            'enabled': enabled,
+            'sublabel': ?sublabel,
+            'sublabelStyle': sublabelStyle.name,
+            'keepsMenuOpen': keepsMenuOpen,
+            'keyEquivalent': ?keyEquivalent,
+            'keyEquivalentModifiers': keyEquivalentModifiers
+                .map((modifier) => modifier.name)
+                .toList(),
+          },
+        TrayMenuCheckbox(
+          :final label,
+          :final enabled,
+          :final checked,
+          :final sublabel,
+          :final sublabelStyle,
+          :final keepsMenuOpen,
+          :final keyEquivalent,
+          :final keyEquivalentModifiers,
+        ) =>
           <String, Object?>{
             'id': id,
             'type': 'checkbox',
             'label': label,
             'enabled': enabled,
             'checked': checked,
+            'sublabel': ?sublabel,
+            'sublabelStyle': sublabelStyle.name,
+            'keepsMenuOpen': keepsMenuOpen,
+            'keyEquivalent': ?keyEquivalent,
+            'keyEquivalentModifiers': keyEquivalentModifiers
+                .map((modifier) => modifier.name)
+                .toList(),
           },
-        TrayMenuSubmenu(:final label, :final enabled, :final items) =>
+        TrayMenuSubmenu(
+          :final label,
+          :final enabled,
+          :final items,
+          :final sublabel,
+          :final sublabelStyle,
+        ) =>
           <String, Object?>{
             'id': id,
             'type': 'submenu',
             'label': label,
             'enabled': enabled,
+            'sublabel': ?sublabel,
+            'sublabelStyle': sublabelStyle.name,
             'items': _encodeItems(items, sink, allocator),
           },
       };

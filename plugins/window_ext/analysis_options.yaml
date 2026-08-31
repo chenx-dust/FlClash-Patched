@@ -1,0 +1,10 @@
+analyzer:
+  exclude:
+    - build/**
+    - windows/**
+    - macos/**
+    - android/**
+    - ios/**
+    - web/**
+    - linux/**
+include: ../../lint_options.yaml

@@ -16,6 +16,7 @@
 #include <tray/tray_plugin_c_api.h>
 #include <url_launcher_windows/url_launcher_windows.h>
 #include <wifi_ssid/wifi_ssid_plugin_c_api.h>
+#include <window_ext/window_ext_plugin_c_api.h>
 #include <window_manager/window_manager_plugin.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
@@ -39,6 +40,8 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("UrlLauncherWindows"));
   WifiSsidPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("WifiSsidPluginCApi"));
+  WindowExtPluginCApiRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("WindowExtPluginCApi"));
   WindowManagerPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("WindowManagerPlugin"));
 }

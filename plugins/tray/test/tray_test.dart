@@ -135,6 +135,57 @@ void main() {
     expect(selected, 1);
   });
 
+  test('menu selection forwards native activation details', () async {
+    TrayMenuSelectionDetails? received;
+    await Tray.instance.show(
+      _spec(
+        menu: [
+          TrayMenuAction(
+            label: 'show',
+            onSelectedWithDetails: (details) => received = details,
+          ),
+        ],
+      ),
+    );
+
+    await _emit('onMenuItemSelected', <String, Object?>{
+      'id': 1024,
+      'activationTimestamp': 1234,
+      'activationToken': 'wayland-token',
+    });
+
+    expect(received?.activationTimestamp, 1234);
+    expect(received?.activationToken, 'wayland-token');
+  });
+
+  test('show encodes advanced menu presentation and brightness', () async {
+    await Tray.instance.show(
+      const TraySpec(
+        icon: TrayIcon.asset('assets/icon.ico'),
+        brightness: Brightness.dark,
+        menu: [
+          TrayMenuAction(
+            label: 'test',
+            sublabel: '...',
+            sublabelStyle: TrayMenuItemSublabelStyle.muted,
+            keepsMenuOpen: true,
+            keyEquivalent: 't',
+            keyEquivalentModifiers: {TrayMenuItemModifier.command},
+          ),
+        ],
+      ),
+    );
+
+    final arguments = calls.single.arguments as Map;
+    final item = (arguments['menu'] as List).single as Map;
+    expect(arguments['brightness'], 'dark');
+    expect(item['sublabel'], '...');
+    expect(item['sublabelStyle'], 'muted');
+    expect(item['keepsMenuOpen'], isTrue);
+    expect(item['keyEquivalent'], 't');
+    expect(item['keyEquivalentModifiers'], ['command']);
+  });
+
   test('a rejected show keeps callbacks for the visible menu', () async {
     var oldSelected = 0;
     var newSelected = 0;

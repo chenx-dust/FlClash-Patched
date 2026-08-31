@@ -16,7 +16,12 @@ namespace {
 #define DWMWA_USE_IMMERSIVE_DARK_MODE 20
 #endif
 
-constexpr const wchar_t kWindowClassName[] = L"FLUTTER_RUNNER_WIN32_WINDOW";
+#ifdef _DEBUG
+constexpr const wchar_t kWindowClassName[] =
+    L"FLCLASH_DEBUG_RUNNER_WIN32_WINDOW";
+#else
+constexpr const wchar_t kWindowClassName[] = L"FLCLASH_RUNNER_WIN32_WINDOW";
+#endif
 
 /// Registry key for app theme preference.
 ///
@@ -136,7 +141,7 @@ bool Win32Window::Create(const std::wstring& title,
 
   HWND window = CreateWindow(
       window_class, title.c_str(), WS_OVERLAPPEDWINDOW,
-      Scale(origin.x, scale_factor), Scale(origin.y, scale_factor),
+      origin.x, origin.y,
       Scale(size.width, scale_factor), Scale(size.height, scale_factor),
       nullptr, nullptr, GetModuleHandle(nullptr), this);
 
