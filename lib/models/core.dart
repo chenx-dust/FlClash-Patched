@@ -70,6 +70,17 @@ abstract class InitParams with _$InitParams {
 }
 
 @freezed
+abstract class DeleteManagedPathParams with _$DeleteManagedPathParams {
+  const factory DeleteManagedPathParams({
+    required ManagedPathScope scope,
+    @JsonKey(name: 'relative-path') required String relativePath,
+  }) = _DeleteManagedPathParams;
+
+  factory DeleteManagedPathParams.fromJson(Map<String, Object?> json) =>
+      _$DeleteManagedPathParamsFromJson(json);
+}
+
+@freezed
 abstract class ChangeProxyParams with _$ChangeProxyParams {
   const factory ChangeProxyParams({
     @JsonKey(name: 'group-name') required String groupName,

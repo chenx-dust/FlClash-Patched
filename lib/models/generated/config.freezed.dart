@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AppSettingProps {
 
- String? get locale;@JsonKey(fromJson: dashboardWidgetsSafeFormJson) List<DashboardWidget> get dashboardWidgets; bool get onlyStatisticsProxy; bool get autoLaunch; bool get silentLaunch; bool get autoRun; bool get openLogs; bool get closeConnections; String get testUrl; bool get isAnimateToPage; bool get autoCheckUpdate; bool get showLabel; bool get disclaimerAccepted; bool get crashlyticsTip; bool get crashlytics; bool get minimizeOnExit; bool get hidden; bool get developerMode; RestoreStrategy get restoreStrategy; bool get showTrayTitle; bool get checkCertificate; String get customUserAgent;
+ String? get locale;@JsonKey(fromJson: dashboardWidgetsSafeFormJson) List<DashboardWidget> get dashboardWidgets; bool get onlyStatisticsProxy; bool get autoLaunch; bool get silentLaunch; bool get autoRun; bool get openLogs; bool get closeConnections; String get testUrl; bool get isAnimateToPage; bool get autoCheckUpdate; bool get showLabel; bool get disclaimerAccepted; bool get crashlyticsTip; bool get crashlytics; bool get minimizeOnExit; bool get hidden; bool get developerMode; RestoreStrategy get restoreStrategy; bool get checkCertificate; String get customUserAgent;
 /// Create a copy of AppSettingProps
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +30,20 @@ $AppSettingPropsCopyWith<AppSettingProps> get copyWith => _$AppSettingPropsCopyW
 @override
 bool operator ==(Object other) {
   final _this = this as AppSettingProps;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettingProps&&(identical(other.locale, _this.locale) || other.locale == _this.locale)&&const DeepCollectionEquality().equals(other.dashboardWidgets, _this.dashboardWidgets)&&(identical(other.onlyStatisticsProxy, _this.onlyStatisticsProxy) || other.onlyStatisticsProxy == _this.onlyStatisticsProxy)&&(identical(other.autoLaunch, _this.autoLaunch) || other.autoLaunch == _this.autoLaunch)&&(identical(other.silentLaunch, _this.silentLaunch) || other.silentLaunch == _this.silentLaunch)&&(identical(other.autoRun, _this.autoRun) || other.autoRun == _this.autoRun)&&(identical(other.openLogs, _this.openLogs) || other.openLogs == _this.openLogs)&&(identical(other.closeConnections, _this.closeConnections) || other.closeConnections == _this.closeConnections)&&(identical(other.testUrl, _this.testUrl) || other.testUrl == _this.testUrl)&&(identical(other.isAnimateToPage, _this.isAnimateToPage) || other.isAnimateToPage == _this.isAnimateToPage)&&(identical(other.autoCheckUpdate, _this.autoCheckUpdate) || other.autoCheckUpdate == _this.autoCheckUpdate)&&(identical(other.showLabel, _this.showLabel) || other.showLabel == _this.showLabel)&&(identical(other.disclaimerAccepted, _this.disclaimerAccepted) || other.disclaimerAccepted == _this.disclaimerAccepted)&&(identical(other.crashlyticsTip, _this.crashlyticsTip) || other.crashlyticsTip == _this.crashlyticsTip)&&(identical(other.crashlytics, _this.crashlytics) || other.crashlytics == _this.crashlytics)&&(identical(other.minimizeOnExit, _this.minimizeOnExit) || other.minimizeOnExit == _this.minimizeOnExit)&&(identical(other.hidden, _this.hidden) || other.hidden == _this.hidden)&&(identical(other.developerMode, _this.developerMode) || other.developerMode == _this.developerMode)&&(identical(other.restoreStrategy, _this.restoreStrategy) || other.restoreStrategy == _this.restoreStrategy)&&(identical(other.showTrayTitle, _this.showTrayTitle) || other.showTrayTitle == _this.showTrayTitle)&&(identical(other.checkCertificate, _this.checkCertificate) || other.checkCertificate == _this.checkCertificate)&&(identical(other.customUserAgent, _this.customUserAgent) || other.customUserAgent == _this.customUserAgent));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettingProps&&(identical(other.locale, _this.locale) || other.locale == _this.locale)&&const DeepCollectionEquality().equals(other.dashboardWidgets, _this.dashboardWidgets)&&(identical(other.onlyStatisticsProxy, _this.onlyStatisticsProxy) || other.onlyStatisticsProxy == _this.onlyStatisticsProxy)&&(identical(other.autoLaunch, _this.autoLaunch) || other.autoLaunch == _this.autoLaunch)&&(identical(other.silentLaunch, _this.silentLaunch) || other.silentLaunch == _this.silentLaunch)&&(identical(other.autoRun, _this.autoRun) || other.autoRun == _this.autoRun)&&(identical(other.openLogs, _this.openLogs) || other.openLogs == _this.openLogs)&&(identical(other.closeConnections, _this.closeConnections) || other.closeConnections == _this.closeConnections)&&(identical(other.testUrl, _this.testUrl) || other.testUrl == _this.testUrl)&&(identical(other.isAnimateToPage, _this.isAnimateToPage) || other.isAnimateToPage == _this.isAnimateToPage)&&(identical(other.autoCheckUpdate, _this.autoCheckUpdate) || other.autoCheckUpdate == _this.autoCheckUpdate)&&(identical(other.showLabel, _this.showLabel) || other.showLabel == _this.showLabel)&&(identical(other.disclaimerAccepted, _this.disclaimerAccepted) || other.disclaimerAccepted == _this.disclaimerAccepted)&&(identical(other.crashlyticsTip, _this.crashlyticsTip) || other.crashlyticsTip == _this.crashlyticsTip)&&(identical(other.crashlytics, _this.crashlytics) || other.crashlytics == _this.crashlytics)&&(identical(other.minimizeOnExit, _this.minimizeOnExit) || other.minimizeOnExit == _this.minimizeOnExit)&&(identical(other.hidden, _this.hidden) || other.hidden == _this.hidden)&&(identical(other.developerMode, _this.developerMode) || other.developerMode == _this.developerMode)&&(identical(other.restoreStrategy, _this.restoreStrategy) || other.restoreStrategy == _this.restoreStrategy)&&(identical(other.checkCertificate, _this.checkCertificate) || other.checkCertificate == _this.checkCertificate)&&(identical(other.customUserAgent, _this.customUserAgent) || other.customUserAgent == _this.customUserAgent));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as AppSettingProps;
-  return Object.hashAll([runtimeType,_this.locale,const DeepCollectionEquality().hash(_this.dashboardWidgets),_this.onlyStatisticsProxy,_this.autoLaunch,_this.silentLaunch,_this.autoRun,_this.openLogs,_this.closeConnections,_this.testUrl,_this.isAnimateToPage,_this.autoCheckUpdate,_this.showLabel,_this.disclaimerAccepted,_this.crashlyticsTip,_this.crashlytics,_this.minimizeOnExit,_this.hidden,_this.developerMode,_this.restoreStrategy,_this.showTrayTitle,_this.checkCertificate,_this.customUserAgent]);
+  return Object.hashAll([runtimeType,_this.locale,const DeepCollectionEquality().hash(_this.dashboardWidgets),_this.onlyStatisticsProxy,_this.autoLaunch,_this.silentLaunch,_this.autoRun,_this.openLogs,_this.closeConnections,_this.testUrl,_this.isAnimateToPage,_this.autoCheckUpdate,_this.showLabel,_this.disclaimerAccepted,_this.crashlyticsTip,_this.crashlytics,_this.minimizeOnExit,_this.hidden,_this.developerMode,_this.restoreStrategy,_this.checkCertificate,_this.customUserAgent]);
 }
 
 @override
 String toString() {
   final _this = this as AppSettingProps;
-  return 'AppSettingProps(locale: ${_this.locale}, dashboardWidgets: ${_this.dashboardWidgets}, onlyStatisticsProxy: ${_this.onlyStatisticsProxy}, autoLaunch: ${_this.autoLaunch}, silentLaunch: ${_this.silentLaunch}, autoRun: ${_this.autoRun}, openLogs: ${_this.openLogs}, closeConnections: ${_this.closeConnections}, testUrl: ${_this.testUrl}, isAnimateToPage: ${_this.isAnimateToPage}, autoCheckUpdate: ${_this.autoCheckUpdate}, showLabel: ${_this.showLabel}, disclaimerAccepted: ${_this.disclaimerAccepted}, crashlyticsTip: ${_this.crashlyticsTip}, crashlytics: ${_this.crashlytics}, minimizeOnExit: ${_this.minimizeOnExit}, hidden: ${_this.hidden}, developerMode: ${_this.developerMode}, restoreStrategy: ${_this.restoreStrategy}, showTrayTitle: ${_this.showTrayTitle}, checkCertificate: ${_this.checkCertificate}, customUserAgent: ${_this.customUserAgent})';
+  return 'AppSettingProps(locale: ${_this.locale}, dashboardWidgets: ${_this.dashboardWidgets}, onlyStatisticsProxy: ${_this.onlyStatisticsProxy}, autoLaunch: ${_this.autoLaunch}, silentLaunch: ${_this.silentLaunch}, autoRun: ${_this.autoRun}, openLogs: ${_this.openLogs}, closeConnections: ${_this.closeConnections}, testUrl: ${_this.testUrl}, isAnimateToPage: ${_this.isAnimateToPage}, autoCheckUpdate: ${_this.autoCheckUpdate}, showLabel: ${_this.showLabel}, disclaimerAccepted: ${_this.disclaimerAccepted}, crashlyticsTip: ${_this.crashlyticsTip}, crashlytics: ${_this.crashlytics}, minimizeOnExit: ${_this.minimizeOnExit}, hidden: ${_this.hidden}, developerMode: ${_this.developerMode}, restoreStrategy: ${_this.restoreStrategy}, checkCertificate: ${_this.checkCertificate}, customUserAgent: ${_this.customUserAgent})';
 }
 
 
@@ -54,7 +54,7 @@ abstract mixin class $AppSettingPropsCopyWith<$Res>  {
   factory $AppSettingPropsCopyWith(AppSettingProps value, $Res Function(AppSettingProps) _then) = _$AppSettingPropsCopyWithImpl;
 @useResult
 $Res call({
- String? locale,@JsonKey(fromJson: dashboardWidgetsSafeFormJson) List<DashboardWidget> dashboardWidgets, bool onlyStatisticsProxy, bool autoLaunch, bool silentLaunch, bool autoRun, bool openLogs, bool closeConnections, String testUrl, bool isAnimateToPage, bool autoCheckUpdate, bool showLabel, bool disclaimerAccepted, bool crashlyticsTip, bool crashlytics, bool minimizeOnExit, bool hidden, bool developerMode, RestoreStrategy restoreStrategy, bool showTrayTitle, bool checkCertificate, String customUserAgent
+ String? locale,@JsonKey(fromJson: dashboardWidgetsSafeFormJson) List<DashboardWidget> dashboardWidgets, bool onlyStatisticsProxy, bool autoLaunch, bool silentLaunch, bool autoRun, bool openLogs, bool closeConnections, String testUrl, bool isAnimateToPage, bool autoCheckUpdate, bool showLabel, bool disclaimerAccepted, bool crashlyticsTip, bool crashlytics, bool minimizeOnExit, bool hidden, bool developerMode, RestoreStrategy restoreStrategy, bool checkCertificate, String customUserAgent
 });
 
 
@@ -71,7 +71,7 @@ class _$AppSettingPropsCopyWithImpl<$Res>
 
 /// Create a copy of AppSettingProps
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? locale = freezed,Object? dashboardWidgets = null,Object? onlyStatisticsProxy = null,Object? autoLaunch = null,Object? silentLaunch = null,Object? autoRun = null,Object? openLogs = null,Object? closeConnections = null,Object? testUrl = null,Object? isAnimateToPage = null,Object? autoCheckUpdate = null,Object? showLabel = null,Object? disclaimerAccepted = null,Object? crashlyticsTip = null,Object? crashlytics = null,Object? minimizeOnExit = null,Object? hidden = null,Object? developerMode = null,Object? restoreStrategy = null,Object? showTrayTitle = null,Object? checkCertificate = null,Object? customUserAgent = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? locale = freezed,Object? dashboardWidgets = null,Object? onlyStatisticsProxy = null,Object? autoLaunch = null,Object? silentLaunch = null,Object? autoRun = null,Object? openLogs = null,Object? closeConnections = null,Object? testUrl = null,Object? isAnimateToPage = null,Object? autoCheckUpdate = null,Object? showLabel = null,Object? disclaimerAccepted = null,Object? crashlyticsTip = null,Object? crashlytics = null,Object? minimizeOnExit = null,Object? hidden = null,Object? developerMode = null,Object? restoreStrategy = null,Object? checkCertificate = null,Object? customUserAgent = null,}) {
   return _then(AppSettingProps(
 locale: freezed == locale ? _self.locale : locale // ignore: cast_nullable_to_non_nullable
 as String?,dashboardWidgets: null == dashboardWidgets ? _self.dashboardWidgets : dashboardWidgets // ignore: cast_nullable_to_non_nullable
@@ -92,8 +92,7 @@ as bool,minimizeOnExit: null == minimizeOnExit ? _self.minimizeOnExit : minimize
 as bool,hidden: null == hidden ? _self.hidden : hidden // ignore: cast_nullable_to_non_nullable
 as bool,developerMode: null == developerMode ? _self.developerMode : developerMode // ignore: cast_nullable_to_non_nullable
 as bool,restoreStrategy: null == restoreStrategy ? _self.restoreStrategy : restoreStrategy // ignore: cast_nullable_to_non_nullable
-as RestoreStrategy,showTrayTitle: null == showTrayTitle ? _self.showTrayTitle : showTrayTitle // ignore: cast_nullable_to_non_nullable
-as bool,checkCertificate: null == checkCertificate ? _self.checkCertificate : checkCertificate // ignore: cast_nullable_to_non_nullable
+as RestoreStrategy,checkCertificate: null == checkCertificate ? _self.checkCertificate : checkCertificate // ignore: cast_nullable_to_non_nullable
 as bool,customUserAgent: null == customUserAgent ? _self.customUserAgent : customUserAgent // ignore: cast_nullable_to_non_nullable
 as String,
   ));
@@ -180,10 +179,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? locale, @JsonKey(fromJson: dashboardWidgetsSafeFormJson)  List<DashboardWidget> dashboardWidgets,  bool onlyStatisticsProxy,  bool autoLaunch,  bool silentLaunch,  bool autoRun,  bool openLogs,  bool closeConnections,  String testUrl,  bool isAnimateToPage,  bool autoCheckUpdate,  bool showLabel,  bool disclaimerAccepted,  bool crashlyticsTip,  bool crashlytics,  bool minimizeOnExit,  bool hidden,  bool developerMode,  RestoreStrategy restoreStrategy,  bool showTrayTitle,  bool checkCertificate,  String customUserAgent)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? locale, @JsonKey(fromJson: dashboardWidgetsSafeFormJson)  List<DashboardWidget> dashboardWidgets,  bool onlyStatisticsProxy,  bool autoLaunch,  bool silentLaunch,  bool autoRun,  bool openLogs,  bool closeConnections,  String testUrl,  bool isAnimateToPage,  bool autoCheckUpdate,  bool showLabel,  bool disclaimerAccepted,  bool crashlyticsTip,  bool crashlytics,  bool minimizeOnExit,  bool hidden,  bool developerMode,  RestoreStrategy restoreStrategy,  bool checkCertificate,  String customUserAgent)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AppSettingProps() when $default != null:
-return $default(_that.locale,_that.dashboardWidgets,_that.onlyStatisticsProxy,_that.autoLaunch,_that.silentLaunch,_that.autoRun,_that.openLogs,_that.closeConnections,_that.testUrl,_that.isAnimateToPage,_that.autoCheckUpdate,_that.showLabel,_that.disclaimerAccepted,_that.crashlyticsTip,_that.crashlytics,_that.minimizeOnExit,_that.hidden,_that.developerMode,_that.restoreStrategy,_that.showTrayTitle,_that.checkCertificate,_that.customUserAgent);case _:
+return $default(_that.locale,_that.dashboardWidgets,_that.onlyStatisticsProxy,_that.autoLaunch,_that.silentLaunch,_that.autoRun,_that.openLogs,_that.closeConnections,_that.testUrl,_that.isAnimateToPage,_that.autoCheckUpdate,_that.showLabel,_that.disclaimerAccepted,_that.crashlyticsTip,_that.crashlytics,_that.minimizeOnExit,_that.hidden,_that.developerMode,_that.restoreStrategy,_that.checkCertificate,_that.customUserAgent);case _:
   return orElse();
 
 }
@@ -201,10 +200,10 @@ return $default(_that.locale,_that.dashboardWidgets,_that.onlyStatisticsProxy,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? locale, @JsonKey(fromJson: dashboardWidgetsSafeFormJson)  List<DashboardWidget> dashboardWidgets,  bool onlyStatisticsProxy,  bool autoLaunch,  bool silentLaunch,  bool autoRun,  bool openLogs,  bool closeConnections,  String testUrl,  bool isAnimateToPage,  bool autoCheckUpdate,  bool showLabel,  bool disclaimerAccepted,  bool crashlyticsTip,  bool crashlytics,  bool minimizeOnExit,  bool hidden,  bool developerMode,  RestoreStrategy restoreStrategy,  bool showTrayTitle,  bool checkCertificate,  String customUserAgent)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? locale, @JsonKey(fromJson: dashboardWidgetsSafeFormJson)  List<DashboardWidget> dashboardWidgets,  bool onlyStatisticsProxy,  bool autoLaunch,  bool silentLaunch,  bool autoRun,  bool openLogs,  bool closeConnections,  String testUrl,  bool isAnimateToPage,  bool autoCheckUpdate,  bool showLabel,  bool disclaimerAccepted,  bool crashlyticsTip,  bool crashlytics,  bool minimizeOnExit,  bool hidden,  bool developerMode,  RestoreStrategy restoreStrategy,  bool checkCertificate,  String customUserAgent)  $default,) {final _that = this;
 switch (_that) {
 case _AppSettingProps():
-return $default(_that.locale,_that.dashboardWidgets,_that.onlyStatisticsProxy,_that.autoLaunch,_that.silentLaunch,_that.autoRun,_that.openLogs,_that.closeConnections,_that.testUrl,_that.isAnimateToPage,_that.autoCheckUpdate,_that.showLabel,_that.disclaimerAccepted,_that.crashlyticsTip,_that.crashlytics,_that.minimizeOnExit,_that.hidden,_that.developerMode,_that.restoreStrategy,_that.showTrayTitle,_that.checkCertificate,_that.customUserAgent);case _:
+return $default(_that.locale,_that.dashboardWidgets,_that.onlyStatisticsProxy,_that.autoLaunch,_that.silentLaunch,_that.autoRun,_that.openLogs,_that.closeConnections,_that.testUrl,_that.isAnimateToPage,_that.autoCheckUpdate,_that.showLabel,_that.disclaimerAccepted,_that.crashlyticsTip,_that.crashlytics,_that.minimizeOnExit,_that.hidden,_that.developerMode,_that.restoreStrategy,_that.checkCertificate,_that.customUserAgent);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -221,10 +220,10 @@ return $default(_that.locale,_that.dashboardWidgets,_that.onlyStatisticsProxy,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? locale, @JsonKey(fromJson: dashboardWidgetsSafeFormJson)  List<DashboardWidget> dashboardWidgets,  bool onlyStatisticsProxy,  bool autoLaunch,  bool silentLaunch,  bool autoRun,  bool openLogs,  bool closeConnections,  String testUrl,  bool isAnimateToPage,  bool autoCheckUpdate,  bool showLabel,  bool disclaimerAccepted,  bool crashlyticsTip,  bool crashlytics,  bool minimizeOnExit,  bool hidden,  bool developerMode,  RestoreStrategy restoreStrategy,  bool showTrayTitle,  bool checkCertificate,  String customUserAgent)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? locale, @JsonKey(fromJson: dashboardWidgetsSafeFormJson)  List<DashboardWidget> dashboardWidgets,  bool onlyStatisticsProxy,  bool autoLaunch,  bool silentLaunch,  bool autoRun,  bool openLogs,  bool closeConnections,  String testUrl,  bool isAnimateToPage,  bool autoCheckUpdate,  bool showLabel,  bool disclaimerAccepted,  bool crashlyticsTip,  bool crashlytics,  bool minimizeOnExit,  bool hidden,  bool developerMode,  RestoreStrategy restoreStrategy,  bool checkCertificate,  String customUserAgent)?  $default,) {final _that = this;
 switch (_that) {
 case _AppSettingProps() when $default != null:
-return $default(_that.locale,_that.dashboardWidgets,_that.onlyStatisticsProxy,_that.autoLaunch,_that.silentLaunch,_that.autoRun,_that.openLogs,_that.closeConnections,_that.testUrl,_that.isAnimateToPage,_that.autoCheckUpdate,_that.showLabel,_that.disclaimerAccepted,_that.crashlyticsTip,_that.crashlytics,_that.minimizeOnExit,_that.hidden,_that.developerMode,_that.restoreStrategy,_that.showTrayTitle,_that.checkCertificate,_that.customUserAgent);case _:
+return $default(_that.locale,_that.dashboardWidgets,_that.onlyStatisticsProxy,_that.autoLaunch,_that.silentLaunch,_that.autoRun,_that.openLogs,_that.closeConnections,_that.testUrl,_that.isAnimateToPage,_that.autoCheckUpdate,_that.showLabel,_that.disclaimerAccepted,_that.crashlyticsTip,_that.crashlytics,_that.minimizeOnExit,_that.hidden,_that.developerMode,_that.restoreStrategy,_that.checkCertificate,_that.customUserAgent);case _:
   return null;
 
 }
@@ -236,7 +235,7 @@ return $default(_that.locale,_that.dashboardWidgets,_that.onlyStatisticsProxy,_t
 @JsonSerializable()
 
 class _AppSettingProps implements AppSettingProps {
-  const _AppSettingProps({this.locale, @JsonKey(fromJson: dashboardWidgetsSafeFormJson)  List<DashboardWidget> dashboardWidgets = defaultDashboardWidgets, this.onlyStatisticsProxy = false, this.autoLaunch = false, this.silentLaunch = false, this.autoRun = false, this.openLogs = false, this.closeConnections = true, this.testUrl = defaultTestUrl, this.isAnimateToPage = true, this.autoCheckUpdate = true, this.showLabel = false, this.disclaimerAccepted = false, this.crashlyticsTip = false, this.crashlytics = false, this.minimizeOnExit = true, this.hidden = false, this.developerMode = false, this.restoreStrategy = RestoreStrategy.compatible, this.showTrayTitle = true, this.checkCertificate = true, this.customUserAgent = ''}): _dashboardWidgets = dashboardWidgets;
+  const _AppSettingProps({this.locale, @JsonKey(fromJson: dashboardWidgetsSafeFormJson)  List<DashboardWidget> dashboardWidgets = defaultDashboardWidgets, this.onlyStatisticsProxy = false, this.autoLaunch = false, this.silentLaunch = false, this.autoRun = false, this.openLogs = false, this.closeConnections = true, this.testUrl = defaultTestUrl, this.isAnimateToPage = true, this.autoCheckUpdate = true, this.showLabel = false, this.disclaimerAccepted = false, this.crashlyticsTip = false, this.crashlytics = false, this.minimizeOnExit = true, this.hidden = false, this.developerMode = false, this.restoreStrategy = RestoreStrategy.compatible, this.checkCertificate = true, this.customUserAgent = ''}): _dashboardWidgets = dashboardWidgets;
   factory _AppSettingProps.fromJson(Map<String, dynamic> json) => _$AppSettingPropsFromJson(json);
 
 @override final  String? locale;
@@ -264,7 +263,6 @@ class _AppSettingProps implements AppSettingProps {
 @override@JsonKey() final  bool hidden;
 @override@JsonKey() final  bool developerMode;
 @override@JsonKey() final  RestoreStrategy restoreStrategy;
-@override@JsonKey() final  bool showTrayTitle;
 @override@JsonKey() final  bool checkCertificate;
 @override@JsonKey() final  String customUserAgent;
 
@@ -281,18 +279,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettingProps&&(identical(other.locale, locale) || other.locale == locale)&&const DeepCollectionEquality().equals(other.dashboardWidgets, _dashboardWidgets)&&(identical(other.onlyStatisticsProxy, onlyStatisticsProxy) || other.onlyStatisticsProxy == onlyStatisticsProxy)&&(identical(other.autoLaunch, autoLaunch) || other.autoLaunch == autoLaunch)&&(identical(other.silentLaunch, silentLaunch) || other.silentLaunch == silentLaunch)&&(identical(other.autoRun, autoRun) || other.autoRun == autoRun)&&(identical(other.openLogs, openLogs) || other.openLogs == openLogs)&&(identical(other.closeConnections, closeConnections) || other.closeConnections == closeConnections)&&(identical(other.testUrl, testUrl) || other.testUrl == testUrl)&&(identical(other.isAnimateToPage, isAnimateToPage) || other.isAnimateToPage == isAnimateToPage)&&(identical(other.autoCheckUpdate, autoCheckUpdate) || other.autoCheckUpdate == autoCheckUpdate)&&(identical(other.showLabel, showLabel) || other.showLabel == showLabel)&&(identical(other.disclaimerAccepted, disclaimerAccepted) || other.disclaimerAccepted == disclaimerAccepted)&&(identical(other.crashlyticsTip, crashlyticsTip) || other.crashlyticsTip == crashlyticsTip)&&(identical(other.crashlytics, crashlytics) || other.crashlytics == crashlytics)&&(identical(other.minimizeOnExit, minimizeOnExit) || other.minimizeOnExit == minimizeOnExit)&&(identical(other.hidden, hidden) || other.hidden == hidden)&&(identical(other.developerMode, developerMode) || other.developerMode == developerMode)&&(identical(other.restoreStrategy, restoreStrategy) || other.restoreStrategy == restoreStrategy)&&(identical(other.showTrayTitle, showTrayTitle) || other.showTrayTitle == showTrayTitle)&&(identical(other.checkCertificate, checkCertificate) || other.checkCertificate == checkCertificate)&&(identical(other.customUserAgent, customUserAgent) || other.customUserAgent == customUserAgent));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettingProps&&(identical(other.locale, locale) || other.locale == locale)&&const DeepCollectionEquality().equals(other.dashboardWidgets, _dashboardWidgets)&&(identical(other.onlyStatisticsProxy, onlyStatisticsProxy) || other.onlyStatisticsProxy == onlyStatisticsProxy)&&(identical(other.autoLaunch, autoLaunch) || other.autoLaunch == autoLaunch)&&(identical(other.silentLaunch, silentLaunch) || other.silentLaunch == silentLaunch)&&(identical(other.autoRun, autoRun) || other.autoRun == autoRun)&&(identical(other.openLogs, openLogs) || other.openLogs == openLogs)&&(identical(other.closeConnections, closeConnections) || other.closeConnections == closeConnections)&&(identical(other.testUrl, testUrl) || other.testUrl == testUrl)&&(identical(other.isAnimateToPage, isAnimateToPage) || other.isAnimateToPage == isAnimateToPage)&&(identical(other.autoCheckUpdate, autoCheckUpdate) || other.autoCheckUpdate == autoCheckUpdate)&&(identical(other.showLabel, showLabel) || other.showLabel == showLabel)&&(identical(other.disclaimerAccepted, disclaimerAccepted) || other.disclaimerAccepted == disclaimerAccepted)&&(identical(other.crashlyticsTip, crashlyticsTip) || other.crashlyticsTip == crashlyticsTip)&&(identical(other.crashlytics, crashlytics) || other.crashlytics == crashlytics)&&(identical(other.minimizeOnExit, minimizeOnExit) || other.minimizeOnExit == minimizeOnExit)&&(identical(other.hidden, hidden) || other.hidden == hidden)&&(identical(other.developerMode, developerMode) || other.developerMode == developerMode)&&(identical(other.restoreStrategy, restoreStrategy) || other.restoreStrategy == restoreStrategy)&&(identical(other.checkCertificate, checkCertificate) || other.checkCertificate == checkCertificate)&&(identical(other.customUserAgent, customUserAgent) || other.customUserAgent == customUserAgent));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hashAll([runtimeType,locale,const DeepCollectionEquality().hash(_dashboardWidgets),onlyStatisticsProxy,autoLaunch,silentLaunch,autoRun,openLogs,closeConnections,testUrl,isAnimateToPage,autoCheckUpdate,showLabel,disclaimerAccepted,crashlyticsTip,crashlytics,minimizeOnExit,hidden,developerMode,restoreStrategy,showTrayTitle,checkCertificate,customUserAgent]);
+    return Object.hashAll([runtimeType,locale,const DeepCollectionEquality().hash(_dashboardWidgets),onlyStatisticsProxy,autoLaunch,silentLaunch,autoRun,openLogs,closeConnections,testUrl,isAnimateToPage,autoCheckUpdate,showLabel,disclaimerAccepted,crashlyticsTip,crashlytics,minimizeOnExit,hidden,developerMode,restoreStrategy,checkCertificate,customUserAgent]);
 }
 
 @override
 String toString() {
-    return 'AppSettingProps(locale: $locale, dashboardWidgets: $dashboardWidgets, onlyStatisticsProxy: $onlyStatisticsProxy, autoLaunch: $autoLaunch, silentLaunch: $silentLaunch, autoRun: $autoRun, openLogs: $openLogs, closeConnections: $closeConnections, testUrl: $testUrl, isAnimateToPage: $isAnimateToPage, autoCheckUpdate: $autoCheckUpdate, showLabel: $showLabel, disclaimerAccepted: $disclaimerAccepted, crashlyticsTip: $crashlyticsTip, crashlytics: $crashlytics, minimizeOnExit: $minimizeOnExit, hidden: $hidden, developerMode: $developerMode, restoreStrategy: $restoreStrategy, showTrayTitle: $showTrayTitle, checkCertificate: $checkCertificate, customUserAgent: $customUserAgent)';
+    return 'AppSettingProps(locale: $locale, dashboardWidgets: $dashboardWidgets, onlyStatisticsProxy: $onlyStatisticsProxy, autoLaunch: $autoLaunch, silentLaunch: $silentLaunch, autoRun: $autoRun, openLogs: $openLogs, closeConnections: $closeConnections, testUrl: $testUrl, isAnimateToPage: $isAnimateToPage, autoCheckUpdate: $autoCheckUpdate, showLabel: $showLabel, disclaimerAccepted: $disclaimerAccepted, crashlyticsTip: $crashlyticsTip, crashlytics: $crashlytics, minimizeOnExit: $minimizeOnExit, hidden: $hidden, developerMode: $developerMode, restoreStrategy: $restoreStrategy, checkCertificate: $checkCertificate, customUserAgent: $customUserAgent)';
 }
 
 
@@ -303,7 +301,7 @@ abstract mixin class _$AppSettingPropsCopyWith<$Res> implements $AppSettingProps
   factory _$AppSettingPropsCopyWith(_AppSettingProps value, $Res Function(_AppSettingProps) _then) = __$AppSettingPropsCopyWithImpl;
 @override @useResult
 $Res call({
- String? locale,@JsonKey(fromJson: dashboardWidgetsSafeFormJson) List<DashboardWidget> dashboardWidgets, bool onlyStatisticsProxy, bool autoLaunch, bool silentLaunch, bool autoRun, bool openLogs, bool closeConnections, String testUrl, bool isAnimateToPage, bool autoCheckUpdate, bool showLabel, bool disclaimerAccepted, bool crashlyticsTip, bool crashlytics, bool minimizeOnExit, bool hidden, bool developerMode, RestoreStrategy restoreStrategy, bool showTrayTitle, bool checkCertificate, String customUserAgent
+ String? locale,@JsonKey(fromJson: dashboardWidgetsSafeFormJson) List<DashboardWidget> dashboardWidgets, bool onlyStatisticsProxy, bool autoLaunch, bool silentLaunch, bool autoRun, bool openLogs, bool closeConnections, String testUrl, bool isAnimateToPage, bool autoCheckUpdate, bool showLabel, bool disclaimerAccepted, bool crashlyticsTip, bool crashlytics, bool minimizeOnExit, bool hidden, bool developerMode, RestoreStrategy restoreStrategy, bool checkCertificate, String customUserAgent
 });
 
 
@@ -320,7 +318,7 @@ class __$AppSettingPropsCopyWithImpl<$Res>
 
 /// Create a copy of AppSettingProps
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? locale = freezed,Object? dashboardWidgets = null,Object? onlyStatisticsProxy = null,Object? autoLaunch = null,Object? silentLaunch = null,Object? autoRun = null,Object? openLogs = null,Object? closeConnections = null,Object? testUrl = null,Object? isAnimateToPage = null,Object? autoCheckUpdate = null,Object? showLabel = null,Object? disclaimerAccepted = null,Object? crashlyticsTip = null,Object? crashlytics = null,Object? minimizeOnExit = null,Object? hidden = null,Object? developerMode = null,Object? restoreStrategy = null,Object? showTrayTitle = null,Object? checkCertificate = null,Object? customUserAgent = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? locale = freezed,Object? dashboardWidgets = null,Object? onlyStatisticsProxy = null,Object? autoLaunch = null,Object? silentLaunch = null,Object? autoRun = null,Object? openLogs = null,Object? closeConnections = null,Object? testUrl = null,Object? isAnimateToPage = null,Object? autoCheckUpdate = null,Object? showLabel = null,Object? disclaimerAccepted = null,Object? crashlyticsTip = null,Object? crashlytics = null,Object? minimizeOnExit = null,Object? hidden = null,Object? developerMode = null,Object? restoreStrategy = null,Object? checkCertificate = null,Object? customUserAgent = null,}) {
   return _then(_AppSettingProps(
 locale: freezed == locale ? _self.locale : locale // ignore: cast_nullable_to_non_nullable
 as String?,dashboardWidgets: null == dashboardWidgets ? _self._dashboardWidgets : dashboardWidgets // ignore: cast_nullable_to_non_nullable
@@ -341,8 +339,7 @@ as bool,minimizeOnExit: null == minimizeOnExit ? _self.minimizeOnExit : minimize
 as bool,hidden: null == hidden ? _self.hidden : hidden // ignore: cast_nullable_to_non_nullable
 as bool,developerMode: null == developerMode ? _self.developerMode : developerMode // ignore: cast_nullable_to_non_nullable
 as bool,restoreStrategy: null == restoreStrategy ? _self.restoreStrategy : restoreStrategy // ignore: cast_nullable_to_non_nullable
-as RestoreStrategy,showTrayTitle: null == showTrayTitle ? _self.showTrayTitle : showTrayTitle // ignore: cast_nullable_to_non_nullable
-as bool,checkCertificate: null == checkCertificate ? _self.checkCertificate : checkCertificate // ignore: cast_nullable_to_non_nullable
+as RestoreStrategy,checkCertificate: null == checkCertificate ? _self.checkCertificate : checkCertificate // ignore: cast_nullable_to_non_nullable
 as bool,customUserAgent: null == customUserAgent ? _self.customUserAgent : customUserAgent // ignore: cast_nullable_to_non_nullable
 as String,
   ));
@@ -934,7 +931,7 @@ as double?,
 /// @nodoc
 mixin _$VpnProps {
 
- bool get enable; bool get systemProxy; bool get ipv6; bool get allowBypass; bool get dnsHijacking; AccessControlProps get accessControlProps;
+ bool get enable; bool get systemProxy; bool get ipv6; bool get allowBypass; bool get dnsHijacking; bool get networkSpeedNotification; AccessControlProps get accessControlProps;
 /// Create a copy of VpnProps
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -948,20 +945,20 @@ $VpnPropsCopyWith<VpnProps> get copyWith => _$VpnPropsCopyWithImpl<VpnProps>(thi
 @override
 bool operator ==(Object other) {
   final _this = this as VpnProps;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VpnProps&&(identical(other.enable, _this.enable) || other.enable == _this.enable)&&(identical(other.systemProxy, _this.systemProxy) || other.systemProxy == _this.systemProxy)&&(identical(other.ipv6, _this.ipv6) || other.ipv6 == _this.ipv6)&&(identical(other.allowBypass, _this.allowBypass) || other.allowBypass == _this.allowBypass)&&(identical(other.dnsHijacking, _this.dnsHijacking) || other.dnsHijacking == _this.dnsHijacking)&&(identical(other.accessControlProps, _this.accessControlProps) || other.accessControlProps == _this.accessControlProps));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VpnProps&&(identical(other.enable, _this.enable) || other.enable == _this.enable)&&(identical(other.systemProxy, _this.systemProxy) || other.systemProxy == _this.systemProxy)&&(identical(other.ipv6, _this.ipv6) || other.ipv6 == _this.ipv6)&&(identical(other.allowBypass, _this.allowBypass) || other.allowBypass == _this.allowBypass)&&(identical(other.dnsHijacking, _this.dnsHijacking) || other.dnsHijacking == _this.dnsHijacking)&&(identical(other.networkSpeedNotification, _this.networkSpeedNotification) || other.networkSpeedNotification == _this.networkSpeedNotification)&&(identical(other.accessControlProps, _this.accessControlProps) || other.accessControlProps == _this.accessControlProps));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as VpnProps;
-  return Object.hash(runtimeType,_this.enable,_this.systemProxy,_this.ipv6,_this.allowBypass,_this.dnsHijacking,_this.accessControlProps);
+  return Object.hash(runtimeType,_this.enable,_this.systemProxy,_this.ipv6,_this.allowBypass,_this.dnsHijacking,_this.networkSpeedNotification,_this.accessControlProps);
 }
 
 @override
 String toString() {
   final _this = this as VpnProps;
-  return 'VpnProps(enable: ${_this.enable}, systemProxy: ${_this.systemProxy}, ipv6: ${_this.ipv6}, allowBypass: ${_this.allowBypass}, dnsHijacking: ${_this.dnsHijacking}, accessControlProps: ${_this.accessControlProps})';
+  return 'VpnProps(enable: ${_this.enable}, systemProxy: ${_this.systemProxy}, ipv6: ${_this.ipv6}, allowBypass: ${_this.allowBypass}, dnsHijacking: ${_this.dnsHijacking}, networkSpeedNotification: ${_this.networkSpeedNotification}, accessControlProps: ${_this.accessControlProps})';
 }
 
 
@@ -972,7 +969,7 @@ abstract mixin class $VpnPropsCopyWith<$Res>  {
   factory $VpnPropsCopyWith(VpnProps value, $Res Function(VpnProps) _then) = _$VpnPropsCopyWithImpl;
 @useResult
 $Res call({
- bool enable, bool systemProxy, bool ipv6, bool allowBypass, bool dnsHijacking, AccessControlProps accessControlProps
+ bool enable, bool systemProxy, bool ipv6, bool allowBypass, bool dnsHijacking, bool networkSpeedNotification, AccessControlProps accessControlProps
 });
 
 
@@ -989,13 +986,14 @@ class _$VpnPropsCopyWithImpl<$Res>
 
 /// Create a copy of VpnProps
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? enable = null,Object? systemProxy = null,Object? ipv6 = null,Object? allowBypass = null,Object? dnsHijacking = null,Object? accessControlProps = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? enable = null,Object? systemProxy = null,Object? ipv6 = null,Object? allowBypass = null,Object? dnsHijacking = null,Object? networkSpeedNotification = null,Object? accessControlProps = null,}) {
   return _then(VpnProps(
 enable: null == enable ? _self.enable : enable // ignore: cast_nullable_to_non_nullable
 as bool,systemProxy: null == systemProxy ? _self.systemProxy : systemProxy // ignore: cast_nullable_to_non_nullable
 as bool,ipv6: null == ipv6 ? _self.ipv6 : ipv6 // ignore: cast_nullable_to_non_nullable
 as bool,allowBypass: null == allowBypass ? _self.allowBypass : allowBypass // ignore: cast_nullable_to_non_nullable
 as bool,dnsHijacking: null == dnsHijacking ? _self.dnsHijacking : dnsHijacking // ignore: cast_nullable_to_non_nullable
+as bool,networkSpeedNotification: null == networkSpeedNotification ? _self.networkSpeedNotification : networkSpeedNotification // ignore: cast_nullable_to_non_nullable
 as bool,accessControlProps: null == accessControlProps ? _self.accessControlProps : accessControlProps // ignore: cast_nullable_to_non_nullable
 as AccessControlProps,
   ));
@@ -1091,10 +1089,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool enable,  bool systemProxy,  bool ipv6,  bool allowBypass,  bool dnsHijacking,  AccessControlProps accessControlProps)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool enable,  bool systemProxy,  bool ipv6,  bool allowBypass,  bool dnsHijacking,  bool networkSpeedNotification,  AccessControlProps accessControlProps)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VpnProps() when $default != null:
-return $default(_that.enable,_that.systemProxy,_that.ipv6,_that.allowBypass,_that.dnsHijacking,_that.accessControlProps);case _:
+return $default(_that.enable,_that.systemProxy,_that.ipv6,_that.allowBypass,_that.dnsHijacking,_that.networkSpeedNotification,_that.accessControlProps);case _:
   return orElse();
 
 }
@@ -1112,10 +1110,10 @@ return $default(_that.enable,_that.systemProxy,_that.ipv6,_that.allowBypass,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool enable,  bool systemProxy,  bool ipv6,  bool allowBypass,  bool dnsHijacking,  AccessControlProps accessControlProps)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool enable,  bool systemProxy,  bool ipv6,  bool allowBypass,  bool dnsHijacking,  bool networkSpeedNotification,  AccessControlProps accessControlProps)  $default,) {final _that = this;
 switch (_that) {
 case _VpnProps():
-return $default(_that.enable,_that.systemProxy,_that.ipv6,_that.allowBypass,_that.dnsHijacking,_that.accessControlProps);case _:
+return $default(_that.enable,_that.systemProxy,_that.ipv6,_that.allowBypass,_that.dnsHijacking,_that.networkSpeedNotification,_that.accessControlProps);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1132,10 +1130,10 @@ return $default(_that.enable,_that.systemProxy,_that.ipv6,_that.allowBypass,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool enable,  bool systemProxy,  bool ipv6,  bool allowBypass,  bool dnsHijacking,  AccessControlProps accessControlProps)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool enable,  bool systemProxy,  bool ipv6,  bool allowBypass,  bool dnsHijacking,  bool networkSpeedNotification,  AccessControlProps accessControlProps)?  $default,) {final _that = this;
 switch (_that) {
 case _VpnProps() when $default != null:
-return $default(_that.enable,_that.systemProxy,_that.ipv6,_that.allowBypass,_that.dnsHijacking,_that.accessControlProps);case _:
+return $default(_that.enable,_that.systemProxy,_that.ipv6,_that.allowBypass,_that.dnsHijacking,_that.networkSpeedNotification,_that.accessControlProps);case _:
   return null;
 
 }
@@ -1147,7 +1145,7 @@ return $default(_that.enable,_that.systemProxy,_that.ipv6,_that.allowBypass,_tha
 @JsonSerializable()
 
 class _VpnProps implements VpnProps {
-  const _VpnProps({this.enable = true, this.systemProxy = true, this.ipv6 = false, this.allowBypass = true, this.dnsHijacking = false, this.accessControlProps = defaultAccessControlProps});
+  const _VpnProps({this.enable = true, this.systemProxy = true, this.ipv6 = false, this.allowBypass = true, this.dnsHijacking = false, this.networkSpeedNotification = false, this.accessControlProps = defaultAccessControlProps});
   factory _VpnProps.fromJson(Map<String, dynamic> json) => _$VpnPropsFromJson(json);
 
 @override@JsonKey() final  bool enable;
@@ -1155,6 +1153,7 @@ class _VpnProps implements VpnProps {
 @override@JsonKey() final  bool ipv6;
 @override@JsonKey() final  bool allowBypass;
 @override@JsonKey() final  bool dnsHijacking;
+@override@JsonKey() final  bool networkSpeedNotification;
 @override@JsonKey() final  AccessControlProps accessControlProps;
 
 /// Create a copy of VpnProps
@@ -1170,18 +1169,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _VpnProps&&(identical(other.enable, enable) || other.enable == enable)&&(identical(other.systemProxy, systemProxy) || other.systemProxy == systemProxy)&&(identical(other.ipv6, ipv6) || other.ipv6 == ipv6)&&(identical(other.allowBypass, allowBypass) || other.allowBypass == allowBypass)&&(identical(other.dnsHijacking, dnsHijacking) || other.dnsHijacking == dnsHijacking)&&(identical(other.accessControlProps, accessControlProps) || other.accessControlProps == accessControlProps));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _VpnProps&&(identical(other.enable, enable) || other.enable == enable)&&(identical(other.systemProxy, systemProxy) || other.systemProxy == systemProxy)&&(identical(other.ipv6, ipv6) || other.ipv6 == ipv6)&&(identical(other.allowBypass, allowBypass) || other.allowBypass == allowBypass)&&(identical(other.dnsHijacking, dnsHijacking) || other.dnsHijacking == dnsHijacking)&&(identical(other.networkSpeedNotification, networkSpeedNotification) || other.networkSpeedNotification == networkSpeedNotification)&&(identical(other.accessControlProps, accessControlProps) || other.accessControlProps == accessControlProps));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,enable,systemProxy,ipv6,allowBypass,dnsHijacking,accessControlProps);
+    return Object.hash(runtimeType,enable,systemProxy,ipv6,allowBypass,dnsHijacking,networkSpeedNotification,accessControlProps);
 }
 
 @override
 String toString() {
-    return 'VpnProps(enable: $enable, systemProxy: $systemProxy, ipv6: $ipv6, allowBypass: $allowBypass, dnsHijacking: $dnsHijacking, accessControlProps: $accessControlProps)';
+    return 'VpnProps(enable: $enable, systemProxy: $systemProxy, ipv6: $ipv6, allowBypass: $allowBypass, dnsHijacking: $dnsHijacking, networkSpeedNotification: $networkSpeedNotification, accessControlProps: $accessControlProps)';
 }
 
 
@@ -1192,7 +1191,7 @@ abstract mixin class _$VpnPropsCopyWith<$Res> implements $VpnPropsCopyWith<$Res>
   factory _$VpnPropsCopyWith(_VpnProps value, $Res Function(_VpnProps) _then) = __$VpnPropsCopyWithImpl;
 @override @useResult
 $Res call({
- bool enable, bool systemProxy, bool ipv6, bool allowBypass, bool dnsHijacking, AccessControlProps accessControlProps
+ bool enable, bool systemProxy, bool ipv6, bool allowBypass, bool dnsHijacking, bool networkSpeedNotification, AccessControlProps accessControlProps
 });
 
 
@@ -1209,13 +1208,14 @@ class __$VpnPropsCopyWithImpl<$Res>
 
 /// Create a copy of VpnProps
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? enable = null,Object? systemProxy = null,Object? ipv6 = null,Object? allowBypass = null,Object? dnsHijacking = null,Object? accessControlProps = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? enable = null,Object? systemProxy = null,Object? ipv6 = null,Object? allowBypass = null,Object? dnsHijacking = null,Object? networkSpeedNotification = null,Object? accessControlProps = null,}) {
   return _then(_VpnProps(
 enable: null == enable ? _self.enable : enable // ignore: cast_nullable_to_non_nullable
 as bool,systemProxy: null == systemProxy ? _self.systemProxy : systemProxy // ignore: cast_nullable_to_non_nullable
 as bool,ipv6: null == ipv6 ? _self.ipv6 : ipv6 // ignore: cast_nullable_to_non_nullable
 as bool,allowBypass: null == allowBypass ? _self.allowBypass : allowBypass // ignore: cast_nullable_to_non_nullable
 as bool,dnsHijacking: null == dnsHijacking ? _self.dnsHijacking : dnsHijacking // ignore: cast_nullable_to_non_nullable
+as bool,networkSpeedNotification: null == networkSpeedNotification ? _self.networkSpeedNotification : networkSpeedNotification // ignore: cast_nullable_to_non_nullable
 as bool,accessControlProps: null == accessControlProps ? _self.accessControlProps : accessControlProps // ignore: cast_nullable_to_non_nullable
 as AccessControlProps,
   ));
@@ -2080,7 +2080,7 @@ as double,
 /// @nodoc
 mixin _$ThemeProps {
 
- int? get primaryColor; List<int> get primaryColors; ThemeMode get themeMode; DynamicSchemeVariant get schemeVariant; bool get pureBlack; TextScale get textScale;
+ int? get primaryColor; List<int> get primaryColors; ThemeMode get themeMode; DynamicSchemeVariant get schemeVariant; bool get pureBlack; bool get monochromeTrayIcon; TextScale get textScale;
 /// Create a copy of ThemeProps
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -2094,20 +2094,20 @@ $ThemePropsCopyWith<ThemeProps> get copyWith => _$ThemePropsCopyWithImpl<ThemePr
 @override
 bool operator ==(Object other) {
   final _this = this as ThemeProps;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ThemeProps&&(identical(other.primaryColor, _this.primaryColor) || other.primaryColor == _this.primaryColor)&&const DeepCollectionEquality().equals(other.primaryColors, _this.primaryColors)&&(identical(other.themeMode, _this.themeMode) || other.themeMode == _this.themeMode)&&(identical(other.schemeVariant, _this.schemeVariant) || other.schemeVariant == _this.schemeVariant)&&(identical(other.pureBlack, _this.pureBlack) || other.pureBlack == _this.pureBlack)&&(identical(other.textScale, _this.textScale) || other.textScale == _this.textScale));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ThemeProps&&(identical(other.primaryColor, _this.primaryColor) || other.primaryColor == _this.primaryColor)&&const DeepCollectionEquality().equals(other.primaryColors, _this.primaryColors)&&(identical(other.themeMode, _this.themeMode) || other.themeMode == _this.themeMode)&&(identical(other.schemeVariant, _this.schemeVariant) || other.schemeVariant == _this.schemeVariant)&&(identical(other.pureBlack, _this.pureBlack) || other.pureBlack == _this.pureBlack)&&(identical(other.monochromeTrayIcon, _this.monochromeTrayIcon) || other.monochromeTrayIcon == _this.monochromeTrayIcon)&&(identical(other.textScale, _this.textScale) || other.textScale == _this.textScale));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as ThemeProps;
-  return Object.hash(runtimeType,_this.primaryColor,const DeepCollectionEquality().hash(_this.primaryColors),_this.themeMode,_this.schemeVariant,_this.pureBlack,_this.textScale);
+  return Object.hash(runtimeType,_this.primaryColor,const DeepCollectionEquality().hash(_this.primaryColors),_this.themeMode,_this.schemeVariant,_this.pureBlack,_this.monochromeTrayIcon,_this.textScale);
 }
 
 @override
 String toString() {
   final _this = this as ThemeProps;
-  return 'ThemeProps(primaryColor: ${_this.primaryColor}, primaryColors: ${_this.primaryColors}, themeMode: ${_this.themeMode}, schemeVariant: ${_this.schemeVariant}, pureBlack: ${_this.pureBlack}, textScale: ${_this.textScale})';
+  return 'ThemeProps(primaryColor: ${_this.primaryColor}, primaryColors: ${_this.primaryColors}, themeMode: ${_this.themeMode}, schemeVariant: ${_this.schemeVariant}, pureBlack: ${_this.pureBlack}, monochromeTrayIcon: ${_this.monochromeTrayIcon}, textScale: ${_this.textScale})';
 }
 
 
@@ -2118,7 +2118,7 @@ abstract mixin class $ThemePropsCopyWith<$Res>  {
   factory $ThemePropsCopyWith(ThemeProps value, $Res Function(ThemeProps) _then) = _$ThemePropsCopyWithImpl;
 @useResult
 $Res call({
- int? primaryColor, List<int> primaryColors, ThemeMode themeMode, DynamicSchemeVariant schemeVariant, bool pureBlack, TextScale textScale
+ int? primaryColor, List<int> primaryColors, ThemeMode themeMode, DynamicSchemeVariant schemeVariant, bool pureBlack, bool monochromeTrayIcon, TextScale textScale
 });
 
 
@@ -2135,13 +2135,14 @@ class _$ThemePropsCopyWithImpl<$Res>
 
 /// Create a copy of ThemeProps
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? primaryColor = freezed,Object? primaryColors = null,Object? themeMode = null,Object? schemeVariant = null,Object? pureBlack = null,Object? textScale = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? primaryColor = freezed,Object? primaryColors = null,Object? themeMode = null,Object? schemeVariant = null,Object? pureBlack = null,Object? monochromeTrayIcon = null,Object? textScale = null,}) {
   return _then(ThemeProps(
 primaryColor: freezed == primaryColor ? _self.primaryColor : primaryColor // ignore: cast_nullable_to_non_nullable
 as int?,primaryColors: null == primaryColors ? _self.primaryColors : primaryColors // ignore: cast_nullable_to_non_nullable
 as List<int>,themeMode: null == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
 as ThemeMode,schemeVariant: null == schemeVariant ? _self.schemeVariant : schemeVariant // ignore: cast_nullable_to_non_nullable
 as DynamicSchemeVariant,pureBlack: null == pureBlack ? _self.pureBlack : pureBlack // ignore: cast_nullable_to_non_nullable
+as bool,monochromeTrayIcon: null == monochromeTrayIcon ? _self.monochromeTrayIcon : monochromeTrayIcon // ignore: cast_nullable_to_non_nullable
 as bool,textScale: null == textScale ? _self.textScale : textScale // ignore: cast_nullable_to_non_nullable
 as TextScale,
   ));
@@ -2237,10 +2238,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? primaryColor,  List<int> primaryColors,  ThemeMode themeMode,  DynamicSchemeVariant schemeVariant,  bool pureBlack,  TextScale textScale)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? primaryColor,  List<int> primaryColors,  ThemeMode themeMode,  DynamicSchemeVariant schemeVariant,  bool pureBlack,  bool monochromeTrayIcon,  TextScale textScale)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ThemeProps() when $default != null:
-return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.schemeVariant,_that.pureBlack,_that.textScale);case _:
+return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.schemeVariant,_that.pureBlack,_that.monochromeTrayIcon,_that.textScale);case _:
   return orElse();
 
 }
@@ -2258,10 +2259,10 @@ return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.sch
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? primaryColor,  List<int> primaryColors,  ThemeMode themeMode,  DynamicSchemeVariant schemeVariant,  bool pureBlack,  TextScale textScale)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? primaryColor,  List<int> primaryColors,  ThemeMode themeMode,  DynamicSchemeVariant schemeVariant,  bool pureBlack,  bool monochromeTrayIcon,  TextScale textScale)  $default,) {final _that = this;
 switch (_that) {
 case _ThemeProps():
-return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.schemeVariant,_that.pureBlack,_that.textScale);case _:
+return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.schemeVariant,_that.pureBlack,_that.monochromeTrayIcon,_that.textScale);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -2278,10 +2279,10 @@ return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.sch
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? primaryColor,  List<int> primaryColors,  ThemeMode themeMode,  DynamicSchemeVariant schemeVariant,  bool pureBlack,  TextScale textScale)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? primaryColor,  List<int> primaryColors,  ThemeMode themeMode,  DynamicSchemeVariant schemeVariant,  bool pureBlack,  bool monochromeTrayIcon,  TextScale textScale)?  $default,) {final _that = this;
 switch (_that) {
 case _ThemeProps() when $default != null:
-return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.schemeVariant,_that.pureBlack,_that.textScale);case _:
+return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.schemeVariant,_that.pureBlack,_that.monochromeTrayIcon,_that.textScale);case _:
   return null;
 
 }
@@ -2293,7 +2294,7 @@ return $default(_that.primaryColor,_that.primaryColors,_that.themeMode,_that.sch
 @JsonSerializable()
 
 class _ThemeProps implements ThemeProps {
-  const _ThemeProps({this.primaryColor,  List<int> primaryColors = defaultPrimaryColors, this.themeMode = ThemeMode.dark, this.schemeVariant = DynamicSchemeVariant.content, this.pureBlack = false, this.textScale = const TextScale()}): _primaryColors = primaryColors;
+  const _ThemeProps({this.primaryColor,  List<int> primaryColors = defaultPrimaryColors, this.themeMode = ThemeMode.dark, this.schemeVariant = DynamicSchemeVariant.content, this.pureBlack = false, this.monochromeTrayIcon = true, this.textScale = const TextScale()}): _primaryColors = primaryColors;
   factory _ThemeProps.fromJson(Map<String, dynamic> json) => _$ThemePropsFromJson(json);
 
 @override final  int? primaryColor;
@@ -2307,6 +2308,7 @@ class _ThemeProps implements ThemeProps {
 @override@JsonKey() final  ThemeMode themeMode;
 @override@JsonKey() final  DynamicSchemeVariant schemeVariant;
 @override@JsonKey() final  bool pureBlack;
+@override@JsonKey() final  bool monochromeTrayIcon;
 @override@JsonKey() final  TextScale textScale;
 
 /// Create a copy of ThemeProps
@@ -2322,18 +2324,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ThemeProps&&(identical(other.primaryColor, primaryColor) || other.primaryColor == primaryColor)&&const DeepCollectionEquality().equals(other.primaryColors, _primaryColors)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.schemeVariant, schemeVariant) || other.schemeVariant == schemeVariant)&&(identical(other.pureBlack, pureBlack) || other.pureBlack == pureBlack)&&(identical(other.textScale, textScale) || other.textScale == textScale));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ThemeProps&&(identical(other.primaryColor, primaryColor) || other.primaryColor == primaryColor)&&const DeepCollectionEquality().equals(other.primaryColors, _primaryColors)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.schemeVariant, schemeVariant) || other.schemeVariant == schemeVariant)&&(identical(other.pureBlack, pureBlack) || other.pureBlack == pureBlack)&&(identical(other.monochromeTrayIcon, monochromeTrayIcon) || other.monochromeTrayIcon == monochromeTrayIcon)&&(identical(other.textScale, textScale) || other.textScale == textScale));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,primaryColor,const DeepCollectionEquality().hash(_primaryColors),themeMode,schemeVariant,pureBlack,textScale);
+    return Object.hash(runtimeType,primaryColor,const DeepCollectionEquality().hash(_primaryColors),themeMode,schemeVariant,pureBlack,monochromeTrayIcon,textScale);
 }
 
 @override
 String toString() {
-    return 'ThemeProps(primaryColor: $primaryColor, primaryColors: $primaryColors, themeMode: $themeMode, schemeVariant: $schemeVariant, pureBlack: $pureBlack, textScale: $textScale)';
+    return 'ThemeProps(primaryColor: $primaryColor, primaryColors: $primaryColors, themeMode: $themeMode, schemeVariant: $schemeVariant, pureBlack: $pureBlack, monochromeTrayIcon: $monochromeTrayIcon, textScale: $textScale)';
 }
 
 
@@ -2344,7 +2346,7 @@ abstract mixin class _$ThemePropsCopyWith<$Res> implements $ThemePropsCopyWith<$
   factory _$ThemePropsCopyWith(_ThemeProps value, $Res Function(_ThemeProps) _then) = __$ThemePropsCopyWithImpl;
 @override @useResult
 $Res call({
- int? primaryColor, List<int> primaryColors, ThemeMode themeMode, DynamicSchemeVariant schemeVariant, bool pureBlack, TextScale textScale
+ int? primaryColor, List<int> primaryColors, ThemeMode themeMode, DynamicSchemeVariant schemeVariant, bool pureBlack, bool monochromeTrayIcon, TextScale textScale
 });
 
 
@@ -2361,13 +2363,14 @@ class __$ThemePropsCopyWithImpl<$Res>
 
 /// Create a copy of ThemeProps
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? primaryColor = freezed,Object? primaryColors = null,Object? themeMode = null,Object? schemeVariant = null,Object? pureBlack = null,Object? textScale = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? primaryColor = freezed,Object? primaryColors = null,Object? themeMode = null,Object? schemeVariant = null,Object? pureBlack = null,Object? monochromeTrayIcon = null,Object? textScale = null,}) {
   return _then(_ThemeProps(
 primaryColor: freezed == primaryColor ? _self.primaryColor : primaryColor // ignore: cast_nullable_to_non_nullable
 as int?,primaryColors: null == primaryColors ? _self._primaryColors : primaryColors // ignore: cast_nullable_to_non_nullable
 as List<int>,themeMode: null == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
 as ThemeMode,schemeVariant: null == schemeVariant ? _self.schemeVariant : schemeVariant // ignore: cast_nullable_to_non_nullable
 as DynamicSchemeVariant,pureBlack: null == pureBlack ? _self.pureBlack : pureBlack // ignore: cast_nullable_to_non_nullable
+as bool,monochromeTrayIcon: null == monochromeTrayIcon ? _self.monochromeTrayIcon : monochromeTrayIcon // ignore: cast_nullable_to_non_nullable
 as bool,textScale: null == textScale ? _self.textScale : textScale // ignore: cast_nullable_to_non_nullable
 as TextScale,
   ));

@@ -16,9 +16,10 @@ class _RunRequest {
 
 @Riverpod(keepAlive: true)
 class SetupAction extends _$SetupAction {
+  static const _updateTickerTag = 'SetupAction.update';
+
   CoreController get _core => ref.read(coreHandlerProvider);
 
-  Timer? _runtimeTimer;
   final _setupScheduler = SerialTaskScheduler();
   final _listenerScheduler = SerialTaskScheduler();
   _RunRequest? _latestRunRequest;
@@ -28,10 +29,7 @@ class SetupAction extends _$SetupAction {
 
   @override
   void build() {
-    ref.onDispose(() {
-      _runtimeTimer?.cancel();
-      _runtimeTimer = null;
-    });
+    ref.onDispose(() => foregroundTicker.unregister(_updateTickerTag));
   }
 
   SetupParams get _setupParams {
@@ -58,8 +56,7 @@ class SetupAction extends _$SetupAction {
   }
 
   void _setLocalRunning(bool running) {
-    _runtimeTimer?.cancel();
-    _runtimeTimer = null;
+    foregroundTicker.unregister(_updateTickerTag);
     if (!running) {
       _startTime = null;
       debouncer.cancel(FunctionTag.applyProfile);
@@ -69,10 +66,7 @@ class SetupAction extends _$SetupAction {
 
     _startTime ??= DateTime.now();
     _refreshRunningState();
-    _runtimeTimer = Timer.periodic(
-      const Duration(seconds: 1),
-      (_) => _refreshRunningState(),
-    );
+    foregroundTicker.register(_updateTickerTag, _refreshRunningState);
   }
 
   void _refreshRunningState() {

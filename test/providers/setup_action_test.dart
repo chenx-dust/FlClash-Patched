@@ -604,7 +604,9 @@ void main() {
       () async {
         final profile = Profile.normal(label: 'p');
         final core = _MockCoreHandlerInterface();
-        when(() => core.getConfig(any())).thenThrow(Exception('broken yaml'));
+        when(
+          () => core.getProfileConfig(any()),
+        ).thenThrow(Exception('broken yaml'));
         String? pushedConfig;
         when(() => core.setupConfig(any())).thenAnswer((_) async {
           pushedConfig = await File(

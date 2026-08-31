@@ -65,16 +65,24 @@ void main() {
   });
 
   group('CommonAction.updateSpeedStatistics', () {
-    test('toggles the tray title flag both ways', () {
+    test('toggles the shared network speed notification flag both ways', () {
       final container = buildContainer();
       final action = container.read(commonActionProvider.notifier);
-      final initial = container.read(appSettingProvider).showTrayTitle;
+      final initial = container
+          .read(vpnSettingProvider)
+          .networkSpeedNotification;
 
       action.updateSpeedStatistics();
-      expect(container.read(appSettingProvider).showTrayTitle, !initial);
+      expect(
+        container.read(vpnSettingProvider).networkSpeedNotification,
+        !initial,
+      );
 
       action.updateSpeedStatistics();
-      expect(container.read(appSettingProvider).showTrayTitle, initial);
+      expect(
+        container.read(vpnSettingProvider).networkSpeedNotification,
+        initial,
+      );
     });
   });
 

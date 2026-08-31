@@ -81,17 +81,24 @@ class AppTray implements TrayPort {
         menu: _buildMenu(trayState: trayState, read: read),
       ),
     );
-    await updateTitle(showTrayTitle: trayState.showTrayTitle, traffic: traffic);
+    await updateTitle(
+      showNetworkSpeed: trayState.showNetworkSpeed,
+      isStart: trayState.isStart,
+      traffic: traffic,
+    );
   }
 
   Future<void> updateTitle({
-    required bool showTrayTitle,
+    required bool showNetworkSpeed,
+    required bool isStart,
     required Traffic traffic,
   }) async {
     if (_isShutDown || !isMacOS) {
       return;
     }
-    await Tray.instance.setTitle(showTrayTitle ? traffic.trayTitle : '');
+    await Tray.instance.setTitle(
+      showNetworkSpeed && isStart ? traffic.trayTitle : '',
+    );
   }
 
   List<TrayMenuItem> _buildMenu({
@@ -120,7 +127,7 @@ class AppTray implements TrayPort {
       if (isMacOS)
         TrayMenuCheckbox(
           label: appLocalizations.speedStatistics,
-          checked: trayState.showTrayTitle,
+          checked: trayState.showNetworkSpeed,
           onSelected: commonAction.updateSpeedStatistics,
         ),
       const TrayMenuSeparator(),

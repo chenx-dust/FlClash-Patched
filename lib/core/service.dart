@@ -89,6 +89,7 @@ class CoreService extends CoreHandlerInterface {
   }
 
   Future<CoreLifecycleResult> _close() async {
+    _rpcClient.beginShutdown();
     try {
       return await _lifecycle.close();
     } finally {

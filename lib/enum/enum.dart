@@ -95,6 +95,12 @@ enum ViewMode { mobile, laptop, desktop }
 enum LogLevel { debug, info, warning, error, silent }
 
 extension LogLevelExt on LogLevel {
+  bool allows(LogLevel level) {
+    return this != LogLevel.silent &&
+        level != LogLevel.silent &&
+        level.index >= index;
+  }
+
   Color? color(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return switch (this) {
@@ -169,6 +175,8 @@ enum AccessControlMode { acceptSelected, rejectSelected }
 enum AccessSortType { none, name, time }
 
 enum ProfileType { file, url }
+
+enum ManagedPathScope { profiles, providers, scripts }
 
 enum ResultType {
   @JsonValue(0)

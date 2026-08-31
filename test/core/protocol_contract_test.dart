@@ -73,7 +73,7 @@ class _RecordingCoreHandler extends CoreHandlerInterface {
         'vehicle-type': 'HTTP',
         'update-at': '2024-01-01T00:00:00.000Z',
       },
-      CoreMethod.getConfig => {
+      CoreMethod.getProfileConfig => {
         'mode': 'rule',
         'rule': ['MATCH,DIRECT'],
       },
@@ -91,7 +91,7 @@ class _FailingConfigCoreHandler extends _RecordingCoreHandler {
     Object? arguments,
     Duration? timeout,
   }) async {
-    if (method == CoreMethod.getConfig) {
+    if (method == CoreMethod.getProfileConfig) {
       throw const CoreMethodException(
         code: 'core_error',
         message: 'config not found',
@@ -113,7 +113,7 @@ class _EmptyConfigCoreHandler extends _RecordingCoreHandler {
     Object? arguments,
     Duration? timeout,
   }) async {
-    if (method == CoreMethod.getConfig) {
+    if (method == CoreMethod.getProfileConfig) {
       return null;
     }
     return super.invokeMethod(
@@ -215,18 +215,18 @@ void main() {
       (await handler.getExternalProvider('provider-1'))?.name,
       'provider-1',
     );
-    expect(await handler.getConfig('/config.yaml'), {
+    expect(await handler.getProfileConfig(42), {
       'mode': 'rule',
       'rule': ['MATCH,DIRECT'],
     });
     expect(await handler.getMemory(), 2048);
   });
 
-  test('getConfig preserves structured core errors', () async {
+  test('getProfileConfig preserves structured core errors', () async {
     final handler = _FailingConfigCoreHandler();
 
     await expectLater(
-      handler.getConfig('/missing.yaml'),
+      handler.getProfileConfig(42),
       throwsA(
         isA<CoreMethodException>()
             .having((error) => error.code, 'code', 'core_error')
@@ -237,11 +237,11 @@ void main() {
     );
   });
 
-  test('getConfig rejects empty transport results', () async {
+  test('getProfileConfig rejects empty transport results', () async {
     final handler = _EmptyConfigCoreHandler();
 
     await expectLater(
-      handler.getConfig('/config.yaml'),
+      handler.getProfileConfig(42),
       throwsA(
         isA<CoreMethodException>().having(
           (error) => error.code,

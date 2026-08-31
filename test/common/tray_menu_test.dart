@@ -40,7 +40,7 @@ TrayState _trayState({
   bool tunEnable = false,
   bool systemProxy = false,
   bool autoLaunch = false,
-  bool showTrayTitle = false,
+  bool showNetworkSpeed = false,
   Mode mode = Mode.rule,
   List<Group> groups = const [],
 }) {
@@ -53,7 +53,8 @@ TrayState _trayState({
     isStart: isStart,
     groups: groups,
     selectedMap: const {},
-    showTrayTitle: showTrayTitle,
+    showNetworkSpeed: showNetworkSpeed,
+    monochromeTrayIcon: false,
   );
 }
 
@@ -169,6 +170,26 @@ void main() {
     expect(labels, contains(l10n.systemProxy));
   });
 
+  test('uses the network speed notification setting for the title', () async {
+    await update(_trayState(isStart: true, showNetworkSpeed: true));
+
+    final speedItem = _items(showCall()).singleWhere(
+      (item) => item['label'] == currentAppLocalizations.speedStatistics,
+    );
+    expect(speedItem['checked'], isTrue);
+    expect(calls.where((call) => call.method == 'setTitle'), hasLength(1));
+
+    calls.clear();
+    await tray.updateTitle(
+      showNetworkSpeed: true,
+      isStart: false,
+      traffic: const Traffic(up: 1, down: 2),
+    );
+
+    final titleCall = calls.singleWhere((call) => call.method == 'setTitle');
+    expect((titleCall.arguments as Map)['title'], isEmpty);
+  });
+
   test('offers every outbound mode as a menu entry', () async {
     await update(_trayState(mode: Mode.global));
 
@@ -269,7 +290,11 @@ void main() {
     });
 
     test('never pushes a tray title', () async {
-      await windows.updateTitle(showTrayTitle: true, traffic: const Traffic());
+      await windows.updateTitle(
+        showNetworkSpeed: true,
+        isStart: true,
+        traffic: const Traffic(),
+      );
 
       expect(calls.where((call) => call.method == 'setTitle'), isEmpty);
     });

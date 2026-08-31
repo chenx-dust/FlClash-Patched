@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:fl_clash/common/print.dart';
+import 'package:fl_clash/state.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -25,5 +27,24 @@ void main() {
 
   test('compactError keeps other exception messages', () {
     expect(compactError(StateError('boom')), contains('boom'));
+  });
+
+  test('app logs preserve their payload without adding a prefix', () {
+    final originalDebugPrint = debugPrint;
+    final wasAttached = globalState.isAttach;
+    final messages = <String?>[];
+    debugPrint = (message, {wrapWidth}) {
+      messages.add(message);
+    };
+    globalState.isAttach = false;
+    addTearDown(() {
+      debugPrint = originalDebugPrint;
+      globalState.isAttach = wasAttached;
+    });
+
+    commonPrint.log('core started');
+    commonPrint.log(null);
+
+    expect(messages, ['core started', '']);
   });
 }

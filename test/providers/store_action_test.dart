@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:drift/native.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
+import 'package:fl_clash/core/desktop/model.dart';
 import 'package:fl_clash/core/interface.dart';
 import 'package:fl_clash/database/database.dart' as db;
 import 'package:fl_clash/enum/enum.dart';
@@ -61,6 +62,12 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     await preferences.setVersion(7);
     core = _MockCoreHandlerInterface();
+    when(() => core.close()).thenAnswer(
+      (_) async => const CoreLifecycleResult(
+        revision: 1,
+        outcome: CoreLifecycleOutcome.applied,
+      ),
+    );
     when(() => core.clearEffect(any())).thenAnswer((_) async => '');
     testDatabase = db.Database(NativeDatabase.memory());
     db.database = testDatabase;
@@ -97,33 +104,29 @@ void main() {
       Profile(id: id, label: 'p$id', autoUpdateDuration: Duration.zero);
 
   group('StoreAction.handleClear', () {
-    test('clears the core effect of every profile still in state', () async {
+    test('closes Core before clearing application data', () async {
       final container = buildContainer(profiles: [profile(1), profile(2)]);
 
       await container.read(storeActionProvider.notifier).handleClear();
 
-      final cleared = verify(() => core.clearEffect(captureAny())).captured;
-      expect(cleared.toSet(), {1, 2});
+      verify(() => core.close()).called(1);
+      verifyNever(() => core.clearEffect(any()));
     });
 
-    test('also clears profiles that only survive on disk', () async {
+    test('removes provider directories that only survive on disk', () async {
       await providerDirFor(41);
       await providerDirFor(42);
       final container = buildContainer(profiles: [profile(1)]);
 
       await container.read(storeActionProvider.notifier).handleClear();
 
-      final cleared = verify(() => core.clearEffect(captureAny())).captured;
       expect(
-        cleared.toSet(),
-        {1, 41, 42},
-        reason:
-            'a provider directory left behind by a profile the database no '
-            'longer knows about still holds downloaded rule data.',
+        Directory(await appPath.getProvidersRootPath()).existsSync(),
+        isFalse,
       );
     });
 
-    test('ignores provider entries that are not a profile id', () async {
+    test('removes non-profile entries inside the managed data root', () async {
       final root = Directory(await appPath.getProvidersRootPath())
         ..createSync(recursive: true);
       File(join(root.path, 'stray.txt')).writeAsStringSync('x');
@@ -133,7 +136,7 @@ void main() {
 
       await container.read(storeActionProvider.notifier).handleClear();
 
-      verifyNever(() => core.clearEffect(any()));
+      expect(root.existsSync(), isFalse);
     });
 
     test('empties the preferences it was asked to clear', () async {

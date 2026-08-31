@@ -15,6 +15,19 @@ type InitParams struct {
 	Version int    `json:"version"`
 }
 
+type ManagedPathScope string
+
+const (
+	profilesPathScope  ManagedPathScope = "profiles"
+	providersPathScope ManagedPathScope = "providers"
+	scriptsPathScope   ManagedPathScope = "scripts"
+)
+
+type DeleteManagedPathParams struct {
+	Scope        ManagedPathScope `json:"scope"`
+	RelativePath string           `json:"relative-path"`
+}
+
 type SetupParams struct {
 	SelectedMap map[string]string `json:"selected-map"`
 	TestURL     string            `json:"test-url"`
@@ -104,15 +117,18 @@ const (
 	updateGeoDataMethod            CoreMethod = "updateGeoData"
 	updateExternalProviderMethod   CoreMethod = "updateExternalProvider"
 	sideLoadExternalProviderMethod CoreMethod = "sideLoadExternalProvider"
-	startLogMethod                 CoreMethod = "startLog"
-	stopLogMethod                  CoreMethod = "stopLog"
+	startLogNotifyMethod           CoreMethod = "startLogNotify"
+	stopLogNotifyMethod            CoreMethod = "stopLogNotify"
+	startRequestNotifyMethod       CoreMethod = "startRequestNotify"
+	stopRequestNotifyMethod        CoreMethod = "stopRequestNotify"
 	startListenerMethod            CoreMethod = "startListener"
 	stopListenerMethod             CoreMethod = "stopListener"
 	updateDnsMethod                CoreMethod = "updateDns"
 	crashMethod                    CoreMethod = "crash"
 	setupConfigMethod              CoreMethod = "setupConfig"
-	getConfigMethod                CoreMethod = "getConfig"
+	getProfileConfigMethod         CoreMethod = "getProfileConfig"
 	clearEffectMethod              CoreMethod = "clearEffect"
+	deleteManagedPathMethod        CoreMethod = "deleteManagedPath"
 )
 
 type CoreMethod string

@@ -335,7 +335,7 @@ var (
 )
 
 func reconcileGeoUpdater() {
-	if updater.GeoAutoUpdate() {
+	if updater.GeoAutoUpdate() && !features.WithLowMemory {
 		registerGeoUpdater()
 		return
 	}

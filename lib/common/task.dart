@@ -45,6 +45,14 @@ Future<String> _encodeMD5<T>(String content) async {
   return content.toMd5();
 }
 
+@visibleForTesting
+GeositeMatcher effectiveGeositeMatcher({
+  required GeositeMatcher configured,
+  required bool isIOS,
+}) {
+  return isIOS ? GeositeMatcher.succinct : configured;
+}
+
 Future<List<Group>> toGroupsTask(ComputeGroupsState data) async {
   return compute<ComputeGroupsState, List<Group>>(buildGroups, data);
 }
@@ -190,6 +198,10 @@ Future<({String yaml, String md5})> _makeRealProfileTask(
   rawConfig['tun']['route-address'] = realPatchConfig.tun.routeAddress;
   rawConfig['tun']['auto-route'] = realPatchConfig.tun.autoRoute;
   rawConfig['geodata-loader'] = realPatchConfig.geodataLoader.name;
+  rawConfig['geosite-matcher'] = effectiveGeositeMatcher(
+    configured: realPatchConfig.geositeMatcher,
+    isIOS: system.isIOS,
+  ).name;
   rawConfig['geo-auto-update'] = realPatchConfig.geoAutoUpdate;
   rawConfig['geo-update-interval'] = realPatchConfig.geoUpdateInterval;
   if (rawConfig['sniffer']?['sniff'] != null) {
@@ -297,7 +309,7 @@ Future<({String yaml, String md5})> _makeRealProfileTask(
   return (yaml: yaml, md5: yaml.toMd5());
 }
 
-Future<List<String>> shakingProfileTask(
+Future<List<DeleteManagedPathParams>> shakingProfileTask(
   ({Iterable<int> profileIds, Iterable<int> scriptIds}) data,
 ) async {
   return compute<
@@ -306,7 +318,7 @@ Future<List<String>> shakingProfileTask(
       Iterable<int> scriptIds,
       RootIsolateToken token,
     }),
-    List<String>
+    List<DeleteManagedPathParams>
   >(_shakingProfileTask, (
     profileIds: data.profileIds,
     scriptIds: data.scriptIds,
@@ -314,7 +326,7 @@ Future<List<String>> shakingProfileTask(
   ));
 }
 
-Future<List<String>> _shakingProfileTask(
+Future<List<DeleteManagedPathParams>> _shakingProfileTask(
   ({Iterable<int> profileIds, Iterable<int> scriptIds, RootIsolateToken token})
   data,
 ) async {
@@ -329,17 +341,18 @@ Future<List<String>> _shakingProfileTask(
 }
 
 @visibleForTesting
-List<String> shakeOrphanFiles({
+List<DeleteManagedPathParams> shakeOrphanFiles({
   required Iterable<int> profileIds,
   required Iterable<int> scriptIds,
   required String profilesDirPath,
   required String providersDirPath,
   required String scriptsDirPath,
 }) {
-  final List<String> targets = [];
+  final targets = <DeleteManagedPathParams>[];
   void scanDirectory(
     Directory dir,
     Iterable<int> baseNames, {
+    required ManagedPathScope scope,
     bool includeDirectories = false,
   }) {
     if (!dir.existsSync()) return;
@@ -353,18 +366,32 @@ List<String> shakeOrphanFiles({
       }
       final id = basenameWithoutExtension(entity.path);
       if (!baseNames.contains(int.tryParse(id))) {
-        targets.add(entity.path);
+        targets.add(
+          DeleteManagedPathParams(
+            scope: scope,
+            relativePath: relative(entity.path, from: dir.path),
+          ),
+        );
       }
     }
   }
 
-  scanDirectory(Directory(profilesDirPath), profileIds);
+  scanDirectory(
+    Directory(profilesDirPath),
+    profileIds,
+    scope: ManagedPathScope.profiles,
+  );
   scanDirectory(
     Directory(providersDirPath),
     profileIds,
+    scope: ManagedPathScope.providers,
     includeDirectories: true,
   );
-  scanDirectory(Directory(scriptsDirPath), scriptIds);
+  scanDirectory(
+    Directory(scriptsDirPath),
+    scriptIds,
+    scope: ManagedPathScope.scripts,
+  );
   return targets;
 }
 

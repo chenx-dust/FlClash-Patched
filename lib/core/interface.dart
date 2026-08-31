@@ -23,7 +23,7 @@ mixin CoreInterface {
 
   Future<String> validateConfig(String path);
 
-  Future<Map<String, dynamic>> getConfig(String path);
+  Future<Map<String, dynamic>> getProfileConfig(int profileId);
 
   Future<Delay?> asyncTestDelay(String url, String proxyName);
 
@@ -60,9 +60,13 @@ mixin CoreInterface {
 
   FutureOr<void> resetTraffic();
 
-  FutureOr<void> startLog();
+  FutureOr<List<Log>> startLogNotify();
 
-  FutureOr<void> stopLog();
+  FutureOr<void> stopLogNotify();
+
+  FutureOr<List<TrackerInfo>> startRequestNotify();
+
+  FutureOr<void> stopRequestNotify();
 
   Future<bool> crash();
 
@@ -71,6 +75,8 @@ mixin CoreInterface {
   FutureOr<bool> closeConnection(String id);
 
   FutureOr<String> clearEffect(int profileId);
+
+  FutureOr<String> deleteManagedPath(DeleteManagedPathParams params);
 
   FutureOr<bool> closeConnections();
 
@@ -162,10 +168,10 @@ abstract class CoreHandlerInterface with CoreInterface {
   }
 
   @override
-  Future<Map<String, dynamic>> getConfig(String path) async {
+  Future<Map<String, dynamic>> getProfileConfig(int profileId) async {
     final result = await _invokeMethod<Map<String, dynamic>>(
-      method: CoreMethod.getConfig,
-      arguments: path,
+      method: CoreMethod.getProfileConfig,
+      arguments: profileId,
     );
     if (result == null) {
       throw const CoreMethodException(
@@ -317,18 +323,54 @@ abstract class CoreHandlerInterface with CoreInterface {
   }
 
   @override
+  Future<String> deleteManagedPath(DeleteManagedPathParams params) async {
+    return _invokeMessage(
+      method: CoreMethod.deleteManagedPath,
+      arguments: params.toJson(),
+    );
+  }
+
+  @override
   FutureOr<void> resetTraffic() {
     _invokeMethod(method: CoreMethod.resetTraffic);
   }
 
   @override
-  FutureOr<void> startLog() {
-    _invokeMethod(method: CoreMethod.startLog);
+  Future<List<Log>> startLogNotify() async {
+    final res = await _invokeMethod<List<dynamic>>(
+      method: CoreMethod.startLogNotify,
+    );
+    if (res == null || res.isEmpty) {
+      return [];
+    }
+    return res
+        .whereType<Map>()
+        .map((item) => Log.fromJson(Map<String, Object?>.from(item)))
+        .toList();
   }
 
   @override
-  FutureOr<void> stopLog() {
-    _invokeMethod<bool>(method: CoreMethod.stopLog);
+  FutureOr<void> stopLogNotify() {
+    _invokeMethod<bool>(method: CoreMethod.stopLogNotify);
+  }
+
+  @override
+  Future<List<TrackerInfo>> startRequestNotify() async {
+    final res = await _invokeMethod<List<dynamic>>(
+      method: CoreMethod.startRequestNotify,
+    );
+    if (res == null || res.isEmpty) {
+      return [];
+    }
+    return res
+        .whereType<Map>()
+        .map((item) => TrackerInfo.fromJson(Map<String, Object?>.from(item)))
+        .toList();
+  }
+
+  @override
+  FutureOr<void> stopRequestNotify() {
+    _invokeMethod<bool>(method: CoreMethod.stopRequestNotify);
   }
 
   @override

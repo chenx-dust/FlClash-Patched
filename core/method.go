@@ -178,8 +178,8 @@ var methodHandlers = map[CoreMethod]methodHandler{
 	setupConfigMethod: withDefaults(defaultSetupParams, func(params *SetupParams, response MethodResponse) {
 		response.success(handleSetupConfig(params))
 	}),
-	getConfigMethod: withArguments(func(path *string, response MethodResponse) {
-		rawConfig, err := handleGetConfig(*path)
+	getProfileConfigMethod: withArguments(func(profileID *int64, response MethodResponse) {
+		rawConfig, err := handleGetProfileConfig(*profileID)
 		if err != nil {
 			response.failure("core_error", err.Error(), nil)
 			return
@@ -248,12 +248,18 @@ var methodHandlers = map[CoreMethod]methodHandler{
 	updateGeoDataMethod: withArguments(func(geoType *string, response MethodResponse) {
 		response.success(handleUpdateGeoData(*geoType))
 	}),
-	startLogMethod: withoutArguments(func(response MethodResponse) {
-		handleStartLog()
+	startLogNotifyMethod: withoutArguments(func(response MethodResponse) {
+		response.success(handleStartLogNotify())
+	}),
+	stopLogNotifyMethod: withoutArguments(func(response MethodResponse) {
+		handleStopLogNotify()
 		response.success(true)
 	}),
-	stopLogMethod: withoutArguments(func(response MethodResponse) {
-		handleStopLog()
+	startRequestNotifyMethod: withoutArguments(func(response MethodResponse) {
+		response.success(handleStartRequestNotify())
+	}),
+	stopRequestNotifyMethod: withoutArguments(func(response MethodResponse) {
+		handleStopRequestNotify()
 		response.success(true)
 	}),
 	startListenerMethod: withoutArguments(func(response MethodResponse) {
@@ -271,6 +277,9 @@ var methodHandlers = map[CoreMethod]methodHandler{
 		safeGo(response, func() {
 			response.success(handleClearEffect(*profileId))
 		})
+	}),
+	deleteManagedPathMethod: withArguments(func(params *DeleteManagedPathParams, response MethodResponse) {
+		response.success(handleDeleteManagedPath(params))
 	}),
 }
 

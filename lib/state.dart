@@ -47,6 +47,21 @@ class GlobalState {
       .read(patchClashConfigProvider.select((state) => state.globalUa))
       .takeFirstValid([packageInfo.ua]);
 
+  void handleBackground() {
+    if (isBackground.value) return;
+    isBackground.value = true;
+    foregroundTicker.pause();
+    render?.pause();
+  }
+
+  void handleForeground() {
+    if (isBackground.value) {
+      isBackground.value = false;
+    }
+    foregroundTicker.resume();
+    render?.resume();
+  }
+
   Future<T?> loadingRun<T>(
     FutureOr<T> Function() futureFunction, {
     String? title,

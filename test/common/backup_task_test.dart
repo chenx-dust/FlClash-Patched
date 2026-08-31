@@ -80,10 +80,13 @@ void main() {
         scriptsDirPath: scripts.path,
       );
 
-      expect(orphans.map(basename), unorderedEquals(['2.yaml', '20.js', '2']));
       expect(
-        orphans.singleWhere((path) => basename(path) == '2'),
-        join(providers.path, '2'),
+        orphans.map((item) => item.relativePath),
+        unorderedEquals(['2.yaml', '20.js', '2']),
+      );
+      expect(
+        orphans.singleWhere((item) => item.relativePath == '2').scope,
+        ManagedPathScope.providers,
       );
     });
 
@@ -102,11 +105,12 @@ void main() {
       );
 
       expect(
-        orphans,
-        unorderedEquals([
-          join(providers.path, '3'),
-          join(providers.path, 'stray'),
-        ]),
+        orphans.map((item) => item.relativePath),
+        unorderedEquals(['3', 'stray']),
+      );
+      expect(
+        orphans.map((item) => item.scope),
+        everyElement(ManagedPathScope.providers),
       );
     });
 
@@ -122,7 +126,7 @@ void main() {
         scriptsDirPath: join(root.path, 'missing'),
       );
 
-      expect(orphans.map(basename), ['stray.yaml']);
+      expect(orphans.map((item) => item.relativePath), ['stray.yaml']);
     });
 
     test('does not descend into the nested providers folder', () {

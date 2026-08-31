@@ -4,6 +4,8 @@
 
 void (*release_object_func)(void *obj);
 
+void *(*retain_object_func)(void *obj);
+
 void (*free_string_func)(char *data);
 
 int (*protect_func)(void *tun_interface, int fd);
@@ -13,6 +15,8 @@ int (*resolve_uid_func)(void *tun_interface, int protocol, const char *source, c
 char* (*resolve_package_func)(void *tun_interface, int uid);
 
 void (*result_func)(void *invoke_Interface, const char *data);
+
+void (*system_log_func)(const char *level, const char *message);
 
 int protect(void *tun_interface, int fd) {
     if (protect_func == NULL) {
@@ -42,6 +46,13 @@ void release_object(void *obj) {
     release_object_func(obj);
 }
 
+void *retain_object(void *obj) {
+    if (retain_object_func == NULL) {
+        return NULL;
+    }
+    return retain_object_func(obj);
+}
+
 void free_string(char *data) {
     if (free_string_func == NULL) {
         return;
@@ -54,4 +65,10 @@ void result(void *invoke_Interface, const char *data) {
         return;
     }
     result_func(invoke_Interface, data);
+}
+
+void system_log(const char *level, const char *message) {
+    if (system_log_func != NULL) {
+        system_log_func(level, message);
+    }
 }

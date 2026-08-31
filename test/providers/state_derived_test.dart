@@ -29,6 +29,12 @@ void main() {
     container.dispose();
   });
 
+  test('iOS proxy state ignores service suspension', () {
+    expect(resolveProxySuspended(isIOS: true, suspend: true), isFalse);
+    expect(resolveProxySuspended(isIOS: false, suspend: true), isTrue);
+    expect(resolveProxySuspended(isIOS: false, suspend: false), isFalse);
+  });
+
   test('group derivation sanitizes runtime state and respects clash mode', () {
     final groups = [
       const Group(
@@ -228,6 +234,12 @@ void main() {
     expect(tray.port, 8899);
     expect(tray.tunEnable, isTrue);
     expect(tray.isStart, isTrue);
+    expect(tray.showNetworkSpeed, isFalse);
+
+    container
+        .read(vpnSettingProvider.notifier)
+        .update((state) => state.copyWith(networkSpeedNotification: true));
+    expect(container.read(trayStateProvider).showNetworkSpeed, isTrue);
 
     final vpn = container.read(vpnStateProvider);
     expect(vpn.stack, container.read(patchClashConfigProvider).tun.stack);

@@ -72,10 +72,7 @@ CoreEvent _geoUpdate({
 }
 
 _MockCoreHandlerInterface _coreInterface() {
-  final coreInterface = _MockCoreHandlerInterface();
-  when(() => coreInterface.startLog()).thenAnswer((_) {});
-  when(() => coreInterface.stopLog()).thenAnswer((_) {});
-  return coreInterface;
+  return _MockCoreHandlerInterface();
 }
 
 Future<ProviderContainer> _pumpCoreManager(
@@ -159,7 +156,6 @@ void main() {
     tester,
   ) async {
     final coreInterface = _MockCoreHandlerInterface();
-    when(() => coreInterface.stopLog()).thenAnswer((_) {});
     final container = ProviderContainer(
       overrides: [
         coreHandlerProvider.overrideWithValue(
@@ -236,33 +232,17 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
-  testWidgets('the log stream follows the openLogs setting', (tester) async {
-    final coreInterface = _coreInterface();
-    final container = await _pumpCoreManager(tester, coreInterface);
-
-    verify(() => coreInterface.stopLog()).called(1);
-    verifyNever(() => coreInterface.startLog());
-
-    container
-        .read(appSettingProvider.notifier)
-        .update((state) => state.copyWith(openLogs: true));
-    await tester.pump();
-
-    verify(() => coreInterface.startLog()).called(1);
-
-    container
-        .read(appSettingProvider.notifier)
-        .update((state) => state.copyWith(openLogs: false));
-    await tester.pump();
-
-    verify(() => coreInterface.stopLog()).called(1);
-
-    await tester.pumpWidget(const SizedBox.shrink());
-  });
-
   testWidgets('core logs are recorded for the logs view', (tester) async {
     final coreInterface = _coreInterface();
-    final container = await _pumpCoreManager(tester, coreInterface);
+    final container = await _pumpCoreManager(
+      tester,
+      coreInterface,
+      overrides: [
+        patchClashConfigProvider.overrideWithValue(
+          const PatchClashConfig(logLevel: LogLevel.info),
+        ),
+      ],
+    );
 
     coreEventManager.sendEvent(
       const CoreEvent(

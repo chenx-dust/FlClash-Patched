@@ -32,6 +32,13 @@ func releaseObject(callback unsafe.Pointer) {
 	C.release_object(callback)
 }
 
+func retainObject(callback unsafe.Pointer) unsafe.Pointer {
+	return C.retain_object(callback)
+}
+
+func writeSystemLog(level, message string) {
+}
+
 func takeCString(s *C.char) string {
 	defer C.free_string(s)
 	return C.GoString(s)

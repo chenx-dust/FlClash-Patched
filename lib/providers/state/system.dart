@@ -40,11 +40,14 @@ TrayState trayState(Ref ref) {
       ),
     ),
   );
-  final appSetting = ref.watch(
-    appSettingProvider.select(
-      (state) =>
-          (autoLaunch: state.autoLaunch, showTrayTitle: state.showTrayTitle),
-    ),
+  final autoLaunch = ref.watch(
+    appSettingProvider.select((state) => state.autoLaunch),
+  );
+  final showNetworkSpeed = ref.watch(
+    vpnSettingProvider.select((state) => state.networkSpeedNotification),
+  );
+  final monochromeTrayIcon = ref.watch(
+    themeSettingProvider.select((state) => state.monochromeTrayIcon),
   );
   final groups = ref.watch(currentGroupsStateProvider).value;
   final selectedMap = ref.watch(selectedMapProvider);
@@ -52,25 +55,15 @@ TrayState trayState(Ref ref) {
   return TrayState(
     mode: clashConfig.mode,
     port: clashConfig.mixedPort,
-    autoLaunch: appSetting.autoLaunch,
+    autoLaunch: autoLaunch,
     systemProxy: systemProxy,
     tunEnable: clashConfig.tunEnable,
     isStart: isStart,
     groups: groups,
     selectedMap: selectedMap,
-    showTrayTitle: appSetting.showTrayTitle,
+    showNetworkSpeed: showNetworkSpeed,
+    monochromeTrayIcon: monochromeTrayIcon,
   );
-}
-
-@riverpod
-TrayTitleState trayTitleState(Ref ref) {
-  final showTrayTitle = ref.watch(
-    appSettingProvider.select((state) => state.showTrayTitle),
-  );
-  final traffic = ref.watch(
-    trafficsProvider.select((state) => state.list.safeLast(const Traffic())),
-  );
-  return TrayTitleState(showTrayTitle: showTrayTitle, traffic: traffic);
 }
 
 @riverpod

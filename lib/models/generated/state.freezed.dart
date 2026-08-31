@@ -834,7 +834,7 @@ $ConfigCopyWith<$Res> get config {
 /// @nodoc
 mixin _$CommonMessage {
 
- String get id; String get text; MessageLevel get level; Duration get duration; MessageActionState? get actionState;
+ String get id; String get text; MessageLevel get level; Duration get duration; MessageActionState? get actionState; bool get allowCopy;
 /// Create a copy of CommonMessage
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -846,20 +846,20 @@ $CommonMessageCopyWith<CommonMessage> get copyWith => _$CommonMessageCopyWithImp
 @override
 bool operator ==(Object other) {
   final _this = this as CommonMessage;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CommonMessage&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.text, _this.text) || other.text == _this.text)&&(identical(other.level, _this.level) || other.level == _this.level)&&(identical(other.duration, _this.duration) || other.duration == _this.duration)&&(identical(other.actionState, _this.actionState) || other.actionState == _this.actionState));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CommonMessage&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.text, _this.text) || other.text == _this.text)&&(identical(other.level, _this.level) || other.level == _this.level)&&(identical(other.duration, _this.duration) || other.duration == _this.duration)&&(identical(other.actionState, _this.actionState) || other.actionState == _this.actionState)&&(identical(other.allowCopy, _this.allowCopy) || other.allowCopy == _this.allowCopy));
 }
 
 
 @override
 int get hashCode {
   final _this = this as CommonMessage;
-  return Object.hash(runtimeType,_this.id,_this.text,_this.level,_this.duration,_this.actionState);
+  return Object.hash(runtimeType,_this.id,_this.text,_this.level,_this.duration,_this.actionState,_this.allowCopy);
 }
 
 @override
 String toString() {
   final _this = this as CommonMessage;
-  return 'CommonMessage(id: ${_this.id}, text: ${_this.text}, level: ${_this.level}, duration: ${_this.duration}, actionState: ${_this.actionState})';
+  return 'CommonMessage(id: ${_this.id}, text: ${_this.text}, level: ${_this.level}, duration: ${_this.duration}, actionState: ${_this.actionState}, allowCopy: ${_this.allowCopy})';
 }
 
 
@@ -870,7 +870,7 @@ abstract mixin class $CommonMessageCopyWith<$Res>  {
   factory $CommonMessageCopyWith(CommonMessage value, $Res Function(CommonMessage) _then) = _$CommonMessageCopyWithImpl;
 @useResult
 $Res call({
- String id, String text, MessageLevel level, Duration duration, MessageActionState? actionState
+ String id, String text, MessageLevel level, Duration duration, MessageActionState? actionState, bool allowCopy
 });
 
 
@@ -887,14 +887,15 @@ class _$CommonMessageCopyWithImpl<$Res>
 
 /// Create a copy of CommonMessage
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? text = null,Object? level = null,Object? duration = null,Object? actionState = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? text = null,Object? level = null,Object? duration = null,Object? actionState = freezed,Object? allowCopy = null,}) {
   return _then(CommonMessage(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
 as String,level: null == level ? _self.level : level // ignore: cast_nullable_to_non_nullable
 as MessageLevel,duration: null == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
 as Duration,actionState: freezed == actionState ? _self.actionState : actionState // ignore: cast_nullable_to_non_nullable
-as MessageActionState?,
+as MessageActionState?,allowCopy: null == allowCopy ? _self.allowCopy : allowCopy // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 /// Create a copy of CommonMessage
@@ -991,10 +992,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String text,  MessageLevel level,  Duration duration,  MessageActionState? actionState)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String text,  MessageLevel level,  Duration duration,  MessageActionState? actionState,  bool allowCopy)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CommonMessage() when $default != null:
-return $default(_that.id,_that.text,_that.level,_that.duration,_that.actionState);case _:
+return $default(_that.id,_that.text,_that.level,_that.duration,_that.actionState,_that.allowCopy);case _:
   return orElse();
 
 }
@@ -1012,10 +1013,10 @@ return $default(_that.id,_that.text,_that.level,_that.duration,_that.actionState
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String text,  MessageLevel level,  Duration duration,  MessageActionState? actionState)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String text,  MessageLevel level,  Duration duration,  MessageActionState? actionState,  bool allowCopy)  $default,) {final _that = this;
 switch (_that) {
 case _CommonMessage():
-return $default(_that.id,_that.text,_that.level,_that.duration,_that.actionState);case _:
+return $default(_that.id,_that.text,_that.level,_that.duration,_that.actionState,_that.allowCopy);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1032,10 +1033,10 @@ return $default(_that.id,_that.text,_that.level,_that.duration,_that.actionState
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String text,  MessageLevel level,  Duration duration,  MessageActionState? actionState)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String text,  MessageLevel level,  Duration duration,  MessageActionState? actionState,  bool allowCopy)?  $default,) {final _that = this;
 switch (_that) {
 case _CommonMessage() when $default != null:
-return $default(_that.id,_that.text,_that.level,_that.duration,_that.actionState);case _:
+return $default(_that.id,_that.text,_that.level,_that.duration,_that.actionState,_that.allowCopy);case _:
   return null;
 
 }
@@ -1047,7 +1048,7 @@ return $default(_that.id,_that.text,_that.level,_that.duration,_that.actionState
 
 
 class _CommonMessage implements CommonMessage {
-  const _CommonMessage({required this.id, required this.text, this.level = MessageLevel.info, this.duration = const Duration(seconds: 3), this.actionState});
+  const _CommonMessage({required this.id, required this.text, this.level = MessageLevel.info, this.duration = const Duration(seconds: 3), this.actionState, this.allowCopy = false});
   
 
 @override final  String id;
@@ -1055,6 +1056,7 @@ class _CommonMessage implements CommonMessage {
 @override@JsonKey() final  MessageLevel level;
 @override@JsonKey() final  Duration duration;
 @override final  MessageActionState? actionState;
+@override@JsonKey() final  bool allowCopy;
 
 /// Create a copy of CommonMessage
 /// with the given fields replaced by the non-null parameter values.
@@ -1066,18 +1068,18 @@ _$CommonMessageCopyWith<_CommonMessage> get copyWith => __$CommonMessageCopyWith
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CommonMessage&&(identical(other.id, id) || other.id == id)&&(identical(other.text, text) || other.text == text)&&(identical(other.level, level) || other.level == level)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.actionState, actionState) || other.actionState == actionState));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CommonMessage&&(identical(other.id, id) || other.id == id)&&(identical(other.text, text) || other.text == text)&&(identical(other.level, level) || other.level == level)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.actionState, actionState) || other.actionState == actionState)&&(identical(other.allowCopy, allowCopy) || other.allowCopy == allowCopy));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,text,level,duration,actionState);
+    return Object.hash(runtimeType,id,text,level,duration,actionState,allowCopy);
 }
 
 @override
 String toString() {
-    return 'CommonMessage(id: $id, text: $text, level: $level, duration: $duration, actionState: $actionState)';
+    return 'CommonMessage(id: $id, text: $text, level: $level, duration: $duration, actionState: $actionState, allowCopy: $allowCopy)';
 }
 
 
@@ -1088,7 +1090,7 @@ abstract mixin class _$CommonMessageCopyWith<$Res> implements $CommonMessageCopy
   factory _$CommonMessageCopyWith(_CommonMessage value, $Res Function(_CommonMessage) _then) = __$CommonMessageCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String text, MessageLevel level, Duration duration, MessageActionState? actionState
+ String id, String text, MessageLevel level, Duration duration, MessageActionState? actionState, bool allowCopy
 });
 
 
@@ -1105,14 +1107,15 @@ class __$CommonMessageCopyWithImpl<$Res>
 
 /// Create a copy of CommonMessage
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? text = null,Object? level = null,Object? duration = null,Object? actionState = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? text = null,Object? level = null,Object? duration = null,Object? actionState = freezed,Object? allowCopy = null,}) {
   return _then(_CommonMessage(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
 as String,level: null == level ? _self.level : level // ignore: cast_nullable_to_non_nullable
 as MessageLevel,duration: null == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
 as Duration,actionState: freezed == actionState ? _self.actionState : actionState // ignore: cast_nullable_to_non_nullable
-as MessageActionState?,
+as MessageActionState?,allowCopy: null == allowCopy ? _self.allowCopy : allowCopy // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -3093,7 +3096,7 @@ $IpInfoCopyWith<$Res>? get ipInfo {
 /// @nodoc
 mixin _$TrayState {
 
- Mode get mode; int get port; bool get autoLaunch; bool get systemProxy; bool get tunEnable; bool get isStart; List<Group> get groups; Map<String, String> get selectedMap; bool get showTrayTitle;
+ Mode get mode; int get port; bool get autoLaunch; bool get systemProxy; bool get tunEnable; bool get isStart; List<Group> get groups; Map<String, String> get selectedMap; bool get showNetworkSpeed; bool get monochromeTrayIcon;
 /// Create a copy of TrayState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -3105,20 +3108,20 @@ $TrayStateCopyWith<TrayState> get copyWith => _$TrayStateCopyWithImpl<TrayState>
 @override
 bool operator ==(Object other) {
   final _this = this as TrayState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TrayState&&(identical(other.mode, _this.mode) || other.mode == _this.mode)&&(identical(other.port, _this.port) || other.port == _this.port)&&(identical(other.autoLaunch, _this.autoLaunch) || other.autoLaunch == _this.autoLaunch)&&(identical(other.systemProxy, _this.systemProxy) || other.systemProxy == _this.systemProxy)&&(identical(other.tunEnable, _this.tunEnable) || other.tunEnable == _this.tunEnable)&&(identical(other.isStart, _this.isStart) || other.isStart == _this.isStart)&&const DeepCollectionEquality().equals(other.groups, _this.groups)&&const DeepCollectionEquality().equals(other.selectedMap, _this.selectedMap)&&(identical(other.showTrayTitle, _this.showTrayTitle) || other.showTrayTitle == _this.showTrayTitle));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TrayState&&(identical(other.mode, _this.mode) || other.mode == _this.mode)&&(identical(other.port, _this.port) || other.port == _this.port)&&(identical(other.autoLaunch, _this.autoLaunch) || other.autoLaunch == _this.autoLaunch)&&(identical(other.systemProxy, _this.systemProxy) || other.systemProxy == _this.systemProxy)&&(identical(other.tunEnable, _this.tunEnable) || other.tunEnable == _this.tunEnable)&&(identical(other.isStart, _this.isStart) || other.isStart == _this.isStart)&&const DeepCollectionEquality().equals(other.groups, _this.groups)&&const DeepCollectionEquality().equals(other.selectedMap, _this.selectedMap)&&(identical(other.showNetworkSpeed, _this.showNetworkSpeed) || other.showNetworkSpeed == _this.showNetworkSpeed)&&(identical(other.monochromeTrayIcon, _this.monochromeTrayIcon) || other.monochromeTrayIcon == _this.monochromeTrayIcon));
 }
 
 
 @override
 int get hashCode {
   final _this = this as TrayState;
-  return Object.hash(runtimeType,_this.mode,_this.port,_this.autoLaunch,_this.systemProxy,_this.tunEnable,_this.isStart,const DeepCollectionEquality().hash(_this.groups),const DeepCollectionEquality().hash(_this.selectedMap),_this.showTrayTitle);
+  return Object.hash(runtimeType,_this.mode,_this.port,_this.autoLaunch,_this.systemProxy,_this.tunEnable,_this.isStart,const DeepCollectionEquality().hash(_this.groups),const DeepCollectionEquality().hash(_this.selectedMap),_this.showNetworkSpeed,_this.monochromeTrayIcon);
 }
 
 @override
 String toString() {
   final _this = this as TrayState;
-  return 'TrayState(mode: ${_this.mode}, port: ${_this.port}, autoLaunch: ${_this.autoLaunch}, systemProxy: ${_this.systemProxy}, tunEnable: ${_this.tunEnable}, isStart: ${_this.isStart}, groups: ${_this.groups}, selectedMap: ${_this.selectedMap}, showTrayTitle: ${_this.showTrayTitle})';
+  return 'TrayState(mode: ${_this.mode}, port: ${_this.port}, autoLaunch: ${_this.autoLaunch}, systemProxy: ${_this.systemProxy}, tunEnable: ${_this.tunEnable}, isStart: ${_this.isStart}, groups: ${_this.groups}, selectedMap: ${_this.selectedMap}, showNetworkSpeed: ${_this.showNetworkSpeed}, monochromeTrayIcon: ${_this.monochromeTrayIcon})';
 }
 
 
@@ -3129,7 +3132,7 @@ abstract mixin class $TrayStateCopyWith<$Res>  {
   factory $TrayStateCopyWith(TrayState value, $Res Function(TrayState) _then) = _$TrayStateCopyWithImpl;
 @useResult
 $Res call({
- Mode mode, int port, bool autoLaunch, bool systemProxy, bool tunEnable, bool isStart, List<Group> groups, Map<String, String> selectedMap, bool showTrayTitle
+ Mode mode, int port, bool autoLaunch, bool systemProxy, bool tunEnable, bool isStart, List<Group> groups, Map<String, String> selectedMap, bool showNetworkSpeed, bool monochromeTrayIcon
 });
 
 
@@ -3146,7 +3149,7 @@ class _$TrayStateCopyWithImpl<$Res>
 
 /// Create a copy of TrayState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? mode = null,Object? port = null,Object? autoLaunch = null,Object? systemProxy = null,Object? tunEnable = null,Object? isStart = null,Object? groups = null,Object? selectedMap = null,Object? showTrayTitle = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? mode = null,Object? port = null,Object? autoLaunch = null,Object? systemProxy = null,Object? tunEnable = null,Object? isStart = null,Object? groups = null,Object? selectedMap = null,Object? showNetworkSpeed = null,Object? monochromeTrayIcon = null,}) {
   return _then(TrayState(
 mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
 as Mode,port: null == port ? _self.port : port // ignore: cast_nullable_to_non_nullable
@@ -3156,7 +3159,8 @@ as bool,tunEnable: null == tunEnable ? _self.tunEnable : tunEnable // ignore: ca
 as bool,isStart: null == isStart ? _self.isStart : isStart // ignore: cast_nullable_to_non_nullable
 as bool,groups: null == groups ? _self.groups : groups // ignore: cast_nullable_to_non_nullable
 as List<Group>,selectedMap: null == selectedMap ? _self.selectedMap : selectedMap // ignore: cast_nullable_to_non_nullable
-as Map<String, String>,showTrayTitle: null == showTrayTitle ? _self.showTrayTitle : showTrayTitle // ignore: cast_nullable_to_non_nullable
+as Map<String, String>,showNetworkSpeed: null == showNetworkSpeed ? _self.showNetworkSpeed : showNetworkSpeed // ignore: cast_nullable_to_non_nullable
+as bool,monochromeTrayIcon: null == monochromeTrayIcon ? _self.monochromeTrayIcon : monochromeTrayIcon // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -3242,10 +3246,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Mode mode,  int port,  bool autoLaunch,  bool systemProxy,  bool tunEnable,  bool isStart,  List<Group> groups,  Map<String, String> selectedMap,  bool showTrayTitle)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Mode mode,  int port,  bool autoLaunch,  bool systemProxy,  bool tunEnable,  bool isStart,  List<Group> groups,  Map<String, String> selectedMap,  bool showNetworkSpeed,  bool monochromeTrayIcon)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TrayState() when $default != null:
-return $default(_that.mode,_that.port,_that.autoLaunch,_that.systemProxy,_that.tunEnable,_that.isStart,_that.groups,_that.selectedMap,_that.showTrayTitle);case _:
+return $default(_that.mode,_that.port,_that.autoLaunch,_that.systemProxy,_that.tunEnable,_that.isStart,_that.groups,_that.selectedMap,_that.showNetworkSpeed,_that.monochromeTrayIcon);case _:
   return orElse();
 
 }
@@ -3263,10 +3267,10 @@ return $default(_that.mode,_that.port,_that.autoLaunch,_that.systemProxy,_that.t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Mode mode,  int port,  bool autoLaunch,  bool systemProxy,  bool tunEnable,  bool isStart,  List<Group> groups,  Map<String, String> selectedMap,  bool showTrayTitle)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Mode mode,  int port,  bool autoLaunch,  bool systemProxy,  bool tunEnable,  bool isStart,  List<Group> groups,  Map<String, String> selectedMap,  bool showNetworkSpeed,  bool monochromeTrayIcon)  $default,) {final _that = this;
 switch (_that) {
 case _TrayState():
-return $default(_that.mode,_that.port,_that.autoLaunch,_that.systemProxy,_that.tunEnable,_that.isStart,_that.groups,_that.selectedMap,_that.showTrayTitle);case _:
+return $default(_that.mode,_that.port,_that.autoLaunch,_that.systemProxy,_that.tunEnable,_that.isStart,_that.groups,_that.selectedMap,_that.showNetworkSpeed,_that.monochromeTrayIcon);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -3283,10 +3287,10 @@ return $default(_that.mode,_that.port,_that.autoLaunch,_that.systemProxy,_that.t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Mode mode,  int port,  bool autoLaunch,  bool systemProxy,  bool tunEnable,  bool isStart,  List<Group> groups,  Map<String, String> selectedMap,  bool showTrayTitle)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Mode mode,  int port,  bool autoLaunch,  bool systemProxy,  bool tunEnable,  bool isStart,  List<Group> groups,  Map<String, String> selectedMap,  bool showNetworkSpeed,  bool monochromeTrayIcon)?  $default,) {final _that = this;
 switch (_that) {
 case _TrayState() when $default != null:
-return $default(_that.mode,_that.port,_that.autoLaunch,_that.systemProxy,_that.tunEnable,_that.isStart,_that.groups,_that.selectedMap,_that.showTrayTitle);case _:
+return $default(_that.mode,_that.port,_that.autoLaunch,_that.systemProxy,_that.tunEnable,_that.isStart,_that.groups,_that.selectedMap,_that.showNetworkSpeed,_that.monochromeTrayIcon);case _:
   return null;
 
 }
@@ -3298,7 +3302,7 @@ return $default(_that.mode,_that.port,_that.autoLaunch,_that.systemProxy,_that.t
 
 
 class _TrayState implements TrayState {
-  const _TrayState({required this.mode, required this.port, required this.autoLaunch, required this.systemProxy, required this.tunEnable, required this.isStart, required  List<Group> groups, required  Map<String, String> selectedMap, required this.showTrayTitle}): _groups = groups,_selectedMap = selectedMap;
+  const _TrayState({required this.mode, required this.port, required this.autoLaunch, required this.systemProxy, required this.tunEnable, required this.isStart, required  List<Group> groups, required  Map<String, String> selectedMap, required this.showNetworkSpeed, required this.monochromeTrayIcon}): _groups = groups,_selectedMap = selectedMap;
   
 
 @override final  Mode mode;
@@ -3321,7 +3325,8 @@ class _TrayState implements TrayState {
   return EqualUnmodifiableMapView(_selectedMap);
 }
 
-@override final  bool showTrayTitle;
+@override final  bool showNetworkSpeed;
+@override final  bool monochromeTrayIcon;
 
 /// Create a copy of TrayState
 /// with the given fields replaced by the non-null parameter values.
@@ -3333,18 +3338,18 @@ _$TrayStateCopyWith<_TrayState> get copyWith => __$TrayStateCopyWithImpl<_TraySt
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TrayState&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.port, port) || other.port == port)&&(identical(other.autoLaunch, autoLaunch) || other.autoLaunch == autoLaunch)&&(identical(other.systemProxy, systemProxy) || other.systemProxy == systemProxy)&&(identical(other.tunEnable, tunEnable) || other.tunEnable == tunEnable)&&(identical(other.isStart, isStart) || other.isStart == isStart)&&const DeepCollectionEquality().equals(other.groups, _groups)&&const DeepCollectionEquality().equals(other.selectedMap, _selectedMap)&&(identical(other.showTrayTitle, showTrayTitle) || other.showTrayTitle == showTrayTitle));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TrayState&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.port, port) || other.port == port)&&(identical(other.autoLaunch, autoLaunch) || other.autoLaunch == autoLaunch)&&(identical(other.systemProxy, systemProxy) || other.systemProxy == systemProxy)&&(identical(other.tunEnable, tunEnable) || other.tunEnable == tunEnable)&&(identical(other.isStart, isStart) || other.isStart == isStart)&&const DeepCollectionEquality().equals(other.groups, _groups)&&const DeepCollectionEquality().equals(other.selectedMap, _selectedMap)&&(identical(other.showNetworkSpeed, showNetworkSpeed) || other.showNetworkSpeed == showNetworkSpeed)&&(identical(other.monochromeTrayIcon, monochromeTrayIcon) || other.monochromeTrayIcon == monochromeTrayIcon));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,mode,port,autoLaunch,systemProxy,tunEnable,isStart,const DeepCollectionEquality().hash(_groups),const DeepCollectionEquality().hash(_selectedMap),showTrayTitle);
+    return Object.hash(runtimeType,mode,port,autoLaunch,systemProxy,tunEnable,isStart,const DeepCollectionEquality().hash(_groups),const DeepCollectionEquality().hash(_selectedMap),showNetworkSpeed,monochromeTrayIcon);
 }
 
 @override
 String toString() {
-    return 'TrayState(mode: $mode, port: $port, autoLaunch: $autoLaunch, systemProxy: $systemProxy, tunEnable: $tunEnable, isStart: $isStart, groups: $groups, selectedMap: $selectedMap, showTrayTitle: $showTrayTitle)';
+    return 'TrayState(mode: $mode, port: $port, autoLaunch: $autoLaunch, systemProxy: $systemProxy, tunEnable: $tunEnable, isStart: $isStart, groups: $groups, selectedMap: $selectedMap, showNetworkSpeed: $showNetworkSpeed, monochromeTrayIcon: $monochromeTrayIcon)';
 }
 
 
@@ -3355,7 +3360,7 @@ abstract mixin class _$TrayStateCopyWith<$Res> implements $TrayStateCopyWith<$Re
   factory _$TrayStateCopyWith(_TrayState value, $Res Function(_TrayState) _then) = __$TrayStateCopyWithImpl;
 @override @useResult
 $Res call({
- Mode mode, int port, bool autoLaunch, bool systemProxy, bool tunEnable, bool isStart, List<Group> groups, Map<String, String> selectedMap, bool showTrayTitle
+ Mode mode, int port, bool autoLaunch, bool systemProxy, bool tunEnable, bool isStart, List<Group> groups, Map<String, String> selectedMap, bool showNetworkSpeed, bool monochromeTrayIcon
 });
 
 
@@ -3372,7 +3377,7 @@ class __$TrayStateCopyWithImpl<$Res>
 
 /// Create a copy of TrayState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? mode = null,Object? port = null,Object? autoLaunch = null,Object? systemProxy = null,Object? tunEnable = null,Object? isStart = null,Object? groups = null,Object? selectedMap = null,Object? showTrayTitle = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? mode = null,Object? port = null,Object? autoLaunch = null,Object? systemProxy = null,Object? tunEnable = null,Object? isStart = null,Object? groups = null,Object? selectedMap = null,Object? showNetworkSpeed = null,Object? monochromeTrayIcon = null,}) {
   return _then(_TrayState(
 mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
 as Mode,port: null == port ? _self.port : port // ignore: cast_nullable_to_non_nullable
@@ -3382,297 +3387,13 @@ as bool,tunEnable: null == tunEnable ? _self.tunEnable : tunEnable // ignore: ca
 as bool,isStart: null == isStart ? _self.isStart : isStart // ignore: cast_nullable_to_non_nullable
 as bool,groups: null == groups ? _self._groups : groups // ignore: cast_nullable_to_non_nullable
 as List<Group>,selectedMap: null == selectedMap ? _self._selectedMap : selectedMap // ignore: cast_nullable_to_non_nullable
-as Map<String, String>,showTrayTitle: null == showTrayTitle ? _self.showTrayTitle : showTrayTitle // ignore: cast_nullable_to_non_nullable
+as Map<String, String>,showNetworkSpeed: null == showNetworkSpeed ? _self.showNetworkSpeed : showNetworkSpeed // ignore: cast_nullable_to_non_nullable
+as bool,monochromeTrayIcon: null == monochromeTrayIcon ? _self.monochromeTrayIcon : monochromeTrayIcon // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
 
 
-}
-
-/// @nodoc
-mixin _$TrayTitleState {
-
- Traffic get traffic; bool get showTrayTitle;
-/// Create a copy of TrayTitleState
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$TrayTitleStateCopyWith<TrayTitleState> get copyWith => _$TrayTitleStateCopyWithImpl<TrayTitleState>(this as TrayTitleState, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  final _this = this as TrayTitleState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TrayTitleState&&(identical(other.traffic, _this.traffic) || other.traffic == _this.traffic)&&(identical(other.showTrayTitle, _this.showTrayTitle) || other.showTrayTitle == _this.showTrayTitle));
-}
-
-
-@override
-int get hashCode {
-  final _this = this as TrayTitleState;
-  return Object.hash(runtimeType,_this.traffic,_this.showTrayTitle);
-}
-
-@override
-String toString() {
-  final _this = this as TrayTitleState;
-  return 'TrayTitleState(traffic: ${_this.traffic}, showTrayTitle: ${_this.showTrayTitle})';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $TrayTitleStateCopyWith<$Res>  {
-  factory $TrayTitleStateCopyWith(TrayTitleState value, $Res Function(TrayTitleState) _then) = _$TrayTitleStateCopyWithImpl;
-@useResult
-$Res call({
- Traffic traffic, bool showTrayTitle
-});
-
-
-$TrafficCopyWith<$Res> get traffic;
-
-}
-/// @nodoc
-class _$TrayTitleStateCopyWithImpl<$Res>
-    implements $TrayTitleStateCopyWith<$Res> {
-  _$TrayTitleStateCopyWithImpl(this._self, this._then);
-
-  final TrayTitleState _self;
-  final $Res Function(TrayTitleState) _then;
-
-/// Create a copy of TrayTitleState
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? traffic = null,Object? showTrayTitle = null,}) {
-  return _then(TrayTitleState(
-traffic: null == traffic ? _self.traffic : traffic // ignore: cast_nullable_to_non_nullable
-as Traffic,showTrayTitle: null == showTrayTitle ? _self.showTrayTitle : showTrayTitle // ignore: cast_nullable_to_non_nullable
-as bool,
-  ));
-}
-/// Create a copy of TrayTitleState
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$TrafficCopyWith<$Res> get traffic {
-  
-  return $TrafficCopyWith<$Res>(_self.traffic, (value) {
-    return _then(_self.copyWith(traffic: value));
-  });
-}
-}
-
-
-/// Adds pattern-matching-related methods to [TrayTitleState].
-extension TrayTitleStatePatterns on TrayTitleState {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TrayTitleState value)?  $default,{required TResult orElse(),}){
-final _that = this;
-switch (_that) {
-case _TrayTitleState() when $default != null:
-return $default(_that);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TrayTitleState value)  $default,){
-final _that = this;
-switch (_that) {
-case _TrayTitleState():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TrayTitleState value)?  $default,){
-final _that = this;
-switch (_that) {
-case _TrayTitleState() when $default != null:
-return $default(_that);case _:
-  return null;
-
-}
-}
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Traffic traffic,  bool showTrayTitle)?  $default,{required TResult orElse(),}) {final _that = this;
-switch (_that) {
-case _TrayTitleState() when $default != null:
-return $default(_that.traffic,_that.showTrayTitle);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Traffic traffic,  bool showTrayTitle)  $default,) {final _that = this;
-switch (_that) {
-case _TrayTitleState():
-return $default(_that.traffic,_that.showTrayTitle);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Traffic traffic,  bool showTrayTitle)?  $default,) {final _that = this;
-switch (_that) {
-case _TrayTitleState() when $default != null:
-return $default(_that.traffic,_that.showTrayTitle);case _:
-  return null;
-
-}
-}
-
-}
-
-/// @nodoc
-
-
-class _TrayTitleState implements TrayTitleState {
-  const _TrayTitleState({required this.traffic, required this.showTrayTitle});
-  
-
-@override final  Traffic traffic;
-@override final  bool showTrayTitle;
-
-/// Create a copy of TrayTitleState
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$TrayTitleStateCopyWith<_TrayTitleState> get copyWith => __$TrayTitleStateCopyWithImpl<_TrayTitleState>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TrayTitleState&&(identical(other.traffic, traffic) || other.traffic == traffic)&&(identical(other.showTrayTitle, showTrayTitle) || other.showTrayTitle == showTrayTitle));
-}
-
-
-@override
-int get hashCode {
-    return Object.hash(runtimeType,traffic,showTrayTitle);
-}
-
-@override
-String toString() {
-    return 'TrayTitleState(traffic: $traffic, showTrayTitle: $showTrayTitle)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$TrayTitleStateCopyWith<$Res> implements $TrayTitleStateCopyWith<$Res> {
-  factory _$TrayTitleStateCopyWith(_TrayTitleState value, $Res Function(_TrayTitleState) _then) = __$TrayTitleStateCopyWithImpl;
-@override @useResult
-$Res call({
- Traffic traffic, bool showTrayTitle
-});
-
-
-@override $TrafficCopyWith<$Res> get traffic;
-
-}
-/// @nodoc
-class __$TrayTitleStateCopyWithImpl<$Res>
-    implements _$TrayTitleStateCopyWith<$Res> {
-  __$TrayTitleStateCopyWithImpl(this._self, this._then);
-
-  final _TrayTitleState _self;
-  final $Res Function(_TrayTitleState) _then;
-
-/// Create a copy of TrayTitleState
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? traffic = null,Object? showTrayTitle = null,}) {
-  return _then(_TrayTitleState(
-traffic: null == traffic ? _self.traffic : traffic // ignore: cast_nullable_to_non_nullable
-as Traffic,showTrayTitle: null == showTrayTitle ? _self.showTrayTitle : showTrayTitle // ignore: cast_nullable_to_non_nullable
-as bool,
-  ));
-}
-
-/// Create a copy of TrayTitleState
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$TrafficCopyWith<$Res> get traffic {
-  
-  return $TrafficCopyWith<$Res>(_self.traffic, (value) {
-    return _then(_self.copyWith(traffic: value));
-  });
-}
 }
 
 /// @nodoc
