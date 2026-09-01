@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:fl_clash/common/tray.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
@@ -9,13 +7,21 @@ import 'package:tray/tray.dart';
 
 void main() {
   group('AppTray.getTrayIcon', () {
-    final tray = AppTray();
-    final suffix = tray.trayIconSuffix;
+    final colorTray = AppTray.forPlatform(isMacOS: false, isWindows: false);
+    final macOSTray = AppTray.forPlatform(isMacOS: true, isWindows: false);
 
-    test('returns idle icon when core is not started', () {
+    test('returns colored status icons on supported platforms', () {
       expect(
-        tray.getTrayIcon(isStart: false, tunEnable: false),
-        'assets/images/icon/status_1.$suffix',
+        colorTray.getTrayIcon(isStart: false, tunEnable: false),
+        'assets/images/icon/status_1.png',
+      );
+      expect(
+        colorTray.getTrayIcon(isStart: true, tunEnable: false),
+        'assets/images/icon/status_2.png',
+      );
+      expect(
+        colorTray.getTrayIcon(isStart: true, tunEnable: true),
+        'assets/images/icon/status_3.png',
       );
     });
 
@@ -42,21 +48,18 @@ void main() {
       );
     });
 
-    test('returns normal mode icon when core is started without TUN', () {
+    test('always returns symbolic icons on macOS', () {
       expect(
-        tray.getTrayIcon(isStart: true, tunEnable: false),
-        Platform.isMacOS
-            ? 'assets/images/icon/status_1.$suffix'
-            : 'assets/images/icon/status_2.$suffix',
+        macOSTray.getTrayIcon(isStart: false, tunEnable: false),
+        'assets/images/icon/flclash-disabled-symbolic.svg',
       );
-    });
-
-    test('returns enhanced mode icon when core is started with TUN', () {
       expect(
-        tray.getTrayIcon(isStart: true, tunEnable: true),
-        Platform.isMacOS
-            ? 'assets/images/icon/status_1.$suffix'
-            : 'assets/images/icon/status_3.$suffix',
+        macOSTray.getTrayIcon(isStart: true, tunEnable: false),
+        'assets/images/icon/flclash-symbolic.svg',
+      );
+      expect(
+        macOSTray.getTrayIcon(isStart: true, tunEnable: true),
+        'assets/images/icon/flclash-symbolic.svg',
       );
     });
   });

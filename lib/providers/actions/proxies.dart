@@ -295,8 +295,14 @@ class ProxiesAction extends _$ProxiesAction {
     List<Proxy> proxies, [
     String? testUrl,
     Duration uiTimeout = const Duration(seconds: 1),
+    FutureOr<void> Function()? onDelayChanged,
   ]) {
-    final operation = _runDelayTests(proxies, testUrl, bumpSort: true);
+    final operation = _runDelayTests(
+      proxies,
+      testUrl,
+      bumpSort: true,
+      onDelayChanged: onDelayChanged,
+    );
     return operation.timeout(uiTimeout, onTimeout: () {});
   }
 
@@ -340,24 +346,27 @@ class ProxiesAction extends _$ProxiesAction {
     List<Proxy> proxies,
     String? testUrl, {
     required bool bumpSort,
+    FutureOr<void> Function()? onDelayChanged,
   }) async {
     final generation = _delayTestGeneration;
     final targets = _resolveDelayTestTargets(proxies, testUrl);
     if (targets.isEmpty) {
       return;
     }
-    await Future.wait(
-      targets.map((target) async {
-        try {
-          await _scheduleDelayTest(target);
-        } catch (error) {
-          commonPrint.log(
-            'Delay test failed for ${target.proxyName}: $error',
-            logLevel: coreFailureLogLevel(error),
-          );
-        }
-      }),
-    );
+    final operations = targets.map((target) async {
+      try {
+        await _scheduleDelayTest(target);
+      } catch (error) {
+        commonPrint.log(
+          'Delay test failed for ${target.proxyName}: $error',
+          logLevel: coreFailureLogLevel(error),
+        );
+      } finally {
+        await onDelayChanged?.call();
+      }
+    }).toList();
+    await onDelayChanged?.call();
+    await Future.wait(operations);
     if (bumpSort && generation == _delayTestGeneration) {
       ref.read(sortNumProvider.notifier).add();
     }

@@ -94,6 +94,34 @@ void main() {
     );
   });
 
+  test('serializes live menu presentation', () {
+    final encoded = TrayCodec.encode(
+      _spec(
+        menu: const [
+          TrayMenuAction(
+            key: 'delay-test',
+            label: 'Delay test',
+            keepsMenuOpen: true,
+          ),
+          TrayMenuCheckbox(
+            key: 'delay:proxy',
+            label: 'Proxy',
+            checked: true,
+            sublabel: '42 ms',
+            sublabelStyle: TrayMenuItemSublabelStyle.badge,
+            usesCustomView: true,
+          ),
+        ],
+      ),
+    );
+
+    expect(encoded.menu[0], containsPair('key', 'delay-test'));
+    expect(encoded.menu[0], containsPair('keepsMenuOpen', true));
+    expect(encoded.menu[1], containsPair('sublabel', '42 ms'));
+    expect(encoded.menu[1], containsPair('sublabelStyle', 'badge'));
+    expect(encoded.menu[1], containsPair('usesCustomView', true));
+  });
+
   test('separators serialize without label or state', () {
     final encoded = TrayCodec.encode(_spec(menu: const [TrayMenuSeparator()]));
 

@@ -43,6 +43,7 @@ TrayState _trayState({
   bool showNetworkSpeed = false,
   Mode mode = Mode.rule,
   List<Group> groups = const [],
+  Map<String, String> selectedMap = const {},
 }) {
   return TrayState(
     mode: mode,
@@ -52,7 +53,7 @@ TrayState _trayState({
     tunEnable: tunEnable,
     isStart: isStart,
     groups: groups,
-    selectedMap: const {},
+    selectedMap: selectedMap,
     showNetworkSpeed: showNetworkSpeed,
     monochromeTrayIcon: false,
   );
@@ -146,18 +147,25 @@ void main() {
     },
   );
 
-  test('builds the stopped menu without the running-only toggles', () async {
+  test('keeps TUN and system proxy available while stopped', () async {
     await update(_trayState());
 
     final labels = _labels(showCall());
+    final items = _items(showCall());
     final l10n = currentAppLocalizations;
     expect(labels, contains(l10n.show));
     expect(labels, contains(l10n.start));
     expect(labels, contains(l10n.autoLaunch));
     expect(labels, contains(l10n.copyEnvVar));
     expect(labels, contains(l10n.exit));
-    expect(labels, isNot(contains(l10n.tun)));
-    expect(labels, isNot(contains(l10n.systemProxy)));
+    expect(
+      items.singleWhere((item) => item['label'] == l10n.tun)['checked'],
+      isFalse,
+    );
+    expect(
+      items.singleWhere((item) => item['label'] == l10n.systemProxy)['checked'],
+      isFalse,
+    );
   });
 
   test('adds TUN and system proxy toggles once the core is running', () async {
@@ -170,13 +178,13 @@ void main() {
     expect(labels, contains(l10n.systemProxy));
   });
 
-  test('uses the network speed notification setting for the title', () async {
+  test('keeps the network speed title visible while stopped', () async {
     await update(_trayState(isStart: true, showNetworkSpeed: true));
 
-    final speedItem = _items(showCall()).singleWhere(
-      (item) => item['label'] == currentAppLocalizations.speedStatistics,
+    expect(
+      _labels(showCall()),
+      isNot(contains(currentAppLocalizations.speedStatistics)),
     );
-    expect(speedItem['checked'], isTrue);
     expect(calls.where((call) => call.method == 'setTitle'), hasLength(1));
 
     calls.clear();
@@ -187,7 +195,7 @@ void main() {
     );
 
     final titleCall = calls.singleWhere((call) => call.method == 'setTitle');
-    expect((titleCall.arguments as Map)['title'], isEmpty);
+    expect((titleCall.arguments as Map)['title'], '1 B/s\n2 B/s');
   });
 
   test('offers every outbound mode as a menu entry', () async {
@@ -241,6 +249,7 @@ void main() {
           const Group(
             name: 'Proxy',
             type: GroupType.Selector,
+            now: 'A',
             all: [Proxy(name: 'A', type: 'Direct')],
           ),
         ],
@@ -251,8 +260,17 @@ void main() {
       showCall(),
     ).firstWhere((item) => item['type'] == 'submenu');
     expect(submenu['label'], 'Proxy');
+    expect(submenu['sublabel'], 'A');
+    expect(submenu['usesCustomView'], isTrue);
     final children = (submenu['items'] as List).cast<Map<Object?, Object?>>();
     expect(children.map((item) => item['label']), contains('A'));
+    final delayTest = children.first;
+    expect(delayTest['key'], 'delay-test:Proxy');
+    expect(delayTest['keepsMenuOpen'], isTrue);
+    final proxy = children.firstWhere((item) => item['label'] == 'A');
+    expect(proxy['key'], 'delay:Proxy:A');
+    expect(proxy['checked'], isTrue);
+    expect(proxy['usesCustomView'], isTrue);
   });
 
   group('a platform that is not macOS', () {

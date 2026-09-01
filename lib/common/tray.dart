@@ -106,6 +106,15 @@ String? getTrayGroupSelectionLabel(
   return label.isEmpty ? null : label;
 }
 
+String _trayDelayTestKey(String groupName) {
+  return 'delay-test:${Uri.encodeComponent(groupName)}';
+}
+
+String _trayProxyDelayKey(String groupName, String proxyName) {
+  return 'delay:${Uri.encodeComponent(groupName)}:'
+      '${Uri.encodeComponent(proxyName)}';
+}
+
 class AppTray implements TrayPort {
   static AppTray? _instance;
 
@@ -184,7 +193,7 @@ class AppTray implements TrayPort {
           size: 18,
         ),
         toolTip: appName,
-        menu: _buildMenu(trayState: trayState, traffic: traffic, read: read),
+        menu: _buildMenu(trayState: trayState, read: read),
         brightness: read(currentBrightnessProvider),
       ),
     );
@@ -203,14 +212,11 @@ class AppTray implements TrayPort {
     if (_isShutDown || !isMacOS) {
       return;
     }
-    await Tray.instance.setTitle(
-      showNetworkSpeed && isStart ? traffic.trayTitle : '',
-    );
+    await Tray.instance.setTitle(showNetworkSpeed ? traffic.trayTitle : '');
   }
 
   List<TrayMenuItem> _buildMenu({
     required TrayState trayState,
-    required Traffic traffic,
     required ProviderReader read,
   }) {
     final commonAction = read(commonActionProvider.notifier);
@@ -251,12 +257,6 @@ class AppTray implements TrayPort {
         keyEquivalentModifiers: startShortcut?.modifiers ?? const {},
         onSelected: commonAction.toggleRunning,
       ),
-      if (isMacOS)
-        TrayMenuCheckbox(
-          label: appLocalizations.speedStatistics,
-          checked: trayState.showNetworkSpeed,
-          onSelected: commonAction.updateSpeedStatistics,
-        ),
       const TrayMenuSeparator(),
       for (final mode in Mode.values)
         TrayMenuCheckbox(
@@ -273,27 +273,24 @@ class AppTray implements TrayPort {
           },
         ),
       const TrayMenuSeparator(),
-      if (isMacOS)
-        ..._buildGroupMenu(trayState: trayState, traffic: traffic, read: read),
-      if (trayState.isStart) ...[
-        TrayMenuCheckbox(
-          label: appLocalizations.tun,
-          checked: trayState.tunEnable,
-          keyEquivalent: shortcutFor(HotAction.tun)?.keyEquivalent,
-          keyEquivalentModifiers:
-              shortcutFor(HotAction.tun)?.modifiers ?? const {},
-          onSelected: systemAction.updateTun,
-        ),
-        TrayMenuCheckbox(
-          label: appLocalizations.systemProxy,
-          checked: trayState.systemProxy,
-          keyEquivalent: shortcutFor(HotAction.proxy)?.keyEquivalent,
-          keyEquivalentModifiers:
-              shortcutFor(HotAction.proxy)?.modifiers ?? const {},
-          onSelected: systemAction.updateSystemProxy,
-        ),
-        const TrayMenuSeparator(),
-      ],
+      if (isMacOS) ..._buildGroupMenu(trayState: trayState, read: read),
+      TrayMenuCheckbox(
+        label: appLocalizations.tun,
+        checked: trayState.tunEnable,
+        keyEquivalent: shortcutFor(HotAction.tun)?.keyEquivalent,
+        keyEquivalentModifiers:
+            shortcutFor(HotAction.tun)?.modifiers ?? const {},
+        onSelected: systemAction.updateTun,
+      ),
+      TrayMenuCheckbox(
+        label: appLocalizations.systemProxy,
+        checked: trayState.systemProxy,
+        keyEquivalent: shortcutFor(HotAction.proxy)?.keyEquivalent,
+        keyEquivalentModifiers:
+            shortcutFor(HotAction.proxy)?.modifiers ?? const {},
+        onSelected: systemAction.updateSystemProxy,
+      ),
+      const TrayMenuSeparator(),
       TrayMenuCheckbox(
         label: appLocalizations.autoLaunch,
         checked: trayState.autoLaunch,
@@ -317,7 +314,6 @@ class AppTray implements TrayPort {
 
   List<TrayMenuItem> _buildGroupMenu({
     required TrayState trayState,
-    required Traffic traffic,
     required ProviderReader read,
   }) {
     if (trayState.groups.isEmpty) {
@@ -325,95 +321,127 @@ class AppTray implements TrayPort {
     }
     return [
       for (final group in trayState.groups)
-        TrayMenuSubmenu(
-          label: group.name,
-          sublabel: getTrayGroupSelectionLabel(group, trayState.selectedMap),
-          items: [
-            TrayMenuAction(
-              label: currentAppLocalizations.delayTest,
-              enabled: !_testingGroups.contains(group.name),
-              keepsMenuOpen: true,
-              onSelected: () {
-                unawaited(
-                  _testGroupDelay(
-                    group: group,
-                    trayState: trayState,
-                    traffic: traffic,
-                    read: read,
-                  ),
-                );
-              },
-            ),
-            const TrayMenuSeparator(),
-            for (final proxy in group.all)
-              TrayMenuCheckbox(
-                label: proxy.name,
-                sublabel: getTrayDelayPresentation(
-                  read(
-                        delayTestPendingProvider(
-                          proxyName: proxy.name,
-                          testUrl: group.testUrl,
-                        ),
-                      )
-                      ? 0
-                      : read(
-                          delayProvider(
-                            proxyName: proxy.name,
-                            testUrl: group.testUrl,
-                          ),
-                        ),
-                  loadingLabel: '...',
-                  timeoutLabel: currentAppLocalizations.timeout,
-                ).label,
-                sublabelStyle: getTrayDelayPresentation(
-                  read(
-                        delayTestPendingProvider(
-                          proxyName: proxy.name,
-                          testUrl: group.testUrl,
-                        ),
-                      )
-                      ? 0
-                      : read(
-                          delayProvider(
-                            proxyName: proxy.name,
-                            testUrl: group.testUrl,
-                          ),
-                        ),
-                  loadingLabel: '...',
-                  timeoutLabel: currentAppLocalizations.timeout,
-                ).style,
-                checked:
-                    getTrayGroupSelectionLabel(group, trayState.selectedMap) ==
-                    proxy.name,
-                onSelected: () {
-                  read(
-                    proxiesActionProvider.notifier,
-                  ).changeProxy(groupName: group.name, proxyName: proxy.name);
-                },
-              ),
-          ],
+        _buildGroupMenuItem(
+          group: group,
+          selectedMap: trayState.selectedMap,
+          read: read,
         ),
       const TrayMenuSeparator(),
     ];
   }
 
-  Future<void> _testGroupDelay({
+  TrayMenuSubmenu _buildGroupMenuItem({
     required Group group,
-    required TrayState trayState,
-    required Traffic traffic,
+    required Map<String, String> selectedMap,
     required ProviderReader read,
-  }) async {
+  }) {
+    final selectedProxyName = group.getCurrentSelectedName(
+      selectedMap[group.name] ?? '',
+    );
+    return TrayMenuSubmenu(
+      label: group.name,
+      sublabel: getTrayGroupSelectionLabel(group, selectedMap),
+      usesCustomView: true,
+      items: [
+        TrayMenuAction(
+          key: _trayDelayTestKey(group.name),
+          label: currentAppLocalizations.delayTest,
+          enabled: !_testingGroups.contains(group.name),
+          keepsMenuOpen: true,
+          onSelected: () {
+            unawaited(_testGroupDelay(group, read));
+          },
+        ),
+        const TrayMenuSeparator(),
+        for (final proxy in group.all)
+          _buildProxyMenuItem(
+            group: group,
+            proxy: proxy,
+            selectedProxyName: selectedProxyName,
+            read: read,
+          ),
+      ],
+    );
+  }
+
+  TrayMenuCheckbox _buildProxyMenuItem({
+    required Group group,
+    required Proxy proxy,
+    required String? selectedProxyName,
+    required ProviderReader read,
+  }) {
+    final pending = read(
+      delayTestPendingProvider(proxyName: proxy.name, testUrl: group.testUrl),
+    );
+    final delay = pending
+        ? 0
+        : read(delayProvider(proxyName: proxy.name, testUrl: group.testUrl));
+    final presentation = getTrayDelayPresentation(
+      delay,
+      loadingLabel: '...',
+      timeoutLabel: currentAppLocalizations.timeout,
+    );
+    return TrayMenuCheckbox(
+      key: _trayProxyDelayKey(group.name, proxy.name),
+      label: proxy.name,
+      sublabel: presentation.label,
+      sublabelStyle: presentation.style,
+      usesCustomView: true,
+      checked: selectedProxyName == proxy.name,
+      onSelected: () {
+        read(
+          proxiesActionProvider.notifier,
+        ).changeProxy(groupName: group.name, proxyName: proxy.name);
+      },
+    );
+  }
+
+  Future<void> _testGroupDelay(Group group, ProviderReader read) async {
     if (!_testingGroups.add(group.name)) {
       return;
     }
+    await Tray.instance.updateMenuItem(
+      key: _trayDelayTestKey(group.name),
+      enabled: false,
+    );
     try {
-      unawaited(update(trayState: trayState, traffic: traffic, read: read));
-      await read(
-        proxiesActionProvider.notifier,
-      ).delayTest(group.all, group.testUrl);
+      await read(proxiesActionProvider.notifier).delayTest(
+        group.all,
+        group.testUrl,
+        const Duration(seconds: 1),
+        () => _updateGroupDelays(group, read),
+      );
     } finally {
       _testingGroups.remove(group.name);
-      unawaited(update(trayState: trayState, traffic: traffic, read: read));
+      await Tray.instance.updateMenuItem(
+        key: _trayDelayTestKey(group.name),
+        enabled: true,
+      );
+    }
+  }
+
+  Future<void> _updateGroupDelays(Group group, ProviderReader read) async {
+    for (final proxy in group.all) {
+      final pending = read(
+        delayTestPendingProvider(proxyName: proxy.name, testUrl: group.testUrl),
+      );
+      final delay = pending
+          ? 0
+          : read(delayProvider(proxyName: proxy.name, testUrl: group.testUrl));
+      final presentation = getTrayDelayPresentation(
+        delay,
+        loadingLabel: '...',
+        timeoutLabel: currentAppLocalizations.timeout,
+      );
+      final label = presentation.label;
+      if (label == null) {
+        continue;
+      }
+      await Tray.instance.updateMenuItem(
+        key: _trayProxyDelayKey(group.name, proxy.name),
+        sublabel: label,
+        sublabelStyle: presentation.style,
+      );
     }
   }
 

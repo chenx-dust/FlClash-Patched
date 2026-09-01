@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
@@ -86,8 +88,15 @@ void main() {
   });
 
   group('tray icon', () {
-    testWidgets('toggles monochrome tray icons', (tester) async {
+    testWidgets('shows the monochrome option only when configurable', (
+      tester,
+    ) async {
       await pumpThemeView(tester);
+
+      if (Platform.isMacOS) {
+        expect(find.text('Monochrome tray icon'), findsNothing);
+        return;
+      }
 
       expect(find.text('Monochrome tray icon'), findsOneWidget);
       expect(readTheme().monochromeTrayIcon, isTrue);

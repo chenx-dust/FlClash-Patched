@@ -16,6 +16,7 @@ const String _methodShow = 'show';
 const String _methodHide = 'hide';
 const String _methodSetTitle = 'setTitle';
 const String _methodOpenMenu = 'openMenu';
+const String _methodUpdateMenuItem = 'updateMenuItem';
 
 const String _eventIconActivated = 'onIconActivated';
 const String _eventMenuRequested = 'onMenuRequested';
@@ -60,8 +61,28 @@ final class Tray {
     return _serialize(_hide);
   }
 
-  Future<void> openMenu() {
-    return _serialize(_openMenu);
+  Future<void> openMenu({bool bringAppToFront = false}) {
+    return _dispatch(() => _openMenu(bringAppToFront));
+  }
+
+  Future<bool> updateMenuItem({
+    required String key,
+    String? label,
+    bool? enabled,
+    bool? checked,
+    String? sublabel,
+    TrayMenuItemSublabelStyle? sublabelStyle,
+  }) {
+    return _serialize(
+      () => _updateMenuItem(
+        key: key,
+        label: label,
+        enabled: enabled,
+        checked: checked,
+        sublabel: sublabel,
+        sublabelStyle: sublabelStyle,
+      ),
+    );
   }
 
   @visibleForTesting
@@ -79,6 +100,18 @@ final class Tray {
     _queue = _queue.then((_) async {
       try {
         completer.complete(await action());
+      } catch (error, stackTrace) {
+        completer.completeError(error, stackTrace);
+      }
+    });
+    return completer.future;
+  }
+
+  Future<T> _dispatch<T>(Future<T> Function() action) {
+    final completer = Completer<T>();
+    _queue = _queue.then((_) {
+      try {
+        action().then(completer.complete, onError: completer.completeError);
       } catch (error, stackTrace) {
         completer.completeError(error, stackTrace);
       }
@@ -138,11 +171,51 @@ final class Tray {
     await _channel.invokeMethod(_methodHide);
   }
 
-  Future<void> _openMenu() async {
+  Future<void> _openMenu(bool bringAppToFront) async {
     if (!capabilities.menuControl || !_isVisible) {
       return;
     }
-    await _channel.invokeMethod(_methodOpenMenu);
+    await _channel.invokeMethod(_methodOpenMenu, <String, Object?>{
+      'bringAppToFront': bringAppToFront,
+    });
+  }
+
+  Future<bool> _updateMenuItem({
+    required String key,
+    String? label,
+    bool? enabled,
+    bool? checked,
+    String? sublabel,
+    TrayMenuItemSublabelStyle? sublabelStyle,
+  }) async {
+    if (!_isVisible) {
+      return false;
+    }
+    final arguments = <String, Object?>{'key': key};
+    if (label != null) {
+      arguments['label'] = label;
+    }
+    if (enabled != null) {
+      arguments['enabled'] = enabled;
+    }
+    if (checked != null) {
+      arguments['checked'] = checked;
+    }
+    if (sublabel != null) {
+      arguments['sublabel'] = sublabel;
+    }
+    if (sublabelStyle != null) {
+      arguments['sublabelStyle'] = sublabelStyle.name;
+    }
+    final applied = await _channel.invokeMethod<bool>(
+      _methodUpdateMenuItem,
+      arguments,
+    );
+    if (applied == true) {
+      _signature = null;
+      return true;
+    }
+    return false;
   }
 
   Future<void> _onPlatformCall(MethodCall call) async {

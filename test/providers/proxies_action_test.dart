@@ -658,6 +658,35 @@ void main() {
       expect(container.read(pendingDelayTestsProvider), isEmpty);
     });
 
+    test('continues publishing results after the UI timeout', () async {
+      final release = Completer<Delay?>();
+      when(
+        () => core.asyncTestDelay(_testUrl, 'HK-01'),
+      ).thenAnswer((_) => release.future);
+      final container = _delayContainer(buildContainer);
+      final snapshots = <({bool pending, int? delay})>[];
+
+      await actionOf(container).delayTest(
+        const [_proxy],
+        null,
+        Duration.zero,
+        () {
+          snapshots.add((
+            pending: container.read(pendingDelayTestsProvider).isNotEmpty,
+            delay: container.read(delayDataSourceProvider)[_testUrl]?['HK-01'],
+          ));
+        },
+      );
+
+      expect(snapshots, contains((pending: true, delay: 0)));
+
+      release.complete(const Delay(name: 'HK-01', url: _testUrl, value: 12));
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(snapshots.last.delay, 12);
+    });
+
     test('drops every spinner when the Core goes away mid-run', () async {
       final release = Completer<Delay?>();
       when(

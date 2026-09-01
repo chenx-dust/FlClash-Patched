@@ -17,7 +17,7 @@ final class TrayTitleView: NSView {
         paragraphStyle.lineBreakMode = .byClipping
         return [
             .paragraphStyle: paragraphStyle,
-            .font: NSFont.systemFont(ofSize: 8.75),
+            .font: NSFont.systemFont(ofSize: 9),
             .foregroundColor: NSColor.labelColor,
         ]
     }()
@@ -69,7 +69,7 @@ final class TrayTitleView: NSView {
             with: NSSize(width: bounds.width, height: CGFloat.greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin, .usesFontLeading]
         )
-        let y = max((bounds.height - textBounds.height) / 2, 0)
+        let y = max((bounds.height - textBounds.height) / 2 + 1, 0)
         attributedTitle.draw(
             in: NSRect(x: 0, y: y, width: bounds.width, height: ceil(textBounds.height))
         )

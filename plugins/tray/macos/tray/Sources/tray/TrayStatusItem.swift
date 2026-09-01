@@ -72,10 +72,12 @@ private final class TrayContentView: NSView {
 
     private let titleView = TrayTitleView()
 
+    private var leadingConstraint: NSLayoutConstraint?
+
     private let stackView: NSStackView = {
         let stack = NSStackView()
         stack.orientation = .horizontal
-        stack.spacing = 6
+        stack.spacing = 4
         stack.distribution = .equalSpacing
         return stack
     }()
@@ -88,8 +90,13 @@ private final class TrayContentView: NSView {
         titleView.isHidden = true
         addSubview(stackView)
         stackView.translatesAutoresizingMaskIntoConstraints = false
+        let leadingConstraint = stackView.leadingAnchor.constraint(
+            equalTo: leadingAnchor,
+            constant: 8
+        )
+        self.leadingConstraint = leadingConstraint
         NSLayoutConstraint.activate([
-            stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            leadingConstraint,
             stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
             stackView.topAnchor.constraint(equalTo: topAnchor, constant: 2),
             stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2),
@@ -121,7 +128,10 @@ private final class TrayContentView: NSView {
     }
 
     func setTitle(_ title: String) -> Bool {
-        titleView.setTitle(title)
+        let leadingMargin: CGFloat = title.isEmpty ? 8 : 4
+        let marginChanged = leadingConstraint?.constant != leadingMargin
+        leadingConstraint?.constant = leadingMargin
+        return titleView.setTitle(title) || marginChanged
     }
 
     private func applyPosition(_ position: String) {

@@ -54,7 +54,15 @@ TrayState trayState(Ref ref) {
   final monochromeTrayIcon = ref.watch(
     themeSettingProvider.select((state) => state.monochromeTrayIcon),
   );
-  final groups = ref.watch(currentGroupsStateProvider).value;
+  final currentGroups = ref.watch(currentGroupsStateProvider).value;
+  final groupNowMap = ref.watch(
+    groupsProvider.select(
+      (groups) => {for (final group in groups) group.name: group.now},
+    ),
+  );
+  final groups = currentGroups
+      .map((group) => group.copyWith(now: groupNowMap[group.name]))
+      .toList();
   final selectedMap = ref.watch(selectedMapProvider);
 
   return TrayState(
