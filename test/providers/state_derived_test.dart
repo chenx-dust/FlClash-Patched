@@ -79,6 +79,46 @@ void main() {
     expect(container.read(currentGroupsStateProvider).value, isEmpty);
   });
 
+  test('tray state restores and follows runtime group selections', () async {
+    const proxies = [
+      Proxy(name: 'A', type: 'Direct'),
+      Proxy(name: 'B', type: 'Direct'),
+    ];
+    container
+        .read(patchClashConfigProvider.notifier)
+        .update((state) => state.copyWith(mode: Mode.rule));
+    container
+        .read(groupsProvider.notifier)
+        .update(
+          (_) => const [
+            Group(
+              name: 'Proxy',
+              type: GroupType.Selector,
+              now: 'A',
+              all: proxies,
+            ),
+          ],
+        );
+
+    expect(container.read(trayStateProvider).groups.single.now, 'A');
+
+    container
+        .read(groupsProvider.notifier)
+        .update(
+          (_) => const [
+            Group(
+              name: 'Proxy',
+              type: GroupType.Selector,
+              now: 'B',
+              all: proxies,
+            ),
+          ],
+        );
+    await container.pump();
+
+    expect(container.read(trayStateProvider).groups.single.now, 'B');
+  });
+
   test('navigation providers select items for width and current page', () {
     NavigationItem networkingItem() => container
         .read(navigationItemsStateProvider)

@@ -17,6 +17,8 @@ File _resolveSource(String relativePath) {
 void main() {
   late String titleViewSource;
   late String statusItemSource;
+  late String menuSource;
+  late String pluginSource;
 
   setUpAll(() {
     titleViewSource = _resolveSource(
@@ -24,6 +26,12 @@ void main() {
     ).readAsStringSync();
     statusItemSource = _resolveSource(
       'macos/tray/Sources/tray/TrayStatusItem.swift',
+    ).readAsStringSync();
+    menuSource = _resolveSource(
+      'macos/tray/Sources/tray/TrayMenu.swift',
+    ).readAsStringSync();
+    pluginSource = _resolveSource(
+      'macos/tray/Sources/tray/TrayPlugin.swift',
     ).readAsStringSync();
   });
 
@@ -75,5 +83,35 @@ void main() {
     expect(statusItemSource, contains('applyPosition'));
     expect(statusItemSource, contains('insertArrangedSubview'));
     expect(statusItemSource, contains('position == "trailing"'));
+  });
+
+  test('macOS tray uses a tighter leading margin with a title', () {
+    expect(statusItemSource, contains('title.isEmpty ? 8 : 4'));
+    expect(statusItemSource, contains('leadingConstraint?.constant'));
+    expect(
+      statusItemSource,
+      contains('return titleView.setTitle(title) || marginChanged'),
+    );
+  });
+
+  test('macOS renders and updates keyed live menu items', () {
+    expect(menuSource, contains('final class TrayMenuItemView: NSView'));
+    expect(menuSource, contains('entry["usesCustomView"]'));
+    expect(menuSource, contains('func updateMenuItem'));
+    expect(pluginSource, contains('case "updateMenuItem"'));
+    expect(menuSource, contains('arguments["sublabel"] as? String'));
+    expect(menuSource, contains('arguments["checked"] as? Bool'));
+  });
+
+  test('macOS updates a compatible attached menu in place', () {
+    expect(pluginSource, contains('item.statusItem.menu === \$0'));
+    expect(pluginSource, contains('attachedMenu.update(items: items)'));
+    expect(menuSource, contains('nativeItem.trayType == type'));
+    expect(menuSource, contains('submenu.isCompatible(with: children)'));
+  });
+
+  test('macOS keeps delay tests inside the tracked menu', () {
+    expect(menuSource, contains('if !keepsMenuOpen'));
+    expect(menuSource, contains('menuItem.menu?.cancelTracking()'));
   });
 }

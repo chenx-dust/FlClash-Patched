@@ -24,6 +24,8 @@ public class TrayPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
             result(true)
         case "openMenu":
             result(openMenu())
+        case "updateMenuItem":
+            result(updateMenuItem(call.arguments as? [String: Any]))
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -49,17 +51,24 @@ public class TrayPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         item.setTitle(arguments["title"] as? String ?? "")
 
         if let items = arguments["menu"] as? [[String: Any]] {
-            let built = TrayMenu(items: items) { [weak self] id, keepsMenuOpen in
-                self?.sendSelection(id: id)
-                if keepsMenuOpen {
-                    DispatchQueue.main.async {
-                        self?.reopenMenu()
-                    }
-                }
+            let appearance = menuAppearance(arguments["brightness"] as? String)
+            let attachedMenu = menu.flatMap {
+                item.statusItem.menu === $0 ? $0 : nil
             }
-            built.appearance = menuAppearance(arguments["brightness"] as? String)
+            attachedMenu?.appearance = appearance
+            if let attachedMenu, attachedMenu.update(items: items) {
+                return true
+            }
+            let built = TrayMenu(items: items) { [weak self] id in
+                self?.sendSelection(id: id)
+            }
+            built.appearance = appearance
             built.delegate = self
             menu = built
+            if let attachedMenu {
+                attachedMenu.cancelTracking()
+                item.openMenu(built)
+            }
         }
 
         return true
@@ -85,6 +94,13 @@ public class TrayPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         }
         statusItem.openMenu(menu)
         return true
+    }
+
+    private func updateMenuItem(_ arguments: [String: Any]?) -> Bool {
+        guard let arguments else {
+            return false
+        }
+        return menu?.updateMenuItem(arguments) ?? false
     }
 
     private func makeStatusItem() -> TrayStatusItem? {
@@ -130,11 +146,6 @@ public class TrayPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         channel.invokeMethod("onMenuItemSelected", arguments: arguments)
     }
 
-    private func reopenMenu() {
-        guard let statusItem = statusItem, let menu = menu else { return }
-        statusItem.openMenu(menu)
-    }
-
     private func menuAppearance(_ brightness: String?) -> NSAppearance? {
         switch brightness {
         case "dark": return NSAppearance(named: .darkAqua)
@@ -143,7 +154,10 @@ public class TrayPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         }
     }
 
-    public func menuDidClose(_ menu: NSMenu) {
+    public func menuDidClose(_ closedMenu: NSMenu) {
+        guard statusItem?.statusItem.menu === closedMenu else {
+            return
+        }
         statusItem?.closeMenu()
     }
 }

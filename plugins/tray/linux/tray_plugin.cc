@@ -52,6 +52,20 @@ static bool bool_value(FlValue* map, const char* key, bool fallback) {
   return fl_value_get_bool(value);
 }
 
+static bool bool_value_if_present(FlValue* map,
+                                  const char* key,
+                                  bool* result) {
+  if (map == nullptr || fl_value_get_type(map) != FL_VALUE_TYPE_MAP) {
+    return false;
+  }
+  FlValue* value = fl_value_lookup_string(map, key);
+  if (value == nullptr || fl_value_get_type(value) != FL_VALUE_TYPE_BOOL) {
+    return false;
+  }
+  *result = fl_value_get_bool(value);
+  return true;
+}
+
 static gboolean set_pending_activation_token(gpointer data) {
   if (active_plugin != nullptr) {
     const gchar* activation_token = static_cast<const gchar*>(data);
@@ -173,9 +187,38 @@ static GtkWidget* build_menu(FlValue* items) {
       }
     }
 
+    const char* key = string_value(entry, "key");
+    if (key != nullptr) {
+      g_object_set_data_full(G_OBJECT(item), "tray-menu-key", g_strdup(key),
+                             g_free);
+    }
+
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
   }
   return menu;
+}
+
+static GtkWidget* find_menu_item(GtkWidget* menu, const char* key) {
+  GList* children = gtk_container_get_children(GTK_CONTAINER(menu));
+  for (GList* current = children; current != nullptr; current = current->next) {
+    GtkWidget* item = GTK_WIDGET(current->data);
+    const char* item_key = static_cast<const char*>(
+        g_object_get_data(G_OBJECT(item), "tray-menu-key"));
+    if (g_strcmp0(item_key, key) == 0) {
+      g_list_free(children);
+      return item;
+    }
+    GtkWidget* submenu = gtk_menu_item_get_submenu(GTK_MENU_ITEM(item));
+    if (submenu != nullptr) {
+      GtkWidget* match = find_menu_item(submenu, key);
+      if (match != nullptr) {
+        g_list_free(children);
+        return match;
+      }
+    }
+  }
+  g_list_free(children);
+  return nullptr;
 }
 
 static void attach_menu(TrayPlugin* self, FlValue* items) {
@@ -259,6 +302,33 @@ static FlMethodResponse* handle_set_title(TrayPlugin* self, FlValue* args) {
   return respond(true);
 }
 
+static FlMethodResponse* handle_update_menu_item(TrayPlugin* self,
+                                                 FlValue* args) {
+  const char* key = string_value(args, "key");
+  if (self->menu == nullptr || key == nullptr) {
+    return respond(false);
+  }
+  GtkWidget* item = find_menu_item(self->menu, key);
+  if (item == nullptr) {
+    return respond(false);
+  }
+
+  const char* label = string_value(args, "label");
+  if (label != nullptr) {
+    gtk_menu_item_set_label(GTK_MENU_ITEM(item), label);
+  }
+  bool enabled = false;
+  if (bool_value_if_present(args, "enabled", &enabled)) {
+    gtk_widget_set_sensitive(item, enabled);
+  }
+  bool checked = false;
+  if (GTK_IS_CHECK_MENU_ITEM(item) &&
+      bool_value_if_present(args, "checked", &checked)) {
+    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), checked);
+  }
+  return respond(true);
+}
+
 static FlMethodResponse* handle_hide(TrayPlugin* self) {
   release_tray(self);
   return respond(true);
@@ -275,6 +345,8 @@ static void tray_plugin_handle_method_call(TrayPlugin* self,
     response = handle_show(self, args);
   } else if (strcmp(method, "setTitle") == 0) {
     response = handle_set_title(self, args);
+  } else if (strcmp(method, "updateMenuItem") == 0) {
+    response = handle_update_menu_item(self, args);
   } else if (strcmp(method, "hide") == 0) {
     response = handle_hide(self);
   } else {
