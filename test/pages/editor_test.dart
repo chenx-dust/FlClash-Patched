@@ -3,6 +3,7 @@ import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:re_editor/re_editor.dart';
 
 import '../helpers/test_app.dart';
 
@@ -11,7 +12,7 @@ final _viewSizeOverride = viewSizeProvider.overrideWithBuild(
 );
 
 void main() {
-  testWidgets('allows predictive pop only without a save guard', (
+  testWidgets('allows predictive pop while guarded content is unchanged', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -41,7 +42,26 @@ void main() {
 
     expect(
       tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
+      isTrue,
+    );
+
+    final controller = tester
+        .widget<CodeEditor>(find.byType(CodeEditor))
+        .controller!;
+    controller.text = 'changed';
+    await tester.pump();
+
+    expect(
+      tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
       isFalse,
+    );
+
+    controller.text = '';
+    await tester.pump();
+
+    expect(
+      tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
+      isTrue,
     );
   });
 

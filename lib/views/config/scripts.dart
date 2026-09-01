@@ -334,6 +334,7 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
       (value) => value,
     );
     return CommonPopScope(
+      canPop: selectedScriptIds.isEmpty,
       onPop: (_) {
         if (selectedScriptIds.isNotEmpty) {
           ref.read(itemsProvider(_key).notifier).value = {};

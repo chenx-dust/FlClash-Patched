@@ -196,10 +196,19 @@ void main() {
     expect(find.byType(ScriptsView), findsOneWidget);
     expect(find.text('Script 0'), findsOneWidget);
     expect(find.text('Script 3'), findsOneWidget);
+    expect(
+      tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
+      isTrue,
+    );
     expect(tester.takeException(), null);
 
     await tester.tap(find.byType(CommonCheckBox).at(1));
     await tester.pump();
+
+    expect(
+      tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
+      isFalse,
+    );
 
     final syncButton = tester.widget<IconButton>(
       find.widgetWithIcon(IconButton, Icons.sync),
