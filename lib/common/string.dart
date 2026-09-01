@@ -50,10 +50,12 @@ extension StringExtension on String {
         uri.host.isNotEmpty;
   }
 
+  List<String> get splitByMultipleSeparatorsList {
+    return split(RegExp(r'[, ;]+')).where((part) => part.isNotEmpty).toList();
+  }
+
   dynamic get splitByMultipleSeparators {
-    final parts = split(
-      RegExp(r'[, ;]+'),
-    ).where((part) => part.isNotEmpty).toList();
+    final parts = splitByMultipleSeparatorsList;
 
     return parts.length > 1 ? parts : this;
   }
