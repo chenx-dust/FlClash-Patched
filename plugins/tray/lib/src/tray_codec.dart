@@ -57,10 +57,12 @@ abstract final class TrayCodec {
         TrayMenuSeparator() => <String, Object?>{'id': id, 'type': 'separator'},
         TrayMenuAction(
           :final label,
+          :final key,
           :final enabled,
           :final sublabel,
           :final sublabelStyle,
           :final keepsMenuOpen,
+          :final usesCustomView,
           :final keyEquivalent,
           :final keyEquivalentModifiers,
         ) =>
@@ -68,10 +70,12 @@ abstract final class TrayCodec {
             'id': id,
             'type': 'action',
             'label': label,
+            'key': ?key,
             'enabled': enabled,
             'sublabel': ?sublabel,
             'sublabelStyle': sublabelStyle.name,
             'keepsMenuOpen': keepsMenuOpen,
+            if (usesCustomView) 'usesCustomView': true,
             'keyEquivalent': ?keyEquivalent,
             'keyEquivalentModifiers': keyEquivalentModifiers
                 .map((modifier) => modifier.name)
@@ -79,11 +83,13 @@ abstract final class TrayCodec {
           },
         TrayMenuCheckbox(
           :final label,
+          :final key,
           :final enabled,
           :final checked,
           :final sublabel,
           :final sublabelStyle,
           :final keepsMenuOpen,
+          :final usesCustomView,
           :final keyEquivalent,
           :final keyEquivalentModifiers,
         ) =>
@@ -91,11 +97,13 @@ abstract final class TrayCodec {
             'id': id,
             'type': 'checkbox',
             'label': label,
+            'key': ?key,
             'enabled': enabled,
             'checked': checked,
             'sublabel': ?sublabel,
             'sublabelStyle': sublabelStyle.name,
             'keepsMenuOpen': keepsMenuOpen,
+            if (usesCustomView) 'usesCustomView': true,
             'keyEquivalent': ?keyEquivalent,
             'keyEquivalentModifiers': keyEquivalentModifiers
                 .map((modifier) => modifier.name)
@@ -103,18 +111,22 @@ abstract final class TrayCodec {
           },
         TrayMenuSubmenu(
           :final label,
+          :final key,
           :final enabled,
           :final items,
           :final sublabel,
           :final sublabelStyle,
+          :final usesCustomView,
         ) =>
           <String, Object?>{
             'id': id,
             'type': 'submenu',
             'label': label,
+            'key': ?key,
             'enabled': enabled,
             'sublabel': ?sublabel,
             'sublabelStyle': sublabelStyle.name,
+            if (usesCustomView) 'usesCustomView': true,
             'items': _encodeItems(items, sink, allocator),
           },
       };

@@ -8,6 +8,8 @@ set(PLUGIN_NAME "tray_plugin")
 list(APPEND PLUGIN_SOURCES
   "tray_plugin.cpp"
   "tray_plugin.h"
+  "tray_window.cpp"
+  "tray_window.h"
 )
 
 add_library(${PLUGIN_NAME} SHARED
