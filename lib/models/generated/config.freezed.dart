@@ -1878,14 +1878,14 @@ $ProxiesStylePropsCopyWith<ProxiesStyleProps> get copyWith => _$ProxiesStyleProp
 @override
 bool operator ==(Object other) {
   final _this = this as ProxiesStyleProps;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProxiesStyleProps&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.sortType, _this.sortType) || other.sortType == _this.sortType)&&(identical(other.layout, _this.layout) || other.layout == _this.layout)&&const DeepCollectionEquality().equals(other.listHeaderStyle, _this.listHeaderStyle)&&(identical(other.iconStyle, _this.iconStyle) || other.iconStyle == _this.iconStyle)&&const DeepCollectionEquality().equals(other.iconSource, _this.iconSource)&&(identical(other.cardType, _this.cardType) || other.cardType == _this.cardType)&&(identical(other.hideUnavailable, _this.hideUnavailable) || other.hideUnavailable == _this.hideUnavailable)&&(identical(other.showHiddenGroups, _this.showHiddenGroups) || other.showHiddenGroups == _this.showHiddenGroups));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProxiesStyleProps&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.sortType, _this.sortType) || other.sortType == _this.sortType)&&(identical(other.layout, _this.layout) || other.layout == _this.layout)&&(identical(other.listHeaderStyle, _this.listHeaderStyle) || other.listHeaderStyle == _this.listHeaderStyle)&&(identical(other.iconStyle, _this.iconStyle) || other.iconStyle == _this.iconStyle)&&(identical(other.iconSource, _this.iconSource) || other.iconSource == _this.iconSource)&&(identical(other.cardType, _this.cardType) || other.cardType == _this.cardType)&&(identical(other.hideUnavailable, _this.hideUnavailable) || other.hideUnavailable == _this.hideUnavailable)&&(identical(other.showHiddenGroups, _this.showHiddenGroups) || other.showHiddenGroups == _this.showHiddenGroups));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as ProxiesStyleProps;
-  return Object.hash(runtimeType,_this.type,_this.sortType,_this.layout,const DeepCollectionEquality().hash(_this.listHeaderStyle),_this.iconStyle,const DeepCollectionEquality().hash(_this.iconSource),_this.cardType,_this.hideUnavailable,_this.showHiddenGroups);
+  return Object.hash(runtimeType,_this.type,_this.sortType,_this.layout,_this.listHeaderStyle,_this.iconStyle,_this.iconSource,_this.cardType,_this.hideUnavailable,_this.showHiddenGroups);
 }
 
 @override
@@ -1919,14 +1919,14 @@ class _$ProxiesStylePropsCopyWithImpl<$Res>
 
 /// Create a copy of ProxiesStyleProps
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? type = null,Object? sortType = null,Object? layout = null,Object? listHeaderStyle = freezed,Object? iconStyle = null,Object? iconSource = freezed,Object? cardType = null,Object? hideUnavailable = null,Object? showHiddenGroups = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? type = null,Object? sortType = null,Object? layout = null,Object? listHeaderStyle = null,Object? iconStyle = null,Object? iconSource = null,Object? cardType = null,Object? hideUnavailable = null,Object? showHiddenGroups = null,}) {
   return _then(ProxiesStyleProps(
 type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as ProxiesType,sortType: null == sortType ? _self.sortType : sortType // ignore: cast_nullable_to_non_nullable
 as ProxiesSortType,layout: null == layout ? _self.layout : layout // ignore: cast_nullable_to_non_nullable
-as ProxiesLayout,listHeaderStyle: freezed == listHeaderStyle ? _self.listHeaderStyle : listHeaderStyle // ignore: cast_nullable_to_non_nullable
+as ProxiesLayout,listHeaderStyle: null == listHeaderStyle ? _self.listHeaderStyle : listHeaderStyle // ignore: cast_nullable_to_non_nullable
 as ProxiesListHeaderStyle,iconStyle: null == iconStyle ? _self.iconStyle : iconStyle // ignore: cast_nullable_to_non_nullable
-as ProxiesIconStyle,iconSource: freezed == iconSource ? _self.iconSource : iconSource // ignore: cast_nullable_to_non_nullable
+as ProxiesIconStyle,iconSource: null == iconSource ? _self.iconSource : iconSource // ignore: cast_nullable_to_non_nullable
 as ProxiesIconSource,cardType: null == cardType ? _self.cardType : cardType // ignore: cast_nullable_to_non_nullable
 as ProxyCardType,hideUnavailable: null == hideUnavailable ? _self.hideUnavailable : hideUnavailable // ignore: cast_nullable_to_non_nullable
 as bool,showHiddenGroups: null == showHiddenGroups ? _self.showHiddenGroups : showHiddenGroups // ignore: cast_nullable_to_non_nullable
@@ -2097,13 +2097,13 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProxiesStyleProps&&(identical(other.type, type) || other.type == type)&&(identical(other.sortType, sortType) || other.sortType == sortType)&&(identical(other.layout, layout) || other.layout == layout)&&const DeepCollectionEquality().equals(other.listHeaderStyle, listHeaderStyle)&&(identical(other.iconStyle, iconStyle) || other.iconStyle == iconStyle)&&const DeepCollectionEquality().equals(other.iconSource, iconSource)&&(identical(other.cardType, cardType) || other.cardType == cardType)&&(identical(other.hideUnavailable, hideUnavailable) || other.hideUnavailable == hideUnavailable)&&(identical(other.showHiddenGroups, showHiddenGroups) || other.showHiddenGroups == showHiddenGroups));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProxiesStyleProps&&(identical(other.type, type) || other.type == type)&&(identical(other.sortType, sortType) || other.sortType == sortType)&&(identical(other.layout, layout) || other.layout == layout)&&(identical(other.listHeaderStyle, listHeaderStyle) || other.listHeaderStyle == listHeaderStyle)&&(identical(other.iconStyle, iconStyle) || other.iconStyle == iconStyle)&&(identical(other.iconSource, iconSource) || other.iconSource == iconSource)&&(identical(other.cardType, cardType) || other.cardType == cardType)&&(identical(other.hideUnavailable, hideUnavailable) || other.hideUnavailable == hideUnavailable)&&(identical(other.showHiddenGroups, showHiddenGroups) || other.showHiddenGroups == showHiddenGroups));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,type,sortType,layout,const DeepCollectionEquality().hash(listHeaderStyle),iconStyle,const DeepCollectionEquality().hash(iconSource),cardType,hideUnavailable,showHiddenGroups);
+    return Object.hash(runtimeType,type,sortType,layout,listHeaderStyle,iconStyle,iconSource,cardType,hideUnavailable,showHiddenGroups);
 }
 
 @override
@@ -2136,14 +2136,14 @@ class __$ProxiesStylePropsCopyWithImpl<$Res>
 
 /// Create a copy of ProxiesStyleProps
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? type = null,Object? sortType = null,Object? layout = null,Object? listHeaderStyle = freezed,Object? iconStyle = null,Object? iconSource = freezed,Object? cardType = null,Object? hideUnavailable = null,Object? showHiddenGroups = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? type = null,Object? sortType = null,Object? layout = null,Object? listHeaderStyle = null,Object? iconStyle = null,Object? iconSource = null,Object? cardType = null,Object? hideUnavailable = null,Object? showHiddenGroups = null,}) {
   return _then(_ProxiesStyleProps(
 type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as ProxiesType,sortType: null == sortType ? _self.sortType : sortType // ignore: cast_nullable_to_non_nullable
 as ProxiesSortType,layout: null == layout ? _self.layout : layout // ignore: cast_nullable_to_non_nullable
-as ProxiesLayout,listHeaderStyle: freezed == listHeaderStyle ? _self.listHeaderStyle : listHeaderStyle // ignore: cast_nullable_to_non_nullable
+as ProxiesLayout,listHeaderStyle: null == listHeaderStyle ? _self.listHeaderStyle : listHeaderStyle // ignore: cast_nullable_to_non_nullable
 as ProxiesListHeaderStyle,iconStyle: null == iconStyle ? _self.iconStyle : iconStyle // ignore: cast_nullable_to_non_nullable
-as ProxiesIconStyle,iconSource: freezed == iconSource ? _self.iconSource : iconSource // ignore: cast_nullable_to_non_nullable
+as ProxiesIconStyle,iconSource: null == iconSource ? _self.iconSource : iconSource // ignore: cast_nullable_to_non_nullable
 as ProxiesIconSource,cardType: null == cardType ? _self.cardType : cardType // ignore: cast_nullable_to_non_nullable
 as ProxyCardType,hideUnavailable: null == hideUnavailable ? _self.hideUnavailable : hideUnavailable // ignore: cast_nullable_to_non_nullable
 as bool,showHiddenGroups: null == showHiddenGroups ? _self.showHiddenGroups : showHiddenGroups // ignore: cast_nullable_to_non_nullable

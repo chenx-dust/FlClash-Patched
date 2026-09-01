@@ -1312,7 +1312,7 @@ final class CurrentGroupsStateProvider
 }
 
 String _$currentGroupsStateHash() =>
-    r'dbf8f02606a31486c99d7b89d19914cd5a1fc496';
+    r'7c895dbf7637e670214a5120ac4eb3faf3543c84';
 
 @ProviderFor(proxyState)
 final proxyStateProvider = ProxyStateProvider._();
@@ -1353,7 +1353,7 @@ final class ProxyStateProvider
   }
 }
 
-String _$proxyStateHash() => r'd2079a9a47a469ed73351b796bba8e79e5694405';
+String _$proxyStateHash() => r'9583a658039310a3190d820d6e2069614e09a74b';
 
 @ProviderFor(proxiesActionsState)
 final proxiesActionsStateProvider = ProxiesActionsStateProvider._();
@@ -1460,7 +1460,7 @@ final class FilterGroupsStateProvider
   }
 }
 
-String _$filterGroupsStateHash() => r'7de7a4603ca5ed7c39a00351af43144eb6c21404';
+String _$filterGroupsStateHash() => r'4df3532467e0886d9de7044e78222295262eebf8';
 
 final class FilterGroupsStateFamily extends $Family
     with $FunctionalFamilyOverride<GroupsState, String> {

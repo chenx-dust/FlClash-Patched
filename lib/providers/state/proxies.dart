@@ -5,6 +5,9 @@ GroupsState currentGroupsState(Ref ref) {
   final mode = ref.watch(
     patchClashConfigProvider.select((state) => state.mode),
   );
+  final showHiddenGroups = ref.watch(
+    proxiesStyleSettingProvider.select((state) => state.showHiddenGroups),
+  );
   final groups = ref.watch(
     groupsProvider.select(
       (state) => state.map((item) {
@@ -21,7 +24,7 @@ GroupsState currentGroupsState(Ref ref) {
       Mode.global => groups.toList(),
       Mode.rule =>
         groups
-            .where((item) => item.hidden == false)
+            .where((item) => showHiddenGroups || item.hidden != true)
             .where((element) => element.name != GroupName.GLOBAL.name)
             .toList(),
     },
@@ -49,7 +52,7 @@ ProxyState proxyState(Ref ref) {
   return ProxyState(
     isStart: suspend ? false : isStart,
     systemProxy: systemProxySelector.systemProxy,
-    bassDomain: systemProxySelector.bypassDomain,
+    bypassDomain: systemProxySelector.bypassDomain,
     port: mixedPort,
   );
 }
@@ -78,16 +81,36 @@ ProxiesActionsState proxiesActionsState(Ref ref) {
 @riverpod
 GroupsState filterGroupsState(Ref ref, String query) {
   final currentGroups = ref.watch(currentGroupsStateProvider);
-  if (query.isEmpty) {
+  final hideUnavailable = ref.watch(
+    proxiesStyleSettingProvider.select((state) => state.hideUnavailable),
+  );
+  if (query.isEmpty && !hideUnavailable) {
     return currentGroups;
   }
-  final lowQuery = query.toLowerCase();
+  final useRegex = ref.watch(searchUseRegexProvider(QueryTag.proxies));
+  final matcher = query.isEmpty
+      ? null
+      : SearchMatcher(query, useRegex: useRegex);
+  final delayMap = hideUnavailable ? ref.watch(delayDataSourceProvider) : null;
+  final defaultTestUrl = hideUnavailable
+      ? ref.watch(appSettingProvider.select((state) => state.testUrl))
+      : null;
   final groups = currentGroups.value
       .map((group) {
         return group.copyWith(
-          all: group.all
-              .where((proxy) => proxy.name.toLowerCase().contains(lowQuery))
-              .toList(),
+          all: group.all.where((proxy) {
+            if (matcher != null && !matcher.hasMatch(proxy.name)) {
+              return false;
+            }
+            if (delayMap != null) {
+              final testUrl = group.testUrl.takeFirstValid([defaultTestUrl!]);
+              final delay = delayMap[testUrl]?[proxy.name];
+              if (delay != null && delay < 0) {
+                return false;
+              }
+            }
+            return true;
+          }).toList(),
         );
       })
       .where((group) => group.all.isNotEmpty)
