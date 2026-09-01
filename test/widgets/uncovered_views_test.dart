@@ -9,6 +9,7 @@ import 'package:fl_clash/views/config/scripts.dart';
 import 'package:fl_clash/views/profiles/overwrite/standard.dart';
 import 'package:fl_clash/views/proxies/setting.dart';
 import 'package:fl_clash/widgets/inherited.dart';
+import 'package:fl_clash/widgets/input.dart';
 import 'package:fl_clash/widgets/pop_scope.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -197,8 +198,29 @@ void main() {
     expect(find.text('Script 3'), findsOneWidget);
     expect(tester.takeException(), null);
 
-    await tester.tap(find.text('Script 1'));
-    await tester.pumpAndSettle();
+    await tester.tap(find.byType(CommonCheckBox).at(1));
+    await tester.pump();
+
+    final syncButton = tester.widget<IconButton>(
+      find.widgetWithIcon(IconButton, Icons.sync),
+    );
+    expect(syncButton.onPressed, isNotNull);
+
+    final updatingOperation = container
+        .read(updatingKeysProvider.notifier)
+        .start(scripts[1].updatingKey);
+    await tester.pump();
+
+    final deleteButton = tester.widget<IconButton>(
+      find.widgetWithIcon(IconButton, Icons.delete),
+    );
+    expect(deleteButton.onPressed, isNull);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+    container
+        .read(updatingKeysProvider.notifier)
+        .stop(scripts[1].updatingKey, updatingOperation);
+    await tester.pump();
     expect(tester.takeException(), null);
   });
 

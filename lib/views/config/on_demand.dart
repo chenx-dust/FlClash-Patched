@@ -377,11 +377,30 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
 
   @override
   Widget build(BuildContext context) {
+    final appLocalizations = context.appLocalizations;
     final excludeSSIDs = ref.watch(excludeSSIDsProvider);
     final selectedItems = ref.watch(itemsProvider(key));
     return CommonScaffold(
       body: CustomScrollView(
         slivers: [
+          if (system.isIOS)
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverToBoxAdapter(
+                child: generateSectionV3(
+                  items: [
+                    ListItem.toggle(
+                      title: Text(appLocalizations.alwaysOn),
+                      subtitle: Text(appLocalizations.alwaysOnDesc),
+                      value: ref.watch(alwaysOnProvider),
+                      onChanged: (value) {
+                        ref.read(alwaysOnProvider.notifier).value = value;
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverToBoxAdapter(child: _buildPrerequisites()),

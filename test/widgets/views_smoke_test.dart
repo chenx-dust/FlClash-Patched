@@ -779,9 +779,9 @@ void main() {
 
     await tester.tap(find.text('DNS mode'));
     await tester.pumpAndSettle();
-    expect(find.text('fakeIp'), findsWidgets);
+    expect(find.text('fake-ip'), findsWidgets);
 
-    await tester.tap(find.text('fakeIp').last);
+    await tester.tap(find.text('fake-ip').last);
     await tester.pumpAndSettle();
 
     expect(
@@ -813,7 +813,7 @@ void main() {
     await tester.pump();
     await tester.tap(find.text('Status'));
     await tester.pump();
-    await tester.tap(find.text('PreferH3'));
+    await tester.tap(find.text('Prefer HTTP/3'));
     await tester.pump();
     await tester.tap(find.text('IPv6'));
     await tester.pump();

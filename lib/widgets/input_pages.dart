@@ -380,6 +380,8 @@ class MapInputPage extends ConsumerStatefulWidget {
   final String? valueLabel;
   final int? keyMaxLength;
   final int? valueMaxLength;
+  final List<String> Function(String value)? valueParser;
+  final String Function(List<String> values)? valueSerializer;
 
   const MapInputPage({
     super.key,
@@ -392,7 +394,9 @@ class MapInputPage extends ConsumerStatefulWidget {
     this.subtitleBuilder,
     this.keyMaxLength,
     this.valueMaxLength,
-  });
+    this.valueParser,
+    this.valueSerializer,
+  }) : assert((valueParser == null) == (valueSerializer == null));
 
   @override
   ConsumerState<MapInputPage> createState() => _MapInputPageState();
@@ -459,6 +463,15 @@ class _MapInputPageState extends ConsumerState<MapInputPage>
       return null;
     }
 
+    if (widget.valueParser != null) {
+      final value = await _showListValueDialog(item, uniqueValidator);
+      if (value == null) {
+        return;
+      }
+      _updateItem(item, value);
+      return;
+    }
+
     final keyField = Field(
       label: widget.keyLabel ?? appLocalizations.key,
       value: item == null ? '' : item.key,
@@ -479,8 +492,40 @@ class _MapInputPageState extends ConsumerState<MapInputPage>
         title: item != null ? appLocalizations.edit : appLocalizations.add,
       ),
     );
-    if (!mounted) return;
-    if (value == null) return;
+    if (!mounted || value == null) return;
+    _updateItem(item, value);
+  }
+
+  Future<MapEntry<String, String>?> _showListValueDialog(
+    MapEntry<String, String>? item,
+    FormFieldValidator<String> uniqueValidator,
+  ) async {
+    final appLocalizations = context.appLocalizations;
+    final value = await dialogs
+        .showCommonDialog<MapEntry<String, List<String>>>(
+          child: MapEntryListDialog(
+            title: item != null ? appLocalizations.edit : appLocalizations.add,
+            keyField: Field(
+              label: widget.keyLabel ?? appLocalizations.key,
+              value: item?.key ?? '',
+              validator: uniqueValidator,
+            ),
+            values: item == null ? const [] : widget.valueParser!(item.value),
+            valueLabel: widget.valueLabel ?? appLocalizations.value,
+            keyMaxLength: widget.keyMaxLength,
+            valueMaxLength: widget.valueMaxLength,
+          ),
+        );
+    if (value == null) {
+      return null;
+    }
+    return MapEntry(value.key, widget.valueSerializer!(value.value));
+  }
+
+  void _updateItem(
+    MapEntry<String, String>? item,
+    MapEntry<String, String> value,
+  ) {
     final index = _items.indexWhere((entry) {
       return entry.key == item?.key;
     });

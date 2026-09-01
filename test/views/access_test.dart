@@ -342,7 +342,7 @@ void main() {
       await teardownView(tester);
     });
 
-    testWidgets('drops hidden packages and sorts what it persists', (
+    testWidgets('preserves installed packages hidden by display filters', (
       tester,
     ) async {
       seedAccessControl(
@@ -367,9 +367,26 @@ void main() {
           .read(vpnSettingProvider)
           .accessControlProps
           .rejectList;
-      expect(saved, ['com.example.browser', 'com.example.chat']);
+      expect(saved, [
+        'com.android.settings',
+        'com.example.browser',
+        'com.example.chat',
+      ]);
 
       await teardownView(tester);
     });
+  });
+
+  testWidgets('enabled banner uses the surface background', (tester) async {
+    seedAccessControl(const AccessControlProps(enable: true));
+    await pumpAccessView(tester);
+
+    final banner = tester.widget<MaterialBanner>(find.byType(MaterialBanner));
+    expect(
+      banner.backgroundColor,
+      Theme.of(tester.element(find.byType(MaterialBanner))).colorScheme.surface,
+    );
+
+    await teardownView(tester);
   });
 }

@@ -577,6 +577,7 @@
   "geoResources": "Geo resources",
   "geoSkipped": "{name} is already up to date",
   "geoUpdated": "{name} updated",
+  "geoUpdating": "Updating {name}...",
   "secondsCount": "{count, plural, =1{1 second} other{{count} seconds}}",
   "entriesCount": "{count, plural, =1{1 entry} other{{count} entries}}",
   "proxiesCount": "{count, plural, =1{1 proxy} other{{count} proxies}}",

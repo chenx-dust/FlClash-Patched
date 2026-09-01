@@ -577,6 +577,7 @@
   "geoResources": "Geoリソース",
   "geoSkipped": "{name} はすでに最新です",
   "geoUpdated": "{name} を更新しました",
+  "geoUpdating": "{name}を更新中...",
   "secondsCount": "{count} 秒",
   "entriesCount": "{count} 件",
   "proxiesCount": "プロキシ {count} 件",

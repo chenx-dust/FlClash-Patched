@@ -4742,6 +4742,16 @@ class AppLocalizations {
     );
   }
 
+  /// `Updating {name}...`
+  String geoUpdating(Object name) {
+    return Intl.message(
+      'Updating $name...',
+      name: 'geoUpdating',
+      desc: '',
+      args: [name],
+    );
+  }
+
   /// `{count, plural, =1{1 second} other{{count} seconds}}`
   String secondsCount(num count) {
     return Intl.plural(

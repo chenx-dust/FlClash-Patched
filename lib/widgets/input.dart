@@ -347,6 +347,193 @@ class _AddDialogState extends State<AddDialog> {
   }
 }
 
+class MapEntryListDialog extends StatefulWidget {
+  final String title;
+  final Field keyField;
+  final List<String> values;
+  final String valueLabel;
+  final int? keyMaxLength;
+  final int? valueMaxLength;
+
+  const MapEntryListDialog({
+    super.key,
+    required this.title,
+    required this.keyField,
+    required this.values,
+    required this.valueLabel,
+    this.keyMaxLength,
+    this.valueMaxLength,
+  });
+
+  @override
+  State<MapEntryListDialog> createState() => _MapEntryListDialogState();
+}
+
+class _MapEntryListDialogState extends State<MapEntryListDialog> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _keyController;
+  final _valueControllers = <TextEditingController>[];
+  final _valueFocusNodes = <FocusNode>[];
+
+  @override
+  void initState() {
+    super.initState();
+    _keyController = TextEditingController(text: widget.keyField.value);
+    final values = widget.values.isEmpty ? const [''] : widget.values;
+    for (final value in values) {
+      _valueControllers.add(TextEditingController(text: value));
+      _valueFocusNodes.add(FocusNode());
+    }
+  }
+
+  void _addValue() {
+    setState(() {
+      _valueControllers.add(TextEditingController());
+      _valueFocusNodes.add(FocusNode());
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _valueFocusNodes.last.requestFocus();
+      }
+    });
+  }
+
+  void _removeValue(int index) {
+    if (_valueControllers.length == 1) {
+      _valueControllers.single.clear();
+      _valueFocusNodes.single.requestFocus();
+      return;
+    }
+    setState(() {
+      _valueControllers.removeAt(index).dispose();
+      _valueFocusNodes.removeAt(index).dispose();
+    });
+  }
+
+  void _handleValueSubmitted(int index) {
+    if (index == _valueControllers.length - 1) {
+      _addValue();
+      return;
+    }
+    _valueFocusNodes[index + 1].requestFocus();
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    Navigator.of(context).pop<MapEntry<String, List<String>>>(
+      MapEntry(
+        _keyController.text,
+        _valueControllers.map((controller) => controller.text).toList(),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _keyController.dispose();
+    for (final controller in _valueControllers) {
+      controller.dispose();
+    }
+    for (final focusNode in _valueFocusNodes) {
+      focusNode.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final appLocalizations = context.appLocalizations;
+    return CommonDialog(
+      title: widget.title,
+      maxWidth: 360,
+      actions: [
+        SizedBox(
+          width: double.infinity,
+          child: Row(
+            children: [
+              TextButton.icon(
+                onPressed: _addValue,
+                icon: const Icon(Icons.add),
+                label: Text(appLocalizations.add),
+              ),
+              const Spacer(),
+              TextButton(
+                onPressed: Navigator.of(context).pop,
+                child: Text(appLocalizations.cancel),
+              ),
+              TextButton(
+                onPressed: _submit,
+                child: Text(appLocalizations.confirm),
+              ),
+            ],
+          ),
+        ),
+      ],
+      child: Form(
+        key: _formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextFormField(
+              autofocus: true,
+              controller: _keyController,
+              inputFormatters: widget.keyMaxLength == null
+                  ? null
+                  : TextInputLimits.limit(widget.keyMaxLength!),
+              textInputAction: TextInputAction.next,
+              decoration: InputDecoration(labelText: widget.keyField.label),
+              validator: (value) {
+                final error = widget.keyField.validator?.call(value);
+                if (error != null) {
+                  return error;
+                }
+                if (value == null || value.isEmpty) {
+                  return appLocalizations.emptyTip(appLocalizations.key);
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            for (var index = 0; index < _valueControllers.length; index++) ...[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _valueControllers[index],
+                      focusNode: _valueFocusNodes[index],
+                      inputFormatters: widget.valueMaxLength == null
+                          ? null
+                          : TextInputLimits.limit(widget.valueMaxLength!),
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(labelText: widget.valueLabel),
+                      validator: (value) => value == null || value.isEmpty
+                          ? appLocalizations.emptyTip(widget.valueLabel)
+                          : null,
+                      onFieldSubmitted: (_) => _handleValueSubmitted(index),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: appLocalizations.delete,
+                    onPressed: () => _removeValue(index),
+                    icon: const Icon(Icons.remove_circle_outline),
+                  ),
+                ],
+              ),
+              if (index != _valueControllers.length - 1)
+                const SizedBox(height: 8),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class NoInputBorder extends InputBorder {
   const NoInputBorder() : super(borderSide: BorderSide.none);
 

@@ -1,6 +1,7 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
+import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
@@ -29,6 +30,44 @@ ConfigWriter<T> _tunWriter<T>(_TunUpdate<T> update) {
   return (ref, value) => ref
       .read(patchClashConfigProvider.notifier)
       .update((state) => update(state, value));
+}
+
+class NetworkResetButton extends ConsumerWidget {
+  const NetworkResetButton({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.appLocalizations;
+    return IconButton(
+      tooltip: l.reset,
+      onPressed: () async {
+        final confirmed = await dialogs.showMessage(
+          title: l.reset,
+          message: TextSpan(text: l.resetTip),
+        );
+        if (confirmed != true || !context.mounted) return;
+        ref
+            .read(networkSettingProvider.notifier)
+            .update(
+              (state) => defaultNetworkProps.copyWith(
+                appendSystemDns: state.appendSystemDns,
+              ),
+            );
+        ref
+            .read(vpnSettingProvider.notifier)
+            .update(
+              (state) => defaultVpnProps.copyWith(
+                networkSpeedNotification: state.networkSpeedNotification,
+                accessControlProps: state.accessControlProps,
+              ),
+            );
+        ref
+            .read(patchClashConfigProvider.notifier)
+            .update((state) => state.copyWith(tun: defaultTun));
+      },
+      icon: const Icon(Icons.replay),
+    );
+  }
 }
 
 ConfigToggleItem _vpnToggle({
@@ -164,11 +203,88 @@ class DNSHijackingItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     return _vpnToggle(
-      title: (l) => l.dnsHijacking,
+      title: (l) => l.captureDns,
+      subtitle: (l) => l.captureDnsDesc,
       select: (state) => state.dnsHijacking,
       update: (state, value) => state.copyWith(dnsHijacking: value),
     );
   }
+}
+
+class SuspendSupportItem extends ConsumerWidget {
+  const SuspendSupportItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) => _vpnToggle(
+    title: (l) => l.suspendSupport,
+    subtitle: (l) => l.suspendSupportDesc,
+    select: (state) => state.suspendSupport,
+    update: (state, value) => state.copyWith(suspendSupport: value),
+  );
+}
+
+class StrictRouteItem extends ConsumerWidget {
+  const StrictRouteItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) => ConfigToggleItem(
+    title: (l) => l.strictRoute,
+    subtitle: (l) => l.strictRouteDesc,
+    selector: patchClashConfigProvider.select((state) => state.tun.strictRoute),
+    onChanged: _tunWriter(
+      (state, value) => state.copyWith.tun(strictRoute: value),
+    ),
+  );
+}
+
+class IcmpForwardingItem extends ConsumerWidget {
+  const IcmpForwardingItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) => ConfigToggleItem(
+    title: (l) => l.icmpForwarding,
+    subtitle: (l) => l.icmpForwardingDesc,
+    selector: patchClashConfigProvider.select(
+      (state) => !state.tun.disableIcmpForwarding,
+    ),
+    onChanged: _tunWriter(
+      (state, value) => state.copyWith.tun(disableIcmpForwarding: !value),
+    ),
+  );
+}
+
+class TunDnsHijackItem extends ConsumerWidget {
+  const TunDnsHijackItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) => ConfigToggleItem(
+    title: (l) => l.dnsHijack,
+    subtitle: (l) => l.dnsHijackDesc,
+    selector: patchClashConfigProvider.select(
+      (state) => state.tun.dnsHijack.isNotEmpty,
+    ),
+    onChanged: _tunWriter(
+      (state, value) => state.copyWith.tun(
+        dnsHijack: value ? ['any:53', 'tcp://any:53'] : [],
+      ),
+    ),
+  );
+}
+
+class EndpointIndependentNatItem extends ConsumerWidget {
+  const EndpointIndependentNatItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) => ConfigToggleItem(
+    title: (l) => l.endpointIndependentNat,
+    subtitle: (l) => l.endpointIndependentNatDesc,
+    selector: patchClashConfigProvider.select(
+      (state) => state.tun.endpointIndependentNat,
+    ),
+    onChanged: _tunWriter(
+      (state, value) => state.copyWith.tun(endpointIndependentNat: value),
+    ),
+  );
 }
 
 class TunStackItem extends ConsumerWidget {
@@ -184,6 +300,124 @@ class TunStackItem extends ConsumerWidget {
       onChanged: _tunWriter((state, value) => state.copyWith.tun(stack: value)),
     );
   }
+}
+
+class TunMtuItem extends ConsumerWidget {
+  const TunMtuItem({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mtu = ref.watch(
+      patchClashConfigProvider.select((state) => state.tun.mtu),
+    );
+    final l = context.appLocalizations;
+    return ListItem.input(
+      title: Text(l.mtu),
+      subtitle: Text('$mtu'),
+      dialogTitle: l.mtu,
+      value: '$mtu',
+      resetValue: '$defaultTunMtu',
+      maxLength: TextInputLimits.number,
+      keyboardType: TextInputType.number,
+      validator: (value) {
+        final parsed = int.tryParse(value ?? '');
+        return parsed == null || parsed <= 0 || parsed > 65535
+            ? l.mtuRangeTip
+            : null;
+      },
+      onChanged: (value) {
+        final parsed = int.tryParse(value ?? '');
+        if (parsed == null) return;
+        ref
+            .read(patchClashConfigProvider.notifier)
+            .update((state) => state.copyWith.tun(mtu: parsed));
+      },
+    );
+  }
+}
+
+ConfigToggleItem _iosVpnToggle({
+  required ConfigLabel title,
+  required ConfigLabel subtitle,
+  required bool Function(VpnProps state) select,
+  required _VpnUpdate<bool> update,
+}) => _vpnToggle(
+  title: title,
+  subtitle: subtitle,
+  select: select,
+  update: update,
+);
+
+class IncludeAllNetworksItem extends ConsumerWidget {
+  const IncludeAllNetworksItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) => _iosVpnToggle(
+    title: (l) => l.includeAllNetworks,
+    subtitle: (l) => l.includeAllNetworksDesc,
+    select: (state) => state.includeAllNetworks,
+    update: (state, value) => state.copyWith(includeAllNetworks: value),
+  );
+}
+
+class ExcludeLocalNetworksItem extends ConsumerWidget {
+  const ExcludeLocalNetworksItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) => _iosVpnToggle(
+    title: (l) => l.excludeLocalNetworks,
+    subtitle: (l) => l.excludeLocalNetworksDesc,
+    select: (state) => state.excludeLocalNetworks,
+    update: (state, value) => state.copyWith(excludeLocalNetworks: value),
+  );
+}
+
+class ExcludeAPNsItem extends ConsumerWidget {
+  const ExcludeAPNsItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) => _iosVpnToggle(
+    title: (l) => l.excludeAPNs,
+    subtitle: (l) => l.excludeAPNsDesc,
+    select: (state) => state.excludeAPNs,
+    update: (state, value) => state.copyWith(excludeAPNs: value),
+  );
+}
+
+class ExcludeCellularServicesItem extends ConsumerWidget {
+  const ExcludeCellularServicesItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) => _iosVpnToggle(
+    title: (l) => l.excludeCellularServices,
+    subtitle: (l) => l.excludeCellularServicesDesc,
+    select: (state) => state.excludeCellularServices,
+    update: (state, value) => state.copyWith(excludeCellularServices: value),
+  );
+}
+
+class EnforceRoutesItem extends ConsumerWidget {
+  const EnforceRoutesItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) => _iosVpnToggle(
+    title: (l) => l.enforceRoutes,
+    subtitle: (l) => l.enforceRoutesDesc,
+    select: (state) => state.enforceRoutes,
+    update: (state, value) => state.copyWith(enforceRoutes: value),
+  );
+}
+
+class ExcludeDeviceCommunicationItem extends ConsumerWidget {
+  const ExcludeDeviceCommunicationItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) => _iosVpnToggle(
+    title: (l) => l.excludeDeviceCommunication,
+    subtitle: (l) => l.excludeDeviceCommunicationDesc,
+    select: (state) => state.excludeDeviceCommunication,
+    update: (state, value) => state.copyWith(excludeDeviceCommunication: value),
+  );
 }
 
 class InterfaceNameModeItem extends ConsumerWidget {
@@ -304,7 +538,12 @@ List<Widget> networkOptionsItems({
   return [
     if (isDesktop) const TUNItem(),
     if (isMacOS) const AutoSetSystemDnsItem(),
-    const TunStackItem(),
+    if (isDesktop) const StrictRouteItem(),
+    const IcmpForwardingItem(),
+    if (isDesktop) const TunDnsHijackItem(),
+    const EndpointIndependentNatItem(),
+    if (!system.isIOS) const TunStackItem(),
+    const TunMtuItem(),
     // mihomo's DefaultSocketHook ignores interface-name on Android
     // (core/lib.go installHooks, vendored dialer.go), so these rows only
     // apply on desktop.
@@ -316,15 +555,16 @@ List<Widget> networkOptionsItems({
   ];
 }
 
-class NetworkListView extends StatelessWidget {
+class NetworkListView extends ConsumerWidget {
   const NetworkListView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final appLocalizations = context.appLocalizations;
+    final version = ref.watch(versionProvider);
     return generateListView([
       if (system.isAndroid) const VPNItem(),
-      if (system.isAndroid)
+      if (system.isMobile)
         ...generateSection(
           title: 'VPN',
           items: [
@@ -333,6 +573,7 @@ class NetworkListView extends StatelessWidget {
             const AllowBypassItem(),
             const Ipv6Item(),
             const DNSHijackingItem(),
+            if (system.isAndroid) const SuspendSupportItem(),
           ],
         ),
       if (system.isDesktop)
@@ -347,6 +588,20 @@ class NetworkListView extends StatelessWidget {
           isMacOS: system.isMacOS,
         ),
       ),
+      if (system.isIOS)
+        ...generateSection(
+          title: appLocalizations.networkExtension,
+          items: [
+            const IncludeAllNetworksItem(),
+            const EnforceRoutesItem(),
+            const ExcludeLocalNetworksItem(),
+            if (version >= 16) ...[
+              const ExcludeAPNsItem(),
+              const ExcludeCellularServicesItem(),
+            ],
+            if (version >= 17) const ExcludeDeviceCommunicationItem(),
+          ],
+        ),
     ]);
   }
 }

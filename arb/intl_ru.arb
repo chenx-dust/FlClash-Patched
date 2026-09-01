@@ -577,6 +577,7 @@
   "geoResources": "Ресурсы Geo",
   "geoSkipped": "{name}: уже последняя версия",
   "geoUpdated": "{name}: обновлено",
+  "geoUpdating": "Обновление {name}...",
   "secondsCount": "{count, plural, one{{count} секунда} few{{count} секунды} many{{count} секунд} other{{count} секунды}}",
   "entriesCount": "{count, plural, one{{count} запись} few{{count} записи} many{{count} записей} other{{count} записи}}",
   "proxiesCount": "{count} прокси",

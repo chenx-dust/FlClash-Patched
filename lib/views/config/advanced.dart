@@ -26,6 +26,7 @@ class AdvancedConfigView extends StatelessWidget {
         blur: false,
         widget: BaseScaffold(
           title: appLocalizations.network,
+          actions: const [NetworkResetButton()],
           body: const NetworkListView(),
         ),
       ),

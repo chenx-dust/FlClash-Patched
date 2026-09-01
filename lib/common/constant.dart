@@ -78,6 +78,7 @@ const providersDirectoryName = 'providers';
 const proxiesProviderDirectoryName = 'proxies';
 const rulesProviderDirectoryName = 'rules';
 const localhost = '127.0.0.1';
+const defaultExternalControllerPort = 9090;
 const clashConfigKey = 'clash_config';
 const configKey = 'config';
 const systemDnsRecordKey = 'system_dns_record';
