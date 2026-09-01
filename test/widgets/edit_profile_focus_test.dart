@@ -7,6 +7,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/profiles/edit.dart';
+import 'package:fl_clash/widgets/pop_scope.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -152,6 +153,17 @@ void main() {
     await tester.pump();
 
     expect(_isFabFocused(), isTrue);
+  });
+
+  testWidgets('allows predictive pop before the profile file changes', (
+    tester,
+  ) async {
+    await pumpEditProfile(tester);
+
+    expect(
+      tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
+      isTrue,
+    );
   });
 
   testWidgets('tabbing reaches every form control after the Save FAB', (

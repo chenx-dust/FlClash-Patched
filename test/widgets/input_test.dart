@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:fl_clash/common/navigator.dart';
 import 'package:fl_clash/models/common.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/widgets/widgets.dart';
@@ -148,11 +149,57 @@ void main() {
       find.byType(ReorderableListView),
     );
 
+    expect(
+      tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
+      isTrue,
+    );
+
     listView.onReorderItem!(0, 2);
     await tester.pump();
 
     expect(_top(tester, 'b'), lessThan(_top(tester, 'c')));
     expect(_top(tester, 'c'), lessThan(_top(tester, 'a')));
+  });
+
+  testWidgets('ListInputPage returns edits when popped without a result', (
+    tester,
+  ) async {
+    List<String>? result;
+    await tester.pumpWidget(
+      ProviderScope(
+        child: TestApp(
+          overrides: [_viewSizeOverride],
+          child: Builder(
+            builder: (context) => FilledButton(
+              onPressed: () async {
+                result = await BaseNavigator.push<List<String>>(
+                  context,
+                  const ListInputPage(
+                    title: 'Items',
+                    items: ['a'],
+                    titleBuilder: _textBuilder,
+                  ),
+                );
+              },
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Add'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField), 'b');
+    await tester.tap(find.text('Confirm'));
+    await tester.pumpAndSettle();
+
+    Navigator.of(tester.element(find.byType(ListInputPage))).pop();
+    await tester.pumpAndSettle();
+
+    expect(result, ['a', 'b']);
   });
 
   testWidgets('OptionsDialog returns the tapped option', (tester) async {
@@ -364,6 +411,10 @@ void main() {
     await tester.tap(find.byType(Checkbox).first);
     await tester.pump();
     expect(find.byIcon(Icons.delete), findsOneWidget);
+    expect(
+      tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
+      isFalse,
+    );
     await tester.tap(find.text('Select all'));
     await tester.pump();
     await tester.tap(find.byIcon(Icons.delete));
@@ -489,6 +540,10 @@ void main() {
     final listView = tester.widget<ReorderableListView>(
       find.byType(ReorderableListView),
     );
+    expect(
+      tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
+      isTrue,
+    );
     listView.onReorderItem!(0, 1);
     await tester.pump();
     expect(
@@ -507,6 +562,10 @@ void main() {
 
     await tester.tap(find.byType(Checkbox).first);
     await tester.pump();
+    expect(
+      tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
+      isFalse,
+    );
     await tester.tap(find.text('Select all'));
     await tester.pump();
     await tester.tap(find.byIcon(Icons.delete));
