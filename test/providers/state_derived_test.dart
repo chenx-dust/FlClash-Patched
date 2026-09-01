@@ -58,6 +58,17 @@ void main() {
     expect(ruleGroups.single.all.single.now, isEmpty);
 
     container
+        .read(proxiesStyleSettingProvider.notifier)
+        .update((state) => state.copyWith(showHiddenGroups: true));
+    expect(
+      container
+          .read(currentGroupsStateProvider)
+          .value
+          .map((group) => group.name),
+      ['Visible', 'Hidden'],
+    );
+
+    container
         .read(patchClashConfigProvider.notifier)
         .update((state) => state.copyWith(mode: Mode.global));
     expect(container.read(currentGroupsStateProvider).value, hasLength(3));
@@ -218,6 +229,29 @@ void main() {
       expect(filtered.single.all.single.name, 'Alpha');
 
       container
+          .read(searchUseRegexProvider(QueryTag.proxies).notifier)
+          .update((_) => true);
+      final regexFiltered = container
+          .read(filterGroupsStateProvider(r'^(Alpha|Gamma)$'))
+          .value;
+      expect(regexFiltered.map((group) => group.name), ['Group A', 'Group B']);
+      expect(regexFiltered.first.all.single.name, 'Alpha');
+
+      container
+          .read(appSettingProvider.notifier)
+          .update((state) => state.copyWith(testUrl: 'https://default.test'));
+      container
+          .read(delayDataSourceProvider.notifier)
+          .setDelay(
+            const Delay(name: 'Beta', url: 'https://default.test', value: -1),
+          );
+      container
+          .read(proxiesStyleSettingProvider.notifier)
+          .update((state) => state.copyWith(hideUnavailable: true));
+      final available = container.read(filterGroupsStateProvider('')).value;
+      expect(available.first.all.map((proxy) => proxy.name), ['Alpha']);
+
+      container
           .read(queryProvider(QueryTag.proxies).notifier)
           .update((_) => 'ga');
       final list = container.read(proxiesListStateProvider);
@@ -276,7 +310,7 @@ void main() {
     final proxy = container.read(proxyStateProvider);
     expect(proxy.isStart, isTrue);
     expect(proxy.systemProxy, isFalse);
-    expect(proxy.bassDomain, ['localhost']);
+    expect(proxy.bypassDomain, ['localhost']);
     expect(proxy.port, 8899);
     expect(container.read(isStartProvider), isTrue);
 

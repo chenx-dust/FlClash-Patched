@@ -126,7 +126,7 @@ ProxiesTabState _tabState(List<Group> groups) {
   return ProxiesTabState(
     groups: groups,
     currentGroupName: 'B',
-    proxyCardType: ProxyCardType.expand,
+    proxyCardType: ProxyCardType.standard,
   );
 }
 
