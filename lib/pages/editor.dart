@@ -54,6 +54,7 @@ class _EditorPageState extends ConsumerState<EditorPage> {
   late FocusNode _focusNode;
   late bool readOnly = false;
   late final SelectionToolbarController _toolbarController;
+  late final ValueNotifier<bool> _canPopNotifier;
 
   @override
   void initState() {
@@ -64,6 +65,9 @@ class _EditorPageState extends ConsumerState<EditorPage> {
     _controller = CodeLineEditingController.fromText(widget.content);
     _findController = CodeFindController(_controller);
     _titleController = TextEditingController(text: widget.title);
+    _canPopNotifier = ValueNotifier(_canPop);
+    _controller.addListener(_updateCanPop);
+    _titleController.addListener(_updateCanPop);
     if (system.isDesktop) {
       return;
     }
@@ -100,17 +104,34 @@ class _EditorPageState extends ConsumerState<EditorPage> {
         _controller.text = content;
         _controller.clearHistory();
       }
+      _updateCanPop();
     });
   }
 
   @override
   void dispose() {
     _toolbarController.hide(context);
+    _controller.removeListener(_updateCanPop);
+    _titleController.removeListener(_updateCanPop);
     _findController.dispose();
     _controller.dispose();
     _titleController.dispose();
+    _canPopNotifier.dispose();
     _focusNode.dispose();
     super.dispose();
+  }
+
+  bool get _canPop {
+    return widget.onPop == null ||
+        (_controller.text == widget.content &&
+            _titleController.text == widget.title);
+  }
+
+  void _updateCanPop() {
+    final canPop = _canPop;
+    if (_canPopNotifier.value != canPop) {
+      _canPopNotifier.value = canPop;
+    }
   }
 
   void _handleSearch() {
@@ -190,42 +211,45 @@ class _EditorPageState extends ConsumerState<EditorPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CommonPopScope(
-      canPop: widget.onPop == null,
-      onPop: _handlePop,
-      child: CommonScaffold(
-        appBar: AppBar(
-          title: _EditorTitleField(
-            controller: _titleController,
-            enabled: widget.titleEditable,
-          ),
-          actions: genActions([
-            if (!readOnly)
-              _EditorSaveAction(
-                controller: _controller,
-                titleController: _titleController,
-                savedContent: widget.content,
-                savedTitle: widget.title,
-                onSave: widget.onSave!,
-              ),
-            _EditorMenuAction(
-              controller: _controller,
-              readOnly: readOnly,
-              supportRemoteDownload: widget.supportRemoteDownload,
-              onSearch: _handleSearch,
-              onImportFromUrl: _handleImportFormUrl,
-              onImportFromFile: _handleImportFormFile,
+    return ValueListenableBuilder(
+      valueListenable: _canPopNotifier,
+      builder: (context, canPop, _) => CommonPopScope(
+        canPop: canPop,
+        onPop: _handlePop,
+        child: CommonScaffold(
+          appBar: AppBar(
+            title: _EditorTitleField(
+              controller: _titleController,
+              enabled: widget.titleEditable,
             ),
-          ]),
-        ),
-        body: _EditorBody(
-          controller: _controller,
-          findController: _findController,
-          toolbarController: _toolbarController,
-          focusNode: _focusNode,
-          readOnly: readOnly,
-          languages: widget.languages,
-          isLoading: widget.content == null,
+            actions: genActions([
+              if (!readOnly)
+                _EditorSaveAction(
+                  controller: _controller,
+                  titleController: _titleController,
+                  savedContent: widget.content,
+                  savedTitle: widget.title,
+                  onSave: widget.onSave!,
+                ),
+              _EditorMenuAction(
+                controller: _controller,
+                readOnly: readOnly,
+                supportRemoteDownload: widget.supportRemoteDownload,
+                onSearch: _handleSearch,
+                onImportFromUrl: _handleImportFormUrl,
+                onImportFromFile: _handleImportFormFile,
+              ),
+            ]),
+          ),
+          body: _EditorBody(
+            controller: _controller,
+            findController: _findController,
+            toolbarController: _toolbarController,
+            focusNode: _focusNode,
+            readOnly: readOnly,
+            languages: widget.languages,
+            isLoading: widget.content == null,
+          ),
         ),
       ),
     );

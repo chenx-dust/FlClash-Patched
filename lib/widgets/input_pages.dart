@@ -1,5 +1,12 @@
 part of 'input.dart';
 
+void _updateCurrentRouteResult(BuildContext context, Object result) {
+  final route = ModalRoute.of(context);
+  if (route is CommonRoute) {
+    route.updateCurrentResult(result);
+  }
+}
+
 class ListInputPage extends ConsumerStatefulWidget {
   final String title;
   final List<String> items;
@@ -281,7 +288,9 @@ class _ListInputPageState extends ConsumerState<ListInputPage>
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     final selectedItems = ref.watch(itemsProvider(_key));
+    _updateCurrentRouteResult(context, _items);
     return CommonPopScope(
+      canPop: selectedItems.isEmpty,
       onPop: (_) {
         if (selectedItems.isNotEmpty) {
           ref.read(itemsProvider(_key).notifier).value = {};
@@ -611,13 +620,16 @@ class _MapInputPageState extends ConsumerState<MapInputPage>
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     final selectedItems = ref.watch(itemsProvider(_key));
+    final result = Map<String, String>.fromEntries(_items);
+    _updateCurrentRouteResult(context, result);
     return CommonPopScope(
+      canPop: selectedItems.isEmpty,
       onPop: (_) {
         if (selectedItems.isNotEmpty) {
           ref.read(itemsProvider(_key).notifier).value = {};
           return false;
         }
-        Navigator.of(context).pop(Map<String, String>.fromEntries(_items));
+        Navigator.of(context).pop(result);
         return false;
       },
       child: CommonScaffold(
