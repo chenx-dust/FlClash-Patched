@@ -100,6 +100,8 @@ const _$DashboardWidgetEnumMap = {
   DashboardWidget.systemProxyButton: 'systemProxyButton',
   DashboardWidget.intranetIp: 'intranetIp',
   DashboardWidget.memoryInfo: 'memoryInfo',
+  DashboardWidget.goroutineInfo: 'goroutineInfo',
+  DashboardWidget.connectionInfo: 'connectionInfo',
 };
 
 _AccessControlProps _$AccessControlPropsFromJson(Map<String, dynamic> json) =>
@@ -344,7 +346,6 @@ const _$ProxiesIconSourceEnumMap = {
 };
 
 const _$ProxyCardTypeEnumMap = {
-  ProxyCardType.expand: 'expand',
   ProxyCardType.standard: 'standard',
   ProxyCardType.shrink: 'shrink',
   ProxyCardType.min: 'min',

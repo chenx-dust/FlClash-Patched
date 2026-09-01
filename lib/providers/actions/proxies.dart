@@ -12,20 +12,14 @@ class _DelayTestTarget {
   final String key;
 }
 
-class _DelayTestJob {
-  _DelayTestJob(Iterable<String> keys) : held = keys.toSet();
-
-  final Set<String> held;
-  bool cancelled = false;
-}
-
 @Riverpod(keepAlive: true)
 class ProxiesAction extends _$ProxiesAction {
   CoreController get _core => ref.read(coreHandlerProvider);
 
   final TaskPool _delayTestPool = TaskPool(maxConcurrentDelayTests);
-
-  final List<_DelayTestJob> _delayTestJobs = [];
+  final Map<String, Future<Delay?>> _pendingDelayTests = {};
+  final Map<String, _DelayTestTarget> _pendingDelayTargets = {};
+  int _delayTestGeneration = 0;
 
   final Map<String, String> _pendingSelectedRollback = {};
 
@@ -39,11 +33,17 @@ class ProxiesAction extends _$ProxiesAction {
   }
 
   void cancelDelayTests() {
-    for (final job in _delayTestJobs) {
-      job.cancelled = true;
-      job.held.clear();
-    }
+    final cancelledTargets = _pendingDelayTargets.values.toList();
+    _delayTestGeneration++;
+    _pendingDelayTests.clear();
+    _pendingDelayTargets.clear();
     ref.read(pendingDelayTestsProvider.notifier).clear();
+    final delays = ref.read(delayDataSourceProvider.notifier);
+    for (final target in cancelledTargets) {
+      delays.setDelay(
+        Delay(url: target.testUrl, name: target.proxyName, value: -1),
+      );
+    }
   }
 
   void updateGroupsDebounce([Duration? duration]) {
@@ -67,6 +67,14 @@ class ProxiesAction extends _$ProxiesAction {
     }, args: [groupName, proxyName]);
   }
 
+  Future<void> resetProxySelection(String groupName) async {
+    debouncer.cancel((FunctionTag.changeProxy, groupName));
+    debouncer.cancel(FunctionTag.updateGroups);
+    _pendingSelectedRollback.remove(groupName);
+    await changeProxy(groupName: groupName, proxyName: '');
+    await updateGroups();
+  }
+
   String _currentSelectedName(String groupName) {
     return ref.read(currentProfileProvider)?.selectedMap[groupName] ?? '';
   }
@@ -74,7 +82,8 @@ class ProxiesAction extends _$ProxiesAction {
   Future<void> updateGroups() async {
     try {
       commonPrint.log('updateGroups');
-      ref.read(groupsProvider.notifier).value = await retry(
+      final profileId = ref.read(currentProfileProvider)?.id;
+      final groups = await retry<List<Group>>(
         task: () async {
           final sortType = ref.read(
             proxiesStyleSettingProvider.select((state) => state.sortType),
@@ -98,11 +107,15 @@ class ProxiesAction extends _$ProxiesAction {
               'updateGroups error: $e',
               logLevel: coreFailureLogLevel(e),
             );
-            return [];
+            return <Group>[];
           }
         },
         retryIf: (res) => res.isEmpty,
       );
+      ref.read(groupsProvider.notifier).value = groups;
+      if (groups.isNotEmpty) {
+        _removeUnavailableSelections(profileId: profileId, groups: groups);
+      }
     } catch (e) {
       // The Core failure path already runs inside the retry task above; a
       // throw here only means ref.read hit a disposed container or the
@@ -112,6 +125,31 @@ class ProxiesAction extends _$ProxiesAction {
         logLevel: coreFailureLogLevel(e),
       );
     }
+  }
+
+  void _removeUnavailableSelections({
+    required int? profileId,
+    required List<Group> groups,
+  }) {
+    final currentProfile = ref.read(currentProfileProvider);
+    if (currentProfile == null || currentProfile.id != profileId) {
+      return;
+    }
+    final availableProxies = {
+      for (final group in groups)
+        group.name: group.all.map((proxy) => proxy.name).toSet(),
+    };
+    final selectedMap = Map<String, String>.fromEntries(
+      currentProfile.selectedMap.entries.where(
+        (entry) => availableProxies[entry.key]?.contains(entry.value) == true,
+      ),
+    );
+    if (selectedMap.length == currentProfile.selectedMap.length) {
+      return;
+    }
+    ref
+        .read(profilesProvider.notifier)
+        .put(currentProfile.copyWith(selectedMap: selectedMap));
   }
 
   void updateCurrentGroupName(String groupName) {
@@ -131,6 +169,9 @@ class ProxiesAction extends _$ProxiesAction {
   }
 
   void setDelay(Delay delay) {
+    if (_pendingDelayTests.containsKey(delayTestKey(delay.url, delay.name))) {
+      return;
+    }
     ref.read(delayDataSourceProvider.notifier).setDelay(delay);
   }
 
@@ -247,12 +288,16 @@ class ProxiesAction extends _$ProxiesAction {
   }
 
   Future<void> proxyDelayTest(Proxy proxy, [String? testUrl]) {
-    return _runDelayTests([proxy], testUrl);
+    return _runDelayTests([proxy], testUrl, bumpSort: false);
   }
 
-  Future<void> delayTest(List<Proxy> proxies, [String? testUrl]) async {
-    await _runDelayTests(proxies, testUrl);
-    ref.read(sortNumProvider.notifier).add();
+  Future<void> delayTest(
+    List<Proxy> proxies, [
+    String? testUrl,
+    Duration uiTimeout = const Duration(seconds: 1),
+  ]) {
+    final operation = _runDelayTests(proxies, testUrl, bumpSort: true);
+    return operation.timeout(uiTimeout, onTimeout: () {});
   }
 
   List<_DelayTestTarget> _resolveDelayTestTargets(
@@ -291,50 +336,98 @@ class ProxiesAction extends _$ProxiesAction {
     return targets;
   }
 
-  Future<void> _runDelayTests(List<Proxy> proxies, String? testUrl) async {
+  Future<void> _runDelayTests(
+    List<Proxy> proxies,
+    String? testUrl, {
+    required bool bumpSort,
+  }) async {
+    final generation = _delayTestGeneration;
     final targets = _resolveDelayTestTargets(proxies, testUrl);
     if (targets.isEmpty) {
       return;
     }
-    final pending = ref.read(pendingDelayTestsProvider.notifier);
-    final job = _DelayTestJob(targets.map((target) => target.key));
-    _delayTestJobs.add(job);
-    pending.acquire(job.held);
-    try {
-      await Future.wait(
-        targets.map(
-          (target) => _delayTestPool.run(() => _runDelayTest(job, target)),
-        ),
-      );
-    } finally {
-      _delayTestJobs.remove(job);
-      final abandoned = job.held.toList();
-      job.held.clear();
-      pending.release(abandoned);
+    await Future.wait(
+      targets.map((target) async {
+        try {
+          await _scheduleDelayTest(target);
+        } catch (error) {
+          commonPrint.log(
+            'Delay test failed for ${target.proxyName}: $error',
+            logLevel: coreFailureLogLevel(error),
+          );
+        }
+      }),
+    );
+    if (bumpSort && generation == _delayTestGeneration) {
+      ref.read(sortNumProvider.notifier).add();
     }
   }
 
-  Future<void> _runDelayTest(_DelayTestJob job, _DelayTestTarget target) async {
-    if (job.cancelled) {
-      return;
+  Future<Delay?> _scheduleDelayTest(_DelayTestTarget target) {
+    final pending = _pendingDelayTests[target.key];
+    if (pending != null) {
+      return pending;
+    }
+    final generation = _delayTestGeneration;
+    final completer = Completer<Delay?>();
+    final operation = completer.future;
+    _pendingDelayTests[target.key] = operation;
+    _pendingDelayTargets[target.key] = target;
+    ref.read(pendingDelayTestsProvider.notifier).acquire([target.key]);
+    ref
+        .read(delayDataSourceProvider.notifier)
+        .setDelay(Delay(url: target.testUrl, name: target.proxyName, value: 0));
+    void release() {
+      if (identical(_pendingDelayTests[target.key], operation)) {
+        _pendingDelayTests.remove(target.key);
+        _pendingDelayTargets.remove(target.key);
+        ref.read(pendingDelayTestsProvider.notifier).release([target.key]);
+      }
+    }
+
+    unawaited(
+      operation.then<void>(
+        (_) => release(),
+        onError: (Object _, StackTrace _) => release(),
+      ),
+    );
+    unawaited(
+      _delayTestPool
+          .run(() => _runDelayTest(target, generation))
+          .then<void>(completer.complete, onError: completer.completeError),
+    );
+    return operation;
+  }
+
+  Future<Delay?> _runDelayTest(_DelayTestTarget target, int generation) async {
+    if (generation != _delayTestGeneration) {
+      return null;
     }
     try {
       final delay = await _core.getDelay(target.testUrl, target.proxyName);
-      if (delay != null && !job.cancelled) {
-        setDelay(delay);
+      if (generation != _delayTestGeneration) {
+        return null;
       }
+      final result =
+          delay ??
+          Delay(url: target.testUrl, name: target.proxyName, value: -1);
+      ref.read(delayDataSourceProvider.notifier).setDelay(result);
+      return result;
     } catch (error) {
-      if (error is CoreMethodException && error.isCoreUnavailable) {
-        job.cancelled = true;
+      if (error is CoreMethodException &&
+          error.isCoreUnavailable &&
+          generation == _delayTestGeneration) {
+        cancelDelayTests();
+        rethrow;
       }
-      commonPrint.log(
-        'Delay test failed for ${target.proxyName}: $error',
-        logLevel: coreFailureLogLevel(error),
-      );
-    } finally {
-      if (job.held.remove(target.key)) {
-        ref.read(pendingDelayTestsProvider.notifier).release([target.key]);
+      if (generation == _delayTestGeneration) {
+        ref
+            .read(delayDataSourceProvider.notifier)
+            .setDelay(
+              Delay(url: target.testUrl, name: target.proxyName, value: -1),
+            );
       }
+      rethrow;
     }
   }
 }

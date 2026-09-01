@@ -25,6 +25,8 @@ ExternalProvider _provider(
   int count = 3,
   DateTime? updateAt,
   SubscriptionInfo? subscriptionInfo,
+  String? path,
+  String? format,
 }) {
   return ExternalProvider(
     name: name,
@@ -33,6 +35,8 @@ ExternalProvider _provider(
     vehicleType: vehicleType,
     updateAt: updateAt ?? DateTime.utc(2026, 1, 1),
     subscriptionInfo: subscriptionInfo,
+    path: path,
+    format: format,
   );
 }
 
@@ -221,6 +225,35 @@ void main() {
     await openMenu(tester, 'file-one');
     expect(find.text(l10n.upload), findsOne);
     expect(find.text(l10n.sync), findsNothing);
+  });
+
+  testWidgets('offers text actions only for editable provider formats', (
+    tester,
+  ) async {
+    final container = containerFor(tester, [
+      _provider(
+        'yaml-rule',
+        type: 'Rule',
+        format: 'YamlRule',
+        path: 'rule.yaml',
+      ),
+      _provider('mrs-rule', type: 'Rule', format: 'MrsRule', path: 'rule.mrs'),
+    ]);
+    await pump(tester, container);
+
+    final l10n = currentAppLocalizations;
+    await openMenu(tester, 'yaml-rule');
+    expect(find.text(l10n.preview), findsOneWidget);
+    expect(find.text(l10n.edit), findsOneWidget);
+    expect(find.text(l10n.upload), findsOneWidget);
+    expect(find.text(l10n.exportFile), findsOneWidget);
+    await closeMenu(tester);
+
+    await openMenu(tester, 'mrs-rule');
+    expect(find.text(l10n.preview), findsNothing);
+    expect(find.text(l10n.edit), findsNothing);
+    expect(find.text(l10n.upload), findsNothing);
+    expect(find.text(l10n.exportFile), findsOneWidget);
   });
 
   testWidgets('offers subscription info only when the provider has one', (

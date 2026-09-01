@@ -39,6 +39,7 @@ final _delayKey = delayTestKey(_testUrl, 'HK-01');
 
 ProviderContainer _delayContainer(ProviderContainer Function() build) {
   final container = build();
+  container.listen(appSettingProvider, (_, _) {});
   container.read(appSettingProvider.notifier).value = const AppSettingProps(
     testUrl: _testUrl,
   );
@@ -112,6 +113,31 @@ void main() {
       expect(groups.single.all.map((proxy) => proxy.name), ['HK-01']);
     });
 
+    test('prunes selections that disappeared after a group refresh', () async {
+      when(core.getProxies).thenAnswer(
+        (_) async => ProxiesData(
+          all: const ['Proxy', 'HK-01'],
+          proxies: Map<String, dynamic>.from({
+            'Proxy': Map<String, dynamic>.from({
+              'name': 'Proxy',
+              'type': 'Selector',
+              'now': 'HK-01',
+              'all': ['HK-01'],
+            }),
+            'HK-01': Map<String, dynamic>.from({'name': 'HK-01', 'type': 'ss'}),
+          }),
+        ),
+      );
+      final profile = _selectedProfile('HK-00').copyWith(
+        selectedMap: {'Proxy': 'HK-00', 'Removed group': 'Removed proxy'},
+      );
+      final container = buildContainer(profile: profile);
+
+      await actionOf(container).updateGroups();
+
+      expect(container.read(currentProfileProvider)?.selectedMap, isEmpty);
+    });
+
     test(
       'publishes the groups once a retry succeeds after core throws',
       () async {
@@ -155,7 +181,7 @@ void main() {
       'clears the groups once retry is exhausted after core throws',
       () async {
         when(core.getProxies).thenThrow(StateError('core down'));
-        final container = buildContainer();
+        final container = buildContainer(profile: _selectedProfile('HK-01'));
         container.read(groupsProvider.notifier).value = [
           _group('Stale', const []),
         ];
@@ -163,6 +189,9 @@ void main() {
         await actionOf(container).updateGroups();
 
         expect(container.read(groupsProvider), isEmpty);
+        expect(container.read(currentProfileProvider)?.selectedMap, {
+          'Proxy': 'HK-01',
+        });
         verify(core.getProxies).called(3);
       },
     );
@@ -293,6 +322,34 @@ void main() {
       });
     });
 
+    test('reset clears the persisted selection and refreshes groups', () async {
+      when(core.getProxies).thenAnswer(
+        (_) async => ProxiesData(
+          all: const ['Proxy', 'HK-01'],
+          proxies: Map<String, dynamic>.from({
+            'Proxy': Map<String, dynamic>.from({
+              'name': 'Proxy',
+              'type': 'Selector',
+              'now': 'HK-01',
+              'all': ['HK-01'],
+            }),
+            'HK-01': Map<String, dynamic>.from({'name': 'HK-01', 'type': 'ss'}),
+          }),
+        ),
+      );
+      final container = buildContainer(profile: _selectedProfile('HK-01'));
+
+      await actionOf(container).resetProxySelection('Proxy');
+
+      verify(
+        () => core.changeProxy(
+          const ChangeProxyParams(groupName: 'Proxy', proxyName: ''),
+          closeConnections: false,
+        ),
+      ).called(1);
+      expect(container.read(currentProfileProvider)?.selectedMap, isEmpty);
+    });
+
     test('rolls the selection back when the switch fails', () async {
       when(
         () => core.changeProxy(
@@ -343,7 +400,7 @@ void main() {
     test('marks the node pending while it runs, then records it', () async {
       late ProviderContainer container;
       final observed = <bool>[];
-      when(() => core.asyncTestDelay(_testUrl, 'HK-01')).thenAnswer((_) async {
+      when(() => core.asyncTestDelay(any(), any())).thenAnswer((_) async {
         observed.add(
           container.read(pendingDelayTestsProvider).contains(_delayKey),
         );
@@ -358,7 +415,7 @@ void main() {
       expect(container.read(pendingDelayTestsProvider), isEmpty);
     });
 
-    test('keeps the last measurement when the Core does not answer', () async {
+    test('records timeout when the Core does not answer', () async {
       when(
         () => core.asyncTestDelay(_testUrl, 'HK-01'),
       ).thenAnswer((_) async => null);
@@ -369,11 +426,11 @@ void main() {
 
       await actionOf(container).proxyDelayTest(_proxy);
 
-      expect(container.read(delayDataSourceProvider)[_testUrl]?['HK-01'], 42);
+      expect(container.read(delayDataSourceProvider)[_testUrl]?['HK-01'], -1);
       expect(container.read(pendingDelayTestsProvider), isEmpty);
     });
 
-    test('falls back to untested when a throwing call had no value', () async {
+    test('records timeout when a delay call throws', () async {
       when(
         () => core.asyncTestDelay(_testUrl, 'HK-01'),
       ).thenThrow(StateError('channel is gone'));
@@ -381,7 +438,71 @@ void main() {
 
       await actionOf(container).proxyDelayTest(_proxy);
 
-      expect(container.read(delayDataSourceProvider)[_testUrl]?['HK-01'], null);
+      expect(container.read(delayDataSourceProvider)[_testUrl]?['HK-01'], -1);
+      expect(container.read(pendingDelayTestsProvider), isEmpty);
+    });
+
+    test(
+      'deduplicates concurrent calls and rejects event overwrites',
+      () async {
+        final release = Completer<Delay?>();
+        when(
+          () => core.asyncTestDelay(_testUrl, 'HK-01'),
+        ).thenAnswer((_) => release.future);
+        final container = _delayContainer(buildContainer);
+        final action = actionOf(container);
+
+        final first = action.proxyDelayTest(_proxy);
+        final second = action.proxyDelayTest(_proxy);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(container.read(delayDataSourceProvider)[_testUrl]?['HK-01'], 0);
+        expect(container.read(pendingDelayTestsProvider), {_delayKey});
+        action.setDelay(const Delay(name: 'HK-01', url: _testUrl, value: 999));
+        expect(container.read(delayDataSourceProvider)[_testUrl]?['HK-01'], 0);
+
+        release.complete(const Delay(name: 'HK-01', url: _testUrl, value: 42));
+        await Future.wait([first, second]);
+
+        verify(() => core.asyncTestDelay(_testUrl, 'HK-01')).called(1);
+        expect(container.read(delayDataSourceProvider)[_testUrl]?['HK-01'], 42);
+        expect(container.read(pendingDelayTestsProvider), isEmpty);
+      },
+    );
+
+    test('a stale disconnect cannot cancel a replacement test', () async {
+      final firstRelease = Completer<Delay?>();
+      final secondRelease = Completer<Delay?>();
+      var calls = 0;
+      when(() => core.asyncTestDelay(_testUrl, 'HK-01')).thenAnswer((_) async {
+        calls++;
+        return calls == 1 ? firstRelease.future : secondRelease.future;
+      });
+      final container = _delayContainer(buildContainer);
+      final action = actionOf(container);
+
+      final first = action.proxyDelayTest(_proxy);
+      await Future<void>.delayed(Duration.zero);
+      action.cancelDelayTests();
+      final second = action.proxyDelayTest(_proxy);
+      await Future<void>.delayed(Duration.zero);
+
+      firstRelease.completeError(
+        const CoreMethodException(
+          code: 'transport_disconnected',
+          message: 'old transport',
+        ),
+      );
+      await first;
+      expect(container.read(pendingDelayTestsProvider), {_delayKey});
+
+      secondRelease.complete(
+        const Delay(name: 'HK-01', url: _testUrl, value: 64),
+      );
+      await second;
+
+      expect(calls, 2);
+      expect(container.read(delayDataSourceProvider)[_testUrl]?['HK-01'], 64);
       expect(container.read(pendingDelayTestsProvider), isEmpty);
     });
 
@@ -449,7 +570,13 @@ void main() {
 
       expect(calls, lessThanOrEqualTo(maxConcurrentDelayTests));
       expect(calls, lessThan(proxies.length));
-      expect(container.read(delayDataSourceProvider), isEmpty);
+      expect(
+        container
+            .read(delayDataSourceProvider)
+            .values
+            .expand((delays) => delays.values),
+        everyElement(-1),
+      );
       expect(container.read(pendingDelayTestsProvider), isEmpty);
     });
 
@@ -475,8 +602,8 @@ void main() {
 
       expect(calls, proxies.length);
       final delays = container.read(delayDataSourceProvider)[_testUrl];
-      expect(delays?.length, proxies.length - 1);
-      expect(delays?['HK-1'], isNull);
+      expect(delays?.length, proxies.length);
+      expect(delays?['HK-1'], -1);
       expect(container.read(pendingDelayTestsProvider), isEmpty);
     });
 
@@ -505,8 +632,29 @@ void main() {
 
       expect(calls, proxies.length);
       final delays = container.read(delayDataSourceProvider)[_testUrl];
-      expect(delays?.length, proxies.length - 1);
-      expect(delays?['HK-1'], isNull);
+      expect(delays?.length, proxies.length);
+      expect(delays?['HK-1'], -1);
+      expect(container.read(pendingDelayTestsProvider), isEmpty);
+    });
+
+    test('returns to the UI before a slow batch finishes', () async {
+      final release = Completer<Delay?>();
+      when(
+        () => core.asyncTestDelay(_testUrl, 'HK-01'),
+      ).thenAnswer((_) => release.future);
+      final container = _delayContainer(buildContainer);
+      final before = container.read(sortNumProvider);
+
+      await actionOf(container).delayTest(const [_proxy], null, Duration.zero);
+
+      expect(container.read(pendingDelayTestsProvider), {_delayKey});
+      expect(container.read(sortNumProvider), before);
+
+      release.complete(const Delay(name: 'HK-01', url: _testUrl, value: 12));
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(container.read(sortNumProvider), before + 1);
       expect(container.read(pendingDelayTestsProvider), isEmpty);
     });
 
@@ -531,7 +679,13 @@ void main() {
       release.complete(const Delay(name: 'HK-01', url: _testUrl, value: 10));
       await run;
 
-      expect(container.read(delayDataSourceProvider), isEmpty);
+      expect(
+        container
+            .read(delayDataSourceProvider)
+            .values
+            .expand((delays) => delays.values),
+        everyElement(-1),
+      );
       expect(container.read(pendingDelayTestsProvider), isEmpty);
     });
   });

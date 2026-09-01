@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/common.dart';
@@ -12,6 +13,8 @@ import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'provider_editor.dart';
 
 class ProvidersView extends ConsumerStatefulWidget {
   const ProvidersView({super.key});
@@ -155,6 +158,42 @@ class ProviderItem extends ConsumerWidget {
     proxiesAction.updateGroupsDebounce();
   }
 
+  void _handlePreview(BuildContext context) {
+    if (provider.path == null || !provider.canEditAsText) {
+      return;
+    }
+    BaseNavigator.push<String>(context, ProviderEditorView(provider: provider));
+  }
+
+  void _handleEdit(BuildContext context) {
+    if (provider.path == null || !provider.canEditAsText) {
+      return;
+    }
+    BaseNavigator.push<String>(
+      context,
+      ProviderEditorView(provider: provider, editable: true),
+    );
+  }
+
+  Future<void> _handleExportFile(BuildContext context) async {
+    final path = provider.path;
+    if (path == null) {
+      return;
+    }
+    final result = await globalState.safeRun<bool>(() async {
+      final uri = await picker.saveFile(
+        provider.name,
+        await File(path).readAsBytes(),
+        type: FileType.custom,
+        allowedExtensions: const ['yaml', 'yml'],
+      );
+      return uri != null;
+    }, title: context.appLocalizations.tip);
+    if (result == true && context.mounted) {
+      context.showSnackBar(context.appLocalizations.exportSuccess);
+    }
+  }
+
   void _handleShowSubscriptionInfo() {
     unawaited(
       dialogs.showCommonDialog<void>(
@@ -205,12 +244,36 @@ class ProviderItem extends ConsumerWidget {
     final appLocalizations = context.appLocalizations;
     final subscriptionInfo = provider.subscriptionInfo;
     return [
+      if (provider.canEditAsText && provider.path != null)
+        CommonPopupMenuItem(
+          icon: Icons.visibility_outlined,
+          label: appLocalizations.preview,
+          onPressed: () {
+            _handlePreview(context);
+          },
+        ),
+      if (provider.canEditAsText && provider.path != null)
+        CommonPopupMenuItem(
+          icon: Icons.edit_outlined,
+          label: appLocalizations.edit,
+          onPressed: () {
+            _handleEdit(context);
+          },
+        ),
       if (provider.canEditAsText)
         CommonPopupMenuItem(
           icon: Icons.upload_outlined,
           label: appLocalizations.upload,
           onPressed: () {
             _handleSideLoadProvider(ref);
+          },
+        ),
+      if (provider.path != null)
+        CommonPopupMenuItem(
+          icon: Icons.file_copy_outlined,
+          label: appLocalizations.exportFile,
+          onPressed: () {
+            _handleExportFile(context);
           },
         ),
       if (provider.vehicleType == 'HTTP')

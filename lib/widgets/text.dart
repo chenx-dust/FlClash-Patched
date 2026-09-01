@@ -4,6 +4,22 @@ import 'package:material_ui/material_ui.dart';
 
 import '../state.dart';
 
+final _emojiRegex = emojiRegex();
+
+String getFirstEmoji(String text) {
+  return _emojiRegex.firstMatch(text)?.group(0) ?? '';
+}
+
+String removeLeadingEmoji(String text) {
+  var value = text;
+  var match = _emojiRegex.matchAsPrefix(value);
+  while (match != null) {
+    value = value.substring(match.end).trimLeft();
+    match = _emojiRegex.matchAsPrefix(value);
+  }
+  return value;
+}
+
 class TooltipText extends StatelessWidget {
   final Text text;
 

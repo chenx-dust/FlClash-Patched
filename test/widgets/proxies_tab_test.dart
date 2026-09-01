@@ -29,7 +29,7 @@ void main() {
           ProxiesTabState(
             groups: [_group('B'), _group('C')],
             currentGroupName: 'B',
-            proxyCardType: ProxyCardType.expand,
+            proxyCardType: ProxyCardType.standard,
           ),
         ),
       ],
@@ -68,6 +68,26 @@ void main() {
 
     expect(key.currentState?.currentGroup?.name, 'C');
     expect(globalContainer.read(currentProfileProvider)?.currentGroupName, 'C');
+  });
+
+  testWidgets('group tabs expose the reset-selection long press', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: globalContainer,
+        child: TestApp(
+          child: const ProxiesTabView(),
+          homeBuilder: (child) => Scaffold(body: child),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final gesture = tester.widget<GestureDetector>(
+      find.byKey(const ValueKey('proxy-group-tab-B')),
+    );
+    expect(gesture.onLongPress, isNotNull);
   });
 }
 
