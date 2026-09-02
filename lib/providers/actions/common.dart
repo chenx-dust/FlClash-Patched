@@ -79,9 +79,17 @@ class CommonAction extends _$CommonAction {
 
   Future<bool> autoCheckUpdate() async {
     if (!ref.read(appSettingProvider).autoCheckUpdate) return false;
-    final res = await request.checkForUpdate();
-    await checkUpdateResultHandle(data: res);
-    return res != null;
+    try {
+      final res = await request.checkForUpdate();
+      await checkUpdateResultHandle(data: res);
+      return res != null;
+    } catch (error, stackTrace) {
+      commonPrint.log(
+        'autoCheckUpdate failed: $error\n$stackTrace',
+        logLevel: LogLevel.warning,
+      );
+      return false;
+    }
   }
 
   TextSpan _releaseSpan(BuildContext context, String tagName, String? body) {

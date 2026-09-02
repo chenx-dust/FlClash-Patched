@@ -1,14 +1,18 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
+import 'package:fl_clash/common/request.dart';
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/core/interface.dart';
 import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/providers/core.dart';
 import 'package:fl_clash/state.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -23,7 +27,8 @@ void main() {
 
   late MockCoreHandlerInterface core;
 
-  setUpAll(() {
+  setUpAll(() async {
+    await AppLocalizations.load(const Locale('en'));
     core = MockCoreHandlerInterface();
     globalState.packageInfo = PackageInfo(
       appName: 'FlClash',
@@ -170,6 +175,27 @@ void main() {
       container
           .read(appSettingProvider.notifier)
           .update((state) => state.copyWith(autoCheckUpdate: false));
+
+      await expectLater(
+        container.read(commonActionProvider.notifier).autoCheckUpdate(),
+        completion(isFalse),
+      );
+    });
+
+    test('absorbs request failures during startup checks', () async {
+      final container = buildContainer();
+      final interceptor = InterceptorsWrapper(
+        onRequest: (options, handler) {
+          handler.reject(
+            DioException(
+              requestOptions: options,
+              error: StateError('network unavailable'),
+            ),
+          );
+        },
+      );
+      request.dio.interceptors.add(interceptor);
+      addTearDown(() => request.dio.interceptors.remove(interceptor));
 
       await expectLater(
         container.read(commonActionProvider.notifier).autoCheckUpdate(),
