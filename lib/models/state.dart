@@ -316,7 +316,6 @@ abstract class SharedState with _$SharedState {
     required String stopText,
     required bool onlyStatisticsProxy,
     @Default(true) bool showStopAction,
-    required bool crashlytics,
     @Default(false) bool networkSpeedNotification,
     @Default(false) bool alwaysOn,
     @Default([]) List<String> excludeSSIDs,
