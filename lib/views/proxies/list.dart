@@ -133,7 +133,7 @@ class ProxiesListViewState extends ConsumerState<ProxiesListView> {
         .fill(columns, filler: (_) => const Flexible(child: SizedBox()))
         .separated(const SizedBox(width: 8));
     return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Row(children: children.toList()),
     );
   }
@@ -176,7 +176,7 @@ class ProxiesListViewState extends ConsumerState<ProxiesListView> {
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
               child: SizedBox(
                 height: headerHeight,
                 child: ListHeader(
@@ -469,6 +469,9 @@ class _ListHeaderState extends ConsumerState<ListHeader> {
       enterAnimated: widget.enterAnimated,
       key: widget.key,
       radius: AppCorner.xl.ap,
+      shape: widget.listHeaderStyle == ProxiesListHeaderStyle.tight
+          ? RoundedRectangleBorder(borderRadius: AppRadius.all(AppCorner.xl.ap))
+          : null,
       type: CommonCardType.filled,
       child: Padding(
         padding: _contentPadding,
