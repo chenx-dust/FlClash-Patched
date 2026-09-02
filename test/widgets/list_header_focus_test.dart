@@ -259,6 +259,35 @@ void main() {
     await tester.pump();
   });
 
+  testWidgets('only the tight list header uses circular corner arcs', (
+    tester,
+  ) async {
+    final container = await pumpListLayout(tester);
+    final headerButton = find.descendant(
+      of: find.byType(ListHeader),
+      matching: find.byType(FilledButton),
+    );
+
+    OutlinedBorder? shape() =>
+        tester.widget<FilledButton>(headerButton).style?.shape?.resolve({});
+
+    expect(shape(), isA<RoundedSuperellipseBorder>());
+
+    container
+        .read(proxiesStyleSettingProvider.notifier)
+        .update(
+          (state) =>
+              state.copyWith(listHeaderStyle: ProxiesListHeaderStyle.tight),
+        );
+    await tester.pump();
+
+    expect(shape(), isA<RoundedRectangleBorder>());
+
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump();
+  });
+
   testWidgets('list header fades into proxy rows', (tester) async {
     await pumpListLayout(tester);
 
