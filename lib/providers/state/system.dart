@@ -160,7 +160,6 @@ SharedState sharedState(Ref ref) {
     appSettingProvider.select(
       (state) => (
         onlyStatisticsProxy: state.onlyStatisticsProxy,
-        crashlytics: state.crashlytics,
         testUrl: state.testUrl,
       ),
     ),
@@ -184,7 +183,6 @@ SharedState sharedState(Ref ref) {
   final currentProfileName = currentProfile.label;
   final selectedMap = currentProfile.selectedMap;
   final onlyStatisticsProxy = appSetting.onlyStatisticsProxy;
-  final crashlytics = appSetting.crashlytics;
   final testUrl = appSetting.testUrl;
   final stack = clashConfig.stack;
   final port = clashConfig.mixedPort;
@@ -192,7 +190,6 @@ SharedState sharedState(Ref ref) {
     currentProfileName: currentProfileName,
     onlyStatisticsProxy: onlyStatisticsProxy,
     stopText: currentAppLocalizations.stop,
-    crashlytics: crashlytics,
     networkSpeedNotification: vpnSetting.networkSpeedNotification,
     excludeSSIDs: ref.watch(excludeSSIDsProvider),
     alwaysOn: ref.watch(alwaysOnProvider),

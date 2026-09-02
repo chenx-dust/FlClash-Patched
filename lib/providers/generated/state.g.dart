@@ -89,7 +89,7 @@ final class TrayStateProvider
   }
 }
 
-String _$trayStateHash() => r'ffdffb73e0d59c80c9baea44faf748db44eb0bfc';
+String _$trayStateHash() => r'3ff68b17bb3f8d3023e17bc96a0cac0757ec80e8';
 
 @ProviderFor(vpnState)
 final vpnStateProvider = VpnStateProvider._();
@@ -389,7 +389,7 @@ final class SharedStateProvider
   }
 }
 
-String _$sharedStateHash() => r'ebe23f97c9c41494d9096686de4de50a3c5201b6';
+String _$sharedStateHash() => r'cee11551d04052ff422ce2d9ddb56ff37c6bc12a';
 
 @ProviderFor(AccessControlState)
 final accessControlStateProvider = AccessControlStateProvider._();
