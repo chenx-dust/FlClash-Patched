@@ -51,7 +51,6 @@ void main() {
     currentProfileName: 'profile',
     stopText: 'stop',
     onlyStatisticsProxy: false,
-    crashlytics: false,
   );
 
   void mockChannel(Future<Object?>? Function(MethodCall call) handler) {
@@ -129,7 +128,6 @@ void main() {
             currentProfileName: 'profile',
             stopText: 'stop',
             onlyStatisticsProxy: false,
-            crashlytics: false,
           ),
         ),
         isEmpty,
@@ -144,7 +142,6 @@ void main() {
         currentProfileName: 'profile',
         stopText: 'stop',
         onlyStatisticsProxy: true,
-        crashlytics: false,
       );
 
       expect(await Service().syncState(state), 'ok');
