@@ -19,6 +19,8 @@ _SharedState _$SharedStateFromJson(Map<String, dynamic> json) => _SharedState(
   stopText: json['stopText'] as String,
   onlyStatisticsProxy: json['onlyStatisticsProxy'] as bool,
   networkSpeedNotification: json['networkSpeedNotification'] as bool? ?? false,
+  collapseQuickSettingsPanel:
+      json['collapseQuickSettingsPanel'] as bool? ?? true,
   alwaysOn: json['alwaysOn'] as bool? ?? false,
   excludeSSIDs:
       (json['excludeSSIDs'] as List<dynamic>?)
@@ -37,6 +39,7 @@ Map<String, dynamic> _$SharedStateToJson(_SharedState instance) =>
       'stopText': instance.stopText,
       'onlyStatisticsProxy': instance.onlyStatisticsProxy,
       'networkSpeedNotification': instance.networkSpeedNotification,
+      'collapseQuickSettingsPanel': instance.collapseQuickSettingsPanel,
       'alwaysOn': instance.alwaysOn,
       'excludeSSIDs': instance.excludeSSIDs,
     };

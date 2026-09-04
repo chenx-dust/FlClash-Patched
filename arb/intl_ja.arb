@@ -167,6 +167,8 @@
   "sync": "同期",
   "exclude": "最近のタスクから隠す",
   "excludeDesc": "バックグラウンド時に、最近のタスクからアプリを隠します",
+  "collapseQuickSettingsPanel": "クイック設定パネルを閉じる",
+  "collapseQuickSettingsPanelDesc": "FlClash タイルをタップした後にクイック設定パネルを閉じます",
   "expand": "展開",
   "shrink": "コンパクト",
   "min": "最小",

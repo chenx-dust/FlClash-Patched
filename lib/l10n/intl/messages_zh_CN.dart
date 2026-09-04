@@ -234,6 +234,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "是否关闭使用原代理的连接？",
     ),
     "collapse": MessageLookupByLibrary.simpleMessage("折叠"),
+    "collapseQuickSettingsPanel": MessageLookupByLibrary.simpleMessage(
+      "收起快捷设置面板",
+    ),
+    "collapseQuickSettingsPanelDesc": MessageLookupByLibrary.simpleMessage(
+      "点击 FlClash 快捷设置开关后收起面板",
+    ),
     "color": MessageLookupByLibrary.simpleMessage("颜色"),
     "colorSchemes": MessageLookupByLibrary.simpleMessage("配色方案"),
     "columns": MessageLookupByLibrary.simpleMessage("列数"),

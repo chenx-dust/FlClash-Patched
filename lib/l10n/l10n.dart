@@ -1300,6 +1300,26 @@ class AppLocalizations {
     );
   }
 
+  /// `Collapse Quick Settings panel`
+  String get collapseQuickSettingsPanel {
+    return Intl.message(
+      'Collapse Quick Settings panel',
+      name: 'collapseQuickSettingsPanel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Collapse after tapping the tile`
+  String get collapseQuickSettingsPanelDesc {
+    return Intl.message(
+      'Collapse after tapping the tile',
+      name: 'collapseQuickSettingsPanelDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Expand`
   String get expand {
     return Intl.message('Expand', name: 'expand', desc: '', args: []);

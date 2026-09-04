@@ -334,6 +334,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Закрыть соединения, использующие предыдущий прокси?",
     ),
     "collapse": MessageLookupByLibrary.simpleMessage("Свернуть"),
+    "collapseQuickSettingsPanel": MessageLookupByLibrary.simpleMessage(
+      "Сворачивать панель быстрых настроек",
+    ),
+    "collapseQuickSettingsPanelDesc": MessageLookupByLibrary.simpleMessage(
+      "Сворачивать панель быстрых настроек после нажатия плитки FlClash",
+    ),
     "color": MessageLookupByLibrary.simpleMessage("Цвет"),
     "colorSchemes": MessageLookupByLibrary.simpleMessage("Цветовые схемы"),
     "columns": MessageLookupByLibrary.simpleMessage("Столбцы"),

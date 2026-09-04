@@ -321,6 +321,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Close connections using the previous proxy?",
     ),
     "collapse": MessageLookupByLibrary.simpleMessage("Collapse"),
+    "collapseQuickSettingsPanel": MessageLookupByLibrary.simpleMessage(
+      "Collapse Quick Settings panel",
+    ),
+    "collapseQuickSettingsPanelDesc": MessageLookupByLibrary.simpleMessage(
+      "Collapse after tapping the tile",
+    ),
     "color": MessageLookupByLibrary.simpleMessage("Color"),
     "colorSchemes": MessageLookupByLibrary.simpleMessage("Color schemes"),
     "columns": MessageLookupByLibrary.simpleMessage("Columns"),

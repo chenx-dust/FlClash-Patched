@@ -167,6 +167,8 @@
   "sync": "Sync",
   "exclude": "Hide from recent tasks",
   "excludeDesc": "Hide the app from recent tasks while it is in the background",
+  "collapseQuickSettingsPanel": "Collapse Quick Settings panel",
+  "collapseQuickSettingsPanelDesc": "Collapse after tapping the tile",
   "expand": "Expand",
   "shrink": "Compact",
   "min": "Minimal",

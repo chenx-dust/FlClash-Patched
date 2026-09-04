@@ -523,6 +523,9 @@ void main() {
     await AppLocalizations.load(const Locale('en'));
     container.listen(sharedStateProvider, (_, _) {});
     container
+        .read(appSettingProvider.notifier)
+        .update((state) => state.copyWith(collapseQuickSettingsPanel: false));
+    container
         .read(patchClashConfigProvider.notifier)
         .update(
           (state) => state.copyWith(
@@ -562,6 +565,7 @@ void main() {
     expect(sharedState.vpnOptions?.includeAllNetworks, true);
     expect(sharedState.vpnOptions?.excludeLocalNetworks, false);
     expect(sharedState.networkSpeedNotification, true);
+    expect(sharedState.collapseQuickSettingsPanel, false);
     expect(sharedState.alwaysOn, true);
     expect(sharedState.excludeSSIDs, ['Office']);
 

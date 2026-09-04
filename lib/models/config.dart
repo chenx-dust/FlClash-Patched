@@ -103,6 +103,7 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default(false) bool disclaimerAccepted,
     @Default(true) bool minimizeOnExit,
     @Default(false) bool hidden,
+    @Default(true) bool collapseQuickSettingsPanel,
     @Default(false) bool developerMode,
     @Default(RestoreStrategy.compatible)
     @JsonKey(unknownEnumValue: RestoreStrategy.compatible)

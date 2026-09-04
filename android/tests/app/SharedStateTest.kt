@@ -44,6 +44,7 @@ class SharedStateTest {
               "currentProfileName": "Work",
               "onlyStatisticsProxy": true,
               "networkSpeedNotification": true,
+              "collapseQuickSettingsPanel": false,
               "vpnOptions": {
                 "enable": true,
                 "port": 7890,
@@ -73,6 +74,7 @@ class SharedStateTest {
         assertEquals("Work", state.currentProfileName)
         assertEquals(true, state.onlyStatisticsProxy)
         assertEquals(true, state.networkSpeedNotification)
+        assertEquals(false, state.collapseQuickSettingsPanel)
         assertEquals(7890, state.vpnOptions?.port)
         assertEquals("gvisor", state.vpnOptions?.stack)
         assertEquals(
@@ -90,6 +92,7 @@ class SharedStateTest {
         assertEquals("FlClash", defaults.currentProfileName)
         assertEquals(false, defaults.onlyStatisticsProxy)
         assertEquals(false, defaults.networkSpeedNotification)
+        assertEquals(true, defaults.collapseQuickSettingsPanel)
         assertNull(defaults.vpnOptions)
         assertNull(defaults.setupParams)
     }
@@ -104,6 +107,7 @@ class SharedStateTest {
         assertNotNull(state)
         assertEquals("FlClash", state.currentProfileName)
         assertEquals(false, state.networkSpeedNotification)
+        assertEquals(true, state.collapseQuickSettingsPanel)
         assertNull(state.vpnOptions)
         assertNull(state.setupParams)
     }
@@ -114,6 +118,7 @@ class SharedStateTest {
 
         assertEquals("Work", state.currentProfileName)
         assertEquals(false, state.networkSpeedNotification)
+        assertEquals(true, state.collapseQuickSettingsPanel)
     }
 
     @Test

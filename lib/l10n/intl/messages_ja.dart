@@ -254,6 +254,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "以前のプロキシを使用している接続を切断しますか？",
     ),
     "collapse": MessageLookupByLibrary.simpleMessage("折りたたむ"),
+    "collapseQuickSettingsPanel": MessageLookupByLibrary.simpleMessage(
+      "クイック設定パネルを閉じる",
+    ),
+    "collapseQuickSettingsPanelDesc": MessageLookupByLibrary.simpleMessage(
+      "FlClash タイルをタップした後にクイック設定パネルを閉じます",
+    ),
     "color": MessageLookupByLibrary.simpleMessage("カラー"),
     "colorSchemes": MessageLookupByLibrary.simpleMessage("カラースキーム"),
     "columns": MessageLookupByLibrary.simpleMessage("列数"),
