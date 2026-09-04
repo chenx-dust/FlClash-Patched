@@ -109,6 +109,7 @@ func TestHandleSuspendRefreshesHealthChecksOnResume(t *testing.T) {
 		refreshHealthChecks = previous
 		isRunning.Store(previousRunning)
 		isSuspended.Store(false)
+		provider.SuspendHealthCheck(false)
 		tunnel.OnRunning()
 	})
 
