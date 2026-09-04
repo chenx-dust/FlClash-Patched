@@ -26,6 +26,9 @@ class ApplicationSettingView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final autoLaunch = ref.watch(
+      appSettingProvider.select((state) => state.autoLaunch),
+    );
     final closeConnections = ref.watch(
       appSettingProvider.select((state) => state.closeConnections),
     );
@@ -48,8 +51,7 @@ class ApplicationSettingView extends ConsumerWidget {
                 : false,
           ),
         ),
-        if (system.isWindows &&
-            ref.watch(appSettingProvider.select((state) => state.autoLaunch)))
+        if (system.isWindows && autoLaunch)
           _appSettingToggle(
             title: (l) => l.highPriorityAutoLaunch,
             subtitle: (l) => l.highPriorityAutoLaunchDesc,
