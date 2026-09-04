@@ -49,6 +49,11 @@ class TileService : android.service.quicksettings.TileService() {
                 RunState.STARTING, RunState.STOPPING -> Tile.STATE_UNAVAILABLE
                 RunState.STOPPED -> Tile.STATE_INACTIVE
             }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                subtitle = application.sharedState.currentProfileName.takeIf {
+                    runState == RunState.STARTED && it.isNotBlank()
+                }
+            }
             updateTile()
         }
     }
