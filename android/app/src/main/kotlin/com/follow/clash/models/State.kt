@@ -8,6 +8,7 @@ data class SharedState(
     val onlyStatisticsProxy: Boolean = false,
     val showStopAction: Boolean = true,
     val networkSpeedNotification: Boolean = false,
+    val collapseQuickSettingsPanel: Boolean = true,
     val vpnOptions: VpnOptions? = null,
     val setupParams: SetupParams? = null,
 )

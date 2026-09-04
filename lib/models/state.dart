@@ -317,6 +317,7 @@ abstract class SharedState with _$SharedState {
     required bool onlyStatisticsProxy,
     @Default(true) bool showStopAction,
     @Default(false) bool networkSpeedNotification,
+    @Default(true) bool collapseQuickSettingsPanel,
     @Default(false) bool alwaysOn,
     @Default([]) List<String> excludeSSIDs,
   }) = _SharedState;

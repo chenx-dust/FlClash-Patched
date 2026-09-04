@@ -79,6 +79,14 @@ class ApplicationSettingView extends ConsumerWidget {
           select: (state) => state.hidden,
           update: (state, value) => state.copyWith(hidden: value),
         ),
+      if (system.isAndroid)
+        _appSettingToggle(
+          title: (l) => l.collapseQuickSettingsPanel,
+          subtitle: (l) => l.collapseQuickSettingsPanelDesc,
+          select: (state) => state.collapseQuickSettingsPanel,
+          update: (state, value) =>
+              state.copyWith(collapseQuickSettingsPanel: value),
+        ),
       _appSettingToggle(
         title: (l) => l.tabAnimation,
         subtitle: (l) => l.tabAnimationDesc,
