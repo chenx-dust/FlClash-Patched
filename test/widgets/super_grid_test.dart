@@ -59,6 +59,21 @@ void main() {
         matching: find.byType(IconButton),
       ),
     );
+    final deleteButtonContext = tester.element(
+      find.ancestor(
+        of: find.byIcon(Icons.close).at(1),
+        matching: find.byType(IconButton),
+      ),
+    );
+    final colorScheme = Theme.of(deleteButtonContext).colorScheme;
+    expect(
+      deleteButton.style?.backgroundColor?.resolve({}),
+      colorScheme.primary,
+    );
+    expect(
+      deleteButton.style?.foregroundColor?.resolve({}),
+      colorScheme.onPrimary,
+    );
     deleteButton.onPressed!();
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 301));
