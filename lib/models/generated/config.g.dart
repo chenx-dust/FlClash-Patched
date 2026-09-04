@@ -30,6 +30,8 @@ _AppSettingProps _$AppSettingPropsFromJson(Map<String, dynamic> json) =>
       disclaimerAccepted: json['disclaimerAccepted'] as bool? ?? false,
       minimizeOnExit: json['minimizeOnExit'] as bool? ?? true,
       hidden: json['hidden'] as bool? ?? false,
+      collapseQuickSettingsPanel:
+          json['collapseQuickSettingsPanel'] as bool? ?? true,
       developerMode: json['developerMode'] as bool? ?? false,
       restoreStrategy:
           $enumDecodeNullable(
@@ -73,6 +75,7 @@ Map<String, dynamic> _$AppSettingPropsToJson(_AppSettingProps instance) =>
       'disclaimerAccepted': instance.disclaimerAccepted,
       'minimizeOnExit': instance.minimizeOnExit,
       'hidden': instance.hidden,
+      'collapseQuickSettingsPanel': instance.collapseQuickSettingsPanel,
       'developerMode': instance.developerMode,
       'restoreStrategy': _$RestoreStrategyEnumMap[instance.restoreStrategy]!,
       'checkCertificate': instance.checkCertificate,

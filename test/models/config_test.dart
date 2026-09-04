@@ -109,6 +109,7 @@ void main() {
       expect(restored.autoCheckUpdate, true);
       expect(restored.showLabel, false);
       expect(restored.minimizeOnExit, true);
+      expect(restored.collapseQuickSettingsPanel, true);
       expect(restored.restoreStrategy, RestoreStrategy.compatible);
       expect(restored.customUserAgent, '');
       expect(restored.testUrl, defaultTestUrl);
@@ -130,6 +131,7 @@ void main() {
         promptCloseConnections: false,
         testUrl: 'https://custom.test',
         customUserAgent: 'CustomUA/1.0',
+        collapseQuickSettingsPanel: false,
         foregroundTickerInterval: 3,
         foregroundTickerIdleWhenUnfocused: false,
         foregroundTickerIdleInterval: 8,
@@ -149,6 +151,7 @@ void main() {
       expect(restored.promptCloseConnections, false);
       expect(restored.testUrl, 'https://custom.test');
       expect(restored.customUserAgent, 'CustomUA/1.0');
+      expect(restored.collapseQuickSettingsPanel, false);
       expect(restored.foregroundTickerInterval, 3);
       expect(restored.foregroundTickerIdleWhenUnfocused, false);
       expect(restored.foregroundTickerIdleInterval, 8);

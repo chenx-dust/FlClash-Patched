@@ -166,6 +166,7 @@ SharedState sharedState(Ref ref) {
         onlyStatisticsProxy: state.onlyStatisticsProxy,
         showStopAction: state.showNotificationStopAction,
         testUrl: state.testUrl,
+        collapseQuickSettingsPanel: state.collapseQuickSettingsPanel,
       ),
     ),
   );
@@ -201,6 +202,7 @@ SharedState sharedState(Ref ref) {
     showStopAction: appSetting.showStopAction,
     stopText: currentAppLocalizations.stop,
     networkSpeedNotification: vpnSetting.networkSpeedNotification,
+    collapseQuickSettingsPanel: appSetting.collapseQuickSettingsPanel,
     excludeSSIDs: ref.watch(excludeSSIDsProvider),
     alwaysOn: ref.watch(alwaysOnProvider),
     stopTip: currentAppLocalizations.stopVpn,
