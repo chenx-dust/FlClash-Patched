@@ -1,4 +1,4 @@
-//go:build !(android && cgo) && !windows
+//go:build !((android || ios) && cgo) && !windows
 
 package main
 
