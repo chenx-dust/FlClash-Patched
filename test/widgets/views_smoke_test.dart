@@ -1020,6 +1020,36 @@ void main() {
         await tester.tap(find.text('Add'));
         await tester.pumpAndSettle();
         expect(find.byType(PagedSheet), findsOneWidget);
+        await tester.tap(
+          find.descendant(
+            of: find.byType(PagedSheet),
+            matching: find.text('DOMAIN'),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('GEOIP'));
+        await tester.pumpAndSettle();
+
+        final switches = find.byType(Switch);
+        expect(switches, findsNWidgets(2));
+        final formContainer = ProviderScope.containerOf(
+          tester.element(switches.first),
+        );
+        for (final value in [true, false]) {
+          await tester.ensureVisible(switches.first);
+          await tester.tap(switches.first);
+          await tester.pumpAndSettle();
+          expect(tester.widget<Switch>(switches.first).value, value);
+          expect(formContainer.read(ruleProvider).noResolve, value);
+          expect(formContainer.read(ruleProvider).src, !value);
+
+          await tester.ensureVisible(switches.last);
+          await tester.tap(switches.last);
+          await tester.pumpAndSettle();
+          expect(tester.widget<Switch>(switches.last).value, value);
+          expect(formContainer.read(ruleProvider).src, value);
+          expect(formContainer.read(ruleProvider).noResolve, value);
+        }
         globalState.navigatorKey.currentState!.pop();
         await tester.pumpAndSettle();
         container
