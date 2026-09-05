@@ -7,7 +7,7 @@ import 'src/changelog/git.dart';
 import 'src/changelog/models.dart';
 import 'src/changelog/render.dart';
 
-const _repository = 'chen08209/FlClash';
+const _repository = 'chenx-dust/FlClash-Patched';
 
 Future<void> main(List<String> arguments) async {
   final parser = ArgParser()
