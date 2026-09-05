@@ -37,7 +37,7 @@ void main() {
         'NoDisplay=true\n'
         'Exec="/home/me/Apps/FlClash.AppImage" %u\n'
         'MimeType=x-scheme-handler/clash;x-scheme-handler/clashmeta;'
-        'x-scheme-handler/flclash;\n',
+        'x-scheme-handler/mihomo;x-scheme-handler/flclash;\n',
       );
     });
 
@@ -47,6 +47,7 @@ void main() {
         'flclash-url-handler.desktop',
         'x-scheme-handler/clash',
         'x-scheme-handler/clashmeta',
+        'x-scheme-handler/mihomo',
         'x-scheme-handler/flclash',
       ]);
     });

@@ -15,6 +15,7 @@ dart setup.dart macos
 dart setup.dart linux
 dart setup.dart windows
 dart setup.dart android
+dart setup.dart ios --no-codesign  # macOS host, arm64 device IPA
 ```
 
 The Go core and the Rust helper build automatically: Flutter runs

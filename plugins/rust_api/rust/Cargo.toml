@@ -12,11 +12,11 @@ rquickjs = { version = "0.12", default-features = false }
 
 # The IPC server exists so a desktop Core process can talk to the app. Android
 # loads the Core in-process, so nothing below is built into the Android library.
-[target.'cfg(not(target_os = "android"))'.dependencies]
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 interprocess = "2"
 global-hotkey = "0.8"
 
-[target.'cfg(all(unix, not(target_os = "android")))'.dependencies]
+[target.'cfg(all(unix, not(any(target_os = "android", target_os = "ios"))))'.dependencies]
 libc = "0.2"
 
 # rquickjs does not ship pre-generated bindings for Android or iOS, so generate

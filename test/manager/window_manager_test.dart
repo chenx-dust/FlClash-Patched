@@ -164,10 +164,9 @@ void main() {
     tester,
   ) async {
     await pumpWindowManager(tester);
-    final listener =
-        tester.state(find.byType(WindowManager)) as WindowListener;
+    final listener = tester.state(find.byType(WindowManager)) as WindowListener;
 
-    await listener.onWindowShouldTerminate();
+    listener.onWindowShouldTerminate();
     await tester.pumpAndSettle();
 
     expect(_RecordingSystemAction.calls, ['exit']);
@@ -175,8 +174,7 @@ void main() {
 
   testWidgets('a native activation request shows the window', (tester) async {
     await pumpWindowManager(tester);
-    final listener =
-        tester.state(find.byType(WindowManager)) as WindowListener;
+    final listener = tester.state(find.byType(WindowManager)) as WindowListener;
 
     listener.onWindowActivate();
     await tester.pump();
@@ -233,7 +231,7 @@ void main() {
 
     listener.onWindowActivate();
     listener.onWindowFocus();
-    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(window.shows, 1);
   });

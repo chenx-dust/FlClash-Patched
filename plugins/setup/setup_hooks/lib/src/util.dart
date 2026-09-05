@@ -55,6 +55,7 @@ ProcessResult runCommand(
     workingDirectory: workingDirectory,
     environment: _withToolSearchPath(environment),
     includeParentEnvironment: includeParentEnvironment,
+    runInShell: Platform.isWindows,
     stdoutEncoding: systemEncoding,
     stderrEncoding: systemEncoding,
   );

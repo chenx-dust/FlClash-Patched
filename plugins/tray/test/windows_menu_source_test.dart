@@ -18,7 +18,9 @@ void main() {
   late String pluginSource;
 
   setUpAll(() {
-    pluginSource = _resolveSource('windows/tray_plugin.cpp').readAsStringSync();
+    pluginSource = _resolveSource(
+      'windows/tray_plugin.cpp',
+    ).readAsStringSync().replaceAll('\r\n', '\n');
   });
 
   test('windows menu clicks come from TrackPopupMenu, not WM_COMMAND', () {
