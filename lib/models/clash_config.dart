@@ -395,47 +395,49 @@ abstract class Rule with _$Rule {
         ruleTarget: RuleTarget.DIRECT.name,
       );
     }
-    final splits = value.split(',');
-    final shortSplits = splits
-        .where(
-          (item) =>
-              !item.contains('src') &&
-              !item.contains('no-resolve') &&
-              item.isNotEmpty,
-        )
-        .map((item) => item.trim())
-        .toList();
+    final splits = value.split(',').map((item) => item.trim()).toList();
     final ruleAction = RuleAction.values.firstWhere(
-      (item) => item.value == shortSplits.first,
+      (item) => item.value == splits.first.toUpperCase(),
       orElse: () => RuleAction.DOMAIN,
     );
-    String? subRule;
-    String? ruleTarget;
-
-    if (ruleAction == RuleAction.SUB_RULE) {
-      subRule = shortSplits.last;
-    } else {
-      ruleTarget = shortSplits.last;
-    }
-
-    String? content;
-    String? ruleProvider;
-
-    if (ruleAction == RuleAction.RULE_SET) {
-      ruleProvider = shortSplits[1];
-    } else {
-      content = shortSplits[1];
-    }
+    // Match mihomo's ParseRulePayload: these payloads may contain commas.
+    final hasCompoundPayload = switch (ruleAction) {
+      RuleAction.AND ||
+      RuleAction.OR ||
+      RuleAction.NOT ||
+      RuleAction.SUB_RULE ||
+      RuleAction.DOMAIN_REGEX ||
+      RuleAction.PROCESS_NAME_REGEX ||
+      RuleAction.PROCESS_PATH_REGEX => true,
+      _ => false,
+    };
+    final isMatch = ruleAction == RuleAction.MATCH;
+    final targetIndex = isMatch
+        ? 1
+        : hasCompoundPayload
+        ? splits.length - 1
+        : 2;
+    final target = targetIndex > 0 && targetIndex < splits.length
+        ? splits[targetIndex]
+        : null;
+    final content = isMatch || splits.length < 2
+        ? null
+        : hasCompoundPayload
+        ? splits.sublist(1, splits.length - 1).join(',')
+        : splits[1];
+    final params = !isMatch && !hasCompoundPayload && splits.length > 3
+        ? splits.sublist(3)
+        : const <String>[];
 
     return Rule(
       id: id,
       ruleAction: ruleAction,
-      content: content,
-      src: splits.contains('src'),
-      ruleProvider: ruleProvider,
-      noResolve: splits.contains('no-resolve'),
-      subRule: subRule,
-      ruleTarget: ruleTarget,
+      content: ruleAction == RuleAction.RULE_SET ? null : content,
+      src: params.contains('src'),
+      ruleProvider: ruleAction == RuleAction.RULE_SET ? content : null,
+      noResolve: params.contains('no-resolve'),
+      subRule: ruleAction == RuleAction.SUB_RULE ? target : null,
+      ruleTarget: ruleAction == RuleAction.SUB_RULE ? null : target,
     );
   }
 
@@ -474,7 +476,7 @@ extension RuleExt on Rule {
   String get rawValue {
     return [
       ruleAction.value,
-      realContent,
+      if (ruleAction != RuleAction.MATCH) realContent,
       realTarget,
       if (ruleAction.hasParams) ...[
         if (src) 'src',

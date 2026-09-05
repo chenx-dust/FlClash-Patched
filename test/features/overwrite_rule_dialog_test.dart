@@ -9,6 +9,46 @@ import 'package:flutter_test/flutter_test.dart';
 import '../helpers/test_app.dart';
 
 void main() {
+  testWidgets('editing a parsed nested rule preserves the expression', (
+    tester,
+  ) async {
+    const raw =
+        'AND,((DOMAIN,example.com),(OR,((NETWORK,TCP),(DST-PORT,443)))),DIRECT';
+    final rule = Rule.parse(raw, id: 42);
+    Rule? result;
+    await tester.pumpWidget(
+      TestApp(
+        wrapInProviderScope: true,
+        overrides: [
+          viewSizeProvider.overrideWithBuild((_, _) => const Size(1200, 800)),
+        ],
+        child: Builder(
+          builder: (context) => FilledButton(
+            onPressed: () async {
+              result = await showDialog<Rule>(
+                context: context,
+                builder: (_) => AddOrEditRuleDialog(rule: rule),
+              );
+            },
+            child: const Text('open'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<TextFormField>(find.byType(TextFormField)).controller!.text,
+      '((DOMAIN,example.com),(OR,((NETWORK,TCP),(DST-PORT,443))))',
+    );
+    await tester.tap(find.text(AppLocalizations.current.confirm));
+    await tester.pumpAndSettle();
+
+    expect(result?.id, 42);
+    expect(result?.rawValue, raw);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('add rule validates content and returns the entered rule', (
     tester,
   ) async {

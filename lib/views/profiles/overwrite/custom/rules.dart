@@ -434,7 +434,14 @@ class _AddOrEditRuleViewState extends ConsumerState<_AddOrEditRuleView> {
     final appLocalizations = context.appLocalizations;
     return _buildItem(
       title: appLocalizations.noResolveHostname,
-      trailing: Switch(value: noResolve ?? false, onChanged: (_) {}),
+      trailing: Switch(
+        value: noResolve ?? false,
+        onChanged: (value) {
+          ref
+              .read(ruleProvider.notifier)
+              .update((state) => state.copyWith(noResolve: value));
+        },
+      ),
     );
   }
 
@@ -442,7 +449,14 @@ class _AddOrEditRuleViewState extends ConsumerState<_AddOrEditRuleView> {
     final appLocalizations = context.appLocalizations;
     return _buildItem(
       title: appLocalizations.matchSourceIp,
-      trailing: Switch(value: src ?? false, onChanged: (_) {}),
+      trailing: Switch(
+        value: src ?? false,
+        onChanged: (value) {
+          ref
+              .read(ruleProvider.notifier)
+              .update((state) => state.copyWith(src: value));
+        },
+      ),
     );
   }
 
@@ -524,7 +538,8 @@ class _AddOrEditRuleViewState extends ConsumerState<_AddOrEditRuleView> {
 bool _handleSaveRule(BuildContext context, WidgetRef ref) {
   final rule = ref.read(ruleProvider);
   final appLocalizations = context.appLocalizations;
-  if (rule.realContent?.isNotEmpty != true) {
+  if (rule.ruleAction != RuleAction.MATCH &&
+      rule.realContent?.isNotEmpty != true) {
     dialogs.showMessage(
       cancelable: false,
       message: TextSpan(

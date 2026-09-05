@@ -168,4 +168,24 @@ void main() {
     expect(stored.ruleTarget, 'DIRECT');
     expect(stored.id, isNot(-1), reason: 'a new rule gets a snowflake id');
   });
+
+  testWidgets('MATCH saves without a content field', (tester) async {
+    final harness = _Harness();
+    await harness.pump(tester);
+    await harness.openAddSheet(tester);
+
+    await tester.tap(find.text(currentAppLocalizations.proxyType));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text(RuleAction.MATCH.name),
+      300,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await tester.tap(find.text(RuleAction.MATCH.name).last);
+    await tester.pumpAndSettle();
+    await harness.save(tester);
+
+    expect(harness.rules.puts, hasLength(1));
+    expect(harness.rules.puts.single.rawValue, 'MATCH,DIRECT');
+  });
 }
