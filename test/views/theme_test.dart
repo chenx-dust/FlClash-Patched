@@ -93,7 +93,7 @@ void main() {
     ) async {
       await pumpThemeView(tester);
 
-      if (Platform.isMacOS) {
+      if (!Platform.isWindows && !Platform.isLinux) {
         expect(find.text('Monochrome tray icon'), findsNothing);
         return;
       }

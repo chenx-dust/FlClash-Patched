@@ -523,7 +523,7 @@ class _MonochromeTrayIconItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (system.isMacOS) {
+    if (!system.isDesktop || system.isMacOS) {
       return const SliverToBoxAdapter();
     }
     final monochromeTrayIcon = ref.watch(
