@@ -72,7 +72,9 @@ void main() {
       ]) {
         expect(
           macOS.getTrayIcon(isStart: isStart, tunEnable: tunEnable),
-          isStart ? 'assets/images/icon/flclash-symbolic.svg' : 'assets/images/icon/flclash-disabled-symbolic.svg',
+          isStart
+              ? 'assets/images/icon/flclash-symbolic.svg'
+              : 'assets/images/icon/flclash-disabled-symbolic.svg',
         );
       }
     });

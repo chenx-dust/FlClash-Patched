@@ -457,9 +457,10 @@ Shared:
 
 ## Build System
 
-`setup.dart` is the release build orchestrator: it writes `env.json` (`APP_ENV`), activates `flutter_distributor` from
-the `chen08209/flutter_distributor` fork pinned to a `v<version>-flclash.<n>` tag (cut a new tag there and bump
-`--git-ref` when the fork changes), and leaves the Core artifacts to the build hook.
+`setup.dart` downloads ignored GeoData before asset bundling, writes `env.json` (`APP_ENV`), and packages releases
+using `chenx-dust/flutter_distributor` at its `FlClash` ref. Core artifacts remain owned by the Dart build hook.
+Linux packages include deb, rpm, pacman, AppImage, and portable zip; Windows zip also carries a `config/` directory.
+iOS packaging supports provisioning and an ad-hoc-signed IPA through `--no-codesign`.
 
 The Go core and the Rust helper are built by a Dart build hook. `plugins/setup/hook/build.dart` only constructs
 `CoreBuilder`, a `package:hooks` `Builder` in `plugins/setup/setup_hooks/`, the same shape `rust_api` uses. Flutter
@@ -490,6 +491,9 @@ Platform projects copy the artifacts out of `libclash/`; application code must n
 
 - Android: the Go core is built `c-shared`, and `libclash.so` with its headers lands in the `:core` module (see Android
   Native Task Ordering).
+- iOS: arm64 device archives `libclash.a` and `libclash_lowmem.a`, with their generated headers, land in
+  `libclash/ios/arm64/`. Runner uses the normal archive and NECore uses the low-memory variant. Simulator builds
+  fail explicitly rather than linking a device archive. Rust IPC and global hotkeys remain desktop-only.
 - macOS: a standalone `FlClashCore`. `Release.xcconfig` pins release and profile `ARCHS` to the host because
   flutter_tools otherwise builds a universal binary and every artifact ships one slice; the hook skips a non-host slice
   for the same reason. The `Stage Core` phase copies the Core after the hook may have rewritten it and fails when it is
@@ -505,7 +509,7 @@ Platform projects copy the artifacts out of `libclash/`; application code must n
 Setup keeps its own cache under `.dart_tool/setup_build_cache/v1/` because it builds a Go core and, on Windows and
 Linux, a Rust helper:
 
-- Go fingerprints cover the target-specific `go list -deps` inputs in `core/` and `Clash.Meta`, module files, the
+- Go fingerprints cover the target-specific `go list -deps` inputs in `core/` and `core/mihomo/`, module files, the
   effective build configuration, `setup_hooks` sources, target flags, the Go toolchain and the Android clang version.
   Helper fingerprints cover its Rust sources and manifests, Cargo/Rust toolchains and flags, and the expected Core
   SHA256.

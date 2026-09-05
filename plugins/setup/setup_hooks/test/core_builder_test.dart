@@ -36,6 +36,7 @@ void main() {
     bool codeAssets = true,
     Uri? compiler,
     int ndkApi = 23,
+    IOSSdk iosSdk = IOSSdk.iPhoneOS,
     Directory? package,
     Map<String, Object?> userDefines = const {},
   }) {
@@ -66,6 +67,9 @@ void main() {
                 archiver: compiler.resolve('llvm-ar'),
                 linker: compiler.resolve('ld.lld'),
               ),
+        iOS: os == OS.iOS
+            ? IOSCodeConfig(targetSdk: iosSdk, targetVersion: 15)
+            : null,
         android: os == OS.android
             ? AndroidCodeConfig(targetNdkApi: ndkApi)
             : null,
@@ -95,6 +99,19 @@ void main() {
             )
             ?.target,
         Target.iosArm64,
+      );
+    });
+
+    test('rejects simulator builds instead of staging device archives', () {
+      expect(
+        () => const CoreBuilder().requestFor(
+          buildInput(
+            os: OS.iOS,
+            architecture: Architecture.arm64,
+            iosSdk: IOSSdk.iPhoneSimulator,
+          ),
+        ),
+        throwsA(isA<BuildException>()),
       );
     });
 
@@ -142,7 +159,10 @@ void main() {
       expect(request.target, Target.androidArm64);
       expect(
         request.androidToolchain!.clangFor(Target.androidArm64),
-        p.join(bin, 'aarch64-linux-android23-clang'),
+        p.join(
+          bin,
+          'aarch64-linux-android23-clang${Platform.isWindows ? '.cmd' : ''}',
+        ),
       );
     });
 
@@ -228,7 +248,11 @@ void main() {
       final output = BuildOutputBuilder();
 
       await builder.run(
-        input: buildInput(os: OS.iOS, architecture: Architecture.arm64, codeAssets: false),
+        input: buildInput(
+          os: OS.iOS,
+          architecture: Architecture.arm64,
+          codeAssets: false,
+        ),
         output: output,
       );
 

@@ -96,6 +96,9 @@ final class CoreBuilder implements Builder {
   BuildRequest? requestFor(BuildInput input) {
     if (!input.config.buildCodeAssets) return null;
     final code = input.config.code;
+    if (code.targetOS == OS.iOS && code.iOS.targetSdk != IOSSdk.iPhoneOS) {
+      throw BuildException('The iOS VPN Core requires an arm64 device build');
+    }
     final platform = switch (code.targetOS) {
       OS.android => 'android',
       OS.iOS => 'ios',

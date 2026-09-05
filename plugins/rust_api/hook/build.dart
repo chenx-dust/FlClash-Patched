@@ -19,8 +19,34 @@ void main(List<String> args) async {
 // rquickjs runs bindgen on Android, which must load the NDK's libclang; Linux
 // NDKs before r26 keep it under lib64, later ones and every macOS NDK under lib.
 Map<String, String> _bindgenEnvironment(BuildInput input) {
-  if (!input.config.buildCodeAssets ||
-      input.config.code.targetOS != OS.android) {
+  if (!input.config.buildCodeAssets) return const {};
+  final code = input.config.code;
+  if (code.targetOS == OS.iOS) {
+    final sdk = code.iOS.targetSdk == IOSSdk.iPhoneOS
+        ? 'iphoneos'
+        : 'iphonesimulator';
+    String xcrun(List<String> args) {
+      final result = Process.runSync('xcrun', ['--sdk', sdk, ...args]);
+      if (result.exitCode != 0) {
+        throw ProcessException(
+          'xcrun',
+          args,
+          '${result.stderr}',
+          result.exitCode,
+        );
+      }
+      return (result.stdout as String).trim();
+    }
+
+    final sdkPath = xcrun(['--show-sdk-path']);
+    final clang = xcrun(['--find', 'clang']);
+    return {
+      'LIBCLANG_PATH': '${File(clang).parent.parent.path}/lib',
+      'BINDGEN_EXTRA_CLANG_ARGS': '-isysroot "$sdkPath"',
+      'IPHONEOS_DEPLOYMENT_TARGET': '${code.iOS.targetVersion}.0',
+    };
+  }
+  if (code.targetOS != OS.android) {
     return const {};
   }
   final compiler = input.config.code.cCompiler?.compiler;
@@ -28,7 +54,7 @@ Map<String, String> _bindgenEnvironment(BuildInput input) {
     return const {};
   }
   final llvmRoot = File.fromUri(compiler).parent.parent;
-  for (final name in const ['lib', 'lib64']) {
+  for (final name in const ['lib', 'lib64', 'bin']) {
     final directory = Directory(
       '${llvmRoot.path}${Platform.pathSeparator}$name',
     );
@@ -37,7 +63,7 @@ Map<String, String> _bindgenEnvironment(BuildInput input) {
     }
   }
   throw StateError(
-    'No libclang under ${llvmRoot.path} (lib or lib64); the NDK Flutter '
+    'No libclang under ${llvmRoot.path} (lib, lib64, or bin); the NDK Flutter '
     'passed cannot run bindgen for rquickjs',
   );
 }

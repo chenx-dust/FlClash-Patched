@@ -323,6 +323,7 @@ class Windows {
       () async => runas(appPath.helperPath, 'install'),
     );
   }
+
   Future<bool> isTaskRegistered(String appName) async {
     final result = await Process.run('schtasks.exe', [
       '/Query',
@@ -488,8 +489,6 @@ class Linux {
     }
     return false;
   }
-
-
 }
 
 final linux = system.isLinux && system.hasHelperService ? Linux() : null;

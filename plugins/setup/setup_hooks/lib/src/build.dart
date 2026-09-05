@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 
@@ -21,8 +23,10 @@ class AndroidToolchain {
   final String clangDirectory;
   final int apiLevel;
 
-  String clangFor(Target target) =>
-      p.join(clangDirectory, '${target.ndkTriple}$apiLevel-clang');
+  String clangFor(Target target) => p.join(
+    clangDirectory,
+    '${target.ndkTriple}$apiLevel-clang${Platform.isWindows ? '.cmd' : ''}',
+  );
 }
 
 class BuildRequest {

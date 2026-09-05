@@ -183,7 +183,16 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView>
                   );
           }).toList();
     _lastUpdatedAt = updatedAt;
-    _listController.setTrackerInfos(updatedTrackerInfos);
+    final sorted = List.of(updatedTrackerInfos)
+      ..sort((a, b) {
+        final traffic = (b.upload + b.download).compareTo(
+          a.upload + a.download,
+        );
+        if (traffic != 0) return traffic;
+        final start = b.start.compareTo(a.start);
+        return start != 0 ? start : a.id.compareTo(b.id);
+      });
+    _listController.setTrackerInfos(sorted);
   }
 
   Future<void> _handleCloseConnection(String id) async {

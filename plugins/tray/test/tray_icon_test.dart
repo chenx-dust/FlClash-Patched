@@ -54,7 +54,7 @@ void main() {
     await Tray.instance.show(const TraySpec(icon: TrayIcon.asset(_asset)));
 
     expect(
-      lastIcon()['path'],
+      (lastIcon()['path'] as String).replaceAll('\\', '/'),
       endsWith('flutter_assets/assets/images/tray/unix/3.0x/status_1.png'),
     );
   });
@@ -67,7 +67,7 @@ void main() {
       await Tray.instance.show(const TraySpec(icon: TrayIcon.asset(_asset)));
 
       expect(
-        lastIcon()['path'],
+        (lastIcon()['path'] as String).replaceAll('\\', '/'),
         endsWith('flutter_assets/assets/images/tray/unix/status_1.png'),
       );
     },
@@ -99,5 +99,33 @@ void main() {
     expect(base64Decode(reps.last['bytes'] as String), [2, 2]);
     expect(lastIcon()['isTemplate'], isTrue);
     expect(lastIcon().containsKey('path'), isFalse);
+  });
+  test('macOS rasterizes SVG templates at every display scale', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+    const asset = 'assets/template.svg';
+    final source = Uint8List.fromList(
+      utf8.encode(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">'
+        '<rect width="18" height="18" fill="black"/></svg>',
+      ),
+    );
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMessageHandler(
+          'flutter/assets',
+          (_) async => ByteData.sublistView(source),
+        );
+    await Tray.instance.show(
+      const TraySpec(icon: TrayIcon.asset(asset, isTemplate: true)),
+    );
+    final reps = (lastIcon()['reps'] as List).cast<Map>();
+    expect(reps.map((rep) => rep['scale']), [1.0, 2.0, 3.0, 4.0]);
+    for (final rep in reps) {
+      final png = base64Decode(rep['bytes'] as String);
+      expect(png.take(8), [137, 80, 78, 71, 13, 10, 26, 10]);
+      final header = ByteData.sublistView(png);
+      expect(header.getUint32(16), (18 * (rep['scale'] as double)).round());
+      expect(header.getUint32(20), header.getUint32(16));
+    }
+    expect(lastIcon()['isTemplate'], isTrue);
   });
 }

@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart' as svg;
 import 'package:path/path.dart' as path;
 
 import 'tray_capabilities.dart';
@@ -28,6 +30,7 @@ final class Tray {
   }
 
   static final Tray instance = Tray._();
+  final _svgRepresentations = <String, List<Map<String, Object?>>>{};
 
   final MethodChannel _channel = const MethodChannel('tray');
 
@@ -87,6 +90,7 @@ final class Tray {
 
   @visibleForTesting
   void resetForTesting() {
+    _svgRepresentations.clear();
     _itemsById = const {};
     _queue = Future<void>.value();
     _signature = null;
@@ -289,13 +293,55 @@ final class Tray {
     };
     switch (defaultTargetPlatform) {
       case TargetPlatform.macOS:
-        resolved['reps'] = await _loadRepresentations(icon.asset);
+        resolved['reps'] = icon.asset.toLowerCase().endsWith('.svg')
+            ? await _loadSvgRepresentations(icon)
+            : await _loadRepresentations(icon.asset);
       case TargetPlatform.linux:
         resolved['path'] = _largestBundledVariant(icon.asset);
       default:
         resolved['path'] = _bundledPath(icon.asset);
     }
     return resolved;
+  }
+
+  Future<List<Map<String, Object?>>> _loadSvgRepresentations(
+    TrayIcon icon,
+  ) async {
+    final key = '${icon.asset}:${icon.size}';
+    final cached = _svgRepresentations[key];
+    if (cached != null) return cached;
+    final source = await rootBundle.loadString(icon.asset);
+    final picture = await svg.vg.loadPicture(svg.SvgStringLoader(source), null);
+    final reps = <Map<String, Object?>>[];
+    try {
+      for (final scale in variantScales) {
+        final size = (icon.size * scale).round();
+        final recorder = ui.PictureRecorder();
+        ui.Canvas(recorder)
+          ..scale(size / picture.size.width, size / picture.size.height)
+          ..drawPicture(picture.picture);
+        final scaled = recorder.endRecording();
+        try {
+          final image = await scaled.toImage(size, size);
+          try {
+            final bytes = await image.toByteData(
+              format: ui.ImageByteFormat.png,
+            );
+            reps.add({
+              'scale': scale,
+              'bytes': base64Encode(bytes!.buffer.asUint8List()),
+            });
+          } finally {
+            image.dispose();
+          }
+        } finally {
+          scaled.dispose();
+        }
+      }
+    } finally {
+      picture.picture.dispose();
+    }
+    return _svgRepresentations[key] = reps;
   }
 
   Future<List<Map<String, Object?>>> _loadRepresentations(String asset) async {

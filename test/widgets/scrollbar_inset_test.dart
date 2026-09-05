@@ -15,7 +15,7 @@ Widget _list() {
 }
 
 final _desktop = TargetPlatformVariant.only(TargetPlatform.macOS);
-final _everyPlatform = TargetPlatformVariant(const {
+const _everyPlatform = TargetPlatformVariant({
   TargetPlatform.macOS,
   TargetPlatform.android,
 });
