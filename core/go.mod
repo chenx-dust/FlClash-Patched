@@ -4,9 +4,12 @@ go 1.25
 
 replace github.com/metacubex/mihomo => ./mihomo
 
+replace github.com/metacubex/sing-tun => github.com/chenx-dust/sing-tun v0.4.23-0.20260905090653-debae783ec1b
+
 require (
 	github.com/Microsoft/go-winio v0.6.2
 	github.com/metacubex/mihomo v0.0.0-00010101000000-000000000000
+	github.com/metacubex/tailscale v0.0.0-20260807072706-a4fb5feabcbb
 )
 
 require (
@@ -89,7 +92,6 @@ require (
 	github.com/metacubex/sing-wireguard v0.0.0-20260810013230-110eac03c3f0 // indirect
 	github.com/metacubex/smux v0.0.0-20260105030934-d0c8756d3141 // indirect
 	github.com/metacubex/ssh v0.1.0 // indirect
-	github.com/metacubex/tailscale v0.0.0-20260807072706-a4fb5feabcbb // indirect
 	github.com/metacubex/tailscale-wireguard-go v0.0.0-20260725073821-e61ab99cede2 // indirect
 	github.com/metacubex/tfo-go v0.0.0-20260623020846-376a77860b8c // indirect
 	github.com/metacubex/tls v0.1.8 // indirect
