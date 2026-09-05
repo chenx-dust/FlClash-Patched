@@ -1083,7 +1083,9 @@ func handleStopRequestNotify() {
 }
 
 func handleGetMemory() uint64 {
-	return statistic.DefaultManager.Memory()
+	var memStats runtime.MemStats
+	runtime.ReadMemStats(&memStats)
+	return memStats.Sys - memStats.HeapReleased
 }
 
 func handleGetGoroutineCount() int {
