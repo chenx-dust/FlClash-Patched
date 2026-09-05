@@ -222,6 +222,7 @@ class ProxiesAction extends _$ProxiesAction {
     if (context == null || !context.mounted) return;
     context.showSnackBar(
       currentAppLocalizations.closeConnectionsPrompt,
+      persist: false,
       action: SnackBarAction(
         label: MaterialLocalizations.of(context).closeButtonTooltip,
         onPressed: () async {
