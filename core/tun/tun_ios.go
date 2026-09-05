@@ -70,8 +70,6 @@ func Start(fd int, config Options) *sing_tun.Listener {
 		LoopbackAddress: []netip.Addr{
 			netip.MustParseAddr("10.7.0.1"),
 		},
-		RecvMsgX: true,
-		SendMsgX: true,
 	}
 
 	listener, err := sing_tun.New(options, tunnel.Tunnel)
