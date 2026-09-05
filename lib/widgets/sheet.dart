@@ -110,6 +110,7 @@ class AdaptiveSheetScaffold extends StatefulWidget {
   final Widget body;
   final String title;
   final bool sheetTransparentToolBar;
+  final bool bodyIncludesBottomSafeArea;
   final bool? centerTitle;
   final List<IconButtonData> actions;
   final VoidCallback? backAction;
@@ -119,6 +120,7 @@ class AdaptiveSheetScaffold extends StatefulWidget {
     required this.body,
     required this.title,
     this.sheetTransparentToolBar = false,
+    this.bodyIncludesBottomSafeArea = false,
     this.centerTitle,
     this.actions = const [],
     this.backAction,
@@ -253,7 +255,8 @@ class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
               ),
             ),
           SizedBox(height: MediaQuery.viewInsetsOf(context).bottom),
-          SizedBox(height: MediaQuery.viewPaddingOf(context).bottom),
+          if (!widget.bodyIncludesBottomSafeArea)
+            SizedBox(height: MediaQuery.viewPaddingOf(context).bottom),
         ],
       ),
     );

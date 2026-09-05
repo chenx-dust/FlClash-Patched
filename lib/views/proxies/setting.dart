@@ -351,7 +351,9 @@ class ProxiesSetting extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.only(bottom: 32),
+      padding: EdgeInsets.only(
+        bottom: 32 + MediaQuery.viewPaddingOf(context).bottom,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -367,10 +369,23 @@ class ProxiesSetting extends StatelessWidget {
                   (state) => state.type == ProxiesType.list,
                 ),
               );
-              if (isList) {
-                return child!;
-              }
-              return Container();
+              return AnimatedCrossFade(
+                duration: MediaQuery.disableAnimationsOf(context)
+                    ? Duration.zero
+                    : midDuration,
+                alignment: Alignment.topLeft,
+                sizeCurve: Curves.easeInOutCubic,
+                firstCurve: Curves.easeInOutCubic,
+                secondCurve: Curves.easeInOutCubic,
+                crossFadeState: isList
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
+                firstChild: const SizedBox(width: double.infinity),
+                secondChild: ExcludeFocus(
+                  excluding: !isList,
+                  child: IgnorePointer(ignoring: !isList, child: child!),
+                ),
+              );
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,

@@ -62,6 +62,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
                   props: const SheetProps(isScrollControlled: true),
                   builder: (_) {
                     return AdaptiveSheetScaffold(
+                      bodyIncludesBottomSafeArea: true,
                       body: const ProxiesSetting(),
                       title: appLocalizations.settings,
                     );
