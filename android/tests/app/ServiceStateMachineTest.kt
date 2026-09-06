@@ -175,7 +175,14 @@ class ServiceStateMachineTest {
             ),
         )
 
-        assertEquals(NotificationParams("Work", true, true), params)
+        assertEquals(
+            NotificationParams(
+                title = "Work",
+                onlyStatisticsProxy = true,
+                networkSpeedNotification = true,
+            ),
+            params,
+        )
     }
 
     @Test
@@ -546,7 +553,16 @@ class ServiceStateMachineTest {
             ),
         )
 
-        assertEquals(listOf(NotificationParams("Work", true, true)), host.notificationParams)
+        assertEquals(
+            listOf(
+                NotificationParams(
+                    title = "Work",
+                    onlyStatisticsProxy = true,
+                    networkSpeedNotification = true,
+                ),
+            ),
+            host.notificationParams,
+        )
     }
 
     @Test
