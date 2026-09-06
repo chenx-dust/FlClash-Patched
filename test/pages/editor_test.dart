@@ -65,7 +65,7 @@ void main() {
     );
   });
 
-  testWidgets('import from URL shows a translated network error message', (
+  testWidgets('import from URL shows a translated error with HTTP status', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -97,10 +97,11 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     await tester.pump(const Duration(milliseconds: 100));
 
-    // flutter_test's mocked HttpClient answers with HTTP 400, which maps to
-    // the localized network exception message in the snackbar.
+    // flutter_test's mocked HttpClient answers with HTTP 400.
     expect(
-      find.text('Network error, please check your connection and try again'),
+      find.text(
+        'Network error, please check your connection and try again [400]',
+      ),
       findsOneWidget,
     );
   });
