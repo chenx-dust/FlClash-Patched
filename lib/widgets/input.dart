@@ -195,6 +195,9 @@ class _InputDialogState extends State<InputDialog> {
               inputFormatters: widget.inputFormatters,
               obscureText: widget.obscureText ?? false,
               keyboardType: widget.keyboardType ?? TextInputType.url,
+              textInputAction: widget.keyboardType == TextInputType.multiline
+                  ? TextInputAction.newline
+                  : TextInputAction.done,
               maxLines: widget.obscureText == true ? 1 : 5,
               minLines: 1,
               controller: _textController,
@@ -318,6 +321,7 @@ class _AddDialogState extends State<AddDialog> {
                   ? null
                   : TextInputLimits.limit(widget.valueMaxLength!),
               keyboardType: TextInputType.text,
+              textInputAction: TextInputAction.done,
               controller: _valueController,
               decoration: InputDecoration(
                 labelText: valueField.label,

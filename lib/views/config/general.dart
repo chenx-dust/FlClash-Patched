@@ -600,6 +600,8 @@ class _ExternalControllerDialogState
               minLines: 1,
               inputFormatters: TextInputLimits.limit(TextInputLimits.password),
               controller: _secretController,
+              textInputAction: TextInputAction.done,
+              onFieldSubmitted: (_) => _handleSubmit(),
               decoration: InputDecoration(
                 labelText: appLocalizations.password,
                 suffixIcon: Row(
