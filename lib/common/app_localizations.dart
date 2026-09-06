@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:fl_clash/core/desktop/launch_policy.dart';
 import 'package:fl_clash/core/method.dart';
@@ -8,19 +11,48 @@ import 'dart:ui';
 final currentAppLocalizations = AppLocalizations.current;
 
 String? networkErrorMessage(Object error, AppLocalizations appLocalizations) {
-  if (error case CoreMethodException(:final code)) {
-    return switch (code) {
+  if (error case CoreMethodException(:final code, :final message)) {
+    final summary = switch (code) {
       'request_bad_response' => appLocalizations.networkException,
       'request_error' => appLocalizations.unknownNetworkError,
       _ => null,
     };
+    return summary == null ? null : _withNetworkDetail(summary, message);
   }
   if (error is DioException) {
-    return error.type == DioExceptionType.badResponse
-        ? appLocalizations.networkException
-        : appLocalizations.unknownNetworkError;
+    if (error.type == DioExceptionType.badResponse) {
+      final response = error.response;
+      final statusCode = response?.statusCode;
+      final summary = statusCode == null
+          ? appLocalizations.networkException
+          : '${appLocalizations.networkException} [$statusCode]';
+      final data = response?.data;
+      final String body;
+      if (data is Uint8List) {
+        try {
+          body = utf8.decode(data);
+        } on FormatException {
+          return summary;
+        }
+      } else if (data is Map || data is List) {
+        body = jsonEncode(data);
+      } else {
+        body = data?.toString() ?? '';
+      }
+      return _withNetworkDetail(summary, body);
+    }
+    final detail = error.error?.toString().trim();
+    return _withNetworkDetail(
+      appLocalizations.unknownNetworkError,
+      detail?.isNotEmpty == true ? detail : error.message,
+    );
   }
   return null;
+}
+
+String _withNetworkDetail(String summary, String? detail) {
+  final text = detail?.trim() ?? '';
+  return text.isEmpty ? summary : '$summary\n$text';
 }
 
 String? coreLaunchBlockedMessage(
