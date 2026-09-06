@@ -392,7 +392,9 @@ void main() {
     verify(() => core.updateExternalProvider('rule-a')).called(1);
   });
 
-  testWidgets('the toolbar classifies Core request failures', (tester) async {
+  testWidgets('the toolbar preserves classified Core request failure details', (
+    tester,
+  ) async {
     final container = containerFor(tester, [_provider('proxy-a')]);
     when(() => core.updateExternalProvider('proxy-a')).thenThrow(
       const CoreMethodException(
@@ -408,8 +410,12 @@ void main() {
     await tester.tap(find.byIcon(Icons.sync));
     await tester.pumpAndSettle();
 
-    expect(find.text(currentAppLocalizations.networkException), findsOneWidget);
-    expect(find.text('503 Service Unavailable'), findsNothing);
+    expect(
+      find.text(
+        '${currentAppLocalizations.networkException}\n503 Service Unavailable',
+      ),
+      findsOneWidget,
+    );
 
     await tester.tap(find.text(currentAppLocalizations.confirm));
     await tester.pumpAndSettle();
