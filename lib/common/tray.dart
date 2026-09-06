@@ -242,7 +242,10 @@ class AppTray implements TrayPort {
         keyEquivalent: viewShortcut?.keyEquivalent,
         keyEquivalentModifiers: viewShortcut?.modifiers ?? const {},
         onSelectedWithDetails: (details) {
-          window?.show();
+          window?.show(
+            activationTimestamp: details.activationTimestamp,
+            activationToken: details.activationToken,
+          );
         },
       ),
       TrayMenuCheckbox(
