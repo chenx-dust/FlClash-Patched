@@ -12,9 +12,9 @@ FlClash is a multi-platform proxy client based on mihomo, built with Flutter. It
 
 ## Forked Dependencies
 
-Three `pubspec.yaml` dependencies are pinned to a fork — `window_manager` by tag,
+Three `pubspec.yaml` dependencies are pinned to a fork — `window_manager` by branch,
 the other two by commit SHA. All three
-forks live under `chen08209`, the same account that owns this repository, so they
+forks live under `chenx-dust` or `chen08209`, so they
 are maintained in-house rather than tracked from a third party: advancing a pin
 is a local decision, and there is no external maintainer to wait on for the patch
 itself. What each fork still waits on is the *upstream* fix that would let the
@@ -29,9 +29,9 @@ of the same number:
 diff -ru ~/.pub-cache/hosted/pub.dev/<name>-<version> ~/.pub-cache/git/<name>-<sha>
 ```
 
-`window_manager` — `chen08209/window_manager`, path `packages/window_manager`,
-version 0.5.1, pinned to the tag `v0.5.1-flclash.1` because the fork carries
-commits of its own rather than a single patch on top of a release.
+`window_manager` — `chenx-dust/window_manager`, path `packages/window_manager`,
+version 0.5.2, tracking `main` on top of
+`chen08209/window_manager` tag `v0.5.1-flclash.3`.
 
 - `windows/window_manager_plugin.cpp`: with `titleBarStyle: hidden` a maximized
   window uses the monitor work area (`GetMonitorInfo().rcWork`) instead of
@@ -46,7 +46,9 @@ commits of its own rather than a single patch on top of a release.
   `onWindowShouldTerminate` (macOS). These lived in a local `window_ext` plugin
   until they moved here; `lib/manager/window_manager.dart` and
   `macos/Runner/AppDelegate.swift` are the callers.
-- Drop the fork once upstream carries all three. The added APIs have call sites,
+- Preserves Linux tray activation timestamps and Wayland tokens through the window visibility queue;
+  the plugin consumes a token once when restoring a minimized window. Also retains `onWindowActivate`.
+- Drop the fork once upstream carries these behaviors. The added APIs have call sites,
   so this is not a pin change alone.
 
 `launch_at_startup` — `chen08209/launch_at_startup`, version 0.5.1.

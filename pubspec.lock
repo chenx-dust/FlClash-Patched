@@ -1793,11 +1793,11 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/window_manager"
-      ref: "v0.5.1-flclash.3"
-      resolved-ref: "4c7dcf9b6b0658a83ce77ad8c3e480952d190d3a"
-      url: "https://github.com/chen08209/window_manager"
+      ref: main
+      resolved-ref: f0b9f1b93a717108412a0f9565ef4319b79fbdac
+      url: "https://github.com/chenx-dust/window_manager.git"
     source: git
-    version: "0.5.1"
+    version: "0.5.2"
   windows_file_picker:
     dependency: transitive
     description:

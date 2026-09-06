@@ -133,6 +133,63 @@ void main() {
     );
   }
 
+  for (final minimized in [false, true]) {
+    testWidgets(
+      'show menu forwards activation details (minimized: $minimized)',
+      (tester) async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+        tray = AppTray.forPlatform(isMacOS: false, isWindows: false);
+        globalState.container = container;
+        const windowChannel = MethodChannel('window_manager');
+        final windowCalls = <MethodCall>[];
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(windowChannel, (call) async {
+              windowCalls.add(call);
+              return call.method == 'isMinimized' ? minimized : null;
+            });
+        addTearDown(() {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(windowChannel, null);
+        });
+        try {
+          await tester.runAsync(() => update(_trayState()));
+        } finally {
+          debugDefaultTargetPlatformOverride = null;
+        }
+        final showItem = _items(showCall()).first;
+
+        await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .handlePlatformMessage(
+              _channel.name,
+              const StandardMethodCodec().encodeMethodCall(
+                MethodCall('onMenuItemSelected', {
+                  'id': showItem['id'],
+                  'activationTimestamp': 1234,
+                  'activationToken': 'wayland-token',
+                }),
+              ),
+              (_) {},
+            );
+        await tester.pumpAndSettle();
+        await tester.pump(const Duration(seconds: 1));
+
+        final activation = windowCalls.singleWhere(
+          (call) => call.method == (minimized ? 'restore' : 'show'),
+        );
+        expect(activation.arguments['activationTimestamp'], 1234);
+        expect(activation.arguments['activationToken'], 'wayland-token');
+        expect(
+          windowCalls.where(
+            (call) =>
+                call.arguments is Map &&
+                call.arguments['activationToken'] == 'wayland-token',
+          ),
+          hasLength(1),
+        );
+      },
+    );
+  }
+
   test(
     'SystemAction.updateTray builds the menu without reading itself',
     () async {

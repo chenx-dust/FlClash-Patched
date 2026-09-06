@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 class _FakeNativeWindow {
   final List<String> calls = [];
+  final List<(int?, String?)> activations = [];
   bool visible = true;
   Completer<void>? hideGate;
 
@@ -12,8 +13,9 @@ class _FakeNativeWindow {
     Duration dockSettleDuration = const Duration(seconds: 1),
   }) {
     return WindowVisibilityController(
-      showWindow: () async {
+      showWindow: ({int? activationTimestamp, String? activationToken}) async {
         calls.add('show');
+        activations.add((activationTimestamp, activationToken));
         visible = true;
       },
       hideWindow: () async {
@@ -31,6 +33,34 @@ class _FakeNativeWindow {
 }
 
 void main() {
+  test(
+    'queued shows retain their own activation details without reusing them',
+    () async {
+      final native = _FakeNativeWindow()..hideGate = Completer<void>();
+      final controller = native.controller(dockSettleDuration: Duration.zero);
+      final hidden = controller.hide();
+      final first = controller.show(
+        activationTimestamp: 1234,
+        activationToken: 'first-token',
+      );
+      final second = controller.show(
+        activationTimestamp: 5678,
+        activationToken: 'second-token',
+      );
+      final plain = controller.show();
+      expect(native.activations, isEmpty);
+
+      native.hideGate!.complete();
+      await Future.wait([hidden, first, second, plain]);
+
+      expect(native.activations, [
+        (1234, 'first-token'),
+        (5678, 'second-token'),
+        (null, null),
+      ]);
+    },
+  );
+
   testWidgets('a hide right after a show waits for the Dock policy to settle', (
     tester,
   ) async {
@@ -131,7 +161,7 @@ void main() {
     var failShow = true;
     final calls = <String>[];
     final controller = WindowVisibilityController(
-      showWindow: () async {
+      showWindow: ({int? activationTimestamp, String? activationToken}) async {
         if (failShow) {
           throw StateError('show failed');
         }
