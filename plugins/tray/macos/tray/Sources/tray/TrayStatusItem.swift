@@ -7,6 +7,7 @@ final class TrayStatusItem {
 
     init?(onActivate: @escaping () -> Void, onMenuRequested: @escaping () -> Void) {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        statusItem.autosaveName = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "tray"
         contentView = TrayContentView(
             onActivate: onActivate,
             onMenuRequested: onMenuRequested
