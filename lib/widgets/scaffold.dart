@@ -354,6 +354,10 @@ class CommonScaffoldState extends State<CommonScaffold> {
                             ? false
                             : true,
                         animateColor: true,
+                        backgroundColor: _isSearch
+                            ? null
+                            : Theme.of(context).colorScheme.surface,
+                        surfaceTintColor: Colors.transparent,
                         centerTitle: widget.centerTitle ?? false,
                         leading: _buildLeading(backAction),
                         title: _buildTitle(state.searchState),
