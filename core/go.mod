@@ -4,7 +4,7 @@ go 1.25
 
 replace github.com/metacubex/mihomo => ./mihomo
 
-replace github.com/metacubex/sing-tun => github.com/chenx-dust/sing-tun v0.4.23-0.20260905090653-debae783ec1b
+replace github.com/metacubex/sing-tun => github.com/metacubex/sing-tun v0.4.23-0.20260905152808-cf4803d5489c
 
 require (
 	github.com/Microsoft/go-winio v0.6.2
