@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:fl_clash/common/app_localizations.dart';
 import 'package:fl_clash/core/desktop/helper_client.dart';
@@ -44,6 +47,82 @@ void main() {
     expect(networkErrorMessage(StateError('boom'), appLocalizations), isNull);
   });
 
+  test('shows HTTP status and subscription response bodies', () {
+    for (final body in <Object>[
+      '订阅已过期',
+      Uint8List.fromList(utf8.encode('订阅已过期')),
+      {'message': '订阅已过期'},
+    ]) {
+      final options = RequestOptions(path: '/subscription');
+      final message = userFacingErrorMessage(
+        DioException(
+          requestOptions: options,
+          type: DioExceptionType.badResponse,
+          response: Response<Object>(
+            requestOptions: options,
+            statusCode: 403,
+            data: body,
+          ),
+        ),
+        appLocalizations,
+      );
+      expect(message, contains('[403]'));
+      expect(message, contains('订阅已过期'));
+    }
+  });
+
+  test('keeps HTTP status when response bytes are not UTF-8', () {
+    final options = RequestOptions(path: '/subscription');
+    expect(
+      userFacingErrorMessage(
+        DioException(
+          requestOptions: options,
+          type: DioExceptionType.badResponse,
+          response: Response<Uint8List>(
+            requestOptions: options,
+            statusCode: 502,
+            data: Uint8List.fromList([255]),
+          ),
+        ),
+        appLocalizations,
+      ),
+      '${appLocalizations.networkException} [502]',
+    );
+  });
+
+  test('shows underlying connection errors and timeout messages', () {
+    for (final type in [
+      DioExceptionType.unknown,
+      DioExceptionType.connectionError,
+      DioExceptionType.badCertificate,
+      DioExceptionType.connectionTimeout,
+    ]) {
+      expect(
+        userFacingErrorMessage(
+          DioException(
+            requestOptions: RequestOptions(path: '/subscription'),
+            type: type,
+            error: 'Connection refused',
+            message: 'Request failed',
+          ),
+          appLocalizations,
+        ),
+        '${appLocalizations.unknownNetworkError}\nConnection refused',
+      );
+    }
+    expect(
+      userFacingErrorMessage(
+        DioException(
+          requestOptions: RequestOptions(path: '/subscription'),
+          type: DioExceptionType.receiveTimeout,
+          message: 'Receive timed out after 10 seconds',
+        ),
+        appLocalizations,
+      ),
+      contains('Receive timed out after 10 seconds'),
+    );
+  });
+
   test('maps Core request failures using the same network categories', () {
     expect(
       networkErrorMessage(
@@ -53,7 +132,7 @@ void main() {
         ),
         appLocalizations,
       ),
-      appLocalizations.networkException,
+      '${appLocalizations.networkException}\n503 Service Unavailable',
     );
     expect(
       networkErrorMessage(
@@ -63,7 +142,7 @@ void main() {
         ),
         appLocalizations,
       ),
-      appLocalizations.unknownNetworkError,
+      '${appLocalizations.unknownNetworkError}\nrequest timed out',
     );
   });
 
