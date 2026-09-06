@@ -53,7 +53,6 @@ jobs:
         run: |
           yq -i '.hooks.user_defines.setup.build_assets = false | .hooks.user_defines.rust_api.build_assets = false' pubspec.yaml
 
-
       - name: Run tests
         run: flutter test --reporter expanded --coverage
 
@@ -381,11 +380,11 @@ jobs:
       - name: Generate release notes
         shell: bash
         env:
-          IS_STABLE: ${{ env.IS_STABLE }}
           TAG: ${{ github.ref_name }}
         run: |
           target=()
-          if [[ "$IS_STABLE" == 'true' ]]; then
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            dart run tool/changelog.dart build
             target=(--tag "$TAG")
           else
             dart run tool/changelog.dart build --unreleased
