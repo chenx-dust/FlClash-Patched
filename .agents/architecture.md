@@ -493,7 +493,10 @@ Platform projects copy the artifacts out of `libclash/`; application code must n
   Native Task Ordering).
 - iOS: arm64 device archives `libclash.a` and `libclash_lowmem.a`, with their generated headers, land in
   `libclash/ios/arm64/`. Runner uses the normal archive and NECore uses the low-memory variant. Simulator builds
-  fail explicitly rather than linking a device archive. Rust IPC and global hotkeys remain desktop-only.
+  fail explicitly rather than linking a device archive. NECore's `Build iOS Core` phase invokes
+  `setup_hooks/bin/build_ios.dart` before compiling sources: Runner depends on NECore, so Runner's Flutter hook is
+  too late to supply the extension's headers on a clean build. Both entry points share `buildPlatform` and its cache.
+  Rust IPC and global hotkeys remain desktop-only.
 - macOS: a standalone `FlClashCore`. `Release.xcconfig` pins release and profile `ARCHS` to the host because
   flutter_tools otherwise builds a universal binary and every artifact ships one slice; the hook skips a non-host slice
   for the same reason. The `Stage Core` phase copies the Core after the hook may have rewritten it and fails when it is
