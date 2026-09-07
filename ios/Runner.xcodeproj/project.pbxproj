@@ -404,6 +404,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 059852B02FF20A1200620D82 /* Build configuration list for PBXNativeTarget "NECore" */;
 			buildPhases = (
+				7F0000013000000000000001 /* Build iOS Core */,
 				059852A02FF20A1200620D82 /* Sources */,
 				059852A12FF20A1200620D82 /* Frameworks */,
 				059852A22FF20A1200620D82 /* Resources */,
@@ -604,6 +605,25 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		7F0000013000000000000001 /* Build iOS Core */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Build iOS Core";
+			outputPaths = (
+				"$(SRCROOT)/../libclash/ios/arm64/libclash.a",
+				"$(SRCROOT)/../libclash/ios/arm64/libclash.h",
+				"$(SRCROOT)/../libclash/ios/arm64/libclash_lowmem.a",
+				"$(SRCROOT)/../libclash/ios/arm64/libclash_lowmem.h",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart\" --packages=\"$SRCROOT/../.dart_tool/package_config.json\" \"$SRCROOT/../plugins/setup/setup_hooks/bin/build_ios.dart\"\n";
+		};
 		3B06AD1E1E4923F5004D2608 /* Thin Binary */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -803,7 +823,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = "$(DEVELOPMENT_TEAM)";
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NECore/Info.plist;
@@ -851,7 +871,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = "$(DEVELOPMENT_TEAM)";
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NECore/Info.plist;
@@ -896,7 +916,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = "$(DEVELOPMENT_TEAM)";
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NECore/Info.plist;
