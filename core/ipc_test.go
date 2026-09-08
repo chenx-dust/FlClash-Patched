@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"net"
 	"os"
 	"strings"
 	"sync"
@@ -469,18 +470,88 @@ func TestSendResumesAFrameThatStalledOnTheWriteDeadline(t *testing.T) {
 	}
 }
 
-func TestSendDropsTheConnectionWhenAStalledFrameNeverDrains(t *testing.T) {
-	fake := &fakeConn{writeErr: os.ErrDeadlineExceeded, writeErrAfter: 2}
+func TestSendResumesAPartialFrameAfterProlongedHostSuspension(t *testing.T) {
+	fake := &fakeConn{writeErr: os.ErrDeadlineExceeded, writeErrAfter: 2, writeErrTimes: 1000}
 	previous := swapConn(fake)
 	defer swapConn(previous)
 
 	send([]byte("{}"))
 
-	if !fake.isClosed() {
-		t.Error("a frame that stalls past every retry leaves the stream desynchronized and must close the connection")
+	if fake.isClosed() {
+		t.Fatal("a suspended host must not lose the connection after repeated write timeouts")
 	}
-	if fake.deadlineCount() != 1+ipcPartialFrameRetries {
-		t.Errorf("deadlines armed = %d, want the retries bounded at %d", fake.deadlineCount(), ipcPartialFrameRetries)
+	send([]byte("next"))
+	frames := fake.frames(t)
+	if len(frames) != 2 || string(frames[0]) != "{}" || string(frames[1]) != "next" {
+		t.Errorf("frames = %q, want the resumed frame followed by the next frame", frames)
+	}
+}
+
+type shortDeadlineConn struct {
+	net.Conn
+	resumed chan struct{}
+}
+
+func (conn *shortDeadlineConn) SetWriteDeadline(time.Time) error {
+	select {
+	case conn.resumed <- struct{}{}:
+	default:
+	}
+	return conn.Conn.SetWriteDeadline(time.Now().Add(time.Millisecond))
+}
+
+func TestPartialFrameTimeoutWaitEndsOnPeerResumeOrDisconnect(t *testing.T) {
+	for _, disconnect := range []bool{false, true} {
+		name := "resume"
+		if disconnect {
+			name = "disconnect"
+		}
+		t.Run(name, func(t *testing.T) {
+			local, peer := net.Pipe()
+			defer local.Close()
+			defer peer.Close()
+			connection := &shortDeadlineConn{Conn: local, resumed: make(chan struct{}, 1)}
+			if err := local.SetWriteDeadline(time.Now().Add(time.Second)); err != nil {
+				t.Fatal(err)
+			}
+			done := make(chan error, 1)
+			go func() {
+				_, err := writeFrame(&resumingWriter{conn: connection}, []byte("payload"))
+				done <- err
+			}()
+			header := make([]byte, 4)
+			if _, err := io.ReadFull(peer, header); err != nil {
+				t.Fatal(err)
+			}
+			select {
+			case <-connection.resumed:
+			case <-time.After(3 * time.Second):
+				t.Fatal("partial frame did not retry its expired write")
+			}
+			if disconnect {
+				peer.Close()
+			} else {
+				peer.SetReadDeadline(time.Now().Add(time.Second))
+				payload := make([]byte, binary.LittleEndian.Uint32(header))
+				if _, err := io.ReadFull(peer, payload); err != nil {
+					t.Fatal(err)
+				}
+				if string(payload) != "payload" {
+					t.Fatalf("resumed payload = %q", payload)
+				}
+			}
+			select {
+			case err := <-done:
+				if disconnect && err == nil {
+					t.Fatal("peer disconnect must end the write with an error")
+				}
+				if !disconnect && err != nil {
+					t.Fatalf("resumed write failed: %v", err)
+				}
+			case <-time.After(3 * time.Second):
+				t.Fatal("write stayed blocked after peer resume or disconnect")
+			}
+		})
 	}
 }
 

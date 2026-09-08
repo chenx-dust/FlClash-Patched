@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"os"
 	"sync"
 	"sync/atomic"
@@ -26,9 +27,8 @@ var (
 )
 
 const (
-	maxIPCFrameSize        = 64 * 1024 * 1024
-	ipcWriteTimeout        = 10 * time.Second
-	ipcPartialFrameRetries = 6
+	maxIPCFrameSize = 64 * 1024 * 1024
+	ipcWriteTimeout = 10 * time.Second
 )
 
 var deliveryFailureReported atomic.Bool
@@ -76,7 +76,6 @@ func writeFrame(w io.Writer, data []byte) (int, error) {
 type resumingWriter struct {
 	conn    ipcConn
 	written int
-	stalls  int
 }
 
 func (writer *resumingWriter) Write(data []byte) (int, error) {
@@ -88,20 +87,23 @@ func (writer *resumingWriter) Write(data []byte) (int, error) {
 		if err == nil {
 			return accepted, nil
 		}
-		if accepted >= len(data) || !writer.resume(err) {
+		if !writer.resume(err) {
 			return accepted, err
+		}
+		if accepted >= len(data) {
+			return accepted, nil
 		}
 	}
 }
 
 func (writer *resumingWriter) resume(err error) bool {
-	if writer.written == 0 || writer.stalls >= ipcPartialFrameRetries {
+	if writer.written == 0 {
 		return false
 	}
-	if !errors.Is(err, os.ErrDeadlineExceeded) {
+	var timeout net.Error
+	if !errors.Is(err, os.ErrDeadlineExceeded) && !(errors.As(err, &timeout) && timeout.Timeout()) {
 		return false
 	}
-	writer.stalls++
 	return writer.conn.SetWriteDeadline(time.Now().Add(ipcWriteTimeout)) == nil
 }
 
