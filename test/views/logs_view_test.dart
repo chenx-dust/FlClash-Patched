@@ -139,7 +139,7 @@ void main() {
     expect(hintFinder(), findsNothing);
   });
 
-  testWidgets('uses the save icon and plain body text for log rows', (
+  testWidgets('uses the save icon and selectable body text for log rows', (
     tester,
   ) async {
     await pumpLogsView(tester);
@@ -147,8 +147,9 @@ void main() {
     expect(find.byIcon(Icons.save_outlined), findsOneWidget);
     expect(find.byIcon(Icons.save_as_outlined), findsNothing);
     expect(find.byType(CommonChip), findsNothing);
-    expect(find.byType(SelectableText), findsNothing);
-    final payload = tester.widget<Text>(find.text('log 199'));
+    final payload = tester.widget<SelectableText>(
+      find.widgetWithText(SelectableText, 'log 199'),
+    );
     expect(
       payload.style?.fontSize,
       Theme.of(

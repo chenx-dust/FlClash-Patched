@@ -346,7 +346,6 @@ class LogItem extends StatelessWidget {
         ],
       ),
       targetBuilder: (open) => GestureDetector(
-        onLongPress: () => copyText(context, log.payload),
         onSecondaryTapDown: (_) => open(targetContext: context),
         child: ListItem(
           padding: const EdgeInsets.symmetric(
@@ -354,7 +353,8 @@ class LogItem extends StatelessWidget {
             vertical: 8,
           ).copyWith(bottom: 12),
           minVerticalPadding: 0,
-          title: Text(
+          minTileHeight: 0,
+          title: SelectableText(
             log.payload,
             style: context.textTheme.bodyMedium?.copyWith(
               color: log.logLevel.color(context),
