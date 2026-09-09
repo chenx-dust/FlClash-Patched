@@ -94,7 +94,12 @@ class _TrayManagerState extends ConsumerState<TrayManager> {
         if (_isMacOS) {
           _openMenu();
         } else {
-          window?.show();
+          _reportFailure(
+            window?.show(
+              activationTimestamp: event.activationTimestamp,
+              activationToken: event.activationToken,
+            ),
+          );
         }
       case TrayMenuRequested():
         _openMenu();

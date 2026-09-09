@@ -108,6 +108,28 @@ static GDBusMessage* session_bus_filter(GDBusConnection* connection,
   return nullptr;
 }
 
+static void add_activation_details(TrayPlugin* self, FlValue* arguments) {
+  const guint32 timestamp = gtk_get_current_event_time();
+  if (timestamp != GDK_CURRENT_TIME) {
+    fl_value_set_string_take(arguments, "activationTimestamp",
+                             fl_value_new_int(timestamp));
+  }
+  if (self->pending_activation_token != nullptr) {
+    fl_value_set_string_take(
+        arguments, "activationToken",
+        fl_value_new_string(self->pending_activation_token));
+    g_clear_pointer(&self->pending_activation_token, g_free);
+  }
+}
+
+static void on_icon_activate(AppIndicator*, gint, gint, gpointer user_data) {
+  TrayPlugin* self = TRAY_PLUGIN(user_data);
+  g_autoptr(FlValue) arguments = fl_value_new_map();
+  add_activation_details(self, arguments);
+  fl_method_channel_invoke_method(self->channel, "onIconActivated",
+                                  arguments, nullptr, nullptr, nullptr);
+}
+
 static void on_menu_item_activate(GtkMenuItem* item, gpointer user_data) {
   if (active_plugin == nullptr) {
     return;
@@ -115,17 +137,7 @@ static void on_menu_item_activate(GtkMenuItem* item, gpointer user_data) {
   g_autoptr(FlValue) arguments = fl_value_new_map();
   fl_value_set_string_take(arguments, "id",
                            fl_value_new_int(GPOINTER_TO_INT(user_data)));
-  const guint32 timestamp = gtk_get_current_event_time();
-  if (timestamp != GDK_CURRENT_TIME) {
-    fl_value_set_string_take(arguments, "activationTimestamp",
-                             fl_value_new_int(timestamp));
-  }
-  if (active_plugin->pending_activation_token != nullptr) {
-    fl_value_set_string_take(
-        arguments, "activationToken",
-        fl_value_new_string(active_plugin->pending_activation_token));
-    g_clear_pointer(&active_plugin->pending_activation_token, g_free);
-  }
+  add_activation_details(active_plugin, arguments);
   fl_method_channel_invoke_method(active_plugin->channel, "onMenuItemSelected",
                                   arguments, nullptr, nullptr, nullptr);
 }
@@ -272,6 +284,10 @@ static FlMethodResponse* handle_show(TrayPlugin* self, FlValue* args) {
   if (is_new) {
     self->indicator =
         app_indicator_new(id, icon_path, APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
+    if (g_signal_lookup("activate", G_OBJECT_TYPE(self->indicator)) != 0) {
+      g_signal_connect(self->indicator, "activate",
+                        G_CALLBACK(on_icon_activate), self);
+    }
   }
 
   attach_menu(self, fl_value_lookup_string(args, "menu"));

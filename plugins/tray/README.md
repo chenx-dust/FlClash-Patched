@@ -58,8 +58,12 @@ rather than on `Platform.isX`.
 | `iconEvents` | yes | yes | no |
 | `menuControl` | yes | yes | no |
 
-Linux runs on AppIndicator/StatusNotifierItem, where the desktop shell owns the menu; the application
-cannot receive icon clicks or open the menu itself.
+Linux runs on AppIndicator/StatusNotifierItem, where the desktop shell owns the menu. With Ayatana
+AppIndicator 0.6.0 or later, activation requests (such as a KDE left click) emit `TrayIconActivated`,
+including any available activation timestamp and Wayland token. Older libraries keep menu-only
+behavior. GNOME's AppIndicator extension normally opens the menu on a single click when a menu exists.
+The Linux `iconEvents` capability remains false because these events are not guaranteed across
+libraries and desktop hosts; programmatic menu opening is unsupported.
 
 ## Linux requirements
 

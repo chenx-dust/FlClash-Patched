@@ -5,7 +5,10 @@ sealed class TrayEvent {
 }
 
 final class TrayIconActivated extends TrayEvent {
-  const TrayIconActivated();
+  const TrayIconActivated({this.activationTimestamp, this.activationToken});
+
+  final int? activationTimestamp;
+  final String? activationToken;
 }
 
 final class TrayMenuRequested extends TrayEvent {
