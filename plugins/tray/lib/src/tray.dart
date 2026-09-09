@@ -225,7 +225,19 @@ final class Tray {
   Future<void> _onPlatformCall(MethodCall call) async {
     switch (call.method) {
       case _eventIconActivated:
-        _events.add(const TrayIconActivated());
+        final arguments = call.arguments;
+        final timestamp = arguments is Map
+            ? arguments['activationTimestamp']
+            : null;
+        final token = arguments is Map ? arguments['activationToken'] : null;
+        _events.add(
+          TrayIconActivated(
+            activationTimestamp: timestamp is int && timestamp > 0
+                ? timestamp
+                : null,
+            activationToken: token is String && token.isNotEmpty ? token : null,
+          ),
+        );
       case _eventMenuRequested:
         _events.add(const TrayMenuRequested());
       case _eventMenuItemSelected:

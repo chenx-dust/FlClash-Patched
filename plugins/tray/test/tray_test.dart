@@ -135,6 +135,37 @@ void main() {
     expect(selected, 1);
   });
 
+  test('icon activation forwards native activation details', () async {
+    final received = Tray.instance.events.first;
+    await _emit('onIconActivated', <String, Object?>{
+      'activationTimestamp': 1234,
+      'activationToken': 'wayland-token',
+    });
+
+    final event = await received as TrayIconActivated;
+    expect(event.activationTimestamp, 1234);
+    expect(event.activationToken, 'wayland-token');
+  });
+
+  test(
+    'icon activation accepts absent or invalid activation details',
+    () async {
+      for (final arguments in <Object?>[
+        null,
+        'invalid',
+        {'activationTimestamp': -1, 'activationToken': ''},
+        {'activationTimestamp': '1234', 'activationToken': 1234},
+      ]) {
+        final received = Tray.instance.events.first;
+        await _emit('onIconActivated', arguments);
+
+        final event = await received as TrayIconActivated;
+        expect(event.activationTimestamp, isNull);
+        expect(event.activationToken, isNull);
+      }
+    },
+  );
+
   test('menu selection forwards native activation details', () async {
     TrayMenuSelectionDetails? received;
     await Tray.instance.show(

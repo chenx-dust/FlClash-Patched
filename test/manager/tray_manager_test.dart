@@ -41,6 +41,7 @@ void main() {
 
   late ProviderContainer container;
   late List<String> windowCalls;
+  late List<MethodCall> windowMethodCalls;
 
   setUpAll(() async {
     await AppLocalizations.load(const Locale('en'));
@@ -50,12 +51,14 @@ void main() {
     _RecordingSystemAction.updateTrayCount = 0;
     _RecordingSystemAction.updateTrayLocales.clear();
     windowCalls = <String>[];
+    windowMethodCalls = <MethodCall>[];
     Tray.instance.resetForTesting();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_trayChannel, (call) async => true);
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_windowChannel, (call) async {
           windowCalls.add(call.method);
+          windowMethodCalls.add(call);
           return call.method == 'isMinimized' ? false : null;
         });
   });
@@ -146,6 +149,25 @@ void main() {
     expect(windowCalls, containsAll(<String>['show', 'focus']));
   });
 
+  testWidgets('icon activation carries focus credentials to the window', (
+    tester,
+  ) async {
+    await pumpTrayManager(tester, isMacOS: false);
+    windowMethodCalls.clear();
+
+    await emitTrayEvent('onIconActivated', {
+      'activationTimestamp': 1234,
+      'activationToken': 'wayland-token',
+    });
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
+
+    final show = windowMethodCalls.singleWhere((call) => call.method == 'show');
+    expect(show.arguments, containsPair('activationTimestamp', 1234));
+    expect(show.arguments, containsPair('activationToken', 'wayland-token'));
+    expect(windowCalls, contains('focus'));
+  });
+
   testWidgets('activating the icon opens the menu on macOS', (tester) async {
     var openMenuCount = 0;
     await pumpTrayManager(
@@ -159,8 +181,6 @@ void main() {
 
     await emitTrayEvent('onIconActivated');
     await tester.pumpAndSettle();
-    // A macOS host arms the Dock settle timer on show; drain it so the binding
-    // ends the test with no pending timer.
     await tester.pump(const Duration(seconds: 1));
 
     expect(openMenuCount, 1);
