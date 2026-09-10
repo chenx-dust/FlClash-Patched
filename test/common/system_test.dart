@@ -1,8 +1,13 @@
 import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/core/desktop/helper_client.dart';
+import 'package:fl_clash/core/desktop/model.dart';
+import 'package:fl_clash/enum/enum.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+
+import '../core/desktop/fakes.dart';
 
 class _FakePathProvider extends PathProviderPlatform {
   _FakePathProvider(this.root);
@@ -93,6 +98,7 @@ void main() {
 
   late Directory root;
   late _FakeProcesses processes;
+  final readEffectiveUid = system.readEffectiveUid;
 
   setUpAll(() {
     root = Directory.systemTemp.createTempSync('system_test');
@@ -110,15 +116,64 @@ void main() {
   setUp(() {
     processes = _FakeProcesses();
     system.runProcess = processes.run;
+    system.readEffectiveUid = () => 1000;
     MacOS().runProcess = processes.run;
     Linux().runProcess = processes.run;
   });
 
   tearDown(() {
     system.runProcess = Process.run;
+    system.readEffectiveUid = readEffectiveUid;
     MacOS().runProcess = Process.run;
     Linux().runProcess = Process.run;
   });
+
+  group('root process', () {
+    test('reads the effective UID from the current process', () async {
+      final result = await Process.run('id', ['-u']);
+
+      expect(result.exitCode, 0);
+      expect(readEffectiveUid(), int.parse(result.stdout.toString().trim()));
+    });
+
+    test('skips file checks and elevation when already root', () async {
+      system.readEffectiveUid = () => 0;
+
+      expect(system.isRunningAsRoot, isTrue);
+      expect(await system.checkIsAdmin(), isTrue);
+      expect(await system.authorizeCore(), AuthorizeCode.none);
+      expect(processes.runs, isEmpty);
+    });
+
+    test('launches directly without probing the Helper', () async {
+      system.readEffectiveUid = () => 0;
+      final direct = FakeLauncher(owner: CoreProcessOwner.direct, pid: 1);
+      final helper = FakeLauncher(owner: CoreProcessOwner.helper, pid: 2);
+      final resolver = HelperLauncherResolver(
+        hasHelper: system.hasHelperService,
+        directLauncher: direct,
+        helperLauncher: helper,
+        helperReady: () async => throw StateError('unexpected Helper probe'),
+      );
+
+      expect(system.hasHelperService, isFalse);
+      expect(await resolver.resolve(), same(direct));
+    });
+
+    test('keeps the normal authorization path for non-root users', () async {
+      expect(system.isRunningAsRoot, isFalse);
+      expect(
+        system.hasHelperService,
+        system.isLinux &&
+            !system.isAppImage &&
+            Directory('/run/systemd/system').existsSync(),
+      );
+      if (system.isAppImage) {
+        expect(await system.authorizeCore(), AuthorizeCode.error);
+        expect(processes.runs, isEmpty);
+      }
+    });
+  }, skip: !Platform.isLinux && !Platform.isMacOS);
 
   group('statArguments', () {
     test('selects the BSD format on macOS and the GNU one elsewhere', () {

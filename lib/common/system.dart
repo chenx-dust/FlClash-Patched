@@ -19,10 +19,15 @@ typedef ProcessRunner =
 
 class System {
   static System? _instance;
+  static final _getEffectiveUid = DynamicLibrary.process()
+      .lookupFunction<Uint32 Function(), int Function()>('geteuid');
   bool _isTV = false;
 
   @visibleForTesting
   ProcessRunner runProcess = Process.run;
+
+  @visibleForTesting
+  int Function() readEffectiveUid = () => _getEffectiveUid();
 
   System._internal();
 
@@ -44,6 +49,8 @@ class System {
   bool get isMobile => isAndroid || isIOS;
 
   bool get isLinux => Platform.isLinux;
+
+  bool get isRunningAsRoot => (isLinux || isMacOS) && readEffectiveUid() == 0;
 
   bool get isTV => _isTV;
 
@@ -104,9 +111,12 @@ class System {
   late final bool _hasSystemd = Directory('/run/systemd/system').existsSync();
 
   bool get hasHelperService =>
-      isWindows || (isLinux && !isAppImage && _hasSystemd);
+      isWindows || (isLinux && !isRunningAsRoot && !isAppImage && _hasSystemd);
 
   Future<bool> checkIsAdmin() async {
+    if (isRunningAsRoot) {
+      return true;
+    }
     if (hasHelperService) {
       return await helperClient.readiness() == HelperReadiness.ready;
     }
@@ -181,6 +191,9 @@ class System {
   Future<AuthorizeCode> authorizeCore() async {
     if (system.isMobile) {
       return AuthorizeCode.error;
+    }
+    if (isRunningAsRoot) {
+      return AuthorizeCode.none;
     }
     if (system.isWindows) {
       return await windows?.registerService() ?? AuthorizeCode.error;
