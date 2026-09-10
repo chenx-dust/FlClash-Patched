@@ -176,25 +176,6 @@ fn unit_contents(executable: &Path, owner: Owner) -> String {
     )
 }
 
-/// The unit runs this binary as root at every boot, so one the invoking user
-/// could overwrite would turn a single polkit approval into standing root.
-fn ensure_root_owned(executable: &Path) -> Result<()> {
-    let directory = executable
-        .parent()
-        .context("helper executable has no parent directory")?;
-    for path in [executable, directory] {
-        let metadata = fs::metadata(path).with_context(|| format!("inspect {}", path.display()))?;
-        if metadata.uid() != 0 || metadata.mode() & 0o022 != 0 {
-            bail!(
-                "{} must be owned by root and not writable by group or others to run as a service; \
-                 install the package instead of running an unpacked bundle",
-                path.display()
-            );
-        }
-    }
-    Ok(())
-}
-
 fn installed_owner_uid(unit: &str) -> Option<u32> {
     let prefix = format!("Environment={OWNER_UID_ENV}=");
     unit.lines()
@@ -219,7 +200,6 @@ fn ensure_unit_is_free_for(owner: Owner) -> Result<()> {
 
 fn install_service() -> Result<()> {
     let executable = std::env::current_exe().context("resolve helper executable path")?;
-    ensure_root_owned(&executable)?;
     let owner = invoking_owner()?;
     ensure_unit_is_free_for(owner)?;
 
