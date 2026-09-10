@@ -692,8 +692,11 @@ is registered at package install, and `Linux.registerService` asks for elevation
 - The Core is spawned with the owner's real UID and an effective UID of 0, which is what a setuid Core would have had.
   It is the signal `core/ownership_unix.go` uses to hand the files it created back to the user; without it a root
   service would leave a root-owned config tree in the owner's home.
-- An AppImage has neither a stable executable path nor a writable Core, and its FUSE mount is `nosuid`, so
-  `system.isAppImage` reports TUN authorization as unavailable instead of prompting for a password that cannot help.
+- On Linux and macOS, an app already running with effective UID 0 skips authorization and launches the Core directly,
+  inheriting its existing privileges. `System.isRunningAsRoot` reads `geteuid()` rather than an environment variable;
+  Linux excludes this case from `hasHelperService`.
+- An AppImage has neither a stable executable path nor a writable Core, and its FUSE mount is `nosuid`, so a non-root
+  app reports TUN authorization as unavailable. An app already running as root uses the same direct-launch path above.
 - A Linux host without systemd (`/run/systemd/system` absent) has no Helper: `system.hasHelperService` is false there,
   readiness is the `stat` check, and `pkexec` sets the setuid bit on the bundled Core as before.
 
