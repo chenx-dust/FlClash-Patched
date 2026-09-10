@@ -8,6 +8,12 @@ class _RecordingListener with CoreEventListener {
 
   final void Function()? onLoadedCallback;
   final List<String> loaded = [];
+  final List<Log> logs = [];
+
+  @override
+  void onLog(Log log) {
+    logs.add(log);
+  }
 
   @override
   void onLoaded(String providerName) {
@@ -17,6 +23,27 @@ class _RecordingListener with CoreEventListener {
 }
 
 void main() {
+  test('live Core logs carry the Core source', () async {
+    final listener = _RecordingListener();
+    coreEventManager.addListener(listener);
+    addTearDown(() => coreEventManager.removeListener(listener));
+
+    coreEventManager.sendEvent(
+      const CoreEvent(
+        type: CoreEventType.log,
+        data: {'LogLevel': 'info', 'Payload': 'Core log'},
+      ),
+    );
+    await pumpEventQueue();
+
+    final log = listener.logs.single;
+    expect(log.source, LogSource.core);
+    expect(log.logLevel, LogLevel.info);
+    expect(log.payload, 'Core log');
+    expect(LogsState(logs: [log], sources: {LogSource.app}).list, isEmpty);
+    expect(LogsState(logs: [log], sources: {LogSource.core}).list, [log]);
+  });
+
   test(
     'a listener may unregister itself while an event is dispatched',
     () async {

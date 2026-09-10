@@ -54,7 +54,9 @@ class CoreEventManager {
         try {
           switch (event.type) {
             case CoreEventType.log:
-              listener.onLog(Log.fromJson(event.data));
+              listener.onLog(
+                Log.fromJson(event.data).copyWith(source: LogSource.core),
+              );
               break;
             case CoreEventType.delay:
               listener.onDelay(Delay.fromJson(event.data));
