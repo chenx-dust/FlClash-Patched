@@ -27,22 +27,57 @@ private final class TrayNativeMenuItem: NSMenuItem {
     }
 }
 
+private final class TrayMenuHighlightView: NSVisualEffectView {
+    override var allowsVibrancy: Bool {
+        true
+    }
+
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        nil
+    }
+}
+
+private final class TrayMenuDrawingView: NSView {
+    var drawHandler: (() -> Void)?
+
+    override var isFlipped: Bool {
+        true
+    }
+
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        nil
+    }
+
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+        drawHandler?()
+    }
+}
+
 private final class TrayMenuItemView: NSView {
     private enum Metrics {
         static let height: CGFloat = 24
         static let minimumWidth: CGFloat = 270
         static let maximumWidth: CGFloat = 520
-        static let checkmarkLeading: CGFloat = 7
-        static let titleLeading: CGFloat = 25
+        static let stateImageLeading: CGFloat = 9
+        static let stateImageWidth: CGFloat = 12
+        static let stateImageHeight: CGFloat = 11
+        static let titleLeading: CGFloat = 21
         static let titleBadgeSpacing: CGFloat = 12
-        static let trailing: CGFloat = 9
+        static let trailing: CGFloat = 16
         static let badgeHeight: CGFloat = 16
         static let badgeHorizontalPadding: CGFloat = 5
-        static let submenuIndicatorWidth: CGFloat = 14
+        static let submenuIndicatorWidth: CGFloat = 9
+        static let submenuIndicatorHeight: CGFloat = 12
+        static let submenuColumnSpacing: CGFloat = 8
         static let minimumTitleWidth: CGFloat = 60
         static let highlightHorizontalInset: CGFloat = 5
         static let highlightVerticalInset: CGFloat = 0
-        static let highlightCornerRadius: CGFloat = 6
+        static let highlightCornerRadius: CGFloat = {
+            ProcessInfo.processInfo.operatingSystemVersion.majorVersion >= 26
+                ? 7
+                : 4
+        }()
     }
 
     private var label: String
@@ -51,6 +86,7 @@ private final class TrayMenuItemView: NSView {
     private var checked: Bool
     private var keepsMenuOpen: Bool
     private var hasSubmenu: Bool
+    private var reservesSubmenuColumn = false
     private var pointerInside = false
     private var trackingAreaReference: NSTrackingArea?
 
@@ -59,6 +95,54 @@ private final class TrayMenuItemView: NSView {
         ofSize: NSFont.labelFontSize,
         weight: .medium
     )
+
+    private let highlightView: NSVisualEffectView = {
+        let view = TrayMenuHighlightView()
+        view.material = NSVisualEffectView.Material(rawValue: 36) ?? .selection
+        view.blendingMode = .behindWindow
+        view.state = .active
+        view.isEmphasized = true
+        view.wantsLayer = true
+        view.layer?.cornerRadius = Metrics.highlightCornerRadius
+        view.layer?.cornerCurve = .continuous
+        view.layer?.masksToBounds = true
+        view.isHidden = true
+        return view
+    }()
+
+    private let drawingView = TrayMenuDrawingView()
+
+    private let checkmarkView: NSImageView = {
+        let view = NSImageView()
+        let configuration = NSImage.SymbolConfiguration(
+            pointSize: NSFont.menuFont(ofSize: 0).pointSize,
+            weight: .bold,
+            scale: .small
+        )
+        view.image = NSImage(named: NSImage.menuOnStateTemplateName)?
+            .withSymbolConfiguration(configuration)
+        view.imageAlignment = .alignCenter
+        view.imageScaling = .scaleProportionallyDown
+        view.isHidden = true
+        return view
+    }()
+
+    private let submenuIndicatorView: NSImageView = {
+        let view = NSImageView()
+        let configuration = NSImage.SymbolConfiguration(
+            pointSize: NSFont.menuFont(ofSize: 0).pointSize,
+            weight: .bold,
+            scale: .small
+        )
+        view.image = NSImage(
+            systemSymbolName: "chevron.right",
+            accessibilityDescription: nil
+        )?.withSymbolConfiguration(configuration)
+        view.imageAlignment = .alignCenter
+        view.imageScaling = .scaleProportionallyDown
+        view.isHidden = true
+        return view
+    }()
 
     init(
         label: String,
@@ -82,6 +166,14 @@ private final class TrayMenuItemView: NSView {
                 height: Metrics.height
             )
         )
+        autoresizingMask = [.width]
+        addSubview(highlightView)
+        addSubview(drawingView)
+        drawingView.addSubview(checkmarkView)
+        drawingView.addSubview(submenuIndicatorView)
+        drawingView.drawHandler = { [weak self] in
+            self?.drawContent()
+        }
         frame.size.width = preferredWidth
     }
 
@@ -97,6 +189,28 @@ private final class TrayMenuItemView: NSView {
         NSSize(width: preferredWidth, height: Metrics.height)
     }
 
+    override func layout() {
+        super.layout()
+        highlightView.frame = bounds.insetBy(
+            dx: Metrics.highlightHorizontalInset,
+            dy: Metrics.highlightVerticalInset
+        )
+        drawingView.frame = bounds
+
+        checkmarkView.frame = NSRect(
+            x: Metrics.stateImageLeading,
+            y: floor((bounds.height - Metrics.stateImageHeight) / 2),
+            width: Metrics.stateImageWidth,
+            height: Metrics.stateImageHeight
+        )
+        submenuIndicatorView.frame = NSRect(
+            x: bounds.width - Metrics.trailing - Metrics.submenuIndicatorWidth,
+            y: (bounds.height - Metrics.submenuIndicatorHeight) / 2,
+            width: Metrics.submenuIndicatorWidth,
+            height: Metrics.submenuIndicatorHeight
+        )
+    }
+
     var preferredWidth: CGFloat {
         let titleWidth = ceil(
             (label as NSString).size(withAttributes: [.font: titleFont]).width
@@ -104,7 +218,6 @@ private final class TrayMenuItemView: NSView {
         let sublabelWidth = sublabelSize.map {
             Metrics.titleBadgeSpacing + $0.width
         } ?? 0
-        let submenuWidth = hasSubmenu ? Metrics.submenuIndicatorWidth : 0
         return min(
             Metrics.maximumWidth,
             max(
@@ -112,7 +225,7 @@ private final class TrayMenuItemView: NSView {
                 Metrics.titleLeading
                     + titleWidth
                     + sublabelWidth
-                    + submenuWidth
+                    + submenuColumnWidth
                     + Metrics.trailing
             )
         )
@@ -133,7 +246,7 @@ private final class TrayMenuItemView: NSView {
         self.keepsMenuOpen = keepsMenuOpen
         self.hasSubmenu = hasSubmenu
         invalidateIntrinsicContentSize()
-        needsDisplay = true
+        refresh()
     }
 
     func updateMenuItem(
@@ -155,7 +268,7 @@ private final class TrayMenuItemView: NSView {
             self.checked = checked
         }
         invalidateIntrinsicContentSize()
-        needsDisplay = true
+        refresh()
     }
 
     override func updateTrackingAreas() {
@@ -174,17 +287,23 @@ private final class TrayMenuItemView: NSView {
     }
 
     override func mouseEntered(with event: NSEvent) {
-        pointerInside = true
-        needsDisplay = true
+        if let menu = enclosingMenuItem?.menu as? TrayMenu {
+            menu.setHoveredCustomView(self)
+        } else {
+            setPointerInside(true)
+        }
     }
 
     override func mouseExited(with event: NSEvent) {
-        pointerInside = false
-        needsDisplay = true
+        if let menu = enclosingMenuItem?.menu as? TrayMenu {
+            menu.clearHoveredCustomView(self)
+        } else {
+            setPointerInside(false)
+        }
     }
 
     override func mouseDown(with event: NSEvent) {
-        needsDisplay = true
+        refresh()
     }
 
     override func mouseUp(with event: NSEvent) {
@@ -204,29 +323,49 @@ private final class TrayMenuItemView: NSView {
         NSApp.sendAction(action, to: menuItem.target, from: menuItem)
     }
 
-    override func draw(_ dirtyRect: NSRect) {
-        super.draw(dirtyRect)
+    fileprivate func refresh() {
+        needsLayout = true
+        drawingView.needsDisplay = true
+    }
+
+    fileprivate func setPointerInside(_ inside: Bool) {
+        guard pointerInside != inside else {
+            return
+        }
+        pointerInside = inside
+        refresh()
+    }
+
+    fileprivate var containsSubmenuIndicator: Bool {
+        hasSubmenu
+    }
+
+    fileprivate func setReservesSubmenuColumn(_ reserves: Bool) {
+        guard reservesSubmenuColumn != reserves else {
+            return
+        }
+        reservesSubmenuColumn = reserves
+        invalidateIntrinsicContentSize()
+        refresh()
+    }
+
+    private func drawContent() {
         guard let menuItem = enclosingMenuItem else {
             return
         }
         let highlighted = menuItem.isEnabled
             && (pointerInside || menuItem.isHighlighted)
-        if highlighted {
-            NSColor.selectedContentBackgroundColor.setFill()
-            let highlightRect = bounds.insetBy(
-                dx: Metrics.highlightHorizontalInset,
-                dy: Metrics.highlightVerticalInset
-            )
-            NSBezierPath(
-                roundedRect: highlightRect,
-                xRadius: Metrics.highlightCornerRadius,
-                yRadius: Metrics.highlightCornerRadius
-            ).fill()
-        }
-        drawCheckmark(highlighted: highlighted, enabled: menuItem.isEnabled)
+        highlightView.isHidden = !highlighted
+        let accessoryColor = foregroundColor(
+            highlighted: highlighted,
+            enabled: menuItem.isEnabled
+        )
+        checkmarkView.isHidden = !checked
+        checkmarkView.contentTintColor = accessoryColor
+        submenuIndicatorView.isHidden = !hasSubmenu
+        submenuIndicatorView.contentTintColor = accessoryColor
         drawTitle(highlighted: highlighted, enabled: menuItem.isEnabled)
         drawSublabel(highlighted: highlighted, enabled: menuItem.isEnabled)
-        drawSubmenuIndicator(highlighted: highlighted, enabled: menuItem.isEnabled)
     }
 
     private var sublabelSize: NSSize? {
@@ -249,47 +388,22 @@ private final class TrayMenuItemView: NSView {
         )
     }
 
-    private func drawCheckmark(highlighted: Bool, enabled: Bool) {
-        guard checked else {
-            return
-        }
-        let color: NSColor
+    private func foregroundColor(highlighted: Bool, enabled: Bool) -> NSColor {
         if !enabled {
-            color = .tertiaryLabelColor
-        } else if highlighted {
-            color = .selectedMenuItemTextColor
-        } else {
-            color = .labelColor
+            return .tertiaryLabelColor
         }
-        let font = NSFont.systemFont(ofSize: 14, weight: .semibold)
-        let text = "✓" as NSString
-        let size = text.size(withAttributes: [.font: font])
-        text.draw(
-            at: NSPoint(
-                x: Metrics.checkmarkLeading,
-                y: (bounds.height - size.height) / 2
-            ),
-            withAttributes: [
-                .font: font,
-                .foregroundColor: color,
-            ]
-        )
+        return highlighted ? .selectedMenuItemTextColor : .labelColor
     }
 
     private func drawTitle(highlighted: Bool, enabled: Bool) {
-        let color: NSColor
-        if !enabled {
-            color = .tertiaryLabelColor
-        } else if highlighted {
-            color = .selectedMenuItemTextColor
-        } else {
-            color = .labelColor
-        }
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineBreakMode = .byTruncatingTail
         let attributes: [NSAttributedString.Key: Any] = [
             .font: titleFont,
-            .foregroundColor: color,
+            .foregroundColor: foregroundColor(
+                highlighted: highlighted,
+                enabled: enabled
+            ),
             .paragraphStyle: paragraphStyle,
         ]
         let textHeight = ceil(
@@ -300,7 +414,7 @@ private final class TrayMenuItemView: NSView {
         } ?? (
             bounds.width
                 - Metrics.trailing
-                - (hasSubmenu ? Metrics.submenuIndicatorWidth : 0)
+                - submenuColumnWidth
         )
         let titleRect = NSRect(
             x: Metrics.titleLeading,
@@ -315,8 +429,7 @@ private final class TrayMenuItemView: NSView {
         guard let size = sublabelSize else {
             return nil
         }
-        let indicatorWidth = hasSubmenu ? Metrics.submenuIndicatorWidth : 0
-        let trailing = Metrics.trailing + indicatorWidth
+        let trailing = Metrics.trailing + submenuColumnWidth
         let maximumWidth = max(
             0,
             bounds.width
@@ -332,6 +445,13 @@ private final class TrayMenuItemView: NSView {
             width: width,
             height: size.height
         )
+    }
+
+    private var submenuColumnWidth: CGFloat {
+        guard reservesSubmenuColumn else {
+            return 0
+        }
+        return Metrics.submenuIndicatorWidth + Metrics.submenuColumnSpacing
     }
 
     private func drawSublabel(highlighted: Bool, enabled: Bool) {
@@ -405,41 +525,28 @@ private final class TrayMenuItemView: NSView {
         )
     }
 
-    private func drawSubmenuIndicator(highlighted: Bool, enabled: Bool) {
-        guard hasSubmenu else {
-            return
-        }
-        let color: NSColor
-        if !enabled {
-            color = .tertiaryLabelColor
-        } else if highlighted {
-            color = .selectedMenuItemTextColor
-        } else {
-            color = .labelColor
-        }
-        let font = NSFont.systemFont(ofSize: 17, weight: .semibold)
-        let text = "›" as NSString
-        let size = text.size(withAttributes: [.font: font])
-        text.draw(
-            at: NSPoint(
-                x: bounds.width - Metrics.trailing - size.width,
-                y: (bounds.height - size.height) / 2
-            ),
-            withAttributes: [
-                .font: font,
-                .foregroundColor: color,
-            ]
-        )
-    }
 }
 
 final class TrayMenu: NSMenu {
     private let onSelect: (Int) -> Void
+    private weak var hoveredCustomView: TrayMenuItemView?
 
     init(items: [[String: Any]], onSelect: @escaping (Int) -> Void) {
         self.onSelect = onSelect
         super.init(title: "")
         autoenablesItems = false
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(menuTrackingDidChange(_:)),
+            name: NSMenu.didBeginTrackingNotification,
+            object: self
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(menuTrackingDidChange(_:)),
+            name: NSMenu.didEndTrackingNotification,
+            object: self
+        )
         var customViews: [TrayMenuItemView] = []
         for entry in items {
             let item = makeItem(entry)
@@ -453,6 +560,34 @@ final class TrayMenu: NSMenu {
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    fileprivate func setHoveredCustomView(_ view: TrayMenuItemView) {
+        guard hoveredCustomView !== view else {
+            return
+        }
+        let previousView = hoveredCustomView
+        hoveredCustomView = view
+        previousView?.setPointerInside(false)
+        view.setPointerInside(true)
+    }
+
+    fileprivate func clearHoveredCustomView(_ view: TrayMenuItemView) {
+        guard hoveredCustomView === view else {
+            return
+        }
+        hoveredCustomView = nil
+        view.setPointerInside(false)
+    }
+
+    @objc private func menuTrackingDidChange(_ notification: Notification) {
+        let previousView = hoveredCustomView
+        hoveredCustomView = nil
+        previousView?.setPointerInside(false)
     }
 
     @discardableResult
@@ -702,10 +837,16 @@ final class TrayMenu: NSMenu {
     }
 
     private func updateCustomViewWidths(_ customViews: [TrayMenuItemView]) {
+        let reservesSubmenuColumn = customViews.contains {
+            $0.containsSubmenuIndicator
+        }
+        for view in customViews {
+            view.setReservesSubmenuColumn(reservesSubmenuColumn)
+        }
         let width = customViews.map(\.preferredWidth).max() ?? 0
         for view in customViews {
             view.frame.size.width = width
-            view.needsDisplay = true
+            view.refresh()
         }
     }
 

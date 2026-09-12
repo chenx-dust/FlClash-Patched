@@ -103,6 +103,59 @@ void main() {
     expect(menuSource, contains('arguments["checked"] as? Bool'));
   });
 
+  test('macOS custom menu items use native selection and state artwork', () {
+    expect(
+      menuSource,
+      contains('NSVisualEffectView.Material(rawValue: 36) ?? .selection'),
+    );
+    expect(menuSource, contains('view.blendingMode = .behindWindow'));
+    expect(menuSource, contains('view.isEmphasized = true'));
+    expect(menuSource, contains('override var allowsVibrancy: Bool'));
+    expect(menuSource, contains('? 7'));
+    expect(menuSource, contains(': 4'));
+    expect(menuSource, contains('NSImage.menuOnStateTemplateName'));
+    expect(menuSource, contains('systemSymbolName: "chevron.right"'));
+    expect(menuSource, contains('NSFont.menuFont(ofSize: 0).pointSize'));
+    expect(menuSource, contains('weight: .bold'));
+    expect(menuSource, contains('scale: .small'));
+    expect(menuSource, contains('static let stateImageHeight: CGFloat = 11'));
+    expect(menuSource, contains('static let titleLeading: CGFloat = 21'));
+    expect(menuSource, contains('static let trailing: CGFloat = 16'));
+    expect(
+      menuSource,
+      contains('static let submenuIndicatorWidth: CGFloat = 9'),
+    );
+    expect(menuSource, contains('private var reservesSubmenuColumn = false'));
+    expect(menuSource, contains('autoresizingMask = [.width]'));
+    expect(menuSource, contains('\$0.containsSubmenuIndicator'));
+    expect(
+      menuSource,
+      contains('view.setReservesSubmenuColumn(reservesSubmenuColumn)'),
+    );
+    expect(
+      menuSource,
+      isNot(contains('NSColor.selectedContentBackgroundColor')),
+    );
+    expect(menuSource, isNot(contains('let text = "✓"')));
+    expect(menuSource, isNot(contains('let text = "›"')));
+  });
+
+  test('macOS custom menu highlight state is owned by each menu', () {
+    expect(
+      menuSource,
+      contains('private weak var hoveredCustomView: TrayMenuItemView?'),
+    );
+    expect(menuSource, contains('previousView?.setPointerInside(false)'));
+    expect(menuSource, contains('hoveredCustomView !== view'));
+    expect(menuSource, contains('hoveredCustomView === view'));
+    expect(menuSource, contains('NSMenu.didBeginTrackingNotification'));
+    expect(menuSource, contains('NSMenu.didEndTrackingNotification'));
+    expect(
+      menuSource,
+      isNot(contains('pointerInside = true\n        refresh()')),
+    );
+  });
+
   test('macOS updates a compatible attached menu in place', () {
     expect(pluginSource, contains('item.statusItem.menu === \$0'));
     expect(pluginSource, contains('attachedMenu.update(items: items)'));
