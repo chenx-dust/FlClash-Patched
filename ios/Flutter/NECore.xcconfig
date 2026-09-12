@@ -1,4 +1,0 @@
-#include "Generated.xcconfig"
-
-APP_BUNDLE_ID = com.follow.clash
-#include? "GeneratedBundleConfig.xcconfig"

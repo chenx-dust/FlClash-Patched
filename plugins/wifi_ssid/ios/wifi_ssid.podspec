@@ -9,7 +9,7 @@ A Flutter plugin to retrieve the current WiFi SSID.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'FlClash' => 'email@example.com' }
   s.source           = { :path => '.' }
-  s.source_files     = 'Classes/**/*'
+  s.source_files     = 'wifi_ssid/Sources/wifi_ssid/**/*'
   s.dependency 'Flutter'
   s.platform = :ios, '14.0'
   s.frameworks = 'CoreLocation', 'NetworkExtension'

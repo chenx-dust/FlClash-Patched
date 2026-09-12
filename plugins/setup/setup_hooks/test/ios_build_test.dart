@@ -60,11 +60,5 @@ void main() {
       target.indexOf('/* Build iOS Core */'),
       allOf(isNonNegative, lessThan(target.indexOf('/* Sources */'))),
     );
-    final configurations = RegExp(
-      r'baseConfigurationReference = [^;]+/\* NECore.xcconfig \*/;'
-      r'.*?ENABLE_USER_SCRIPT_SANDBOXING = (YES|NO);',
-      dotAll: true,
-    ).allMatches(project);
-    expect(configurations.map((match) => match.group(1)), ['NO', 'NO', 'NO']);
   });
 }
