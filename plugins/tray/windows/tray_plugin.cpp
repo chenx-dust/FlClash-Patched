@@ -335,7 +335,7 @@ bool TrayPlugin::OpenMenu(bool bring_app_to_front) {
   return true;
 }
 
-bool TrayPlugin::UpdateMenuItem(
+bool TrayPlugin::ApplyMenuItemUpdate(
     const flutter::EncodableMap& arguments) {
   const std::string* key = StringAt(arguments, "key");
   if (key == nullptr) {
@@ -384,6 +384,27 @@ bool TrayPlugin::UpdateMenuItem(
   }
   return ::SetMenuItemInfoW(location->second.menu, location->second.position,
                             TRUE, &info) != FALSE;
+}
+
+bool TrayPlugin::UpdateMenuItems(
+    const flutter::EncodableList& updates) {
+  for (const auto& value : updates) {
+    const auto* update = std::get_if<flutter::EncodableMap>(&value);
+    if (update == nullptr) {
+      return false;
+    }
+    const std::string* key = StringAt(*update, "key");
+    if (key == nullptr || menu_items_.find(*key) == menu_items_.end()) {
+      return false;
+    }
+  }
+  for (const auto& value : updates) {
+    const auto& update = std::get<flutter::EncodableMap>(value);
+    if (!ApplyMenuItemUpdate(update)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 std::optional<LRESULT> TrayPlugin::HandleWindowProc(HWND window,
@@ -444,11 +465,13 @@ void TrayPlugin::HandleMethodCall(
     return;
   }
 
-  if (method == "updateMenuItem") {
+  if (method == "updateMenuItems") {
     const auto* arguments =
         std::get_if<flutter::EncodableMap>(method_call.arguments());
+    const auto* updates =
+        arguments == nullptr ? nullptr : ListAt(*arguments, "updates");
     result->Success(flutter::EncodableValue(
-        arguments != nullptr && UpdateMenuItem(*arguments)));
+        updates != nullptr && UpdateMenuItems(*updates)));
     return;
   }
 

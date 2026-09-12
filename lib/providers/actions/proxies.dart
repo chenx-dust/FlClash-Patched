@@ -1,15 +1,17 @@
 part of '../action.dart';
 
 class _DelayTestTarget {
-  const _DelayTestTarget({
+  _DelayTestTarget({
     required this.proxyName,
     required this.testUrl,
     required this.key,
+    required this.sourceProxyNames,
   });
 
   final String proxyName;
   final String testUrl;
   final String key;
+  final Set<String> sourceProxyNames;
 }
 
 @Riverpod(keepAlive: true)
@@ -296,7 +298,7 @@ class ProxiesAction extends _$ProxiesAction {
     List<Proxy> proxies, [
     String? testUrl,
     Duration uiTimeout = const Duration(seconds: 1),
-    FutureOr<void> Function()? onDelayChanged,
+    FutureOr<void> Function(Set<String> proxyNames)? onDelayChanged,
   ]) {
     final operation = _runDelayTests(
       proxies,
@@ -316,8 +318,7 @@ class ProxiesAction extends _$ProxiesAction {
       currentProfileProvider.select((state) => state?.selectedMap ?? {}),
     );
     final fallbackTestUrl = ref.read(realTestUrlProvider(testUrl));
-    final seen = <String>{};
-    final targets = <_DelayTestTarget>[];
+    final targets = <String, _DelayTestTarget>{};
     for (final proxy in proxies) {
       final state = computeRealSelectedProxyState(
         proxy.name,
@@ -329,25 +330,26 @@ class ProxiesAction extends _$ProxiesAction {
       }
       final currentTestUrl = state.testUrl.takeFirstValid([fallbackTestUrl]);
       final key = delayTestKey(currentTestUrl, state.proxyName);
-      if (!seen.add(key)) {
+      final target = targets[key];
+      if (target != null) {
+        target.sourceProxyNames.add(proxy.name);
         continue;
       }
-      targets.add(
-        _DelayTestTarget(
-          proxyName: state.proxyName,
-          testUrl: currentTestUrl,
-          key: key,
-        ),
+      targets[key] = _DelayTestTarget(
+        proxyName: state.proxyName,
+        testUrl: currentTestUrl,
+        key: key,
+        sourceProxyNames: {proxy.name},
       );
     }
-    return targets;
+    return targets.values.toList();
   }
 
   Future<void> _runDelayTests(
     List<Proxy> proxies,
     String? testUrl, {
     required bool bumpSort,
-    FutureOr<void> Function()? onDelayChanged,
+    FutureOr<void> Function(Set<String> proxyNames)? onDelayChanged,
   }) async {
     final generation = _delayTestGeneration;
     final targets = _resolveDelayTestTargets(proxies, testUrl);
@@ -363,10 +365,12 @@ class ProxiesAction extends _$ProxiesAction {
           logLevel: coreFailureLogLevel(error),
         );
       } finally {
-        await onDelayChanged?.call();
+        await onDelayChanged?.call(target.sourceProxyNames);
       }
     }).toList();
-    await onDelayChanged?.call();
+    await onDelayChanged?.call(
+      targets.expand((target) => target.sourceProxyNames).toSet(),
+    );
     await Future.wait(operations);
     if (bumpSort && generation == _delayTestGeneration) {
       ref.read(sortNumProvider.notifier).add();

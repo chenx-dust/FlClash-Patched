@@ -600,7 +600,41 @@ final class TrayMenu: NSMenu {
     }
 
     @discardableResult
-    func updateMenuItem(_ arguments: [String: Any]) -> Bool {
+    func updateMenuItems(_ updates: [[String: Any]]) -> Bool {
+        guard updates.allSatisfy({ arguments in
+            guard let key = arguments["key"] as? String else {
+                return false
+            }
+            return containsMenuItem(key)
+        }) else {
+            return false
+        }
+        for arguments in updates {
+            if !applyMenuItemUpdate(arguments, updateWidths: false) {
+                return false
+            }
+        }
+        updateCustomViewWidthsRecursively()
+        return true
+    }
+
+    private func containsMenuItem(_ key: String) -> Bool {
+        for item in items {
+            if item.representedObject as? String == key {
+                return true
+            }
+            if let submenu = item.submenu as? TrayMenu,
+               submenu.containsMenuItem(key) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private func applyMenuItemUpdate(
+        _ arguments: [String: Any],
+        updateWidths: Bool
+    ) -> Bool {
         guard let key = arguments["key"] as? String else {
             return false
         }
@@ -646,17 +680,31 @@ final class TrayMenu: NSMenu {
                         hasSubmenu: type == .submenu
                     )
                 }
-                updateCustomViewWidths(
-                    items.compactMap { $0.view as? TrayMenuItemView }
-                )
+                if updateWidths {
+                    updateCustomViewWidths(
+                        items.compactMap { $0.view as? TrayMenuItemView }
+                    )
+                }
                 return true
             }
             if let submenu = item.submenu as? TrayMenu,
-               submenu.updateMenuItem(arguments) {
+               submenu.applyMenuItemUpdate(
+                   arguments,
+                   updateWidths: updateWidths
+               ) {
                 return true
             }
         }
         return false
+    }
+
+    private func updateCustomViewWidthsRecursively() {
+        updateCustomViewWidths(
+            items.compactMap { $0.view as? TrayMenuItemView }
+        )
+        for item in items {
+            (item.submenu as? TrayMenu)?.updateCustomViewWidthsRecursively()
+        }
     }
 
     private func makeItem(_ entry: [String: Any]) -> NSMenuItem {

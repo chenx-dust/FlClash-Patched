@@ -97,10 +97,12 @@ void main() {
   test('macOS renders and updates keyed live menu items', () {
     expect(menuSource, contains('final class TrayMenuItemView: NSView'));
     expect(menuSource, contains('entry["usesCustomView"]'));
-    expect(menuSource, contains('func updateMenuItem'));
-    expect(pluginSource, contains('case "updateMenuItem"'));
+    expect(menuSource, contains('func updateMenuItems'));
+    expect(pluginSource, contains('case "updateMenuItems"'));
+    expect(pluginSource, isNot(contains('case "updateMenuItem":')));
     expect(menuSource, contains('arguments["sublabel"] as? String'));
     expect(menuSource, contains('arguments["checked"] as? Bool'));
+    expect(menuSource, contains('updateCustomViewWidthsRecursively()'));
   });
 
   test('macOS custom menu items use native selection and state artwork', () {

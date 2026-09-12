@@ -27,7 +27,10 @@ void main() {
     expect(source, contains('gtk_menu_item_set_label'));
     expect(source, contains('gtk_widget_set_sensitive'));
     expect(source, contains('GTK_IS_CHECK_MENU_ITEM(item)'));
-    expect(source, contains('handle_update_menu_item(self, args)'));
+    expect(source, contains('handle_update_menu_items(self, args)'));
+    expect(source, contains('apply_menu_item_update'));
+    expect(source, contains('fl_value_lookup_string(args, "updates")'));
+    expect(source, isNot(contains('strcmp(method, "updateMenuItem")')));
   });
 }
 

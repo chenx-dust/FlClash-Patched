@@ -13,6 +13,24 @@ enum TrayMenuItemModifier {
 
 enum TrayMenuItemSublabelStyle { badge, secondary, muted, destructive }
 
+final class TrayMenuItemUpdate {
+  const TrayMenuItemUpdate({
+    required this.key,
+    this.label,
+    this.enabled,
+    this.checked,
+    this.sublabel,
+    this.sublabelStyle,
+  });
+
+  final String key;
+  final String? label;
+  final bool? enabled;
+  final bool? checked;
+  final String? sublabel;
+  final TrayMenuItemSublabelStyle? sublabelStyle;
+}
+
 final class TrayMenuSelectionDetails {
   const TrayMenuSelectionDetails({
     this.activationTimestamp,

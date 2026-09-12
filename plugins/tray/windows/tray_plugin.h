@@ -45,7 +45,8 @@ class TrayPlugin : public flutter::Plugin {
   bool Show(const flutter::EncodableMap& arguments);
   void Hide();
   bool OpenMenu(bool bring_app_to_front);
-  bool UpdateMenuItem(const flutter::EncodableMap& arguments);
+  bool UpdateMenuItems(const flutter::EncodableList& updates);
+  bool ApplyMenuItemUpdate(const flutter::EncodableMap& arguments);
   bool ApplyIcon(bool add);
   void RebuildMenu(HMENU menu, const flutter::EncodableList& items);
   void SendEvent(const char* name, const flutter::EncodableValue& arguments);

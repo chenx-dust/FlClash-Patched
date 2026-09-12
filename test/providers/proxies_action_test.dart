@@ -666,17 +666,14 @@ void main() {
       final container = _delayContainer(buildContainer);
       final snapshots = <({bool pending, int? delay})>[];
 
-      await actionOf(container).delayTest(
-        const [_proxy],
-        null,
-        Duration.zero,
-        () {
-          snapshots.add((
-            pending: container.read(pendingDelayTestsProvider).isNotEmpty,
-            delay: container.read(delayDataSourceProvider)[_testUrl]?['HK-01'],
-          ));
-        },
-      );
+      await actionOf(container).delayTest(const [_proxy], null, Duration.zero, (
+        _,
+      ) {
+        snapshots.add((
+          pending: container.read(pendingDelayTestsProvider).isNotEmpty,
+          delay: container.read(delayDataSourceProvider)[_testUrl]?['HK-01'],
+        ));
+      });
 
       expect(snapshots, contains((pending: true, delay: 0)));
 
@@ -685,6 +682,46 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       expect(snapshots.last.delay, 12);
+    });
+
+    test('reports all starters and only each completed proxy', () async {
+      final releases = <String, Completer<Delay?>>{
+        'HK-01': Completer<Delay?>(),
+        'HK-02': Completer<Delay?>(),
+      };
+      when(() => core.asyncTestDelay(_testUrl, any())).thenAnswer((invocation) {
+        final name = invocation.positionalArguments[1] as String;
+        return releases[name]!.future;
+      });
+      final container = _delayContainer(buildContainer);
+      final changed = <Set<String>>[];
+
+      await actionOf(container).delayTest(
+        const [_proxy, Proxy(name: 'HK-02', type: 'ss')],
+        null,
+        Duration.zero,
+        (proxyNames) => changed.add({...proxyNames}),
+      );
+
+      expect(changed, [
+        {'HK-01', 'HK-02'},
+      ]);
+
+      releases['HK-02']!.complete(
+        const Delay(name: 'HK-02', url: _testUrl, value: 22),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(changed.last, {'HK-02'});
+
+      releases['HK-01']!.complete(
+        const Delay(name: 'HK-01', url: _testUrl, value: 11),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(changed.last, {'HK-01'});
     });
 
     test('drops every spinner when the Core goes away mid-run', () async {

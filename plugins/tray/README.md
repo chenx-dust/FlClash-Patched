@@ -22,6 +22,10 @@ await Tray.instance.show(
 );
 
 await Tray.instance.setTitle('↑ 1.2 MB/s');
+await Tray.instance.updateMenuItems(const [
+  TrayMenuItemUpdate(key: 'proxy-a', sublabel: '42 ms'),
+  TrayMenuItemUpdate(key: 'proxy-b', sublabel: 'Timeout'),
+]);
 await Tray.instance.hide();
 ```
 
@@ -29,6 +33,8 @@ await Tray.instance.hide();
   identical `TraySpec` performs no platform call, so callbacks may be rebuilt freely.
 - `setTitle` is the incremental path for high-frequency text. It is a no-op where
   `capabilities.title` is false, and while no tray is visible.
+- `updateMenuItems` applies one or more keyed item changes in one serialized
+  platform call.
 - `hide` is idempotent and returns native state to "`show` was never called", so a later `show`
   rebuilds the tray from scratch.
 - `openMenu` is a no-op where `capabilities.menuControl` is false.

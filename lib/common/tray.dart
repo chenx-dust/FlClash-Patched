@@ -400,28 +400,33 @@ class AppTray implements TrayPort {
     if (!_testingGroups.add(group.name)) {
       return;
     }
-    await Tray.instance.updateMenuItem(
-      key: _trayDelayTestKey(group.name),
-      enabled: false,
-    );
+    await Tray.instance.updateMenuItems([
+      TrayMenuItemUpdate(key: _trayDelayTestKey(group.name), enabled: false),
+    ]);
     try {
       await read(proxiesActionProvider.notifier).delayTest(
         group.all,
         group.testUrl,
         const Duration(seconds: 1),
-        () => _updateGroupDelays(group, read),
+        (proxyNames) => _updateGroupDelays(group, read, proxyNames),
       );
     } finally {
       _testingGroups.remove(group.name);
-      await Tray.instance.updateMenuItem(
-        key: _trayDelayTestKey(group.name),
-        enabled: true,
-      );
+      await Tray.instance.updateMenuItems([
+        TrayMenuItemUpdate(key: _trayDelayTestKey(group.name), enabled: true),
+      ]);
     }
   }
 
-  Future<void> _updateGroupDelays(Group group, ProviderReader read) async {
-    for (final proxy in group.all) {
+  Future<void> _updateGroupDelays(
+    Group group,
+    ProviderReader read,
+    Set<String> proxyNames,
+  ) async {
+    final updates = <TrayMenuItemUpdate>[];
+    for (final proxy in group.all.where(
+      (proxy) => proxyNames.contains(proxy.name),
+    )) {
       final pending = read(
         delayTestPendingProvider(proxyName: proxy.name, testUrl: group.testUrl),
       );
@@ -437,12 +442,15 @@ class AppTray implements TrayPort {
       if (label == null) {
         continue;
       }
-      await Tray.instance.updateMenuItem(
-        key: _trayProxyDelayKey(group.name, proxy.name),
-        sublabel: label,
-        sublabelStyle: presentation.style,
+      updates.add(
+        TrayMenuItemUpdate(
+          key: _trayProxyDelayKey(group.name, proxy.name),
+          sublabel: label,
+          sublabelStyle: presentation.style,
+        ),
       );
     }
+    await Tray.instance.updateMenuItems(updates);
   }
 
   Future<void> _copyEnv(int port) async {

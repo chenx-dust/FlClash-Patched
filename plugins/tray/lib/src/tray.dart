@@ -18,7 +18,7 @@ const String _methodShow = 'show';
 const String _methodHide = 'hide';
 const String _methodSetTitle = 'setTitle';
 const String _methodOpenMenu = 'openMenu';
-const String _methodUpdateMenuItem = 'updateMenuItem';
+const String _methodUpdateMenuItems = 'updateMenuItems';
 
 const String _eventIconActivated = 'onIconActivated';
 const String _eventMenuRequested = 'onMenuRequested';
@@ -68,24 +68,8 @@ final class Tray {
     return _dispatch(() => _openMenu(bringAppToFront));
   }
 
-  Future<bool> updateMenuItem({
-    required String key,
-    String? label,
-    bool? enabled,
-    bool? checked,
-    String? sublabel,
-    TrayMenuItemSublabelStyle? sublabelStyle,
-  }) {
-    return _serialize(
-      () => _updateMenuItem(
-        key: key,
-        label: label,
-        enabled: enabled,
-        checked: checked,
-        sublabel: sublabel,
-        sublabelStyle: sublabelStyle,
-      ),
-    );
+  Future<bool> updateMenuItems(List<TrayMenuItemUpdate> updates) {
+    return _serialize(() => _updateMenuItems(updates));
   }
 
   @visibleForTesting
@@ -184,42 +168,33 @@ final class Tray {
     });
   }
 
-  Future<bool> _updateMenuItem({
-    required String key,
-    String? label,
-    bool? enabled,
-    bool? checked,
-    String? sublabel,
-    TrayMenuItemSublabelStyle? sublabelStyle,
-  }) async {
+  Future<bool> _updateMenuItems(List<TrayMenuItemUpdate> updates) async {
     if (!_isVisible) {
       return false;
     }
-    final arguments = <String, Object?>{'key': key};
-    if (label != null) {
-      arguments['label'] = label;
-    }
-    if (enabled != null) {
-      arguments['enabled'] = enabled;
-    }
-    if (checked != null) {
-      arguments['checked'] = checked;
-    }
-    if (sublabel != null) {
-      arguments['sublabel'] = sublabel;
-    }
-    if (sublabelStyle != null) {
-      arguments['sublabelStyle'] = sublabelStyle.name;
+    if (updates.isEmpty) {
+      return true;
     }
     final applied = await _channel.invokeMethod<bool>(
-      _methodUpdateMenuItem,
-      arguments,
+      _methodUpdateMenuItems,
+      <String, Object?>{'updates': updates.map(_encodeMenuItemUpdate).toList()},
     );
     if (applied == true) {
       _signature = null;
       return true;
     }
     return false;
+  }
+
+  Map<String, Object?> _encodeMenuItemUpdate(TrayMenuItemUpdate update) {
+    return <String, Object?>{
+      'key': update.key,
+      'label': ?update.label,
+      'enabled': ?update.enabled,
+      'checked': ?update.checked,
+      'sublabel': ?update.sublabel,
+      'sublabelStyle': ?update.sublabelStyle?.name,
+    };
   }
 
   Future<void> _onPlatformCall(MethodCall call) async {

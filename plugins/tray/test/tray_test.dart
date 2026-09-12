@@ -223,7 +223,7 @@ void main() {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(_channel, (call) async {
             calls.add(call);
-            return call.method == 'updateMenuItem' ? false : true;
+            return call.method == 'updateMenuItems' ? false : true;
           });
       final spec = _spec(
         menu: const [TrayMenuAction(key: 'known', label: 'Known')],
@@ -231,7 +231,9 @@ void main() {
       await Tray.instance.show(spec);
 
       expect(
-        await Tray.instance.updateMenuItem(key: 'missing', enabled: false),
+        await Tray.instance.updateMenuItems(const [
+          TrayMenuItemUpdate(key: 'missing', enabled: false),
+        ]),
         isFalse,
       );
       await Tray.instance.show(spec);
@@ -239,6 +241,51 @@ void main() {
       expect(showCount(), 1);
     },
   );
+
+  test('batch menu updates use one native call', () async {
+    await Tray.instance.show(
+      _spec(
+        menu: const [
+          TrayMenuAction(key: 'first', label: 'First'),
+          TrayMenuCheckbox(key: 'second', label: 'Second', checked: false),
+        ],
+      ),
+    );
+
+    expect(
+      await Tray.instance.updateMenuItems(const [
+        TrayMenuItemUpdate(
+          key: 'first',
+          sublabel: '12 ms',
+          sublabelStyle: TrayMenuItemSublabelStyle.badge,
+        ),
+        TrayMenuItemUpdate(key: 'second', enabled: false, checked: true),
+      ]),
+      isTrue,
+    );
+
+    final updateCall = calls.last;
+    expect(updateCall.method, 'updateMenuItems');
+    expect(updateCall.arguments, {
+      'updates': [
+        {'key': 'first', 'sublabel': '12 ms', 'sublabelStyle': 'badge'},
+        {'key': 'second', 'enabled': false, 'checked': true},
+      ],
+    });
+    expect(
+      calls.where((call) => call.method == 'updateMenuItems'),
+      hasLength(1),
+    );
+  });
+
+  test('an empty batch does not call the platform', () async {
+    await Tray.instance.show(_spec());
+    final before = calls.length;
+
+    expect(await Tray.instance.updateMenuItems(const []), isTrue);
+
+    expect(calls, hasLength(before));
+  });
 
   test('openMenu encodes the optional Windows owner preference', () async {
     await Tray.instance.show(_spec());
@@ -296,13 +343,15 @@ void main() {
 
     final open = Tray.instance.openMenu();
     await Future<void>.delayed(Duration.zero);
-    final update = Tray.instance.updateMenuItem(key: 'delay', enabled: false);
+    final update = Tray.instance.updateMenuItems(const [
+      TrayMenuItemUpdate(key: 'delay', enabled: false),
+    ]);
     await update;
 
     expect(calls.map((call) => call.method), [
       'show',
       'openMenu',
-      'updateMenuItem',
+      'updateMenuItems',
     ]);
     menuClosed.complete();
     await open;

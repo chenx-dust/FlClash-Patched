@@ -318,15 +318,14 @@ static FlMethodResponse* handle_set_title(TrayPlugin* self, FlValue* args) {
   return respond(true);
 }
 
-static FlMethodResponse* handle_update_menu_item(TrayPlugin* self,
-                                                 FlValue* args) {
+static bool apply_menu_item_update(TrayPlugin* self, FlValue* args) {
   const char* key = string_value(args, "key");
   if (self->menu == nullptr || key == nullptr) {
-    return respond(false);
+    return false;
   }
   GtkWidget* item = find_menu_item(self->menu, key);
   if (item == nullptr) {
-    return respond(false);
+    return false;
   }
 
   const char* label = string_value(args, "label");
@@ -341,6 +340,32 @@ static FlMethodResponse* handle_update_menu_item(TrayPlugin* self,
   if (GTK_IS_CHECK_MENU_ITEM(item) &&
       bool_value_if_present(args, "checked", &checked)) {
     gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), checked);
+  }
+  return true;
+}
+
+static FlMethodResponse* handle_update_menu_items(TrayPlugin* self,
+                                                  FlValue* args) {
+  FlValue* updates = args == nullptr
+                         ? nullptr
+                         : fl_value_lookup_string(args, "updates");
+  if (updates == nullptr ||
+      fl_value_get_type(updates) != FL_VALUE_TYPE_LIST) {
+    return respond(false);
+  }
+  for (size_t i = 0; i < fl_value_get_length(updates); i++) {
+    FlValue* update = fl_value_get_list_value(updates, i);
+    const char* key = string_value(update, "key");
+    if (key == nullptr || self->menu == nullptr ||
+        find_menu_item(self->menu, key) == nullptr) {
+      return respond(false);
+    }
+  }
+  for (size_t i = 0; i < fl_value_get_length(updates); i++) {
+    if (!apply_menu_item_update(
+            self, fl_value_get_list_value(updates, i))) {
+      return respond(false);
+    }
   }
   return respond(true);
 }
@@ -361,8 +386,8 @@ static void tray_plugin_handle_method_call(TrayPlugin* self,
     response = handle_show(self, args);
   } else if (strcmp(method, "setTitle") == 0) {
     response = handle_set_title(self, args);
-  } else if (strcmp(method, "updateMenuItem") == 0) {
-    response = handle_update_menu_item(self, args);
+  } else if (strcmp(method, "updateMenuItems") == 0) {
+    response = handle_update_menu_items(self, args);
   } else if (strcmp(method, "hide") == 0) {
     response = handle_hide(self);
   } else {

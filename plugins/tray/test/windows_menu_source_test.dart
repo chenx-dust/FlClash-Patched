@@ -92,6 +92,17 @@ void main() {
     );
   });
 
+  test('windows validates and applies batch menu updates', () {
+    expect(pluginSource, contains('bool TrayPlugin::UpdateMenuItems'));
+    expect(pluginSource, contains('method == "updateMenuItems"'));
+    expect(pluginSource, contains('ListAt(*arguments, "updates")'));
+    expect(
+      pluginSource.indexOf('menu_items_.find(*key) == menu_items_.end()'),
+      lessThan(pluginSource.indexOf('if (!ApplyMenuItemUpdate(update))')),
+    );
+    expect(pluginSource, isNot(contains('method == "updateMenuItem"')));
+  });
+
   test('windows can make the Flutter window own the popup menu', () {
     expect(pluginSource, contains('BoolAt(*arguments, "bringAppToFront"'));
     expect(
