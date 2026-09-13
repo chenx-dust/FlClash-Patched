@@ -31,11 +31,6 @@ class Window implements WindowPort {
   }
 
   Future<void> init(int version, WindowProps props) async {
-    final acquire = await singleInstanceLock.acquire();
-    if (!acquire) {
-      commonPrint.log('another instance owns the data directory, exiting');
-      exit(0);
-    }
     if (system.isWindows) {
       for (final scheme in protocolSchemes) {
         protocol.register(scheme);
