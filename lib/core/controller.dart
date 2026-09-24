@@ -61,8 +61,8 @@ class CoreController {
   static Future<void> initGeo() async {
     final homePath = await appPath.homeDirPath;
     const geoFileNameList = [MMDB, GEOIP, GEOSITE, ASN, BUNDLE_MRS];
-    try {
-      for (final geoFileName in geoFileNameList) {
+    for (final geoFileName in geoFileNameList) {
+      try {
         final geoFile = File(join(homePath, geoFileName));
         final isExists = await geoFile.exists();
         if (isExists) {
@@ -71,13 +71,12 @@ class CoreController {
         final data = await rootBundle.load('assets/data/$geoFileName');
         final List<int> bytes = data.buffer.asUint8List();
         await geoFile.writeAsBytes(bytes, flush: true);
+      } catch (e) {
+        commonPrint.log(
+          'Failed to initialize geo data: $e',
+          logLevel: LogLevel.error,
+        );
       }
-    } catch (e) {
-      commonPrint.log(
-        'Failed to initialize geo data: $e',
-        logLevel: LogLevel.error,
-      );
-      rethrow;
     }
   }
 
