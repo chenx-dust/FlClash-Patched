@@ -202,6 +202,7 @@ class _ListInputPageState extends ConsumerState<ListInputPage>
         valueMaxLength: isEdit ? widget.itemMaxLength : null,
         valueHelperText: isEdit ? null : appLocalizations.multipleValuesTip,
         title: isEdit ? appLocalizations.edit : appLocalizations.add,
+        autofocus: !isEdit,
       ),
     );
 
@@ -501,6 +502,7 @@ class _MapInputPageState extends ConsumerState<MapInputPage>
         keyMaxLength: widget.keyMaxLength,
         valueMaxLength: widget.valueMaxLength,
         title: item != null ? appLocalizations.edit : appLocalizations.add,
+        autofocus: item == null,
       ),
     );
     if (!mounted || value == null) return;

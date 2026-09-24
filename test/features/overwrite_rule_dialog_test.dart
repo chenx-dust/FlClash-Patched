@@ -76,6 +76,13 @@ void main() {
     );
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<EditableText>(find.byType(EditableText).first)
+          .focusNode
+          .hasFocus,
+      isTrue,
+    );
     final l10n = AppLocalizations.current;
 
     await tester.tap(find.text(l10n.confirm));

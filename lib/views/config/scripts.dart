@@ -196,6 +196,7 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
     if (newScript.label.isEmpty) {
       final res = await dialogs.showCommonDialog<String>(
         child: InputDialog(
+          autofocus: true,
           title: appLocalizations.save,
           value: '',
           hintText: appLocalizations.pleaseEnterScriptName,

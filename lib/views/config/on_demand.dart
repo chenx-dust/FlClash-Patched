@@ -96,6 +96,7 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
     final appLocalizations = context.appLocalizations;
     final newSSID = await dialogs.showCommonDialog<String>(
       child: InputDialog(
+        autofocus: ssid == null,
         title: ssid == null
             ? appLocalizations.addSsid
             : appLocalizations.editSsid,

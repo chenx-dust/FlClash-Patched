@@ -103,6 +103,7 @@ class InputDialog extends StatefulWidget {
   final int? maxLength;
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
+  final bool autofocus;
 
   const InputDialog({
     super.key,
@@ -117,6 +118,7 @@ class InputDialog extends StatefulWidget {
     this.maxLength,
     this.inputFormatters,
     this.keyboardType,
+    this.autofocus = false,
     this.autovalidateMode = AutovalidateMode.onUserInteraction,
   });
 
@@ -191,6 +193,7 @@ class _InputDialogState extends State<InputDialog> {
           runSpacing: 16,
           children: [
             TextFormField(
+              autofocus: widget.autofocus,
               maxLength: widget.maxLength,
               inputFormatters: widget.inputFormatters,
               obscureText: widget.obscureText ?? false,
@@ -225,6 +228,7 @@ class AddDialog extends StatefulWidget {
   final int? keyMaxLength;
   final int? valueMaxLength;
   final String? valueHelperText;
+  final bool autofocus;
 
   const AddDialog({
     super.key,
@@ -234,6 +238,7 @@ class AddDialog extends StatefulWidget {
     this.keyMaxLength,
     this.valueMaxLength,
     this.valueHelperText,
+    this.autofocus = false,
   });
 
   @override
@@ -292,6 +297,7 @@ class _AddDialogState extends State<AddDialog> {
           children: [
             if (keyField != null)
               TextFormField(
+                autofocus: widget.autofocus,
                 maxLines: 3,
                 minLines: 1,
                 inputFormatters: widget.keyMaxLength == null
@@ -315,6 +321,7 @@ class _AddDialogState extends State<AddDialog> {
                 },
               ),
             TextFormField(
+              autofocus: widget.autofocus && keyField == null,
               maxLines: 3,
               minLines: 1,
               inputFormatters: widget.valueMaxLength == null

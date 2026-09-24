@@ -171,6 +171,13 @@ void main() {
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
     expect(find.byType(URLFormDialog), findsOne);
+    expect(
+      tester
+          .widget<EditableText>(find.byType(EditableText).first)
+          .focusNode
+          .hasFocus,
+      isTrue,
+    );
 
     await tester.tap(find.text(currentAppLocalizations.submit));
     await tester.pumpAndSettle();
