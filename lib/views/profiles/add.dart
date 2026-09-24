@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/models/models.dart';
@@ -11,6 +10,7 @@ import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/views/profiles/age_key_generator.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AddProfileView extends ConsumerWidget {
@@ -178,6 +178,19 @@ class _URLFormDialogState extends State<URLFormDialog> {
     await dialogs.showCommonDialog<void>(child: const AgeKeyGeneratorDialog());
   }
 
+  Future<void> _pasteUrlFromClipboard() async {
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    var text = data?.text?.trim() ?? '';
+    if (text.isEmpty || !mounted) return;
+    if (text.length > TextInputLimits.url) {
+      text = text.substring(0, TextInputLimits.url);
+    }
+    _urlController.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+  }
+
   @override
   void dispose() {
     _urlController.dispose();
@@ -220,7 +233,14 @@ class _URLFormDialogState extends State<URLFormDialog> {
                 maxLines: 5,
                 inputFormatters: TextInputLimits.limit(TextInputLimits.url),
                 controller: _urlController,
-                decoration: InputDecoration(labelText: appLocalizations.url),
+                decoration: InputDecoration(
+                  labelText: appLocalizations.url,
+                  suffixIcon: IconButton(
+                    tooltip: appLocalizations.paste,
+                    onPressed: _pasteUrlFromClipboard,
+                    icon: const Icon(Icons.paste),
+                  ),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return appLocalizations.emptyTip('').trim();

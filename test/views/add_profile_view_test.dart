@@ -5,6 +5,7 @@ import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/profiles/add.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -222,6 +223,63 @@ void main() {
 
     expect(find.byType(URLFormDialog), findsNothing);
     expect(popped?.url, 'https://example.com/profile');
+    expect(popped?.ageSecretKey, isNull);
+    expect(tester.takeException(), null);
+  });
+
+  testWidgets('URL import dialog pastes the clipboard into the URL field', (
+    tester,
+  ) async {
+    final container = _containerFor(tester);
+    ({String url, String? ageSecretKey})? popped;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'Clipboard.getData') {
+          return <String, dynamic>{'text': '  https://example.com/clip  '};
+        }
+        return null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: TestApp(
+          child: Scaffold(
+            body: Builder(
+              builder: (context) => TextButton(
+                onPressed: () async {
+                  popped =
+                      await showDialog<({String url, String? ageSecretKey})>(
+                        context: context,
+                        builder: (_) => const URLFormDialog(),
+                      );
+                },
+                child: const Text('open'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip(currentAppLocalizations.paste));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(currentAppLocalizations.submit));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(URLFormDialog), findsNothing);
+    expect(popped?.url, 'https://example.com/clip');
     expect(popped?.ageSecretKey, isNull);
     expect(tester.takeException(), null);
   });
