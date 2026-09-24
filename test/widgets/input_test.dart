@@ -273,10 +273,7 @@ void main() {
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
     expect(
-      tester
-          .widget<EditableText>(find.byType(EditableText))
-          .focusNode
-          .hasFocus,
+      tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus,
       isTrue,
     );
     await tester.tap(find.text('Submit'));
@@ -345,10 +342,7 @@ void main() {
     await tester.tap(find.text('Scalar'));
     await tester.pumpAndSettle();
     expect(
-      tester
-          .widget<EditableText>(find.byType(EditableText))
-          .focusNode
-          .hasFocus,
+      tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus,
       isTrue,
     );
     await tester.tap(find.text('Confirm'));
