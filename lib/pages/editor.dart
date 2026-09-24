@@ -155,6 +155,7 @@ class _EditorPageState extends ConsumerState<EditorPage> {
     final appLocalizations = context.appLocalizations;
     final url = await dialogs.showCommonDialog(
       child: InputDialog(
+        autofocus: true,
         title: appLocalizations.import,
         value: '',
         labelText: appLocalizations.url,

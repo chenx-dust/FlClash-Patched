@@ -356,6 +356,7 @@ class _AddOrEditRuleDialogState extends State<AddOrEditRuleDialog> {
                   ),
                   const SizedBox(height: 24),
                   _RuleContentField(
+                    autofocus: widget.rule == null,
                     controller: _contentController,
                     onSubmitted: _handleSubmit,
                   ),
@@ -410,15 +411,18 @@ class _RuleContentField extends StatelessWidget {
   const _RuleContentField({
     required this.controller,
     required this.onSubmitted,
+    required this.autofocus,
   });
 
   final TextEditingController controller;
   final VoidCallback onSubmitted;
+  final bool autofocus;
 
   @override
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     return TextFormField(
+      autofocus: autofocus,
       keyboardType: TextInputType.text,
       inputFormatters: TextInputLimits.limit(TextInputLimits.rule),
       onFieldSubmitted: (_) {

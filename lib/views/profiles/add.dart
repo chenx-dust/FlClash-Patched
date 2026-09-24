@@ -58,6 +58,7 @@ class AddProfileView extends ConsumerWidget {
     final profilesAction = ref.read(profilesActionProvider.notifier);
     final name = await dialogs.showCommonDialog<String>(
       child: InputDialog(
+        autofocus: true,
         title: appLocalizations.newProfile,
         value: '',
         labelText: appLocalizations.name,
@@ -226,6 +227,7 @@ class _URLFormDialogState extends State<URLFormDialog> {
             runSpacing: 16,
             children: [
               TextFormField(
+                autofocus: true,
                 keyboardType: TextInputType.url,
                 textInputAction: TextInputAction.done,
                 onFieldSubmitted: (_) => _handleAddProfileFormURL(),
