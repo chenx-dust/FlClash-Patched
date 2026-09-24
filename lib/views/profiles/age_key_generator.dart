@@ -2,6 +2,7 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/method.dart';
 import 'package:fl_clash/providers/core.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -32,6 +33,19 @@ class _AgeKeyGeneratorDialogState extends ConsumerState<AgeKeyGeneratorDialog> {
     _privateKeyController.dispose();
     _publicKeyController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pastePrivateKeyFromClipboard() async {
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    final text = data?.text?.trim() ?? '';
+    if (text.isEmpty || !mounted) return;
+    setState(() {
+      _privateKeyController.value = TextEditingValue(
+        text: text,
+        selection: TextSelection.collapsed(offset: text.length),
+      );
+      _helperText = null;
+    });
   }
 
   Future<void> _handleGenerate() async {
@@ -112,6 +126,7 @@ class _AgeKeyGeneratorDialogState extends ConsumerState<AgeKeyGeneratorDialog> {
         _helperText == appLocalizations.ageKeyPairGeneratedSuccess;
     return CommonDialog(
       title: appLocalizations.ageKeyGenerateTitle,
+      maxWidth: 320,
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
@@ -124,19 +139,20 @@ class _AgeKeyGeneratorDialogState extends ConsumerState<AgeKeyGeneratorDialog> {
       ],
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 8),
           TextField(
             controller: _privateKeyController,
             decoration: InputDecoration(
-              border: const OutlineInputBorder(),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
               labelText: appLocalizations.agePrivateKeyLabel,
               suffixIcon: IconButton(
-                tooltip: appLocalizations.copy,
-                icon: const Icon(Icons.copy),
-                onPressed: () => copyText(context, _privateKeyController.text),
+                tooltip: _generateFromPrivateKey
+                    ? appLocalizations.paste
+                    : appLocalizations.copy,
+                icon: Icon(_generateFromPrivateKey ? Icons.paste : Icons.copy),
+                onPressed: _generateFromPrivateKey
+                    ? _pastePrivateKeyFromClipboard
+                    : () => copyText(context, _privateKeyController.text),
               ),
             ),
             onChanged: (_) {
@@ -147,13 +163,11 @@ class _AgeKeyGeneratorDialogState extends ConsumerState<AgeKeyGeneratorDialog> {
               }
             },
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
           TextField(
             controller: _publicKeyController,
             readOnly: true,
             decoration: InputDecoration(
-              border: const OutlineInputBorder(),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
               labelText: appLocalizations.agePublicKeyLabel,
               helperText: _helperText,
               helperMaxLines: 2,
@@ -169,14 +183,13 @@ class _AgeKeyGeneratorDialogState extends ConsumerState<AgeKeyGeneratorDialog> {
               ),
             ),
           ),
-          const SizedBox(height: 24),
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
+          const SizedBox(height: 8),
+          ListItem.checkbox(
             title: Text(appLocalizations.generateFromPrivateKey),
             value: _generateFromPrivateKey,
             onChanged: (value) {
               setState(() {
-                _generateFromPrivateKey = value;
+                _generateFromPrivateKey = value ?? false;
                 _helperText = null;
               });
             },
