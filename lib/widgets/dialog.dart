@@ -60,13 +60,18 @@ class CommonDialog extends ConsumerWidget {
         actions: actions,
         contentPadding: padding,
         backgroundColor: backgroundColor,
-        content: Container(
-          constraints: BoxConstraints(
-            maxHeight: min(size.height - 40, 500),
-            maxWidth: maxWidth,
+        content: ListTileTheme(
+          data: const ListTileThemeData(shape: AppShape.md),
+          child: Container(
+            constraints: BoxConstraints(
+              maxHeight: min(size.height - 40, 500),
+              maxWidth: maxWidth,
+            ),
+            width: size.width - 40,
+            child: !overrideScroll
+                ? SingleChildScrollView(child: child)
+                : child,
           ),
-          width: size.width - 40,
-          child: !overrideScroll ? SingleChildScrollView(child: child) : child,
         ),
       ),
     );
