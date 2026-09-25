@@ -257,6 +257,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Интервал автообновления (минуты)",
     ),
     "back": MessageLookupByLibrary.simpleMessage("Назад"),
+    "backToDashboard": MessageLookupByLibrary.simpleMessage(
+      "Возврат на главную",
+    ),
+    "backToDashboardDesc": MessageLookupByLibrary.simpleMessage(
+      "Перед выходом возвращаться на панель",
+    ),
     "backup": MessageLookupByLibrary.simpleMessage("Резервное копирование"),
     "backupAndRestore": MessageLookupByLibrary.simpleMessage(
       "Резервное копирование и восстановление",

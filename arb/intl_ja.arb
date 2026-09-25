@@ -41,6 +41,8 @@
   "tunDesc": "管理者モードでのみ有効",
   "minimizeOnExit": "終了時に最小化",
   "minimizeOnExitDesc": "システム標準の終了動作を変更します",
+  "backToDashboard": "戻る時にダッシュボードへ",
+  "backToDashboardDesc": "終了する前にダッシュボードへ戻ります",
   "autoLaunch": "自動起動",
   "autoLaunchDesc": "システム起動時に自動的に起動します",
   "silentLaunch": "サイレント起動",

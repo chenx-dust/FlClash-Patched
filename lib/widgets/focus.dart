@@ -1,3 +1,4 @@
+import 'package:fl_clash/enum/enum.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
@@ -114,6 +115,70 @@ class PageTraversalPolicy extends OrderedTraversalPolicy {
 
   @override
   bool previous(FocusNode currentNode) => _moveOrEscape(currentNode, false);
+}
+
+class NavDestinationAnchor extends StatelessWidget {
+  const NavDestinationAnchor({
+    super.key,
+    required this.label,
+    required this.child,
+  });
+
+  final PageLabel label;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => child;
+}
+
+bool releaseEditableFocus() {
+  final node = FocusManager.instance.primaryFocus;
+  final focusContext = node?.context;
+  if (focusContext == null) {
+    return false;
+  }
+  final isInput =
+      focusContext.widget is EditableText ||
+      focusContext.findAncestorWidgetOfExactType<EditableText>() != null ||
+      focusContext.widget is Slider ||
+      focusContext.findAncestorWidgetOfExactType<Slider>() != null;
+  final scope = node?.enclosingScope;
+  if (!isInput || scope == null) {
+    return false;
+  }
+  scope.requestScopeFocus();
+  return true;
+}
+
+bool focusIsInNavigation() {
+  final focusContext = FocusManager.instance.primaryFocus?.context;
+  if (focusContext == null) {
+    return false;
+  }
+  return focusContext.findAncestorWidgetOfExactType<NavigationBar>() != null ||
+      focusContext.findAncestorWidgetOfExactType<NavigationRail>() != null;
+}
+
+bool focusNavigationDestination(BuildContext context, PageLabel label) {
+  FocusNode? target;
+  void visit(Element element) {
+    if (target != null) {
+      return;
+    }
+    final widget = element.widget;
+    if (widget is NavDestinationAnchor && widget.label == label) {
+      final node = Focus.maybeOf(element);
+      if (node != null && node.canRequestFocus) {
+        target = node;
+        return;
+      }
+    }
+    element.visitChildren(visit);
+  }
+
+  context.visitChildElements(visit);
+  target?.requestFocus();
+  return target != null;
 }
 
 class FocusEntryOnArrow extends StatefulWidget {

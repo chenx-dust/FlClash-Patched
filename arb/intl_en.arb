@@ -41,6 +41,8 @@
   "tunDesc": "Only effective in administrator mode",
   "minimizeOnExit": "Minimize on exit",
   "minimizeOnExitDesc": "Override the default system exit behavior",
+  "backToDashboard": "Back to dashboard",
+  "backToDashboardDesc": "Return to the dashboard before exiting",
   "autoLaunch": "Auto launch",
   "autoLaunchDesc": "Launch automatically at system startup",
   "silentLaunch": "Silent launch",

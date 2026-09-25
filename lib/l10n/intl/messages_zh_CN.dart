@@ -187,6 +187,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "autoUpdate": MessageLookupByLibrary.simpleMessage("自动更新"),
     "autoUpdateInterval": MessageLookupByLibrary.simpleMessage("自动更新间隔（分钟）"),
     "back": MessageLookupByLibrary.simpleMessage("返回"),
+    "backToDashboard": MessageLookupByLibrary.simpleMessage("返回时回首页"),
+    "backToDashboardDesc": MessageLookupByLibrary.simpleMessage("退出前先返回仪表盘"),
     "backup": MessageLookupByLibrary.simpleMessage("备份"),
     "backupAndRestore": MessageLookupByLibrary.simpleMessage("备份与恢复"),
     "backupAndRestoreDesc": MessageLookupByLibrary.simpleMessage(

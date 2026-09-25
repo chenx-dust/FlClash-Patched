@@ -340,6 +340,26 @@ class AppLocalizations {
     );
   }
 
+  /// `Back to dashboard`
+  String get backToDashboard {
+    return Intl.message(
+      'Back to dashboard',
+      name: 'backToDashboard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Return to the dashboard before exiting`
+  String get backToDashboardDesc {
+    return Intl.message(
+      'Return to the dashboard before exiting',
+      name: 'backToDashboardDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Auto launch`
   String get autoLaunch {
     return Intl.message('Auto launch', name: 'autoLaunch', desc: '', args: []);

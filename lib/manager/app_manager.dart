@@ -9,6 +9,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/animated_visibility.dart';
+import 'package:fl_clash/widgets/focus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -209,7 +210,10 @@ class _SidebarRail extends StatelessWidget {
             destinations: [
               for (final item in items)
                 NavigationRailDestination(
-                  icon: item.icon,
+                  icon: NavDestinationAnchor(
+                    label: item.label,
+                    child: item.icon,
+                  ),
                   label: Text(item.label.label),
                 ),
             ],

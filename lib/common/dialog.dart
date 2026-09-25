@@ -51,12 +51,14 @@ class Dialogs {
             actions: [
               if (cancelable)
                 TextButton(
+                  autofocus: true,
                   onPressed: () {
                     Navigator.of(context).pop(false);
                   },
                   child: Text(cancelText ?? appLocalizations.cancel),
                 ),
               TextButton(
+                autofocus: !cancelable,
                 onPressed: () {
                   Navigator.of(context).pop(true);
                 },

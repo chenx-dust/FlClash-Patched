@@ -123,7 +123,10 @@ class _HomeShell extends ConsumerWidget {
                   destinations: [
                     for (final item in navigationItems)
                       NavigationDestination(
-                        icon: item.icon,
+                        icon: NavDestinationAnchor(
+                          label: item.label,
+                          child: item.icon,
+                        ),
                         label: item.label.label,
                       ),
                   ],
@@ -498,12 +501,32 @@ class _HomeBackScopeContainerState
     extends ConsumerState<HomeBackScopeContainer> {
   bool _canHandlePop = false;
 
+  bool _focusTvBack(BuildContext context) {
+    if (releaseEditableFocus()) {
+      return true;
+    }
+    if (focusIsInNavigation()) {
+      return false;
+    }
+    return focusNavigationDestination(
+      context,
+      ref.read(currentPageLabelProvider),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isMobile = ref.watch(isMobileViewProvider);
+    final isTV = system.isTV;
+    final backToDashboard = ref.watch(
+      appSettingProvider.select((state) => state.backToDashboard),
+    );
+    final pageLabel = ref.watch(currentPageLabelProvider);
     return CommonPopScope(
       canPop:
+          !isTV &&
           !_canHandlePop &&
+          !(backToDashboard && pageLabel != PageLabel.dashboard) &&
           (defaultTargetPlatform == TargetPlatform.android
               ? ref.watch(
                   appSettingProvider.select((state) => state.minimizeOnExit),
@@ -520,6 +543,27 @@ class _HomeBackScopeContainerState
             return false;
           }
         } else if (await navigator.maybePop()) {
+          return false;
+        }
+        if (!context.mounted) {
+          return false;
+        }
+        if (isTV && _focusTvBack(context)) {
+          return false;
+        }
+        final backToDashboard = ref.read(appSettingProvider).backToDashboard;
+        if (backToDashboard && pageLabel != PageLabel.dashboard) {
+          ref
+              .read(currentPageLabelProvider.notifier)
+              .toPage(PageLabel.dashboard);
+          if (isTV) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!context.mounted) {
+                return;
+              }
+              focusNavigationDestination(context, PageLabel.dashboard);
+            });
+          }
           return false;
         }
         await ref.read(systemActionProvider.notifier).handleClose();

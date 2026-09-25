@@ -39,6 +39,12 @@ class ApplicationSettingView extends ConsumerWidget {
         select: (state) => state.minimizeOnExit,
         update: (state, value) => state.copyWith(minimizeOnExit: value),
       ),
+      _appSettingToggle(
+        title: (l) => l.backToDashboard,
+        subtitle: (l) => l.backToDashboardDesc,
+        select: (state) => state.backToDashboard,
+        update: (state, value) => state.copyWith(backToDashboard: value),
+      ),
       if (system.isDesktop) ...[
         _appSettingToggle(
           title: (l) => l.autoLaunch,

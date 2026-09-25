@@ -254,6 +254,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Auto-update interval (minutes)",
     ),
     "back": MessageLookupByLibrary.simpleMessage("Back"),
+    "backToDashboard": MessageLookupByLibrary.simpleMessage(
+      "Back to dashboard",
+    ),
+    "backToDashboardDesc": MessageLookupByLibrary.simpleMessage(
+      "Return to the dashboard before exiting",
+    ),
     "backup": MessageLookupByLibrary.simpleMessage("Backup"),
     "backupAndRestore": MessageLookupByLibrary.simpleMessage(
       "Backup and restore",

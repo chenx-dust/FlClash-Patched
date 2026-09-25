@@ -41,6 +41,8 @@
   "tunDesc": "仅在管理员模式生效",
   "minimizeOnExit": "退出时最小化",
   "minimizeOnExitDesc": "修改系统默认退出事件",
+  "backToDashboard": "返回时回首页",
+  "backToDashboardDesc": "退出前先返回仪表盘",
   "autoLaunch": "自启动",
   "autoLaunchDesc": "跟随系统自启动",
   "silentLaunch": "静默启动",

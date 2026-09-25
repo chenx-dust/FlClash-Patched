@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/common/shape.dart';
 import 'package:fl_clash/common/system.dart';
+import 'package:fl_clash/widgets/focus.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -29,23 +30,12 @@ class CommonDialog extends ConsumerWidget {
   });
 
   bool _dismissInputFocus(BuildContext context) {
-    final node = FocusManager.instance.primaryFocus;
-    final focusContext = node?.context;
+    final focusContext = FocusManager.instance.primaryFocus?.context;
     if (focusContext == null ||
         ModalRoute.of(focusContext) != ModalRoute.of(context)) {
       return false;
     }
-    final isInput =
-        focusContext.widget is EditableText ||
-        focusContext.findAncestorWidgetOfExactType<EditableText>() != null ||
-        focusContext.widget is Slider ||
-        focusContext.findAncestorWidgetOfExactType<Slider>() != null;
-    final scope = node?.enclosingScope;
-    if (!isInput || scope == null) {
-      return false;
-    }
-    scope.requestScopeFocus();
-    return true;
+    return releaseEditableFocus();
   }
 
   @override

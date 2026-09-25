@@ -203,6 +203,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "autoUpdate": MessageLookupByLibrary.simpleMessage("自動更新"),
     "autoUpdateInterval": MessageLookupByLibrary.simpleMessage("自動更新間隔（分）"),
     "back": MessageLookupByLibrary.simpleMessage("戻る"),
+    "backToDashboard": MessageLookupByLibrary.simpleMessage("戻る時にダッシュボードへ"),
+    "backToDashboardDesc": MessageLookupByLibrary.simpleMessage(
+      "終了する前にダッシュボードへ戻ります",
+    ),
     "backup": MessageLookupByLibrary.simpleMessage("バックアップ"),
     "backupAndRestore": MessageLookupByLibrary.simpleMessage("バックアップと復元"),
     "backupAndRestoreDesc": MessageLookupByLibrary.simpleMessage(

@@ -84,6 +84,10 @@ void main() {
 
     expect(find.text('body'), findsOneWidget);
     expect(find.text('Cancel'), findsOneWidget);
+    expect(
+      Focus.of(tester.element(find.text('Cancel'))).hasPrimaryFocus,
+      isTrue,
+    );
 
     await tester.tap(find.text('Confirm'));
     await tester.pumpAndSettle();
@@ -117,6 +121,10 @@ void main() {
 
     expect(find.text('Cancel'), findsNothing);
     expect(find.text('Confirm'), findsOneWidget);
+    expect(
+      Focus.of(tester.element(find.text('Confirm'))).hasPrimaryFocus,
+      isTrue,
+    );
 
     await tester.tap(find.text('Confirm'));
     await tester.pumpAndSettle();
@@ -139,6 +147,7 @@ void main() {
     expect(find.text('Custom title'), findsOneWidget);
     expect(find.text('Go'), findsOneWidget);
     expect(find.text('Back'), findsOneWidget);
+    expect(Focus.of(tester.element(find.text('Back'))).hasPrimaryFocus, isTrue);
 
     await tester.tap(find.text('Back'));
     await tester.pumpAndSettle();
