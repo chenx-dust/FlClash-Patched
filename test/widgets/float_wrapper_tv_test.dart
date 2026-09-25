@@ -57,10 +57,10 @@ Future<void> _pump(WidgetTester tester, ProviderContainer container) {
   return tester.pumpWidget(
     UncontrolledProviderScope(
       container: container,
-      child: MaterialApp(
+      child: const MaterialApp(
         home: Scaffold(
           body: FloatWrapper(
-            child: TextButton(onPressed: _noop, child: const Text('action')),
+            child: TextButton(onPressed: _noop, child: Text('action')),
           ),
         ),
       ),
