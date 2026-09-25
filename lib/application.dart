@@ -54,6 +54,10 @@ Widget buildManagerStack({
   );
 }
 
+const _tooltipTheme = TooltipThemeData(
+  waitDuration: Duration(milliseconds: 500),
+);
+
 PageTransitionsTheme buildPageTransitionsTheme({
   required bool predictiveBack,
   required bool isMobile,
@@ -215,6 +219,7 @@ class ApplicationState extends ConsumerState<Application> {
                   useMaterial3: true,
                   pageTransitionsTheme: pageTransitionsTheme,
                   colorScheme: _getAppColorScheme(brightness: Brightness.light),
+                  tooltipTheme: _tooltipTheme,
                 ).withAppShapes,
                 darkTheme: ThemeData(
                   useMaterial3: true,
@@ -222,6 +227,7 @@ class ApplicationState extends ConsumerState<Application> {
                   colorScheme: _getAppColorScheme(
                     brightness: Brightness.dark,
                   ).toPureBlack(themeProps.pureBlack),
+                  tooltipTheme: _tooltipTheme,
                 ).withAppShapes,
                 home: child!,
               ),
