@@ -1,6 +1,8 @@
+import 'package:fl_clash/widgets/card.dart';
 import 'package:fl_clash/widgets/grid.dart';
 import 'package:fl_clash/widgets/super_grid.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/test_app.dart';
@@ -213,5 +215,83 @@ void main() {
     expect(await transformCompleted, isFalse);
     await tester.pump(const Duration(seconds: 2));
     expect(tester.takeException(), null);
+  });
+
+  testWidgets('edit mode deletes the focused card instead of its action', (
+    tester,
+  ) async {
+    final key = GlobalKey<SuperGridState>();
+    var cardPresses = 0;
+
+    await tester.pumpWidget(
+      TestApp(
+        child: Scaffold(
+          body: SuperGrid(
+            key: key,
+            crossAxisCount: 4,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            children: [
+              GridItem(
+                crossAxisCellCount: 2,
+                mainAxisCellCount: 1,
+                child: SizedBox(
+                  height: 100,
+                  child: CommonCard(
+                    skipTraversal: true,
+                    onPressed: () => cardPresses++,
+                    child: TextButton(
+                      onPressed: () {},
+                      child: const Text('inner'),
+                    ),
+                  ),
+                ),
+              ),
+              _item('B'),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(tester.getSize(find.byType(IconButton).first), const Size(24, 24));
+    var excluded = false;
+    tester.element(find.text('inner')).visitAncestorElements((element) {
+      final widget = element.widget;
+      if (widget is ExcludeFocus && widget.excluding) {
+        excluded = true;
+        return false;
+      }
+      return true;
+    });
+    expect(excluded, isTrue);
+
+    for (var i = 0; i < 8; i++) {
+      final focused = FocusManager.instance.primaryFocus?.context;
+      if (focused?.findAncestorWidgetOfExactType<OutlinedButton>() != null) {
+        break;
+      }
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+    }
+    expect(
+      FocusManager.instance.primaryFocus?.context
+          ?.findAncestorWidgetOfExactType<OutlinedButton>(),
+      isNotNull,
+      reason: 'edit mode keeps focus on the card',
+    );
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 301));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 421));
+    await tester.pump();
+
+    expect(cardPresses, 0);
+    expect(key.currentState!.length, 1);
+    expect(find.text('inner'), findsNothing);
+    expect(find.text('B'), findsOneWidget);
   });
 }

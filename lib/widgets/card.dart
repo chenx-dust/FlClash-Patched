@@ -82,6 +82,27 @@ class InfoHeader extends StatelessWidget {
   }
 }
 
+class CardPressOverride extends InheritedWidget {
+  const CardPressOverride({
+    super.key,
+    required this.onPressed,
+    required super.child,
+  });
+
+  final VoidCallback onPressed;
+
+  static VoidCallback? maybeOf(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<CardPressOverride>()
+        ?.onPressed;
+  }
+
+  @override
+  bool updateShouldNotify(CardPressOverride oldWidget) {
+    return onPressed != oldWidget.onPressed;
+  }
+}
+
 class CommonCard extends StatelessWidget {
   const CommonCard({
     super.key,
@@ -197,6 +218,7 @@ class CommonCard extends StatelessWidget {
     BuildContext context,
     Widget childWidget,
     FocusNode? focusNode,
+    VoidCallback? pressed,
   ) {
     return switch (type == CommonCardType.filled) {
       true => FilledButton(
@@ -220,7 +242,7 @@ class CommonCard extends StatelessWidget {
                 (states) => _buildBorderSide(context, states),
               ),
             ),
-        onPressed: onPressed,
+        onPressed: pressed,
         child: childWidget,
       ),
       false => OutlinedButton(
@@ -241,7 +263,7 @@ class CommonCard extends StatelessWidget {
                 (states) => _buildBorderSide(context, states),
               ),
             ),
-        onPressed: onPressed,
+        onPressed: pressed,
         child: childWidget,
       ),
     };
@@ -271,12 +293,17 @@ class CommonCard extends StatelessWidget {
       childWidget = Stack(children: children);
     }
 
-    final button = skipTraversal
+    final pressOverride = CardPressOverride.maybeOf(context);
+    final pressed = pressOverride ?? onPressed;
+    if (pressOverride != null) {
+      childWidget = ExcludeFocus(child: childWidget);
+    }
+    final button = skipTraversal && pressOverride == null
         ? _SkipTraversalScope(
             builder: (focusNode) =>
-                _buildButton(context, childWidget, focusNode),
+                _buildButton(context, childWidget, focusNode, pressed),
           )
-        : _buildButton(context, childWidget, null);
+        : _buildButton(context, childWidget, null, pressed);
     final card = !enterActionsOnRight
         ? button
         : Focus(

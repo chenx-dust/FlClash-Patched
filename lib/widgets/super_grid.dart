@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:defer_pointer/defer_pointer.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/widgets/activate_box.dart';
+import 'package:fl_clash/widgets/card.dart';
 import 'package:fl_clash/widgets/grid.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/physics.dart';
@@ -677,6 +678,7 @@ class _DeletableContainerState extends State<_DeletableContainer>
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
   bool _deleteButtonVisible = true;
+  bool _deleting = false;
 
   @override
   void initState() {
@@ -699,11 +701,16 @@ class _DeletableContainerState extends State<_DeletableContainer>
       setState(() {
         _controller.value = 0;
         _deleteButtonVisible = true;
+        _deleting = false;
       });
     }
   }
 
   Future<void> _handleDel() async {
+    if (_deleting) {
+      return;
+    }
+    _deleting = true;
     setState(() {
       _deleteButtonVisible = false;
     });
@@ -730,7 +737,10 @@ class _DeletableContainerState extends State<_DeletableContainer>
               child: Opacity(opacity: _fadeAnimation.value, child: child!),
             );
           },
-          child: widget.child,
+          child: CardPressOverride(
+            onPressed: _handleDel,
+            child: widget.child,
+          ),
         ),
         if (_deleteButtonVisible)
           Positioned(
