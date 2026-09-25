@@ -46,6 +46,52 @@ class _PageFocusScopeState extends State<PageFocusScope> {
 }
 
 class PageTraversalPolicy extends OrderedTraversalPolicy {
+  FocusScopeNode? _overlayFocusBoundary(FocusNode node) {
+    var scope = node.nearestScope;
+    while (scope != null && scope != FocusManager.instance.rootScope) {
+      final route = _routeOf(scope);
+      if (route != null &&
+          !route.opaque &&
+          !identical(route, _routeOf(scope.enclosingScope))) {
+        return scope;
+      }
+      scope = scope.enclosingScope;
+    }
+    return null;
+  }
+
+  ModalRoute<dynamic>? _routeOf(FocusScopeNode? scope) {
+    final focusContext = scope?.context;
+    if (focusContext == null) {
+      return null;
+    }
+    return ModalRoute.of(focusContext);
+  }
+
+  bool _moveInsideOverlay(
+    FocusScopeNode boundary, {
+    required bool directional,
+    required bool Function() move,
+  }) {
+    final previous = directional
+        ? boundary.directionalTraversalEdgeBehavior
+        : boundary.traversalEdgeBehavior;
+    if (directional) {
+      boundary.directionalTraversalEdgeBehavior = TraversalEdgeBehavior.stop;
+    } else {
+      boundary.traversalEdgeBehavior = TraversalEdgeBehavior.stop;
+    }
+    try {
+      return move();
+    } finally {
+      if (directional) {
+        boundary.directionalTraversalEdgeBehavior = previous;
+      } else {
+        boundary.traversalEdgeBehavior = previous;
+      }
+    }
+  }
+
   FocusNode? _findPrimaryAction(FocusScopeNode scope) {
     for (final node in scope.traversalDescendants) {
       final context = node.context;
@@ -75,6 +121,14 @@ class PageTraversalPolicy extends OrderedTraversalPolicy {
 
   @override
   bool inDirection(FocusNode currentNode, TraversalDirection direction) {
+    final boundary = _overlayFocusBoundary(currentNode);
+    if (boundary != null) {
+      return _moveInsideOverlay(
+        boundary,
+        directional: true,
+        move: () => super.inDirection(currentNode, direction),
+      );
+    }
     final isDownRight =
         direction == TraversalDirection.down ||
         direction == TraversalDirection.right;
@@ -99,6 +153,15 @@ class PageTraversalPolicy extends OrderedTraversalPolicy {
   }
 
   bool _moveOrEscape(FocusNode currentNode, bool forward) {
+    final boundary = _overlayFocusBoundary(currentNode);
+    if (boundary != null) {
+      return _moveInsideOverlay(
+        boundary,
+        directional: false,
+        move: () =>
+            forward ? super.next(currentNode) : super.previous(currentNode),
+      );
+    }
     final scope = currentNode.nearestScope;
     final before = scope?.focusedChild;
     final moved = forward
