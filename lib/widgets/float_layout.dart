@@ -1,6 +1,7 @@
 import 'package:fl_clash/common/system.dart';
 import 'package:material_ui/material_ui.dart';
 
+import 'button.dart';
 import 'inherited.dart';
 
 class FloatLayout extends StatelessWidget {
@@ -49,9 +50,10 @@ class FloatWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final button = system.isTV ? FabFocusOutline(child: child) : child;
     return Container(
       margin: const EdgeInsets.all(kFloatingActionButtonMargin),
-      child: child,
+      child: button,
     );
   }
 }

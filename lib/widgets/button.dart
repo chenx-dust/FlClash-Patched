@@ -4,6 +4,65 @@ import 'package:material_ui/material_ui.dart';
 import 'builder.dart';
 import 'card.dart';
 
+class FabFocusOutline extends StatefulWidget {
+  const FabFocusOutline({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  State<FabFocusOutline> createState() => _FabFocusOutlineState();
+}
+
+class _FabFocusOutlineState extends State<FabFocusOutline> {
+  bool _focused = false;
+
+  void _handleFocusChange(bool focused) {
+    if (_focused == focused) {
+      return;
+    }
+    setState(() => _focused = focused);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Focus(
+      canRequestFocus: false,
+      skipTraversal: true,
+      onFocusChange: _handleFocusChange,
+      child: Stack(
+        children: [
+          widget.child,
+          if (_focused)
+            const Positioned.fill(child: IgnorePointer(child: _FabFocusRing())),
+        ],
+      ),
+    );
+  }
+}
+
+class _FabFocusRing extends StatelessWidget {
+  const _FabFocusRing();
+
+  static const width = 2.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(width / 2),
+      child: DecoratedBox(
+        decoration: ShapeDecoration(
+          shape: AppShape.all(AppCorner.md - width / 2).copyWith(
+            side: BorderSide(
+              color: context.colorScheme.onPrimaryContainer,
+              width: width,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class CommonFloatingActionButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final Icon icon;

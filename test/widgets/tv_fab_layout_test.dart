@@ -125,6 +125,72 @@ void main() {
     expect(find.byType(TextField), findsOneWidget);
   });
 
+  testWidgets('TV FAB draws an outline while it has focus', (tester) async {
+    final outsideFocus = FocusNode();
+    addTearDown(outsideFocus.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Column(
+          children: [
+            Focus(focusNode: outsideFocus, child: const SizedBox()),
+            Expanded(
+              child: CommonScaffold(
+                appBar: AppBar(title: const Text('page')),
+                isTV: true,
+                floatingActionButton: _action(),
+                body: _content(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    outsideFocus.requestFocus();
+    await tester.pump();
+
+    final outline = find.descendant(
+      of: find.byType(FabFocusOutline),
+      matching: find.byType(IgnorePointer),
+    );
+    expect(outline, findsNothing);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+
+    expect(_isActionFocused(), isTrue);
+    final shape =
+        tester
+                .widget<DecoratedBox>(
+                  find.descendant(
+                    of: outline,
+                    matching: find.byType(DecoratedBox),
+                  ),
+                )
+                .decoration
+            as ShapeDecoration;
+    final side = (shape.shape as RoundedSuperellipseBorder).side;
+    expect(side.width, 2);
+    expect(
+      side.color,
+      Theme.of(tester.element(outline)).colorScheme.onPrimaryContainer,
+    );
+  });
+
+  testWidgets('non-TV FAB has no focus outline', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: CommonScaffold(
+          appBar: AppBar(title: const Text('page')),
+          isTV: false,
+          floatingActionButton: _action(),
+          body: _content(),
+        ),
+      ),
+    );
+
+    expect(find.byType(FabFocusOutline), findsNothing);
+  });
+
   testWidgets('TV top action is the first focus target in page content', (
     tester,
   ) async {

@@ -4,6 +4,7 @@ import 'package:fl_clash/widgets/pop_scope.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/rendering.dart';
 
+import 'button.dart';
 import 'chip.dart';
 import 'focus.dart';
 import 'inherited.dart';
@@ -289,6 +290,10 @@ class CommonScaffoldState extends State<CommonScaffold> {
         : button;
   }
 
+  Widget _buildTvFloatingActionButton() {
+    return FabFocusOutline(child: widget.floatingActionButton!);
+  }
+
   List<Widget> _buildActions(
     AppBarSearchState? searchState,
     List<Widget> actions,
@@ -314,7 +319,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
             height: 48,
             child: CommonScaffoldFabExtendedProvider(
               isExtended: true,
-              child: widget.floatingActionButton!,
+              child: _buildTvFloatingActionButton(),
             ),
           ),
         ),
@@ -408,7 +413,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
                 order: const PrimaryFocusOrder(),
                 child: CommonScaffoldFabExtendedProvider(
                   isExtended: true,
-                  child: widget.floatingActionButton!,
+                  child: _buildTvFloatingActionButton(),
                 ),
               ),
             ),
