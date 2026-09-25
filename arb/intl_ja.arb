@@ -43,6 +43,8 @@
   "minimizeOnExitDesc": "システム標準の終了動作を変更します",
   "backToDashboard": "戻る時にダッシュボードへ",
   "backToDashboardDesc": "終了する前にダッシュボードへ戻ります",
+  "tvMode": "TVモード",
+  "tvModeDesc": "この端末でリモコン向けのレイアウトを使います",
   "autoLaunch": "自動起動",
   "autoLaunchDesc": "システム起動時に自動的に起動します",
   "silentLaunch": "サイレント起動",

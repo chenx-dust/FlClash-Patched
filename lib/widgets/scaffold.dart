@@ -8,6 +8,7 @@ import 'button.dart';
 import 'chip.dart';
 import 'focus.dart';
 import 'inherited.dart';
+import 'tv_layout.dart';
 
 typedef OnKeywordsUpdateCallback = void Function(List<String> keywords);
 
@@ -394,9 +395,12 @@ class CommonScaffoldState extends State<CommonScaffold> {
 
   @override
   Widget build(BuildContext context) {
+    return withTvLayout(context, isTV: widget.isTV, builder: _buildScaffold);
+  }
+
+  Widget _buildScaffold(BuildContext context, bool isTV) {
     assert(widget.appBar != null || widget.title != null);
     final backActionProvider = CommonScaffoldBackActionProvider.of(context);
-    final isTV = widget.isTV ?? system.isTV;
     final bottomInset = BottomInsetScope.of(context);
     final hasFab = !isTV && widget.floatingActionButton != null;
     final body = SafeArea(

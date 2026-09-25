@@ -4,6 +4,7 @@ import 'package:fl_clash/manager/back_manager.dart';
 import 'package:flutter/widgets.dart';
 
 import 'inherited.dart';
+import 'tv_back.dart';
 
 class CommonPopScopeAttemptNotification extends Notification {
   final Future<void> completion;
@@ -46,6 +47,9 @@ class CommonPopScope extends StatelessWidget {
           ? null
           : (didPop, _) async {
               if (didPop) {
+                return;
+              }
+              if (TvBackScope.consume(context)) {
                 return;
               }
               final completion = _handlePop(context);

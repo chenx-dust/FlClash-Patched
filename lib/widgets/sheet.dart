@@ -2,10 +2,14 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/models/common.dart';
 import 'package:fl_clash/widgets/inherited.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
+import 'focus.dart';
 import 'scaffold.dart';
 import 'side_sheet.dart';
+import 'tv_back.dart';
+import 'tv_layout.dart';
 
 @immutable
 class SheetProps {
@@ -54,7 +58,8 @@ Future<T?> showSheet<T>({
       context: context,
       isScrollControlled: props.isScrollControlled,
       builder: (_) {
-        return SheetProvider(
+        return _sheetHost(
+          context: context,
           type: SheetType.bottomSheet,
           child: builder(context),
         );
@@ -71,7 +76,8 @@ Future<T?> showSheet<T>({
       constraints: BoxConstraints(maxWidth: props.maxWidth ?? 360),
       filter: props.blur ? commonFilter : null,
       builder: (_) {
-        return SheetProvider(
+        return _sheetHost(
+          context: context,
           type: SheetType.sideSheet,
           child: builder(context),
         );
@@ -89,21 +95,113 @@ Future<T?> showExtend<T>(
   return switch (isMobile || props.forceFull) {
     true => BaseNavigator.push(
       context,
-      SheetProvider(type: SheetType.page, child: builder(context)),
+      _sheetHost(
+        context: context,
+        type: SheetType.page,
+        child: builder(context),
+      ),
     ),
     false => showModalSideSheet<T>(
       useSafeArea: props.useSafeArea,
       context: context,
       constraints: BoxConstraints(maxWidth: props.maxWidth ?? 360),
       filter: props.blur ? commonFilter : null,
-      builder: (context) {
-        return SheetProvider(
+      builder: (_) {
+        return _sheetHost(
+          context: context,
           type: SheetType.sideSheet,
           child: builder(context),
         );
       },
     ),
   };
+}
+
+Widget _sheetHost({
+  required BuildContext context,
+  required SheetType type,
+  required Widget child,
+}) {
+  final tvLayout = ProviderScope.containerOf(
+    context,
+    listen: false,
+  ).read(tvLayoutProvider);
+  return SheetProvider(
+    type: type,
+    child: tvLayout ? _TvSheetBack(child: child) : child,
+  );
+}
+
+class _TvSheetBack extends StatefulWidget {
+  const _TvSheetBack({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_TvSheetBack> createState() => _TvSheetBackState();
+}
+
+class _TvSheetBackState extends State<_TvSheetBack> implements PopEntry<void> {
+  final TvBackDecision _decision = TvBackDecision();
+  ModalRoute<void>? _route;
+
+  @override
+  final ValueNotifier<bool> canPopNotifier = ValueNotifier<bool>(true);
+
+  @override
+  void onPopInvoked(bool didPop) {}
+
+  @override
+  void onPopInvokedWithResult(bool didPop, void result) {
+    if (didPop || ModalRoute.of(context)?.isCurrent != true) {
+      return;
+    }
+    if (!_decision.consume(editableFocusWithin(context))) {
+      return;
+    }
+    _syncCanPop();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _decision.onSettled = _syncCanPop;
+    FocusManager.instance.addListener(_syncCanPop);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _syncCanPop());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (identical(route, _route)) {
+      return;
+    }
+    _route?.unregisterPopEntry(this);
+    _route = route;
+    _route?.registerPopEntry(this);
+  }
+
+  @override
+  void dispose() {
+    FocusManager.instance.removeListener(_syncCanPop);
+    _decision.dispose();
+    _route?.unregisterPopEntry(this);
+    canPopNotifier.dispose();
+    super.dispose();
+  }
+
+  void _syncCanPop() {
+    if (!mounted) {
+      return;
+    }
+    canPopNotifier.value = !editableFocusWithin(context) && !_decision.settling;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TvBackScope(decision: _decision, child: widget.child);
+  }
 }
 
 class AdaptiveSheetScaffold extends StatefulWidget {

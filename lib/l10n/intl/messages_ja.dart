@@ -1236,6 +1236,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "tunDesc": MessageLookupByLibrary.simpleMessage("管理者モードでのみ有効"),
     "turnOff": MessageLookupByLibrary.simpleMessage("オフにする"),
     "turnOn": MessageLookupByLibrary.simpleMessage("オンにする"),
+    "tvMode": MessageLookupByLibrary.simpleMessage("TVモード"),
+    "tvModeDesc": MessageLookupByLibrary.simpleMessage(
+      "この端末でリモコン向けのレイアウトを使います",
+    ),
     "uiUpdateIdleInterval": MessageLookupByLibrary.simpleMessage("アイドル更新間隔"),
     "uiUpdateIdleWhenUnfocused": MessageLookupByLibrary.simpleMessage(
       "フォーカス喪失時にアイドル",

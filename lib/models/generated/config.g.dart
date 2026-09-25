@@ -31,6 +31,7 @@ _AppSettingProps _$AppSettingPropsFromJson(Map<String, dynamic> json) =>
       disclaimerAccepted: json['disclaimerAccepted'] as bool? ?? false,
       minimizeOnExit: json['minimizeOnExit'] as bool? ?? true,
       backToDashboard: json['backToDashboard'] as bool? ?? true,
+      tvMode: json['tvMode'] as bool? ?? false,
       hidden: json['hidden'] as bool? ?? false,
       collapseQuickSettingsPanel:
           json['collapseQuickSettingsPanel'] as bool? ?? true,
@@ -78,6 +79,7 @@ Map<String, dynamic> _$AppSettingPropsToJson(_AppSettingProps instance) =>
       'disclaimerAccepted': instance.disclaimerAccepted,
       'minimizeOnExit': instance.minimizeOnExit,
       'backToDashboard': instance.backToDashboard,
+      'tvMode': instance.tvMode,
       'hidden': instance.hidden,
       'collapseQuickSettingsPanel': instance.collapseQuickSettingsPanel,
       'developerMode': instance.developerMode,

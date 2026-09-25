@@ -517,7 +517,7 @@ class _HomeBackScopeContainerState
   @override
   Widget build(BuildContext context) {
     final isMobile = ref.watch(isMobileViewProvider);
-    final isTV = system.isTV;
+    final isTV = ref.watch(tvLayoutProvider);
     final backToDashboard = ref.watch(
       appSettingProvider.select((state) => state.backToDashboard),
     );

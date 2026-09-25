@@ -1,3 +1,4 @@
+import 'package:fl_clash/common/system.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
@@ -104,4 +105,43 @@ void main() {
       expect(container.read(appSettingProvider).foregroundTickerInterval, 7);
     },
   );
+
+  testWidgets('shows TV mode only when the device is not a television', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1400, 1400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(() {
+      system.isTV = false;
+    });
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    globalState.container = container;
+    container.read(viewSizeProvider.notifier).value = const Size(1400, 1400);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const TestApp(child: ApplicationSettingView()),
+      ),
+    );
+
+    expect(find.text('TV mode'), findsOneWidget);
+    await tester.tap(find.text('TV mode'));
+    await tester.pump();
+    expect(container.read(appSettingProvider).tvMode, isTrue);
+    expect(system.isTV, isFalse);
+
+    system.isTV = true;
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const TestApp(child: ApplicationSettingView()),
+      ),
+    );
+    expect(find.text('TV mode'), findsNothing);
+    expect(system.isTV, isTrue);
+  });
 }

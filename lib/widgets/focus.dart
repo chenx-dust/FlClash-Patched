@@ -194,23 +194,41 @@ class NavDestinationAnchor extends StatelessWidget {
   Widget build(BuildContext context) => child;
 }
 
-bool releaseEditableFocus() {
-  final node = FocusManager.instance.primaryFocus;
-  final focusContext = node?.context;
-  if (focusContext == null) {
-    return false;
-  }
-  final isInput =
-      focusContext.widget is EditableText ||
+bool _isEditableContext(BuildContext focusContext) {
+  return focusContext.widget is EditableText ||
       focusContext.findAncestorWidgetOfExactType<EditableText>() != null ||
       focusContext.widget is Slider ||
       focusContext.findAncestorWidgetOfExactType<Slider>() != null;
+}
+
+bool releaseEditableFocus() {
+  final node = FocusManager.instance.primaryFocus;
+  final focusContext = node?.context;
+  if (focusContext == null || !_isEditableContext(focusContext)) {
+    return false;
+  }
   final scope = node?.enclosingScope;
-  if (!isInput || scope == null) {
+  if (scope == null) {
     return false;
   }
   scope.requestScopeFocus();
   return true;
+}
+
+bool editableFocusWithin(BuildContext boundary) {
+  final focusContext = FocusManager.instance.primaryFocus?.context;
+  if (focusContext == null || !_isEditableContext(focusContext)) {
+    return false;
+  }
+  var within = false;
+  focusContext.visitAncestorElements((element) {
+    if (identical(element, boundary)) {
+      within = true;
+      return false;
+    }
+    return true;
+  });
+  return within;
 }
 
 bool focusIsInNavigation() {

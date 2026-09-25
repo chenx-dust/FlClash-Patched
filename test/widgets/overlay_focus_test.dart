@@ -60,17 +60,11 @@ void main() {
                   CommonPopupRoute<void>(
                     barrierLabel: 'dismiss',
                     anchorOf: () => const Rect.fromLTWH(80, 80, 40, 40),
-                    builder: (_) => Column(
+                    builder: (_) => const Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        TextButton(
-                          onPressed: _noop,
-                          child: const Text('Menu A'),
-                        ),
-                        TextButton(
-                          onPressed: _noop,
-                          child: const Text('Menu B'),
-                        ),
+                        TextButton(onPressed: _noop, child: Text('Menu A')),
+                        TextButton(onPressed: _noop, child: Text('Menu B')),
                       ],
                     ),
                   ),
@@ -115,17 +109,11 @@ void main() {
                   CommonPopupRoute<void>(
                     barrierLabel: 'dismiss',
                     anchorOf: () => const Rect.fromLTWH(80, 80, 40, 40),
-                    builder: (_) => Column(
+                    builder: (_) => const Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        TextButton(
-                          onPressed: _noop,
-                          child: const Text('Menu A'),
-                        ),
-                        TextButton(
-                          onPressed: _noop,
-                          child: const Text('Menu B'),
-                        ),
+                        TextButton(onPressed: _noop, child: Text('Menu A')),
+                        TextButton(onPressed: _noop, child: Text('Menu B')),
                       ],
                     ),
                   ),
@@ -159,16 +147,10 @@ void main() {
               onPressed: () {
                 showModalSideSheet<void>(
                   context: context,
-                  builder: (_) => Column(
+                  builder: (_) => const Column(
                     children: [
-                      TextButton(
-                        onPressed: _noop,
-                        child: const Text('Sheet A'),
-                      ),
-                      TextButton(
-                        onPressed: _noop,
-                        child: const Text('Sheet B'),
-                      ),
+                      TextButton(onPressed: _noop, child: Text('Sheet A')),
+                      TextButton(onPressed: _noop, child: Text('Sheet B')),
                     ],
                   ),
                 );

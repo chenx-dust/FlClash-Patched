@@ -45,6 +45,13 @@ class ApplicationSettingView extends ConsumerWidget {
         select: (state) => state.backToDashboard,
         update: (state, value) => state.copyWith(backToDashboard: value),
       ),
+      if (!system.isTV)
+        _appSettingToggle(
+          title: (l) => l.tvMode,
+          subtitle: (l) => l.tvModeDesc,
+          select: (state) => state.tvMode,
+          update: (state, value) => state.copyWith(tvMode: value),
+        ),
       if (system.isDesktop) ...[
         _appSettingToggle(
           title: (l) => l.autoLaunch,

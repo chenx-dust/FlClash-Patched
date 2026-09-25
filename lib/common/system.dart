@@ -21,7 +21,7 @@ class System {
   static System? _instance;
   static final _getEffectiveUid = DynamicLibrary.process()
       .lookupFunction<Uint32 Function(), int Function()>('geteuid');
-  bool _isTV = false;
+  bool _deviceIsTV = false;
 
   @visibleForTesting
   ProcessRunner runProcess = Process.run;
@@ -52,11 +52,14 @@ class System {
 
   bool get isRunningAsRoot => (isLinux || isMacOS) && readEffectiveUid() == 0;
 
-  bool get isTV => _isTV;
+  bool get isTV => _deviceIsTV;
+
+  @visibleForTesting
+  set isTV(bool value) => _deviceIsTV = value;
 
   Future<int> init() async {
     final deviceInfo = await DeviceInfoPlugin().deviceInfo;
-    _isTV = switch (deviceInfo) {
+    _deviceIsTV = switch (deviceInfo) {
       AndroidDeviceInfo(:final systemFeatures) => systemFeatures.any(
         const {
           'android.hardware.type.television',

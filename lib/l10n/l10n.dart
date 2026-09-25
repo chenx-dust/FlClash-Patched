@@ -360,6 +360,21 @@ class AppLocalizations {
     );
   }
 
+  /// `TV mode`
+  String get tvMode {
+    return Intl.message('TV mode', name: 'tvMode', desc: '', args: []);
+  }
+
+  /// `Use the remote-friendly layout on this device`
+  String get tvModeDesc {
+    return Intl.message(
+      'Use the remote-friendly layout on this device',
+      name: 'tvModeDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Auto launch`
   String get autoLaunch {
     return Intl.message('Auto launch', name: 'autoLaunch', desc: '', args: []);

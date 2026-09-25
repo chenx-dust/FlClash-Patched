@@ -1,4 +1,4 @@
-import 'package:fl_clash/common/system.dart';
+import 'package:fl_clash/widgets/tv_layout.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'button.dart';
@@ -18,7 +18,11 @@ class FloatLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (isTV ?? system.isTV) {
+    return withTvLayout(context, isTV: isTV, builder: _layout);
+  }
+
+  Widget _layout(BuildContext context, bool tvLayout) {
+    if (tvLayout) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -50,10 +54,15 @@ class FloatWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final button = system.isTV ? FabFocusOutline(child: child) : child;
-    return Container(
-      margin: const EdgeInsets.all(kFloatingActionButtonMargin),
-      child: button,
+    return withTvLayout(
+      context,
+      builder: (context, tvLayout) {
+        final button = tvLayout ? FabFocusOutline(child: child) : child;
+        return Container(
+          margin: const EdgeInsets.all(kFloatingActionButtonMargin),
+          child: button,
+        );
+      },
     );
   }
 }

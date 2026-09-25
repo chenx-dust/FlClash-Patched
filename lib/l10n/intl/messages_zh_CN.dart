@@ -1076,6 +1076,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "tunDesc": MessageLookupByLibrary.simpleMessage("仅在管理员模式生效"),
     "turnOff": MessageLookupByLibrary.simpleMessage("关闭"),
     "turnOn": MessageLookupByLibrary.simpleMessage("开启"),
+    "tvMode": MessageLookupByLibrary.simpleMessage("电视模式"),
+    "tvModeDesc": MessageLookupByLibrary.simpleMessage("在此设备上使用遥控器布局"),
     "uiUpdateIdleInterval": MessageLookupByLibrary.simpleMessage("怠速更新周期"),
     "uiUpdateIdleWhenUnfocused": MessageLookupByLibrary.simpleMessage("失焦时怠速"),
     "uiUpdateIdleWhenUnfocusedDesc": MessageLookupByLibrary.simpleMessage(

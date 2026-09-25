@@ -43,6 +43,8 @@
   "minimizeOnExitDesc": "修改系统默认退出事件",
   "backToDashboard": "返回时回首页",
   "backToDashboardDesc": "退出前先返回仪表盘",
+  "tvMode": "电视模式",
+  "tvModeDesc": "在此设备上使用遥控器布局",
   "autoLaunch": "自启动",
   "autoLaunchDesc": "跟随系统自启动",
   "silentLaunch": "静默启动",

@@ -106,6 +106,7 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default(false) bool disclaimerAccepted,
     @Default(true) bool minimizeOnExit,
     @Default(true) bool backToDashboard,
+    @Default(false) bool tvMode,
     @Default(false) bool hidden,
     @Default(true) bool collapseQuickSettingsPanel,
     @Default(false) bool developerMode,

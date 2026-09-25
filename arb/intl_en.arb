@@ -43,6 +43,8 @@
   "minimizeOnExitDesc": "Override the default system exit behavior",
   "backToDashboard": "Back to dashboard",
   "backToDashboardDesc": "Return to the dashboard before exiting",
+  "tvMode": "TV mode",
+  "tvModeDesc": "Use the remote-friendly layout on this device",
   "autoLaunch": "Auto launch",
   "autoLaunchDesc": "Launch automatically at system startup",
   "silentLaunch": "Silent launch",
