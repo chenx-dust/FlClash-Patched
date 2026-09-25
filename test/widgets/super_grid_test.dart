@@ -256,16 +256,28 @@ void main() {
     await tester.pump();
 
     expect(tester.getSize(find.byType(IconButton).first), const Size(24, 24));
-    var excluded = false;
+    var cardChildExcluded = false;
+    var cornerExcluded = false;
     tester.element(find.text('inner')).visitAncestorElements((element) {
       final widget = element.widget;
       if (widget is ExcludeFocus && widget.excluding) {
-        excluded = true;
+        cardChildExcluded = true;
         return false;
       }
       return true;
     });
-    expect(excluded, isTrue);
+    tester.element(find.byIcon(Icons.close).first).visitAncestorElements((
+      element,
+    ) {
+      final widget = element.widget;
+      if (widget is ExcludeFocus && widget.excluding) {
+        cornerExcluded = true;
+        return false;
+      }
+      return true;
+    });
+    expect(cardChildExcluded, isTrue);
+    expect(cornerExcluded, isTrue);
 
     for (var i = 0; i < 8; i++) {
       final focused = FocusManager.instance.primaryFocus?.context;

@@ -747,19 +747,21 @@ class _DeletableContainerState extends State<_DeletableContainer>
             top: -8,
             right: -8,
             child: DeferPointer(
-              child: SizedBox(
-                width: 24,
-                height: 24,
-                child: IconButton.filled(
-                  tooltip: context.appLocalizations.remove,
-                  iconSize: 20,
-                  padding: const EdgeInsets.all(2),
-                  style: IconButton.styleFrom(
-                    backgroundColor: context.colorScheme.primary,
-                    foregroundColor: context.colorScheme.onPrimary,
+              child: ExcludeFocus(
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: IconButton.filled(
+                    tooltip: context.appLocalizations.remove,
+                    iconSize: 20,
+                    padding: const EdgeInsets.all(2),
+                    style: IconButton.styleFrom(
+                      backgroundColor: context.colorScheme.primary,
+                      foregroundColor: context.colorScheme.onPrimary,
+                    ),
+                    onPressed: _handleDel,
+                    icon: const Icon(Icons.close),
                   ),
-                  onPressed: _handleDel,
-                  icon: const Icon(Icons.close),
                 ),
               ),
             ),

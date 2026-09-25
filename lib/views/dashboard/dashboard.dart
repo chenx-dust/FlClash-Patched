@@ -310,24 +310,22 @@ class _AddedContainer extends StatefulWidget {
 }
 
 class _AddedContainerState extends State<_AddedContainer> {
-  @override
-  void initState() {
-    super.initState();
-  }
+  bool _adding = false;
 
   @override
   void didUpdateWidget(_AddedContainer oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.child != widget.child) {}
+    if (oldWidget.child != widget.child) {
+      _adding = false;
+    }
   }
 
-  Future<void> _handleAdd() async {
+  void _handleAdd() {
+    if (_adding) {
+      return;
+    }
+    _adding = true;
     widget.onAdd();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   @override
@@ -335,24 +333,29 @@ class _AddedContainerState extends State<_AddedContainer> {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        ActivateBox(child: widget.child),
+        CardPressOverride(
+          onPressed: _handleAdd,
+          child: ActivateBox(child: widget.child),
+        ),
         Positioned(
           top: -8,
           right: -8,
           child: DeferPointer(
-            child: SizedBox(
-              width: 24,
-              height: 24,
-              child: IconButton.filled(
-                tooltip: context.appLocalizations.add,
-                iconSize: 20,
-                padding: const EdgeInsets.all(2),
-                style: IconButton.styleFrom(
-                  backgroundColor: context.colorScheme.primary,
-                  foregroundColor: context.colorScheme.onPrimary,
+            child: ExcludeFocus(
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: IconButton.filled(
+                  tooltip: context.appLocalizations.add,
+                  iconSize: 20,
+                  padding: const EdgeInsets.all(2),
+                  style: IconButton.styleFrom(
+                    backgroundColor: context.colorScheme.primary,
+                    foregroundColor: context.colorScheme.onPrimary,
+                  ),
+                  onPressed: _handleAdd,
+                  icon: const Icon(Icons.add),
                 ),
-                onPressed: _handleAdd,
-                icon: const Icon(Icons.add),
               ),
             ),
           ),
