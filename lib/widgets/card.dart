@@ -86,20 +86,20 @@ class CardPressOverride extends InheritedWidget {
   const CardPressOverride({
     super.key,
     required this.onPressed,
+    this.focusNode,
     required super.child,
   });
 
   final VoidCallback onPressed;
+  final FocusNode? focusNode;
 
-  static VoidCallback? maybeOf(BuildContext context) {
-    return context
-        .dependOnInheritedWidgetOfExactType<CardPressOverride>()
-        ?.onPressed;
+  static CardPressOverride? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<CardPressOverride>();
   }
 
   @override
   bool updateShouldNotify(CardPressOverride oldWidget) {
-    return onPressed != oldWidget.onPressed;
+    return onPressed != oldWidget.onPressed || focusNode != oldWidget.focusNode;
   }
 }
 
@@ -294,7 +294,7 @@ class CommonCard extends StatelessWidget {
     }
 
     final pressOverride = CardPressOverride.maybeOf(context);
-    final pressed = pressOverride ?? onPressed;
+    final pressed = pressOverride?.onPressed ?? onPressed;
     if (pressOverride != null) {
       childWidget = ExcludeFocus(child: childWidget);
     }
@@ -303,7 +303,7 @@ class CommonCard extends StatelessWidget {
             builder: (focusNode) =>
                 _buildButton(context, childWidget, focusNode, pressed),
           )
-        : _buildButton(context, childWidget, null, pressed);
+        : _buildButton(context, childWidget, pressOverride?.focusNode, pressed);
     final card = !enterActionsOnRight
         ? button
         : Focus(

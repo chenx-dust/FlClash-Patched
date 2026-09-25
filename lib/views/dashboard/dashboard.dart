@@ -138,6 +138,14 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
     _isEditNotifier.value = true;
   }
 
+  bool _handleBack() {
+    if (key.currentState?.cancelHeldMove() == true) {
+      return true;
+    }
+    _handleExitEdit();
+    return false;
+  }
+
   void _handleExitEdit() {
     if (!_isEditNotifier.value) {
       return;
@@ -234,7 +242,8 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                       };
                       return isEdit
                           ? BackLayerScope(
-                              onBack: _handleExitEdit,
+                              onBack: _handleBack,
+                              onDeactivate: _handleExitEdit,
                               child: SuperGrid(
                                 key: key,
                                 crossAxisCount: columns,

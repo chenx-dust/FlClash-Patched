@@ -164,11 +164,12 @@ class CommonScaffoldState extends State<CommonScaffold> {
     _updateSearchState((state) => state?.copyWith(query: null));
   }
 
-  void _handleExitAppBarLayer() {
+  bool _handleExitAppBarLayer() {
     handleExitSearching();
     if (_isEdit) {
       _appBarState.value.editState?.onExit();
     }
+    return false;
   }
 
   void _popAppBarLayer() {

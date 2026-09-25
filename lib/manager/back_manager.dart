@@ -8,6 +8,12 @@ class BackIntent extends Intent {
   const BackIntent();
 }
 
+const backShortcuts = <ShortcutActivator, Intent>{
+  SingleActivator(LogicalKeyboardKey.escape): BackIntent(),
+  SingleActivator(LogicalKeyboardKey.goBack): BackIntent(),
+  SingleActivator(LogicalKeyboardKey.gameButtonB): BackIntent(),
+};
+
 class BackManager extends StatefulWidget {
   final Widget child;
 
@@ -35,10 +41,7 @@ class _BackManagerState extends State<BackManager> {
   @override
   Widget build(BuildContext context) {
     return Shortcuts(
-      shortcuts: const {
-        SingleActivator(LogicalKeyboardKey.escape): BackIntent(),
-        SingleActivator(LogicalKeyboardKey.gameButtonB): BackIntent(),
-      },
+      shortcuts: backShortcuts,
       child: Actions(
         actions: {
           BackIntent: CallbackAction<BackIntent>(

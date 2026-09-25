@@ -10,6 +10,7 @@ import 'package:fl_clash/views/access.dart';
 import 'package:fl_clash/views/dashboard/dashboard.dart';
 import 'package:fl_clash/views/logs.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -39,6 +40,7 @@ void main() {
                     setState(() {
                       innerActive = false;
                     });
+                    return false;
                   },
                   child: child,
                 );
@@ -50,6 +52,7 @@ void main() {
                     setState(() {
                       outerActive = false;
                     });
+                    return false;
                   },
                   child: child,
                 );
@@ -96,6 +99,7 @@ void main() {
               child: BackLayerScope(
                 onBack: () {
                   backCount++;
+                  return false;
                 },
                 schedulePostFrameCallback: pendingCallbacks.add,
                 child: const SizedBox(),
@@ -153,6 +157,7 @@ void main() {
             return BackLayerScope(
               onBack: () {
                 backCount++;
+                return false;
               },
               child: const SizedBox(),
             );
@@ -289,7 +294,9 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         dashboardStateProvider.overrideWithValue(
-          const DashboardState(dashboardWidgets: []),
+          const DashboardState(
+            dashboardWidgets: [DashboardWidget.networkSpeed],
+          ),
         ),
       ],
     );
@@ -314,6 +321,21 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('edit-icon')));
     await tester.pump(const Duration(milliseconds: 500));
     expect(find.byKey(const ValueKey('save-icon')), findsOneWidget);
+
+    final grid = tester.state<SuperGridState>(find.byType(SuperGrid));
+    final card = tester.widget<OutlinedButton>(
+      find
+          .descendant(
+            of: find.byType(SuperGrid),
+            matching: find.byType(OutlinedButton),
+          )
+          .first,
+    );
+    card.focusNode!.requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+    expect(grid.isHolding, isTrue);
 
     isActive.value = false;
     await tester.pump();
@@ -438,6 +460,107 @@ void main() {
     expect(container.read(appSettingProvider).dashboardWidgets, [
       DashboardWidget.outboundModeV2,
     ]);
+  });
+
+  testWidgets('escape in edit mode leaves edit before the page', (
+    tester,
+  ) async {
+    final container = ProviderContainer(
+      overrides: [
+        dashboardStateProvider.overrideWithValue(
+          const DashboardState(
+            dashboardWidgets: [
+              DashboardWidget.networkSpeed,
+              DashboardWidget.outboundModeV2,
+            ],
+          ),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+    globalState.container = container;
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const _DashboardTestApp(),
+      ),
+    );
+    await tester.pump();
+
+    await tester.tap(find.byKey(const ValueKey('edit-icon')));
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.byKey(const ValueKey('save-icon')), findsOneWidget);
+
+    final grid = tester.state<SuperGridState>(find.byType(SuperGrid));
+    final card = tester.widget<OutlinedButton>(
+      find
+          .descendant(
+            of: find.byType(SuperGrid),
+            matching: find.byType(OutlinedButton),
+          )
+          .first,
+    );
+    card.focusNode!.requestFocus();
+    await tester.pump();
+    for (final key in [
+      LogicalKeyboardKey.escape,
+      LogicalKeyboardKey.goBack,
+      LogicalKeyboardKey.gameButtonB,
+    ]) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      expect(grid.isHolding, isTrue);
+      await tester.sendKeyEvent(key, physicalKey: PhysicalKeyboardKey.escape);
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(grid.isHolding, isFalse);
+      expect(find.byKey(const ValueKey('save-icon')), findsOneWidget);
+    }
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+    expect(grid.isHolding, isTrue);
+    await tester.binding.handlePopRoute();
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(grid.isHolding, isFalse);
+    expect(find.byKey(const ValueKey('save-icon')), findsOneWidget);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(find.byKey(const ValueKey('edit-icon')), findsOneWidget);
+  });
+
+  testWidgets('a back layer stays armed when its callback retains it', (
+    tester,
+  ) async {
+    var backs = 0;
+    var retain = true;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: BackLayerScope(
+          onBack: () {
+            backs++;
+            return retain;
+          },
+          child: const SizedBox(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.binding.handlePopRoute();
+    await tester.pump();
+    expect(backs, 1);
+
+    retain = false;
+    await tester.binding.handlePopRoute();
+    await tester.pump();
+    expect(backs, 2);
+
+    await tester.binding.handlePopRoute();
+    await tester.pump();
+    expect(backs, 2);
   });
 }
 

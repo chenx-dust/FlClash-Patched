@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fl_clash/manager/back_manager.dart';
 import 'package:flutter/widgets.dart';
 
 import 'inherited.dart';
@@ -58,7 +59,10 @@ class CommonPopScope extends StatelessWidget {
 
 class BackLayerScope extends StatefulWidget {
   final Widget child;
-  final VoidCallback onBack;
+
+  /// Called when this layer is popped. Return true to keep capturing back.
+  final bool Function() onBack;
+  final VoidCallback? onDeactivate;
   @visibleForTesting
   final void Function(void Function(Duration) callback)?
   schedulePostFrameCallback;
@@ -66,6 +70,7 @@ class BackLayerScope extends StatefulWidget {
   const BackLayerScope({
     super.key,
     required this.onBack,
+    this.onDeactivate,
     required this.child,
     @visibleForTesting this.schedulePostFrameCallback,
   });
@@ -101,20 +106,31 @@ class _BackLayerScopeState extends State<BackLayerScope> {
         return;
       }
       if (!_isPageActive) {
-        widget.onBack();
+        if (widget.onDeactivate case final onDeactivate?) {
+          onDeactivate();
+        } else {
+          widget.onBack();
+        }
         return;
       }
       if (route == null) {
         return;
       }
-      final entry = LocalHistoryEntry(
-        impliesAppBarDismissal: false,
-        onRemove: _handleRemove,
-      );
-      _entry = entry;
-      route.addLocalHistoryEntry(entry);
-      _notifyNavigation(route);
+      _installEntry(route);
     });
+  }
+
+  void _installEntry(ModalRoute<dynamic> route) {
+    if (_entry != null) {
+      return;
+    }
+    final entry = LocalHistoryEntry(
+      impliesAppBarDismissal: false,
+      onRemove: _handleRemove,
+    );
+    _entry = entry;
+    route.addLocalHistoryEntry(entry);
+    _notifyNavigation(route);
   }
 
   void _notifyNavigation(ModalRoute<dynamic> route) {
@@ -136,7 +152,10 @@ class _BackLayerScopeState extends State<BackLayerScope> {
       _notifyNavigation(route);
     }
     if (!_isDetaching && mounted) {
-      widget.onBack();
+      final retain = widget.onBack();
+      if (retain && mounted && _isPageActive && _route != null) {
+        _installEntry(_route!);
+      }
     }
   }
 
@@ -161,6 +180,16 @@ class _BackLayerScopeState extends State<BackLayerScope> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.child;
+    return Shortcuts(
+      shortcuts: backShortcuts,
+      child: Actions(
+        actions: {
+          BackIntent: CallbackAction<BackIntent>(
+            onInvoke: (_) => Navigator.of(context).maybePop(),
+          ),
+        },
+        child: widget.child,
+      ),
+    );
   }
 }

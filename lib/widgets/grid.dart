@@ -19,6 +19,10 @@ class Grid extends MultiChildRenderObjectWidget {
 
   final TextDirection textDirection;
 
+  /// Child painted after the others. Layout order is paint order, so a card
+  /// that slid into an earlier slot would otherwise pass underneath.
+  final int? foregroundIndex;
+
   const Grid({
     super.key,
     this.mainAxisSpacing = 0,
@@ -27,6 +31,7 @@ class Grid extends MultiChildRenderObjectWidget {
     AxisDirection? axisDirection,
     TextDirection? textDirection,
     this.mainAxisExtent,
+    this.foregroundIndex,
     List<Widget>? children,
   }) : crossAxisCount = crossAxisCount ?? 1,
        axisDirection = axisDirection ?? AxisDirection.down,
@@ -41,6 +46,7 @@ class Grid extends MultiChildRenderObjectWidget {
     AxisDirection? axisDirection,
     TextDirection? textDirection,
     double? mainAxisExtent,
+    int? foregroundIndex,
     List<Widget>? children,
   }) : this(
          key: key,
@@ -50,6 +56,7 @@ class Grid extends MultiChildRenderObjectWidget {
          axisDirection: axisDirection,
          textDirection: textDirection,
          mainAxisExtent: mainAxisExtent,
+         foregroundIndex: foregroundIndex,
          children: children,
        );
 
@@ -62,6 +69,7 @@ class Grid extends MultiChildRenderObjectWidget {
       crossAxisSpacing: crossAxisSpacing,
       axisDirection: axisDirection,
       mainAxisExtent: mainAxisExtent,
+      foregroundIndex: foregroundIndex,
     );
   }
 
@@ -73,7 +81,8 @@ class Grid extends MultiChildRenderObjectWidget {
       ..crossAxisSpacing = crossAxisSpacing
       ..textDirection = textDirection
       ..axisDirection = axisDirection
-      ..crossAxisCount = crossAxisCount;
+      ..crossAxisCount = crossAxisCount
+      ..foregroundIndex = foregroundIndex;
   }
 }
 
@@ -88,12 +97,14 @@ class RenderGrid extends RenderBox
     required AxisDirection axisDirection,
     required TextDirection textDirection,
     double? mainAxisExtent,
+    int? foregroundIndex,
   }) : _crossAxisCount = crossAxisCount,
        _crossAxisSpacing = crossAxisSpacing,
        _mainAxisSpacing = mainAxisSpacing,
        _axisDirection = axisDirection,
        _textDirection = textDirection,
-       _mainAxisExtent = mainAxisExtent;
+       _mainAxisExtent = mainAxisExtent,
+       _foregroundIndex = foregroundIndex;
 
   int _crossAxisCount;
 
@@ -177,9 +188,76 @@ class RenderGrid extends RenderBox
     _hasOverflow = size != requestedSize;
   }
 
+  int? _foregroundIndex;
+
+  int? get foregroundIndex => _foregroundIndex;
+
+  set foregroundIndex(int? value) {
+    if (_foregroundIndex == value) {
+      return;
+    }
+    _foregroundIndex = value;
+    markNeedsPaint();
+  }
+
+  RenderBox? _childAt(int? index) {
+    if (index == null || index < 0) {
+      return null;
+    }
+    var child = firstChild;
+    var current = 0;
+    while (child != null) {
+      if (current == index) {
+        return child;
+      }
+      child = childAfter(child);
+      current++;
+    }
+    return null;
+  }
+
+  bool _hitChild(BoxHitTestResult result, RenderBox child, Offset position) {
+    final parentData = child.parentData! as GridParentData;
+    return result.addWithPaintOffset(
+      offset: parentData.offset,
+      position: position,
+      hitTest: (result, transformed) {
+        return child.hitTest(result, position: transformed);
+      },
+    );
+  }
+
   @override
   bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
-    return defaultHitTestChildren(result, position: position);
+    final foreground = _childAt(_foregroundIndex);
+    if (foreground != null && _hitChild(result, foreground, position)) {
+      return true;
+    }
+    var child = lastChild;
+    while (child != null) {
+      final parentData = child.parentData! as GridParentData;
+      if (!identical(child, foreground) && _hitChild(result, child, position)) {
+        return true;
+      }
+      child = parentData.previousSibling;
+    }
+    return false;
+  }
+
+  void _paintChildren(PaintingContext context, Offset offset) {
+    final foreground = _childAt(_foregroundIndex);
+    var child = firstChild;
+    while (child != null) {
+      final parentData = child.parentData! as GridParentData;
+      if (!identical(child, foreground)) {
+        context.paintChild(child, parentData.offset + offset);
+      }
+      child = parentData.nextSibling;
+    }
+    if (foreground != null) {
+      final parentData = foreground.parentData! as GridParentData;
+      context.paintChild(foreground, parentData.offset + offset);
+    }
   }
 
   @override
@@ -189,10 +267,10 @@ class RenderGrid extends RenderBox
         needsCompositing,
         offset,
         Offset.zero & size,
-        defaultPaint,
+        _paintChildren,
       );
     } else {
-      defaultPaint(context, offset);
+      _paintChildren(context, offset);
     }
   }
 
