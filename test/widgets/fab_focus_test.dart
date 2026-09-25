@@ -71,6 +71,84 @@ String? _focusedItemKey() {
 
 void main() {
   for (final wrapNavigator in [false, true]) {
+    for (final direction in [
+      LogicalKeyboardKey.arrowRight,
+      LogicalKeyboardKey.arrowDown,
+    ]) {
+      testWidgets(
+        'TV FAB moves ${direction.keyLabel} inside page (navigator: $wrapNavigator)',
+        (tester) async {
+          final fabFocus = FocusNode();
+          final actionFocus = FocusNode();
+          final bodyFocus = FocusNode();
+          addTearDown(fabFocus.dispose);
+          addTearDown(actionFocus.dispose);
+          addTearDown(bodyFocus.dispose);
+          final page = PageFocusScope(
+            child: Scaffold(
+              appBar: AppBar(
+                actions: [
+                  FocusTraversalOrder(
+                    order: const PrimaryFocusOrder(),
+                    child: FloatingActionButton(
+                      focusNode: fabFocus,
+                      onPressed: () {},
+                      child: const Icon(Icons.play_arrow),
+                    ),
+                  ),
+                  IconButton(
+                    focusNode: actionFocus,
+                    tooltip: 'Add',
+                    onPressed: () {},
+                    icon: const Icon(Icons.add),
+                  ),
+                ],
+              ),
+              body: Align(
+                alignment: Alignment.topRight,
+                child: TextButton(
+                  focusNode: bodyFocus,
+                  onPressed: () {},
+                  child: const Text('Content'),
+                ),
+              ),
+            ),
+          );
+          await _pumpWithOutsideFocus(
+            tester,
+            FocusTraversalGroup(
+              policy: PageTraversalPolicy(),
+              child: wrapNavigator
+                  ? Navigator(
+                      pages: [MaterialPage(child: page)],
+                      onDidRemovePage: (_) {},
+                    )
+                  : page,
+            ),
+          );
+          fabFocus.requestFocus();
+          await tester.pump();
+
+          await tester.sendKeyEvent(direction);
+          await tester.pump();
+
+          expect(
+            direction == LogicalKeyboardKey.arrowRight
+                ? actionFocus.hasPrimaryFocus
+                : bodyFocus.hasPrimaryFocus,
+            isTrue,
+          );
+          if (direction == LogicalKeyboardKey.arrowRight) {
+            await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+            await tester.pump();
+            expect(fabFocus.hasPrimaryFocus, isTrue);
+          }
+        },
+      );
+    }
+  }
+
+  for (final wrapNavigator in [false, true]) {
     testWidgets(
       'page${wrapNavigator ? ' navigator' : ''} uses natural focus order',
       (tester) async {

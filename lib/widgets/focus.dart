@@ -78,9 +78,6 @@ class PageTraversalPolicy extends OrderedTraversalPolicy {
     final isDownRight =
         direction == TraversalDirection.down ||
         direction == TraversalDirection.right;
-    if (isDownRight && _isInPrimaryAction(currentNode)) {
-      return _escapeToEnclosingScope(currentNode, true);
-    }
     final scope = currentNode.nearestScope;
     final before = scope?.focusedChild;
     final moved = super.inDirection(currentNode, direction);
@@ -88,6 +85,9 @@ class PageTraversalPolicy extends OrderedTraversalPolicy {
       return true;
     }
     if (isDownRight) {
+      if (_isInPrimaryAction(currentNode)) {
+        return _escapeToEnclosingScope(currentNode, true);
+      }
       final primaryAction = scope == null ? null : _findPrimaryAction(scope);
       if (primaryAction != null && primaryAction.canRequestFocus) {
         primaryAction.requestFocus();
