@@ -729,16 +729,16 @@ class _ExternalControllerDialogState
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          spacing: 16,
           children: [
             SwitchListTile(
-              contentPadding: EdgeInsets.zero,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
               title: Text(appLocalizations.enableExternalController),
               value: _enabled,
               onChanged: (value) => setState(() => _enabled = value),
             ),
+            const SizedBox(height: 8),
             SwitchListTile(
-              contentPadding: EdgeInsets.zero,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
               title: Text(appLocalizations.allowLanAccess),
               subtitle: Text(appLocalizations.allowLanAccessDesc),
               value: _allowLan,
@@ -746,6 +746,7 @@ class _ExternalControllerDialogState
                   ? null
                   : (value) => setState(() => _allowLan = value),
             ),
+            const SizedBox(height: 16),
             TextFormField(
               enabled: _enabled,
               keyboardType: TextInputType.number,
@@ -775,6 +776,7 @@ class _ExternalControllerDialogState
                 return null;
               },
             ),
+            const SizedBox(height: 16),
             TextFormField(
               enabled: _enabled,
               maxLines: 1,
