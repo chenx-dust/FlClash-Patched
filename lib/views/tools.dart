@@ -34,8 +34,6 @@ class _ToolViewState extends ConsumerState<ToolsView> {
       title: Text(navigationItem.label.label),
       subtitle: description != null ? Text(description) : null,
       widget: navigationItem.builder(context),
-      maxWidth: 400,
-      forceFull: false,
     );
   }
 
