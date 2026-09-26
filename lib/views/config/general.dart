@@ -426,12 +426,12 @@ class GeneralView extends ConsumerWidget {
         select: (state) => state.allowLan,
         update: (state, value) => state.copyWith(allowLan: value),
       ),
-      const ExternalControllerItem(),
       const AuthenticationItem(),
       if (authentication) ...const [
         AuthenticationAccountItem(),
         AuthenticationPasswordItem(),
       ],
+      const ExternalControllerItem(),
     ];
   }
 

@@ -87,7 +87,7 @@ void main() {
     );
     expect(
       mobile.builders[TargetPlatform.iOS],
-      same(commonCupertinoPageTransitions),
+      same(const PageTransitionsTheme().builders[TargetPlatform.iOS]!),
     );
   });
 

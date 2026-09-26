@@ -14,12 +14,14 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../helpers/test_app.dart';
 
-Future<void> _scrollTo(WidgetTester tester, String text) {
-  return tester.scrollUntilVisible(
+Future<void> _scrollTo(WidgetTester tester, String text) async {
+  await tester.scrollUntilVisible(
     find.text(text),
     500,
     scrollable: find.byType(Scrollable).first,
   );
+  // ensureVisible jumps immediately; the hit target stays stale until a frame.
+  await tester.pump();
 }
 
 Future<void> _jumpToTop(WidgetTester tester) async {

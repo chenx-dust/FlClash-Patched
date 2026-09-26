@@ -73,7 +73,8 @@ PageTransitionsTheme buildPageTransitionsTheme({
       TargetPlatform.windows: pageTransitions,
       TargetPlatform.linux: pageTransitions,
       TargetPlatform.macOS: pageTransitions,
-      TargetPlatform.iOS: commonCupertinoPageTransitions,
+      TargetPlatform.iOS:
+          const PageTransitionsTheme().builders[TargetPlatform.iOS]!,
     },
   );
 }
