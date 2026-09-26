@@ -97,13 +97,13 @@ class DecorationListItem extends StatelessWidget {
       ItemPosition.startAndEnd,
     ].contains(position);
     final borderRadius = AppRadius.vertical(
-      top: isStart ? AppCorner.xl : AppCorner.none,
-      bottom: isEnd ? AppCorner.xl : AppCorner.none,
+      top: isStart ? (isEnd ? AppCorner.xxl : AppCorner.xl) : AppCorner.none,
+      bottom: isEnd ? (isStart ? AppCorner.xxl : AppCorner.xl) : AppCorner.none,
     );
     return CommonCard(
       shape: proxyDecorator == true
           ? LinearBorder.none
-          : AppShape.of(borderRadius),
+          : RoundedRectangleBorder(borderRadius: borderRadius),
       isError: invalid,
       isSelected: isSelected,
       padding: EdgeInsets.zero,
