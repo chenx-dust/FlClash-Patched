@@ -64,14 +64,14 @@ class _ToolViewState extends ConsumerState<ToolsView> {
     return generateSection(
       title: context.appLocalizations.settings,
       items: [
+        const _GeneralItem(),
         const _LocaleItem(),
         const _ThemeItem(),
-        const _BackupItem(),
+        const _AdvancedConfigItem(),
         if (system.isDesktop) const _HotkeyItem(),
         if (system.isWindows) const _LoopbackItem(),
         if (system.isAndroid) const _AccessItem(),
-        const _AdvancedConfigItem(),
-        const _GeneralItem(),
+        const _BackupItem(),
       ],
     );
   }

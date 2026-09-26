@@ -19,9 +19,6 @@ const commonSharedXPageTransitions = SharedAxisPageTransitionsBuilder(
 const commonDesktopFadePageTransitions =
     CommonDesktopFadePageTransitionsBuilder();
 
-final commonCupertinoPageTransitions =
-    const PageTransitionsTheme().builders[TargetPlatform.iOS]!;
-
 class CommonDesktopFadePageTransitionsBuilder extends PageTransitionsBuilder {
   const CommonDesktopFadePageTransitionsBuilder();
 
