@@ -631,9 +631,7 @@ class _EditProxyGroupViewState extends ConsumerState<_EditProxyGroupView> {
       body: SizedBox(
         height: height,
         child: ListView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-          ).copyWith(bottom: 20, top: context.sheetTopPadding),
+          padding: sectionPagePadding.copyWith(top: context.sheetTopPadding),
           children: [
             generateSectionV3(
               title: appLocalizations.general,

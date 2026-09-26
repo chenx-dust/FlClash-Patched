@@ -588,7 +588,7 @@ class _NetworkingViewState extends ConsumerState<NetworkingView>
             ),
       title: Text(proxy.name, style: context.textTheme.bodyLarge?.toSoftBold),
       subtitle: Text([protocol, ?summary].join(' · ')),
-      childrenPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      childrenPadding: sectionPagePadding.copyWith(top: 8, bottom: 8),
       children: _proxyChildren(context, proxy),
     );
   }

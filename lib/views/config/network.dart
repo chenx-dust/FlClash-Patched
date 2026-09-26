@@ -597,47 +597,55 @@ class NetworkListView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final appLocalizations = context.appLocalizations;
     final version = ref.watch(versionProvider);
-    return generateListView([
-      if (system.isAndroid) const VPNItem(),
-      if (system.isMobile)
-        ...generateSection(
-          title: 'VPN',
-          items: [
-            const VpnSystemProxyItem(),
-            const BypassDomainItem(),
-            const AllowBypassItem(),
-            const Ipv6Item(),
-            const DNSHijackingItem(),
-            if (system.isAndroid) const SuspendSupportItem(),
-          ],
-        ),
-      if (system.isDesktop)
-        ...generateSection(
-          title: appLocalizations.system,
-          items: [const SystemProxyItem(), const BypassDomainItem()],
-        ),
-      ...generateSection(
-        title: appLocalizations.options,
-        items: networkOptionsItems(
-          isDesktop: system.isDesktop,
-          isMacOS: system.isMacOS,
-          isIOS: system.isIOS,
-        ),
-      ),
-      if (system.isIOS)
-        ...generateSection(
-          title: appLocalizations.networkExtension,
-          items: [
-            const IncludeAllNetworksItem(),
-            const EnforceRoutesItem(),
-            const ExcludeLocalNetworksItem(),
-            if (version >= 16) ...[
-              const ExcludeAPNsItem(),
-              const ExcludeCellularServicesItem(),
+    final leadingVpn = system.isAndroid;
+    return ListView(
+      padding: sectionPagePadding,
+      children: [
+        if (leadingVpn)
+          generateSectionV3(isFirst: true, items: const [VPNItem()]),
+        if (system.isMobile)
+          generateSectionV3(
+            title: 'VPN',
+            isFirst: !leadingVpn,
+            items: [
+              const VpnSystemProxyItem(),
+              const BypassDomainItem(),
+              const AllowBypassItem(),
+              const Ipv6Item(),
+              const DNSHijackingItem(),
+              if (system.isAndroid) const SuspendSupportItem(),
             ],
-            if (version >= 17) const ExcludeDeviceCommunicationItem(),
-          ],
+          ),
+        if (system.isDesktop)
+          generateSectionV3(
+            title: appLocalizations.system,
+            isFirst: true,
+            items: const [SystemProxyItem(), BypassDomainItem()],
+          ),
+        generateSectionV3(
+          title: appLocalizations.options,
+          isFirst: !system.isMobile && !system.isDesktop,
+          items: networkOptionsItems(
+            isDesktop: system.isDesktop,
+            isMacOS: system.isMacOS,
+            isIOS: system.isIOS,
+          ),
         ),
-    ]);
+        if (system.isIOS)
+          generateSectionV3(
+            title: appLocalizations.networkExtension,
+            items: [
+              const IncludeAllNetworksItem(),
+              const EnforceRoutesItem(),
+              const ExcludeLocalNetworksItem(),
+              if (version >= 16) ...[
+                const ExcludeAPNsItem(),
+                const ExcludeCellularServicesItem(),
+              ],
+              if (version >= 17) const ExcludeDeviceCommunicationItem(),
+            ],
+          ),
+      ],
+    );
   }
 }

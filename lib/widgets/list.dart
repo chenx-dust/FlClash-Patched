@@ -652,7 +652,9 @@ Widget generateSectionV3({
           padding: isFirst
               ? listHeaderPadding.copyWith(top: 8.ap)
               : listHeaderPadding,
-        ),
+        )
+      else if (isFirst && items.isNotEmpty)
+        SizedBox(height: 8.ap),
       Column(children: [...genItems]),
     ],
   );

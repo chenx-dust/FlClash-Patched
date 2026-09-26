@@ -102,9 +102,7 @@ class ResourcesView extends ConsumerWidget {
         ),
       ],
       body: ListView(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-        ).copyWith(bottom: 16),
+        padding: sectionPagePadding,
         children: [
           generateSectionV3(
             title: appLocalizations.geoOptions,

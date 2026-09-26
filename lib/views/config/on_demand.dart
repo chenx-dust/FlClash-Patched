@@ -143,7 +143,7 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
       key: ValueKey(ssid),
       index: index,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: sectionPagePadding.copyWith(bottom: 0),
         child: ItemPositionProvider(
           position: position,
           child: SelectedDecorationListItem(
@@ -349,7 +349,7 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
   ) {
     if (excludeSSIDs.isEmpty) {
       return SliverPadding(
-        padding: const EdgeInsets.symmetric(horizontal: 16).copyWith(top: 12),
+        padding: sectionPagePadding.copyWith(top: 12),
         sliver: SliverToBoxAdapter(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 48),
@@ -369,7 +369,7 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
       length: excludeSSIDs.length,
     );
     return SliverPadding(
-      padding: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.only(top: 12, bottom: 16),
       sliver: SliverReorderableList(
         itemBuilder: (_, index) => itemAt(index),
         proxyDecorator: (child, index, animation) =>
@@ -390,9 +390,10 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
         slivers: [
           if (system.isIOS)
             SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: sectionPagePadding.copyWith(bottom: 0),
               sliver: SliverToBoxAdapter(
                 child: generateSectionV3(
+                  isFirst: true,
                   items: [
                     ListItem.toggle(
                       title: Text(appLocalizations.alwaysOn),
@@ -407,11 +408,11 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
               ),
             ),
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: sectionPagePadding.copyWith(bottom: 0),
             sliver: SliverToBoxAdapter(child: _buildPrerequisites()),
           ),
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: sectionPagePadding.copyWith(bottom: 0),
             sliver: SliverToBoxAdapter(child: _buildExcludeSsidsHeader()),
           ),
           _buildExcludeSsidsList(excludeSSIDs, selectedItems),

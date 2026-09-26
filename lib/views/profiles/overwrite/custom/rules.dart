@@ -507,9 +507,7 @@ class _AddOrEditRuleViewState extends ConsumerState<_AddOrEditRuleView> {
         constraints: BoxConstraints(maxHeight: height),
         child: ListView(
           shrinkWrap: true,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-          ).copyWith(bottom: 20, top: context.sheetTopPadding),
+          padding: sectionPagePadding.copyWith(top: context.sheetTopPadding),
           children: [
             generateSectionV3(
               title: appLocalizations.basicInfo,

@@ -43,7 +43,7 @@ class ScriptContent extends ConsumerWidget {
         const SliverToBoxAdapter(child: SizedBox(height: 8)),
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: sectionPagePadding.copyWith(bottom: 0),
             child: RadioGroup<int>(
               groupValue: scriptId,
               onChanged: (value) {

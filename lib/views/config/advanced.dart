@@ -78,8 +78,9 @@ class AdvancedConfigView extends StatelessWidget {
     ];
     return BaseScaffold(
       title: appLocalizations.advancedConfig,
-      body: generateListView(
-        items.separated(const Divider(height: 0)).toList(),
+      body: ListView(
+        padding: sectionPagePadding,
+        children: [generateSectionV3(isFirst: true, items: items)],
       ),
     );
   }

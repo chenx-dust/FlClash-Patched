@@ -34,6 +34,8 @@ final listHeaderPadding = EdgeInsets.only(
   top: 20.mAp,
   bottom: 8.mAp,
 );
+
+const sectionPagePadding = EdgeInsets.fromLTRB(16, 0, 16, 16);
 const sheetAppBarHeight = 68.0;
 
 const watchExecution = false;
