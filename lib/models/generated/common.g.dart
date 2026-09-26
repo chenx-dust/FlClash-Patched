@@ -263,6 +263,13 @@ const _$HotActionEnumMap = {
   HotAction.mode: 'mode',
   HotAction.proxy: 'proxy',
   HotAction.tun: 'tun',
+  HotAction.ruleMode: 'ruleMode',
+  HotAction.globalMode: 'globalMode',
+  HotAction.directMode: 'directMode',
+  HotAction.delayTest: 'delayTest',
+  HotAction.updateProfiles: 'updateProfiles',
+  HotAction.copyEnv: 'copyEnv',
+  HotAction.exit: 'exit',
 };
 
 const _$KeyboardModifierEnumMap = {

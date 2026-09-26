@@ -328,6 +328,53 @@ void main() {
     expect(labels, contains(l10n.systemProxy));
   });
 
+  test('shows hotkey shortcuts for mode, copy, delay, and update', () async {
+    container.listen(hotKeyActionsProvider, (_, _) {});
+    container.read(hotKeyActionsProvider.notifier).value = [
+      HotKeyAction(
+        action: HotAction.ruleMode,
+        key: PhysicalKeyboardKey.keyA.usbHidUsage,
+        modifiers: const {KeyboardModifier.control},
+      ),
+      HotKeyAction(
+        action: HotAction.copyEnv,
+        key: PhysicalKeyboardKey.keyC.usbHidUsage,
+        modifiers: const {KeyboardModifier.control, KeyboardModifier.shift},
+      ),
+    ];
+
+    await update(_trayState());
+
+    final l10n = currentAppLocalizations;
+    final items = _items(showCall());
+    final rule = items.singleWhere((item) => item['label'] == l10n.rule);
+    expect(rule['keyEquivalent'], 'a');
+    expect(rule['keyEquivalentModifiers'], ['control']);
+    final copy = items.singleWhere((item) => item['label'] == l10n.copyEnvVar);
+    expect(copy['keyEquivalent'], 'c');
+    expect(copy['keyEquivalentModifiers'], containsAll(['control', 'shift']));
+    expect(
+      items.map((item) => item['label']),
+      containsAll([l10n.actionDelayTest, l10n.actionUpdateProfiles]),
+    );
+
+    debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+    tray = AppTray.forPlatform(isMacOS: false, isWindows: true);
+    await update(_trayState());
+    expect(calls.where((call) => call.method == 'show').length, 2);
+    final windowsItems = _items(showCall());
+    expect(
+      windowsItems.map((item) => item['label']).toList(),
+      contains('${l10n.rule}\tCtrl+A'),
+    );
+    expect(
+      windowsItems.singleWhere(
+        (item) => item['label'] == '${l10n.copyEnvVar}\tCtrl+Shift+C',
+      ),
+      isNotNull,
+    );
+  });
+
   test('keeps the network speed title visible while stopped', () async {
     await update(_trayState(isStart: true, showNetworkSpeed: true));
 

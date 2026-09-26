@@ -285,12 +285,14 @@ class AppTray implements TrayPort {
 
     final viewShortcut = shortcutFor(HotAction.view);
     final startShortcut = shortcutFor(HotAction.start);
-    final nextMode =
-        Mode.values[(trayState.mode.index + 1) % Mode.values.length];
+    final exitShortcut = shortcutFor(HotAction.exit);
+    final copyEnvShortcut = shortcutFor(HotAction.copyEnv);
+    final delayShortcut = shortcutFor(HotAction.delayTest);
+    final updateShortcut = shortcutFor(HotAction.updateProfiles);
 
     return [
       TrayMenuAction(
-        label: appLocalizations.show,
+        label: _menuLabel(appLocalizations.show, HotAction.view, read),
         keyEquivalent: viewShortcut?.keyEquivalent,
         keyEquivalentModifiers: viewShortcut?.modifiers ?? const {},
         onSelectedWithDetails: (details) {
@@ -301,9 +303,11 @@ class AppTray implements TrayPort {
         },
       ),
       TrayMenuCheckbox(
-        label: trayState.isStart
-            ? appLocalizations.stop
-            : appLocalizations.start,
+        label: _menuLabel(
+          trayState.isStart ? appLocalizations.stop : appLocalizations.start,
+          HotAction.start,
+          read,
+        ),
         checked: false,
         keyEquivalent: startShortcut?.keyEquivalent,
         keyEquivalentModifiers: startShortcut?.modifiers ?? const {},
@@ -312,14 +316,11 @@ class AppTray implements TrayPort {
       const TrayMenuSeparator(),
       for (final mode in Mode.values)
         TrayMenuCheckbox(
-          label: mode.label,
+          label: _menuLabel(mode.label, _modeHotAction(mode), read),
           checked: mode == trayState.mode,
-          keyEquivalent: mode == nextMode
-              ? shortcutFor(HotAction.mode)?.keyEquivalent
-              : null,
-          keyEquivalentModifiers: mode == nextMode
-              ? shortcutFor(HotAction.mode)?.modifiers ?? const {}
-              : const {},
+          keyEquivalent: shortcutFor(_modeHotAction(mode))?.keyEquivalent,
+          keyEquivalentModifiers:
+              shortcutFor(_modeHotAction(mode))?.modifiers ?? const {},
           onSelected: () {
             setupAction.changeMode(mode);
           },
@@ -328,8 +329,41 @@ class AppTray implements TrayPort {
       _buildProfileMenu(read),
       const TrayMenuSeparator(),
       ..._buildGroupMenu(trayState: trayState, read: read),
+      TrayMenuAction(
+        label: _menuLabel(
+          appLocalizations.actionDelayTest,
+          HotAction.delayTest,
+          read,
+        ),
+        keyEquivalent: delayShortcut?.keyEquivalent,
+        keyEquivalentModifiers: delayShortcut?.modifiers ?? const {},
+        onSelected: () {
+          unawaited(
+            read(
+              proxiesActionProvider.notifier,
+            ).delayTestGroups(trayState.groups),
+          );
+        },
+      ),
+      TrayMenuAction(
+        label: _menuLabel(
+          appLocalizations.actionUpdateProfiles,
+          HotAction.updateProfiles,
+          read,
+        ),
+        keyEquivalent: updateShortcut?.keyEquivalent,
+        keyEquivalentModifiers: updateShortcut?.modifiers ?? const {},
+        onSelected: () {
+          unawaited(
+            globalState.safeRun(
+              read(profilesActionProvider.notifier).updateProfiles,
+            ),
+          );
+        },
+      ),
+      const TrayMenuSeparator(),
       TrayMenuCheckbox(
-        label: appLocalizations.tun,
+        label: _menuLabel(appLocalizations.tun, HotAction.tun, read),
         checked: trayState.tunEnable,
         keyEquivalent: shortcutFor(HotAction.tun)?.keyEquivalent,
         keyEquivalentModifiers:
@@ -337,7 +371,7 @@ class AppTray implements TrayPort {
         onSelected: systemAction.updateTun,
       ),
       TrayMenuCheckbox(
-        label: appLocalizations.systemProxy,
+        label: _menuLabel(appLocalizations.systemProxy, HotAction.proxy, read),
         checked: trayState.systemProxy,
         keyEquivalent: shortcutFor(HotAction.proxy)?.keyEquivalent,
         keyEquivalentModifiers:
@@ -351,14 +385,16 @@ class AppTray implements TrayPort {
         onSelected: systemAction.updateAutoLaunch,
       ),
       TrayMenuAction(
-        label: appLocalizations.copyEnvVar,
-        onSelected: () {
-          _copyEnv(trayState.port);
-        },
+        label: _menuLabel(appLocalizations.copyEnvVar, HotAction.copyEnv, read),
+        keyEquivalent: copyEnvShortcut?.keyEquivalent,
+        keyEquivalentModifiers: copyEnvShortcut?.modifiers ?? const {},
+        onSelected: systemAction.copyProxyEnv,
       ),
       const TrayMenuSeparator(),
       TrayMenuAction(
-        label: appLocalizations.exit,
+        label: _menuLabel(appLocalizations.exit, HotAction.exit, read),
+        keyEquivalent: exitShortcut?.keyEquivalent,
+        keyEquivalentModifiers: exitShortcut?.modifiers ?? const {},
         onSelected: () {
           systemAction.handleExit();
         },
@@ -554,19 +590,32 @@ class AppTray implements TrayPort {
     await Tray.instance.updateMenuItems(updates);
   }
 
-  Future<void> _copyEnv(int port) async {
-    final url = 'http://127.0.0.1:$port';
-
-    final cmdline = isWindows
-        ? '\$env:http_proxy="$url"; \$env:https_proxy="$url"; '
-              '\$env:all_proxy="$url"; '
-              '\$env:no_proxy="localhost,::1,127.0.0.1"'
-        : 'export http_proxy="$url"; export https_proxy="$url"; '
-              'export all_proxy="$url"; '
-              'export no_proxy="localhost,::1,127.0.0.1"';
-
-    await Clipboard.setData(ClipboardData(text: cmdline));
+  String _menuLabel(String label, HotAction action, ProviderReader read) {
+    if (isMacOS) {
+      return label;
+    }
+    final hotKey = read(getHotKeyActionProvider(action));
+    final key = hotKey.key;
+    if (key == null) {
+      return label;
+    }
+    final shortcut = ShortcutLabels(
+      isMacOS: false,
+      isWindows: isWindows,
+    ).text(hotKey.modifiers, key);
+    if (shortcut.isEmpty) {
+      return label;
+    }
+    return '$label\t$shortcut';
   }
+}
+
+HotAction _modeHotAction(Mode mode) {
+  return switch (mode) {
+    Mode.rule => HotAction.ruleMode,
+    Mode.global => HotAction.globalMode,
+    Mode.direct => HotAction.directMode,
+  };
 }
 
 final appTray = system.isDesktop ? AppTray() : null;

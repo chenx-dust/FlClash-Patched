@@ -137,6 +137,15 @@ class SystemAction extends _$SystemAction {
         .update((state) => state.copyWith.tun(enable: !state.tun.enable));
   }
 
+  Future<void> copyProxyEnv() async {
+    final port = ref.read(
+      patchClashConfigProvider.select((state) => state.mixedPort),
+    );
+    await Clipboard.setData(
+      ClipboardData(text: proxyEnvCommand(port, isWindows: system.isWindows)),
+    );
+  }
+
   void updateSystemProxy() {
     ref
         .read(networkSettingProvider.notifier)

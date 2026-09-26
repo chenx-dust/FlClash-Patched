@@ -2150,6 +2150,66 @@ class AppLocalizations {
     return Intl.message('TUN', name: 'actionTun', desc: '', args: []);
   }
 
+  /// `Rule mode`
+  String get actionRuleMode {
+    return Intl.message(
+      'Rule mode',
+      name: 'actionRuleMode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Global mode`
+  String get actionGlobalMode {
+    return Intl.message(
+      'Global mode',
+      name: 'actionGlobalMode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Direct mode`
+  String get actionDirectMode {
+    return Intl.message(
+      'Direct mode',
+      name: 'actionDirectMode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Test all delays`
+  String get actionDelayTest {
+    return Intl.message(
+      'Test all delays',
+      name: 'actionDelayTest',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update profiles`
+  String get actionUpdateProfiles {
+    return Intl.message(
+      'Update profiles',
+      name: 'actionUpdateProfiles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Copy environment variables`
+  String get copyEnvVar {
+    return Intl.message(
+      'Copy environment variables',
+      name: 'copyEnvVar',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Disclaimer`
   String get disclaimer {
     return Intl.message('Disclaimer', name: 'disclaimer', desc: '', args: []);
@@ -2217,6 +2277,51 @@ class AppLocalizations {
       name: 'hotkeyConflict',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Global hotkeys work even while the window is hidden. Tap an action to record its key combination.`
+  String get hotkeyDesc {
+    return Intl.message(
+      'Global hotkeys work even while the window is hidden. Tap an action to record its key combination.',
+      name: 'hotkeyDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not registered, it may be taken by another app`
+  String get hotkeyUnavailable {
+    return Intl.message(
+      'Not registered, it may be taken by another app',
+      name: 'hotkeyUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not set`
+  String get hotkeyNotSet {
+    return Intl.message('Not set', name: 'hotkeyNotSet', desc: '', args: []);
+  }
+
+  /// `Include at least one of {modifiers}`
+  String hotkeyNeedsModifier(Object modifiers) {
+    return Intl.message(
+      'Include at least one of $modifiers',
+      name: 'hotkeyNeedsModifier',
+      desc: '',
+      args: [modifiers],
+    );
+  }
+
+  /// `Already used by "{action}". Saving moves it here.`
+  String hotkeyConflictWith(Object action) {
+    return Intl.message(
+      'Already used by "$action". Saving moves it here.',
+      name: 'hotkeyConflictWith',
+      desc: '',
+      args: [action],
     );
   }
 
@@ -2445,16 +2550,6 @@ class AppLocalizations {
     return Intl.message(
       'Network interface used for outbound connections',
       name: 'interfaceNameDesc',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Copy environment variables`
-  String get copyEnvVar {
-    return Intl.message(
-      'Copy environment variables',
-      name: 'copyEnvVar',
       desc: '',
       args: [],
     );

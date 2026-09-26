@@ -91,6 +91,13 @@ extension HotActionL10n on HotAction {
       HotAction.mode => appLocalizations.actionMode,
       HotAction.proxy => appLocalizations.actionProxy,
       HotAction.tun => appLocalizations.actionTun,
+      HotAction.ruleMode => appLocalizations.actionRuleMode,
+      HotAction.globalMode => appLocalizations.actionGlobalMode,
+      HotAction.directMode => appLocalizations.actionDirectMode,
+      HotAction.delayTest => appLocalizations.actionDelayTest,
+      HotAction.updateProfiles => appLocalizations.actionUpdateProfiles,
+      HotAction.copyEnv => appLocalizations.copyEnvVar,
+      HotAction.exit => appLocalizations.exit,
     };
   }
 }

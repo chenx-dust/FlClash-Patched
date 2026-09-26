@@ -53,8 +53,12 @@ Future<void> _pumpRecorder(
           builder: (context) => TextButton(
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (_) =>
-                    Scaffold(body: HotKeyRecorder(hotKeyAction: action)),
+                builder: (_) => Scaffold(
+                  body: HotKeyRecorder(
+                    hotKeyAction: action,
+                    labels: ShortcutLabels.host(),
+                  ),
+                ),
               ),
             ),
             child: const Text('open'),
@@ -87,8 +91,8 @@ Future<void> _pressWithControl(
 }
 
 void main() {
-  group('HotKeyView.getSubtitle', () {
-    testWidgets('reports the empty state when no key is bound', (tester) async {
+  group('HotKeyView', () {
+    testWidgets('shows unset actions in sections', (tester) async {
       final container = _containerFor(tester);
       await tester.pumpWidget(
         UncontrolledProviderScope(
@@ -98,17 +102,22 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      const view = HotKeyView();
-      final context = tester.element(find.byType(HotKeyView));
-      expect(
-        view.getSubtitle(context, const HotKeyAction(action: HotAction.mode)),
-        currentAppLocalizations.noHotKey,
-      );
+      expect(find.text('Rule mode'), findsOneWidget);
+      expect(find.text('Not set'), findsWidgets);
       expect(tester.takeException(), null);
     });
 
-    testWidgets('joins modifiers and the key into one label', (tester) async {
-      final container = _containerFor(tester);
+    testWidgets('shows the bound key caps', (tester) async {
+      final container = _containerFor(
+        tester,
+        hotKeyActions: [
+          HotKeyAction(
+            action: HotAction.mode,
+            key: PhysicalKeyboardKey.keyA.usbHidUsage,
+            modifiers: const {KeyboardModifier.control},
+          ),
+        ],
+      );
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
@@ -117,19 +126,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      const view = HotKeyView();
-      final context = tester.element(find.byType(HotKeyView));
-      final label = view.getSubtitle(
-        context,
-        HotKeyAction(
-          action: HotAction.mode,
-          key: PhysicalKeyboardKey.keyA.usbHidUsage,
-          modifiers: const {KeyboardModifier.control},
-        ),
-      );
-
-      expect(label, contains('+'));
-      expect(label, endsWith(PhysicalKeyboardKey.keyA.label));
+      expect(find.text('Ctrl'), findsOneWidget);
+      expect(find.text('A'), findsOneWidget);
       expect(tester.takeException(), null);
     });
   });
@@ -152,13 +150,12 @@ void main() {
       );
 
       expect(find.text(currentAppLocalizations.pressKeyboard), findsNothing);
-      expect(find.byType(KeyboardKeyBox), findsNWidgets(2));
+      expect(find.text('Ctrl'), findsOneWidget);
+      expect(find.text('A'), findsOneWidget);
       expect(tester.takeException(), null);
     });
 
-    testWidgets('confirm stores a modifier plus key combination', (
-      tester,
-    ) async {
+    testWidgets('save stores a modifier plus key combination', (tester) async {
       final container = _containerFor(tester);
       await _pumpRecorder(
         tester,
@@ -171,7 +168,7 @@ void main() {
         PhysicalKeyboardKey.keyA,
         LogicalKeyboardKey.keyA,
       );
-      await tester.tap(find.text(currentAppLocalizations.confirm));
+      await tester.tap(find.text(currentAppLocalizations.save));
       await tester.pumpAndSettle();
 
       final stored = container.read(hotKeyActionsProvider);
@@ -181,7 +178,7 @@ void main() {
       expect(stored.single.modifiers, {KeyboardModifier.control});
     });
 
-    testWidgets('confirm rejects a bare key with no modifier', (tester) async {
+    testWidgets('save stays disabled for a bare key', (tester) async {
       final container = _containerFor(tester);
       await _pumpRecorder(
         tester,
@@ -199,14 +196,15 @@ void main() {
         physicalKey: PhysicalKeyboardKey.keyA,
       );
 
-      await tester.tap(find.text(currentAppLocalizations.confirm));
-      await tester.pumpAndSettle();
-
+      final save = tester.widget<TextButton>(
+        find.widgetWithText(TextButton, currentAppLocalizations.save),
+      );
+      expect(save.onPressed, isNull);
+      expect(find.textContaining('Ctrl'), findsWidgets);
       expect(container.read(hotKeyActionsProvider), isEmpty);
-      expect(find.text(currentAppLocalizations.inputCorrectHotkey), findsOne);
     });
 
-    testWidgets('confirm rejects a combination already bound elsewhere', (
+    testWidgets('save moves a combination already bound elsewhere', (
       tester,
     ) async {
       final taken = HotKeyAction(
@@ -226,14 +224,17 @@ void main() {
         PhysicalKeyboardKey.keyA,
         LogicalKeyboardKey.keyA,
       );
-      await tester.tap(find.text(currentAppLocalizations.confirm));
+      expect(find.textContaining('Start/Stop'), findsOneWidget);
+      await tester.tap(find.text(currentAppLocalizations.save));
       await tester.pumpAndSettle();
 
-      expect(container.read(hotKeyActionsProvider), [taken]);
-      expect(find.text(currentAppLocalizations.hotkeyConflict), findsOne);
+      final stored = container.read(hotKeyActionsProvider);
+      expect(stored, hasLength(1));
+      expect(stored.single.action, HotAction.mode);
+      expect(stored.single.key, PhysicalKeyboardKey.keyA.usbHidUsage);
     });
 
-    testWidgets('confirm replaces the binding for the same action', (
+    testWidgets('save replaces the binding for the same action', (
       tester,
     ) async {
       final existing = HotKeyAction(
@@ -249,7 +250,7 @@ void main() {
         PhysicalKeyboardKey.keyA,
         LogicalKeyboardKey.keyA,
       );
-      await tester.tap(find.text(currentAppLocalizations.confirm));
+      await tester.tap(find.text(currentAppLocalizations.save));
       await tester.pumpAndSettle();
 
       final stored = container.read(hotKeyActionsProvider);
@@ -271,10 +272,7 @@ void main() {
       await tester.tap(find.text(currentAppLocalizations.remove));
       await tester.pumpAndSettle();
 
-      final stored = container.read(hotKeyActionsProvider);
-      expect(stored, hasLength(1));
-      expect(stored.single.key, isNull);
-      expect(stored.single.modifiers, isEmpty);
+      expect(container.read(hotKeyActionsProvider), isEmpty);
     });
   });
 }
