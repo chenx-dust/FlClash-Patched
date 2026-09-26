@@ -231,7 +231,7 @@ class ProfileItem extends ConsumerWidget {
           builder: (context) {
             return CommonDialog(
               backgroundColor: context.colorScheme.surfaceContainerLow,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               title: context.appLocalizations.subscriptionInfo,
               actions: [
                 TextButton(
