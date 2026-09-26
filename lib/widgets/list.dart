@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/inherited.dart';
@@ -361,9 +362,12 @@ class ListItem<T> extends ConsumerWidget {
           closedBuilder: (context, action) {
             Future<void> openAction() async {
               final isMobile = context.isMobileView;
-              final predictiveBack = ref
-                  .read(themeSettingProvider)
-                  .predictiveBack;
+              final supportPredictiveBack = system.supportsPredictiveBack(
+                ref.read(versionProvider),
+              );
+              final predictiveBack =
+                  supportPredictiveBack &&
+                  ref.read(themeSettingProvider).predictiveBack;
               if (!isMobile ||
                   platform == TargetPlatform.iOS ||
                   platform == TargetPlatform.android && predictiveBack) {
