@@ -11,7 +11,6 @@ import 'package:fl_clash/providers/state.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/config/advanced.dart';
 import 'package:fl_clash/views/config/dns.dart';
-import 'package:fl_clash/views/config/general.dart';
 import 'package:fl_clash/views/config/network.dart';
 import 'package:fl_clash/views/config/on_demand.dart';
 import 'package:fl_clash/views/config/rules.dart';
@@ -70,13 +69,12 @@ void main() {
     'logs': const LogsView(),
     'dns queries': const DnsQueriesView(),
     'tools': const ToolsView(),
-    'basic config': const ConfigView(),
+    'general': const GeneralView(),
     'dns config': const Scaffold(body: DnsListView()),
     'network config': const Scaffold(body: NetworkListView()),
     'advanced config': const AdvancedConfigView(),
     'on demand config': const OnDemandView(),
     'theme': const ThemeView(),
-    'application settings': const ApplicationSettingView(),
     'backup and restore': const BackupAndRestore(),
     'hotkeys': const HotKeyView(),
     'access control': const AccessView(),
@@ -635,9 +633,8 @@ void main() {
   final toolDestinations = <String, Type>{
     'Theme': ThemeView,
     'Backup and restore': BackupAndRestore,
-    'Basic configuration': ConfigView,
     'Advanced configuration': AdvancedConfigView,
-    'Application': ApplicationSettingView,
+    'General': GeneralView,
   };
 
   for (final entry in toolDestinations.entries) {
@@ -670,6 +667,12 @@ void main() {
         500,
         scrollable: find.byType(Scrollable).first,
       );
+      if (entry.key == 'General') {
+        expect(
+          find.text('General settings for the app and core'),
+          findsOneWidget,
+        );
+      }
       await tester.tap(target);
       await tester.pumpAndSettle();
 

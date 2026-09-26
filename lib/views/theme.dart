@@ -37,18 +37,20 @@ class ThemeView extends StatelessWidget {
     final appLocalizations = context.appLocalizations;
     return BaseScaffold(
       title: appLocalizations.theme,
-      body: const CustomScrollView(
+      body: CustomScrollView(
         slivers: [
-          _ThemeModeItem(),
-          SliverToBoxAdapter(child: SizedBox(height: 16)),
-          _PrimaryColorItem(),
-          SliverToBoxAdapter(child: SizedBox(height: 16)),
-          _PrueBlackItem(),
-          _MonochromeTrayIconItem(),
-          _PredictiveBackItem(),
-          SliverToBoxAdapter(child: SizedBox(height: 16)),
-          _TextScaleFactorItem(),
-          SliverToBoxAdapter(child: SizedBox(height: 32)),
+          const _ThemeModeItem(),
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          const _PrimaryColorItem(),
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          const _PrueBlackItem(),
+          const _MonochromeTrayIconItem(),
+          const _PredictiveBackItem(),
+          if (!system.isTV) const _TvModeItem(),
+          const _TabAnimationItem(),
+          const _SwipeToSwitchPageItem(),
+          const _TextScaleFactorItem(),
+          const SliverToBoxAdapter(child: SizedBox(height: 32)),
         ],
       ),
     );
@@ -583,6 +585,83 @@ class _PredictiveBackItem extends ConsumerWidget {
       ),
     );
   }
+}
+
+class _TvModeItem extends ConsumerWidget {
+  const _TvModeItem();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return _appSettingToggle(
+      context: context,
+      ref: ref,
+      icon: Icons.tv,
+      title: context.appLocalizations.tvMode,
+      select: (state) => state.tvMode,
+      update: (state, value) => state.copyWith(tvMode: value),
+    );
+  }
+}
+
+class _TabAnimationItem extends ConsumerWidget {
+  const _TabAnimationItem();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return _appSettingToggle(
+      context: context,
+      ref: ref,
+      icon: Icons.animation,
+      title: context.appLocalizations.tabAnimation,
+      select: (state) => state.isAnimateToPage,
+      update: (state, value) => state.copyWith(isAnimateToPage: value),
+    );
+  }
+}
+
+class _SwipeToSwitchPageItem extends ConsumerWidget {
+  const _SwipeToSwitchPageItem();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return _appSettingToggle(
+      context: context,
+      ref: ref,
+      icon: Icons.swipe,
+      title: context.appLocalizations.swipeToSwitchPage,
+      select: (state) => state.isSwipeToPage,
+      update: (state, value) => state.copyWith(isSwipeToPage: value),
+    );
+  }
+}
+
+Widget _appSettingToggle({
+  required BuildContext context,
+  required WidgetRef ref,
+  required IconData icon,
+  required String title,
+  required bool Function(AppSettingProps state) select,
+  required AppSettingProps Function(AppSettingProps state, bool value) update,
+}) {
+  final value = ref.watch(appSettingProvider.select(select));
+  return SliverToBoxAdapter(
+    child: ListItem.toggle(
+      leading: Icon(icon),
+      horizontalTitleGap: 12,
+      title: Text(
+        title,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+          color: context.colorScheme.onSurfaceVariant,
+        ),
+      ),
+      value: value,
+      onChanged: (next) {
+        ref
+            .read(appSettingProvider.notifier)
+            .update((state) => update(state, next));
+      },
+    ),
+  );
 }
 
 class _TextScaleFactorItem extends ConsumerWidget {

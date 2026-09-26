@@ -8,7 +8,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/pages/home.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
-import 'package:fl_clash/views/application_setting.dart';
+import 'package:fl_clash/views/config/general.dart';
 import 'package:fl_clash/views/tools.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:fl_clash/views/navigation.dart';
@@ -467,27 +467,38 @@ void main() {
       );
       await tester.pump();
 
-      final applicationItem = find.text('Application');
+      final generalItem = find.text('General');
       await tester.scrollUntilVisible(
-        applicationItem,
+        generalItem,
         500,
         scrollable: find.byType(Scrollable).first,
       );
-      await tester.tap(applicationItem);
+      await tester.tap(generalItem);
       await tester.pumpAndSettle();
-      expect(find.byType(ApplicationSettingView), findsOneWidget);
+      expect(find.byType(GeneralView), findsOneWidget);
 
       final logItem = find.text('Logcat');
+      final generalScrollable = find.descendant(
+        of: find.byType(GeneralView),
+        matching: find.byType(Scrollable),
+      );
       await tester.scrollUntilVisible(
         logItem,
         500,
-        scrollable: find.byType(Scrollable).first,
+        scrollable: generalScrollable,
       );
+      final overflow =
+          tester.getRect(logItem).bottom -
+          tester.view.physicalSize.height / tester.view.devicePixelRatio;
+      if (overflow > 0) {
+        await tester.drag(generalScrollable, Offset(0, -(overflow + 24)));
+        await tester.pump();
+      }
       await tester.tap(logItem);
       await tester.pumpAndSettle();
 
       expect(container.read(appSettingProvider).openLogs, isTrue);
-      expect(find.byType(ApplicationSettingView), findsOneWidget);
+      expect(find.byType(GeneralView), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );

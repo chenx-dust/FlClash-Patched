@@ -4,6 +4,7 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
+import 'package:fl_clash/widgets/config_item.dart';
 import 'package:fl_clash/widgets/list.dart';
 import 'package:fl_clash/widgets/scaffold.dart';
 import 'package:material_ui/material_ui.dart';
@@ -31,6 +32,13 @@ class AboutView extends ConsumerWidget {
       separated: false,
       title: appLocalizations.more,
       items: [
+        ConfigToggleItem(
+          title: (l) => l.autoCheckUpdate,
+          selector: appSettingProvider.select((state) => state.autoCheckUpdate),
+          onChanged: (ref, value) => ref
+              .read(appSettingProvider.notifier)
+              .update((state) => state.copyWith(autoCheckUpdate: value)),
+        ),
         ListItem(
           title: Text(appLocalizations.checkUpdate),
           onTap: () {

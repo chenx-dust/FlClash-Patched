@@ -95,9 +95,9 @@ class AppLocalizations {
     return Intl.message('Profiles', name: 'profiles', desc: '', args: []);
   }
 
-  /// `Tools`
+  /// `More`
   String get tools {
-    return Intl.message('Tools', name: 'tools', desc: '', args: []);
+    return Intl.message('More', name: 'tools', desc: '', args: []);
   }
 
   /// `Logs`
@@ -1178,6 +1178,46 @@ class AppLocalizations {
   /// `General`
   String get general {
     return Intl.message('General', name: 'general', desc: '', args: []);
+  }
+
+  /// `General settings for the app and core`
+  String get generalDesc {
+    return Intl.message(
+      'General settings for the app and core',
+      name: 'generalDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Startup and background`
+  String get startupAndBackground {
+    return Intl.message(
+      'Startup and background',
+      name: 'startupAndBackground',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Requests and updates`
+  String get requestsAndUpdates {
+    return Intl.message(
+      'Requests and updates',
+      name: 'requestsAndUpdates',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Logs and diagnostics`
+  String get logsAndDiagnostics {
+    return Intl.message(
+      'Logs and diagnostics',
+      name: 'logsAndDiagnostics',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Set the system HTTP proxy`

@@ -669,6 +669,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "fruitSaladScheme": MessageLookupByLibrary.simpleMessage("Фруктовый микс"),
     "general": MessageLookupByLibrary.simpleMessage("Общие"),
+    "generalDesc": MessageLookupByLibrary.simpleMessage(
+      "Общие настройки приложения и ядра",
+    ),
     "generateFromPrivateKey": MessageLookupByLibrary.simpleMessage(
       "Создать из закрытого ключа Age",
     ),
@@ -788,9 +791,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "inputRuleContent": MessageLookupByLibrary.simpleMessage(
       "Введите содержимое правила",
     ),
-    "installedAppsPermissionDeniedMessage": MessageLookupByLibrary.simpleMessage(
-      "Разрешение на список приложений отклонено, поэтому установленные приложения недоступны. Предоставьте его вручную в системных настройках.",
-    ),
+    "installedAppsPermissionDeniedMessage":
+        MessageLookupByLibrary.simpleMessage(
+          "Разрешение на список приложений отклонено, поэтому установленные приложения недоступны. Предоставьте его вручную в системных настройках.",
+        ),
     "installedAppsPermissionDesc": MessageLookupByLibrary.simpleMessage(
       "Эта система не выдаёт список установленных приложений без разрешения. Предоставьте его, чтобы настроить прокси для отдельных приложений.",
     ),
@@ -871,6 +875,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "При отключении раздел логов будет скрыт",
     ),
     "logs": MessageLookupByLibrary.simpleMessage("Логи"),
+    "logsAndDiagnostics": MessageLookupByLibrary.simpleMessage(
+      "Логи и диагностика",
+    ),
     "logsDesc": MessageLookupByLibrary.simpleMessage(
       "Записи захваченных логов",
     ),
@@ -1177,6 +1184,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "remove": MessageLookupByLibrary.simpleMessage("Убрать"),
     "request": MessageLookupByLibrary.simpleMessage("Запрос"),
     "requests": MessageLookupByLibrary.simpleMessage("Запросы"),
+    "requestsAndUpdates": MessageLookupByLibrary.simpleMessage(
+      "Запросы и обновления",
+    ),
     "requestsDesc": MessageLookupByLibrary.simpleMessage(
       "Просмотр последних запросов",
     ),
@@ -1457,6 +1467,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "start": MessageLookupByLibrary.simpleMessage("Старт"),
     "startVpn": MessageLookupByLibrary.simpleMessage("Запуск VPN..."),
+    "startupAndBackground": MessageLookupByLibrary.simpleMessage(
+      "Запуск и фоновая работа",
+    ),
     "status": MessageLookupByLibrary.simpleMessage("Статус"),
     "statusDesc": MessageLookupByLibrary.simpleMessage(
       "При отключении используется системный DNS",
@@ -1566,7 +1579,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "toggle": MessageLookupByLibrary.simpleMessage("Переключить"),
     "toggleLabel": MessageLookupByLibrary.simpleMessage("Переключить подписи"),
     "tonalSpotScheme": MessageLookupByLibrary.simpleMessage("Тональный акцент"),
-    "tools": MessageLookupByLibrary.simpleMessage("Инструменты"),
+    "tools": MessageLookupByLibrary.simpleMessage("Ещё"),
     "torch": MessageLookupByLibrary.simpleMessage("Фонарик"),
     "totalTraffic": MessageLookupByLibrary.simpleMessage("Общий трафик"),
     "tproxyPort": MessageLookupByLibrary.simpleMessage("Порт TProxy"),

@@ -326,10 +326,26 @@ class ListItem<T> extends ConsumerWidget {
        onTap = null;
 
   Widget _buildListTile({
+    required ItemPosition? position,
     void Function()? onTap,
     Widget? trailing,
     Widget? leading,
   }) {
+    if (position != null) {
+      // OpenContainer reparents the closed tile out of the section's provider.
+      return ItemPositionProvider(
+        position: position,
+        child: DecorationListItem(
+          leading: leading ?? this.leading,
+          title: title,
+          subtitle: subtitle,
+          trailing: trailing ?? this.trailing,
+          contentPadding: padding,
+          horizontalTitleGap: horizontalTitleGap,
+          onPressed: onTap,
+        ),
+      );
+    }
     return ListTile(
       key: key,
       dense: dense,
@@ -352,6 +368,7 @@ class ListItem<T> extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final position = ItemPositionProvider.of(context)?.position;
     switch (_action) {
       case final _OpenAction openDelegate:
         final child = openDelegate.widget;
@@ -390,7 +407,7 @@ class ListItem<T> extends ConsumerWidget {
               action();
             }
 
-            return _buildListTile(onTap: openAction);
+            return _buildListTile(position: position, onTap: openAction);
           },
           onClosed: onChanged,
           openBuilder: (_, action) {
@@ -401,6 +418,7 @@ class ListItem<T> extends ConsumerWidget {
         final child = nextDelegate.widget;
 
         return _buildListTile(
+          position: position,
           onTap: () {
             showExtend(
               context,
@@ -417,6 +435,7 @@ class ListItem<T> extends ConsumerWidget {
       case final _OptionsAction options:
         final optionsDelegate = options as _OptionsAction<T>;
         return _buildListTile(
+          position: position,
           onTap: () async {
             final value = await dialogs.showCommonDialog<T>(
               child: OptionsDialog<T>(
@@ -431,6 +450,7 @@ class ListItem<T> extends ConsumerWidget {
         );
       case final _InputAction inputDelegate:
         return _buildListTile(
+          position: position,
           onTap: () async {
             final value = await dialogs.showCommonDialog<String>(
               child: InputDialog(
@@ -450,6 +470,7 @@ class ListItem<T> extends ConsumerWidget {
         );
       case final _CheckboxAction checkboxDelegate:
         return _buildListTile(
+          position: position,
           onTap: checkboxDelegate.onChanged == null
               ? null
               : () {
@@ -462,6 +483,7 @@ class ListItem<T> extends ConsumerWidget {
         );
       case final _ToggleAction toggleAction:
         return _buildListTile(
+          position: position,
           onTap: toggleAction.onChanged == null
               ? null
               : () {
@@ -475,6 +497,7 @@ class ListItem<T> extends ConsumerWidget {
       case final _RadioAction radio:
         final radioDelegate = radio as _RadioAction<T>;
         return _buildListTile(
+          position: position,
           onTap: radioDelegate.onTap,
           leading: ExcludeFocus(
             child: Radio<T>(
@@ -487,7 +510,7 @@ class ListItem<T> extends ConsumerWidget {
           trailing: trailing,
         );
       case _DefaultAction():
-        return _buildListTile(onTap: onTap);
+        return _buildListTile(position: position, onTap: onTap);
     }
   }
 }
@@ -614,13 +637,12 @@ Widget generateSectionV3({
   List<Widget>? actions,
   bool isFirst = false,
 }) {
-  final genItems = items.mapIndexed<Widget>((index, item) {
-    final position = ItemPosition.get(index, items.length);
-    if (position != ItemPosition.middle) {
-      return ItemPositionProvider(position: position, child: item);
-    }
-    return item;
-  });
+  final genItems = items.mapIndexed<Widget>(
+    (index, item) => ItemPositionProvider(
+      position: ItemPosition.get(index, items.length),
+      child: item,
+    ),
+  );
   return Column(
     children: [
       if (items.isNotEmpty && title != null)

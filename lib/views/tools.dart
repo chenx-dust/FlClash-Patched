@@ -6,9 +6,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/views/about.dart';
 import 'package:fl_clash/views/access.dart';
-import 'package:fl_clash/views/application_setting.dart';
 import 'package:fl_clash/views/backup_and_restore.dart';
-import 'package:fl_clash/views/config/config.dart';
 import 'package:fl_clash/views/hotkey.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
@@ -16,6 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' show dirname, join;
 
 import 'config/advanced.dart';
+import 'config/general.dart';
 import 'developer.dart';
 import 'theme.dart';
 
@@ -71,9 +70,8 @@ class _ToolViewState extends ConsumerState<ToolsView> {
         if (system.isDesktop) const _HotkeyItem(),
         if (system.isWindows) const _LoopbackItem(),
         if (system.isAndroid) const _AccessItem(),
-        const _ConfigItem(),
         const _AdvancedConfigItem(),
-        const _SettingItem(),
+        const _GeneralItem(),
       ],
     );
   }
@@ -221,16 +219,16 @@ class _AccessItem extends StatelessWidget {
   }
 }
 
-class _ConfigItem extends StatelessWidget {
-  const _ConfigItem();
+class _GeneralItem extends StatelessWidget {
+  const _GeneralItem();
 
   @override
   Widget build(BuildContext context) {
     return ListItem.open(
-      leading: const Icon(Icons.edit),
-      title: Text(context.appLocalizations.basicConfig),
-      subtitle: Text(context.appLocalizations.basicConfigDesc),
-      widget: const ConfigView(),
+      leading: const Icon(Icons.settings),
+      title: Text(context.appLocalizations.general),
+      subtitle: Text(context.appLocalizations.generalDesc),
+      widget: const GeneralView(),
     );
   }
 }
@@ -245,20 +243,6 @@ class _AdvancedConfigItem extends StatelessWidget {
       title: Text(context.appLocalizations.advancedConfig),
       subtitle: Text(context.appLocalizations.advancedConfigDesc),
       widget: const AdvancedConfigView(),
-    );
-  }
-}
-
-class _SettingItem extends StatelessWidget {
-  const _SettingItem();
-
-  @override
-  Widget build(BuildContext context) {
-    return ListItem.open(
-      leading: const Icon(Icons.settings),
-      title: Text(context.appLocalizations.application),
-      subtitle: Text(context.appLocalizations.applicationDesc),
-      widget: const ApplicationSettingView(),
     );
   }
 }
