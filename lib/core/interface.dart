@@ -92,6 +92,10 @@ mixin CoreInterface {
 
   FutureOr<void> stopRequestNotify();
 
+  FutureOr<List<DnsQuery>> startDnsNotify();
+
+  FutureOr<void> stopDnsNotify();
+
   Future<bool> crash();
 
   FutureOr<List<TrackerInfo>> getConnections();
@@ -486,6 +490,25 @@ abstract class CoreHandlerInterface with CoreInterface {
   @override
   FutureOr<void> stopRequestNotify() {
     _invokeMethod<bool>(method: CoreMethod.stopRequestNotify);
+  }
+
+  @override
+  Future<List<DnsQuery>> startDnsNotify() async {
+    final res = await _invokeMethod<List<dynamic>>(
+      method: CoreMethod.startDnsNotify,
+    );
+    if (res == null || res.isEmpty) {
+      return [];
+    }
+    return res
+        .whereType<Map>()
+        .map((item) => DnsQuery.fromJson(Map<String, Object?>.from(item)))
+        .toList();
+  }
+
+  @override
+  FutureOr<void> stopDnsNotify() {
+    _invokeMethod<bool>(method: CoreMethod.stopDnsNotify);
   }
 
   @override

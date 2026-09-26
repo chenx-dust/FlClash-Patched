@@ -201,6 +201,71 @@ abstract class LogsState with _$LogsState {
   }) = _LogsState;
 }
 
+@freezed
+abstract class DnsQuery with _$DnsQuery {
+  const factory DnsQuery({
+    required String domain,
+    required String type,
+    @JsonKey(unknownEnumValue: JsonKey.nullForUndefinedEnumValue)
+    DnsQueryInitiator? initiator,
+    @Default('') String upstream,
+    @Default(false) bool cached,
+    @Default([]) List<String> answers,
+    @Default('') String rcode,
+    @Default('') String error,
+    @Default(0) int delay,
+    required DateTime time,
+  }) = _DnsQuery;
+
+  factory DnsQuery.fromJson(Map<String, Object?> json) =>
+      _$DnsQueryFromJson(json);
+}
+
+extension DnsQueryExt on DnsQuery {
+  bool get hasFailureRcode => rcode.isNotEmpty && rcode != 'NOERROR';
+
+  bool get isFailed => error.isNotEmpty || hasFailureRcode;
+
+  List<String> get results {
+    if (answers.isNotEmpty) {
+      return answers;
+    }
+    if (error.isNotEmpty) {
+      return [error];
+    }
+    return const [];
+  }
+
+  List<String> get searchFields => [
+    domain,
+    type,
+    initiator?.name ?? '',
+    upstream,
+    rcode,
+    error,
+    ...answers,
+  ];
+}
+
+@freezed
+abstract class DnsQueriesState with _$DnsQueriesState {
+  const factory DnsQueriesState({
+    @Default([]) List<DnsQuery> dnsQueries,
+    @Default('') String query,
+    @Default(false) bool useRegex,
+    @Default(true) bool autoScrollToEnd,
+  }) = _DnsQueriesState;
+}
+
+extension DnsQueriesStateExt on DnsQueriesState {
+  List<DnsQuery> get list {
+    final matcher = SearchMatcher(query, useRegex: useRegex);
+    return dnsQueries
+        .where((dnsQuery) => matcher.hasAnyMatch(dnsQuery.searchFields))
+        .toList();
+  }
+}
+
 extension LogsStateExt on LogsState {
   bool get hasFilters => sources.isNotEmpty || levels.isNotEmpty;
 

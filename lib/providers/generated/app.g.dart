@@ -166,6 +166,58 @@ abstract class _$Requests extends $Notifier<FixedList<TrackerInfo>> {
   }
 }
 
+@ProviderFor(DnsQueries)
+final dnsQueriesProvider = DnsQueriesProvider._();
+
+final class DnsQueriesProvider
+    extends $NotifierProvider<DnsQueries, FixedList<DnsQuery>> {
+  DnsQueriesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'dnsQueriesProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$dnsQueriesHash();
+
+  @$internal
+  @override
+  DnsQueries create() => DnsQueries();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(FixedList<DnsQuery> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<FixedList<DnsQuery>>(value),
+    );
+  }
+}
+
+String _$dnsQueriesHash() => r'504be850a360e2af42b33edb24f5f228c6c9b94d';
+
+abstract class _$DnsQueries extends $Notifier<FixedList<DnsQuery>> {
+  FixedList<DnsQuery> build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<FixedList<DnsQuery>, FixedList<DnsQuery>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<FixedList<DnsQuery>, FixedList<DnsQuery>>,
+              FixedList<DnsQuery>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(Providers)
 final providersProvider = ProvidersProvider._();
 

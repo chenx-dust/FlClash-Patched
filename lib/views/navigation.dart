@@ -37,6 +37,13 @@ class Navigation implements NavigationPort {
             const ProfilesView(key: GlobalObjectKey(PageLabel.profiles)),
       ),
       NavigationItem(
+        icon: const Icon(Icons.dns),
+        label: PageLabel.dnsQueries,
+        builder: (_) =>
+            const DnsQueriesView(key: GlobalObjectKey(PageLabel.dnsQueries)),
+        modes: [NavigationItemMode.more],
+      ),
+      NavigationItem(
         icon: const Icon(Icons.view_timeline),
         label: PageLabel.requests,
         builder: (_) =>

@@ -47,6 +47,9 @@ class SetupAction extends _$SetupAction {
     final setupResult = applyProfile(force: true);
     ref.read(logsProvider.notifier).value = FixedList(maxLogsLength);
     ref.read(requestsProvider.notifier).value = FixedList(maxRequestsLength);
+    ref.read(dnsQueriesProvider.notifier).value = FixedList(
+      maxDnsQueriesLength,
+    );
     try {
       return await setupResult;
     } catch (e, s) {

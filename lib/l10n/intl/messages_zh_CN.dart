@@ -153,6 +153,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "allowLanDesc": MessageLookupByLibrary.simpleMessage("允许通过局域网访问代理"),
     "alwaysOn": MessageLookupByLibrary.simpleMessage("始终连接"),
     "alwaysOnDesc": MessageLookupByLibrary.simpleMessage("在任何网络环境下保持 VPN 连接"),
+    "answers": MessageLookupByLibrary.simpleMessage("应答"),
     "app": MessageLookupByLibrary.simpleMessage("应用"),
     "appAccessControl": MessageLookupByLibrary.simpleMessage("应用访问控制"),
     "appendSystemDns": MessageLookupByLibrary.simpleMessage("追加系统 DNS"),
@@ -210,6 +211,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "blockConnection": MessageLookupByLibrary.simpleMessage("阻止连接"),
     "bypassDomain": MessageLookupByLibrary.simpleMessage("排除域名"),
     "bypassDomainDesc": MessageLookupByLibrary.simpleMessage("仅在系统代理启用时生效"),
+    "cache": MessageLookupByLibrary.simpleMessage("缓存"),
     "cacheCorrupt": MessageLookupByLibrary.simpleMessage("缓存已损坏，是否清空？"),
     "cancel": MessageLookupByLibrary.simpleMessage("取消"),
     "cancelSelectAll": MessageLookupByLibrary.simpleMessage("取消全选"),
@@ -340,6 +342,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "dnsHijacking": MessageLookupByLibrary.simpleMessage("DNS劫持"),
     "dnsIPv6Desc": MessageLookupByLibrary.simpleMessage("关闭后，AAAA 查询将返回空结果"),
     "dnsMode": MessageLookupByLibrary.simpleMessage("DNS 模式"),
+    "dnsQueries": MessageLookupByLibrary.simpleMessage("DNS 查询"),
+    "dnsQueriesDesc": MessageLookupByLibrary.simpleMessage("核心 DNS 解析记录"),
     "domain": MessageLookupByLibrary.simpleMessage("域名"),
     "download": MessageLookupByLibrary.simpleMessage("下载"),
     "downloadSpeed": MessageLookupByLibrary.simpleMessage("下载速度"),
@@ -382,6 +386,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "entries": MessageLookupByLibrary.simpleMessage("个条目"),
     "entriesCount": m8,
+    "error": MessageLookupByLibrary.simpleMessage("错误"),
     "exclude": MessageLookupByLibrary.simpleMessage("从最近任务中隐藏"),
     "excludeAPNs": MessageLookupByLibrary.simpleMessage("排除 APNs"),
     "excludeAPNsDesc": MessageLookupByLibrary.simpleMessage(
@@ -539,6 +544,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "infiniteTime": MessageLookupByLibrary.simpleMessage("长期有效"),
     "init": MessageLookupByLibrary.simpleMessage("初始化"),
     "initialize": MessageLookupByLibrary.simpleMessage("初始化"),
+    "initiator": MessageLookupByLibrary.simpleMessage("发起方"),
     "inputCorrectHotkey": MessageLookupByLibrary.simpleMessage("请输入正确的快捷键"),
     "inputProxyGroupName": MessageLookupByLibrary.simpleMessage("输入策略组名称"),
     "inputRuleContent": MessageLookupByLibrary.simpleMessage("输入规则内容"),
@@ -668,6 +674,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "newProfile": MessageLookupByLibrary.simpleMessage("新建"),
     "newProfileDesc": MessageLookupByLibrary.simpleMessage("手动编写配置文件"),
     "nextMatch": MessageLookupByLibrary.simpleMessage("下一个匹配"),
+    "no": MessageLookupByLibrary.simpleMessage("否"),
     "noData": MessageLookupByLibrary.simpleMessage("暂无数据"),
     "noFilterCondition": MessageLookupByLibrary.simpleMessage("暂无筛选条件"),
     "noHotKey": MessageLookupByLibrary.simpleMessage("暂无快捷键"),
@@ -761,6 +768,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxies": MessageLookupByLibrary.simpleMessage("代理"),
     "proxiesCount": m26,
     "proxiesEmpty": MessageLookupByLibrary.simpleMessage("代理为空"),
+    "proxy": MessageLookupByLibrary.simpleMessage("代理"),
     "proxyChains": MessageLookupByLibrary.simpleMessage("代理链"),
     "proxyDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
       "检测到选中的代理存在异常",
@@ -793,6 +801,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "quickFill": MessageLookupByLibrary.simpleMessage("一键填入"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("彩虹"),
     "random": MessageLookupByLibrary.simpleMessage("随机"),
+    "recordType": MessageLookupByLibrary.simpleMessage("记录类型"),
     "recvMsgX": MessageLookupByLibrary.simpleMessage("启用 RecvMsgX"),
     "recvMsgXDesc": MessageLookupByLibrary.simpleMessage(
       "在 macOS 和 iOS 上批量接收 TUN 数据包",
@@ -821,6 +830,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "respectRulesDesc": MessageLookupByLibrary.simpleMessage(
       "DNS 连接跟随 rules，需配置 proxy-server-nameserver",
     ),
+    "responseCode": MessageLookupByLibrary.simpleMessage("响应码"),
     "restart": MessageLookupByLibrary.simpleMessage("重启"),
     "restartCoreTip": MessageLookupByLibrary.simpleMessage("您确定要重启核心吗？"),
     "restore": MessageLookupByLibrary.simpleMessage("恢复"),
@@ -1127,6 +1137,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV 配置"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("白名单模式"),
     "yearsAgo": m33,
+    "yes": MessageLookupByLibrary.simpleMessage("是"),
     "zhCN": MessageLookupByLibrary.simpleMessage("中文简体"),
   };
 }

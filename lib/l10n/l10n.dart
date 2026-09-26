@@ -1270,6 +1270,71 @@ class AppLocalizations {
     );
   }
 
+  /// `DNS queries`
+  String get dnsQueries {
+    return Intl.message('DNS queries', name: 'dnsQueries', desc: '', args: []);
+  }
+
+  /// `Core DNS resolution records`
+  String get dnsQueriesDesc {
+    return Intl.message(
+      'Core DNS resolution records',
+      name: 'dnsQueriesDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Initiator`
+  String get initiator {
+    return Intl.message('Initiator', name: 'initiator', desc: '', args: []);
+  }
+
+  /// `Record type`
+  String get recordType {
+    return Intl.message('Record type', name: 'recordType', desc: '', args: []);
+  }
+
+  /// `Response code`
+  String get responseCode {
+    return Intl.message(
+      'Response code',
+      name: 'responseCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Answers`
+  String get answers {
+    return Intl.message('Answers', name: 'answers', desc: '', args: []);
+  }
+
+  /// `Cache`
+  String get cache {
+    return Intl.message('Cache', name: 'cache', desc: '', args: []);
+  }
+
+  /// `Yes`
+  String get yes {
+    return Intl.message('Yes', name: 'yes', desc: '', args: []);
+  }
+
+  /// `No`
+  String get no {
+    return Intl.message('No', name: 'no', desc: '', args: []);
+  }
+
+  /// `Error`
+  String get error {
+    return Intl.message('Error', name: 'error', desc: '', args: []);
+  }
+
+  /// `Proxy`
+  String get proxy {
+    return Intl.message('Proxy', name: 'proxy', desc: '', args: []);
+  }
+
   /// `Find process`
   String get findProcessMode {
     return Intl.message(

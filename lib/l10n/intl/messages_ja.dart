@@ -163,6 +163,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "alwaysOnDesc": MessageLookupByLibrary.simpleMessage(
       "あらゆるネットワーク環境でVPN接続を維持",
     ),
+    "answers": MessageLookupByLibrary.simpleMessage("応答"),
     "app": MessageLookupByLibrary.simpleMessage("アプリ"),
     "appAccessControl": MessageLookupByLibrary.simpleMessage("アプリアクセス制御"),
     "appendSystemDns": MessageLookupByLibrary.simpleMessage("システム DNS を追加"),
@@ -230,6 +231,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "bypassDomainDesc": MessageLookupByLibrary.simpleMessage(
       "システムプロキシが有効な場合のみ適用されます",
     ),
+    "cache": MessageLookupByLibrary.simpleMessage("キャッシュ"),
     "cacheCorrupt": MessageLookupByLibrary.simpleMessage(
       "キャッシュが破損しています。クリアしますか？",
     ),
@@ -384,6 +386,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "無効にすると、AAAA クエリは空の結果を返します",
     ),
     "dnsMode": MessageLookupByLibrary.simpleMessage("DNS モード"),
+    "dnsQueries": MessageLookupByLibrary.simpleMessage("DNS クエリ"),
+    "dnsQueriesDesc": MessageLookupByLibrary.simpleMessage("コアの DNS 解決記録"),
     "domain": MessageLookupByLibrary.simpleMessage("ドメイン"),
     "download": MessageLookupByLibrary.simpleMessage("ダウンロード"),
     "downloadSpeed": MessageLookupByLibrary.simpleMessage("ダウンロード速度"),
@@ -434,6 +438,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "entries": MessageLookupByLibrary.simpleMessage(" 件"),
     "entriesCount": m8,
+    "error": MessageLookupByLibrary.simpleMessage("エラー"),
     "exclude": MessageLookupByLibrary.simpleMessage("最近のタスクから隠す"),
     "excludeAPNs": MessageLookupByLibrary.simpleMessage("APNs を除外"),
     "excludeAPNsDesc": MessageLookupByLibrary.simpleMessage(
@@ -611,6 +616,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "infiniteTime": MessageLookupByLibrary.simpleMessage("無期限"),
     "init": MessageLookupByLibrary.simpleMessage("初期化"),
     "initialize": MessageLookupByLibrary.simpleMessage("初期化"),
+    "initiator": MessageLookupByLibrary.simpleMessage("発信元"),
     "inputCorrectHotkey": MessageLookupByLibrary.simpleMessage(
       "正しいホットキーを入力してください",
     ),
@@ -760,6 +766,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "newProfile": MessageLookupByLibrary.simpleMessage("新規作成"),
     "newProfileDesc": MessageLookupByLibrary.simpleMessage("プロファイルを手動で作成"),
     "nextMatch": MessageLookupByLibrary.simpleMessage("次の一致"),
+    "no": MessageLookupByLibrary.simpleMessage("いいえ"),
     "noData": MessageLookupByLibrary.simpleMessage("データがありません"),
     "noFilterCondition": MessageLookupByLibrary.simpleMessage("フィルター条件なし"),
     "noHotKey": MessageLookupByLibrary.simpleMessage("ホットキーはまだありません"),
@@ -865,6 +872,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxies": MessageLookupByLibrary.simpleMessage("プロキシ"),
     "proxiesCount": m26,
     "proxiesEmpty": MessageLookupByLibrary.simpleMessage("プロキシが空です"),
+    "proxy": MessageLookupByLibrary.simpleMessage("プロキシ"),
     "proxyChains": MessageLookupByLibrary.simpleMessage("プロキシチェーン"),
     "proxyDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
       "選択したプロキシに異常が見つかりました",
@@ -911,6 +919,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "quickFill": MessageLookupByLibrary.simpleMessage("クイック入力"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("レインボー"),
     "random": MessageLookupByLibrary.simpleMessage("ランダム"),
+    "recordType": MessageLookupByLibrary.simpleMessage("レコードタイプ"),
     "recvMsgX": MessageLookupByLibrary.simpleMessage("RecvMsgX を有効にする"),
     "recvMsgXDesc": MessageLookupByLibrary.simpleMessage(
       "macOS と iOS で TUN パケットを一括受信",
@@ -943,6 +952,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "respectRulesDesc": MessageLookupByLibrary.simpleMessage(
       "DNS 接続をルールに従わせます（proxy-server-nameserver の設定が必要）",
     ),
+    "responseCode": MessageLookupByLibrary.simpleMessage("応答コード"),
     "restart": MessageLookupByLibrary.simpleMessage("再起動"),
     "restartCoreTip": MessageLookupByLibrary.simpleMessage("コアを再起動してもよろしいですか？"),
     "restore": MessageLookupByLibrary.simpleMessage("復元"),
@@ -1293,6 +1303,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV 設定"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("ホワイトリストモード"),
     "yearsAgo": m33,
+    "yes": MessageLookupByLibrary.simpleMessage("はい"),
     "zhCN": MessageLookupByLibrary.simpleMessage("簡体字中国語"),
   };
 }

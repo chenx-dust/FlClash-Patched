@@ -288,6 +288,13 @@ var methodHandlers = map[CoreMethod]methodHandler{
 		handleStopRequestNotify()
 		response.success(true)
 	}),
+	startDnsNotifyMethod: withoutArguments(func(response MethodResponse) {
+		response.success(handleStartDnsNotify())
+	}),
+	stopDnsNotifyMethod: withoutArguments(func(response MethodResponse) {
+		handleStopDnsNotify()
+		response.success(true)
+	}),
 	startListenerMethod: withoutArguments(func(response MethodResponse) {
 		response.success(handleStartListener())
 	}),

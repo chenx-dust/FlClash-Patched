@@ -31,6 +31,7 @@ import (
 	"github.com/metacubex/mihomo/config"
 	"github.com/metacubex/mihomo/constant"
 	"github.com/metacubex/mihomo/constant/features"
+	"github.com/metacubex/mihomo/dns"
 	"github.com/metacubex/mihomo/hub/executor"
 	"github.com/metacubex/mihomo/listener"
 	"github.com/metacubex/mihomo/log"
@@ -61,9 +62,18 @@ var (
 	requestNotifyLen     int
 )
 
+var (
+	dnsNotifyMu      sync.Mutex
+	dnsNotifyEnabled bool
+	dnsNotifyCache   [maxCachedDnsNotify]DnsQuery
+	dnsNotifyStart   int
+	dnsNotifyLen     int
+)
+
 const (
 	maxCachedLogNotify     = 100
 	maxCachedRequestNotify = 100
+	maxCachedDnsNotify     = 100
 )
 
 type StampedLogEvent struct {
@@ -1103,6 +1113,37 @@ func handleStopRequestNotify() {
 	requestNotifyEnabled = false
 }
 
+func handleStartDnsNotify() []DnsQuery {
+	dnsNotifyMu.Lock()
+	defer dnsNotifyMu.Unlock()
+	queries := make([]DnsQuery, dnsNotifyLen)
+	for i := 0; i < dnsNotifyLen; i++ {
+		index := (dnsNotifyStart + i) % maxCachedDnsNotify
+		queries[i] = dnsNotifyCache[index]
+	}
+	dnsNotifyStart = 0
+	dnsNotifyLen = 0
+	dnsNotifyEnabled = true
+	return queries
+}
+
+func handleStopDnsNotify() {
+	dnsNotifyMu.Lock()
+	defer dnsNotifyMu.Unlock()
+	dnsNotifyEnabled = false
+}
+
+func cacheDnsQuery(query DnsQuery) {
+	if dnsNotifyLen < maxCachedDnsNotify {
+		index := (dnsNotifyStart + dnsNotifyLen) % maxCachedDnsNotify
+		dnsNotifyCache[index] = query
+		dnsNotifyLen++
+		return
+	}
+	dnsNotifyCache[dnsNotifyStart] = query
+	dnsNotifyStart = (dnsNotifyStart + 1) % maxCachedDnsNotify
+}
+
 func handleGetMemory() uint64 {
 	var memStats runtime.MemStats
 	runtime.ReadMemStats(&memStats)
@@ -1283,6 +1324,20 @@ func init() {
 				Name:  name,
 				Value: delayValue(delay),
 			},
+		})
+	}
+	dns.DefaultQueryNotify = func(record dns.QueryRecord) {
+		query := newDnsQuery(record)
+		dnsNotifyMu.Lock()
+		if !dnsNotifyEnabled {
+			cacheDnsQuery(query)
+			dnsNotifyMu.Unlock()
+			return
+		}
+		dnsNotifyMu.Unlock()
+		sendMessage(Message{
+			Type: DnsMessage,
+			Data: query,
 		})
 	}
 	statistic.DefaultRequestNotify = func(c statistic.Tracker) {

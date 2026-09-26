@@ -270,6 +270,14 @@ class CoreController {
     _interface.stopRequestNotify();
   }
 
+  Future<List<DnsQuery>> startDnsNotify() async {
+    return _interface.startDnsNotify();
+  }
+
+  void stopDnsNotify() {
+    _interface.stopDnsNotify();
+  }
+
   Future<void> requestGc() async {
     await _interface.forceGc();
   }

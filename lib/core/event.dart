@@ -33,6 +33,8 @@ abstract mixin class CoreEventListener {
 
   void onRequest(TrackerInfo connection) {}
 
+  void onDns(DnsQuery dnsQuery) {}
+
   void onLoaded(String providerName) {}
 
   void onCrash(String message) {}
@@ -63,6 +65,9 @@ class CoreEventManager {
               break;
             case CoreEventType.request:
               listener.onRequest(TrackerInfo.fromJson(event.data));
+              break;
+            case CoreEventType.dns:
+              listener.onDns(DnsQuery.fromJson(event.data));
               break;
             case CoreEventType.loaded:
               listener.onLoaded(event.data);

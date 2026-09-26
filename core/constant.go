@@ -227,6 +227,8 @@ const (
 	stopLogNotifyMethod                  CoreMethod = "stopLogNotify"
 	startRequestNotifyMethod             CoreMethod = "startRequestNotify"
 	stopRequestNotifyMethod              CoreMethod = "stopRequestNotify"
+	startDnsNotifyMethod                 CoreMethod = "startDnsNotify"
+	stopDnsNotifyMethod                  CoreMethod = "stopDnsNotify"
 	startListenerMethod                  CoreMethod = "startListener"
 	stopListenerMethod                   CoreMethod = "stopListener"
 	updateDnsMethod                      CoreMethod = "updateDns"
@@ -287,6 +289,7 @@ const (
 	LogMessage       MessageType = "log"
 	DelayMessage     MessageType = "delay"
 	RequestMessage   MessageType = "request"
+	DnsMessage       MessageType = "dns"
 	LoadedMessage    MessageType = "loaded"
 	GeoUpdateMessage MessageType = "geoUpdate"
 )

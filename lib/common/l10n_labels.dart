@@ -16,6 +16,7 @@ extension PageLabelL10n on PageLabel {
       PageLabel.resources => appLocalizations.resources,
       PageLabel.networking => appLocalizations.networking,
       PageLabel.connections => appLocalizations.connections,
+      PageLabel.dnsQueries => appLocalizations.dnsQueries,
     };
   }
 
@@ -27,10 +28,24 @@ extension PageLabelL10n on PageLabel {
       PageLabel.resources => appLocalizations.resourcesDesc,
       PageLabel.networking => appLocalizations.networkingDesc,
       PageLabel.connections => appLocalizations.connectionsDesc,
+      PageLabel.dnsQueries => appLocalizations.dnsQueriesDesc,
       PageLabel.dashboard ||
       PageLabel.proxies ||
       PageLabel.profiles ||
       PageLabel.tools => null,
+    };
+  }
+}
+
+extension DnsQueryInitiatorL10n on DnsQueryInitiator {
+  String get label {
+    final appLocalizations = currentAppLocalizations;
+    return switch (this) {
+      DnsQueryInitiator.app => appLocalizations.app,
+      DnsQueryInitiator.rule => appLocalizations.rule,
+      DnsQueryInitiator.direct => appLocalizations.direct,
+      DnsQueryInitiator.proxy => appLocalizations.proxy,
+      DnsQueryInitiator.other => appLocalizations.other,
     };
   }
 }

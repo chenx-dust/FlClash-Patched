@@ -34,6 +34,8 @@ enum CoreMethod {
   stopLogNotify,
   startRequestNotify,
   stopRequestNotify,
+  startDnsNotify,
+  stopDnsNotify,
   startListener,
   stopListener,
   getMemory,

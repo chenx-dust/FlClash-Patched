@@ -204,7 +204,9 @@ enum ResultType {
   error,
 }
 
-enum CoreEventType { log, delay, request, loaded, crash, geoUpdate }
+enum CoreEventType { log, delay, request, dns, loaded, crash, geoUpdate }
+
+enum DnsQueryInitiator { app, rule, direct, proxy, other }
 
 enum InvokeMessageType { protect, process }
 
@@ -290,6 +292,7 @@ enum FunctionTag {
   proxiesTabChange,
   logs,
   requests,
+  dnsQueries,
   autoScrollToEnd,
   loadedProvider,
   saveSharedFile,
@@ -368,6 +371,7 @@ enum PageLabel {
   resources,
   networking,
   connections,
+  dnsQueries,
 }
 
 enum RuleAction {

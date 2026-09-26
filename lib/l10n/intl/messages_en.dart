@@ -198,6 +198,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "alwaysOnDesc": MessageLookupByLibrary.simpleMessage(
       "Keep VPN connected under any network conditions",
     ),
+    "answers": MessageLookupByLibrary.simpleMessage("Answers"),
     "app": MessageLookupByLibrary.simpleMessage("App"),
     "appAccessControl": MessageLookupByLibrary.simpleMessage(
       "App access control",
@@ -287,6 +288,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "bypassDomainDesc": MessageLookupByLibrary.simpleMessage(
       "Only takes effect while the system proxy is enabled",
     ),
+    "cache": MessageLookupByLibrary.simpleMessage("Cache"),
     "cacheCorrupt": MessageLookupByLibrary.simpleMessage(
       "The cache is corrupted. Clear it?",
     ),
@@ -467,6 +469,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "When disabled, AAAA queries return an empty result",
     ),
     "dnsMode": MessageLookupByLibrary.simpleMessage("DNS mode"),
+    "dnsQueries": MessageLookupByLibrary.simpleMessage("DNS queries"),
+    "dnsQueriesDesc": MessageLookupByLibrary.simpleMessage(
+      "Core DNS resolution records",
+    ),
     "domain": MessageLookupByLibrary.simpleMessage("Domain"),
     "download": MessageLookupByLibrary.simpleMessage("Download"),
     "downloadSpeed": MessageLookupByLibrary.simpleMessage("Download speed"),
@@ -529,6 +535,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "entries": MessageLookupByLibrary.simpleMessage(" entries"),
     "entriesCount": m8,
+    "error": MessageLookupByLibrary.simpleMessage("Error"),
     "exclude": MessageLookupByLibrary.simpleMessage("Hide from recent tasks"),
     "excludeAPNs": MessageLookupByLibrary.simpleMessage("Exclude APNs"),
     "excludeAPNsDesc": MessageLookupByLibrary.simpleMessage(
@@ -732,6 +739,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "infiniteTime": MessageLookupByLibrary.simpleMessage("Never expires"),
     "init": MessageLookupByLibrary.simpleMessage("Init"),
     "initialize": MessageLookupByLibrary.simpleMessage("Initialize"),
+    "initiator": MessageLookupByLibrary.simpleMessage("Initiator"),
     "inputCorrectHotkey": MessageLookupByLibrary.simpleMessage(
       "Please enter a valid hotkey",
     ),
@@ -920,6 +928,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Write a profile manually",
     ),
     "nextMatch": MessageLookupByLibrary.simpleMessage("Next match"),
+    "no": MessageLookupByLibrary.simpleMessage("No"),
     "noData": MessageLookupByLibrary.simpleMessage("No data"),
     "noFilterCondition": MessageLookupByLibrary.simpleMessage(
       "No filter conditions",
@@ -1043,6 +1052,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxies": MessageLookupByLibrary.simpleMessage("Proxies"),
     "proxiesCount": m26,
     "proxiesEmpty": MessageLookupByLibrary.simpleMessage("Proxies are empty"),
+    "proxy": MessageLookupByLibrary.simpleMessage("Proxy"),
     "proxyChains": MessageLookupByLibrary.simpleMessage("Proxy chain"),
     "proxyDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
       "The selected proxies are abnormal",
@@ -1091,6 +1101,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "quickFill": MessageLookupByLibrary.simpleMessage("Quick fill"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("Rainbow"),
     "random": MessageLookupByLibrary.simpleMessage("Random"),
+    "recordType": MessageLookupByLibrary.simpleMessage("Record type"),
     "recvMsgX": MessageLookupByLibrary.simpleMessage("Enable RecvMsgX"),
     "recvMsgXDesc": MessageLookupByLibrary.simpleMessage(
       "Receive TUN packets in batches on macOS and iOS",
@@ -1133,6 +1144,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "respectRulesDesc": MessageLookupByLibrary.simpleMessage(
       "DNS connections follow rules; proxy-server-nameserver must be configured",
     ),
+    "responseCode": MessageLookupByLibrary.simpleMessage("Response code"),
     "restart": MessageLookupByLibrary.simpleMessage("Restart"),
     "restartCoreTip": MessageLookupByLibrary.simpleMessage(
       "Are you sure you want to restart the core?",
@@ -1541,6 +1553,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("Whitelist mode"),
     "yearsAgo": m33,
+    "yes": MessageLookupByLibrary.simpleMessage("Yes"),
     "zhCN": MessageLookupByLibrary.simpleMessage("Simplified Chinese"),
   };
 }

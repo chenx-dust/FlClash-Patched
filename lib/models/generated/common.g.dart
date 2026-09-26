@@ -130,6 +130,46 @@ const _$LogLevelEnumMap = {
 
 const _$LogSourceEnumMap = {LogSource.app: 'app', LogSource.core: 'core'};
 
+_DnsQuery _$DnsQueryFromJson(Map<String, dynamic> json) => _DnsQuery(
+  domain: json['domain'] as String,
+  type: json['type'] as String,
+  initiator: $enumDecodeNullable(
+    _$DnsQueryInitiatorEnumMap,
+    json['initiator'],
+    unknownValue: JsonKey.nullForUndefinedEnumValue,
+  ),
+  upstream: json['upstream'] as String? ?? '',
+  cached: json['cached'] as bool? ?? false,
+  answers:
+      (json['answers'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+      const [],
+  rcode: json['rcode'] as String? ?? '',
+  error: json['error'] as String? ?? '',
+  delay: (json['delay'] as num?)?.toInt() ?? 0,
+  time: DateTime.parse(json['time'] as String),
+);
+
+Map<String, dynamic> _$DnsQueryToJson(_DnsQuery instance) => <String, dynamic>{
+  'domain': instance.domain,
+  'type': instance.type,
+  'initiator': _$DnsQueryInitiatorEnumMap[instance.initiator],
+  'upstream': instance.upstream,
+  'cached': instance.cached,
+  'answers': instance.answers,
+  'rcode': instance.rcode,
+  'error': instance.error,
+  'delay': instance.delay,
+  'time': instance.time.toIso8601String(),
+};
+
+const _$DnsQueryInitiatorEnumMap = {
+  DnsQueryInitiator.app: 'app',
+  DnsQueryInitiator.rule: 'rule',
+  DnsQueryInitiator.direct: 'direct',
+  DnsQueryInitiator.proxy: 'proxy',
+  DnsQueryInitiator.other: 'other',
+};
+
 _DAVProps _$DAVPropsFromJson(Map<String, dynamic> json) => _DAVProps(
   uri: json['uri'] as String,
   user: json['user'] as String,

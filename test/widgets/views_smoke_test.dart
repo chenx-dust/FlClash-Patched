@@ -60,6 +60,7 @@ void main() {
     'resources': const ResourcesView(),
     'networking': const NetworkingView(),
     'logs': const LogsView(),
+    'dns queries': const DnsQueriesView(),
     'tools': const ToolsView(),
     'basic config': const ConfigView(),
     'dns config': const Scaffold(body: DnsListView()),

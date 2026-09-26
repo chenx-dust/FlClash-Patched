@@ -201,6 +201,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "alwaysOnDesc": MessageLookupByLibrary.simpleMessage(
       "Поддерживать VPN-подключение в любых сетевых условиях",
     ),
+    "answers": MessageLookupByLibrary.simpleMessage("Ответы"),
     "app": MessageLookupByLibrary.simpleMessage("Приложение"),
     "appAccessControl": MessageLookupByLibrary.simpleMessage(
       "Контроль доступа приложений",
@@ -296,6 +297,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "bypassDomainDesc": MessageLookupByLibrary.simpleMessage(
       "Действует только при включённом системном прокси",
     ),
+    "cache": MessageLookupByLibrary.simpleMessage("Кэш"),
     "cacheCorrupt": MessageLookupByLibrary.simpleMessage(
       "Кэш повреждён. Очистить его?",
     ),
@@ -484,6 +486,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Если выключено, запросы AAAA возвращают пустой результат",
     ),
     "dnsMode": MessageLookupByLibrary.simpleMessage("Режим DNS"),
+    "dnsQueries": MessageLookupByLibrary.simpleMessage("DNS-запросы"),
+    "dnsQueriesDesc": MessageLookupByLibrary.simpleMessage(
+      "Записи DNS-разрешения ядра",
+    ),
     "domain": MessageLookupByLibrary.simpleMessage("Домен"),
     "download": MessageLookupByLibrary.simpleMessage("Загрузка"),
     "downloadSpeed": MessageLookupByLibrary.simpleMessage(
@@ -560,6 +566,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "entries": MessageLookupByLibrary.simpleMessage(" записей"),
     "entriesCount": m8,
+    "error": MessageLookupByLibrary.simpleMessage("Ошибка"),
     "exclude": MessageLookupByLibrary.simpleMessage("Скрыть из недавних задач"),
     "excludeAPNs": MessageLookupByLibrary.simpleMessage("Исключить APNs"),
     "excludeAPNsDesc": MessageLookupByLibrary.simpleMessage(
@@ -765,6 +772,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "infiniteTime": MessageLookupByLibrary.simpleMessage("Бессрочно"),
     "init": MessageLookupByLibrary.simpleMessage("Инициализация"),
     "initialize": MessageLookupByLibrary.simpleMessage("Инициализировать"),
+    "initiator": MessageLookupByLibrary.simpleMessage("Источник"),
     "inputCorrectHotkey": MessageLookupByLibrary.simpleMessage(
       "Введите корректную горячую клавишу",
     ),
@@ -955,6 +963,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Создать профиль вручную",
     ),
     "nextMatch": MessageLookupByLibrary.simpleMessage("Следующее совпадение"),
+    "no": MessageLookupByLibrary.simpleMessage("Нет"),
     "noData": MessageLookupByLibrary.simpleMessage("Нет данных"),
     "noFilterCondition": MessageLookupByLibrary.simpleMessage(
       "Нет условий фильтрации",
@@ -1092,6 +1101,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxies": MessageLookupByLibrary.simpleMessage("Прокси"),
     "proxiesCount": m26,
     "proxiesEmpty": MessageLookupByLibrary.simpleMessage("Список прокси пуст"),
+    "proxy": MessageLookupByLibrary.simpleMessage("Прокси"),
     "proxyChains": MessageLookupByLibrary.simpleMessage("Цепочка прокси"),
     "proxyDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
       "Обнаружены отклонения в выбранных прокси",
@@ -1142,6 +1152,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "quickFill": MessageLookupByLibrary.simpleMessage("Быстрое заполнение"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("Радуга"),
     "random": MessageLookupByLibrary.simpleMessage("Случайный"),
+    "recordType": MessageLookupByLibrary.simpleMessage("Тип записи"),
     "recvMsgX": MessageLookupByLibrary.simpleMessage("Включить RecvMsgX"),
     "recvMsgXDesc": MessageLookupByLibrary.simpleMessage(
       "Пакетный приём пакетов TUN в macOS и iOS",
@@ -1184,6 +1195,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "respectRulesDesc": MessageLookupByLibrary.simpleMessage(
       "DNS-соединения следуют правилам; необходимо настроить proxy-server-nameserver",
     ),
+    "responseCode": MessageLookupByLibrary.simpleMessage("Код ответа"),
     "restart": MessageLookupByLibrary.simpleMessage("Перезапустить"),
     "restartCoreTip": MessageLookupByLibrary.simpleMessage(
       "Вы уверены, что хотите перезапустить ядро?",
@@ -1634,6 +1646,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Режим белого списка",
     ),
     "yearsAgo": m33,
+    "yes": MessageLookupByLibrary.simpleMessage("Да"),
     "zhCN": MessageLookupByLibrary.simpleMessage("Упрощённый китайский"),
   };
 }
