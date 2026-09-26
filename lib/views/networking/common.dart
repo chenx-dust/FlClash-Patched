@@ -15,11 +15,13 @@ class OverlayNetworkLoginItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
-    return ListItem(
+    return DecorationListItem(
       leading: const Icon(Icons.login),
-      title: Text(url),
-      titleTextStyle: context.textTheme.bodyMedium?.copyWith(
-        color: context.colorScheme.onSurfaceVariant,
+      title: Text(
+        url,
+        style: context.textTheme.bodyMedium?.copyWith(
+          color: context.colorScheme.onSurfaceVariant,
+        ),
       ),
       trailing: FilledButton.tonalIcon(
         onPressed: () {

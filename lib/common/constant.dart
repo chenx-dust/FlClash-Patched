@@ -31,7 +31,7 @@ final baseInfoEdgeInsets = EdgeInsets.symmetric(
 final listHeaderPadding = EdgeInsets.only(
   left: 16.mAp,
   right: 8.mAp,
-  top: 24.mAp,
+  top: 20.mAp,
   bottom: 8.mAp,
 );
 const sheetAppBarHeight = 68.0;

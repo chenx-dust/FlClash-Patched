@@ -395,6 +395,7 @@ class EasyTierNode {
   final int nextHop;
   final int cost;
   final String connectionType;
+  final Map<String, bool> featureFlags;
   final String hostname;
   final String ipv4;
   final int latencyMs;
@@ -411,6 +412,7 @@ class EasyTierNode {
     this.nextHop = 0,
     this.cost = 0,
     this.connectionType = '',
+    this.featureFlags = const {},
     this.hostname = '',
     this.ipv4 = '',
     this.latencyMs = 0,
@@ -429,6 +431,7 @@ class EasyTierNode {
       nextHop: json['next-hop'] as int? ?? 0,
       cost: json['cost'] as int? ?? 0,
       connectionType: json['connection-type'] as String? ?? '',
+      featureFlags: _featureFlags(json['feature-flags']),
       hostname: json['hostname'] as String? ?? '',
       ipv4: json['ipv4'] as String? ?? '',
       latencyMs: json['latency-ms'] as int? ?? 0,
@@ -446,6 +449,19 @@ class EasyTierNode {
           )
           .toList(),
     );
+  }
+
+  bool get isPublicServer => featureFlags['is_public_server'] ?? false;
+
+  static Map<String, bool> _featureFlags(Object? value) {
+    if (value is! Map) {
+      return const {};
+    }
+    return {
+      for (final entry in value.entries)
+        if (entry.key is String && entry.value is bool)
+          entry.key as String: entry.value as bool,
+    };
   }
 }
 

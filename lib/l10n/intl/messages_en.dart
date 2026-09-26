@@ -481,6 +481,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Connection latency",
     ),
     "easyTierDnsZone": MessageLookupByLibrary.simpleMessage("DNS zone"),
+    "easyTierFeatureFlags": MessageLookupByLibrary.simpleMessage(
+      "Feature flags",
+    ),
     "easyTierInstanceId": MessageLookupByLibrary.simpleMessage("Instance ID"),
     "easyTierLatencyFirstPathLatency": MessageLookupByLibrary.simpleMessage(
       "Path latency (latency first)",
@@ -500,6 +503,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "easyTierPeerId": MessageLookupByLibrary.simpleMessage("Peer ID"),
     "easyTierProtocol": MessageLookupByLibrary.simpleMessage(
       "Transport protocol",
+    ),
+    "easyTierPublicServer": MessageLookupByLibrary.simpleMessage(
+      "Public server",
     ),
     "easyTierRemoteEndpoint": MessageLookupByLibrary.simpleMessage(
       "Remote endpoint",

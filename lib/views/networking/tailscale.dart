@@ -27,45 +27,38 @@ List<Widget> buildTailscaleChildren({
     node: node,
     displayName: _tailscaleNodeDisplayName(node, details.magicDnsSuffix),
   );
-  return [
-    ...generateSection(
-      isFirst: true,
-      items: [
-        ?statusErrorItem,
-        ?activationItem,
-        if (status.authUrl.isNotEmpty)
-          OverlayNetworkLoginItem(url: status.authUrl),
-        if (const {
-          OverlayNetworkState.connected,
-          OverlayNetworkState.needsApproval,
-        }.contains(status.state))
-          _AccountItem(
-            tailnetName: status.networkName,
-            busy: loggingOut,
-            onLogout: details.authKeyConfigured ? null : onLogout,
-          ),
-        if (details.health.isNotEmpty)
-          ListItem(
-            leading: Icon(
-              Icons.health_and_safety_outlined,
-              color: context.colorScheme.error,
-            ),
-            title: Text(appLocalizations.tailscaleHealthWarnings),
-            subtitle: Text(details.health.join('\n')),
-          ),
-      ],
-    ),
-    if (localNodes.isNotEmpty)
-      ...generateSection(
-        title: appLocalizations.local,
-        isFirst: true,
-        items: [for (final node in localNodes) buildNode(node)],
+
+  final statusItems = <Widget>[
+    ?statusErrorItem,
+    ?activationItem,
+    if (status.authUrl.isNotEmpty) OverlayNetworkLoginItem(url: status.authUrl),
+    if (const {
+      OverlayNetworkState.connected,
+      OverlayNetworkState.needsApproval,
+    }.contains(status.state))
+      _AccountItem(
+        tailnetName: status.networkName,
+        busy: loggingOut,
+        onLogout: details.authKeyConfigured ? null : onLogout,
       ),
-    ...generateSection(
+    if (details.health.isNotEmpty)
+      DecorationListItem(
+        leading: Icon(
+          Icons.health_and_safety_outlined,
+          color: context.colorScheme.error,
+        ),
+        title: Text(appLocalizations.tailscaleHealthWarnings),
+        subtitle: Text(details.health.join('\n')),
+      ),
+  ];
+  return [
+    if (statusItems.isNotEmpty)
+      generateSectionV3(isFirst: true, items: statusItems),
+    generateSectionV3(
       title: appLocalizations.nodes,
-      isFirst: true,
+      isFirst: statusItems.isEmpty,
       items: [
-        if (peers.isEmpty) ListItem(title: Text(appLocalizations.noData)),
+        for (final node in localNodes) buildNode(node),
         for (final node in peers) buildNode(node),
       ],
     ),
@@ -116,7 +109,7 @@ class _AccountItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
-    return ListItem(
+    return DecorationListItem(
       leading: const Icon(Icons.account_circle_outlined),
       title: Text(appLocalizations.account),
       subtitle: Text(
@@ -244,19 +237,24 @@ class _TailscaleNodeItemState extends State<_TailscaleNodeItem> {
     final color = node.online
         ? context.colorScheme.primary
         : context.colorScheme.outline;
-    return ListItem(
+    return DecorationListItem(
       leading: Icon(_nodeIcon(node.os), color: color),
       title: Text(widget.displayName),
       subtitle: summary.isEmpty ? null : Text(summary.join(' · ')),
       trailing: node.self
-          ? null
+          ? Text(
+              appLocalizations.local,
+              style: context.textTheme.bodyMedium?.copyWith(
+                color: context.colorScheme.secondary,
+              ),
+            )
           : node.online
           ? _buildDelayText(context)
           : Text(
               appLocalizations.offline,
               style: context.textTheme.bodyMedium?.copyWith(color: color),
             ),
-      onTap: () {
+      onPressed: () {
         dialogs.showCommonDialog(
           child: _TailscaleNodeDetailsDialog(
             node: node,

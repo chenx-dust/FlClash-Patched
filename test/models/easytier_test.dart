@@ -14,6 +14,11 @@ void main() {
         'next-hop': 7,
         'cost': 2,
         'connection-type': 'relayed',
+        'feature-flags': {
+          'is_public_server': true,
+          'avoid_relay_data': false,
+          'need_p2p': true,
+        },
         'proxy-cidrs': ['192.168.2.0/24'],
         'listeners': ['udp://127.0.0.1:1000'],
         'connections': [
@@ -38,6 +43,14 @@ void main() {
       expect(node.nextHop, 7);
       expect(node.cost, 2);
       expect(node.connectionType, 'relayed');
+      expect(node.isPublicServer, isTrue);
+      expect(node.featureFlags, {
+        'is_public_server': true,
+        'avoid_relay_data': false,
+        'need_p2p': true,
+      });
+      expect(EasyTierNode.fromJson({}).featureFlags, isEmpty);
+      expect(EasyTierNode.fromJson({}).isPublicServer, isFalse);
       expect(node.proxyCidrs, ['192.168.2.0/24']);
       expect(node.connections.first.rxBytes, 0);
       expect(node.connections.first.lossRate, 0.125);

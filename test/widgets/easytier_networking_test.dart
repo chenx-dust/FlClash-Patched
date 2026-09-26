@@ -73,6 +73,7 @@ void main() {
                             hostname: 'z-peer',
                             ipv4: '10.1.0.3',
                             connectionType: 'relayed',
+                            featureFlags: {'is_public_server': true},
                           ),
                           EasyTierNode(
                             hostname: 'a-peer',
@@ -176,7 +177,10 @@ void main() {
     await tester.pumpAndSettle();
     verifyNever(() => core.activateOverlayNetwork(any(), any()));
     expect(requests.last.targets.single.kind, OverlayNetworkKind.easytier);
-    final button = find.widgetWithText(FilledButton, 'Initialize');
+    final button = find.descendant(
+      of: find.byType(FilledButton),
+      matching: find.widgetWithText(FilledButton, 'Initialize'),
+    );
     await tester.tap(button);
     await tester.pump();
     expect(tester.widget<FilledButton>(button).onPressed, isNull);
@@ -229,6 +233,8 @@ void main() {
     expect(find.byIcon(Icons.bolt), findsNothing);
     expect(find.text('23 ms'), findsOneWidget);
     expect(find.text('Relayed'), findsOneWidget);
+    expect(find.text('10.1.0.3 · Relayed · Public server'), findsOneWidget);
+    expect(find.text('Public server'), findsNothing);
     expect(
       tester.widget<Text>(find.text('23 ms')).style?.color,
       getDelayColor(23),
@@ -251,13 +257,22 @@ void main() {
     expect(find.text('udp://192.0.2.1:2000'), findsOneWidget);
     expect(find.text('12.50%'), findsOneWidget);
     expect(find.text('1KB'), findsOneWidget);
+    expect(find.text('Feature flags'), findsNothing);
+    globalState.navigatorKey.currentState!.pop();
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('z-peer'));
+    await tester.pumpAndSettle();
+    expect(find.text('Feature flags'), findsOneWidget);
+    expect(find.text('is_public_server'), findsOneWidget);
     globalState.navigatorKey.currentState!.pop();
     await tester.pumpAndSettle();
 
     empty = true;
     await tester.pump(const Duration(seconds: 3));
     await tester.pump();
-    expect(find.text('No data'), findsOneWidget);
+    expect(find.text('No data'), findsNothing);
+    expect(find.text('local-device'), findsOneWidget);
+    expect(find.text('z-peer'), findsNothing);
     pendingDetails = Completer<List<OverlayNetworkStatus>>();
     requests.clear();
     await tester.pump(const Duration(seconds: 3));
@@ -277,7 +292,8 @@ void main() {
     ]);
     pendingDetails = null;
     await tester.pump();
-    expect(find.text('No data'), findsOneWidget);
+    expect(find.text('No data'), findsNothing);
+    expect(find.text('local-device'), findsOneWidget);
     expect(find.text('a-peer'), findsNothing);
     requests.clear();
     await tester.pump(const Duration(seconds: 3));

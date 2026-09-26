@@ -40,7 +40,7 @@ class _NetworkingViewState extends ConsumerState<NetworkingView>
   CoreController get _core => ref.read(coreHandlerProvider);
 
   @override
-  Duration get pollInterval => const Duration(seconds: 2);
+  Duration get pollInterval => const Duration(seconds: 1);
 
   @override
   bool get canPoll => super.canPoll && _expanded.isNotEmpty;
@@ -421,7 +421,7 @@ class _NetworkingViewState extends ConsumerState<NetworkingView>
       return null;
     }
     final label = _stateLabel(context, status);
-    return ListItem(
+    return DecorationListItem(
       leading: Icon(Icons.error_outline, color: context.colorScheme.error),
       title: Text(label),
       subtitle: status.error == label ? null : Text(status.error),
@@ -441,9 +441,17 @@ class _NetworkingViewState extends ConsumerState<NetworkingView>
     final error = _requestErrors[key];
     if (error != null) {
       return [
-        ListItem(
-          leading: Icon(Icons.error_outline, color: context.colorScheme.error),
-          title: Text(error.toString()),
+        generateSectionV3(
+          isFirst: true,
+          items: [
+            DecorationListItem(
+              leading: Icon(
+                Icons.error_outline,
+                color: context.colorScheme.error,
+              ),
+              title: Text(error.toString()),
+            ),
+          ],
         ),
       ];
     }
@@ -457,7 +465,7 @@ class _NetworkingViewState extends ConsumerState<NetworkingView>
               OverlayNetworkState.uninitialized,
               OverlayNetworkState.stopped,
             }.contains(status.state)
-        ? ListItem(
+        ? DecorationListItem(
             leading: const Icon(Icons.power_settings_new),
             title: Text(_stateLabel(context, status)),
             trailing: FilledButton.tonalIcon(
@@ -477,7 +485,9 @@ class _NetworkingViewState extends ConsumerState<NetworkingView>
         : null;
     if (status?.state == OverlayNetworkState.uninitialized &&
         activationItem != null) {
-      return generateSection(isFirst: true, items: [activationItem]);
+      return [
+        generateSectionV3(isFirst: true, items: [activationItem]),
+      ];
     }
     final tailscaleDetails = status?.tailscaleDetails;
     if (status != null && tailscaleDetails != null) {
@@ -520,10 +530,12 @@ class _NetworkingViewState extends ConsumerState<NetworkingView>
     }
     return statusErrorItem == null && activationItem == null
         ? const []
-        : generateSection(
-            isFirst: true,
-            items: [?statusErrorItem, ?activationItem],
-          );
+        : [
+            generateSectionV3(
+              isFirst: true,
+              items: [?statusErrorItem, ?activationItem],
+            ),
+          ];
   }
 
   Widget _buildProxy(BuildContext context, _NetworkingProxy proxy) {
@@ -536,49 +548,48 @@ class _NetworkingViewState extends ConsumerState<NetworkingView>
       OverlayNetworkKind.easytier => 'EasyTier',
     };
     final summary = status == null ? null : _summary(context, status);
-    return Material(
-      type: MaterialType.transparency,
-      child: ExpansionTile(
-        key: PageStorageKey('$key\u0000$_expansionGeneration'),
-        initiallyExpanded: _expanded.contains(key),
-        expansionAnimationStyle: const AnimationStyle(
-          duration: animateDuration,
-          curve: Curves.easeOutCubic,
-          reverseCurve: Curves.easeInCubic,
-        ),
-        onExpansionChanged: (expanded) {
-          setState(() {
-            if (expanded) {
-              _expanded.add(key);
-            } else {
-              _expanded.remove(key);
-            }
-          });
-          if (expanded) {
-            startPolling();
-            _loadDetails([proxy]);
-          } else {
-            if (_expanded.isEmpty) {
-              stopPolling();
-            }
-          }
-        },
-        leading: error != null || status?.state == OverlayNetworkState.error
-            ? Icon(Icons.error_outline, color: context.colorScheme.error)
-            : SvgPicture.asset(
-                'assets/images/networking/${proxy.type}.svg',
-                key: ValueKey('networking-${proxy.type}-icon'),
-                width: 24,
-                height: 24,
-                colorFilter: ColorFilter.mode(
-                  context.colorScheme.primary,
-                  BlendMode.srcIn,
-                ),
-              ),
-        title: Text(proxy.name, style: context.textTheme.bodyLarge?.toSoftBold),
-        subtitle: Text([protocol, ?summary].join(' · ')),
-        children: _proxyChildren(context, proxy),
+    return ExpansionTile(
+      key: PageStorageKey('$key\u0000$_expansionGeneration'),
+      initiallyExpanded: _expanded.contains(key),
+      shape: const Border(),
+      expansionAnimationStyle: const AnimationStyle(
+        duration: animateDuration,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
       ),
+      onExpansionChanged: (expanded) {
+        setState(() {
+          if (expanded) {
+            _expanded.add(key);
+          } else {
+            _expanded.remove(key);
+          }
+        });
+        if (expanded) {
+          startPolling();
+          _loadDetails([proxy]);
+        } else {
+          if (_expanded.isEmpty) {
+            stopPolling();
+          }
+        }
+      },
+      leading: error != null || status?.state == OverlayNetworkState.error
+          ? Icon(Icons.error_outline, color: context.colorScheme.error)
+          : SvgPicture.asset(
+              'assets/images/networking/${proxy.type}.svg',
+              key: ValueKey('networking-${proxy.type}-icon'),
+              width: 24,
+              height: 24,
+              colorFilter: ColorFilter.mode(
+                context.colorScheme.primary,
+                BlendMode.srcIn,
+              ),
+            ),
+      title: Text(proxy.name, style: context.textTheme.bodyLarge?.toSoftBold),
+      subtitle: Text([protocol, ?summary].join(' · ')),
+      childrenPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      children: _proxyChildren(context, proxy),
     );
   }
 

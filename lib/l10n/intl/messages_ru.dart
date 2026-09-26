@@ -500,6 +500,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Задержка соединения",
     ),
     "easyTierDnsZone": MessageLookupByLibrary.simpleMessage("DNS-зона"),
+    "easyTierFeatureFlags": MessageLookupByLibrary.simpleMessage(
+      "Флаги функций",
+    ),
     "easyTierInstanceId": MessageLookupByLibrary.simpleMessage("ID экземпляра"),
     "easyTierLatencyFirstPathLatency": MessageLookupByLibrary.simpleMessage(
       "Задержка пути (приоритет задержки)",
@@ -523,6 +526,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "easyTierPeerId": MessageLookupByLibrary.simpleMessage("ID узла"),
     "easyTierProtocol": MessageLookupByLibrary.simpleMessage(
       "Транспортный протокол",
+    ),
+    "easyTierPublicServer": MessageLookupByLibrary.simpleMessage(
+      "Публичный сервер",
     ),
     "easyTierRemoteEndpoint": MessageLookupByLibrary.simpleMessage(
       "Удалённая конечная точка",

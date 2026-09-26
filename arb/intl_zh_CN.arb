@@ -797,6 +797,8 @@
   "easyTierConnectionLatency": "连接延迟",
   "easyTierPathLatency": "路径延迟（跳数优先）",
   "easyTierLatencyFirstPathLatency": "路径延迟（延迟优先）",
+  "easyTierPublicServer": "公共服务器",
+  "easyTierFeatureFlags": "功能标志",
   "recvMsgX": "启用 RecvMsgX",
   "recvMsgXDesc": "在 macOS 和 iOS 上批量接收 TUN 数据包",
   "sendMsgX": "启用 SendMsgX",

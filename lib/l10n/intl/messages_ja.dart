@@ -394,6 +394,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "downloadTraffic": MessageLookupByLibrary.simpleMessage("ダウンロード通信量"),
     "easyTierConnectionLatency": MessageLookupByLibrary.simpleMessage("接続遅延"),
     "easyTierDnsZone": MessageLookupByLibrary.simpleMessage("DNS ゾーン"),
+    "easyTierFeatureFlags": MessageLookupByLibrary.simpleMessage("機能フラグ"),
     "easyTierInstanceId": MessageLookupByLibrary.simpleMessage("インスタンス ID"),
     "easyTierLatencyFirstPathLatency": MessageLookupByLibrary.simpleMessage(
       "経路遅延（遅延優先）",
@@ -410,6 +411,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "easyTierPathLatency": MessageLookupByLibrary.simpleMessage("経路遅延（ホップ数優先）"),
     "easyTierPeerId": MessageLookupByLibrary.simpleMessage("ピア ID"),
     "easyTierProtocol": MessageLookupByLibrary.simpleMessage("トランスポートプロトコル"),
+    "easyTierPublicServer": MessageLookupByLibrary.simpleMessage("パブリックサーバー"),
     "easyTierRemoteEndpoint": MessageLookupByLibrary.simpleMessage(
       "リモートエンドポイント",
     ),

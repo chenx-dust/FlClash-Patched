@@ -797,6 +797,8 @@
   "easyTierConnectionLatency": "Connection latency",
   "easyTierPathLatency": "Path latency (hop-count first)",
   "easyTierLatencyFirstPathLatency": "Path latency (latency first)",
+  "easyTierPublicServer": "Public server",
+  "easyTierFeatureFlags": "Feature flags",
   "recvMsgX": "Enable RecvMsgX",
   "recvMsgXDesc": "Receive TUN packets in batches on macOS and iOS",
   "sendMsgX": "Enable SendMsgX",

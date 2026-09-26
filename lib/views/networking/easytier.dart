@@ -44,15 +44,15 @@ List<Widget> buildEasyTierChildren({
       return name != 0 ? name : a.ipv4.compareTo(b.ipv4);
     });
   return [
-    ...generateSection(
+    generateSectionV3(
       isFirst: true,
       items: [
         ?statusErrorItem,
         ?activationItem,
-        ListItem(
+        DecorationListItem(
           leading: const Icon(Icons.hub_outlined),
           title: Text(networkTitle),
-          onTap: networkItems.isEmpty
+          onPressed: networkItems.isEmpty
               ? null
               : () {
                   dialogs.showCommonDialog(
@@ -65,16 +65,10 @@ List<Widget> buildEasyTierChildren({
         ),
       ],
     ),
-    ...generateSection(
-      isFirst: true,
-      title: l10n.local,
-      items: [_EasyTierNodeItem(node: details.local, local: true)],
-    ),
-    ...generateSection(
-      isFirst: true,
+    generateSectionV3(
       title: l10n.nodes,
       items: [
-        if (peers.isEmpty) ListItem(title: Text(l10n.noData)),
+        _EasyTierNodeItem(node: details.local, local: true),
         for (final peer in peers) _EasyTierNodeItem(node: peer),
       ],
     ),
@@ -103,6 +97,12 @@ class _EasyTierNodeItem extends StatelessWidget {
       'relayed' => l10n.relayed,
       _ => '',
     };
+    final featureFlags =
+        node.featureFlags.entries
+            .where((entry) => entry.value)
+            .map((entry) => entry.key)
+            .toList()
+          ..sort();
     final items = <OverlayNetworkDetailItem>[
       if (node.peerId != 0)
         (
@@ -114,6 +114,12 @@ class _EasyTierNodeItem extends StatelessWidget {
         (name: l10n.easyTierInstanceId, value: node.instanceId, copyable: true),
       if (!local && node.version.isNotEmpty)
         (name: l10n.version, value: node.version, copyable: false),
+      for (var index = 0; index < featureFlags.length; index++)
+        (
+          name: index == 0 ? l10n.easyTierFeatureFlags : '',
+          value: featureFlags[index],
+          copyable: false,
+        ),
       if (!local && connectionType.isNotEmpty)
         (name: l10n.status, value: connectionType, copyable: false),
       if (!local && node.nextHop != 0)
@@ -222,12 +228,26 @@ class _EasyTierNodeItem extends StatelessWidget {
     final subtitle = [
       if (node.hostname.isNotEmpty && node.ipv4.isNotEmpty) node.ipv4,
       if (!local && connectionType.isNotEmpty) connectionType,
+      if (node.isPublicServer) l10n.easyTierPublicServer,
     ].join(' · ');
-    return ListItem(
-      leading: Icon(local ? Icons.devices_outlined : Icons.device_hub),
+    return DecorationListItem(
+      leading: Icon(
+        local
+            ? Icons.devices_outlined
+            : node.isPublicServer
+            ? Icons.public
+            : Icons.device_hub,
+      ),
       title: Text(title),
       subtitle: subtitle.isEmpty ? null : Text(subtitle),
-      trailing: !local && node.connectionType == 'relayed'
+      trailing: local
+          ? Text(
+              l10n.local,
+              style: context.textTheme.bodyMedium?.copyWith(
+                color: context.colorScheme.secondary,
+              ),
+            )
+          : node.connectionType == 'relayed'
           ? Text(
               l10n.relayed,
               style: context.textTheme.bodyMedium?.copyWith(
@@ -242,7 +262,7 @@ class _EasyTierNodeItem extends StatelessWidget {
               ),
             )
           : null,
-      onTap: items.isEmpty
+      onPressed: items.isEmpty
           ? null
           : () {
               dialogs.showCommonDialog(

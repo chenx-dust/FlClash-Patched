@@ -797,6 +797,8 @@
   "easyTierConnectionLatency": "接続遅延",
   "easyTierPathLatency": "経路遅延（ホップ数優先）",
   "easyTierLatencyFirstPathLatency": "経路遅延（遅延優先）",
+  "easyTierPublicServer": "パブリックサーバー",
+  "easyTierFeatureFlags": "機能フラグ",
   "recvMsgX": "RecvMsgX を有効にする",
   "recvMsgXDesc": "macOS と iOS で TUN パケットを一括受信",
   "sendMsgX": "SendMsgX を有効にする",

@@ -6650,6 +6650,26 @@ class AppLocalizations {
     );
   }
 
+  /// `Public server`
+  String get easyTierPublicServer {
+    return Intl.message(
+      'Public server',
+      name: 'easyTierPublicServer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Feature flags`
+  String get easyTierFeatureFlags {
+    return Intl.message(
+      'Feature flags',
+      name: 'easyTierFeatureFlags',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Enable RecvMsgX`
   String get recvMsgX {
     return Intl.message(

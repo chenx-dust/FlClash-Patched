@@ -350,6 +350,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "downloadTraffic": MessageLookupByLibrary.simpleMessage("下载流量"),
     "easyTierConnectionLatency": MessageLookupByLibrary.simpleMessage("连接延迟"),
     "easyTierDnsZone": MessageLookupByLibrary.simpleMessage("DNS 域"),
+    "easyTierFeatureFlags": MessageLookupByLibrary.simpleMessage("功能标志"),
     "easyTierInstanceId": MessageLookupByLibrary.simpleMessage("实例 ID"),
     "easyTierLatencyFirstPathLatency": MessageLookupByLibrary.simpleMessage(
       "路径延迟（延迟优先）",
@@ -362,6 +363,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "easyTierPathLatency": MessageLookupByLibrary.simpleMessage("路径延迟（跳数优先）"),
     "easyTierPeerId": MessageLookupByLibrary.simpleMessage("节点 ID"),
     "easyTierProtocol": MessageLookupByLibrary.simpleMessage("传输协议"),
+    "easyTierPublicServer": MessageLookupByLibrary.simpleMessage("公共服务器"),
     "easyTierRemoteEndpoint": MessageLookupByLibrary.simpleMessage("远端端点"),
     "easyTierRouteCost": MessageLookupByLibrary.simpleMessage("路由代价"),
     "easyTierRxPackets": MessageLookupByLibrary.simpleMessage("接收包数"),

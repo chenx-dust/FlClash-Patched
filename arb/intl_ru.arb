@@ -797,6 +797,8 @@
   "easyTierConnectionLatency": "Задержка соединения",
   "easyTierPathLatency": "Задержка пути (приоритет числа переходов)",
   "easyTierLatencyFirstPathLatency": "Задержка пути (приоритет задержки)",
+  "easyTierPublicServer": "Публичный сервер",
+  "easyTierFeatureFlags": "Флаги функций",
   "recvMsgX": "Включить RecvMsgX",
   "recvMsgXDesc": "Пакетный приём пакетов TUN в macOS и iOS",
   "sendMsgX": "Включить SendMsgX",

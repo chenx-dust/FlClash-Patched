@@ -40,20 +40,20 @@ List<Widget> buildZeroTierChildren({
       ),
   ];
   return [
-    ...generateSection(
+    generateSectionV3(
       isFirst: true,
       items: [
         ?statusErrorItem,
         ?activationItem,
         if (status.authUrl.isNotEmpty)
           OverlayNetworkLoginItem(url: status.authUrl),
-        ListItem(
+        DecorationListItem(
           leading: const Icon(Icons.hub_outlined),
           title: Text(networkTitle),
           subtitle: status.networkName.isEmpty || details.networkId.isEmpty
               ? null
               : Text(details.networkId),
-          onTap: networkItems.isEmpty
+          onPressed: networkItems.isEmpty
               ? null
               : () {
                   dialogs.showCommonDialog(
@@ -66,16 +66,14 @@ List<Widget> buildZeroTierChildren({
         ),
       ],
     ),
-    ...generateSection(
-      isFirst: true,
-      title: appLocalizations.local,
-      items: [_ZeroTierLocalNodeItem(details: details)],
-    ),
-    ...generateSection(
-      isFirst: true,
-      title: appLocalizations.nodes,
-      items: [for (final peer in details.peers) _ZeroTierPeerItem(peer: peer)],
-    ),
+    if (details.peers.isNotEmpty)
+      generateSectionV3(
+        title: appLocalizations.nodes,
+        items: [
+          _ZeroTierLocalNodeItem(details: details),
+          for (final peer in details.peers) _ZeroTierPeerItem(peer: peer),
+        ],
+      ),
   ];
 }
 
@@ -104,7 +102,7 @@ class _ZeroTierLocalNodeItem extends StatelessWidget {
           copyable: true,
         ),
     ];
-    return ListItem(
+    return DecorationListItem(
       leading: Icon(Icons.devices_outlined, color: color),
       title: Text(
         details.node.isNotEmpty ? details.node : appLocalizations.local,
@@ -113,10 +111,12 @@ class _ZeroTierLocalNodeItem extends StatelessWidget {
           ? null
           : Text(details.addresses.join('\n')),
       trailing: Text(
-        status,
-        style: context.textTheme.bodyMedium?.copyWith(color: color),
+        appLocalizations.local,
+        style: context.textTheme.bodyMedium?.copyWith(
+          color: context.colorScheme.secondary,
+        ),
       ),
-      onTap: items.isEmpty
+      onPressed: items.isEmpty
           ? null
           : () {
               dialogs.showCommonDialog(
@@ -180,7 +180,7 @@ class _ZeroTierPeerItem extends StatelessWidget {
           copyable: true,
         ),
     ];
-    return ListItem(
+    return DecorationListItem(
       leading: Icon(_peerIcon(peer.role), color: color),
       title: Text(peer.address),
       subtitle: summary.isEmpty ? null : Text(summary.join(' · ')),
@@ -192,7 +192,7 @@ class _ZeroTierPeerItem extends StatelessWidget {
               ),
             )
           : null,
-      onTap: () {
+      onPressed: () {
         dialogs.showCommonDialog(
           child: OverlayNetworkDetailsDialog(
             title: appLocalizations.details(peer.address),
