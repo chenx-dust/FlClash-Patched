@@ -31,7 +31,10 @@ class _QuickSwitchCard extends StatelessWidget {
             context: context,
             builder: (_) {
               return AdaptiveSheetScaffold(
-                body: generateListView(generateSection(items: items)),
+                body: ListView(
+                  padding: sectionPagePadding,
+                  children: [generateSectionV3(isFirst: true, items: items)],
+                ),
                 title: label,
               );
             },
