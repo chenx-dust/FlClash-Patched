@@ -411,6 +411,7 @@ class _DnsQueryDetailViewState extends State<DnsQueryDetailView> {
       children: [
         generateSectionV3(
           title: appLocalizations.basicInfo,
+          isFirst: true,
           items: _rows([
             (appLocalizations.time, dnsQuery.time.showFull, null, null, false),
             (appLocalizations.domain, dnsQuery.domain, null, null, false),
@@ -500,27 +501,18 @@ class _DnsDetailRow extends StatelessWidget {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 16,
+        spacing: 20,
         children: [
-          Flexible(
-            child: Row(
-              spacing: 4,
-              children: [
-                Flexible(
-                  child: Text(
-                    title,
-                    style: context.textTheme.bodyMedium?.copyWith(
-                      color: isError ? context.colorScheme.error : null,
-                    ),
-                  ),
+          Row(
+            spacing: 4,
+            children: [
+              Text(title),
+              if (onFilter != null)
+                Icon(
+                  filtered ? Icons.filter_alt : Icons.filter_alt_outlined,
+                  size: 18,
                 ),
-                if (onFilter != null)
-                  Icon(
-                    filtered ? Icons.filter_alt : Icons.filter_alt_outlined,
-                    size: 18,
-                  ),
-              ],
-            ),
+            ],
           ),
           if (!isError)
             Flexible(

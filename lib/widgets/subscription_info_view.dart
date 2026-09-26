@@ -118,6 +118,7 @@ class SubscriptionInfoDetailView extends StatelessWidget {
         children: [
           generateSectionV3(
             title: appLocalizations.trafficUsage,
+            isFirst: true,
             items: [
               _buildItem(
                 label: appLocalizations.usedTraffic,

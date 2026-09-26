@@ -108,6 +108,7 @@ class ResourcesView extends ConsumerWidget {
         children: [
           generateSectionV3(
             title: appLocalizations.geoOptions,
+            isFirst: true,
             items: [
               DecorationListItem(
                 minVerticalPadding: 8,

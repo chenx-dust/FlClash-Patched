@@ -608,6 +608,7 @@ Widget generateSectionV3({
   String? title,
   required Iterable<Widget> items,
   List<Widget>? actions,
+  bool isFirst = false,
 }) {
   final genItems = items.mapIndexed<Widget>((index, item) {
     final position = ItemPosition.get(index, items.length);
@@ -619,7 +620,13 @@ Widget generateSectionV3({
   return Column(
     children: [
       if (items.isNotEmpty && title != null)
-        ListHeader(title: title, actions: actions),
+        ListHeader(
+          title: title,
+          actions: actions,
+          padding: isFirst
+              ? listHeaderPadding.copyWith(top: 8.ap)
+              : listHeaderPadding,
+        ),
       Column(children: [...genItems]),
     ],
   );

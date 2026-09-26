@@ -637,6 +637,7 @@ class _EditProxyGroupViewState extends ConsumerState<_EditProxyGroupView> {
           children: [
             generateSectionV3(
               title: appLocalizations.general,
+              isFirst: true,
               items: [
                 _field((state) => state.name, _buildNameItem),
                 _field((state) => state.type, _buildTypeItem),

@@ -303,6 +303,7 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
   Widget _buildPrerequisites() {
     return generateSectionV3(
       title: context.appLocalizations.prerequisites,
+      isFirst: !system.isIOS,
       items: [
         if (_isAndroid) _buildBatteryOptimizationItem(),
         if (_isAndroid || _isMacOS) _buildLocationPermissionItem(),

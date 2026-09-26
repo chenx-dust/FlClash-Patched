@@ -274,6 +274,7 @@ class _TrackerInfoDetailViewState extends State<TrackerInfoDetailView> {
       children: [
         generateSectionV3(
           title: appLocalizations.basicInfo,
+          isFirst: true,
           items: _buildRows([
             (
               appLocalizations.creationTime,

@@ -513,6 +513,7 @@ class _AddOrEditRuleViewState extends ConsumerState<_AddOrEditRuleView> {
           children: [
             generateSectionV3(
               title: appLocalizations.basicInfo,
+              isFirst: true,
               items: [
                 _buildTypeItem(rule.ruleAction),
                 if (rule.ruleAction != RuleAction.MATCH)
