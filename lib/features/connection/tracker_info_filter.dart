@@ -1,4 +1,5 @@
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/features/filter_bar.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
@@ -10,7 +11,7 @@ extension TrackerInfoFilterTypeExt on TrackerInfoFilterType {
     final appLocalizations = context.appLocalizations;
     return switch (this) {
       TrackerInfoFilterType.process => appLocalizations.process,
-      TrackerInfoFilterType.chain => appLocalizations.proxyChains,
+      TrackerInfoFilterType.chain => appLocalizations.proxyGroup,
       TrackerInfoFilterType.network => appLocalizations.networkType,
       TrackerInfoFilterType.rule => appLocalizations.rule,
     };
@@ -221,88 +222,31 @@ class TrackerInfoFilterBar extends StatelessWidget {
     );
   }
 
-  Widget _buildAddButton(BuildContext context) {
-    final items = TrackerInfoFilterType.values.map((type) {
-      return CommonPopupMenuItem(
-        icon: type.icon,
-        label: type.getLabel(context),
-        onPressed: () {
-          _showFilterSheet(context, type);
-        },
-      );
-    }).toList();
-    return CommonPopupBox(
-      popupBuilder: (_) => CommonPopupMenu(items: items),
-      targetBuilder: (open) {
-        return IconButton(
-          padding: EdgeInsets.zero,
-          visualDensity: VisualDensity.compact,
-          tooltip: context.appLocalizations.filter,
-          onPressed: () => open(targetContext: context),
-          icon: const Icon(Icons.add),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final showBar = visible || filter.isNotEmpty;
-    final entries = filter.entries.toList();
-    return AnimatedSwitcher(
-      duration: animateDuration,
-      switchInCurve: Curves.easeOutCubic,
-      switchOutCurve: Curves.easeInCubic,
-      transitionBuilder: (child, animation) {
-        return SizeTransition(
-          sizeFactor: animation,
-          alignment: AlignmentDirectional.topStart,
-          child: FadeTransition(opacity: animation, child: child),
-        );
-      },
-      child: showBar
-          ? Padding(
-              key: const ValueKey(true),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              child: Row(
-                spacing: 8,
-                children: [
-                  Expanded(
-                    child: entries.isEmpty
-                        ? Text(
-                            context.appLocalizations.noFilterCondition,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: context.textTheme.bodyMedium?.copyWith(
-                              color: context
-                                  .colorScheme
-                                  .onSurfaceVariant
-                                  .opacity60,
-                            ),
-                          )
-                        : SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              spacing: 8,
-                              children: [
-                                for (final entry in entries)
-                                  CommonChip(
-                                    label: entry.value,
-                                    onDeleted: () {
-                                      onChanged(
-                                        filter.remove(entry.type, entry.value),
-                                      );
-                                    },
-                                  ),
-                              ],
-                            ),
-                          ),
-                  ),
-                  _buildAddButton(context),
-                ],
-              ),
-            )
-          : const SizedBox(key: ValueKey(false)),
+    return FilterChipBar(
+      visible: visible,
+      active: filter.isNotEmpty,
+      chips: [
+        for (final entry in filter.entries)
+          FilterChipData(
+            icon: entry.type.icon,
+            label: entry.value,
+            onDeleted: () {
+              onChanged(filter.remove(entry.type, entry.value));
+            },
+          ),
+      ],
+      actions: [
+        for (final type in TrackerInfoFilterType.values)
+          FilterMenuAction(
+            icon: type.icon,
+            label: type.getLabel(context),
+            onPressed: () {
+              _showFilterSheet(context, type);
+            },
+          ),
+      ],
     );
   }
 }
@@ -321,17 +265,10 @@ class TrackerInfoFilterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (visible || filter.isNotEmpty) {
-      return IconButton.filledTonal(
-        tooltip: context.appLocalizations.filter,
-        onPressed: onPressed,
-        icon: const Icon(Icons.filter_alt_outlined),
-      );
-    }
-    return IconButton(
-      tooltip: context.appLocalizations.filter,
+    return FilterToggleButton(
+      visible: visible,
+      active: filter.isNotEmpty,
       onPressed: onPressed,
-      icon: const Icon(Icons.filter_alt_outlined),
     );
   }
 }
@@ -370,26 +307,6 @@ class _TrackerInfoFilterSheetState extends State<_TrackerInfoFilterSheet> {
     widget.onChanged(filter);
   }
 
-  List<String> _sortedOptions(Iterable<String> values) {
-    final options = values
-        .where((value) => value.trim().isNotEmpty)
-        .toSet()
-        .toList();
-    options.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-    return options;
-  }
-
-  Map<String, int> _countOptions(Iterable<String> values) {
-    final counts = <String, int>{};
-    for (final value in values) {
-      if (value.trim().isEmpty) {
-        continue;
-      }
-      counts[value] = (counts[value] ?? 0) + 1;
-    }
-    return counts;
-  }
-
   Set<String> _selectedValues(TrackerInfoFilterType type) {
     return switch (type) {
       TrackerInfoFilterType.process => _filter.processes,
@@ -399,74 +316,29 @@ class _TrackerInfoFilterSheetState extends State<_TrackerInfoFilterSheet> {
     };
   }
 
-  List<Widget> _buildSection({
-    required BuildContext context,
-    required TrackerInfoFilterType type,
-    required Iterable<String> rawOptions,
-  }) {
-    final options = _sortedOptions(rawOptions);
-    if (options.isEmpty) {
-      return const [];
-    }
-    final counts = _countOptions(rawOptions);
-    final selectedValues = _selectedValues(type);
-    final unselectedOptions = options
-        .where((option) => !selectedValues.contains(option))
-        .toList();
-    if (unselectedOptions.isEmpty) {
-      return const [];
-    }
-    return generateSection(
-      title: type.getLabel(context),
-      items: unselectedOptions.map((option) {
-        return ListItem(
-          leading: Icon(type.icon),
-          title: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            spacing: 8,
-            children: [
-              Flexible(child: Text(option)),
-              Text(
-                '${counts[option] ?? 0}',
-                style: context.textTheme.bodySmall?.copyWith(
-                  color: context.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-          onTap: () {
-            _setFilter(_filter.add(type, option));
-          },
-        );
-      }),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final appLocalizations = context.appLocalizations;
+    final type = widget.type;
     final trackerInfos = widget.trackerInfos;
-    final rawOptions = switch (widget.type) {
-      TrackerInfoFilterType.process => trackerInfos.map(
-        (item) => item.metadata.process,
-      ),
-      TrackerInfoFilterType.chain => trackerInfos.expand((item) => item.chains),
-      TrackerInfoFilterType.network => trackerInfos.map(
-        (item) => item.metadata.network,
-      ),
-      TrackerInfoFilterType.rule => trackerInfos.map(getTrackerInfoRuleText),
-    };
-    final items = _buildSection(
-      context: context,
-      type: widget.type,
-      rawOptions: rawOptions,
-    );
-    return AdaptiveSheetScaffold(
-      title: widget.type.getLabel(context),
-      body: items.isEmpty
-          ? NullStatus(label: appLocalizations.noData)
-          : generateListView(items),
+    return FilterValueSheet(
+      title: type.getLabel(context),
+      values: switch (type) {
+        TrackerInfoFilterType.process => trackerInfos.map(
+          (item) => item.metadata.process,
+        ),
+        TrackerInfoFilterType.chain => trackerInfos.expand(
+          (item) => item.chains,
+        ),
+        TrackerInfoFilterType.network => trackerInfos.map(
+          (item) => item.metadata.network,
+        ),
+        TrackerInfoFilterType.rule => trackerInfos.map(getTrackerInfoRuleText),
+      },
+      selected: _selectedValues(type),
+      labelOf: (value) => value,
+      onSelected: (value) {
+        _setFilter(_filter.add(type, value));
+      },
     );
   }
 }

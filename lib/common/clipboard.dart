@@ -10,5 +10,5 @@ Future<void> copyText(BuildContext context, String? text) async {
   if (!context.mounted) {
     return;
   }
-  context.showSnackBar(context.appLocalizations.copySuccess);
+  context.showNotifier(context.appLocalizations.copySuccess);
 }

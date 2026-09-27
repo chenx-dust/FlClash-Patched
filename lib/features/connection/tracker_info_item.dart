@@ -9,6 +9,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'tracker_info_filter.dart';
 
+String _ruleText(TrackerInfo trackerInfo) {
+  final rule = trackerInfo.rule;
+  final rulePayload = trackerInfo.rulePayload;
+  if (rulePayload.isNotEmpty) {
+    return '$rule($rulePayload)';
+  }
+  return rule;
+}
+
 class TrackerInfoItem extends ConsumerWidget {
   final TrackerInfo trackerInfo;
   final Function(String)? onClickKeyword;
@@ -32,6 +41,7 @@ class TrackerInfoItem extends ConsumerWidget {
   Widget _buildMeta(BuildContext context) {
     final traffic = Traffic(up: trackerInfo.upload, down: trackerInfo.download);
     final chains = trackerInfo.chains;
+    final rule = _ruleText(trackerInfo);
     final speed = trackerInfo.hasSpeed
         ? Traffic(
             up: trackerInfo.uploadSpeed ?? 0,
@@ -57,26 +67,28 @@ class TrackerInfoItem extends ConsumerWidget {
             ),
           ),
         ),
-        if (chains.isNotEmpty)
+        if (chains.isNotEmpty || rule.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(top: 6, bottom: 0),
-            child: Wrap(
-              spacing: 6,
-              runSpacing: 4,
-              children: [
-                for (final chain in chains)
-                  CommonChip(
-                    label: chain,
-                    onPressed: () {
-                      final onClickFilter = this.onClickFilter;
-                      if (onClickFilter != null) {
-                        onClickFilter(TrackerInfoFilterType.chain, chain);
-                        return;
-                      }
-                      onClickKeyword?.call(chain);
-                    },
-                  ),
-              ],
+            padding: const EdgeInsets.only(top: 4),
+            child: _ProxyChain(
+              chains: chains,
+              rule: rule,
+              chipBuilder: (chain) {
+                final colorScheme = context.colorScheme;
+                return TonalChip(
+                  label: chain,
+                  color: colorScheme.secondaryContainer,
+                  foregroundColor: colorScheme.onSecondaryContainer,
+                  onPressed: () {
+                    final onClickFilter = this.onClickFilter;
+                    if (onClickFilter != null) {
+                      onClickFilter(TrackerInfoFilterType.chain, chain);
+                      return;
+                    }
+                    onClickKeyword?.call(chain);
+                  },
+                );
+              },
             ),
           ),
       ],
@@ -181,15 +193,6 @@ class _TrackerInfoDetailViewState extends State<TrackerInfoDetailView> {
     });
   }
 
-  String _getRuleText() {
-    final rule = trackerInfo.rule;
-    final rulePayload = trackerInfo.rulePayload;
-    if (rulePayload.isNotEmpty) {
-      return '$rule($rulePayload)';
-    }
-    return rule;
-  }
-
   String _getProcessText() {
     final process = trackerInfo.metadata.process;
     final uid = trackerInfo.metadata.uid;
@@ -218,21 +221,19 @@ class _TrackerInfoDetailViewState extends State<TrackerInfoDetailView> {
         children: [
           Text(context.appLocalizations.proxyChains),
           Flexible(
-            child: Wrap(
-              spacing: 6,
-              runSpacing: 4,
+            child: _ProxyChain(
+              chains: trackerInfo.chains,
               alignment: WrapAlignment.end,
-              children: [
-                for (final chain in trackerInfo.chains)
-                  CommonChip(
-                    label:
-                        '${_filter.contains(TrackerInfoFilterType.chain, chain) ? '✓ ' : ''}$chain',
-                    onPressed: widget.onClickFilter == null
-                        ? null
-                        : () =>
-                              _applyFilter(TrackerInfoFilterType.chain, chain),
-                  ),
-              ],
+              chipBuilder: (chain) {
+                final chip = MetaChip(label: chain);
+                if (widget.onClickFilter == null) {
+                  return chip;
+                }
+                return GestureDetector(
+                  onTap: () => _applyFilter(TrackerInfoFilterType.chain, chain),
+                  child: chip,
+                );
+              },
             ),
           ),
         ],
@@ -294,9 +295,9 @@ class _TrackerInfoDetailViewState extends State<TrackerInfoDetailView> {
             ),
             (
               appLocalizations.rule,
-              _getRuleText(),
+              _ruleText(trackerInfo),
               TrackerInfoFilterType.rule,
-              _getRuleText(),
+              _ruleText(trackerInfo),
             ),
             (
               appLocalizations.upload,
@@ -382,6 +383,61 @@ class _TrackerInfoDetailViewState extends State<TrackerInfoDetailView> {
   }
 }
 
+class _ProxyChain extends StatelessWidget {
+  final List<String> chains;
+  final String rule;
+  final WrapAlignment alignment;
+  final Widget Function(String chain) chipBuilder;
+
+  const _ProxyChain({
+    required this.chains,
+    required this.chipBuilder,
+    this.rule = '',
+    this.alignment = WrapAlignment.start,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final showRule = rule.isNotEmpty;
+    return Wrap(
+      spacing: 6,
+      runSpacing: 4,
+      alignment: alignment,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        if (showRule)
+          Text(
+            rule,
+            style: context.textTheme.bodySmall?.copyWith(
+              color: context.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        for (final (index, chain) in chains.reversed.indexed)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 6,
+            children: [
+              if (index > 0 || showRule) const _ProxyChainArrow(),
+              Flexible(child: chipBuilder(chain)),
+            ],
+          ),
+      ],
+    );
+  }
+}
+
+class _ProxyChainArrow extends StatelessWidget {
+  const _ProxyChainArrow();
+
+  @override
+  Widget build(BuildContext context) {
+    final style = context.textTheme.bodySmall?.copyWith(
+      color: context.colorScheme.outline,
+    );
+    return Text('→', style: style?.toJetBrainsMono);
+  }
+}
+
 class _DetailRow extends StatelessWidget {
   final String title;
   final String value;
@@ -395,16 +451,10 @@ class _DetailRow extends StatelessWidget {
     this.onFilter,
   });
 
-  Future<void> _copy(BuildContext context) async {
-    await Clipboard.setData(ClipboardData(text: value));
-    if (!context.mounted) return;
-    context.showNotifier(context.appLocalizations.copySuccess);
-  }
-
   @override
   Widget build(BuildContext context) {
     return DecorationListItem(
-      onPressed: onFilter ?? () => _copy(context),
+      onPressed: onFilter ?? () => copyText(context, value),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,

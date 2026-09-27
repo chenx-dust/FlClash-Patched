@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -379,6 +380,49 @@ class _ScrollToEndBoxState<T> extends State<ScrollToEndBox<T>> {
         return false;
       },
       child: widget.child,
+    );
+  }
+}
+
+/// A vertical mouse wheel scrolls this row. [Scrollable] ignores that axis.
+class HorizontalWheelScroll extends StatefulWidget {
+  final Widget child;
+
+  const HorizontalWheelScroll({super.key, required this.child});
+
+  @override
+  State<HorizontalWheelScroll> createState() => _HorizontalWheelScrollState();
+}
+
+class _HorizontalWheelScrollState extends State<HorizontalWheelScroll> {
+  final ScrollController _controller = ScrollController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _onPointerSignal(PointerSignalEvent event) {
+    if (event is! PointerScrollEvent || !_controller.hasClients) {
+      return;
+    }
+    final delta = event.scrollDelta.dy;
+    if (delta == 0) {
+      return;
+    }
+    _controller.position.pointerScroll(delta);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Listener(
+      onPointerSignal: _onPointerSignal,
+      child: SingleChildScrollView(
+        controller: _controller,
+        scrollDirection: Axis.horizontal,
+        child: widget.child,
+      ),
     );
   }
 }

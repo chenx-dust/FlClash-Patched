@@ -143,7 +143,7 @@ void main() {
     );
 
     expect(find.text('Process'), findsOneWidget);
-    expect(find.text('Proxy chain'), findsOneWidget);
+    expect(find.text('Proxy group'), findsOneWidget);
     expect(find.text('Network type'), findsOneWidget);
     expect(find.text('Rule'), findsOneWidget);
     expect(find.byIcon(Icons.apps), findsOneWidget);
@@ -176,7 +176,12 @@ void main() {
 
     expect(find.byType(CommonChip), findsOneWidget);
     expect(find.text('curl'), findsOneWidget);
-    await tester.tap(find.byIcon(Icons.close));
+    expect(find.byIcon(Icons.apps), findsOneWidget);
+    expect(find.byIcon(Icons.close), findsNothing);
+    await tester.tap(find.text('curl'));
+    await tester.pumpAndSettle();
+    expect(find.byIcon(Icons.close), findsOneWidget);
+    await tester.tap(find.text('curl'));
     await tester.pumpAndSettle();
 
     expect(filter.isEmpty, isTrue);
@@ -237,7 +242,7 @@ void main() {
         ),
         (
           type: TrackerInfoFilterType.chain,
-          menuLabel: 'Proxy chain',
+          menuLabel: 'Proxy group',
           option: 'Proxy',
         ),
         (

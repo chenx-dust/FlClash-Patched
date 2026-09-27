@@ -117,8 +117,18 @@ void main() {
     );
     await tester.pump();
 
+    expect(find.text('DOMAIN-SUFFIX'), findsOneWidget);
     expect(find.text('Proxy A'), findsOneWidget);
     expect(find.text('Proxy B'), findsOneWidget);
+    expect(find.text('→'), findsNWidgets(2));
+    expect(
+      tester.getTopLeft(find.text('DOMAIN-SUFFIX')).dx,
+      lessThan(tester.getTopLeft(find.text('Proxy B')).dx),
+    );
+    expect(
+      tester.getTopLeft(find.text('Proxy B')).dx,
+      lessThan(tester.getTopLeft(find.text('Proxy A')).dx),
+    );
 
     await tester.tap(find.text('Proxy A'));
     await tester.pump();
