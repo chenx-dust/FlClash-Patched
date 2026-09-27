@@ -238,7 +238,11 @@ class _LogsViewState extends ConsumerState<LogsView> {
                     separatorBuilder: (_, _) => const Divider(height: 0),
                     itemBuilder: (_, index) {
                       final log = logs[index];
-                      return LogItem(log: log);
+                      return LogItem(
+                        log: log,
+                        onToggleSource: _listController.toggleSource,
+                        onToggleLevel: _listController.toggleLevel,
+                      );
                     },
                   ),
                 ),
@@ -327,68 +331,45 @@ class _LogFilterButton extends StatelessWidget {
 
 class LogItem extends StatelessWidget {
   final Log log;
+  final ValueChanged<LogSource>? onToggleSource;
+  final ValueChanged<LogLevel>? onToggleLevel;
 
-  const LogItem({super.key, required this.log});
+  const LogItem({
+    super.key,
+    required this.log,
+    this.onToggleSource,
+    this.onToggleLevel,
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.appLocalizations;
-    final source = log.source.name.toUpperCase();
-    final level = log.logLevel.name.toUpperCase();
-    return CommonPopupBox(
-      popupBuilder: (_) => CommonPopupMenu(
-        items: [
-          CommonPopupMenuItem(
-            icon: Icons.copy,
-            label: l10n.copy,
-            onPressed: () => copyText(context, log.payload),
+    final tone = switch (log.logLevel) {
+      LogLevel.warning => RecordTone.warning,
+      LogLevel.error => RecordTone.error,
+      LogLevel.info => RecordTone.neutral,
+      LogLevel.debug || LogLevel.silent => RecordTone.muted,
+    };
+    return RecordListItem(
+      tone: tone,
+      header: RecordHeader(
+        children: [
+          RecordTimestamp(log.dateTime),
+          RecordLabel(
+            label: log.source.name.toUpperCase(),
+            tone: RecordTone.muted,
+            onPressed: () => onToggleSource?.call(log.source),
+          ),
+          RecordLabel(
+            label: log.logLevel.name.toUpperCase(),
+            tone: tone,
+            onPressed: () => onToggleLevel?.call(log.logLevel),
           ),
         ],
       ),
-      targetBuilder: (open) => GestureDetector(
-        onSecondaryTapDown: (_) => open(targetContext: context),
-        child: ListItem(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 8,
-          ).copyWith(bottom: 12),
-          minVerticalPadding: 0,
-          minTileHeight: 0,
-          title: SelectableText(
-            log.payload,
-            style: context.textTheme.bodyMedium?.copyWith(
-              color: log.logLevel.color(context),
-            ),
-          ),
-          subtitle: Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        '${l10n.source} $source · ${l10n.level} $level',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.textTheme.labelMedium?.copyWith(
-                          color: context.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      log.dateTime,
-                      style: context.textTheme.bodySmall?.copyWith(
-                        color: context.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
+      body: SelectableText(
+        log.payload,
+        style: RecordTextStyles.of(context).primary,
       ),
     );
   }

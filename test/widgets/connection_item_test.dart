@@ -117,6 +117,7 @@ void main() {
     );
     await tester.pump();
 
+    expect(find.text('TCP'), findsOneWidget);
     expect(find.text('DOMAIN-SUFFIX'), findsOneWidget);
     expect(find.text('Proxy A'), findsOneWidget);
     expect(find.text('Proxy B'), findsOneWidget);
@@ -136,6 +137,83 @@ void main() {
     await tester.pump();
 
     expect(clicked, ['Proxy A', 'Proxy B']);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('TrackerInfoItem lays out destination and live speeds', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TestApp(
+        wrapInProviderScope: true,
+        homeBuilder: (child) => Scaffold(body: child),
+        child: TrackerInfoItem(
+          isLive: true,
+          detailTitle: 'detail',
+          trackerInfo: _tracker(
+            host: 'example.com',
+            destinationIP: '5.6.7.8',
+            destinationPort: '443',
+            process: 'chrome',
+            sourceIP: '1.2.3.4',
+            sourcePort: '8080',
+          ).copyWith(uploadSpeed: 1024, downloadSpeed: 2048),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.textContaining('example.com:443'), findsOneWidget);
+    expect(find.textContaining('5.6.7.8'), findsOneWidget);
+    expect(find.textContaining('chrome'), findsOneWidget);
+    expect(find.textContaining('1.2.3.4:8080'), findsOneWidget);
+    expect(find.textContaining('1KB/s'), findsOneWidget);
+    expect(find.textContaining('2KB/s'), findsOneWidget);
+    expect(find.byIcon(Icons.arrow_upward), findsOneWidget);
+    expect(find.byIcon(Icons.arrow_downward), findsOneWidget);
+    final header = tester.getRect(find.byType(RecordHeader));
+    final speed = tester.getRect(find.textContaining('2KB/s'));
+    expect(header.right - speed.right, lessThanOrEqualTo(1));
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('TrackerInfoItem keeps the close action outside the header', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TestApp(
+        wrapInProviderScope: true,
+        homeBuilder: (child) => Scaffold(body: child),
+        child: TrackerInfoItem(
+          isLive: true,
+          detailTitle: 'detail',
+          trackerInfo: _tracker(
+            chains: const ['Proxy A', 'Proxy B'],
+          ).copyWith(uploadSpeed: 1024, downloadSpeed: 2048),
+          trailing: IconButton(onPressed: () {}, icon: const Icon(Icons.close)),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byIcon(Icons.close), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(RecordHeader),
+        matching: find.byIcon(Icons.close),
+      ),
+      findsNothing,
+    );
+    final tile = tester.getRect(find.byType(ListTile));
+    final header = tester.getRect(find.byType(RecordHeader));
+    final button = tester.getRect(find.byType(IconButton));
+    final speed = tester.getRect(find.textContaining('2KB/s'));
+    expect(header.right - speed.right, lessThanOrEqualTo(1));
+    expect((header.right - button.right).abs(), lessThanOrEqualTo(1));
+    expect(button.top, greaterThanOrEqualTo(header.bottom));
+    expect(tile.bottom - button.bottom, lessThanOrEqualTo(16));
 
     await tester.pumpWidget(const SizedBox.shrink());
   });

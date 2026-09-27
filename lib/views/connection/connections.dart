@@ -266,8 +266,13 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView>
                       tooltip: MaterialLocalizations.of(
                         context,
                       ).closeButtonTooltip,
-                      visualDensity: VisualDensity.compact,
-                      icon: const Icon(Icons.close, size: 20),
+                      padding: const EdgeInsets.all(4),
+                      constraints: const BoxConstraints.tightFor(
+                        width: 30,
+                        height: 30,
+                      ),
+                      iconSize: 22,
+                      icon: const Icon(Icons.close),
                       onPressed: () {
                         _handleCloseConnection(trackerInfo.id);
                       },

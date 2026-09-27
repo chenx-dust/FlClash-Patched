@@ -11,6 +11,7 @@ DnsQuery _query({
   String rcode = 'NOERROR',
   List<String> answers = const ['1.1.1.1'],
   String error = '',
+  bool cached = false,
 }) {
   return DnsQuery(
     domain: domain,
@@ -22,13 +23,14 @@ DnsQuery _query({
     rcode: rcode,
     answers: answers,
     error: error,
+    cached: cached,
     time: DateTime.utc(2026),
   );
 }
 
 void main() {
   group('DnsQueryFilter', () {
-    test('keeps the four filter dimensions independent', () {
+    test('keeps each filter dimension independent', () {
       const empty = DnsQueryFilter();
 
       expect(empty.isEmpty, isTrue);
@@ -38,7 +40,8 @@ void main() {
           .add(DnsQueryFilterType.type, 'A')
           .add(DnsQueryFilterType.initiator, 'app')
           .add(DnsQueryFilterType.upstream, 'udp://1.1.1.1:53')
-          .add(DnsQueryFilterType.rcode, 'NOERROR');
+          .add(DnsQueryFilterType.rcode, 'NOERROR')
+          .add(DnsQueryFilterType.cache, dnsQueryCachedFilterValue);
 
       expect(filter.isEmpty, isFalse);
       expect(filter.entries.map((entry) => (entry.type, entry.value)), [
@@ -46,6 +49,7 @@ void main() {
         (DnsQueryFilterType.initiator, 'app'),
         (DnsQueryFilterType.upstream, 'udp://1.1.1.1:53'),
         (DnsQueryFilterType.rcode, 'NOERROR'),
+        (DnsQueryFilterType.cache, dnsQueryCachedFilterValue),
       ]);
       expect(empty.isEmpty, isTrue);
     });
@@ -128,6 +132,28 @@ void main() {
         isTrue,
       );
       expect(filter.matches(_query(domain: 'app.example')), isFalse);
+    });
+
+    test('matches cached and uncached queries separately', () {
+      final cached = const DnsQueryFilter().add(
+        DnsQueryFilterType.cache,
+        dnsQueryCachedFilterValue,
+      );
+      final uncached = const DnsQueryFilter().add(
+        DnsQueryFilterType.cache,
+        dnsQueryUncachedFilterValue,
+      );
+
+      expect(
+        cached.matches(_query(domain: 'cached.example', cached: true)),
+        isTrue,
+      );
+      expect(cached.matches(_query(domain: 'fresh.example')), isFalse);
+      expect(uncached.matches(_query(domain: 'fresh.example')), isTrue);
+      expect(
+        uncached.matches(_query(domain: 'cached.example', cached: true)),
+        isFalse,
+      );
     });
   });
 }

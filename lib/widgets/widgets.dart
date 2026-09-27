@@ -31,6 +31,7 @@ export 'paged_sheet.dart';
 export 'palette.dart';
 export 'pop_scope.dart';
 export 'popup.dart';
+export 'record.dart';
 export 'scaffold.dart';
 export 'scroll.dart';
 export 'setting.dart';

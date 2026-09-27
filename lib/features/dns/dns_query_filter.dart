@@ -5,7 +5,14 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 
-enum DnsQueryFilterType { type, initiator, upstream, rcode }
+enum DnsQueryFilterType { type, initiator, upstream, rcode, cache }
+
+const dnsQueryCachedFilterValue = 'true';
+const dnsQueryUncachedFilterValue = 'false';
+
+String dnsQueryCacheFilterValue(bool cached) {
+  return cached ? dnsQueryCachedFilterValue : dnsQueryUncachedFilterValue;
+}
 
 extension DnsQueryFilterTypeExt on DnsQueryFilterType {
   String getLabel(BuildContext context) {
@@ -15,6 +22,7 @@ extension DnsQueryFilterTypeExt on DnsQueryFilterType {
       DnsQueryFilterType.initiator => appLocalizations.initiator,
       DnsQueryFilterType.upstream => appLocalizations.source,
       DnsQueryFilterType.rcode => appLocalizations.responseCode,
+      DnsQueryFilterType.cache => appLocalizations.cache,
     };
   }
 
@@ -24,6 +32,7 @@ extension DnsQueryFilterTypeExt on DnsQueryFilterType {
       DnsQueryFilterType.initiator => Icons.apps,
       DnsQueryFilterType.upstream => Icons.cloud_outlined,
       DnsQueryFilterType.rcode => Icons.tag,
+      DnsQueryFilterType.cache => Icons.cached,
     };
   }
 }
@@ -40,19 +49,22 @@ class DnsQueryFilter {
   final Set<String> initiators;
   final Set<String> upstreams;
   final Set<String> rcodes;
+  final Set<String> caches;
 
   const DnsQueryFilter({
     this.types = const {},
     this.initiators = const {},
     this.upstreams = const {},
     this.rcodes = const {},
+    this.caches = const {},
   });
 
   bool get isEmpty {
     return types.isEmpty &&
         initiators.isEmpty &&
         upstreams.isEmpty &&
-        rcodes.isEmpty;
+        rcodes.isEmpty &&
+        caches.isEmpty;
   }
 
   bool get isNotEmpty => !isEmpty;
@@ -63,6 +75,7 @@ class DnsQueryFilter {
       DnsQueryFilterType.initiator => initiators.contains(value),
       DnsQueryFilterType.upstream => upstreams.contains(value),
       DnsQueryFilterType.rcode => rcodes.contains(value),
+      DnsQueryFilterType.cache => caches.contains(value),
     };
   }
 
@@ -71,12 +84,14 @@ class DnsQueryFilter {
     Set<String>? initiators,
     Set<String>? upstreams,
     Set<String>? rcodes,
+    Set<String>? caches,
   }) {
     return DnsQueryFilter(
       types: types ?? this.types,
       initiators: initiators ?? this.initiators,
       upstreams: upstreams ?? this.upstreams,
       rcodes: rcodes ?? this.rcodes,
+      caches: caches ?? this.caches,
     );
   }
 
@@ -100,6 +115,7 @@ class DnsQueryFilter {
         upstreams: toggleValue(upstreams),
       ),
       DnsQueryFilterType.rcode => copyWith(rcodes: toggleValue(rcodes)),
+      DnsQueryFilterType.cache => copyWith(caches: toggleValue(caches)),
     };
   }
 
@@ -115,6 +131,7 @@ class DnsQueryFilter {
       ),
       DnsQueryFilterType.upstream => copyWith(upstreams: addValue(upstreams)),
       DnsQueryFilterType.rcode => copyWith(rcodes: addValue(rcodes)),
+      DnsQueryFilterType.cache => copyWith(caches: addValue(caches)),
     };
   }
 
@@ -132,6 +149,7 @@ class DnsQueryFilter {
         upstreams: removeValue(upstreams),
       ),
       DnsQueryFilterType.rcode => copyWith(rcodes: removeValue(rcodes)),
+      DnsQueryFilterType.cache => copyWith(caches: removeValue(caches)),
     };
   }
 
@@ -154,13 +172,17 @@ class DnsQueryFilter {
     for (final rcode in rcodes) {
       yield DnsQueryFilterEntry(type: DnsQueryFilterType.rcode, value: rcode);
     }
+    for (final cache in caches) {
+      yield DnsQueryFilterEntry(type: DnsQueryFilterType.cache, value: cache);
+    }
   }
 
   bool matches(DnsQuery query) {
     return _matchesValue(types, query.type) &&
         _matchesValue(initiators, query.initiator?.name ?? '') &&
         _matchesValue(upstreams, query.upstream) &&
-        _matchesValue(rcodes, query.rcode);
+        _matchesValue(rcodes, query.rcode) &&
+        _matchesValue(caches, dnsQueryCacheFilterValue(query.cached));
   }
 
   bool _matchesValue(Set<String> filters, String value) {
@@ -169,10 +191,18 @@ class DnsQueryFilter {
 }
 
 String dnsQueryFilterLabel(DnsQueryFilterType type, String value) {
-  if (type != DnsQueryFilterType.initiator) {
-    return value;
-  }
-  return DnsQueryInitiator.values.asNameMap()[value]?.label ?? value;
+  return switch (type) {
+    DnsQueryFilterType.initiator =>
+      DnsQueryInitiator.values.asNameMap()[value]?.label ?? value,
+    DnsQueryFilterType.cache => switch (value) {
+      dnsQueryCachedFilterValue => currentAppLocalizations.yes,
+      dnsQueryUncachedFilterValue => currentAppLocalizations.no,
+      _ => value,
+    },
+    DnsQueryFilterType.type ||
+    DnsQueryFilterType.upstream ||
+    DnsQueryFilterType.rcode => value,
+  };
 }
 
 extension DnsQueryFilterListExt on Iterable<DnsQuery> {
@@ -303,6 +333,7 @@ class _DnsQueryFilterSheetState extends State<_DnsQueryFilterSheet> {
       DnsQueryFilterType.initiator => _filter.initiators,
       DnsQueryFilterType.upstream => _filter.upstreams,
       DnsQueryFilterType.rcode => _filter.rcodes,
+      DnsQueryFilterType.cache => _filter.caches,
     };
   }
 
@@ -319,6 +350,9 @@ class _DnsQueryFilterSheetState extends State<_DnsQueryFilterSheet> {
         ),
         DnsQueryFilterType.upstream => dnsQueries.map((item) => item.upstream),
         DnsQueryFilterType.rcode => dnsQueries.map((item) => item.rcode),
+        DnsQueryFilterType.cache => dnsQueries.map(
+          (item) => dnsQueryCacheFilterValue(item.cached),
+        ),
       },
       selected: _selectedValues(type),
       labelOf: (value) => dnsQueryFilterLabel(type, value),

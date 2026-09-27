@@ -87,6 +87,7 @@ class TrackerInfoList extends StatelessWidget {
       itemBuilder: (_, index) => _buildTrackerInfoItem(
         context,
         trackerInfos[index],
+        isLive: false,
         detailTitle: detailTitle,
         trailingBuilder: trailingBuilder,
         filter: filter,
@@ -132,6 +133,7 @@ class TrackerInfoAnimatedList extends StatelessWidget {
       itemBuilder: (context, trackerInfo) => _buildTrackerInfoItem(
         context,
         trackerInfo,
+        isLive: true,
         detailTitle: detailTitle,
         trailingBuilder: trailingBuilder,
         filter: filter,
@@ -145,6 +147,7 @@ class TrackerInfoAnimatedList extends StatelessWidget {
 Widget _buildTrackerInfoItem(
   BuildContext context,
   TrackerInfo trackerInfo, {
+  required bool isLive,
   required String detailTitle,
   required Widget? Function(TrackerInfo trackerInfo)? trailingBuilder,
   required TrackerInfoFilter filter,
@@ -155,6 +158,7 @@ Widget _buildTrackerInfoItem(
   return TrackerInfoItem(
     key: Key(trackerInfo.id),
     trackerInfo: trackerInfo,
+    isLive: isLive,
     onClickKeyword: (value) {
       context.commonScaffoldState?.addKeyword(value);
     },

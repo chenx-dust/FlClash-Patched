@@ -187,6 +187,7 @@ class _ChipSurface extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: context.textTheme.labelMedium?.copyWith(
                     color: foregroundColor,
+                    height: 1,
                     fontSize: isLarge
                         ? (context.textTheme.labelMedium?.fontSize ?? 14) + 1
                         : null,
@@ -262,7 +263,7 @@ class TonalChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final content = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -272,7 +273,7 @@ class TonalChip extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: context.textTheme.labelMedium?.copyWith(
+              style: context.textTheme.bodySmall?.copyWith(
                 color: foregroundColor,
               ),
             ),

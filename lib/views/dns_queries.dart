@@ -282,59 +282,92 @@ class DnsQueryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
-    final results = dnsQuery.results;
-    final meta = [
-      dnsQuery.time.getLastUpdateTimeDesc(context),
+    final styles = RecordTextStyles.of(context);
+    final tone = dnsQuery.isFailed ? RecordTone.error : RecordTone.neutral;
+    final summary = dnsQuery.error.isNotEmpty
+        ? dnsQuery.error
+        : dnsQuery.answers.join(', ');
+    final initiator = dnsQuery.initiator;
+    final type = Text(
       dnsQuery.type,
-      ?dnsQuery.initiator?.label,
-      if (dnsQuery.cached) appLocalizations.cache,
-      if (dnsQuery.hasFailureRcode) dnsQuery.rcode,
-      '${dnsQuery.delay} ms',
-      if (dnsQuery.upstream.isNotEmpty) dnsQuery.upstream,
-    ].join(' · ');
-    return ListItem(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 8,
-      ).copyWith(bottom: 12),
-      minVerticalPadding: 0,
-      horizontalTitleGap: 12,
-      tileTitleAlignment: ListTileTitleAlignment.top,
+      style: const TextStyle(fontWeight: FontWeight.w500),
+    );
+    return RecordListItem(
+      tone: tone,
       onTap: () => _showDetail(context),
-      title: Text(
-        dnsQuery.domain,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: context.textTheme.bodyLarge,
+      header: RecordHeader(
+        trailing: Text('${dnsQuery.delay} ms'),
+        children: [RecordTimestamp(dnsQuery.time.toLocal().showFull), type],
       ),
-      subtitle: Column(
+      body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 4,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 2),
-            child: Text(
-              meta,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: context.textTheme.bodySmall?.copyWith(
-                color: context.colorScheme.onSurfaceVariant,
-              ),
-            ),
+          Text(
+            dnsQuery.domain,
+            style: styles.primary?.copyWith(fontWeight: FontWeight.w500),
           ),
-          if (results.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 6),
-              child: Wrap(
-                spacing: 6,
-                runSpacing: 4,
-                children: [
-                  for (final result in results) CommonChip(label: result),
-                ],
+          if (summary.isNotEmpty)
+            Text(
+              summary,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: styles.secondary?.copyWith(
+                color: tone.accentColor(context),
               ),
             ),
+          Wrap(
+            spacing: 6,
+            runSpacing: 4,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              if (initiator != null)
+                RecordLabel(
+                  label: initiator.label,
+                  onPressed: _filterTap(
+                    DnsQueryFilterType.initiator,
+                    initiator.name,
+                  ),
+                ),
+              if (dnsQuery.cached)
+                RecordLabel(
+                  label: appLocalizations.cache,
+                  tone: RecordTone.muted,
+                  onPressed: _filterTap(
+                    DnsQueryFilterType.cache,
+                    dnsQueryCacheFilterValue(true),
+                  ),
+                ),
+              if (dnsQuery.hasFailureRcode)
+                RecordLabel(
+                  label: dnsQuery.rcode,
+                  tone: RecordTone.error,
+                  onPressed: _filterTap(
+                    DnsQueryFilterType.rcode,
+                    dnsQuery.rcode,
+                  ),
+                ),
+              if (dnsQuery.upstream.isNotEmpty)
+                GestureDetector(
+                  onTap: _filterTap(
+                    DnsQueryFilterType.upstream,
+                    dnsQuery.upstream,
+                  ),
+                  child: Text(dnsQuery.upstream, style: styles.muted),
+                ),
+            ],
+          ),
         ],
       ),
     );
+  }
+
+  VoidCallback? _filterTap(DnsQueryFilterType type, String value) {
+    final onClickFilter = this.onClickFilter;
+    if (onClickFilter == null || value.isEmpty) {
+      return null;
+    }
+    return () => onClickFilter(type, value);
   }
 }
 
@@ -437,8 +470,8 @@ class _DnsQueryDetailViewState extends State<DnsQueryDetailView> {
             (
               appLocalizations.cache,
               dnsQuery.cached ? appLocalizations.yes : appLocalizations.no,
-              null,
-              null,
+              DnsQueryFilterType.cache,
+              dnsQueryCacheFilterValue(dnsQuery.cached),
               false,
             ),
             (
