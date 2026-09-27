@@ -332,6 +332,7 @@ class SetupAction extends _$SetupAction {
       ),
     );
     final overrideDns = ref.read(overrideDnsProvider);
+    final overrideNtp = ref.read(overrideNtpProvider);
     final appendSystemDns = networkSetting.appendSystemDns;
     final routeMode = networkSetting.routeMode;
     final configMap = await _core.getConfig(profileId);
@@ -364,6 +365,7 @@ class SetupAction extends _$SetupAction {
         rawConfig: rawConfig,
         realPatchConfig: realPatchConfig,
         overrideDns: overrideDns,
+        overrideNtp: overrideNtp,
         appendSystemDns: appendSystemDns,
         addedRules: addedRules,
         defaultUA: defaultUA,

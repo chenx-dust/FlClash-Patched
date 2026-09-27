@@ -4584,9 +4584,294 @@ as Map<String, String>,
 
 
 /// @nodoc
+mixin _$Ntp {
+
+ bool get enable; String get server; int get port; int get interval;@JsonKey(name: 'dialer-proxy') String get dialerProxy;@JsonKey(name: 'write-to-system') bool get writeToSystem;
+/// Create a copy of Ntp
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$NtpCopyWith<Ntp> get copyWith => _$NtpCopyWithImpl<Ntp>(this as Ntp, _$identity);
+
+  /// Serializes this Ntp to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as Ntp;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Ntp&&(identical(other.enable, _this.enable) || other.enable == _this.enable)&&(identical(other.server, _this.server) || other.server == _this.server)&&(identical(other.port, _this.port) || other.port == _this.port)&&(identical(other.interval, _this.interval) || other.interval == _this.interval)&&(identical(other.dialerProxy, _this.dialerProxy) || other.dialerProxy == _this.dialerProxy)&&(identical(other.writeToSystem, _this.writeToSystem) || other.writeToSystem == _this.writeToSystem));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as Ntp;
+  return Object.hash(runtimeType,_this.enable,_this.server,_this.port,_this.interval,_this.dialerProxy,_this.writeToSystem);
+}
+
+@override
+String toString() {
+  final _this = this as Ntp;
+  return 'Ntp(enable: ${_this.enable}, server: ${_this.server}, port: ${_this.port}, interval: ${_this.interval}, dialerProxy: ${_this.dialerProxy}, writeToSystem: ${_this.writeToSystem})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $NtpCopyWith<$Res>  {
+  factory $NtpCopyWith(Ntp value, $Res Function(Ntp) _then) = _$NtpCopyWithImpl;
+@useResult
+$Res call({
+ bool enable, String server, int port, int interval,@JsonKey(name: 'dialer-proxy') String dialerProxy,@JsonKey(name: 'write-to-system') bool writeToSystem
+});
+
+
+
+
+}
+/// @nodoc
+class _$NtpCopyWithImpl<$Res>
+    implements $NtpCopyWith<$Res> {
+  _$NtpCopyWithImpl(this._self, this._then);
+
+  final Ntp _self;
+  final $Res Function(Ntp) _then;
+
+/// Create a copy of Ntp
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? enable = null,Object? server = null,Object? port = null,Object? interval = null,Object? dialerProxy = null,Object? writeToSystem = null,}) {
+  return _then(Ntp(
+enable: null == enable ? _self.enable : enable // ignore: cast_nullable_to_non_nullable
+as bool,server: null == server ? _self.server : server // ignore: cast_nullable_to_non_nullable
+as String,port: null == port ? _self.port : port // ignore: cast_nullable_to_non_nullable
+as int,interval: null == interval ? _self.interval : interval // ignore: cast_nullable_to_non_nullable
+as int,dialerProxy: null == dialerProxy ? _self.dialerProxy : dialerProxy // ignore: cast_nullable_to_non_nullable
+as String,writeToSystem: null == writeToSystem ? _self.writeToSystem : writeToSystem // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [Ntp].
+extension NtpPatterns on Ntp {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _Ntp value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _Ntp() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _Ntp value)  $default,){
+final _that = this;
+switch (_that) {
+case _Ntp():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _Ntp value)?  $default,){
+final _that = this;
+switch (_that) {
+case _Ntp() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool enable,  String server,  int port,  int interval, @JsonKey(name: 'dialer-proxy')  String dialerProxy, @JsonKey(name: 'write-to-system')  bool writeToSystem)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _Ntp() when $default != null:
+return $default(_that.enable,_that.server,_that.port,_that.interval,_that.dialerProxy,_that.writeToSystem);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool enable,  String server,  int port,  int interval, @JsonKey(name: 'dialer-proxy')  String dialerProxy, @JsonKey(name: 'write-to-system')  bool writeToSystem)  $default,) {final _that = this;
+switch (_that) {
+case _Ntp():
+return $default(_that.enable,_that.server,_that.port,_that.interval,_that.dialerProxy,_that.writeToSystem);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool enable,  String server,  int port,  int interval, @JsonKey(name: 'dialer-proxy')  String dialerProxy, @JsonKey(name: 'write-to-system')  bool writeToSystem)?  $default,) {final _that = this;
+switch (_that) {
+case _Ntp() when $default != null:
+return $default(_that.enable,_that.server,_that.port,_that.interval,_that.dialerProxy,_that.writeToSystem);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _Ntp implements Ntp {
+  const _Ntp({this.enable = false, this.server = 'time.apple.com', this.port = 123, this.interval = 30, @JsonKey(name: 'dialer-proxy') this.dialerProxy = '', @JsonKey(name: 'write-to-system') this.writeToSystem = false});
+  factory _Ntp.fromJson(Map<String, dynamic> json) => _$NtpFromJson(json);
+
+@override@JsonKey() final  bool enable;
+@override@JsonKey() final  String server;
+@override@JsonKey() final  int port;
+@override@JsonKey() final  int interval;
+@override@JsonKey(name: 'dialer-proxy') final  String dialerProxy;
+@override@JsonKey(name: 'write-to-system') final  bool writeToSystem;
+
+/// Create a copy of Ntp
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$NtpCopyWith<_Ntp> get copyWith => __$NtpCopyWithImpl<_Ntp>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$NtpToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Ntp&&(identical(other.enable, enable) || other.enable == enable)&&(identical(other.server, server) || other.server == server)&&(identical(other.port, port) || other.port == port)&&(identical(other.interval, interval) || other.interval == interval)&&(identical(other.dialerProxy, dialerProxy) || other.dialerProxy == dialerProxy)&&(identical(other.writeToSystem, writeToSystem) || other.writeToSystem == writeToSystem));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,enable,server,port,interval,dialerProxy,writeToSystem);
+}
+
+@override
+String toString() {
+    return 'Ntp(enable: $enable, server: $server, port: $port, interval: $interval, dialerProxy: $dialerProxy, writeToSystem: $writeToSystem)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$NtpCopyWith<$Res> implements $NtpCopyWith<$Res> {
+  factory _$NtpCopyWith(_Ntp value, $Res Function(_Ntp) _then) = __$NtpCopyWithImpl;
+@override @useResult
+$Res call({
+ bool enable, String server, int port, int interval,@JsonKey(name: 'dialer-proxy') String dialerProxy,@JsonKey(name: 'write-to-system') bool writeToSystem
+});
+
+
+
+
+}
+/// @nodoc
+class __$NtpCopyWithImpl<$Res>
+    implements _$NtpCopyWith<$Res> {
+  __$NtpCopyWithImpl(this._self, this._then);
+
+  final _Ntp _self;
+  final $Res Function(_Ntp) _then;
+
+/// Create a copy of Ntp
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? enable = null,Object? server = null,Object? port = null,Object? interval = null,Object? dialerProxy = null,Object? writeToSystem = null,}) {
+  return _then(_Ntp(
+enable: null == enable ? _self.enable : enable // ignore: cast_nullable_to_non_nullable
+as bool,server: null == server ? _self.server : server // ignore: cast_nullable_to_non_nullable
+as String,port: null == port ? _self.port : port // ignore: cast_nullable_to_non_nullable
+as int,interval: null == interval ? _self.interval : interval // ignore: cast_nullable_to_non_nullable
+as int,dialerProxy: null == dialerProxy ? _self.dialerProxy : dialerProxy // ignore: cast_nullable_to_non_nullable
+as String,writeToSystem: null == writeToSystem ? _self.writeToSystem : writeToSystem // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
 mixin _$PatchClashConfig {
 
-@JsonKey(name: 'mixed-port') int get mixedPort;@JsonKey(name: 'socks-port') int get socksPort;@JsonKey(name: 'port') int get port;@JsonKey(name: 'redir-port') int get redirPort;@JsonKey(name: 'tproxy-port') int get tproxyPort;@JsonKey(unknownEnumValue: Mode.rule) Mode get mode;@JsonKey(name: 'allow-lan') bool get allowLan;@JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error) LogLevel get logLevel; bool get ipv6;@JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always) FindProcessMode get findProcessMode;@JsonKey(name: 'interface-name-mode', unknownEnumValue: InterfaceNameMode.clear) InterfaceNameMode get interfaceNameMode;@JsonKey(name: 'interface-name') String get interfaceName;@JsonKey(name: 'keep-alive-interval') int get keepAliveInterval;@JsonKey(name: 'unified-delay') bool get unifiedDelay;@JsonKey(name: 'tcp-concurrent') bool get tcpConcurrent;@JsonKey(fromJson: Tun.safeFormJson) Tun get tun;@JsonKey(fromJson: Dns.safeDnsFromJson) Dns get dns;@JsonKey(name: 'geox-url', fromJson: _geoXUrlFromJson, toJson: _geoXUrlToJson) Map<GeoResource, String> get geoXUrl;@JsonKey(name: 'geodata-loader', unknownEnumValue: GeodataLoader.memconservative) GeodataLoader get geodataLoader;@JsonKey(name: 'geosite-matcher', unknownEnumValue: GeositeMatcher.succinct) GeositeMatcher get geositeMatcher;@JsonKey(name: 'global-ua') String? get globalUa;@JsonKey(name: 'external-controller') String get externalController; String get secret; Map<String, String> get hosts;@JsonKey(name: 'geo-auto-update') bool get geoAutoUpdate;@JsonKey(name: 'geo-update-interval') int get geoUpdateInterval;
+@JsonKey(name: 'mixed-port') int get mixedPort;@JsonKey(name: 'socks-port') int get socksPort;@JsonKey(name: 'port') int get port;@JsonKey(name: 'redir-port') int get redirPort;@JsonKey(name: 'tproxy-port') int get tproxyPort;@JsonKey(unknownEnumValue: Mode.rule) Mode get mode;@JsonKey(name: 'allow-lan') bool get allowLan;@JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error) LogLevel get logLevel; bool get ipv6;@JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always) FindProcessMode get findProcessMode;@JsonKey(name: 'interface-name-mode', unknownEnumValue: InterfaceNameMode.clear) InterfaceNameMode get interfaceNameMode;@JsonKey(name: 'interface-name') String get interfaceName;@JsonKey(name: 'keep-alive-interval') int get keepAliveInterval;@JsonKey(name: 'unified-delay') bool get unifiedDelay;@JsonKey(name: 'tcp-concurrent') bool get tcpConcurrent;@JsonKey(fromJson: Tun.safeFormJson) Tun get tun;@JsonKey(fromJson: Dns.safeDnsFromJson) Dns get dns;@JsonKey(fromJson: Ntp.safeNtpFromJson) Ntp get ntp;@JsonKey(name: 'geox-url', fromJson: _geoXUrlFromJson, toJson: _geoXUrlToJson) Map<GeoResource, String> get geoXUrl;@JsonKey(name: 'geodata-loader', unknownEnumValue: GeodataLoader.memconservative) GeodataLoader get geodataLoader;@JsonKey(name: 'geosite-matcher', unknownEnumValue: GeositeMatcher.succinct) GeositeMatcher get geositeMatcher;@JsonKey(name: 'global-ua') String? get globalUa;@JsonKey(name: 'external-controller') String get externalController; String get secret; Map<String, String> get hosts;@JsonKey(name: 'geo-auto-update') bool get geoAutoUpdate;@JsonKey(name: 'geo-update-interval') int get geoUpdateInterval;
 /// Create a copy of PatchClashConfig
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -4600,20 +4885,20 @@ $PatchClashConfigCopyWith<PatchClashConfig> get copyWith => _$PatchClashConfigCo
 @override
 bool operator ==(Object other) {
   final _this = this as PatchClashConfig;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PatchClashConfig&&(identical(other.mixedPort, _this.mixedPort) || other.mixedPort == _this.mixedPort)&&(identical(other.socksPort, _this.socksPort) || other.socksPort == _this.socksPort)&&(identical(other.port, _this.port) || other.port == _this.port)&&(identical(other.redirPort, _this.redirPort) || other.redirPort == _this.redirPort)&&(identical(other.tproxyPort, _this.tproxyPort) || other.tproxyPort == _this.tproxyPort)&&(identical(other.mode, _this.mode) || other.mode == _this.mode)&&(identical(other.allowLan, _this.allowLan) || other.allowLan == _this.allowLan)&&(identical(other.logLevel, _this.logLevel) || other.logLevel == _this.logLevel)&&(identical(other.ipv6, _this.ipv6) || other.ipv6 == _this.ipv6)&&(identical(other.findProcessMode, _this.findProcessMode) || other.findProcessMode == _this.findProcessMode)&&(identical(other.interfaceNameMode, _this.interfaceNameMode) || other.interfaceNameMode == _this.interfaceNameMode)&&(identical(other.interfaceName, _this.interfaceName) || other.interfaceName == _this.interfaceName)&&(identical(other.keepAliveInterval, _this.keepAliveInterval) || other.keepAliveInterval == _this.keepAliveInterval)&&(identical(other.unifiedDelay, _this.unifiedDelay) || other.unifiedDelay == _this.unifiedDelay)&&(identical(other.tcpConcurrent, _this.tcpConcurrent) || other.tcpConcurrent == _this.tcpConcurrent)&&(identical(other.tun, _this.tun) || other.tun == _this.tun)&&(identical(other.dns, _this.dns) || other.dns == _this.dns)&&const DeepCollectionEquality().equals(other.geoXUrl, _this.geoXUrl)&&(identical(other.geodataLoader, _this.geodataLoader) || other.geodataLoader == _this.geodataLoader)&&(identical(other.geositeMatcher, _this.geositeMatcher) || other.geositeMatcher == _this.geositeMatcher)&&(identical(other.globalUa, _this.globalUa) || other.globalUa == _this.globalUa)&&(identical(other.externalController, _this.externalController) || other.externalController == _this.externalController)&&(identical(other.secret, _this.secret) || other.secret == _this.secret)&&const DeepCollectionEquality().equals(other.hosts, _this.hosts)&&(identical(other.geoAutoUpdate, _this.geoAutoUpdate) || other.geoAutoUpdate == _this.geoAutoUpdate)&&(identical(other.geoUpdateInterval, _this.geoUpdateInterval) || other.geoUpdateInterval == _this.geoUpdateInterval));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PatchClashConfig&&(identical(other.mixedPort, _this.mixedPort) || other.mixedPort == _this.mixedPort)&&(identical(other.socksPort, _this.socksPort) || other.socksPort == _this.socksPort)&&(identical(other.port, _this.port) || other.port == _this.port)&&(identical(other.redirPort, _this.redirPort) || other.redirPort == _this.redirPort)&&(identical(other.tproxyPort, _this.tproxyPort) || other.tproxyPort == _this.tproxyPort)&&(identical(other.mode, _this.mode) || other.mode == _this.mode)&&(identical(other.allowLan, _this.allowLan) || other.allowLan == _this.allowLan)&&(identical(other.logLevel, _this.logLevel) || other.logLevel == _this.logLevel)&&(identical(other.ipv6, _this.ipv6) || other.ipv6 == _this.ipv6)&&(identical(other.findProcessMode, _this.findProcessMode) || other.findProcessMode == _this.findProcessMode)&&(identical(other.interfaceNameMode, _this.interfaceNameMode) || other.interfaceNameMode == _this.interfaceNameMode)&&(identical(other.interfaceName, _this.interfaceName) || other.interfaceName == _this.interfaceName)&&(identical(other.keepAliveInterval, _this.keepAliveInterval) || other.keepAliveInterval == _this.keepAliveInterval)&&(identical(other.unifiedDelay, _this.unifiedDelay) || other.unifiedDelay == _this.unifiedDelay)&&(identical(other.tcpConcurrent, _this.tcpConcurrent) || other.tcpConcurrent == _this.tcpConcurrent)&&(identical(other.tun, _this.tun) || other.tun == _this.tun)&&(identical(other.dns, _this.dns) || other.dns == _this.dns)&&(identical(other.ntp, _this.ntp) || other.ntp == _this.ntp)&&const DeepCollectionEquality().equals(other.geoXUrl, _this.geoXUrl)&&(identical(other.geodataLoader, _this.geodataLoader) || other.geodataLoader == _this.geodataLoader)&&(identical(other.geositeMatcher, _this.geositeMatcher) || other.geositeMatcher == _this.geositeMatcher)&&(identical(other.globalUa, _this.globalUa) || other.globalUa == _this.globalUa)&&(identical(other.externalController, _this.externalController) || other.externalController == _this.externalController)&&(identical(other.secret, _this.secret) || other.secret == _this.secret)&&const DeepCollectionEquality().equals(other.hosts, _this.hosts)&&(identical(other.geoAutoUpdate, _this.geoAutoUpdate) || other.geoAutoUpdate == _this.geoAutoUpdate)&&(identical(other.geoUpdateInterval, _this.geoUpdateInterval) || other.geoUpdateInterval == _this.geoUpdateInterval));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as PatchClashConfig;
-  return Object.hashAll([runtimeType,_this.mixedPort,_this.socksPort,_this.port,_this.redirPort,_this.tproxyPort,_this.mode,_this.allowLan,_this.logLevel,_this.ipv6,_this.findProcessMode,_this.interfaceNameMode,_this.interfaceName,_this.keepAliveInterval,_this.unifiedDelay,_this.tcpConcurrent,_this.tun,_this.dns,const DeepCollectionEquality().hash(_this.geoXUrl),_this.geodataLoader,_this.geositeMatcher,_this.globalUa,_this.externalController,_this.secret,const DeepCollectionEquality().hash(_this.hosts),_this.geoAutoUpdate,_this.geoUpdateInterval]);
+  return Object.hashAll([runtimeType,_this.mixedPort,_this.socksPort,_this.port,_this.redirPort,_this.tproxyPort,_this.mode,_this.allowLan,_this.logLevel,_this.ipv6,_this.findProcessMode,_this.interfaceNameMode,_this.interfaceName,_this.keepAliveInterval,_this.unifiedDelay,_this.tcpConcurrent,_this.tun,_this.dns,_this.ntp,const DeepCollectionEquality().hash(_this.geoXUrl),_this.geodataLoader,_this.geositeMatcher,_this.globalUa,_this.externalController,_this.secret,const DeepCollectionEquality().hash(_this.hosts),_this.geoAutoUpdate,_this.geoUpdateInterval]);
 }
 
 @override
 String toString() {
   final _this = this as PatchClashConfig;
-  return 'PatchClashConfig(mixedPort: ${_this.mixedPort}, socksPort: ${_this.socksPort}, port: ${_this.port}, redirPort: ${_this.redirPort}, tproxyPort: ${_this.tproxyPort}, mode: ${_this.mode}, allowLan: ${_this.allowLan}, logLevel: ${_this.logLevel}, ipv6: ${_this.ipv6}, findProcessMode: ${_this.findProcessMode}, interfaceNameMode: ${_this.interfaceNameMode}, interfaceName: ${_this.interfaceName}, keepAliveInterval: ${_this.keepAliveInterval}, unifiedDelay: ${_this.unifiedDelay}, tcpConcurrent: ${_this.tcpConcurrent}, tun: ${_this.tun}, dns: ${_this.dns}, geoXUrl: ${_this.geoXUrl}, geodataLoader: ${_this.geodataLoader}, geositeMatcher: ${_this.geositeMatcher}, globalUa: ${_this.globalUa}, externalController: ${_this.externalController}, secret: ${_this.secret}, hosts: ${_this.hosts}, geoAutoUpdate: ${_this.geoAutoUpdate}, geoUpdateInterval: ${_this.geoUpdateInterval})';
+  return 'PatchClashConfig(mixedPort: ${_this.mixedPort}, socksPort: ${_this.socksPort}, port: ${_this.port}, redirPort: ${_this.redirPort}, tproxyPort: ${_this.tproxyPort}, mode: ${_this.mode}, allowLan: ${_this.allowLan}, logLevel: ${_this.logLevel}, ipv6: ${_this.ipv6}, findProcessMode: ${_this.findProcessMode}, interfaceNameMode: ${_this.interfaceNameMode}, interfaceName: ${_this.interfaceName}, keepAliveInterval: ${_this.keepAliveInterval}, unifiedDelay: ${_this.unifiedDelay}, tcpConcurrent: ${_this.tcpConcurrent}, tun: ${_this.tun}, dns: ${_this.dns}, ntp: ${_this.ntp}, geoXUrl: ${_this.geoXUrl}, geodataLoader: ${_this.geodataLoader}, geositeMatcher: ${_this.geositeMatcher}, globalUa: ${_this.globalUa}, externalController: ${_this.externalController}, secret: ${_this.secret}, hosts: ${_this.hosts}, geoAutoUpdate: ${_this.geoAutoUpdate}, geoUpdateInterval: ${_this.geoUpdateInterval})';
 }
 
 
@@ -4624,11 +4909,11 @@ abstract mixin class $PatchClashConfigCopyWith<$Res>  {
   factory $PatchClashConfigCopyWith(PatchClashConfig value, $Res Function(PatchClashConfig) _then) = _$PatchClashConfigCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'mixed-port') int mixedPort,@JsonKey(name: 'socks-port') int socksPort,@JsonKey(name: 'port') int port,@JsonKey(name: 'redir-port') int redirPort,@JsonKey(name: 'tproxy-port') int tproxyPort,@JsonKey(unknownEnumValue: Mode.rule) Mode mode,@JsonKey(name: 'allow-lan') bool allowLan,@JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error) LogLevel logLevel, bool ipv6,@JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always) FindProcessMode findProcessMode,@JsonKey(name: 'interface-name-mode', unknownEnumValue: InterfaceNameMode.clear) InterfaceNameMode interfaceNameMode,@JsonKey(name: 'interface-name') String interfaceName,@JsonKey(name: 'keep-alive-interval') int keepAliveInterval,@JsonKey(name: 'unified-delay') bool unifiedDelay,@JsonKey(name: 'tcp-concurrent') bool tcpConcurrent,@JsonKey(fromJson: Tun.safeFormJson) Tun tun,@JsonKey(fromJson: Dns.safeDnsFromJson) Dns dns,@JsonKey(name: 'geox-url', fromJson: _geoXUrlFromJson, toJson: _geoXUrlToJson) Map<GeoResource, String> geoXUrl,@JsonKey(name: 'geodata-loader', unknownEnumValue: GeodataLoader.memconservative) GeodataLoader geodataLoader,@JsonKey(name: 'geosite-matcher', unknownEnumValue: GeositeMatcher.succinct) GeositeMatcher geositeMatcher,@JsonKey(name: 'global-ua') String? globalUa,@JsonKey(name: 'external-controller') String externalController, String secret, Map<String, String> hosts,@JsonKey(name: 'geo-auto-update') bool geoAutoUpdate,@JsonKey(name: 'geo-update-interval') int geoUpdateInterval
+@JsonKey(name: 'mixed-port') int mixedPort,@JsonKey(name: 'socks-port') int socksPort,@JsonKey(name: 'port') int port,@JsonKey(name: 'redir-port') int redirPort,@JsonKey(name: 'tproxy-port') int tproxyPort,@JsonKey(unknownEnumValue: Mode.rule) Mode mode,@JsonKey(name: 'allow-lan') bool allowLan,@JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error) LogLevel logLevel, bool ipv6,@JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always) FindProcessMode findProcessMode,@JsonKey(name: 'interface-name-mode', unknownEnumValue: InterfaceNameMode.clear) InterfaceNameMode interfaceNameMode,@JsonKey(name: 'interface-name') String interfaceName,@JsonKey(name: 'keep-alive-interval') int keepAliveInterval,@JsonKey(name: 'unified-delay') bool unifiedDelay,@JsonKey(name: 'tcp-concurrent') bool tcpConcurrent,@JsonKey(fromJson: Tun.safeFormJson) Tun tun,@JsonKey(fromJson: Dns.safeDnsFromJson) Dns dns,@JsonKey(fromJson: Ntp.safeNtpFromJson) Ntp ntp,@JsonKey(name: 'geox-url', fromJson: _geoXUrlFromJson, toJson: _geoXUrlToJson) Map<GeoResource, String> geoXUrl,@JsonKey(name: 'geodata-loader', unknownEnumValue: GeodataLoader.memconservative) GeodataLoader geodataLoader,@JsonKey(name: 'geosite-matcher', unknownEnumValue: GeositeMatcher.succinct) GeositeMatcher geositeMatcher,@JsonKey(name: 'global-ua') String? globalUa,@JsonKey(name: 'external-controller') String externalController, String secret, Map<String, String> hosts,@JsonKey(name: 'geo-auto-update') bool geoAutoUpdate,@JsonKey(name: 'geo-update-interval') int geoUpdateInterval
 });
 
 
-$TunCopyWith<$Res> get tun;$DnsCopyWith<$Res> get dns;
+$TunCopyWith<$Res> get tun;$DnsCopyWith<$Res> get dns;$NtpCopyWith<$Res> get ntp;
 
 }
 /// @nodoc
@@ -4641,7 +4926,7 @@ class _$PatchClashConfigCopyWithImpl<$Res>
 
 /// Create a copy of PatchClashConfig
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? mixedPort = null,Object? socksPort = null,Object? port = null,Object? redirPort = null,Object? tproxyPort = null,Object? mode = null,Object? allowLan = null,Object? logLevel = null,Object? ipv6 = null,Object? findProcessMode = null,Object? interfaceNameMode = null,Object? interfaceName = null,Object? keepAliveInterval = null,Object? unifiedDelay = null,Object? tcpConcurrent = null,Object? tun = null,Object? dns = null,Object? geoXUrl = null,Object? geodataLoader = null,Object? geositeMatcher = null,Object? globalUa = freezed,Object? externalController = null,Object? secret = null,Object? hosts = null,Object? geoAutoUpdate = null,Object? geoUpdateInterval = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? mixedPort = null,Object? socksPort = null,Object? port = null,Object? redirPort = null,Object? tproxyPort = null,Object? mode = null,Object? allowLan = null,Object? logLevel = null,Object? ipv6 = null,Object? findProcessMode = null,Object? interfaceNameMode = null,Object? interfaceName = null,Object? keepAliveInterval = null,Object? unifiedDelay = null,Object? tcpConcurrent = null,Object? tun = null,Object? dns = null,Object? ntp = null,Object? geoXUrl = null,Object? geodataLoader = null,Object? geositeMatcher = null,Object? globalUa = freezed,Object? externalController = null,Object? secret = null,Object? hosts = null,Object? geoAutoUpdate = null,Object? geoUpdateInterval = null,}) {
   return _then(PatchClashConfig(
 mixedPort: null == mixedPort ? _self.mixedPort : mixedPort // ignore: cast_nullable_to_non_nullable
 as int,socksPort: null == socksPort ? _self.socksPort : socksPort // ignore: cast_nullable_to_non_nullable
@@ -4660,7 +4945,8 @@ as int,unifiedDelay: null == unifiedDelay ? _self.unifiedDelay : unifiedDelay //
 as bool,tcpConcurrent: null == tcpConcurrent ? _self.tcpConcurrent : tcpConcurrent // ignore: cast_nullable_to_non_nullable
 as bool,tun: null == tun ? _self.tun : tun // ignore: cast_nullable_to_non_nullable
 as Tun,dns: null == dns ? _self.dns : dns // ignore: cast_nullable_to_non_nullable
-as Dns,geoXUrl: null == geoXUrl ? _self.geoXUrl : geoXUrl // ignore: cast_nullable_to_non_nullable
+as Dns,ntp: null == ntp ? _self.ntp : ntp // ignore: cast_nullable_to_non_nullable
+as Ntp,geoXUrl: null == geoXUrl ? _self.geoXUrl : geoXUrl // ignore: cast_nullable_to_non_nullable
 as Map<GeoResource, String>,geodataLoader: null == geodataLoader ? _self.geodataLoader : geodataLoader // ignore: cast_nullable_to_non_nullable
 as GeodataLoader,geositeMatcher: null == geositeMatcher ? _self.geositeMatcher : geositeMatcher // ignore: cast_nullable_to_non_nullable
 as GeositeMatcher,globalUa: freezed == globalUa ? _self.globalUa : globalUa // ignore: cast_nullable_to_non_nullable
@@ -4689,6 +4975,15 @@ $DnsCopyWith<$Res> get dns {
   
   return $DnsCopyWith<$Res>(_self.dns, (value) {
     return _then(_self.copyWith(dns: value));
+  });
+}/// Create a copy of PatchClashConfig
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$NtpCopyWith<$Res> get ntp {
+  
+  return $NtpCopyWith<$Res>(_self.ntp, (value) {
+    return _then(_self.copyWith(ntp: value));
   });
 }
 }
@@ -4772,10 +5067,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'mixed-port')  int mixedPort, @JsonKey(name: 'socks-port')  int socksPort, @JsonKey(name: 'port')  int port, @JsonKey(name: 'redir-port')  int redirPort, @JsonKey(name: 'tproxy-port')  int tproxyPort, @JsonKey(unknownEnumValue: Mode.rule)  Mode mode, @JsonKey(name: 'allow-lan')  bool allowLan, @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error)  LogLevel logLevel,  bool ipv6, @JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always)  FindProcessMode findProcessMode, @JsonKey(name: 'interface-name-mode', unknownEnumValue: InterfaceNameMode.clear)  InterfaceNameMode interfaceNameMode, @JsonKey(name: 'interface-name')  String interfaceName, @JsonKey(name: 'keep-alive-interval')  int keepAliveInterval, @JsonKey(name: 'unified-delay')  bool unifiedDelay, @JsonKey(name: 'tcp-concurrent')  bool tcpConcurrent, @JsonKey(fromJson: Tun.safeFormJson)  Tun tun, @JsonKey(fromJson: Dns.safeDnsFromJson)  Dns dns, @JsonKey(name: 'geox-url', fromJson: _geoXUrlFromJson, toJson: _geoXUrlToJson)  Map<GeoResource, String> geoXUrl, @JsonKey(name: 'geodata-loader', unknownEnumValue: GeodataLoader.memconservative)  GeodataLoader geodataLoader, @JsonKey(name: 'geosite-matcher', unknownEnumValue: GeositeMatcher.succinct)  GeositeMatcher geositeMatcher, @JsonKey(name: 'global-ua')  String? globalUa, @JsonKey(name: 'external-controller')  String externalController,  String secret,  Map<String, String> hosts, @JsonKey(name: 'geo-auto-update')  bool geoAutoUpdate, @JsonKey(name: 'geo-update-interval')  int geoUpdateInterval)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'mixed-port')  int mixedPort, @JsonKey(name: 'socks-port')  int socksPort, @JsonKey(name: 'port')  int port, @JsonKey(name: 'redir-port')  int redirPort, @JsonKey(name: 'tproxy-port')  int tproxyPort, @JsonKey(unknownEnumValue: Mode.rule)  Mode mode, @JsonKey(name: 'allow-lan')  bool allowLan, @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error)  LogLevel logLevel,  bool ipv6, @JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always)  FindProcessMode findProcessMode, @JsonKey(name: 'interface-name-mode', unknownEnumValue: InterfaceNameMode.clear)  InterfaceNameMode interfaceNameMode, @JsonKey(name: 'interface-name')  String interfaceName, @JsonKey(name: 'keep-alive-interval')  int keepAliveInterval, @JsonKey(name: 'unified-delay')  bool unifiedDelay, @JsonKey(name: 'tcp-concurrent')  bool tcpConcurrent, @JsonKey(fromJson: Tun.safeFormJson)  Tun tun, @JsonKey(fromJson: Dns.safeDnsFromJson)  Dns dns, @JsonKey(fromJson: Ntp.safeNtpFromJson)  Ntp ntp, @JsonKey(name: 'geox-url', fromJson: _geoXUrlFromJson, toJson: _geoXUrlToJson)  Map<GeoResource, String> geoXUrl, @JsonKey(name: 'geodata-loader', unknownEnumValue: GeodataLoader.memconservative)  GeodataLoader geodataLoader, @JsonKey(name: 'geosite-matcher', unknownEnumValue: GeositeMatcher.succinct)  GeositeMatcher geositeMatcher, @JsonKey(name: 'global-ua')  String? globalUa, @JsonKey(name: 'external-controller')  String externalController,  String secret,  Map<String, String> hosts, @JsonKey(name: 'geo-auto-update')  bool geoAutoUpdate, @JsonKey(name: 'geo-update-interval')  int geoUpdateInterval)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PatchClashConfig() when $default != null:
-return $default(_that.mixedPort,_that.socksPort,_that.port,_that.redirPort,_that.tproxyPort,_that.mode,_that.allowLan,_that.logLevel,_that.ipv6,_that.findProcessMode,_that.interfaceNameMode,_that.interfaceName,_that.keepAliveInterval,_that.unifiedDelay,_that.tcpConcurrent,_that.tun,_that.dns,_that.geoXUrl,_that.geodataLoader,_that.geositeMatcher,_that.globalUa,_that.externalController,_that.secret,_that.hosts,_that.geoAutoUpdate,_that.geoUpdateInterval);case _:
+return $default(_that.mixedPort,_that.socksPort,_that.port,_that.redirPort,_that.tproxyPort,_that.mode,_that.allowLan,_that.logLevel,_that.ipv6,_that.findProcessMode,_that.interfaceNameMode,_that.interfaceName,_that.keepAliveInterval,_that.unifiedDelay,_that.tcpConcurrent,_that.tun,_that.dns,_that.ntp,_that.geoXUrl,_that.geodataLoader,_that.geositeMatcher,_that.globalUa,_that.externalController,_that.secret,_that.hosts,_that.geoAutoUpdate,_that.geoUpdateInterval);case _:
   return orElse();
 
 }
@@ -4793,10 +5088,10 @@ return $default(_that.mixedPort,_that.socksPort,_that.port,_that.redirPort,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'mixed-port')  int mixedPort, @JsonKey(name: 'socks-port')  int socksPort, @JsonKey(name: 'port')  int port, @JsonKey(name: 'redir-port')  int redirPort, @JsonKey(name: 'tproxy-port')  int tproxyPort, @JsonKey(unknownEnumValue: Mode.rule)  Mode mode, @JsonKey(name: 'allow-lan')  bool allowLan, @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error)  LogLevel logLevel,  bool ipv6, @JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always)  FindProcessMode findProcessMode, @JsonKey(name: 'interface-name-mode', unknownEnumValue: InterfaceNameMode.clear)  InterfaceNameMode interfaceNameMode, @JsonKey(name: 'interface-name')  String interfaceName, @JsonKey(name: 'keep-alive-interval')  int keepAliveInterval, @JsonKey(name: 'unified-delay')  bool unifiedDelay, @JsonKey(name: 'tcp-concurrent')  bool tcpConcurrent, @JsonKey(fromJson: Tun.safeFormJson)  Tun tun, @JsonKey(fromJson: Dns.safeDnsFromJson)  Dns dns, @JsonKey(name: 'geox-url', fromJson: _geoXUrlFromJson, toJson: _geoXUrlToJson)  Map<GeoResource, String> geoXUrl, @JsonKey(name: 'geodata-loader', unknownEnumValue: GeodataLoader.memconservative)  GeodataLoader geodataLoader, @JsonKey(name: 'geosite-matcher', unknownEnumValue: GeositeMatcher.succinct)  GeositeMatcher geositeMatcher, @JsonKey(name: 'global-ua')  String? globalUa, @JsonKey(name: 'external-controller')  String externalController,  String secret,  Map<String, String> hosts, @JsonKey(name: 'geo-auto-update')  bool geoAutoUpdate, @JsonKey(name: 'geo-update-interval')  int geoUpdateInterval)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'mixed-port')  int mixedPort, @JsonKey(name: 'socks-port')  int socksPort, @JsonKey(name: 'port')  int port, @JsonKey(name: 'redir-port')  int redirPort, @JsonKey(name: 'tproxy-port')  int tproxyPort, @JsonKey(unknownEnumValue: Mode.rule)  Mode mode, @JsonKey(name: 'allow-lan')  bool allowLan, @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error)  LogLevel logLevel,  bool ipv6, @JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always)  FindProcessMode findProcessMode, @JsonKey(name: 'interface-name-mode', unknownEnumValue: InterfaceNameMode.clear)  InterfaceNameMode interfaceNameMode, @JsonKey(name: 'interface-name')  String interfaceName, @JsonKey(name: 'keep-alive-interval')  int keepAliveInterval, @JsonKey(name: 'unified-delay')  bool unifiedDelay, @JsonKey(name: 'tcp-concurrent')  bool tcpConcurrent, @JsonKey(fromJson: Tun.safeFormJson)  Tun tun, @JsonKey(fromJson: Dns.safeDnsFromJson)  Dns dns, @JsonKey(fromJson: Ntp.safeNtpFromJson)  Ntp ntp, @JsonKey(name: 'geox-url', fromJson: _geoXUrlFromJson, toJson: _geoXUrlToJson)  Map<GeoResource, String> geoXUrl, @JsonKey(name: 'geodata-loader', unknownEnumValue: GeodataLoader.memconservative)  GeodataLoader geodataLoader, @JsonKey(name: 'geosite-matcher', unknownEnumValue: GeositeMatcher.succinct)  GeositeMatcher geositeMatcher, @JsonKey(name: 'global-ua')  String? globalUa, @JsonKey(name: 'external-controller')  String externalController,  String secret,  Map<String, String> hosts, @JsonKey(name: 'geo-auto-update')  bool geoAutoUpdate, @JsonKey(name: 'geo-update-interval')  int geoUpdateInterval)  $default,) {final _that = this;
 switch (_that) {
 case _PatchClashConfig():
-return $default(_that.mixedPort,_that.socksPort,_that.port,_that.redirPort,_that.tproxyPort,_that.mode,_that.allowLan,_that.logLevel,_that.ipv6,_that.findProcessMode,_that.interfaceNameMode,_that.interfaceName,_that.keepAliveInterval,_that.unifiedDelay,_that.tcpConcurrent,_that.tun,_that.dns,_that.geoXUrl,_that.geodataLoader,_that.geositeMatcher,_that.globalUa,_that.externalController,_that.secret,_that.hosts,_that.geoAutoUpdate,_that.geoUpdateInterval);case _:
+return $default(_that.mixedPort,_that.socksPort,_that.port,_that.redirPort,_that.tproxyPort,_that.mode,_that.allowLan,_that.logLevel,_that.ipv6,_that.findProcessMode,_that.interfaceNameMode,_that.interfaceName,_that.keepAliveInterval,_that.unifiedDelay,_that.tcpConcurrent,_that.tun,_that.dns,_that.ntp,_that.geoXUrl,_that.geodataLoader,_that.geositeMatcher,_that.globalUa,_that.externalController,_that.secret,_that.hosts,_that.geoAutoUpdate,_that.geoUpdateInterval);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -4813,10 +5108,10 @@ return $default(_that.mixedPort,_that.socksPort,_that.port,_that.redirPort,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'mixed-port')  int mixedPort, @JsonKey(name: 'socks-port')  int socksPort, @JsonKey(name: 'port')  int port, @JsonKey(name: 'redir-port')  int redirPort, @JsonKey(name: 'tproxy-port')  int tproxyPort, @JsonKey(unknownEnumValue: Mode.rule)  Mode mode, @JsonKey(name: 'allow-lan')  bool allowLan, @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error)  LogLevel logLevel,  bool ipv6, @JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always)  FindProcessMode findProcessMode, @JsonKey(name: 'interface-name-mode', unknownEnumValue: InterfaceNameMode.clear)  InterfaceNameMode interfaceNameMode, @JsonKey(name: 'interface-name')  String interfaceName, @JsonKey(name: 'keep-alive-interval')  int keepAliveInterval, @JsonKey(name: 'unified-delay')  bool unifiedDelay, @JsonKey(name: 'tcp-concurrent')  bool tcpConcurrent, @JsonKey(fromJson: Tun.safeFormJson)  Tun tun, @JsonKey(fromJson: Dns.safeDnsFromJson)  Dns dns, @JsonKey(name: 'geox-url', fromJson: _geoXUrlFromJson, toJson: _geoXUrlToJson)  Map<GeoResource, String> geoXUrl, @JsonKey(name: 'geodata-loader', unknownEnumValue: GeodataLoader.memconservative)  GeodataLoader geodataLoader, @JsonKey(name: 'geosite-matcher', unknownEnumValue: GeositeMatcher.succinct)  GeositeMatcher geositeMatcher, @JsonKey(name: 'global-ua')  String? globalUa, @JsonKey(name: 'external-controller')  String externalController,  String secret,  Map<String, String> hosts, @JsonKey(name: 'geo-auto-update')  bool geoAutoUpdate, @JsonKey(name: 'geo-update-interval')  int geoUpdateInterval)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'mixed-port')  int mixedPort, @JsonKey(name: 'socks-port')  int socksPort, @JsonKey(name: 'port')  int port, @JsonKey(name: 'redir-port')  int redirPort, @JsonKey(name: 'tproxy-port')  int tproxyPort, @JsonKey(unknownEnumValue: Mode.rule)  Mode mode, @JsonKey(name: 'allow-lan')  bool allowLan, @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error)  LogLevel logLevel,  bool ipv6, @JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always)  FindProcessMode findProcessMode, @JsonKey(name: 'interface-name-mode', unknownEnumValue: InterfaceNameMode.clear)  InterfaceNameMode interfaceNameMode, @JsonKey(name: 'interface-name')  String interfaceName, @JsonKey(name: 'keep-alive-interval')  int keepAliveInterval, @JsonKey(name: 'unified-delay')  bool unifiedDelay, @JsonKey(name: 'tcp-concurrent')  bool tcpConcurrent, @JsonKey(fromJson: Tun.safeFormJson)  Tun tun, @JsonKey(fromJson: Dns.safeDnsFromJson)  Dns dns, @JsonKey(fromJson: Ntp.safeNtpFromJson)  Ntp ntp, @JsonKey(name: 'geox-url', fromJson: _geoXUrlFromJson, toJson: _geoXUrlToJson)  Map<GeoResource, String> geoXUrl, @JsonKey(name: 'geodata-loader', unknownEnumValue: GeodataLoader.memconservative)  GeodataLoader geodataLoader, @JsonKey(name: 'geosite-matcher', unknownEnumValue: GeositeMatcher.succinct)  GeositeMatcher geositeMatcher, @JsonKey(name: 'global-ua')  String? globalUa, @JsonKey(name: 'external-controller')  String externalController,  String secret,  Map<String, String> hosts, @JsonKey(name: 'geo-auto-update')  bool geoAutoUpdate, @JsonKey(name: 'geo-update-interval')  int geoUpdateInterval)?  $default,) {final _that = this;
 switch (_that) {
 case _PatchClashConfig() when $default != null:
-return $default(_that.mixedPort,_that.socksPort,_that.port,_that.redirPort,_that.tproxyPort,_that.mode,_that.allowLan,_that.logLevel,_that.ipv6,_that.findProcessMode,_that.interfaceNameMode,_that.interfaceName,_that.keepAliveInterval,_that.unifiedDelay,_that.tcpConcurrent,_that.tun,_that.dns,_that.geoXUrl,_that.geodataLoader,_that.geositeMatcher,_that.globalUa,_that.externalController,_that.secret,_that.hosts,_that.geoAutoUpdate,_that.geoUpdateInterval);case _:
+return $default(_that.mixedPort,_that.socksPort,_that.port,_that.redirPort,_that.tproxyPort,_that.mode,_that.allowLan,_that.logLevel,_that.ipv6,_that.findProcessMode,_that.interfaceNameMode,_that.interfaceName,_that.keepAliveInterval,_that.unifiedDelay,_that.tcpConcurrent,_that.tun,_that.dns,_that.ntp,_that.geoXUrl,_that.geodataLoader,_that.geositeMatcher,_that.globalUa,_that.externalController,_that.secret,_that.hosts,_that.geoAutoUpdate,_that.geoUpdateInterval);case _:
   return null;
 
 }
@@ -4828,7 +5123,7 @@ return $default(_that.mixedPort,_that.socksPort,_that.port,_that.redirPort,_that
 @JsonSerializable()
 
 class _PatchClashConfig implements PatchClashConfig {
-  const _PatchClashConfig({@JsonKey(name: 'mixed-port') this.mixedPort = defaultMixedPort, @JsonKey(name: 'socks-port') this.socksPort = 0, @JsonKey(name: 'port') this.port = 0, @JsonKey(name: 'redir-port') this.redirPort = 0, @JsonKey(name: 'tproxy-port') this.tproxyPort = 0, @JsonKey(unknownEnumValue: Mode.rule) this.mode = Mode.rule, @JsonKey(name: 'allow-lan') this.allowLan = false, @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error) this.logLevel = LogLevel.info, this.ipv6 = false, @JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always) this.findProcessMode = FindProcessMode.always, @JsonKey(name: 'interface-name-mode', unknownEnumValue: InterfaceNameMode.clear) this.interfaceNameMode = InterfaceNameMode.clear, @JsonKey(name: 'interface-name') this.interfaceName = '', @JsonKey(name: 'keep-alive-interval') this.keepAliveInterval = defaultKeepAliveInterval, @JsonKey(name: 'unified-delay') this.unifiedDelay = true, @JsonKey(name: 'tcp-concurrent') this.tcpConcurrent = true, @JsonKey(fromJson: Tun.safeFormJson) this.tun = defaultTun, @JsonKey(fromJson: Dns.safeDnsFromJson) this.dns = defaultDns, @JsonKey(name: 'geox-url', fromJson: _geoXUrlFromJson, toJson: _geoXUrlToJson)  Map<GeoResource, String> geoXUrl = defaultGeoXUrl, @JsonKey(name: 'geodata-loader', unknownEnumValue: GeodataLoader.memconservative) this.geodataLoader = GeodataLoader.memconservative, @JsonKey(name: 'geosite-matcher', unknownEnumValue: GeositeMatcher.succinct) this.geositeMatcher = GeositeMatcher.succinct, @JsonKey(name: 'global-ua') this.globalUa, @JsonKey(name: 'external-controller') this.externalController = '', this.secret = '',  Map<String, String> hosts = const {}, @JsonKey(name: 'geo-auto-update') this.geoAutoUpdate = false, @JsonKey(name: 'geo-update-interval') this.geoUpdateInterval = 24}): _geoXUrl = geoXUrl,_hosts = hosts;
+  const _PatchClashConfig({@JsonKey(name: 'mixed-port') this.mixedPort = defaultMixedPort, @JsonKey(name: 'socks-port') this.socksPort = 0, @JsonKey(name: 'port') this.port = 0, @JsonKey(name: 'redir-port') this.redirPort = 0, @JsonKey(name: 'tproxy-port') this.tproxyPort = 0, @JsonKey(unknownEnumValue: Mode.rule) this.mode = Mode.rule, @JsonKey(name: 'allow-lan') this.allowLan = false, @JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error) this.logLevel = LogLevel.info, this.ipv6 = false, @JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always) this.findProcessMode = FindProcessMode.always, @JsonKey(name: 'interface-name-mode', unknownEnumValue: InterfaceNameMode.clear) this.interfaceNameMode = InterfaceNameMode.clear, @JsonKey(name: 'interface-name') this.interfaceName = '', @JsonKey(name: 'keep-alive-interval') this.keepAliveInterval = defaultKeepAliveInterval, @JsonKey(name: 'unified-delay') this.unifiedDelay = true, @JsonKey(name: 'tcp-concurrent') this.tcpConcurrent = true, @JsonKey(fromJson: Tun.safeFormJson) this.tun = defaultTun, @JsonKey(fromJson: Dns.safeDnsFromJson) this.dns = defaultDns, @JsonKey(fromJson: Ntp.safeNtpFromJson) this.ntp = defaultNtp, @JsonKey(name: 'geox-url', fromJson: _geoXUrlFromJson, toJson: _geoXUrlToJson)  Map<GeoResource, String> geoXUrl = defaultGeoXUrl, @JsonKey(name: 'geodata-loader', unknownEnumValue: GeodataLoader.memconservative) this.geodataLoader = GeodataLoader.memconservative, @JsonKey(name: 'geosite-matcher', unknownEnumValue: GeositeMatcher.succinct) this.geositeMatcher = GeositeMatcher.succinct, @JsonKey(name: 'global-ua') this.globalUa, @JsonKey(name: 'external-controller') this.externalController = '', this.secret = '',  Map<String, String> hosts = const {}, @JsonKey(name: 'geo-auto-update') this.geoAutoUpdate = false, @JsonKey(name: 'geo-update-interval') this.geoUpdateInterval = 24}): _geoXUrl = geoXUrl,_hosts = hosts;
   factory _PatchClashConfig.fromJson(Map<String, dynamic> json) => _$PatchClashConfigFromJson(json);
 
 @override@JsonKey(name: 'mixed-port') final  int mixedPort;
@@ -4848,6 +5143,7 @@ class _PatchClashConfig implements PatchClashConfig {
 @override@JsonKey(name: 'tcp-concurrent') final  bool tcpConcurrent;
 @override@JsonKey(fromJson: Tun.safeFormJson) final  Tun tun;
 @override@JsonKey(fromJson: Dns.safeDnsFromJson) final  Dns dns;
+@override@JsonKey(fromJson: Ntp.safeNtpFromJson) final  Ntp ntp;
  final  Map<GeoResource, String> _geoXUrl;
 @override@JsonKey(name: 'geox-url', fromJson: _geoXUrlFromJson, toJson: _geoXUrlToJson) Map<GeoResource, String> get geoXUrl {
   if (_geoXUrl is EqualUnmodifiableMapView) return _geoXUrl;
@@ -4883,18 +5179,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PatchClashConfig&&(identical(other.mixedPort, mixedPort) || other.mixedPort == mixedPort)&&(identical(other.socksPort, socksPort) || other.socksPort == socksPort)&&(identical(other.port, port) || other.port == port)&&(identical(other.redirPort, redirPort) || other.redirPort == redirPort)&&(identical(other.tproxyPort, tproxyPort) || other.tproxyPort == tproxyPort)&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.allowLan, allowLan) || other.allowLan == allowLan)&&(identical(other.logLevel, logLevel) || other.logLevel == logLevel)&&(identical(other.ipv6, ipv6) || other.ipv6 == ipv6)&&(identical(other.findProcessMode, findProcessMode) || other.findProcessMode == findProcessMode)&&(identical(other.interfaceNameMode, interfaceNameMode) || other.interfaceNameMode == interfaceNameMode)&&(identical(other.interfaceName, interfaceName) || other.interfaceName == interfaceName)&&(identical(other.keepAliveInterval, keepAliveInterval) || other.keepAliveInterval == keepAliveInterval)&&(identical(other.unifiedDelay, unifiedDelay) || other.unifiedDelay == unifiedDelay)&&(identical(other.tcpConcurrent, tcpConcurrent) || other.tcpConcurrent == tcpConcurrent)&&(identical(other.tun, tun) || other.tun == tun)&&(identical(other.dns, dns) || other.dns == dns)&&const DeepCollectionEquality().equals(other.geoXUrl, _geoXUrl)&&(identical(other.geodataLoader, geodataLoader) || other.geodataLoader == geodataLoader)&&(identical(other.geositeMatcher, geositeMatcher) || other.geositeMatcher == geositeMatcher)&&(identical(other.globalUa, globalUa) || other.globalUa == globalUa)&&(identical(other.externalController, externalController) || other.externalController == externalController)&&(identical(other.secret, secret) || other.secret == secret)&&const DeepCollectionEquality().equals(other.hosts, _hosts)&&(identical(other.geoAutoUpdate, geoAutoUpdate) || other.geoAutoUpdate == geoAutoUpdate)&&(identical(other.geoUpdateInterval, geoUpdateInterval) || other.geoUpdateInterval == geoUpdateInterval));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PatchClashConfig&&(identical(other.mixedPort, mixedPort) || other.mixedPort == mixedPort)&&(identical(other.socksPort, socksPort) || other.socksPort == socksPort)&&(identical(other.port, port) || other.port == port)&&(identical(other.redirPort, redirPort) || other.redirPort == redirPort)&&(identical(other.tproxyPort, tproxyPort) || other.tproxyPort == tproxyPort)&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.allowLan, allowLan) || other.allowLan == allowLan)&&(identical(other.logLevel, logLevel) || other.logLevel == logLevel)&&(identical(other.ipv6, ipv6) || other.ipv6 == ipv6)&&(identical(other.findProcessMode, findProcessMode) || other.findProcessMode == findProcessMode)&&(identical(other.interfaceNameMode, interfaceNameMode) || other.interfaceNameMode == interfaceNameMode)&&(identical(other.interfaceName, interfaceName) || other.interfaceName == interfaceName)&&(identical(other.keepAliveInterval, keepAliveInterval) || other.keepAliveInterval == keepAliveInterval)&&(identical(other.unifiedDelay, unifiedDelay) || other.unifiedDelay == unifiedDelay)&&(identical(other.tcpConcurrent, tcpConcurrent) || other.tcpConcurrent == tcpConcurrent)&&(identical(other.tun, tun) || other.tun == tun)&&(identical(other.dns, dns) || other.dns == dns)&&(identical(other.ntp, ntp) || other.ntp == ntp)&&const DeepCollectionEquality().equals(other.geoXUrl, _geoXUrl)&&(identical(other.geodataLoader, geodataLoader) || other.geodataLoader == geodataLoader)&&(identical(other.geositeMatcher, geositeMatcher) || other.geositeMatcher == geositeMatcher)&&(identical(other.globalUa, globalUa) || other.globalUa == globalUa)&&(identical(other.externalController, externalController) || other.externalController == externalController)&&(identical(other.secret, secret) || other.secret == secret)&&const DeepCollectionEquality().equals(other.hosts, _hosts)&&(identical(other.geoAutoUpdate, geoAutoUpdate) || other.geoAutoUpdate == geoAutoUpdate)&&(identical(other.geoUpdateInterval, geoUpdateInterval) || other.geoUpdateInterval == geoUpdateInterval));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hashAll([runtimeType,mixedPort,socksPort,port,redirPort,tproxyPort,mode,allowLan,logLevel,ipv6,findProcessMode,interfaceNameMode,interfaceName,keepAliveInterval,unifiedDelay,tcpConcurrent,tun,dns,const DeepCollectionEquality().hash(_geoXUrl),geodataLoader,geositeMatcher,globalUa,externalController,secret,const DeepCollectionEquality().hash(_hosts),geoAutoUpdate,geoUpdateInterval]);
+    return Object.hashAll([runtimeType,mixedPort,socksPort,port,redirPort,tproxyPort,mode,allowLan,logLevel,ipv6,findProcessMode,interfaceNameMode,interfaceName,keepAliveInterval,unifiedDelay,tcpConcurrent,tun,dns,ntp,const DeepCollectionEquality().hash(_geoXUrl),geodataLoader,geositeMatcher,globalUa,externalController,secret,const DeepCollectionEquality().hash(_hosts),geoAutoUpdate,geoUpdateInterval]);
 }
 
 @override
 String toString() {
-    return 'PatchClashConfig(mixedPort: $mixedPort, socksPort: $socksPort, port: $port, redirPort: $redirPort, tproxyPort: $tproxyPort, mode: $mode, allowLan: $allowLan, logLevel: $logLevel, ipv6: $ipv6, findProcessMode: $findProcessMode, interfaceNameMode: $interfaceNameMode, interfaceName: $interfaceName, keepAliveInterval: $keepAliveInterval, unifiedDelay: $unifiedDelay, tcpConcurrent: $tcpConcurrent, tun: $tun, dns: $dns, geoXUrl: $geoXUrl, geodataLoader: $geodataLoader, geositeMatcher: $geositeMatcher, globalUa: $globalUa, externalController: $externalController, secret: $secret, hosts: $hosts, geoAutoUpdate: $geoAutoUpdate, geoUpdateInterval: $geoUpdateInterval)';
+    return 'PatchClashConfig(mixedPort: $mixedPort, socksPort: $socksPort, port: $port, redirPort: $redirPort, tproxyPort: $tproxyPort, mode: $mode, allowLan: $allowLan, logLevel: $logLevel, ipv6: $ipv6, findProcessMode: $findProcessMode, interfaceNameMode: $interfaceNameMode, interfaceName: $interfaceName, keepAliveInterval: $keepAliveInterval, unifiedDelay: $unifiedDelay, tcpConcurrent: $tcpConcurrent, tun: $tun, dns: $dns, ntp: $ntp, geoXUrl: $geoXUrl, geodataLoader: $geodataLoader, geositeMatcher: $geositeMatcher, globalUa: $globalUa, externalController: $externalController, secret: $secret, hosts: $hosts, geoAutoUpdate: $geoAutoUpdate, geoUpdateInterval: $geoUpdateInterval)';
 }
 
 
@@ -4905,11 +5201,11 @@ abstract mixin class _$PatchClashConfigCopyWith<$Res> implements $PatchClashConf
   factory _$PatchClashConfigCopyWith(_PatchClashConfig value, $Res Function(_PatchClashConfig) _then) = __$PatchClashConfigCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'mixed-port') int mixedPort,@JsonKey(name: 'socks-port') int socksPort,@JsonKey(name: 'port') int port,@JsonKey(name: 'redir-port') int redirPort,@JsonKey(name: 'tproxy-port') int tproxyPort,@JsonKey(unknownEnumValue: Mode.rule) Mode mode,@JsonKey(name: 'allow-lan') bool allowLan,@JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error) LogLevel logLevel, bool ipv6,@JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always) FindProcessMode findProcessMode,@JsonKey(name: 'interface-name-mode', unknownEnumValue: InterfaceNameMode.clear) InterfaceNameMode interfaceNameMode,@JsonKey(name: 'interface-name') String interfaceName,@JsonKey(name: 'keep-alive-interval') int keepAliveInterval,@JsonKey(name: 'unified-delay') bool unifiedDelay,@JsonKey(name: 'tcp-concurrent') bool tcpConcurrent,@JsonKey(fromJson: Tun.safeFormJson) Tun tun,@JsonKey(fromJson: Dns.safeDnsFromJson) Dns dns,@JsonKey(name: 'geox-url', fromJson: _geoXUrlFromJson, toJson: _geoXUrlToJson) Map<GeoResource, String> geoXUrl,@JsonKey(name: 'geodata-loader', unknownEnumValue: GeodataLoader.memconservative) GeodataLoader geodataLoader,@JsonKey(name: 'geosite-matcher', unknownEnumValue: GeositeMatcher.succinct) GeositeMatcher geositeMatcher,@JsonKey(name: 'global-ua') String? globalUa,@JsonKey(name: 'external-controller') String externalController, String secret, Map<String, String> hosts,@JsonKey(name: 'geo-auto-update') bool geoAutoUpdate,@JsonKey(name: 'geo-update-interval') int geoUpdateInterval
+@JsonKey(name: 'mixed-port') int mixedPort,@JsonKey(name: 'socks-port') int socksPort,@JsonKey(name: 'port') int port,@JsonKey(name: 'redir-port') int redirPort,@JsonKey(name: 'tproxy-port') int tproxyPort,@JsonKey(unknownEnumValue: Mode.rule) Mode mode,@JsonKey(name: 'allow-lan') bool allowLan,@JsonKey(name: 'log-level', unknownEnumValue: LogLevel.error) LogLevel logLevel, bool ipv6,@JsonKey(name: 'find-process-mode', unknownEnumValue: FindProcessMode.always) FindProcessMode findProcessMode,@JsonKey(name: 'interface-name-mode', unknownEnumValue: InterfaceNameMode.clear) InterfaceNameMode interfaceNameMode,@JsonKey(name: 'interface-name') String interfaceName,@JsonKey(name: 'keep-alive-interval') int keepAliveInterval,@JsonKey(name: 'unified-delay') bool unifiedDelay,@JsonKey(name: 'tcp-concurrent') bool tcpConcurrent,@JsonKey(fromJson: Tun.safeFormJson) Tun tun,@JsonKey(fromJson: Dns.safeDnsFromJson) Dns dns,@JsonKey(fromJson: Ntp.safeNtpFromJson) Ntp ntp,@JsonKey(name: 'geox-url', fromJson: _geoXUrlFromJson, toJson: _geoXUrlToJson) Map<GeoResource, String> geoXUrl,@JsonKey(name: 'geodata-loader', unknownEnumValue: GeodataLoader.memconservative) GeodataLoader geodataLoader,@JsonKey(name: 'geosite-matcher', unknownEnumValue: GeositeMatcher.succinct) GeositeMatcher geositeMatcher,@JsonKey(name: 'global-ua') String? globalUa,@JsonKey(name: 'external-controller') String externalController, String secret, Map<String, String> hosts,@JsonKey(name: 'geo-auto-update') bool geoAutoUpdate,@JsonKey(name: 'geo-update-interval') int geoUpdateInterval
 });
 
 
-@override $TunCopyWith<$Res> get tun;@override $DnsCopyWith<$Res> get dns;
+@override $TunCopyWith<$Res> get tun;@override $DnsCopyWith<$Res> get dns;@override $NtpCopyWith<$Res> get ntp;
 
 }
 /// @nodoc
@@ -4922,7 +5218,7 @@ class __$PatchClashConfigCopyWithImpl<$Res>
 
 /// Create a copy of PatchClashConfig
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? mixedPort = null,Object? socksPort = null,Object? port = null,Object? redirPort = null,Object? tproxyPort = null,Object? mode = null,Object? allowLan = null,Object? logLevel = null,Object? ipv6 = null,Object? findProcessMode = null,Object? interfaceNameMode = null,Object? interfaceName = null,Object? keepAliveInterval = null,Object? unifiedDelay = null,Object? tcpConcurrent = null,Object? tun = null,Object? dns = null,Object? geoXUrl = null,Object? geodataLoader = null,Object? geositeMatcher = null,Object? globalUa = freezed,Object? externalController = null,Object? secret = null,Object? hosts = null,Object? geoAutoUpdate = null,Object? geoUpdateInterval = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? mixedPort = null,Object? socksPort = null,Object? port = null,Object? redirPort = null,Object? tproxyPort = null,Object? mode = null,Object? allowLan = null,Object? logLevel = null,Object? ipv6 = null,Object? findProcessMode = null,Object? interfaceNameMode = null,Object? interfaceName = null,Object? keepAliveInterval = null,Object? unifiedDelay = null,Object? tcpConcurrent = null,Object? tun = null,Object? dns = null,Object? ntp = null,Object? geoXUrl = null,Object? geodataLoader = null,Object? geositeMatcher = null,Object? globalUa = freezed,Object? externalController = null,Object? secret = null,Object? hosts = null,Object? geoAutoUpdate = null,Object? geoUpdateInterval = null,}) {
   return _then(_PatchClashConfig(
 mixedPort: null == mixedPort ? _self.mixedPort : mixedPort // ignore: cast_nullable_to_non_nullable
 as int,socksPort: null == socksPort ? _self.socksPort : socksPort // ignore: cast_nullable_to_non_nullable
@@ -4941,7 +5237,8 @@ as int,unifiedDelay: null == unifiedDelay ? _self.unifiedDelay : unifiedDelay //
 as bool,tcpConcurrent: null == tcpConcurrent ? _self.tcpConcurrent : tcpConcurrent // ignore: cast_nullable_to_non_nullable
 as bool,tun: null == tun ? _self.tun : tun // ignore: cast_nullable_to_non_nullable
 as Tun,dns: null == dns ? _self.dns : dns // ignore: cast_nullable_to_non_nullable
-as Dns,geoXUrl: null == geoXUrl ? _self._geoXUrl : geoXUrl // ignore: cast_nullable_to_non_nullable
+as Dns,ntp: null == ntp ? _self.ntp : ntp // ignore: cast_nullable_to_non_nullable
+as Ntp,geoXUrl: null == geoXUrl ? _self._geoXUrl : geoXUrl // ignore: cast_nullable_to_non_nullable
 as Map<GeoResource, String>,geodataLoader: null == geodataLoader ? _self.geodataLoader : geodataLoader // ignore: cast_nullable_to_non_nullable
 as GeodataLoader,geositeMatcher: null == geositeMatcher ? _self.geositeMatcher : geositeMatcher // ignore: cast_nullable_to_non_nullable
 as GeositeMatcher,globalUa: freezed == globalUa ? _self.globalUa : globalUa // ignore: cast_nullable_to_non_nullable
@@ -4971,6 +5268,15 @@ $DnsCopyWith<$Res> get dns {
   
   return $DnsCopyWith<$Res>(_self.dns, (value) {
     return _then(_self.copyWith(dns: value));
+  });
+}/// Create a copy of PatchClashConfig
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$NtpCopyWith<$Res> get ntp {
+  
+  return $NtpCopyWith<$Res>(_self.ntp, (value) {
+    return _then(_self.copyWith(ntp: value));
   });
 }
 }

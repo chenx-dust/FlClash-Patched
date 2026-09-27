@@ -349,6 +349,7 @@ abstract class MakeRealProfileState with _$MakeRealProfileState {
     required Map<String, dynamic> rawConfig,
     required PatchClashConfig realPatchConfig,
     required bool overrideDns,
+    @Default(false) bool overrideNtp,
     required bool appendSystemDns,
     required List<ProxyGroup> proxyGroups,
     required List<Rule> rules,

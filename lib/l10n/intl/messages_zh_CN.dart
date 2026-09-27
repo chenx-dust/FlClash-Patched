@@ -336,6 +336,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "detectionTip": MessageLookupByLibrary.simpleMessage("依赖第三方 api，仅供参考"),
     "developerMode": MessageLookupByLibrary.simpleMessage("开发者模式"),
     "developerModeEnableTip": MessageLookupByLibrary.simpleMessage("开发者模式已启用。"),
+    "dialerProxy": MessageLookupByLibrary.simpleMessage("拨号代理"),
+    "dialerProxyDesc": MessageLookupByLibrary.simpleMessage("用于连接 NTP 服务器的出站"),
     "direct": MessageLookupByLibrary.simpleMessage("直连"),
     "disableUDP": MessageLookupByLibrary.simpleMessage("禁用 UDP"),
     "disclaimer": MessageLookupByLibrary.simpleMessage("免责声明"),
@@ -710,6 +712,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "nodes": MessageLookupByLibrary.simpleMessage("节点"),
     "none": MessageLookupByLibrary.simpleMessage("无"),
     "notSelectedTip": MessageLookupByLibrary.simpleMessage("当前代理组无法选中"),
+    "ntpDesc": MessageLookupByLibrary.simpleMessage("更新 NTP 相关设置"),
+    "ntpInterval": MessageLookupByLibrary.simpleMessage("同步间隔（分钟）"),
+    "ntpStatusDesc": MessageLookupByLibrary.simpleMessage(
+      "从 NTP 服务器获取时间，而非系统时钟",
+    ),
     "nullProfileDesc": MessageLookupByLibrary.simpleMessage("没有配置文件,请先添加配置文件"),
     "nullTip": m25,
     "numberTip": m26,
@@ -735,6 +742,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "开启后将覆盖配置中的 DNS 选项",
     ),
     "overrideMode": MessageLookupByLibrary.simpleMessage("覆写模式"),
+    "overrideNtp": MessageLookupByLibrary.simpleMessage("覆写 NTP"),
+    "overrideNtpDesc": MessageLookupByLibrary.simpleMessage(
+      "开启后将覆盖配置中的 NTP 选项",
+    ),
     "overrideScript": MessageLookupByLibrary.simpleMessage("覆写脚本"),
     "overwriteTypeCustom": MessageLookupByLibrary.simpleMessage("自定义"),
     "overwriteTypeCustomDesc": MessageLookupByLibrary.simpleMessage(
@@ -993,6 +1004,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "sendMsgXDesc": MessageLookupByLibrary.simpleMessage(
       "在 macOS 和 iOS 上批量发送 TUN 数据包；多线程下载时可能导致内核卡住",
     ),
+    "server": MessageLookupByLibrary.simpleMessage("服务器"),
     "settings": MessageLookupByLibrary.simpleMessage("设置"),
     "show": MessageLookupByLibrary.simpleMessage("显示"),
     "showHiddenGroups": MessageLookupByLibrary.simpleMessage("显示隐藏组"),
@@ -1160,6 +1172,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnTip": MessageLookupByLibrary.simpleMessage("重启 VPN 后改变生效"),
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV 配置"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("白名单模式"),
+    "writeToSystem": MessageLookupByLibrary.simpleMessage("写入系统"),
+    "writeToSystemDesc": MessageLookupByLibrary.simpleMessage("同时设置系统时钟"),
     "yearsAgo": m35,
     "yes": MessageLookupByLibrary.simpleMessage("是"),
     "zhCN": MessageLookupByLibrary.simpleMessage("中文简体"),

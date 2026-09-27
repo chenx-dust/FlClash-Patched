@@ -3,6 +3,7 @@ import 'package:fl_clash/models/clash_config.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/views/config/dns.dart';
 import 'package:fl_clash/views/config/network.dart';
+import 'package:fl_clash/views/config/ntp.dart';
 import 'package:fl_clash/views/config/scripts.dart';
 import 'package:fl_clash/widgets/list.dart';
 import 'package:fl_clash/widgets/scaffold.dart';
@@ -58,6 +59,38 @@ class AdvancedConfigView extends StatelessWidget {
             ),
           ],
           body: const DnsListView(),
+        ),
+        blur: false,
+      ),
+      ListItem.open(
+        title: const Text('NTP'),
+        subtitle: Text(appLocalizations.ntpDesc),
+        leading: const Icon(Icons.schedule),
+        widget: BaseScaffold(
+          title: 'NTP',
+          actions: [
+            Consumer(
+              builder: (_, ref, _) {
+                return IconButton(
+                  onPressed: () async {
+                    final res = await dialogs.showMessage(
+                      title: appLocalizations.reset,
+                      message: TextSpan(text: appLocalizations.resetTip),
+                    );
+                    if (res != true) {
+                      return;
+                    }
+                    ref
+                        .read(patchClashConfigProvider.notifier)
+                        .update((state) => state.copyWith(ntp: defaultNtp));
+                  },
+                  tooltip: appLocalizations.reset,
+                  icon: const Icon(Icons.replay),
+                );
+              },
+            ),
+          ],
+          body: const NtpListView(),
         ),
         blur: false,
       ),

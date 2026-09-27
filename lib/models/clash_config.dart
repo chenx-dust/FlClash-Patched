@@ -10,6 +10,7 @@ const defaultClashConfig = PatchClashConfig();
 
 const defaultTun = Tun();
 const defaultDns = Dns();
+const defaultNtp = Ntp();
 const defaultGeoXUrl = {
   GeoResource.MMDB:
       'https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.metadb',
@@ -541,6 +542,28 @@ Map<String, String> _geoXUrlToJson(Map<GeoResource, String> value) {
 }
 
 @freezed
+abstract class Ntp with _$Ntp {
+  const factory Ntp({
+    @Default(false) bool enable,
+    @Default('time.apple.com') String server,
+    @Default(123) int port,
+    @Default(30) int interval,
+    @Default('') @JsonKey(name: 'dialer-proxy') String dialerProxy,
+    @Default(false) @JsonKey(name: 'write-to-system') bool writeToSystem,
+  }) = _Ntp;
+
+  factory Ntp.fromJson(Map<String, Object?> json) => _$NtpFromJson(json);
+
+  factory Ntp.safeNtpFromJson(Map<String, Object?> json) {
+    return decodeOrRestoreDefault(
+      'ntp config',
+      () => Ntp.fromJson(json),
+      () => const Ntp(),
+    );
+  }
+}
+
+@freezed
 abstract class PatchClashConfig with _$PatchClashConfig {
   const factory PatchClashConfig({
     @Default(defaultMixedPort) @JsonKey(name: 'mixed-port') int mixedPort,
@@ -574,6 +597,7 @@ abstract class PatchClashConfig with _$PatchClashConfig {
     @Default(true) @JsonKey(name: 'tcp-concurrent') bool tcpConcurrent,
     @Default(defaultTun) @JsonKey(fromJson: Tun.safeFormJson) Tun tun,
     @Default(defaultDns) @JsonKey(fromJson: Dns.safeDnsFromJson) Dns dns,
+    @Default(defaultNtp) @JsonKey(fromJson: Ntp.safeNtpFromJson) Ntp ntp,
     @Default(defaultGeoXUrl)
     @JsonKey(
       name: 'geox-url',

@@ -462,6 +462,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "developerModeEnableTip": MessageLookupByLibrary.simpleMessage(
       "Developer mode is enabled.",
     ),
+    "dialerProxy": MessageLookupByLibrary.simpleMessage("Dialer proxy"),
+    "dialerProxyDesc": MessageLookupByLibrary.simpleMessage(
+      "The outbound used to reach the NTP server",
+    ),
     "direct": MessageLookupByLibrary.simpleMessage("Direct"),
     "disableUDP": MessageLookupByLibrary.simpleMessage("Disable UDP"),
     "disclaimer": MessageLookupByLibrary.simpleMessage("Disclaimer"),
@@ -782,10 +786,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "inputRuleContent": MessageLookupByLibrary.simpleMessage(
       "Enter the rule content",
     ),
-    "installedAppsPermissionDeniedMessage":
-        MessageLookupByLibrary.simpleMessage(
-          "The app list permission was denied, so installed apps cannot be listed. Please grant it manually in system settings.",
-        ),
+    "installedAppsPermissionDeniedMessage": MessageLookupByLibrary.simpleMessage(
+      "The app list permission was denied, so installed apps cannot be listed. Please grant it manually in system settings.",
+    ),
     "installedAppsPermissionDesc": MessageLookupByLibrary.simpleMessage(
       "This system hides the installed app list until the permission is granted. Authorize it to configure the per-app proxy.",
     ),
@@ -984,6 +987,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "notSelectedTip": MessageLookupByLibrary.simpleMessage(
       "The current proxy group cannot be selected",
     ),
+    "ntpDesc": MessageLookupByLibrary.simpleMessage(
+      "Update NTP-related settings",
+    ),
+    "ntpInterval": MessageLookupByLibrary.simpleMessage(
+      "Sync interval (minutes)",
+    ),
+    "ntpStatusDesc": MessageLookupByLibrary.simpleMessage(
+      "Take the time from an NTP server instead of the system clock",
+    ),
     "nullProfileDesc": MessageLookupByLibrary.simpleMessage(
       "No profiles yet, please add one first",
     ),
@@ -1017,6 +1029,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "When enabled, the DNS options in the profile are overridden",
     ),
     "overrideMode": MessageLookupByLibrary.simpleMessage("Override mode"),
+    "overrideNtp": MessageLookupByLibrary.simpleMessage("Override NTP"),
+    "overrideNtpDesc": MessageLookupByLibrary.simpleMessage(
+      "When enabled, the NTP options in the profile are overridden",
+    ),
     "overrideScript": MessageLookupByLibrary.simpleMessage("Override script"),
     "overwriteTypeCustom": MessageLookupByLibrary.simpleMessage("Custom"),
     "overwriteTypeCustomDesc": MessageLookupByLibrary.simpleMessage(
@@ -1369,6 +1385,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "sendMsgXDesc": MessageLookupByLibrary.simpleMessage(
       "Send TUN packets in batches on macOS and iOS; may cause the kernel to freeze during multi-threaded downloads",
     ),
+    "server": MessageLookupByLibrary.simpleMessage("Server"),
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),
     "show": MessageLookupByLibrary.simpleMessage("Show"),
     "showHiddenGroups": MessageLookupByLibrary.simpleMessage("Show hidden"),
@@ -1592,6 +1609,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "WebDAV configuration",
     ),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("Whitelist mode"),
+    "writeToSystem": MessageLookupByLibrary.simpleMessage("Write to system"),
+    "writeToSystemDesc": MessageLookupByLibrary.simpleMessage(
+      "Also set the system clock",
+    ),
     "yearsAgo": m35,
     "yes": MessageLookupByLibrary.simpleMessage("Yes"),
     "zhCN": MessageLookupByLibrary.simpleMessage("Simplified Chinese"),

@@ -376,6 +376,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "developerModeEnableTip": MessageLookupByLibrary.simpleMessage(
       "開発者モードが有効になりました。",
     ),
+    "dialerProxy": MessageLookupByLibrary.simpleMessage("ダイヤラープロキシ"),
+    "dialerProxyDesc": MessageLookupByLibrary.simpleMessage(
+      "NTP サーバーへの接続に使用するアウトバウンド",
+    ),
     "direct": MessageLookupByLibrary.simpleMessage("ダイレクト"),
     "disableUDP": MessageLookupByLibrary.simpleMessage("UDP を無効化"),
     "disclaimer": MessageLookupByLibrary.simpleMessage("免責事項"),
@@ -804,6 +808,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "notSelectedTip": MessageLookupByLibrary.simpleMessage(
       "現在のプロキシグループは選択できません",
     ),
+    "ntpDesc": MessageLookupByLibrary.simpleMessage("NTP 関連設定の更新"),
+    "ntpInterval": MessageLookupByLibrary.simpleMessage("同期間隔（分）"),
+    "ntpStatusDesc": MessageLookupByLibrary.simpleMessage(
+      "システムクロックではなく NTP サーバーから時刻を取得します",
+    ),
     "nullProfileDesc": MessageLookupByLibrary.simpleMessage(
       "プロファイルがありません。先にプロファイルを追加してください",
     ),
@@ -833,6 +842,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "有効化するとプロファイルの DNS 設定を上書き",
     ),
     "overrideMode": MessageLookupByLibrary.simpleMessage("上書きモード"),
+    "overrideNtp": MessageLookupByLibrary.simpleMessage("NTP 上書き"),
+    "overrideNtpDesc": MessageLookupByLibrary.simpleMessage(
+      "有効化するとプロファイルの NTP 設定を上書き",
+    ),
     "overrideScript": MessageLookupByLibrary.simpleMessage("上書きスクリプト"),
     "overwriteTypeCustom": MessageLookupByLibrary.simpleMessage("カスタム"),
     "overwriteTypeCustomDesc": MessageLookupByLibrary.simpleMessage(
@@ -1141,6 +1154,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "sendMsgXDesc": MessageLookupByLibrary.simpleMessage(
       "macOS と iOS で TUN パケットを一括送信。マルチスレッドダウンロード中にカーネルがフリーズする可能性があります",
     ),
+    "server": MessageLookupByLibrary.simpleMessage("サーバー"),
     "settings": MessageLookupByLibrary.simpleMessage("設定"),
     "show": MessageLookupByLibrary.simpleMessage("表示"),
     "showHiddenGroups": MessageLookupByLibrary.simpleMessage("非表示グループを表示"),
@@ -1326,6 +1340,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnTip": MessageLookupByLibrary.simpleMessage("変更は VPN 再起動後に有効"),
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV 設定"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("ホワイトリストモード"),
+    "writeToSystem": MessageLookupByLibrary.simpleMessage("システムに書き込む"),
+    "writeToSystemDesc": MessageLookupByLibrary.simpleMessage("システムクロックも設定します"),
     "yearsAgo": m35,
     "yes": MessageLookupByLibrary.simpleMessage("はい"),
     "zhCN": MessageLookupByLibrary.simpleMessage("簡体字中国語"),

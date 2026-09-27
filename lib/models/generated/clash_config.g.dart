@@ -448,6 +448,24 @@ Map<String, dynamic> _$ClashConfigToJson(_ClashConfig instance) =>
       'proxyTypeMap': instance.proxyTypeMap,
     };
 
+_Ntp _$NtpFromJson(Map<String, dynamic> json) => _Ntp(
+  enable: json['enable'] as bool? ?? false,
+  server: json['server'] as String? ?? 'time.apple.com',
+  port: (json['port'] as num?)?.toInt() ?? 123,
+  interval: (json['interval'] as num?)?.toInt() ?? 30,
+  dialerProxy: json['dialer-proxy'] as String? ?? '',
+  writeToSystem: json['write-to-system'] as bool? ?? false,
+);
+
+Map<String, dynamic> _$NtpToJson(_Ntp instance) => <String, dynamic>{
+  'enable': instance.enable,
+  'server': instance.server,
+  'port': instance.port,
+  'interval': instance.interval,
+  'dialer-proxy': instance.dialerProxy,
+  'write-to-system': instance.writeToSystem,
+};
+
 _PatchClashConfig _$PatchClashConfigFromJson(Map<String, dynamic> json) =>
     _PatchClashConfig(
       mixedPort: (json['mixed-port'] as num?)?.toInt() ?? defaultMixedPort,
@@ -497,6 +515,9 @@ _PatchClashConfig _$PatchClashConfigFromJson(Map<String, dynamic> json) =>
       dns: json['dns'] == null
           ? defaultDns
           : Dns.safeDnsFromJson(json['dns'] as Map<String, Object?>),
+      ntp: json['ntp'] == null
+          ? defaultNtp
+          : Ntp.safeNtpFromJson(json['ntp'] as Map<String, Object?>),
       geoXUrl: json['geox-url'] == null
           ? defaultGeoXUrl
           : _geoXUrlFromJson(json['geox-url'] as Map<String, Object?>?),
@@ -546,6 +567,7 @@ Map<String, dynamic> _$PatchClashConfigToJson(_PatchClashConfig instance) =>
       'tcp-concurrent': instance.tcpConcurrent,
       'tun': instance.tun,
       'dns': instance.dns,
+      'ntp': instance.ntp,
       'geox-url': _geoXUrlToJson(instance.geoXUrl),
       'geodata-loader': _$GeodataLoaderEnumMap[instance.geodataLoader]!,
       'geosite-matcher': _$GeositeMatcherEnumMap[instance.geositeMatcher]!,

@@ -482,6 +482,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "developerModeEnableTip": MessageLookupByLibrary.simpleMessage(
       "Режим разработчика включён.",
     ),
+    "dialerProxy": MessageLookupByLibrary.simpleMessage(
+      "Прокси для подключения",
+    ),
+    "dialerProxyDesc": MessageLookupByLibrary.simpleMessage(
+      "Исход, через который идёт обращение к NTP-серверу",
+    ),
     "direct": MessageLookupByLibrary.simpleMessage("Прямой"),
     "disableUDP": MessageLookupByLibrary.simpleMessage("Отключить UDP"),
     "disclaimer": MessageLookupByLibrary.simpleMessage(
@@ -820,10 +826,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "inputRuleContent": MessageLookupByLibrary.simpleMessage(
       "Введите содержимое правила",
     ),
-    "installedAppsPermissionDeniedMessage":
-        MessageLookupByLibrary.simpleMessage(
-          "Разрешение на список приложений отклонено, поэтому установленные приложения недоступны. Предоставьте его вручную в системных настройках.",
-        ),
+    "installedAppsPermissionDeniedMessage": MessageLookupByLibrary.simpleMessage(
+      "Разрешение на список приложений отклонено, поэтому установленные приложения недоступны. Предоставьте его вручную в системных настройках.",
+    ),
     "installedAppsPermissionDesc": MessageLookupByLibrary.simpleMessage(
       "Эта система не выдаёт список установленных приложений без разрешения. Предоставьте его, чтобы настроить прокси для отдельных приложений.",
     ),
@@ -1024,6 +1029,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "notSelectedTip": MessageLookupByLibrary.simpleMessage(
       "Текущую группу прокси нельзя выбрать",
     ),
+    "ntpDesc": MessageLookupByLibrary.simpleMessage(
+      "Настройки, связанные с NTP",
+    ),
+    "ntpInterval": MessageLookupByLibrary.simpleMessage(
+      "Интервал синхронизации (минуты)",
+    ),
+    "ntpStatusDesc": MessageLookupByLibrary.simpleMessage(
+      "Брать время с NTP-сервера, а не из системных часов",
+    ),
     "nullProfileDesc": MessageLookupByLibrary.simpleMessage(
       "Профилей пока нет. Сначала добавьте профиль",
     ),
@@ -1060,6 +1074,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "overrideMode": MessageLookupByLibrary.simpleMessage(
       "Режим переопределения",
+    ),
+    "overrideNtp": MessageLookupByLibrary.simpleMessage("Переопределить NTP"),
+    "overrideNtpDesc": MessageLookupByLibrary.simpleMessage(
+      "При включении настройки NTP профиля переопределяются",
     ),
     "overrideScript": MessageLookupByLibrary.simpleMessage(
       "Скрипт переопределения",
@@ -1437,6 +1455,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "sendMsgXDesc": MessageLookupByLibrary.simpleMessage(
       "Пакетная отправка пакетов TUN в macOS и iOS; возможны зависания ядра при многопоточной загрузке",
     ),
+    "server": MessageLookupByLibrary.simpleMessage("Сервер"),
     "settings": MessageLookupByLibrary.simpleMessage("Настройки"),
     "show": MessageLookupByLibrary.simpleMessage("Показать"),
     "showHiddenGroups": MessageLookupByLibrary.simpleMessage(
@@ -1687,6 +1706,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "whitelistMode": MessageLookupByLibrary.simpleMessage(
       "Режим белого списка",
+    ),
+    "writeToSystem": MessageLookupByLibrary.simpleMessage(
+      "Записывать в систему",
+    ),
+    "writeToSystemDesc": MessageLookupByLibrary.simpleMessage(
+      "Также устанавливать системные часы",
     ),
     "yearsAgo": m35,
     "yes": MessageLookupByLibrary.simpleMessage("Да"),

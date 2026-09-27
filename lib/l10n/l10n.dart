@@ -1895,6 +1895,101 @@ class AppLocalizations {
     );
   }
 
+  /// `Override NTP`
+  String get overrideNtp {
+    return Intl.message(
+      'Override NTP',
+      name: 'overrideNtp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `When enabled, the NTP options in the profile are overridden`
+  String get overrideNtpDesc {
+    return Intl.message(
+      'When enabled, the NTP options in the profile are overridden',
+      name: 'overrideNtpDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update NTP-related settings`
+  String get ntpDesc {
+    return Intl.message(
+      'Update NTP-related settings',
+      name: 'ntpDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Take the time from an NTP server instead of the system clock`
+  String get ntpStatusDesc {
+    return Intl.message(
+      'Take the time from an NTP server instead of the system clock',
+      name: 'ntpStatusDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sync interval (minutes)`
+  String get ntpInterval {
+    return Intl.message(
+      'Sync interval (minutes)',
+      name: 'ntpInterval',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Server`
+  String get server {
+    return Intl.message('Server', name: 'server', desc: '', args: []);
+  }
+
+  /// `Dialer proxy`
+  String get dialerProxy {
+    return Intl.message(
+      'Dialer proxy',
+      name: 'dialerProxy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The outbound used to reach the NTP server`
+  String get dialerProxyDesc {
+    return Intl.message(
+      'The outbound used to reach the NTP server',
+      name: 'dialerProxyDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Write to system`
+  String get writeToSystem {
+    return Intl.message(
+      'Write to system',
+      name: 'writeToSystem',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Also set the system clock`
+  String get writeToSystemDesc {
+    return Intl.message(
+      'Also set the system clock',
+      name: 'writeToSystemDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Status`
   String get status {
     return Intl.message('Status', name: 'status', desc: '', args: []);

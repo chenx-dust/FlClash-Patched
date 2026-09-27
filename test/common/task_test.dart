@@ -399,6 +399,57 @@ void main() {
     expect(config['rules'], ['DOMAIN,custom.example,DIRECT']);
   });
 
+  test(
+    'makeRealProfileTask overrides NTP and keeps keys it cannot edit',
+    () async {
+      final rawConfig = await decodeJSONTask<Map<String, dynamic>>(
+        await encodeJSONTask({
+          'ntp': {'enable': false, 'server': 'pool.ntp.org', 'extra': 'keep'},
+        }),
+      );
+      final untouched = await makeRealProfileTask(
+        MakeRealProfileState(
+          profilesPath: '/profiles',
+          profileId: 14,
+          rawConfig: rawConfig,
+          realPatchConfig: const PatchClashConfig(),
+          overrideDns: false,
+          appendSystemDns: false,
+          proxyGroups: const [],
+          rules: const [],
+          addedRules: const [],
+          defaultUA: 'FlClash-Test',
+        ),
+      );
+      final untouchedConfig = loadYaml(untouched.yaml) as YamlMap;
+      expect(untouchedConfig['ntp']['server'], 'pool.ntp.org');
+      expect(untouchedConfig['ntp']['extra'], 'keep');
+
+      final result = await makeRealProfileTask(
+        MakeRealProfileState(
+          profilesPath: '/profiles',
+          profileId: 14,
+          rawConfig: rawConfig,
+          realPatchConfig: const PatchClashConfig(
+            ntp: Ntp(enable: true, server: 'time.cloudflare.com', port: 123),
+          ),
+          overrideDns: false,
+          overrideNtp: true,
+          appendSystemDns: false,
+          proxyGroups: const [],
+          rules: const [],
+          addedRules: const [],
+          defaultUA: 'FlClash-Test',
+        ),
+      );
+      final config = loadYaml(result.yaml) as YamlMap;
+      expect(config['ntp']['enable'], true);
+      expect(config['ntp']['server'], 'time.cloudflare.com');
+      expect(config['ntp']['port'], 123);
+      expect(config['ntp']['extra'], 'keep');
+    },
+  );
+
   test('makeRealProfileTask keeps the DNS keys it cannot edit', () async {
     final rawConfig = await decodeJSONTask<Map<String, dynamic>>(
       await encodeJSONTask({

@@ -631,6 +631,7 @@ void main() {
       final restored = roundTrip(() => config.toJson(), Config.fromJson);
       expect(restored.currentProfileId, null);
       expect(restored.overrideDns, false);
+      expect(restored.overrideNtp, false);
       expect(restored.networkProps.systemProxy, true);
       expect(restored.vpnProps.enable, true);
       expect(restored.hotKeyActions, isEmpty);
@@ -646,6 +647,7 @@ void main() {
       const config = Config(
         currentProfileId: 42,
         overrideDns: true,
+        overrideNtp: true,
         hotKeyActions: [],
         appSettingProps: AppSettingProps(locale: 'en', autoLaunch: true),
         networkProps: NetworkProps(systemProxy: false),
@@ -660,6 +662,7 @@ void main() {
       final restored = roundTrip(() => config.toJson(), Config.fromJson);
       expect(restored.currentProfileId, 42);
       expect(restored.overrideDns, true);
+      expect(restored.overrideNtp, true);
       expect(restored.appSettingProps.locale, 'en');
       expect(restored.appSettingProps.autoLaunch, true);
       expect(restored.networkProps.systemProxy, false);
