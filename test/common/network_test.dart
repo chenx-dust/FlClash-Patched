@@ -53,6 +53,7 @@ void main() {
         'Wi-Fi',
         'WLAN1',
         'Ethernet 2',
+        '以太网 2',
         'en0',
         'enp3s0',
         'ens5',
@@ -72,6 +73,8 @@ void main() {
       for (final name in [
         'FlClash',
         'Meta Tunnel',
+        'tun0',
+        'utun3',
         'tailscale0',
         'ZeroTier One',
         'netbird0',
@@ -88,7 +91,7 @@ void main() {
     });
 
     test('leaves unrecognised interface names as unknown', () {
-      for (final name in ['utun3', 'lo0', 'ppp0', '']) {
+      for (final name in ['fortune0', 'veth0', 'lo0', 'ppp0', '']) {
         expect(
           _FakeInterface(name, const []).interfaceType,
           NetworkInterfaceType.unknown,
@@ -134,7 +137,7 @@ void main() {
     test('sorts physical, unknown, then virtual interfaces', () async {
       listing([
         _FakeInterface('tailscale0', [_v4('100.64.0.1')]),
-        _FakeInterface('utun0', [_v4('10.9.0.1')]),
+        _FakeInterface('fortune0', [_v4('10.9.0.1')]),
         _FakeInterface('en1', [_v4('192.168.1.20')]),
       ]);
 
@@ -142,7 +145,7 @@ void main() {
 
       expect(interfaces.map((interface) => interface.name), [
         'en1',
-        'utun0',
+        'fortune0',
         'tailscale0',
       ]);
     });

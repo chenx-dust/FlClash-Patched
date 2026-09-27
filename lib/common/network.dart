@@ -15,12 +15,14 @@ NetworkInterfaceLister listNetworkInterfaces =
 extension NetworkInterfaceExt on NetworkInterface {
   NetworkInterfaceType get interfaceType {
     final nameLowCase = name.toLowerCase();
-    if (nameLowCase.contains('wlan') ||
-        nameLowCase.contains('wi-fi') ||
-        nameLowCase.contains('ethernet') ||
-        nameLowCase.startsWith(RegExp(r'^en\d+')) ||
-        nameLowCase.startsWith(RegExp(r'^en(p|s|x)\d+')) ||
-        nameLowCase.startsWith(RegExp(r'^eth\d+'))) {
+    if (!nameLowCase.contains('veth') &&
+        (nameLowCase.contains('wlan') ||
+            nameLowCase.contains('wi-fi') ||
+            nameLowCase.contains('ethernet') ||
+            nameLowCase.contains('以太网') ||
+            nameLowCase.startsWith(RegExp(r'^en\d+')) ||
+            nameLowCase.startsWith(RegExp(r'^en(p|s|x)\d+')) ||
+            nameLowCase.startsWith(RegExp(r'^eth\d+')))) {
       return NetworkInterfaceType.physical;
     }
     if (nameLowCase.contains('clash') ||
@@ -29,7 +31,8 @@ extension NetworkInterfaceExt on NetworkInterface {
         nameLowCase.contains('zerotier') ||
         nameLowCase.contains('netbird') ||
         nameLowCase.contains('easytier') ||
-        nameLowCase.contains('tunnel') ||
+        nameLowCase.startsWith('tun') ||
+        nameLowCase.startsWith('utun') ||
         nameLowCase.contains('docker') ||
         nameLowCase.contains('tap')) {
       return NetworkInterfaceType.virtual;
