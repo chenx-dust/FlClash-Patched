@@ -864,9 +864,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Disabling hides the log entry point",
     ),
     "logs": MessageLookupByLibrary.simpleMessage("Logs"),
-    "logsAndDiagnostics": MessageLookupByLibrary.simpleMessage(
-      "Logs and diagnostics",
-    ),
     "logsDesc": MessageLookupByLibrary.simpleMessage("Captured log records"),
     "logsTest": MessageLookupByLibrary.simpleMessage("Logs test"),
     "loopback": MessageLookupByLibrary.simpleMessage("Loopback unlock tool"),
@@ -1153,9 +1150,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "remove": MessageLookupByLibrary.simpleMessage("Remove"),
     "request": MessageLookupByLibrary.simpleMessage("Request"),
     "requests": MessageLookupByLibrary.simpleMessage("Requests"),
-    "requestsAndUpdates": MessageLookupByLibrary.simpleMessage(
-      "Requests and updates",
-    ),
     "requestsDesc": MessageLookupByLibrary.simpleMessage(
       "View recent request records",
     ),
@@ -1512,7 +1506,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "toggle": MessageLookupByLibrary.simpleMessage("Toggle"),
     "toggleLabel": MessageLookupByLibrary.simpleMessage("Toggle labels"),
     "tonalSpotScheme": MessageLookupByLibrary.simpleMessage("Tonal spot"),
-    "tools": MessageLookupByLibrary.simpleMessage("More"),
+    "tools": MessageLookupByLibrary.simpleMessage("Tools"),
     "torch": MessageLookupByLibrary.simpleMessage("Flashlight"),
     "totalTraffic": MessageLookupByLibrary.simpleMessage("Total traffic"),
     "tproxyPort": MessageLookupByLibrary.simpleMessage("TProxy port"),

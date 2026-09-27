@@ -570,7 +570,7 @@ class GeneralView extends ConsumerWidget {
             items: _startupItems(appLocalizations, autoLaunch: autoLaunch),
           ),
           generateSectionV3(
-            title: appLocalizations.requestsAndUpdates,
+            title: appLocalizations.requests,
             items: _requestItems(),
           ),
           generateSectionV3(
@@ -582,10 +582,7 @@ class GeneralView extends ConsumerWidget {
             items: _connectionItems(closeConnections: closeConnections),
           ),
           generateSectionV3(title: appLocalizations.core, items: _coreItems()),
-          generateSectionV3(
-            title: appLocalizations.logsAndDiagnostics,
-            items: _logItems(),
-          ),
+          generateSectionV3(title: appLocalizations.logs, items: _logItems()),
           generateSectionV3(title: appLocalizations.app, items: _appItems()),
         ],
       ),

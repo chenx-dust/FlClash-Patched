@@ -36,78 +36,62 @@ class _ToolViewState extends ConsumerState<ToolsView> {
     );
   }
 
-  Widget _buildNavigationMenu(List<NavigationItem> navigationItems) {
-    return Column(
-      children: [
-        for (final navigationItem in navigationItems) ...[
-          _buildNavigationMenuItem(navigationItem),
-          navigationItems.last != navigationItem
-              ? const Divider(height: 0)
-              : Container(),
-        ],
-      ],
-    );
+  List<Widget> _otherItems(bool enableDeveloperMode) {
+    return [
+      const _DisclaimerItem(),
+      if (enableDeveloperMode) const _DeveloperItem(),
+      const _InfoItem(),
+    ];
   }
 
-  List<Widget> _getOtherList(bool enableDeveloperMode) {
-    return generateSection(
-      title: context.appLocalizations.other,
-      items: [
-        const _DisclaimerItem(),
-        if (enableDeveloperMode) const _DeveloperItem(),
-        const _InfoItem(),
-      ],
-    );
-  }
-
-  List<Widget> _getSettingList() {
-    return generateSection(
-      title: context.appLocalizations.settings,
-      items: [
-        const _GeneralItem(),
-        const _LocaleItem(),
-        const _ThemeItem(),
-        const _AdvancedConfigItem(),
-        if (system.isDesktop) const _HotkeyItem(),
-        if (system.isWindows) const _LoopbackItem(),
-        if (system.isAndroid) const _AccessItem(),
-        const _BackupItem(),
-      ],
-    );
+  List<Widget> _settingItems() {
+    return [
+      const _GeneralItem(),
+      const _LocaleItem(),
+      const _ThemeItem(),
+      const _AdvancedConfigItem(),
+      if (system.isDesktop) const _HotkeyItem(),
+      if (system.isWindows) const _LoopbackItem(),
+      if (system.isAndroid) const _AccessItem(),
+      const _BackupItem(),
+    ];
   }
 
   @override
   Widget build(BuildContext context) {
-    final appSetting = ref.watch(
-      appSettingProvider.select(
-        (state) => (locale: state.locale, developerMode: state.developerMode),
-      ),
+    final developerMode = ref.watch(
+      appSettingProvider.select((state) => state.developerMode),
     );
-    final items = [
-      Consumer(
-        builder: (_, ref, _) {
-          final state = ref.watch(moreToolsSelectorStateProvider);
-          if (state.navigationItems.isEmpty) {
-            return Container();
-          }
-          return Column(
-            children: [
-              ListHeader(title: context.appLocalizations.more),
-              _buildNavigationMenu(state.navigationItems),
-            ],
-          );
-        },
-      ),
-      ..._getSettingList(),
-      ..._getOtherList(appSetting.developerMode),
-    ];
+    final navigationItems = ref.watch(
+      moreToolsSelectorStateProvider.select((state) => state.navigationItems),
+    );
+    final appLocalizations = context.appLocalizations;
+    final hasMore = navigationItems.isNotEmpty;
     return CommonScaffold(
-      title: context.appLocalizations.tools,
-      body: ListView.builder(
+      title: appLocalizations.tools,
+      body: ListView(
         key: toolsStoreKey,
-        itemCount: items.length,
-        itemBuilder: (_, index) => items[index],
-        padding: const EdgeInsets.only(bottom: 20),
+        padding: sectionPagePadding,
+        children: [
+          if (hasMore)
+            generateSectionV3(
+              title: appLocalizations.more,
+              isFirst: true,
+              items: [
+                for (final navigationItem in navigationItems)
+                  _buildNavigationMenuItem(navigationItem),
+              ],
+            ),
+          generateSectionV3(
+            title: appLocalizations.settings,
+            isFirst: !hasMore,
+            items: _settingItems(),
+          ),
+          generateSectionV3(
+            title: appLocalizations.other,
+            items: _otherItems(developerMode),
+          ),
+        ],
       ),
     );
   }
