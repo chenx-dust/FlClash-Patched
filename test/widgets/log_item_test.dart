@@ -20,7 +20,7 @@ void main() {
         homeBuilder: (child) => Scaffold(body: child),
         child: LogItem(
           onToggleLevel: levels.add,
-          log: Log(
+          log: const Log(
             logLevel: LogLevel.error,
             source: LogSource.core,
             payload: payload,

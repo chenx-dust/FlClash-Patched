@@ -227,7 +227,7 @@ class FilterToggleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final icon = const Icon(Icons.filter_alt_outlined);
+    const icon = Icon(Icons.filter_alt_outlined);
     final tooltip = context.appLocalizations.filter;
     if (visible || active) {
       return IconButton.filledTonal(

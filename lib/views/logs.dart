@@ -343,7 +343,6 @@ class LogItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.appLocalizations;
     final tone = switch (log.logLevel) {
       LogLevel.warning => RecordTone.warning,
       LogLevel.error => RecordTone.error,
