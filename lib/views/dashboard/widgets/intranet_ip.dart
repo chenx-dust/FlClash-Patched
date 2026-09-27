@@ -32,7 +32,7 @@ class IntranetIP extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              height: globalState.measure.titleMediumHeight + 16,
+              height: globalState.measure.titleMediumHeight + 12,
               padding: baseInfoEdgeInsets.copyWith(bottom: 0),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
@@ -50,7 +50,7 @@ class IntranetIP extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 2),
+                  const SizedBox(width: 4),
                   AspectRatio(
                     aspectRatio: 1,
                     child: ExcludeFocus(

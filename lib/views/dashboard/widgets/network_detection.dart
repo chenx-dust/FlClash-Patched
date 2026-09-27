@@ -45,6 +45,7 @@ class NetworkDetection extends ConsumerWidget {
     final isLoading = networkDetection.isLoading;
     final emojiTextStyle = context.textTheme.titleMedium?.toLight.copyWith(
       fontFamily: FontFamily.twEmoji.value,
+      height: 1,
     );
     final titleTextStyle = context.colorScheme.onSurfaceVariant;
     final descTextStyle = context.textTheme.titleSmall?.copyWith(
@@ -68,9 +69,12 @@ class NetworkDetection extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   ipInfo != null
-                      ? Text(
-                          _countryCodeToEmoji(ipInfo.countryCode),
-                          style: emojiTextStyle,
+                      ? SizedBox(
+                          width: 20,
+                          child: Text(
+                            _countryCodeToEmoji(ipInfo.countryCode),
+                            style: emojiTextStyle,
+                          ),
                         )
                       : Icon(Icons.network_check, color: titleTextStyle),
                   const SizedBox(width: 8),
@@ -85,7 +89,7 @@ class NetworkDetection extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 2),
+                  const SizedBox(width: 4),
                   AspectRatio(
                     aspectRatio: 1,
                     child: ExcludeFocus(
