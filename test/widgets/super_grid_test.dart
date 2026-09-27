@@ -52,6 +52,13 @@ Color deleteFill(WidgetTester tester, Finder icon) {
   return (container.decoration! as ShapeDecoration).color!;
 }
 
+double closePresence(WidgetTester tester, Finder icon) {
+  final fade = tester.widget<FadeTransition>(
+    find.ancestor(of: icon, matching: find.byType(FadeTransition)).first,
+  );
+  return fade.opacity.value;
+}
+
 Color paintedDeleteFill(WidgetTester tester, Finder icon) {
   final stack = _deleteButtonStack(tester, icon);
   late RenderDecoratedBox box;
@@ -134,12 +141,12 @@ void main() {
     await gesture.addPointer();
     await gesture.moveTo(tester.getCenter(find.byIcon(Icons.close).at(1)));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(const Duration(milliseconds: 50));
     expect(
       paintedDeleteFill(tester, find.byIcon(Icons.close).at(1)),
       Color.lerp(colorScheme.primary, colorScheme.error, 0.5),
     );
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(const Duration(milliseconds: 50));
     expect(
       paintedDeleteFill(tester, find.byIcon(Icons.close).at(1)),
       colorScheme.error,
@@ -197,6 +204,51 @@ void main() {
       expect(find.byKey(ValueKey(label)), findsOneWidget);
     }
     expect(tester.takeException(), null);
+  });
+
+  testWidgets('dragging hides every close button until the card lands', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TestApp(
+        child: Scaffold(
+          body: SuperGrid(
+            crossAxisCount: 4,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            children: [_item('A'), _item('B')],
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.byIcon(Icons.close), findsNWidgets(2));
+
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.byKey(const ValueKey('A'))),
+    );
+    await tester.pump();
+    await gesture.moveBy(const Offset(24, 0));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    final fading = find.byIcon(Icons.close);
+    expect(fading, findsWidgets);
+    for (var i = 0; i < fading.evaluate().length; i++) {
+      final presence = closePresence(tester, fading.at(i));
+      expect(presence, greaterThan(0));
+      expect(presence, lessThan(1));
+    }
+    await tester.pump(const Duration(milliseconds: 200));
+    expect(find.byIcon(Icons.close), findsNothing);
+
+    await gesture.up();
+    await tester.pump();
+    expect(find.byIcon(Icons.close), findsNothing);
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pump(const Duration(milliseconds: 200));
+    expect(find.byIcon(Icons.close), findsNWidgets(2));
+    expect(closePresence(tester, find.byIcon(Icons.close).at(0)), 1);
+    expect(closePresence(tester, find.byIcon(Icons.close).at(1)), 1);
   });
 
   testWidgets('SuperGrid moves the dragged item into the hovered slot', (
@@ -460,7 +512,7 @@ void main() {
     return key;
   }
 
-  testWidgets('edit mode releases a lifted card after a boundary move', (
+  testWidgets('edit mode keeps the held close button armed at a boundary', (
     tester,
   ) async {
     final key = await pumpEditableGrid(tester);
@@ -475,18 +527,16 @@ void main() {
       cardScale(tester, 'A') / cardScale(tester, 'B'),
       closeTo(1.03, 0.01),
     );
-    expect(find.byIcon(Icons.close), findsNWidgets(2));
+    await tester.pump(const Duration(milliseconds: 200));
+    expect(find.byIcon(Icons.close), findsOneWidget);
+    final scheme = Theme.of(tester.element(find.byType(SuperGrid))).colorScheme;
+    expect(deleteFill(tester, find.byIcon(Icons.close)), scheme.error);
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
     await tester.pump();
     expect(key.currentState!.isHolding, isTrue);
     expect(labelsByX(tester, ['A', 'B']), ['A', 'B']);
     expect(find.byIcon(Icons.close), findsOneWidget);
-    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
-    await tester.pump();
-    expect(key.currentState!.isHolding, isFalse);
-    expect(key.currentState!.length, 2);
-    await tester.pump(const Duration(milliseconds: 200));
-    expect(cardScale(tester, 'A') / cardScale(tester, 'B'), closeTo(1, 0.01));
+    expect(deleteFill(tester, find.byIcon(Icons.close)), scheme.error);
   });
 
   testWidgets('edit mode moves a held card and restores it on cancel', (
@@ -501,10 +551,18 @@ void main() {
     await settleSlide(tester);
 
     expect(labelsByX(tester, ['A', 'B']), ['B', 'A']);
-    expect(find.byIcon(Icons.close), findsOneWidget);
+    expect(find.byIcon(Icons.close), findsNothing);
 
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    final returning = find.byIcon(Icons.close);
+    expect(returning, findsNWidgets(2));
+    for (var i = 0; i < 2; i++) {
+      final presence = closePresence(tester, returning.at(i));
+      expect(presence, greaterThan(0.5));
+      expect(presence, lessThan(1));
+    }
     await settleSlide(tester);
     expect(key.currentState!.isHolding, isFalse);
     expect(labelsByX(tester, ['A', 'B']), ['A', 'B']);
@@ -597,15 +655,10 @@ void main() {
 
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pump();
-    expect(find.byIcon(Icons.close), findsNWidgets(2));
+    await tester.pump(const Duration(milliseconds: 200));
+    expect(find.byIcon(Icons.close), findsOneWidget);
     final scheme = Theme.of(tester.element(find.byType(SuperGrid))).colorScheme;
-    final icons = find.byIcon(Icons.close);
-    final fillsByX = [
-      for (var i = 0; i < 2; i++)
-        (tester.getTopLeft(icons.at(i)).dx, deleteFill(tester, icons.at(i))),
-    ]..sort((a, b) => a.$1.compareTo(b.$1));
-    expect(fillsByX.first.$2, scheme.error);
-    expect(fillsByX.last.$2, scheme.primary);
+    expect(deleteFill(tester, find.byIcon(Icons.close)), scheme.error);
 
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pump();
