@@ -88,7 +88,6 @@ struct PacketTunnelVPNOptions: Decodable {
   let ipv6: Bool
   let captureDns: Bool
   let systemProxy: Bool
-  let suspendSupport: Bool
   let bypassDomain: [String]
   let stack: String
   let mtu: Int
@@ -110,7 +109,6 @@ struct PacketTunnelVPNOptions: Decodable {
     case ipv6
     case captureDns
     case systemProxy
-    case suspendSupport
     case bypassDomain
     case stack
     case mtu
@@ -134,10 +132,6 @@ struct PacketTunnelVPNOptions: Decodable {
     ipv6 = try container.decode(Bool.self, forKey: .ipv6)
     captureDns = try container.decode(Bool.self, forKey: .captureDns)
     systemProxy = try container.decode(Bool.self, forKey: .systemProxy)
-    suspendSupport = try container.decodeIfPresent(
-      Bool.self,
-      forKey: .suspendSupport
-    ) ?? true
     bypassDomain = try container.decodeIfPresent(
       [String].self,
       forKey: .bypassDomain

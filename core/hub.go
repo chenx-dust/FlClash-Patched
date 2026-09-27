@@ -22,7 +22,6 @@ import (
 	"github.com/metacubex/mihomo/adapter"
 	"github.com/metacubex/mihomo/adapter/outbound"
 	"github.com/metacubex/mihomo/adapter/outboundgroup"
-	"github.com/metacubex/mihomo/adapter/provider"
 	"github.com/metacubex/mihomo/common/observable"
 	"github.com/metacubex/mihomo/common/utils"
 	"github.com/metacubex/mihomo/component/age"
@@ -934,47 +933,6 @@ func handleSideLoadExternalProvider(providerName string, data []byte) *MethodErr
 	return nil
 }
 
-// defaultRefreshHealthChecks re-probes every proxy provider off the calling
-// thread. Providers coalesce concurrent checks internally, so an extra call
-// costs nothing when one is already running.
-func defaultRefreshHealthChecks() {
-	safeGoDetached("refreshHealthChecks", func() {
-		for name, p := range tunnel.ProvidersSnapshot() {
-			log.Debugln("[APP] re-checking provider %s after resume", name)
-			p.HealthCheck()
-		}
-	})
-}
-
-var refreshHealthChecks = defaultRefreshHealthChecks
-
-func handleSuspend(suspended bool) bool {
-	wasSuspended := isSuspended.Swap(suspended)
-	provider.SuspendHealthCheck(suspended)
-	if suspended {
-		tunnel.OnSuspend()
-		return true
-	}
-
-	tunnel.OnRunning()
-	// Scheduled provider health checks are suppressed while suspended, so
-	// refresh immediately instead of waiting for the next interval. Do not probe
-	// while the listeners are stopped: the service also resumes the core on its
-	// way down.
-	if wasSuspended && isRunning.Load() {
-		refreshHealthChecks()
-	}
-	return true
-}
-
-// A failure measured while the device is dozing says nothing about the node -
-// the app had no network at all - and publishing it repaints the entire list as
-// Timeout for a user who is not even looking. Successes still are worth having,
-// whenever they happen.
-func shouldPublishDelay(delay uint16) bool {
-	return delay != 0 || !isSuspended.Load()
-}
-
 func startLogLocked() {
 	ctx, cancel := context.WithCancel(context.Background())
 	subscriber := log.Subscribe()
@@ -1314,9 +1272,6 @@ func handleSetupConfig(params *SetupParams) string {
 
 func init() {
 	adapter.UrlTestHook = func(url string, name string, delay uint16) {
-		if !shouldPublishDelay(delay) {
-			return
-		}
 		sendMessage(Message{
 			Type: DelayMessage,
 			Data: &Delay{

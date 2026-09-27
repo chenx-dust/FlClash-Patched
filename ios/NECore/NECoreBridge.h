@@ -28,7 +28,6 @@ struct sockaddr_ctl {
 + (BOOL)startTunWithFileDescriptor:(int)fileDescriptor
                            options:(NSData *)options;
 + (void)stopTun;
-+ (void)setSuspended:(BOOL)suspended;
 
 @end
 

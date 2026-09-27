@@ -75,10 +75,6 @@ object Core {
         )
     }
 
-    external fun suspended(
-        suspended: Boolean,
-    )
-
     private external fun invokeMethod(
         data: String,
         cb: InvokeInterface,

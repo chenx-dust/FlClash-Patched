@@ -185,9 +185,4 @@ static void NECoreSystemLog(const char *level, const char *message) {
   stopTun();
 }
 
-+ (void)setSuspended:(BOOL)suspended {
-  [self initializeBridge];
-  suspend(suspended ? 1 : 0);
-}
-
 @end

@@ -14,8 +14,6 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
     category: "PacketTunnelProvider"
   )
 
-  private var suspendSupport = true
-
   override func startTunnel(
     options: [String: NSObject]?,
     completionHandler: @escaping (Error?) -> Void
@@ -29,9 +27,8 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
       return
     }
     logger.info(
-      "startTunnel options stack=\(vpnOptions.stack, privacy: .public) ipv6=\(vpnOptions.ipv6, privacy: .public) captureDns=\(vpnOptions.captureDns, privacy: .public) systemProxy=\(vpnOptions.systemProxy, privacy: .public) suspendSupport=\(vpnOptions.suspendSupport, privacy: .public)"
+      "startTunnel options stack=\(vpnOptions.stack, privacy: .public) ipv6=\(vpnOptions.ipv6, privacy: .public) captureDns=\(vpnOptions.captureDns, privacy: .public) systemProxy=\(vpnOptions.systemProxy, privacy: .public)"
     )
-    suspendSupport = vpnOptions.suspendSupport
 
     setTunnelNetworkSettings(
       networkConfiguration.makeSettings(for: vpnOptions)
@@ -187,21 +184,6 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
         "handleAppMessage response bytes=\(response.count, privacy: .public)"
       )
       completionHandler(response)
-    }
-  }
-
-  override func sleep(completionHandler: @escaping () -> Void) {
-    if suspendSupport {
-      logger.info("sleep: suspending tunnel")
-      NECoreBridge.setSuspended(true)
-    }
-    completionHandler()
-  }
-
-  override func wake() {
-    if suspendSupport {
-      logger.info("wake: resuming tunnel")
-      NECoreBridge.setSuspended(false)
     }
   }
 

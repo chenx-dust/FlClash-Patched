@@ -147,6 +147,13 @@ Quick Settings, notification, revoke, and Always-on VPN paths converge on the sa
   watchdog calls `PendingResult.finish()` exactly once; the watchdog releases Android's broadcast lease and does not
   cancel or redefine the underlying lifecycle intent.
 
+The Core does not react to the screen, to Doze, or to iOS packet-tunnel sleep and wake. Doze's firewall keeps apps
+without an exemption off the network before their traffic reaches the TUN, so what still arrives is traffic Doze
+allows. Suspending the tunnel rejects that traffic, and waking it re-probes every provider: every proxy group is a
+provider, `select` groups included, and checking one tests every node in it. The Android VPN service and the iOS
+packet tunnel keep running, so scheduled health checks still measure real results. The persisted `suspendSupport`
+option no longer changes this.
+
 ## Core Protocol And Event Delivery
 
 The shared protocol uses `CoreMethodCall(id, method, arguments)` and `CoreMethodResponse(id, result, error)` in both

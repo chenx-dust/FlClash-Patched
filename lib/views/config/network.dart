@@ -216,18 +216,6 @@ class DNSHijackingItem extends ConsumerWidget {
   }
 }
 
-class SuspendSupportItem extends ConsumerWidget {
-  const SuspendSupportItem({super.key});
-
-  @override
-  Widget build(BuildContext context, ref) => _vpnToggle(
-    title: (l) => l.suspendSupport,
-    subtitle: (l) => l.suspendSupportDesc,
-    select: (state) => state.suspendSupport,
-    update: (state, value) => state.copyWith(suspendSupport: value),
-  );
-}
-
 class StrictRouteItem extends ConsumerWidget {
   const StrictRouteItem({super.key});
 
@@ -639,7 +627,6 @@ class NetworkListView extends ConsumerWidget {
               const AllowBypassItem(),
               const Ipv6Item(),
               const DNSHijackingItem(),
-              if (system.isAndroid) const SuspendSupportItem(),
             ],
           ),
         if (system.isDesktop)
