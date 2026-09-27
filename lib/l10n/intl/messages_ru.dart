@@ -1489,6 +1489,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Стандартный режим: переопределяет базовую конфигурацию и позволяет просто добавлять правила",
     ),
     "start": MessageLookupByLibrary.simpleMessage("Старт"),
+    "startFromScratch": MessageLookupByLibrary.simpleMessage("С нуля"),
     "startVpn": MessageLookupByLibrary.simpleMessage("Запуск VPN..."),
     "startupAndBackground": MessageLookupByLibrary.simpleMessage(
       "Запуск и фоновая работа",

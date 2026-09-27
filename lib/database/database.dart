@@ -34,7 +34,7 @@ class Database extends _$Database {
   Database([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   static LazyDatabase _openConnection() {
     return LazyDatabase(() async {
@@ -56,8 +56,85 @@ class Database extends _$Database {
         if (from < 4) {
           await _migrateProfileColumns(m);
         }
+        if (from < 5) {
+          await _addColumnIfMissing(m, scripts, scripts.url);
+          await _addColumnIfMissing(m, scripts, scripts.order);
+          await _importLegacyScriptUrls();
+        }
       },
     );
+  }
+
+  @visibleForTesting
+  static Future<String?> Function()? debugScriptSidecarDirectory;
+
+  Future<void> _addColumnIfMissing(
+    Migrator m,
+    TableInfo<Table, dynamic> table,
+    GeneratedColumn<Object> column,
+  ) async {
+    final tableInfo = await customSelect(
+      'PRAGMA table_info(${table.actualTableName})',
+    ).get();
+    final columnNames = tableInfo
+        .map((row) => row.read<String>('name'))
+        .toSet();
+    if (columnNames.contains(column.$name)) {
+      return;
+    }
+    await m.addColumn(table, column);
+  }
+
+  Future<void> _importLegacyScriptUrls() async {
+    final directoryPath = await _legacyScriptDirectory();
+    if (directoryPath == null) {
+      return;
+    }
+    final directory = Directory(directoryPath);
+    if (!await directory.exists()) {
+      return;
+    }
+    await for (final entity in directory.list()) {
+      if (entity is! File) {
+        continue;
+      }
+      final name = entity.path.replaceAll('\\', '/').split('/').last;
+      // getScriptPath appends `.js`, so the sidecar was `{id}.url.json.js`.
+      final match = RegExp(r'^(\d+)\.url\.json\.js$').firstMatch(name);
+      if (match == null) {
+        continue;
+      }
+      Object? data;
+      try {
+        data = json.decode(await entity.readAsString());
+      } catch (_) {
+        continue;
+      }
+      if (data is! Map) {
+        continue;
+      }
+      final url = data['url'];
+      if (url is! String || url.isEmpty) {
+        continue;
+      }
+      await customStatement(
+        'UPDATE scripts SET url = ? WHERE id = ? AND url IS NULL',
+        [url, int.parse(match.group(1)!)],
+      );
+      await entity.delete();
+    }
+  }
+
+  Future<String?> _legacyScriptDirectory() async {
+    final override = debugScriptSidecarDirectory;
+    if (override != null) {
+      return override();
+    }
+    try {
+      return await appPath.scriptsDirPath.timeout(const Duration(seconds: 5));
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<void> _migrateProfileColumns(Migrator m) async {

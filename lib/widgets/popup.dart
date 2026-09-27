@@ -49,10 +49,10 @@ class CommonPopupRoute<T> extends PopupRoute<T> {
   bool get barrierDismissible => true;
 
   @override
-  Duration get transitionDuration => const Duration(milliseconds: 250);
+  Duration get transitionDuration => const Duration(milliseconds: 150);
 
   @override
-  Duration get reverseTransitionDuration => const Duration(milliseconds: 150);
+  Duration get reverseTransitionDuration => const Duration(milliseconds: 120);
 
   void _handleDismiss() {
     if (isCurrent) {

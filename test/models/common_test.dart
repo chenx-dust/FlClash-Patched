@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/models/models.dart';
@@ -10,55 +11,27 @@ import 'package:mocktail/mocktail.dart';
 class MockFile extends Mock implements File {}
 
 void main() {
-  group('Script remote URL', () {
-    late Directory tempDirectory;
+  group('Script labels', () {
+    Script script(int id, String label) =>
+        Script(id: id, label: label, lastUpdateTime: DateTime(2026));
 
-    setUp(() async {
-      tempDirectory = await Directory.systemTemp.createTemp(
-        'fl_clash_script_remote_url_',
-      );
-      debugScriptRemoteUrlPath = (id) async {
-        return '${tempDirectory.path}${Platform.pathSeparator}$id.url.json.js';
-      };
+    test('hasLabel ignores the script being renamed', () {
+      final scripts = [script(1, 'Alpha'), script(2, 'Beta')];
+
+      expect(scripts.hasLabel('Alpha'), isTrue);
+      expect(scripts.hasLabel('Alpha', except: scripts.first), isFalse);
+      expect(scripts.first.updatingKey, 'script_1');
     });
 
-    tearDown(() async {
-      debugScriptRemoteUrlPath = null;
-      await tempDirectory.delete(recursive: true);
-    });
+    test('uniqueLabel appends a counter when the name is taken', () {
+      final scripts = [script(1, 'Alpha'), script(2, 'Alpha(1)')];
 
-    test('saves, reads, and clears its sidecar', () async {
-      final script = Script(
-        id: 901,
-        label: 'Remote script',
-        lastUpdateTime: DateTime(2026),
+      expect('Alpha.js'.fileStem, 'Alpha');
+      expect(
+        scripts.uniqueLabel('Alpha.js'.fileStem, fallback: 'Script'),
+        'Alpha(2)',
       );
-
-      expect(await script.remoteUrl, isNull);
-
-      await script.saveRemoteUrl('https://example.com/script.js');
-
-      expect(await script.remoteUrl, 'https://example.com/script.js');
-      expect(await File(await script.remoteUrlPath).exists(), isTrue);
-      expect(script.updatingKey, 'script_901');
-
-      await script.clearRemoteUrl();
-
-      expect(await script.remoteUrl, isNull);
-      expect(await File(await script.remoteUrlPath).exists(), isFalse);
-    });
-
-    test('treats an invalid sidecar as an absent URL', () async {
-      final script = Script(
-        id: 902,
-        label: 'Invalid remote script',
-        lastUpdateTime: DateTime(2026),
-      );
-      final file = File(await script.remoteUrlPath);
-      await file.create(recursive: true);
-      await file.writeAsString('not json');
-
-      expect(await script.remoteUrl, isNull);
+      expect(scripts.uniqueLabel('', fallback: 'Script'), 'Script');
     });
   });
 

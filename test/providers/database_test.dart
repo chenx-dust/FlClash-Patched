@@ -358,12 +358,21 @@ void main() {
       expect(read().map((item) => item.id), [2], reason: 'rolled back');
     });
 
-    test('isExits matches on label', () async {
-      notifier.put(script(1, 'Known'));
+    test('order persists the new indexes', () async {
+      notifier.put(script(1, 'First'));
+      await pumpEventQueue();
+      notifier.put(script(2, 'Second'));
+      await pumpEventQueue();
+      notifier.put(script(3, 'Third'));
       await pumpEventQueue();
 
-      expect(notifier.isExits('Known'), isTrue);
-      expect(notifier.isExits('Unknown'), isFalse);
+      notifier.order(0, 2);
+      await pumpEventQueue();
+
+      expect(read().map((item) => item.label), ['Second', 'Third', 'First']);
+      final rows = await testDatabase.scriptsDao.query().get();
+      expect(rows.map((item) => item.label), ['Second', 'Third', 'First']);
+      expect(rows.map((item) => item.order), [0, 1, 2]);
     });
   });
 

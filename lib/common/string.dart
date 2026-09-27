@@ -140,6 +140,46 @@ extension StringExtension on String {
     }
     return this;
   }
+
+  String take(int maxLength) {
+    return length <= maxLength ? this : substring(0, maxLength);
+  }
+
+  String get fileStem {
+    final dot = lastIndexOf('.');
+    return dot > 0 ? substring(0, dot) : this;
+  }
+
+  String get urlFileName {
+    final segments = Uri.tryParse(this)?.pathSegments ?? const [];
+    return segments.lastWhere(
+      (segment) => segment.isNotEmpty,
+      orElse: () => '',
+    );
+  }
+}
+
+final _labelCounter = RegExp(r'\((\d{1,9})\)$');
+
+String uniqueLabelFor(
+  String name, {
+  required String fallback,
+  required bool Function(String label) taken,
+}) {
+  const maxLength = TextInputLimits.name;
+  final label = name.trim().takeFirstValid([fallback]).take(maxLength).trim();
+  if (!taken(label)) {
+    return label;
+  }
+  final counter = _labelCounter.firstMatch(label);
+  final stem = counter == null ? label : label.substring(0, counter.start);
+  for (var index = int.parse(counter?[1] ?? '0') + 1; ; index++) {
+    final suffix = '($index)';
+    final candidate = stem.take(maxLength - suffix.length) + suffix;
+    if (!taken(candidate)) {
+      return candidate;
+    }
+  }
 }
 
 extension SearchableStringsExtension on Iterable<String> {

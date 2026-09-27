@@ -715,15 +715,18 @@ abstract class Script with _$Script {
     required int id,
     required String label,
     required DateTime lastUpdateTime,
+    String? url,
+    int? order,
   }) = _Script;
 
   factory Script.fromJson(Map<String, Object?> json) => _$ScriptFromJson(json);
 
-  factory Script.create({required String label}) {
+  factory Script.create({required String label, String? url}) {
     return Script(
       id: snowflake.id,
       label: label,
       lastUpdateTime: DateTime.now(),
+      url: url,
     );
   }
 }
@@ -739,50 +742,26 @@ extension ScriptsExt on List<Script> {
     }
     return null;
   }
-}
 
-@visibleForTesting
-Future<String> Function(int id)? debugScriptRemoteUrlPath;
+  bool hasLabel(String label, {Script? except}) {
+    return any((script) => script.id != except?.id && script.label == label);
+  }
 
-Future<String> getScriptRemoteUrlPath(int id) {
-  return debugScriptRemoteUrlPath?.call(id) ??
-      appPath.getScriptPath('$id.url.json');
+  String uniqueLabel(String name, {required String fallback}) {
+    return uniqueLabelFor(
+      name,
+      fallback: fallback,
+      taken: (label) => hasLabel(label),
+    );
+  }
 }
 
 extension ScriptExt on Script {
   String get fileName => '$id.js';
 
-  Future<String> get path async => appPath.getScriptPath(id.toString());
-
-  Future<String> get remoteUrlPath async => getScriptRemoteUrlPath(id);
-
-  Future<String?> get remoteUrl async {
-    final file = File(await remoteUrlPath);
-    if (!await file.exists()) {
-      return null;
-    }
-    try {
-      final data = json.decode(await file.readAsString());
-      if (data is Map) {
-        return data['url'] as String?;
-      }
-    } catch (_) {}
-    return null;
-  }
-
-  Future<void> saveRemoteUrl(String url) async {
-    final file = File(await remoteUrlPath);
-    if (!await file.exists()) {
-      await file.create(recursive: true);
-    }
-    await file.writeAsString(json.encode({'url': url}));
-  }
-
-  Future<void> clearRemoteUrl() async {
-    await File(await remoteUrlPath).safeDelete();
-  }
-
   String get updatingKey => 'script_$id';
+
+  Future<String> get path async => appPath.getScriptPath(id.toString());
 
   Future<String?> get content async {
     final file = File(await path);
@@ -799,6 +778,11 @@ extension ScriptExt on Script {
     }
     await file.writeAsString(content);
     return copyWith(lastUpdateTime: DateTime.now());
+  }
+
+  Future<Script> update() async {
+    final response = await request.getTextResponseForUrl(url!);
+    return save(response.data ?? '');
   }
 
   Future<Script> saveWithPath(String copyPath) async {

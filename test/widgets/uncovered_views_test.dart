@@ -9,6 +9,7 @@ import 'package:fl_clash/views/config/scripts.dart';
 import 'package:fl_clash/views/profiles/overwrite/standard.dart';
 import 'package:fl_clash/views/proxies/setting.dart';
 import 'package:fl_clash/widgets/inherited.dart';
+import 'package:fl_clash/widgets/loading.dart';
 import 'package:fl_clash/widgets/input.dart';
 import 'package:fl_clash/widgets/pop_scope.dart';
 import 'package:material_ui/material_ui.dart';
@@ -169,7 +170,7 @@ void main() {
     expect(tester.takeException(), null);
   });
 
-  testWidgets('scripts view renders stored scripts and selects one', (
+  testWidgets('scripts view renders stored scripts and opens the item menu', (
     tester,
   ) async {
     final scripts = List.generate(
@@ -178,6 +179,7 @@ void main() {
         id: index + 1,
         label: 'Script $index',
         lastUpdateTime: DateTime(2026, 1, index + 1),
+        url: index == 1 ? 'https://example.com/script.js' : null,
       ),
     );
     final container = _containerFor(
@@ -188,7 +190,7 @@ void main() {
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: const TestApp(child: ScriptsView()),
+        child: const TestApp(locale: Locale('en'), child: ScriptsView()),
       ),
     );
     await tester.pump();
@@ -196,35 +198,20 @@ void main() {
     expect(find.byType(ScriptsView), findsOneWidget);
     expect(find.text('Script 0'), findsOneWidget);
     expect(find.text('Script 3'), findsOneWidget);
-    expect(
-      tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
-      isTrue,
-    );
     expect(tester.takeException(), null);
 
-    await tester.tap(find.byType(CommonCheckBox).at(1));
-    await tester.pump();
+    await tester.tap(find.byTooltip('More').at(1));
+    await tester.pumpAndSettle();
 
-    expect(
-      tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
-      isFalse,
-    );
-
-    final syncButton = tester.widget<IconButton>(
-      find.widgetWithIcon(IconButton, Icons.sync),
-    );
-    expect(syncButton.onPressed, isNotNull);
+    expect(find.text('Sync'), findsOneWidget);
+    expect(find.text('URL'), findsOneWidget);
 
     final updatingOperation = container
         .read(updatingKeysProvider.notifier)
         .start(scripts[1].updatingKey);
     await tester.pump();
 
-    final deleteButton = tester.widget<IconButton>(
-      find.widgetWithIcon(IconButton, Icons.delete),
-    );
-    expect(deleteButton.onPressed, isNull);
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byType(CommonCircleLoading), findsWidgets);
 
     container
         .read(updatingKeysProvider.notifier)

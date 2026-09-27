@@ -3230,6 +3230,16 @@ class AppLocalizations {
     );
   }
 
+  /// `Start from scratch`
+  String get startFromScratch {
+    return Intl.message(
+      'Start from scratch',
+      name: 'startFromScratch',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Auto-set system DNS`
   String get autoSetSystemDns {
     return Intl.message(

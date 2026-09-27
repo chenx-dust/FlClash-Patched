@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drift/native.dart';
 import 'package:fl_clash/database/database.dart' as fl;
 import 'package:fl_clash/enum/enum.dart';
@@ -39,6 +41,13 @@ void _downgradeToUpstreamV3(Database raw) {
   raw.execute('PRAGMA user_version = 3');
 }
 
+/// Schema version 4 had no `url` or `order` on `scripts`.
+void _downgradeToV4(Database raw) {
+  raw.execute('ALTER TABLE scripts DROP COLUMN url');
+  raw.execute('ALTER TABLE scripts DROP COLUMN "order"');
+  raw.execute('PRAGMA user_version = 4');
+}
+
 /// Fork schema version 3 had no `match_target` on `profiles`.
 void _downgradeToForkV3(Database raw) {
   raw.execute('ALTER TABLE profiles DROP COLUMN match_target');
@@ -64,6 +73,7 @@ void main() {
   late Database raw;
 
   setUp(() async {
+    fl.Database.debugScriptSidecarDirectory = () async => null;
     raw = sqlite3.openInMemory();
     final seed = fl.Database(
       NativeDatabase.opened(raw, closeUnderlyingOnClose: false),
@@ -72,7 +82,10 @@ void main() {
     await seed.close();
   });
 
-  tearDown(() => raw.close());
+  tearDown(() {
+    fl.Database.debugScriptSidecarDirectory = null;
+    raw.close();
+  });
 
   Future<fl.Database> openAndMigrate() async {
     final database = fl.Database(
@@ -89,7 +102,7 @@ void main() {
 
     await openAndMigrate();
 
-    expect(_userVersion(raw), 4);
+    expect(_userVersion(raw), 5);
   });
 
   test('the v2 upgrade adds both profile columns', () async {
@@ -101,7 +114,7 @@ void main() {
 
     expect(_columnsOf(raw, 'profiles'), contains('match_target'));
     expect(_columnsOf(raw, 'profiles'), contains('age_secret_key'));
-    expect(_userVersion(raw), 4);
+    expect(_userVersion(raw), 5);
   });
 
   test('the upstream v3 upgrade adds age_secret_key to profiles', () async {
@@ -111,7 +124,35 @@ void main() {
     await openAndMigrate();
 
     expect(_columnsOf(raw, 'profiles'), contains('age_secret_key'));
-    expect(_userVersion(raw), 4);
+    expect(_userVersion(raw), 5);
+  });
+
+  test('the v4 upgrade stores a sidecar script url on the row', () async {
+    _downgradeToV4(raw);
+    raw.execute(
+      'INSERT INTO scripts (id, label, last_update_time) '
+      "VALUES (7, 'Remote', 0)",
+    );
+    final directory = await Directory.systemTemp.createTemp('script_urls_');
+    addTearDown(() => directory.delete(recursive: true));
+    final sidecar = File(
+      '${directory.path}${Platform.pathSeparator}7.url.json.js',
+    );
+    await sidecar.writeAsString('{"url":"https://example.com/a.js"}');
+    fl.Database.debugScriptSidecarDirectory = () async => directory.path;
+    addTearDown(() {
+      fl.Database.debugScriptSidecarDirectory = null;
+    });
+
+    await openAndMigrate();
+
+    expect(
+      raw.select('SELECT url FROM scripts WHERE id = 7').single['url'],
+      'https://example.com/a.js',
+    );
+    expect(sidecar.existsSync(), isFalse);
+    expect(_columnsOf(raw, 'scripts'), containsAll(['url', 'order']));
+    expect(_userVersion(raw), 5);
   });
 
   test('the fork v3 upgrade adds match_target and keeps age data', () async {
@@ -141,7 +182,7 @@ void main() {
           .single['age_secret_key'],
       'AGE-SECRET-KEY-test',
     );
-    expect(_userVersion(raw), 4);
+    expect(_userVersion(raw), 5);
   });
 
   test(
@@ -153,7 +194,7 @@ void main() {
       await openAndMigrate();
 
       expect(_columnsOf(raw, 'profiles'), contains('match_target'));
-      expect(_userVersion(raw), 4);
+      expect(_userVersion(raw), 5);
     },
   );
 
@@ -228,7 +269,7 @@ void main() {
 
     final database = await openAndMigrate();
 
-    expect(_userVersion(raw), 4);
+    expect(_userVersion(raw), 5);
     expect(await database.customSelect('SELECT * FROM rules').get(), isEmpty);
   });
 
@@ -240,7 +281,7 @@ void main() {
       await openAndMigrate();
 
       expect(_columnsOf(raw, 'rules'), before);
-      expect(_userVersion(raw), 4);
+      expect(_userVersion(raw), 5);
       expect(_hasTable(raw, 'proxy_groups'), isTrue);
     },
   );

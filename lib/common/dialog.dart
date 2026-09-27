@@ -114,6 +114,27 @@ class Dialogs {
     );
   }
 
+  Future<String?> showUrlInput({required String title, String value = ''}) {
+    final appLocalizations = currentAppLocalizations;
+    return showCommonDialog<String>(
+      child: InputDialog(
+        title: title,
+        value: value,
+        labelText: appLocalizations.url,
+        inputFormatters: TextInputLimits.limit(TextInputLimits.url),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return appLocalizations.emptyTip(appLocalizations.value);
+          }
+          if (!value.isUrl) {
+            return appLocalizations.urlTip(appLocalizations.value);
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
   Future<bool> showDisclaimer() async {
     return await showCommonDialog<bool>(
           dismissible: false,

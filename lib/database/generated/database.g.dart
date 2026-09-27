@@ -940,8 +940,26 @@ class $ScriptsTable extends Scripts with TableInfo<$ScriptsTable, RawScript> {
         type: DriftSqlType.dateTime,
         requiredDuringInsert: true,
       );
+  static const VerificationMeta _urlMeta = const VerificationMeta('url');
   @override
-  List<GeneratedColumn> get $columns => [id, label, lastUpdateTime];
+  late final GeneratedColumn<String> url = GeneratedColumn<String>(
+    'url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _orderMeta = const VerificationMeta('order');
+  @override
+  late final GeneratedColumn<int> order = GeneratedColumn<int>(
+    'order',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, label, lastUpdateTime, url, order];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -976,6 +994,18 @@ class $ScriptsTable extends Scripts with TableInfo<$ScriptsTable, RawScript> {
     } else if (isInserting) {
       context.missing(_lastUpdateTimeMeta);
     }
+    if (data.containsKey('url')) {
+      context.handle(
+        _urlMeta,
+        url.isAcceptableOrUnknown(data['url']!, _urlMeta),
+      );
+    }
+    if (data.containsKey('order')) {
+      context.handle(
+        _orderMeta,
+        order.isAcceptableOrUnknown(data['order']!, _orderMeta),
+      );
+    }
     return context;
   }
 
@@ -997,6 +1027,14 @@ class $ScriptsTable extends Scripts with TableInfo<$ScriptsTable, RawScript> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_update_time'],
       )!,
+      url: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}url'],
+      ),
+      order: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}order'],
+      ),
     );
   }
 
@@ -1010,10 +1048,14 @@ class RawScript extends DataClass implements Insertable<RawScript> {
   final int id;
   final String label;
   final DateTime lastUpdateTime;
+  final String? url;
+  final int? order;
   const RawScript({
     required this.id,
     required this.label,
     required this.lastUpdateTime,
+    this.url,
+    this.order,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1021,6 +1063,12 @@ class RawScript extends DataClass implements Insertable<RawScript> {
     map['id'] = Variable<int>(id);
     map['label'] = Variable<String>(label);
     map['last_update_time'] = Variable<DateTime>(lastUpdateTime);
+    if (!nullToAbsent || url != null) {
+      map['url'] = Variable<String>(url);
+    }
+    if (!nullToAbsent || order != null) {
+      map['order'] = Variable<int>(order);
+    }
     return map;
   }
 
@@ -1029,6 +1077,10 @@ class RawScript extends DataClass implements Insertable<RawScript> {
       id: Value(id),
       label: Value(label),
       lastUpdateTime: Value(lastUpdateTime),
+      url: url == null && nullToAbsent ? const Value.absent() : Value(url),
+      order: order == null && nullToAbsent
+          ? const Value.absent()
+          : Value(order),
     );
   }
 
@@ -1041,6 +1093,8 @@ class RawScript extends DataClass implements Insertable<RawScript> {
       id: serializer.fromJson<int>(json['id']),
       label: serializer.fromJson<String>(json['label']),
       lastUpdateTime: serializer.fromJson<DateTime>(json['lastUpdateTime']),
+      url: serializer.fromJson<String?>(json['url']),
+      order: serializer.fromJson<int?>(json['order']),
     );
   }
   @override
@@ -1050,15 +1104,24 @@ class RawScript extends DataClass implements Insertable<RawScript> {
       'id': serializer.toJson<int>(id),
       'label': serializer.toJson<String>(label),
       'lastUpdateTime': serializer.toJson<DateTime>(lastUpdateTime),
+      'url': serializer.toJson<String?>(url),
+      'order': serializer.toJson<int?>(order),
     };
   }
 
-  RawScript copyWith({int? id, String? label, DateTime? lastUpdateTime}) =>
-      RawScript(
-        id: id ?? this.id,
-        label: label ?? this.label,
-        lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
-      );
+  RawScript copyWith({
+    int? id,
+    String? label,
+    DateTime? lastUpdateTime,
+    Value<String?> url = const Value.absent(),
+    Value<int?> order = const Value.absent(),
+  }) => RawScript(
+    id: id ?? this.id,
+    label: label ?? this.label,
+    lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
+    url: url.present ? url.value : this.url,
+    order: order.present ? order.value : this.order,
+  );
   RawScript copyWithCompanion(ScriptsCompanion data) {
     return RawScript(
       id: data.id.present ? data.id.value : this.id,
@@ -1066,6 +1129,8 @@ class RawScript extends DataClass implements Insertable<RawScript> {
       lastUpdateTime: data.lastUpdateTime.present
           ? data.lastUpdateTime.value
           : this.lastUpdateTime,
+      url: data.url.present ? data.url.value : this.url,
+      order: data.order.present ? data.order.value : this.order,
     );
   }
 
@@ -1074,46 +1139,60 @@ class RawScript extends DataClass implements Insertable<RawScript> {
     return (StringBuffer('RawScript(')
           ..write('id: $id, ')
           ..write('label: $label, ')
-          ..write('lastUpdateTime: $lastUpdateTime')
+          ..write('lastUpdateTime: $lastUpdateTime, ')
+          ..write('url: $url, ')
+          ..write('order: $order')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, label, lastUpdateTime);
+  int get hashCode => Object.hash(id, label, lastUpdateTime, url, order);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is RawScript &&
           other.id == this.id &&
           other.label == this.label &&
-          other.lastUpdateTime == this.lastUpdateTime);
+          other.lastUpdateTime == this.lastUpdateTime &&
+          other.url == this.url &&
+          other.order == this.order);
 }
 
 class ScriptsCompanion extends UpdateCompanion<RawScript> {
   final Value<int> id;
   final Value<String> label;
   final Value<DateTime> lastUpdateTime;
+  final Value<String?> url;
+  final Value<int?> order;
   const ScriptsCompanion({
     this.id = const Value.absent(),
     this.label = const Value.absent(),
     this.lastUpdateTime = const Value.absent(),
+    this.url = const Value.absent(),
+    this.order = const Value.absent(),
   });
   ScriptsCompanion.insert({
     this.id = const Value.absent(),
     required String label,
     required DateTime lastUpdateTime,
+    this.url = const Value.absent(),
+    this.order = const Value.absent(),
   }) : label = Value(label),
        lastUpdateTime = Value(lastUpdateTime);
   static Insertable<RawScript> custom({
     Expression<int>? id,
     Expression<String>? label,
     Expression<DateTime>? lastUpdateTime,
+    Expression<String>? url,
+    Expression<int>? order,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (label != null) 'label': label,
       if (lastUpdateTime != null) 'last_update_time': lastUpdateTime,
+      if (url != null) 'url': url,
+      if (order != null) 'order': order,
     });
   }
 
@@ -1121,11 +1200,15 @@ class ScriptsCompanion extends UpdateCompanion<RawScript> {
     Value<int>? id,
     Value<String>? label,
     Value<DateTime>? lastUpdateTime,
+    Value<String?>? url,
+    Value<int?>? order,
   }) {
     return ScriptsCompanion(
       id: id ?? this.id,
       label: label ?? this.label,
       lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
+      url: url ?? this.url,
+      order: order ?? this.order,
     );
   }
 
@@ -1141,6 +1224,12 @@ class ScriptsCompanion extends UpdateCompanion<RawScript> {
     if (lastUpdateTime.present) {
       map['last_update_time'] = Variable<DateTime>(lastUpdateTime.value);
     }
+    if (url.present) {
+      map['url'] = Variable<String>(url.value);
+    }
+    if (order.present) {
+      map['order'] = Variable<int>(order.value);
+    }
     return map;
   }
 
@@ -1149,7 +1238,9 @@ class ScriptsCompanion extends UpdateCompanion<RawScript> {
     return (StringBuffer('ScriptsCompanion(')
           ..write('id: $id, ')
           ..write('label: $label, ')
-          ..write('lastUpdateTime: $lastUpdateTime')
+          ..write('lastUpdateTime: $lastUpdateTime, ')
+          ..write('url: $url, ')
+          ..write('order: $order')
           ..write(')'))
         .toString();
   }
@@ -4194,12 +4285,16 @@ typedef $$ScriptsTableCreateCompanionBuilder =
       Value<int> id,
       required String label,
       required DateTime lastUpdateTime,
+      Value<String?> url,
+      Value<int?> order,
     });
 typedef $$ScriptsTableUpdateCompanionBuilder =
     ScriptsCompanion Function({
       Value<int> id,
       Value<String> label,
       Value<DateTime> lastUpdateTime,
+      Value<String?> url,
+      Value<int?> order,
     });
 
 class $$ScriptsTableFilterComposer extends Composer<_$Database, $ScriptsTable> {
@@ -4222,6 +4317,16 @@ class $$ScriptsTableFilterComposer extends Composer<_$Database, $ScriptsTable> {
 
   ColumnFilters<DateTime> get lastUpdateTime => $composableBuilder(
     column: $table.lastUpdateTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get url => $composableBuilder(
+    column: $table.url,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get order => $composableBuilder(
+    column: $table.order,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -4249,6 +4354,16 @@ class $$ScriptsTableOrderingComposer
     column: $table.lastUpdateTime,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get url => $composableBuilder(
+    column: $table.url,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get order => $composableBuilder(
+    column: $table.order,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ScriptsTableAnnotationComposer
@@ -4270,6 +4385,12 @@ class $$ScriptsTableAnnotationComposer
     column: $table.lastUpdateTime,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get url =>
+      $composableBuilder(column: $table.url, builder: (column) => column);
+
+  GeneratedColumn<int> get order =>
+      $composableBuilder(column: $table.order, builder: (column) => column);
 }
 
 class $$ScriptsTableTableManager
@@ -4303,20 +4424,28 @@ class $$ScriptsTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<String> label = const Value.absent(),
                 Value<DateTime> lastUpdateTime = const Value.absent(),
+                Value<String?> url = const Value.absent(),
+                Value<int?> order = const Value.absent(),
               }) => ScriptsCompanion(
                 id: id,
                 label: label,
                 lastUpdateTime: lastUpdateTime,
+                url: url,
+                order: order,
               ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
                 required String label,
                 required DateTime lastUpdateTime,
+                Value<String?> url = const Value.absent(),
+                Value<int?> order = const Value.absent(),
               }) => ScriptsCompanion.insert(
                 id: id,
                 label: label,
                 lastUpdateTime: lastUpdateTime,
+                url: url,
+                order: order,
               ),
           withReferenceMapper: (p0) => p0
               .map(

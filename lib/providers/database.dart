@@ -194,16 +194,16 @@ class Scripts extends _$Scripts with AsyncNotifierMixin, OptimisticMixin {
     optimistic(next, () => database.scripts.remove((t) => t.id.equals(id)));
   }
 
-  void delAll(Iterable<int> ids) {
-    final scriptIds = ids.toSet();
-    optimistic(
-      value.where((item) => !scriptIds.contains(item.id)).toList(),
-      () => database.scripts.remove((t) => t.id.isIn(scriptIds)),
-    );
-  }
-
-  bool isExits(String label) {
-    return value.indexWhere((item) => item.label == label) != -1;
+  void order(int oldIndex, int newIndex) {
+    final next = value.copyAndReorder(oldIndex, newIndex);
+    final changed = <ScriptsCompanion>[];
+    next.forEachIndexed((index, item) {
+      if (item.order != index) {
+        next[index] = item.copyWith(order: index);
+        changed.add(item.toCompanion(index));
+      }
+    });
+    optimistic(next, () => database.scriptsDao.putAll(changed));
   }
 
   @override

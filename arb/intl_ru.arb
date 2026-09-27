@@ -414,6 +414,7 @@
   "import": "Импорт",
   "importFile": "Импорт из файла",
   "importUrl": "Импорт по URL",
+  "startFromScratch": "С нуля",
   "autoSetSystemDns": "Автонастройка системного DNS",
   "details": "Сведения о {label}",
   "creationTime": "Время создания",

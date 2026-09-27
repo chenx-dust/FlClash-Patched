@@ -1415,6 +1415,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Standard mode: overrides the basic configuration and offers simple rule additions",
     ),
     "start": MessageLookupByLibrary.simpleMessage("Start"),
+    "startFromScratch": MessageLookupByLibrary.simpleMessage(
+      "Start from scratch",
+    ),
     "startVpn": MessageLookupByLibrary.simpleMessage("Starting VPN..."),
     "startupAndBackground": MessageLookupByLibrary.simpleMessage(
       "Startup and background",

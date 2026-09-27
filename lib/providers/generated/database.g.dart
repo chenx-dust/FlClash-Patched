@@ -336,7 +336,7 @@ final class ScriptsProvider
   Scripts create() => Scripts();
 }
 
-String _$scriptsHash() => r'5deb6254cd0fd99d9d179ee4576ec680928f182a';
+String _$scriptsHash() => r'd972619681830814ed31751a17346bbfd0ca64a2';
 
 abstract class _$Scripts extends $StreamNotifier<List<Script>> {
   Stream<List<Script>> build();

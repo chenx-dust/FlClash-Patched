@@ -414,6 +414,7 @@
   "import": "导入",
   "importFile": "通过文件导入",
   "importUrl": "通过 URL 导入",
+  "startFromScratch": "从零开始",
   "autoSetSystemDns": "自动设置系统 DNS",
   "details": "{label} 详情",
   "creationTime": "创建时间",

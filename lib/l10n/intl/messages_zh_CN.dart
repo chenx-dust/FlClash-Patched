@@ -1033,6 +1033,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "标准模式，覆写基础配置，提供简单追加规则能力",
     ),
     "start": MessageLookupByLibrary.simpleMessage("启动"),
+    "startFromScratch": MessageLookupByLibrary.simpleMessage("从零开始"),
     "startVpn": MessageLookupByLibrary.simpleMessage("正在启动 VPN..."),
     "startupAndBackground": MessageLookupByLibrary.simpleMessage("启动与后台"),
     "status": MessageLookupByLibrary.simpleMessage("状态"),

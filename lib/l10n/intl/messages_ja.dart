@@ -1185,6 +1185,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "標準モード：基本設定を上書きし、シンプルなルール追加機能を提供します",
     ),
     "start": MessageLookupByLibrary.simpleMessage("開始"),
+    "startFromScratch": MessageLookupByLibrary.simpleMessage("最初から作成"),
     "startVpn": MessageLookupByLibrary.simpleMessage("VPN を開始中..."),
     "startupAndBackground": MessageLookupByLibrary.simpleMessage("起動とバックグラウンド"),
     "status": MessageLookupByLibrary.simpleMessage("状態"),

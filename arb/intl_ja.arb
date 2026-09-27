@@ -414,6 +414,7 @@
   "import": "インポート",
   "importFile": "ファイルからインポート",
   "importUrl": "URL からインポート",
+  "startFromScratch": "最初から作成",
   "autoSetSystemDns": "オートセットシステム DNS",
   "details": "{label} 詳細",
   "creationTime": "作成日時",

@@ -5689,7 +5689,7 @@ as String,
 /// @nodoc
 mixin _$Script {
 
- int get id; String get label; DateTime get lastUpdateTime;
+ int get id; String get label; DateTime get lastUpdateTime; String? get url; int? get order;
 /// Create a copy of Script
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -5703,20 +5703,20 @@ $ScriptCopyWith<Script> get copyWith => _$ScriptCopyWithImpl<Script>(this as Scr
 @override
 bool operator ==(Object other) {
   final _this = this as Script;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Script&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.label, _this.label) || other.label == _this.label)&&(identical(other.lastUpdateTime, _this.lastUpdateTime) || other.lastUpdateTime == _this.lastUpdateTime));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Script&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.label, _this.label) || other.label == _this.label)&&(identical(other.lastUpdateTime, _this.lastUpdateTime) || other.lastUpdateTime == _this.lastUpdateTime)&&(identical(other.url, _this.url) || other.url == _this.url)&&(identical(other.order, _this.order) || other.order == _this.order));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as Script;
-  return Object.hash(runtimeType,_this.id,_this.label,_this.lastUpdateTime);
+  return Object.hash(runtimeType,_this.id,_this.label,_this.lastUpdateTime,_this.url,_this.order);
 }
 
 @override
 String toString() {
   final _this = this as Script;
-  return 'Script(id: ${_this.id}, label: ${_this.label}, lastUpdateTime: ${_this.lastUpdateTime})';
+  return 'Script(id: ${_this.id}, label: ${_this.label}, lastUpdateTime: ${_this.lastUpdateTime}, url: ${_this.url}, order: ${_this.order})';
 }
 
 
@@ -5727,7 +5727,7 @@ abstract mixin class $ScriptCopyWith<$Res>  {
   factory $ScriptCopyWith(Script value, $Res Function(Script) _then) = _$ScriptCopyWithImpl;
 @useResult
 $Res call({
- int id, String label, DateTime lastUpdateTime
+ int id, String label, DateTime lastUpdateTime, String? url, int? order
 });
 
 
@@ -5744,12 +5744,14 @@ class _$ScriptCopyWithImpl<$Res>
 
 /// Create a copy of Script
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? label = null,Object? lastUpdateTime = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? label = null,Object? lastUpdateTime = null,Object? url = freezed,Object? order = freezed,}) {
   return _then(Script(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,label: null == label ? _self.label : label // ignore: cast_nullable_to_non_nullable
 as String,lastUpdateTime: null == lastUpdateTime ? _self.lastUpdateTime : lastUpdateTime // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,url: freezed == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
+as String?,order: freezed == order ? _self.order : order // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -5834,10 +5836,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String label,  DateTime lastUpdateTime)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String label,  DateTime lastUpdateTime,  String? url,  int? order)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Script() when $default != null:
-return $default(_that.id,_that.label,_that.lastUpdateTime);case _:
+return $default(_that.id,_that.label,_that.lastUpdateTime,_that.url,_that.order);case _:
   return orElse();
 
 }
@@ -5855,10 +5857,10 @@ return $default(_that.id,_that.label,_that.lastUpdateTime);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String label,  DateTime lastUpdateTime)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String label,  DateTime lastUpdateTime,  String? url,  int? order)  $default,) {final _that = this;
 switch (_that) {
 case _Script():
-return $default(_that.id,_that.label,_that.lastUpdateTime);case _:
+return $default(_that.id,_that.label,_that.lastUpdateTime,_that.url,_that.order);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -5875,10 +5877,10 @@ return $default(_that.id,_that.label,_that.lastUpdateTime);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String label,  DateTime lastUpdateTime)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String label,  DateTime lastUpdateTime,  String? url,  int? order)?  $default,) {final _that = this;
 switch (_that) {
 case _Script() when $default != null:
-return $default(_that.id,_that.label,_that.lastUpdateTime);case _:
+return $default(_that.id,_that.label,_that.lastUpdateTime,_that.url,_that.order);case _:
   return null;
 
 }
@@ -5890,12 +5892,14 @@ return $default(_that.id,_that.label,_that.lastUpdateTime);case _:
 @JsonSerializable()
 
 class _Script implements Script {
-  const _Script({required this.id, required this.label, required this.lastUpdateTime});
+  const _Script({required this.id, required this.label, required this.lastUpdateTime, this.url, this.order});
   factory _Script.fromJson(Map<String, dynamic> json) => _$ScriptFromJson(json);
 
 @override final  int id;
 @override final  String label;
 @override final  DateTime lastUpdateTime;
+@override final  String? url;
+@override final  int? order;
 
 /// Create a copy of Script
 /// with the given fields replaced by the non-null parameter values.
@@ -5910,18 +5914,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Script&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&(identical(other.lastUpdateTime, lastUpdateTime) || other.lastUpdateTime == lastUpdateTime));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Script&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&(identical(other.lastUpdateTime, lastUpdateTime) || other.lastUpdateTime == lastUpdateTime)&&(identical(other.url, url) || other.url == url)&&(identical(other.order, order) || other.order == order));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,label,lastUpdateTime);
+    return Object.hash(runtimeType,id,label,lastUpdateTime,url,order);
 }
 
 @override
 String toString() {
-    return 'Script(id: $id, label: $label, lastUpdateTime: $lastUpdateTime)';
+    return 'Script(id: $id, label: $label, lastUpdateTime: $lastUpdateTime, url: $url, order: $order)';
 }
 
 
@@ -5932,7 +5936,7 @@ abstract mixin class _$ScriptCopyWith<$Res> implements $ScriptCopyWith<$Res> {
   factory _$ScriptCopyWith(_Script value, $Res Function(_Script) _then) = __$ScriptCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String label, DateTime lastUpdateTime
+ int id, String label, DateTime lastUpdateTime, String? url, int? order
 });
 
 
@@ -5949,12 +5953,14 @@ class __$ScriptCopyWithImpl<$Res>
 
 /// Create a copy of Script
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? label = null,Object? lastUpdateTime = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? label = null,Object? lastUpdateTime = null,Object? url = freezed,Object? order = freezed,}) {
   return _then(_Script(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,label: null == label ? _self.label : label // ignore: cast_nullable_to_non_nullable
 as String,lastUpdateTime: null == lastUpdateTime ? _self.lastUpdateTime : lastUpdateTime // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,url: freezed == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
+as String?,order: freezed == order ? _self.order : order // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

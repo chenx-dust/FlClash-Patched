@@ -1,12 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/pages/editor.dart';
-import 'package:fl_clash/providers/app.dart';
-import 'package:fl_clash/providers/database.dart';
+import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_ui/material_ui.dart';
@@ -20,138 +20,35 @@ class ScriptsView extends ConsumerStatefulWidget {
 }
 
 class _ScriptsViewState extends ConsumerState<ScriptsView> {
-  final _key = uniqueId;
-  final _remoteUrlFutures = <int, Future<String?>>{};
-  String? _editingRemoteUrl;
+  late final ScriptsAction _scriptsAction;
 
-  Future<void> _handleDelete() async {
+  @override
+  void initState() {
+    super.initState();
+    _scriptsAction = ref.read(scriptsActionProvider.notifier);
+  }
+
+  Future<void> _handleDelete(Script script) async {
     final appLocalizations = context.appLocalizations;
     final res = await dialogs.showMessage(
       title: appLocalizations.tip,
       message: TextSpan(
-        text: appLocalizations.deleteMultipTip(appLocalizations.script),
+        text: appLocalizations.deleteTip(appLocalizations.script),
       ),
     );
-    if (res != true) {
+    if (res != true || !mounted) {
       return;
     }
-    final selectedScriptIds = ref.read(itemsProvider(_key)).cast<int>();
-    final selectedScripts = ref
-        .read(scriptsProvider.notifier)
-        .value
-        .where((script) => selectedScriptIds.contains(script.id));
-    if (selectedScripts.any(
-      (script) => ref.read(isUpdatingProvider(script.updatingKey)),
-    )) {
-      return;
-    }
-    ref.read(scriptsProvider.notifier).delAll(selectedScriptIds);
-    ref.read(itemsProvider(_key).notifier).value = {};
-    for (final id in selectedScriptIds) {
-      unawaited(_clearEffect(id));
-    }
+    ref.read(scriptsProvider.notifier).del(script.id);
+    unawaited(_clearEffect(script.id));
   }
 
   Future<void> _clearEffect(int id) async {
     final path = await appPath.getScriptPath(id.toString());
     await File(path).safeDelete();
-    await File(await getScriptRemoteUrlPath(id)).safeDelete();
-    unawaited(_remoteUrlFutures.remove(id));
   }
 
-  void _handleSelected(int id) {
-    ref.read(itemsProvider(_key).notifier).update((selectedScriptIds) {
-      return Set<int>.from(selectedScriptIds)..addOrRemove(id);
-    });
-  }
-
-  void _handleSelectAll() {
-    final ids =
-        ref.read(scriptsProvider).value?.map((item) => item.id).toSet() ?? {};
-    ref.read(itemsProvider(_key).notifier).update((selected) {
-      return selected.containsAll(ids) ? {} : ids;
-    });
-  }
-
-  Future<void> _handleSyncScript(Script script) async {
-    final appLocalizations = context.appLocalizations;
-    final url = await script.remoteUrl;
-    if (url == null || url.isEmpty) {
-      dialogs.showNotifier(appLocalizations.emptyTip(appLocalizations.url));
-      return;
-    }
-    final updatingKey = script.updatingKey;
-    final updatingKeys = ref.read(updatingKeysProvider.notifier);
-    final updatingOperation = updatingKeys.start(updatingKey);
-    dialogs.showNotifier(appLocalizations.geoUpdating(script.label));
-    try {
-      await globalState.safeRun<void>(() async {
-        final response = await request.getTextResponseForUrl(url);
-        final content = response.data;
-        if (content == null) {
-          dialogs.showNotifier(
-            appLocalizations.nullTip(appLocalizations.content),
-          );
-          return;
-        }
-        if (await script.content == content) {
-          dialogs.showNotifier(appLocalizations.geoSkipped(script.label));
-          return;
-        }
-        if (!mounted) {
-          return;
-        }
-        final currentScript = ref
-            .read(scriptsProvider.notifier)
-            .value
-            .get(script.id);
-        if (currentScript == null) {
-          return;
-        }
-        final updatedScript = await currentScript.save(content);
-        ref.read(scriptsProvider.notifier).put(updatedScript);
-        dialogs.showNotifier(appLocalizations.geoUpdated(script.label));
-      }, silence: false);
-    } finally {
-      updatingKeys.stop(updatingKey, updatingOperation);
-    }
-  }
-
-  Future<String?> _remoteUrlFutureFor(Script script) {
-    return _remoteUrlFutures[script.id] ??= script.remoteUrl;
-  }
-
-  Widget _buildScriptTitle(Script script) {
-    return FutureBuilder<String?>(
-      future: _remoteUrlFutureFor(script),
-      builder: (_, snapshot) {
-        final remoteUrl = snapshot.data;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(script.label, style: context.textTheme.bodyLarge, maxLines: 3),
-            const SizedBox(height: 4),
-            Text(
-              script.lastUpdateTime.getLastUpdateTimeDesc(context),
-              style: context.textTheme.bodyMedium,
-            ),
-            if (remoteUrl != null && remoteUrl.isNotEmpty) ...[
-              const SizedBox(height: 4),
-              Text(
-                remoteUrl,
-                style: context.textTheme.bodyMedium?.toLight,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildContent(List<Script> scripts, Set<dynamic> selectedScriptIds) {
+  Widget _buildContent(List<Script> scripts) {
     final appLocalizations = context.appLocalizations;
     return NullStatusSwitcher(
       isEmpty: scripts.isEmpty,
@@ -159,28 +56,105 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
         illustration: NullStatusIllustration.scripts,
         label: appLocalizations.nullTip(appLocalizations.script),
       ),
-      child: ListView.builder(
+      child: ReorderableListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        buildDefaultDragHandles: false,
         itemCount: scripts.length,
         itemBuilder: (_, index) {
           final script = scripts[index];
-          return ItemPositionProvider(
-            position: ItemPosition.get(index, scripts.length),
-            child: SelectedDecorationListItem(
-              isSelected: selectedScriptIds.contains(script.id),
-              isEditing: selectedScriptIds.isNotEmpty,
-              title: _buildScriptTitle(script),
-              onSelected: () {
-                _handleSelected(script.id);
-              },
-              onPressed: () {
-                _handleToEditor(script.id);
-              },
-            ),
+          return ReorderableDelayedDragStartListener(
+            key: ValueKey(script.id),
+            index: index,
+            child: _buildItem(script, index, scripts.length),
           );
+        },
+        proxyDecorator: (_, index, animation) {
+          return commonProxyDecorator(
+            _buildItem(scripts[index], index, scripts.length),
+            index,
+            animation,
+          );
+        },
+        onReorderItem: ref.read(scriptsProvider.notifier).order,
+      ),
+    );
+  }
+
+  Widget _buildItem(Script script, int index, int length) {
+    return ItemPositionProvider(
+      position: ItemPosition.get(index, length),
+      child: DecorationListItem(
+        contentPadding: const EdgeInsets.only(left: 16, right: 8),
+        title: Text(script.label),
+        subtitle: script.url != null
+            ? Text(script.lastUpdateTime.getLastUpdateTimeDesc(context))
+            : null,
+        trailing: _ScriptItemMenu(
+          script: script,
+          onEdit: () {
+            _handleToEditor(script);
+          },
+          onEditUrl: () {
+            _handleEditUrl(script);
+          },
+          onUpdate: () {
+            _handleUpdate(script);
+          },
+          onDelete: () {
+            _handleDelete(script);
+          },
+        ),
+        onPressed: () {
+          _handleToEditor(script);
         },
       ),
     );
+  }
+
+  Future<void> _handleEditUrl(Script script) async {
+    final url = await dialogs.showUrlInput(
+      title: context.appLocalizations.url,
+      value: script.url ?? '',
+    );
+    if (url == null || url == script.url) {
+      return;
+    }
+    await _handleUpdate(script.copyWith(url: url));
+  }
+
+  Future<void> _handleUpdate(Script script) async {
+    await globalState.safeRun(
+      () => _scriptsAction.updateScript(script),
+      title: script.label,
+    );
+  }
+
+  List<Script> get _scripts => ref.read(scriptsProvider).value ?? [];
+
+  String? _validateName(String? value, {Script? script}) {
+    final appLocalizations = context.appLocalizations;
+    final label = value?.trim() ?? '';
+    if (label.isEmpty) {
+      return appLocalizations.emptyTip(appLocalizations.name);
+    }
+    if (_scripts.hasLabel(label, except: script)) {
+      return appLocalizations.existsTip(appLocalizations.name);
+    }
+    return null;
+  }
+
+  Future<String?> _showNameDialog({Script? script}) async {
+    final appLocalizations = context.appLocalizations;
+    final res = await dialogs.showCommonDialog<String>(
+      child: InputDialog(
+        title: appLocalizations.save,
+        value: '',
+        hintText: appLocalizations.pleaseEnterScriptName,
+        inputFormatters: TextInputLimits.limit(TextInputLimits.name),
+        validator: (value) => _validateName(value, script: script),
+      ),
+    );
+    return res?.trim().value;
   }
 
   Future<void> _handleEditorSave(
@@ -190,61 +164,28 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
     Script? script,
   }) async {
     final appLocalizations = context.appLocalizations;
-    Script newScript =
-        (script?.copyWith(label: title) ?? Script.create(label: title));
-    newScript = await newScript.save(content);
-    if (newScript.label.isEmpty) {
-      final res = await dialogs.showCommonDialog<String>(
-        child: InputDialog(
-          autofocus: true,
-          title: appLocalizations.save,
-          value: '',
-          hintText: appLocalizations.pleaseEnterScriptName,
-          inputFormatters: TextInputLimits.limit(TextInputLimits.name),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return appLocalizations.emptyTip(appLocalizations.name);
-            }
-            if (value != script?.label) {
-              final isExits = ref.read(scriptsProvider.notifier).isExits(value);
-              if (isExits) {
-                return appLocalizations.existsTip(appLocalizations.name);
-              }
-            }
-            return null;
-          },
+    var label = title.trim();
+    if (label.isEmpty) {
+      final res = await _showNameDialog(script: script);
+      if (res == null) {
+        return;
+      }
+      label = res;
+    }
+    if (_scripts.hasLabel(label, except: script)) {
+      unawaited(
+        dialogs.showMessage(
+          message: TextSpan(
+            text: appLocalizations.existsTip(appLocalizations.name),
+          ),
         ),
       );
-      if (res == null || res.isEmpty) {
-        return;
-      }
-      newScript = newScript.copyWith(label: res);
+      return;
     }
-    if (newScript.label != script?.label) {
-      final isExits = ref
-          .read(scriptsProvider.notifier)
-          .isExits(newScript.label);
-      if (isExits) {
-        unawaited(
-          dialogs.showMessage(
-            message: TextSpan(
-              text: appLocalizations.existsTip(appLocalizations.name),
-            ),
-          ),
-        );
-        return;
-      }
-    }
-    if (_editingRemoteUrl != null) {
-      if (_editingRemoteUrl!.isEmpty) {
-        await newScript.clearRemoteUrl();
-        _remoteUrlFutures[newScript.id] = Future.value(null);
-      } else {
-        await newScript.saveRemoteUrl(_editingRemoteUrl!);
-        _remoteUrlFutures[newScript.id] = Future.value(_editingRemoteUrl);
-      }
-    }
-    ref.read(scriptsProvider.notifier).put(newScript);
+    final newScript =
+        await (script?.copyWith(label: label) ?? Script.create(label: label))
+            .save(content);
+    _scriptsAction.putScript(newScript);
     if (mounted) {
       Navigator.of(context).pop();
     }
@@ -264,7 +205,10 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
     final res = await dialogs.showMessage(
       message: TextSpan(text: appLocalizations.saveChanges),
     );
-    if (res == true && mounted) {
+    if (res == null) {
+      return false;
+    }
+    if (res && mounted) {
       unawaited(_handleEditorSave(context, title, content, script: script));
     } else {
       return true;
@@ -272,10 +216,7 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
     return false;
   }
 
-  void _handleToEditor([int? id]) async {
-    _editingRemoteUrl = null;
-    final script = await ref.read(scriptProvider(id).future);
-    _editingRemoteUrl = await script?.remoteUrl;
+  void _handleToEditor([Script? script]) async {
     final title = script?.label ?? '';
     final raw = (await script?.content) ?? scriptTemplate;
     if (!mounted) {
@@ -287,13 +228,6 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
         EditorPage(
           titleEditable: true,
           title: title,
-          supportRemoteDownload: true,
-          onRemoteDownload: (url) {
-            _editingRemoteUrl = url;
-          },
-          onLocalImport: () {
-            _editingRemoteUrl = '';
-          },
           onSave: (context, title, content) {
             _handleEditorSave(context, title, content, script: script);
           },
@@ -313,86 +247,168 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
     );
   }
 
+  Future<void> _handleImport(
+    String content, {
+    String? url,
+    required String fileName,
+  }) async {
+    final label = _scripts.uniqueLabel(
+      fileName.fileStem,
+      fallback: context.appLocalizations.script,
+    );
+    final script = await Script.create(label: label, url: url).save(content);
+    _scriptsAction.putScript(script);
+  }
+
+  Future<void> _handleImportFromUrl() async {
+    final appLocalizations = context.appLocalizations;
+    final url = await dialogs.showUrlInput(title: appLocalizations.importUrl);
+    if (url == null) {
+      return;
+    }
+    final res = await globalState.loadingRun(
+      () => request.getTextResponseForUrl(url),
+      title: appLocalizations.importUrl,
+      tag: LoadingTag.scripts,
+    );
+    if (res == null || !mounted) {
+      return;
+    }
+    await _handleImport(res.data ?? '', url: url, fileName: url.urlFileName);
+  }
+
+  Future<void> _handleImportFromFile() async {
+    final file = await globalState.safeRun(picker.pickerFile);
+    if (file == null) {
+      return;
+    }
+    final bytes = await globalState.safeRun(file.readBytes);
+    if (bytes == null || !mounted) {
+      return;
+    }
+    await _handleImport(utf8.decode(bytes), fileName: file.name);
+  }
+
   @override
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     final scripts = ref.watch(scriptsProvider).value ?? [];
-    final selectedScriptIds = ref.watch(itemsProvider(_key));
-    final selectedScripts = scripts
-        .where((script) => selectedScriptIds.contains(script.id))
-        .toList();
-    final selectedScript = selectedScripts.length == 1
-        ? selectedScripts.single
-        : null;
-    final selectedUpdatingStates = {
-      for (final script in selectedScripts)
-        script.id: ref.watch(isUpdatingProvider(script.updatingKey)),
-    };
-    final isSelectedScriptUpdating = selectedScript == null
-        ? false
-        : selectedUpdatingStates[selectedScript.id] ?? false;
-    final isAnySelectedScriptUpdating = selectedUpdatingStates.values.any(
-      (value) => value,
-    );
-    return CommonPopScope(
-      canPop: selectedScriptIds.isEmpty,
-      onPop: (_) {
-        if (selectedScriptIds.isNotEmpty) {
-          ref.read(itemsProvider(_key).notifier).value = {};
-          return false;
-        }
-        Navigator.of(context).pop();
-        return false;
-      },
-      child: CommonScaffold(
-        actions: [
-          if (selectedScript != null) ...[
-            CommonMinIconButtonTheme(
-              child: IconButton.filledTonal(
-                tooltip: appLocalizations.sync,
-                onPressed: isSelectedScriptUpdating
-                    ? null
-                    : () {
-                        _handleSyncScript(selectedScript);
-                      },
-                icon: isSelectedScriptUpdating
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.sync),
+    final isLoading = ref.watch(loadingProvider(LoadingTag.scripts));
+    return CommonScaffold(
+      isLoading: isLoading,
+      actions: [
+        CommonPopupBox(
+          targetBuilder: (open) {
+            return CommonMinFilledButtonTheme(
+              child: FilledButton.tonal(
+                onPressed: () {
+                  final isMobile = ref.read(isMobileViewProvider);
+                  open(offset: Offset(0, isMobile ? 0 : 20));
+                },
+                child: Text(appLocalizations.add),
               ),
-            ),
-            const SizedBox(width: 2),
-          ],
-          if (selectedScriptIds.isNotEmpty) ...[
-            CommonMinIconButtonTheme(
-              child: IconButton.filledTonal(
-                tooltip: context.appLocalizations.delete,
-                onPressed: isAnySelectedScriptUpdating ? null : _handleDelete,
-                icon: const Icon(Icons.delete),
+            );
+          },
+          popupBuilder: (_) => CommonPopupMenu(
+            items: [
+              CommonPopupMenuItem(
+                icon: Icons.edit_outlined,
+                label: appLocalizations.startFromScratch,
+                onPressed: _handleToEditor,
               ),
-            ),
-            const SizedBox(width: 2),
-          ],
-          CommonMinFilledButtonTheme(
-            child: selectedScriptIds.isNotEmpty
-                ? FilledButton(
-                    onPressed: _handleSelectAll,
-                    child: Text(appLocalizations.selectAll),
-                  )
-                : FilledButton.tonal(
-                    onPressed: () {
-                      _handleToEditor();
-                    },
-                    child: Text(appLocalizations.add),
-                  ),
+              CommonPopupMenuItem(
+                icon: Icons.cloud_download_outlined,
+                label: appLocalizations.importUrl,
+                onPressed: _handleImportFromUrl,
+              ),
+              CommonPopupMenuItem(
+                icon: Icons.upload_file_outlined,
+                label: appLocalizations.importFile,
+                onPressed: _handleImportFromFile,
+              ),
+            ],
           ),
-          const SizedBox(width: 8),
-        ],
-        body: _buildContent(scripts, selectedScriptIds),
-        title: appLocalizations.script,
+        ),
+        const SizedBox(width: 8),
+      ],
+      body: _buildContent(scripts),
+      title: appLocalizations.script,
+    );
+  }
+}
+
+class _ScriptItemMenu extends ConsumerWidget {
+  const _ScriptItemMenu({
+    required this.script,
+    required this.onEdit,
+    required this.onEditUrl,
+    required this.onUpdate,
+    required this.onDelete,
+  });
+
+  final Script script;
+  final VoidCallback onEdit;
+  final VoidCallback onEditUrl;
+  final VoidCallback onUpdate;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appLocalizations = context.appLocalizations;
+    final isUpdating = ref.watch(isUpdatingProvider(script.updatingKey));
+    return SizedBox.square(
+      dimension: 40,
+      child: FadeThroughBox(
+        alignment: Alignment.center,
+        child: isUpdating
+            ? const Padding(
+                key: ValueKey('loading'),
+                padding: EdgeInsets.all(8),
+                child: CommonCircleLoading(),
+              )
+            : CommonPopupBox(
+                key: const ValueKey('menu'),
+                popupBuilder: (_) => CommonPopupMenu(
+                  items: [
+                    CommonPopupMenuItem(
+                      icon: Icons.edit_outlined,
+                      label: appLocalizations.edit,
+                      onPressed: onEdit,
+                    ),
+                    if (script.url != null) ...[
+                      CommonPopupMenuItem(
+                        icon: Icons.link,
+                        label: appLocalizations.url,
+                        onPressed: onEditUrl,
+                      ),
+                      CommonPopupMenuItem(
+                        icon: Icons.sync,
+                        label: appLocalizations.sync,
+                        onPressed: onUpdate,
+                      ),
+                    ],
+                    CommonPopupMenuItem(
+                      danger: true,
+                      icon: Icons.delete_outlined,
+                      label: appLocalizations.delete,
+                      onPressed: onDelete,
+                    ),
+                  ],
+                ),
+                targetBuilder: (open) {
+                  return IconButton(
+                    style: IconButton.styleFrom(
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.standard,
+                    ),
+                    tooltip: appLocalizations.more,
+                    onPressed: () {
+                      open();
+                    },
+                    icon: const Icon(Icons.more_vert),
+                  );
+                },
+              ),
       ),
     );
   }
