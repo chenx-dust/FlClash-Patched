@@ -2360,6 +2360,16 @@ class AppLocalizations {
     return Intl.message('Stack mode', name: 'stackMode', desc: '', args: []);
   }
 
+  /// `Congestion control`
+  String get congestionController {
+    return Intl.message(
+      'Congestion control',
+      name: 'congestionController',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Network`
   String get network {
     return Intl.message('Network', name: 'network', desc: '', args: []);

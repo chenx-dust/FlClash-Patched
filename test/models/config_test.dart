@@ -27,6 +27,26 @@ void main() {
     expect(json['sendmsgx'], isTrue);
   });
 
+  test('TUN congestion controller defaults to cubic and round-trips', () {
+    expect(const Tun().congestionController, TunCongestionController.cubic);
+    expect(
+      Tun.fromJson({}).congestionController,
+      TunCongestionController.cubic,
+    );
+    expect(
+      Tun.fromJson({'congestion-controller': 'future'}).congestionController,
+      TunCongestionController.cubic,
+    );
+    for (final controller in TunCongestionController.values) {
+      final tun = Tun.fromJson({'congestion-controller': controller.name});
+      expect(tun.congestionController, controller);
+      expect(
+        roundTrip(tun.toJson, Tun.fromJson).congestionController,
+        controller,
+      );
+    }
+  });
+
   test('TUN defaults to mips and preserves saved stack choices', () {
     expect(const Tun().stack, TunStack.mips);
     expect(Tun.fromJson({}).stack, TunStack.mips);
@@ -537,7 +557,7 @@ void main() {
         'interface-name-mode': 'future',
         'geodata-loader': 'future',
         'geosite-matcher': 'future',
-        'tun': {'stack': 'future'},
+        'tun': {'stack': 'future', 'congestion-controller': 'future'},
         'dns': {'enhanced-mode': 'future'},
       });
 
@@ -548,6 +568,7 @@ void main() {
       expect(patch.geodataLoader, GeodataLoader.memconservative);
       expect(patch.geositeMatcher, GeositeMatcher.succinct);
       expect(patch.tun.stack, TunStack.mips);
+      expect(patch.tun.congestionController, TunCongestionController.cubic);
       expect(patch.dns.enhancedMode, DnsMode.fakeIp);
     });
 

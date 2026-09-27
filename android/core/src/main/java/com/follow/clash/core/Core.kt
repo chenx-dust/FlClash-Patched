@@ -19,6 +19,7 @@ object Core {
         val mtu: Int,
         val disableIcmpForwarding: Boolean,
         val endpointIndependentNat: Boolean,
+        val congestionController: String,
     ) {
         fun toJson(): String = JSONObject()
             .put("stack", stack)
@@ -27,6 +28,7 @@ object Core {
             .put("mtu", mtu)
             .put("disableIcmpForwarding", disableIcmpForwarding)
             .put("endpointIndependentNat", endpointIndependentNat)
+            .put("congestionController", congestionController)
             .toString()
     }
 

@@ -27,6 +27,7 @@ data class VpnOptions(
     val routeAddress: List<String>,
     val disableIcmpForwarding: Boolean,
     val endpointIndependentNat: Boolean,
+    val congestionController: String? = null,
 )
 
 data class CIDR(

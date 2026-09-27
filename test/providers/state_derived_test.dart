@@ -547,6 +547,7 @@ void main() {
               routeAddress: const ['10.0.0.0/8'],
               disableIcmpForwarding: true,
               endpointIndependentNat: true,
+              congestionController: TunCongestionController.bbr,
             ),
           ),
         );
@@ -574,6 +575,10 @@ void main() {
     expect(sharedState.vpnOptions?.mtu, 1500);
     expect(sharedState.vpnOptions?.disableIcmpForwarding, true);
     expect(sharedState.vpnOptions?.endpointIndependentNat, true);
+    expect(
+      sharedState.vpnOptions?.congestionController,
+      TunCongestionController.bbr,
+    );
     expect(sharedState.vpnOptions?.suspendSupport, false);
     expect(sharedState.vpnOptions?.includeAllNetworks, true);
     expect(sharedState.vpnOptions?.excludeLocalNetworks, false);

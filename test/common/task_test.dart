@@ -221,6 +221,7 @@ void main() {
       expect(result.md5, hasLength(32));
       expect(config['mixed-port'], 7893);
       expect(config['allow-lan'], true);
+      expect(config['tun']['congestion-controller'], 'cubic');
       expect(config['global-ua'], 'FlClash-Test');
       expect(config['profile']['store-selected'], false);
       expect(

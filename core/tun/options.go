@@ -9,4 +9,5 @@ type Options struct {
 	MTU                    uint32 `json:"mtu"`
 	DisableICMPForwarding  bool   `json:"disableIcmpForwarding"`
 	EndpointIndependentNAT bool   `json:"endpointIndependentNat"`
+	CongestionController   string `json:"congestionController"`
 }

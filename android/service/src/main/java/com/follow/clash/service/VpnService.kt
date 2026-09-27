@@ -165,6 +165,7 @@ class VpnService : SystemVpnService(), ManagedService {
                             mtu = mtu,
                             disableIcmpForwarding = options.disableIcmpForwarding,
                             endpointIndependentNat = options.endpointIndependentNat,
+                            congestionController = options.congestionController.orEmpty(),
                         ),
                     ),
                 ) { "Core rejected the tun file descriptor" }

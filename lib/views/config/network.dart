@@ -320,6 +320,31 @@ class SendMsgXItem extends ConsumerWidget {
   );
 }
 
+class TunCongestionControllerItem extends ConsumerWidget {
+  const TunCongestionControllerItem({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final stack = ref.watch(
+      patchClashConfigProvider.select((state) => state.tun.stack),
+    );
+    if (stack != TunStack.mips) {
+      return Container();
+    }
+    return ConfigOptionsItem<TunCongestionController>(
+      title: (l) => l.congestionController,
+      options: TunCongestionController.values,
+      textBuilder: (controller) => controller.name,
+      selector: patchClashConfigProvider.select(
+        (state) => state.tun.congestionController,
+      ),
+      onChanged: _tunWriter(
+        (state, value) => state.copyWith.tun(congestionController: value),
+      ),
+    );
+  }
+}
+
 class TunStackItem extends ConsumerWidget {
   const TunStackItem({super.key});
 
@@ -577,6 +602,7 @@ List<Widget> networkOptionsItems({
     if (isDesktop) const TunDnsHijackItem(),
     const EndpointIndependentNatItem(),
     const TunStackItem(),
+    const TunCongestionControllerItem(),
     if (isMacOS || isIOS) ...[const RecvMsgXItem(), const SendMsgXItem()],
     const TunMtuItem(),
     // mihomo's DefaultSocketHook ignores interface-name on Android

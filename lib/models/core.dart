@@ -57,6 +57,9 @@ abstract class VpnOptions with _$VpnOptions {
     @Default([]) List<String> routeAddress,
     @Default(false) bool disableIcmpForwarding,
     @Default(false) bool endpointIndependentNat,
+    @Default(TunCongestionController.cubic)
+    @JsonKey(unknownEnumValue: TunCongestionController.cubic)
+    TunCongestionController congestionController,
     @Default(true) bool recvMsgX,
     @Default(false) bool sendMsgX,
     @Default(false) bool includeAllNetworks,

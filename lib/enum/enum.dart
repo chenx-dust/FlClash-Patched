@@ -189,6 +189,8 @@ enum TrackerInfoSortType {
 
 enum TunStack { mips, gvisor, system, mixed }
 
+enum TunCongestionController { cubic, reno, bbr, bbr3 }
+
 enum AccessControlMode { acceptSelected, rejectSelected }
 
 enum AccessSortType { none, name, time }

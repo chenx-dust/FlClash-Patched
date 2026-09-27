@@ -308,6 +308,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "confirmOverwriteTip": MessageLookupByLibrary.simpleMessage(
       "確定すると既存のデータを上書きします",
     ),
+    "congestionController": MessageLookupByLibrary.simpleMessage("輻輳制御"),
     "connected": MessageLookupByLibrary.simpleMessage("接続済み"),
     "connecting": MessageLookupByLibrary.simpleMessage("接続中"),
     "connection": MessageLookupByLibrary.simpleMessage("接続"),

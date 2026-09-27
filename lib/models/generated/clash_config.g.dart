@@ -191,6 +191,13 @@ _Tun _$TunFromJson(Map<String, dynamic> json) => _Tun(
   strictRoute: json['strict-route'] as bool? ?? false,
   disableIcmpForwarding: json['disable-icmp-forwarding'] as bool? ?? false,
   endpointIndependentNat: json['endpoint-independent-nat'] as bool? ?? false,
+  congestionController:
+      $enumDecodeNullable(
+        _$TunCongestionControllerEnumMap,
+        json['congestion-controller'],
+        unknownValue: TunCongestionController.cubic,
+      ) ??
+      TunCongestionController.cubic,
 );
 
 Map<String, dynamic> _$TunToJson(_Tun instance) => <String, dynamic>{
@@ -206,6 +213,8 @@ Map<String, dynamic> _$TunToJson(_Tun instance) => <String, dynamic>{
   'strict-route': instance.strictRoute,
   'disable-icmp-forwarding': instance.disableIcmpForwarding,
   'endpoint-independent-nat': instance.endpointIndependentNat,
+  'congestion-controller':
+      _$TunCongestionControllerEnumMap[instance.congestionController]!,
 };
 
 const _$TunStackEnumMap = {
@@ -213,6 +222,13 @@ const _$TunStackEnumMap = {
   TunStack.gvisor: 'gvisor',
   TunStack.system: 'system',
   TunStack.mixed: 'mixed',
+};
+
+const _$TunCongestionControllerEnumMap = {
+  TunCongestionController.cubic: 'cubic',
+  TunCongestionController.reno: 'reno',
+  TunCongestionController.bbr: 'bbr',
+  TunCongestionController.bbr3: 'bbr3',
 };
 
 _FallbackFilter _$FallbackFilterFromJson(

@@ -84,6 +84,7 @@ func Start(fd int, config Options) *sing_tun.Listener {
 		FileDescriptor:         dupFd,
 		DisableICMPForwarding:  config.DisableICMPForwarding,
 		EndpointIndependentNat: config.EndpointIndependentNAT,
+		CongestionController:   config.CongestionController,
 	}
 
 	listener, err := sing_tun.New(options, tunnel.Tunnel)

@@ -237,6 +237,11 @@ SharedState sharedState(Ref ref) {
           (state) => state.tun.endpointIndependentNat,
         ),
       ),
+      congestionController: ref.watch(
+        patchClashConfigProvider.select(
+          (state) => state.tun.congestionController,
+        ),
+      ),
       recvMsgX: ref.watch(
         patchClashConfigProvider.select((state) => state.tun.recvMsgX),
       ),

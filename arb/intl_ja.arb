@@ -305,6 +305,7 @@
   "iconStyle": "アイコンスタイル",
   "onlyIcon": "アイコンのみ",
   "stackMode": "スタックモード",
+  "congestionController": "輻輳制御",
   "network": "ネットワーク",
   "networkDesc": "ネットワーク関連の設定を変更します",
   "bypassDomain": "除外ドメイン",

@@ -202,6 +202,8 @@ Future<({String yaml, String md5})> _makeRealProfileTask(
   rawConfig['tun']['stack'] = realPatchConfig.tun.stack.name;
   rawConfig['tun']['route-address'] = realPatchConfig.tun.routeAddress;
   rawConfig['tun']['auto-route'] = realPatchConfig.tun.autoRoute;
+  rawConfig['tun']['congestion-controller'] =
+      realPatchConfig.tun.congestionController.name;
   rawConfig['geodata-loader'] = realPatchConfig.geodataLoader.name;
   rawConfig['geosite-matcher'] = effectiveGeositeMatcher(
     configured: realPatchConfig.geositeMatcher,

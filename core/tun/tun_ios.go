@@ -74,6 +74,7 @@ func Start(fd int, config Options) *sing_tun.Listener {
 		FileDescriptor:         tunFd,
 		DisableICMPForwarding:  config.DisableICMPForwarding,
 		EndpointIndependentNat: config.EndpointIndependentNAT,
+		CongestionController:   config.CongestionController,
 		LoopbackAddress: []netip.Addr{
 			netip.MustParseAddr("10.7.0.1"),
 		},

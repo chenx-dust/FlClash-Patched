@@ -305,6 +305,7 @@
   "iconStyle": "Стиль значков",
   "onlyIcon": "Только значок",
   "stackMode": "Режим стека",
+  "congestionController": "Управление перегрузкой",
   "network": "Сеть",
   "networkDesc": "Настройки, связанные с сетью",
   "bypassDomain": "Исключённые домены",

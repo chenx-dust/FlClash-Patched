@@ -140,6 +140,42 @@ void main() {
       expect(container.read(patchClashConfigProvider).tun.stack, target);
     });
 
+    testWidgets('the congestion controller picker writes the chosen value', (
+      tester,
+    ) async {
+      await pumpItem(tester, const TunCongestionControllerItem());
+      final initial = container
+          .read(patchClashConfigProvider)
+          .tun
+          .congestionController;
+      final target = TunCongestionController.values.firstWhere(
+        (item) => item != initial,
+      );
+
+      await tester.tap(find.byType(ListTile).first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(target.name).last);
+      await tester.pumpAndSettle();
+
+      expect(
+        container.read(patchClashConfigProvider).tun.congestionController,
+        target,
+      );
+    });
+
+    testWidgets(
+      'the congestion controller picker is hidden off the mips stack',
+      (tester) async {
+        container
+            .read(patchClashConfigProvider.notifier)
+            .update((state) => state.copyWith.tun(stack: TunStack.gvisor));
+
+        await pumpItem(tester, const TunCongestionControllerItem());
+
+        expect(find.byType(ListTile), findsNothing);
+      },
+    );
+
     testWidgets('the route mode picker writes the chosen mode', (tester) async {
       await pumpItem(tester, const RouteModeItem());
       final initial = container.read(networkSettingProvider).routeMode;
@@ -221,6 +257,7 @@ void main() {
     test('mobile network options include the stack picker', () {
       final items = networkOptionsItems(isDesktop: false, isMacOS: false);
       expect(items.whereType<TunStackItem>(), hasLength(1));
+      expect(items.whereType<TunCongestionControllerItem>(), hasLength(1));
     });
 
     test('interface name rows appear only on desktop', () {

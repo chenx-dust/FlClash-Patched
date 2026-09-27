@@ -102,6 +102,13 @@ _VpnOptions _$VpnOptionsFromJson(Map<String, dynamic> json) => _VpnOptions(
       const [],
   disableIcmpForwarding: json['disableIcmpForwarding'] as bool? ?? false,
   endpointIndependentNat: json['endpointIndependentNat'] as bool? ?? false,
+  congestionController:
+      $enumDecodeNullable(
+        _$TunCongestionControllerEnumMap,
+        json['congestionController'],
+        unknownValue: TunCongestionController.cubic,
+      ) ??
+      TunCongestionController.cubic,
   recvMsgX: json['recvMsgX'] as bool? ?? true,
   sendMsgX: json['sendMsgX'] as bool? ?? false,
   includeAllNetworks: json['includeAllNetworks'] as bool? ?? false,
@@ -129,6 +136,8 @@ Map<String, dynamic> _$VpnOptionsToJson(_VpnOptions instance) =>
       'routeAddress': instance.routeAddress,
       'disableIcmpForwarding': instance.disableIcmpForwarding,
       'endpointIndependentNat': instance.endpointIndependentNat,
+      'congestionController':
+          _$TunCongestionControllerEnumMap[instance.congestionController]!,
       'recvMsgX': instance.recvMsgX,
       'sendMsgX': instance.sendMsgX,
       'includeAllNetworks': instance.includeAllNetworks,
@@ -138,6 +147,13 @@ Map<String, dynamic> _$VpnOptionsToJson(_VpnOptions instance) =>
       'enforceRoutes': instance.enforceRoutes,
       'excludeDeviceCommunication': instance.excludeDeviceCommunication,
     };
+
+const _$TunCongestionControllerEnumMap = {
+  TunCongestionController.cubic: 'cubic',
+  TunCongestionController.reno: 'reno',
+  TunCongestionController.bbr: 'bbr',
+  TunCongestionController.bbr3: 'bbr3',
+};
 
 _InitParams _$InitParamsFromJson(Map<String, dynamic> json) => _InitParams(
   homeDir: json['home-dir'] as String,

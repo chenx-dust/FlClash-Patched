@@ -266,6 +266,12 @@ abstract class Tun with _$Tun {
     @JsonKey(name: 'endpoint-independent-nat')
     @Default(false)
     bool endpointIndependentNat,
+    @Default(TunCongestionController.cubic)
+    @JsonKey(
+      name: 'congestion-controller',
+      unknownEnumValue: TunCongestionController.cubic,
+    )
+    TunCongestionController congestionController,
   }) = _Tun;
 
   factory Tun.fromJson(Map<String, Object?> json) => _$TunFromJson(json);

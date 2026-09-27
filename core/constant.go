@@ -55,14 +55,15 @@ type UpdateParams struct {
 }
 
 type tunSchema struct {
-	RecvMsgX     *bool              `yaml:"recvmsgx" json:"recvmsgx"`
-	SendMsgX     *bool              `yaml:"sendmsgx" json:"sendmsgx"`
-	Enable       bool               `yaml:"enable" json:"enable"`
-	Device       *string            `yaml:"device" json:"device"`
-	Stack        *constant.TUNStack `yaml:"stack" json:"stack"`
-	DNSHijack    *[]string          `yaml:"dns-hijack" json:"dns-hijack"`
-	AutoRoute    *bool              `yaml:"auto-route" json:"auto-route"`
-	RouteAddress *[]netip.Prefix    `yaml:"route-address" json:"route-address,omitempty"`
+	RecvMsgX             *bool              `yaml:"recvmsgx" json:"recvmsgx"`
+	SendMsgX             *bool              `yaml:"sendmsgx" json:"sendmsgx"`
+	Enable               bool               `yaml:"enable" json:"enable"`
+	Device               *string            `yaml:"device" json:"device"`
+	Stack                *constant.TUNStack `yaml:"stack" json:"stack"`
+	DNSHijack            *[]string          `yaml:"dns-hijack" json:"dns-hijack"`
+	AutoRoute            *bool              `yaml:"auto-route" json:"auto-route"`
+	RouteAddress         *[]netip.Prefix    `yaml:"route-address" json:"route-address,omitempty"`
+	CongestionController *string            `yaml:"congestion-controller" json:"congestion-controller"`
 }
 
 type SideLoadParams struct {

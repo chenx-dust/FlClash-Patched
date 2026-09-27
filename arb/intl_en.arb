@@ -305,6 +305,7 @@
   "iconStyle": "Icon style",
   "onlyIcon": "Icon only",
   "stackMode": "Stack mode",
+  "congestionController": "Congestion control",
   "network": "Network",
   "networkDesc": "Adjust network-related settings",
   "bypassDomain": "Bypass domains",

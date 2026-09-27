@@ -270,6 +270,9 @@ func patchTun(target *LC.Tun, params *tunSchema) {
 	if params.Stack != nil {
 		target.Stack = *params.Stack
 	}
+	if params.CongestionController != nil {
+		target.CongestionController = *params.CongestionController
+	}
 }
 
 func updateConfig(params *UpdateParams) error {

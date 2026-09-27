@@ -87,6 +87,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
           mtu: vpnOptions.mtu,
           disableIcmpForwarding: vpnOptions.disableIcmpForwarding,
           endpointIndependentNat: vpnOptions.endpointIndependentNat,
+          congestionController: vpnOptions.congestionController,
           recvMsgX: vpnOptions.recvMsgX,
           sendMsgX: vpnOptions.sendMsgX
         )
@@ -248,6 +249,7 @@ private struct CoreTunOptions: Encodable {
   let mtu: Int
   let disableIcmpForwarding: Bool
   let endpointIndependentNat: Bool
+  let congestionController: String
   let recvMsgX: Bool
   let sendMsgX: Bool
 }
