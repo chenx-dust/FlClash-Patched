@@ -378,15 +378,13 @@ class ListItem<T> extends ConsumerWidget {
           tappable: false,
           closedBuilder: (context, action) {
             Future<void> openAction() async {
-              final isMobile = context.isMobileView;
               final supportPredictiveBack = system.supportsPredictiveBack(
                 ref.read(versionProvider),
               );
               final predictiveBack =
                   supportPredictiveBack &&
                   ref.read(themeSettingProvider).predictiveBack;
-              if (!isMobile ||
-                  platform == TargetPlatform.iOS ||
+              if (platform == TargetPlatform.iOS ||
                   platform == TargetPlatform.android && predictiveBack) {
                 final res = await showExtend(
                   context,
