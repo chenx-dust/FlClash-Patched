@@ -8,7 +8,7 @@
 
 [![Downloads](https://img.shields.io/github/downloads/chenx-dust/FlClash-Patched/total?style=flat-square&logo=github)](https://github.com/chenx-dust/FlClash-Patched/releases/)[![Last Version](https://img.shields.io/github/release/chenx-dust/FlClash-Patched/all.svg?style=flat-square)](https://github.com/chenx-dust/FlClash-Patched/releases/)[![License](https://img.shields.io/github/license/chenx-dust/FlClash-Patched?style=flat-square)](LICENSE)
 
-[FlClash](https://github.com/chen08209/FlClash) 的软分支版本，修复数个 bug，提升效能，增加功能。
+[FlClash](https://github.com/chen08209/FlClash) 的分支版本，修复数个 bug，提升效能，增加功能。
 
 ## 免责声明
 

@@ -8,7 +8,7 @@
 
 [![Downloads](https://img.shields.io/github/downloads/chenx-dust/FlClash-Patched/total?style=flat-square&logo=github)](https://github.com/chenx-dust/FlClash-Patched/releases/)[![Last Version](https://img.shields.io/github/release/chenx-dust/FlClash-Patched/all.svg?style=flat-square)](https://github.com/chenx-dust/FlClash-Patched/releases/)[![License](https://img.shields.io/github/license/chenx-dust/FlClash-Patched?style=flat-square)](LICENSE)
 
-A soft fork of [FlClash](https://github.com/chen08209/FlClash), with several bug fixes, power efficiency improvements and new features.
+A fork of [FlClash](https://github.com/chen08209/FlClash), with several bug fixes, power efficiency improvements and new features.
 
 > [!CAUTION]
 > 如果您是中华人民共和国公民或者长期居住在中华人民共和国境内，请在使用前仔细阅读并理解 [免责声明](./README_zh_CN.md#免责声明) 中的内容。下载、安装或使用本项目即表示您同意免责声明中的条款，并承担由此产生的全部责任。
