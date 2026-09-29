@@ -836,9 +836,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "random": MessageLookupByLibrary.simpleMessage("随机"),
     "recordType": MessageLookupByLibrary.simpleMessage("记录类型"),
     "recvMsgX": MessageLookupByLibrary.simpleMessage("启用 RecvMsgX"),
-    "recvMsgXDesc": MessageLookupByLibrary.simpleMessage(
-      "在 macOS 和 iOS 上批量接收 TUN 数据包",
-    ),
+    "recvMsgXDesc": MessageLookupByLibrary.simpleMessage("在 Darwin 上批量接收数据包"),
     "redirPort": MessageLookupByLibrary.simpleMessage("Redir 端口"),
     "redo": MessageLookupByLibrary.simpleMessage("重做"),
     "regexSearch": MessageLookupByLibrary.simpleMessage("正则搜索"),
@@ -1001,9 +999,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "selected": MessageLookupByLibrary.simpleMessage("已选择"),
     "selectedCountTitle": m31,
     "sendMsgX": MessageLookupByLibrary.simpleMessage("启用 SendMsgX"),
-    "sendMsgXDesc": MessageLookupByLibrary.simpleMessage(
-      "在 macOS 和 iOS 上批量发送 TUN 数据包；多线程下载时可能导致内核卡住",
-    ),
+    "sendMsgXDesc": MessageLookupByLibrary.simpleMessage("在 Darwin 上批量发送数据包"),
     "server": MessageLookupByLibrary.simpleMessage("服务器"),
     "settings": MessageLookupByLibrary.simpleMessage("设置"),
     "show": MessageLookupByLibrary.simpleMessage("显示"),

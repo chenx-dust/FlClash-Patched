@@ -39,6 +39,7 @@ type SetupParams struct {
 }
 
 type UpdateParams struct {
+	Secret             *string            `json:"secret"`
 	Tun                *tunSchema         `json:"tun"`
 	AllowLan           *bool              `json:"allow-lan"`
 	MixedPort          *int               `json:"mixed-port"`
@@ -55,15 +56,19 @@ type UpdateParams struct {
 }
 
 type tunSchema struct {
-	RecvMsgX             *bool              `yaml:"recvmsgx" json:"recvmsgx"`
-	SendMsgX             *bool              `yaml:"sendmsgx" json:"sendmsgx"`
-	Enable               bool               `yaml:"enable" json:"enable"`
-	Device               *string            `yaml:"device" json:"device"`
-	Stack                *constant.TUNStack `yaml:"stack" json:"stack"`
-	DNSHijack            *[]string          `yaml:"dns-hijack" json:"dns-hijack"`
-	AutoRoute            *bool              `yaml:"auto-route" json:"auto-route"`
-	RouteAddress         *[]netip.Prefix    `yaml:"route-address" json:"route-address,omitempty"`
-	CongestionController *string            `yaml:"congestion-controller" json:"congestion-controller"`
+	MTU                    *uint32            `yaml:"mtu" json:"mtu"`
+	StrictRoute            *bool              `yaml:"strict-route" json:"strict-route"`
+	DisableICMPForwarding  *bool              `yaml:"disable-icmp-forwarding" json:"disable-icmp-forwarding"`
+	EndpointIndependentNat *bool              `yaml:"endpoint-independent-nat" json:"endpoint-independent-nat"`
+	RecvMsgX               *bool              `yaml:"recvmsgx" json:"recvmsgx"`
+	SendMsgX               *bool              `yaml:"sendmsgx" json:"sendmsgx"`
+	Enable                 bool               `yaml:"enable" json:"enable"`
+	Device                 *string            `yaml:"device" json:"device"`
+	Stack                  *constant.TUNStack `yaml:"stack" json:"stack"`
+	DNSHijack              *[]string          `yaml:"dns-hijack" json:"dns-hijack"`
+	AutoRoute              *bool              `yaml:"auto-route" json:"auto-route"`
+	RouteAddress           *[]netip.Prefix    `yaml:"route-address" json:"route-address,omitempty"`
+	CongestionController   *string            `yaml:"congestion-controller" json:"congestion-controller"`
 }
 
 type SideLoadParams struct {

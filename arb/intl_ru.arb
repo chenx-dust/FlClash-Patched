@@ -825,7 +825,7 @@
   "easyTierPublicServer": "Публичный сервер",
   "easyTierFeatureFlags": "Флаги функций",
   "recvMsgX": "Включить RecvMsgX",
-  "recvMsgXDesc": "Пакетный приём пакетов TUN в macOS и iOS",
+  "recvMsgXDesc": "Пакетный приём пакетов в Darwin",
   "sendMsgX": "Включить SendMsgX",
-  "sendMsgXDesc": "Пакетная отправка пакетов TUN в macOS и iOS; возможны зависания ядра при многопоточной загрузке"
+  "sendMsgXDesc": "Пакетная отправка пакетов в Darwin"
 }

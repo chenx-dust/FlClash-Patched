@@ -825,7 +825,7 @@
   "easyTierPublicServer": "パブリックサーバー",
   "easyTierFeatureFlags": "機能フラグ",
   "recvMsgX": "RecvMsgX を有効にする",
-  "recvMsgXDesc": "macOS と iOS で TUN パケットを一括受信",
+  "recvMsgXDesc": "Darwin でパケットを一括受信",
   "sendMsgX": "SendMsgX を有効にする",
-  "sendMsgXDesc": "macOS と iOS で TUN パケットを一括送信。マルチスレッドダウンロード中にカーネルがフリーズする可能性があります"
+  "sendMsgXDesc": "Darwin でパケットを一括送信"
 }

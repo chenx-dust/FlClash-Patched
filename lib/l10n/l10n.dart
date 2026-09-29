@@ -6910,10 +6910,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Receive TUN packets in batches on macOS and iOS`
+  /// `Receive packets in batches on Darwin`
   String get recvMsgXDesc {
     return Intl.message(
-      'Receive TUN packets in batches on macOS and iOS',
+      'Receive packets in batches on Darwin',
       name: 'recvMsgXDesc',
       desc: '',
       args: [],
@@ -6930,10 +6930,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Send TUN packets in batches on macOS and iOS; may cause the kernel to freeze during multi-threaded downloads`
+  /// `Send packets in batches on Darwin`
   String get sendMsgXDesc {
     return Intl.message(
-      'Send TUN packets in batches on macOS and iOS; may cause the kernel to freeze during multi-threaded downloads',
+      'Send packets in batches on Darwin',
       name: 'sendMsgXDesc',
       desc: '',
       args: [],

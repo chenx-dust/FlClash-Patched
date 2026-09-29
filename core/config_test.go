@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"net"
 	"net/netip"
@@ -16,6 +17,7 @@ import (
 	"github.com/metacubex/mihomo/component/updater"
 	"github.com/metacubex/mihomo/config"
 	"github.com/metacubex/mihomo/constant"
+	"github.com/metacubex/mihomo/hub/route"
 	authStore "github.com/metacubex/mihomo/listener/auth"
 	"github.com/metacubex/mihomo/log"
 	"github.com/metacubex/mihomo/tunnel"
@@ -844,5 +846,39 @@ func TestTestDelayStopsQueueingOnceTheTimeoutIsSpent(t *testing.T) {
 		}
 	case <-time.After(time.Second):
 		t.Fatal("handleTestDelay outlived the timeout it was given, waiting for a slot")
+	}
+}
+
+func TestUpdateConfigAppliesControllerSecretWithoutAddressChange(t *testing.T) {
+	withCurrentConfig(t, &config.Config{
+		General:    &config.General{},
+		Controller: &config.Controller{ExternalController: "127.0.0.1:9090", Secret: "old"},
+	})
+	original := recreateControllerServer
+	t.Cleanup(func() { recreateControllerServer = original })
+	var recreated []*route.Config
+	recreateControllerServer = func(cfg *route.Config) { recreated = append(recreated, cfg) }
+	for _, payload := range []string{`{"secret":"new"}`, `{"secret":"new"}`, `{}`, `{"secret":""}`} {
+		var params UpdateParams
+		if err := json.Unmarshal([]byte(payload), &params); err != nil {
+			t.Fatal(err)
+		}
+		if err := updateConfig(&params); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if len(recreated) != 2 {
+		t.Fatalf("controller recreated %d times, want 2", len(recreated))
+	}
+	if recreated[0].Secret != "new" || recreated[1].Secret != "" {
+		t.Fatal("controller did not receive the changed secrets")
+	}
+	for _, cfg := range recreated {
+		if cfg.Addr != "127.0.0.1:9090" {
+			t.Fatalf("controller address changed: %q", cfg.Addr)
+		}
+	}
+	if currentConfig.Controller.Secret != "" {
+		t.Fatal("secret was not cleared")
 	}
 }

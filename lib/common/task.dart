@@ -193,18 +193,10 @@ Future<({String yaml, String md5})> _makeRealProfileTask(
   rawConfig['authentication'] = data.authentication;
   rawConfig['skip-auth-prefixes'] = [];
   rawConfig['mode'] = realPatchConfig.mode.name;
-  if (rawConfig['tun'] == null) {
-    rawConfig['tun'] = {};
-  }
-  rawConfig['tun']['enable'] = realPatchConfig.tun.enable;
-  rawConfig['tun']['device'] = realPatchConfig.tun.device;
-  rawConfig['tun']['mtu'] = realPatchConfig.tun.mtu;
-  rawConfig['tun']['dns-hijack'] = realPatchConfig.tun.dnsHijack;
-  rawConfig['tun']['stack'] = realPatchConfig.tun.stack.name;
-  rawConfig['tun']['route-address'] = realPatchConfig.tun.routeAddress;
-  rawConfig['tun']['auto-route'] = realPatchConfig.tun.autoRoute;
-  rawConfig['tun']['congestion-controller'] =
-      realPatchConfig.tun.congestionController.name;
+  final rawTun = rawConfig['tun'] is Map
+      ? Map<String, dynamic>.from(rawConfig['tun'] as Map)
+      : <String, dynamic>{};
+  rawConfig['tun'] = {...rawTun, ...realPatchConfig.tun.toJson()};
   rawConfig['geodata-loader'] = realPatchConfig.geodataLoader.name;
   rawConfig['geosite-matcher'] = effectiveGeositeMatcher(
     configured: realPatchConfig.geositeMatcher,

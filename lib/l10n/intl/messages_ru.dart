@@ -826,9 +826,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "inputRuleContent": MessageLookupByLibrary.simpleMessage(
       "Введите содержимое правила",
     ),
-    "installedAppsPermissionDeniedMessage": MessageLookupByLibrary.simpleMessage(
-      "Разрешение на список приложений отклонено, поэтому установленные приложения недоступны. Предоставьте его вручную в системных настройках.",
-    ),
+    "installedAppsPermissionDeniedMessage":
+        MessageLookupByLibrary.simpleMessage(
+          "Разрешение на список приложений отклонено, поэтому установленные приложения недоступны. Предоставьте его вручную в системных настройках.",
+        ),
     "installedAppsPermissionDesc": MessageLookupByLibrary.simpleMessage(
       "Эта система не выдаёт список установленных приложений без разрешения. Предоставьте его, чтобы настроить прокси для отдельных приложений.",
     ),
@@ -1212,7 +1213,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "recordType": MessageLookupByLibrary.simpleMessage("Тип записи"),
     "recvMsgX": MessageLookupByLibrary.simpleMessage("Включить RecvMsgX"),
     "recvMsgXDesc": MessageLookupByLibrary.simpleMessage(
-      "Пакетный приём пакетов TUN в macOS и iOS",
+      "Пакетный приём пакетов в Darwin",
     ),
     "redirPort": MessageLookupByLibrary.simpleMessage("Порт Redir"),
     "redo": MessageLookupByLibrary.simpleMessage("Повторить"),
@@ -1453,7 +1454,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectedCountTitle": m31,
     "sendMsgX": MessageLookupByLibrary.simpleMessage("Включить SendMsgX"),
     "sendMsgXDesc": MessageLookupByLibrary.simpleMessage(
-      "Пакетная отправка пакетов TUN в macOS и iOS; возможны зависания ядра при многопоточной загрузке",
+      "Пакетная отправка пакетов в Darwin",
     ),
     "server": MessageLookupByLibrary.simpleMessage("Сервер"),
     "settings": MessageLookupByLibrary.simpleMessage("Настройки"),

@@ -247,6 +247,59 @@ void main() {
   );
 
   test(
+    'makeRealProfileTask applies every TUN setting and preserves extras',
+    () async {
+      for (final tun in [
+        const Tun(
+          enable: true,
+          device: 'test-tun',
+          mtu: 1500,
+          autoRoute: true,
+          stack: TunStack.gvisor,
+          recvMsgX: false,
+          sendMsgX: true,
+          dnsHijack: ['any:53'],
+          routeAddress: ['10.0.0.0/8'],
+          strictRoute: true,
+          disableIcmpForwarding: true,
+          endpointIndependentNat: true,
+          congestionController: TunCongestionController.bbr,
+        ),
+        const Tun(),
+      ]) {
+        final result = await makeRealProfileTask(
+          MakeRealProfileState(
+            profilesPath: '/profiles',
+            profileId: 7,
+            rawConfig: {
+              'tun': {
+                'recvmsgx': !tun.recvMsgX,
+                'sendmsgx': !tun.sendMsgX,
+                'strict-route': !tun.strictRoute,
+                'disable-icmp-forwarding': !tun.disableIcmpForwarding,
+                'endpoint-independent-nat': !tun.endpointIndependentNat,
+                'route-exclude-address': ['192.168.0.0/16'],
+              },
+            },
+            realPatchConfig: PatchClashConfig(tun: tun),
+            overrideDns: false,
+            appendSystemDns: false,
+            proxyGroups: const [],
+            rules: const [],
+            addedRules: const [],
+            defaultUA: 'FlClash-Test',
+          ),
+        );
+        final config = loadYaml(result.yaml) as YamlMap;
+        expect(config['tun'], {
+          ...tun.toJson(),
+          'route-exclude-address': ['192.168.0.0/16'],
+        });
+      }
+    },
+  );
+
+  test(
     'makeRealProfileTask routes MATCH placeholders to matchTarget',
     () async {
       final rawConfig = await decodeJSONTask<Map<String, dynamic>>(

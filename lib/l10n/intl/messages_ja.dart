@@ -956,9 +956,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "random": MessageLookupByLibrary.simpleMessage("ランダム"),
     "recordType": MessageLookupByLibrary.simpleMessage("レコードタイプ"),
     "recvMsgX": MessageLookupByLibrary.simpleMessage("RecvMsgX を有効にする"),
-    "recvMsgXDesc": MessageLookupByLibrary.simpleMessage(
-      "macOS と iOS で TUN パケットを一括受信",
-    ),
+    "recvMsgXDesc": MessageLookupByLibrary.simpleMessage("Darwin でパケットを一括受信"),
     "redirPort": MessageLookupByLibrary.simpleMessage("Redir ポート"),
     "redo": MessageLookupByLibrary.simpleMessage("やり直す"),
     "regexSearch": MessageLookupByLibrary.simpleMessage("正規表現検索"),
@@ -1151,9 +1149,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "selected": MessageLookupByLibrary.simpleMessage("選択済み"),
     "selectedCountTitle": m31,
     "sendMsgX": MessageLookupByLibrary.simpleMessage("SendMsgX を有効にする"),
-    "sendMsgXDesc": MessageLookupByLibrary.simpleMessage(
-      "macOS と iOS で TUN パケットを一括送信。マルチスレッドダウンロード中にカーネルがフリーズする可能性があります",
-    ),
+    "sendMsgXDesc": MessageLookupByLibrary.simpleMessage("Darwin でパケットを一括送信"),
     "server": MessageLookupByLibrary.simpleMessage("サーバー"),
     "settings": MessageLookupByLibrary.simpleMessage("設定"),
     "show": MessageLookupByLibrary.simpleMessage("表示"),

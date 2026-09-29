@@ -38,3 +38,26 @@ func TestPatchTunCongestionController(t *testing.T) {
 		t.Fatal("omitted congestion controller changed the existing value")
 	}
 }
+
+func TestPatchTunRoutingOptions(t *testing.T) {
+	target := LC.Tun{}
+	var params tunSchema
+	if err := json.Unmarshal([]byte(`{"mtu":1500,"strict-route":true,"disable-icmp-forwarding":true,"endpoint-independent-nat":true}`), &params); err != nil {
+		t.Fatal(err)
+	}
+	patchTun(&target, &params)
+	if target.MTU != 1500 || !target.StrictRoute || !target.DisableICMPForwarding || !target.EndpointIndependentNat {
+		t.Fatalf("routing options were not applied: %+v", target)
+	}
+	patchTun(&target, &tunSchema{})
+	if target.MTU != 1500 || !target.StrictRoute || !target.DisableICMPForwarding || !target.EndpointIndependentNat {
+		t.Fatalf("omitted routing options changed existing values: %+v", target)
+	}
+	if err := json.Unmarshal([]byte(`{"mtu":9000,"strict-route":false,"disable-icmp-forwarding":false,"endpoint-independent-nat":false}`), &params); err != nil {
+		t.Fatal(err)
+	}
+	patchTun(&target, &params)
+	if target.MTU != 9000 || target.StrictRoute || target.DisableICMPForwarding || target.EndpointIndependentNat {
+		t.Fatalf("routing options could not be reset: %+v", target)
+	}
+}

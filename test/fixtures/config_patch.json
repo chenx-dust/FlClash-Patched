@@ -1,0 +1,30 @@
+{
+  "tun": {
+    "enable": true,
+    "device": "contract-tun",
+    "mtu": 1500,
+    "auto-route": true,
+    "stack": "system",
+    "recvmsgx": true,
+    "sendmsgx": true,
+    "dns-hijack": ["any:53"],
+    "route-address": ["10.0.0.0/8"],
+    "strict-route": true,
+    "disable-icmp-forwarding": true,
+    "endpoint-independent-nat": true,
+    "congestion-controller": "bbr"
+  },
+  "mixed-port": 7890,
+  "allow-lan": true,
+  "find-process-mode": "always",
+  "mode": "rule",
+  "log-level": "info",
+  "ipv6": true,
+  "tcp-concurrent": true,
+  "external-controller": "127.0.0.1:9090",
+  "secret": "contract-secret",
+  "unified-delay": true,
+  "authentication": ["user:password"],
+  "geo-auto-update": true,
+  "geo-update-interval": 12
+}

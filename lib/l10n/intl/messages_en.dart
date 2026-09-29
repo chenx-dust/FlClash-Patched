@@ -786,9 +786,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "inputRuleContent": MessageLookupByLibrary.simpleMessage(
       "Enter the rule content",
     ),
-    "installedAppsPermissionDeniedMessage": MessageLookupByLibrary.simpleMessage(
-      "The app list permission was denied, so installed apps cannot be listed. Please grant it manually in system settings.",
-    ),
+    "installedAppsPermissionDeniedMessage":
+        MessageLookupByLibrary.simpleMessage(
+          "The app list permission was denied, so installed apps cannot be listed. Please grant it manually in system settings.",
+        ),
     "installedAppsPermissionDesc": MessageLookupByLibrary.simpleMessage(
       "This system hides the installed app list until the permission is granted. Authorize it to configure the per-app proxy.",
     ),
@@ -1154,7 +1155,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "recordType": MessageLookupByLibrary.simpleMessage("Record type"),
     "recvMsgX": MessageLookupByLibrary.simpleMessage("Enable RecvMsgX"),
     "recvMsgXDesc": MessageLookupByLibrary.simpleMessage(
-      "Receive TUN packets in batches on macOS and iOS",
+      "Receive packets in batches on Darwin",
     ),
     "redirPort": MessageLookupByLibrary.simpleMessage("Redir port"),
     "redo": MessageLookupByLibrary.simpleMessage("Redo"),
@@ -1383,7 +1384,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectedCountTitle": m31,
     "sendMsgX": MessageLookupByLibrary.simpleMessage("Enable SendMsgX"),
     "sendMsgXDesc": MessageLookupByLibrary.simpleMessage(
-      "Send TUN packets in batches on macOS and iOS; may cause the kernel to freeze during multi-threaded downloads",
+      "Send packets in batches on Darwin",
     ),
     "server": MessageLookupByLibrary.simpleMessage("Server"),
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),

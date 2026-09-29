@@ -247,6 +247,18 @@ func routeConfig(cfg *config.Config) *route.Config {
 }
 
 func patchTun(target *LC.Tun, params *tunSchema) {
+	if params.MTU != nil {
+		target.MTU = *params.MTU
+	}
+	if params.StrictRoute != nil {
+		target.StrictRoute = *params.StrictRoute
+	}
+	if params.DisableICMPForwarding != nil {
+		target.DisableICMPForwarding = *params.DisableICMPForwarding
+	}
+	if params.EndpointIndependentNat != nil {
+		target.EndpointIndependentNat = *params.EndpointIndependentNat
+	}
 	target.Enable = params.Enable
 	if params.RecvMsgX != nil {
 		target.RecvMsgX = *params.RecvMsgX
@@ -273,6 +285,8 @@ func patchTun(target *LC.Tun, params *tunSchema) {
 		target.CongestionController = *params.CongestionController
 	}
 }
+
+var recreateControllerServer = route.ReCreateServer
 
 func updateConfig(params *UpdateParams) error {
 	configMu.Lock()
@@ -315,10 +329,18 @@ func updateConfig(params *UpdateParams) error {
 	if params.Tun != nil {
 		patchTun(&general.Tun, params.Tun)
 	}
+	controllerChanged := false
+	if params.Secret != nil && *params.Secret != currentConfig.Controller.Secret {
+		currentConfig.Controller.Secret = *params.Secret
+		controllerChanged = true
+	}
 	if params.ExternalController != nil &&
 		*params.ExternalController != currentConfig.Controller.ExternalController {
 		currentConfig.Controller.ExternalController = *params.ExternalController
-		route.ReCreateServer(routeConfig(currentConfig))
+		controllerChanged = true
+	}
+	if controllerChanged {
+		recreateControllerServer(routeConfig(currentConfig))
 	}
 	if params.Authentication != nil {
 		applyAuthentication(currentConfig, *params.Authentication)
