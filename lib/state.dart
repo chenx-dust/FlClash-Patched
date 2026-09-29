@@ -24,8 +24,6 @@ class GlobalState {
   late ProviderContainer container;
   bool needInitStatus = true;
 
-  bool get isPre => appEnv != 'stable';
-
   bool get canCrashCore => canCrashCoreFor(isDebug: kDebugMode, appEnv: appEnv);
 
   @visibleForTesting
