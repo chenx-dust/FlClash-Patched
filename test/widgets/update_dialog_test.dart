@@ -67,7 +67,7 @@ void main() {
   setUpAll(() {
     globalState.packageInfo = PackageInfo(
       appName: 'FlClash',
-      packageName: 'com.follow.clash',
+      packageName: 'cc.chenx.flclash',
       version: _runningVersion,
       buildNumber: '1',
     );

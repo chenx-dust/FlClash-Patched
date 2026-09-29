@@ -1,11 +1,11 @@
-package com.follow.clash
+package cc.chenx.flclash
 
-import com.follow.clash.common.AccessControlMode
-import com.follow.clash.models.SetupParams
-import com.follow.clash.models.SharedState
-import com.follow.clash.service.models.AccessControlProps
-import com.follow.clash.service.models.NotificationParams
-import com.follow.clash.service.models.VpnOptions
+import cc.chenx.flclash.common.AccessControlMode
+import cc.chenx.flclash.models.SetupParams
+import cc.chenx.flclash.models.SharedState
+import cc.chenx.flclash.service.models.AccessControlProps
+import cc.chenx.flclash.service.models.NotificationParams
+import cc.chenx.flclash.service.models.VpnOptions
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -99,7 +99,7 @@ private class FakeHost(override val scope: CoroutineScope) : ServiceStateHost {
     var beforeStartService: (() -> Unit)? = null
 
     override var runTimeMillis = 0L
-    override val homeDirPath = "/data/user/0/com.follow.clash/files"
+    override val homeDirPath = "/data/user/0/cc.chenx.flclash/files"
     override val sdkInt = 34
     override var startMessage = "Start VPN"
     override var stopMessage = "Stop VPN"

@@ -499,7 +499,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "expressiveScheme": MessageLookupByLibrary.simpleMessage("エクスプレッシブ"),
     "externalController": MessageLookupByLibrary.simpleMessage("外部コントローラー"),
     "externalControllerDesc": MessageLookupByLibrary.simpleMessage(
-      "Clash コアへの外部アクセスを設定",
+      "Mihomo コアへの外部アクセスを設定",
     ),
     "externalFetch": MessageLookupByLibrary.simpleMessage("外部取得"),
     "externalLink": MessageLookupByLibrary.simpleMessage("外部リンク"),

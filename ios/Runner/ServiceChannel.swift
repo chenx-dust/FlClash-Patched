@@ -12,7 +12,7 @@ final class ServiceChannel {
   private static var instance: ServiceChannel?
   private static var pendingShortcutToggle = false
 
-  private static let packageName = "com.follow.clash"
+  private static let packageName = "cc.chenx.flclash"
   private let channel: FlutterMethodChannel
   private let tileChannel: FlutterMethodChannel
   private let sharedStateStore: SharedStateStore
@@ -20,7 +20,7 @@ final class ServiceChannel {
   private let coreMessageRouter: CoreMessageRouter
   private let coreEventRelay: CoreEventRelay
   private let logger = Logger(
-    subsystem: Bundle.main.bundleIdentifier ?? "com.follow.clash",
+    subsystem: Bundle.main.bundleIdentifier ?? "cc.chenx.flclash",
     category: "ServiceChannel"
   )
 

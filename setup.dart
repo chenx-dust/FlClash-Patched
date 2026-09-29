@@ -291,7 +291,7 @@ Future<int> _package(
   if (platform == 'ios' && iosNoSign) {
     return packageIOSNoSign(
       rootDir: rootDir,
-      appBundleId: iosBundleId ?? 'com.follow.clash',
+      appBundleId: iosBundleId ?? 'cc.chenx.flclash',
       iosDevelopmentTeam: iosDevelopmentTeam,
       verbose: verbose,
     );

@@ -8,7 +8,7 @@
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_follow_clash_core_Core_startTun(JNIEnv *env, jobject thiz, jint fd, jobject cb,
+Java_cc_chenx_flclash_core_Core_startTun(JNIEnv *env, jobject thiz, jint fd, jobject cb,
                                          jstring options) {
     const auto interface = new_global(cb);
     return startTUN(interface, fd, get_string(options))
@@ -18,32 +18,32 @@ Java_com_follow_clash_core_Core_startTun(JNIEnv *env, jobject thiz, jint fd, job
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_follow_clash_core_Core_stopTun(JNIEnv *env, jobject thiz) {
+Java_cc_chenx_flclash_core_Core_stopTun(JNIEnv *env, jobject thiz) {
     stopTun();
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_follow_clash_core_Core_forceGC(JNIEnv *env, jobject thiz) {
+Java_cc_chenx_flclash_core_Core_forceGC(JNIEnv *env, jobject thiz) {
     forceGC();
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_follow_clash_core_Core_updateDNS(JNIEnv *env, jobject thiz, jstring dns) {
+Java_cc_chenx_flclash_core_Core_updateDNS(JNIEnv *env, jobject thiz, jstring dns) {
     updateDns(get_string(dns));
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_follow_clash_core_Core_invokeMethod(JNIEnv *env, jobject thiz, jstring data, jobject cb) {
+Java_cc_chenx_flclash_core_Core_invokeMethod(JNIEnv *env, jobject thiz, jstring data, jobject cb) {
     const auto interface = new_global(cb);
     invokeMethod(interface, get_string(data));
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_follow_clash_core_Core_setEventListener(JNIEnv *env, jobject thiz, jobject cb) {
+Java_cc_chenx_flclash_core_Core_setEventListener(JNIEnv *env, jobject thiz, jobject cb) {
     if (cb != nullptr) {
         const auto interface = new_global(cb);
         setEventListener(interface);
@@ -54,7 +54,7 @@ Java_com_follow_clash_core_Core_setEventListener(JNIEnv *env, jobject thiz, jobj
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_follow_clash_core_Core_getTraffic(JNIEnv *env, jobject thiz,
+Java_cc_chenx_flclash_core_Core_getTraffic(JNIEnv *env, jobject thiz,
                                            const jboolean only_statistics_proxy) {
     scoped_string traffic = getTraffic(only_statistics_proxy);
     return new_string(traffic);
@@ -62,7 +62,7 @@ Java_com_follow_clash_core_Core_getTraffic(JNIEnv *env, jobject thiz,
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_follow_clash_core_Core_getTotalTraffic(JNIEnv *env, jobject thiz,
+Java_cc_chenx_flclash_core_Core_getTotalTraffic(JNIEnv *env, jobject thiz,
                                                 const jboolean only_statistics_proxy) {
     scoped_string traffic = getTotalTraffic(only_statistics_proxy);
     return new_string(traffic);
@@ -70,7 +70,7 @@ Java_com_follow_clash_core_Core_getTotalTraffic(JNIEnv *env, jobject thiz,
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_follow_clash_core_Core_quickSetup(JNIEnv *env, jobject thiz, jstring init_params_string,
+Java_cc_chenx_flclash_core_Core_quickSetup(JNIEnv *env, jobject thiz, jstring init_params_string,
                                            jstring setup_params_string, jobject cb) {
     const auto interface = new_global(cb);
     quickSetup(interface, get_string(init_params_string), get_string(setup_params_string));
@@ -179,9 +179,9 @@ JNI_OnLoad(JavaVM *vm, void *) {
 
     initialize_jni(vm, env);
 
-    const auto c_tun_interface = find_class("com/follow/clash/core/TunInterface");
+    const auto c_tun_interface = find_class("cc/chenx/flclash/core/TunInterface");
 
-    const auto c_invoke_interface = find_class("com/follow/clash/core/InvokeInterface");
+    const auto c_invoke_interface = find_class("cc/chenx/flclash/core/InvokeInterface");
 
     m_tun_interface_protect = find_method(c_tun_interface, "protect", "(I)Z");
     m_tun_interface_resolve_uid = find_method(c_tun_interface, "resolveUid",

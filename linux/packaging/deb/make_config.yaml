@@ -40,4 +40,4 @@ categories:
   - Network
 
 startup_notify: true
-startup_wm_class: com.follow.clash
+startup_wm_class: cc.chenx.flclash

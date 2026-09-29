@@ -145,7 +145,7 @@
   "allowBypass": "Разрешить приложениям обходить VPN",
   "allowBypassDesc": "При включении некоторые приложения смогут обходить VPN",
   "externalController": "Внешний контроллер",
-  "externalControllerDesc": "Настройка внешнего доступа к ядру Clash",
+  "externalControllerDesc": "Настройка внешнего доступа к ядру Mihomo",
   "ipv6Desc": "При включении можно принимать трафик IPv6",
   "app": "Приложение",
   "general": "Общие",

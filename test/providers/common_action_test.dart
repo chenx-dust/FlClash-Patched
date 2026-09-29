@@ -32,7 +32,7 @@ void main() {
     core = MockCoreHandlerInterface();
     globalState.packageInfo = PackageInfo(
       appName: 'FlClash',
-      packageName: 'com.follow.clash',
+      packageName: 'cc.chenx.flclash',
       version: runningVersion,
       buildNumber: '1',
     );

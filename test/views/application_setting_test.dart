@@ -301,7 +301,7 @@ void main() {
 
     globalState.packageInfo = PackageInfo(
       appName: 'FlClash',
-      packageName: 'com.follow.clash',
+      packageName: 'cc.chenx.flclash',
       version: '0.0.0',
       buildNumber: '1',
     );

@@ -44,7 +44,7 @@ final class CoreMessageRouter {
     }
   )
   private let logger = Logger(
-    subsystem: Bundle.main.bundleIdentifier ?? "com.follow.clash",
+    subsystem: Bundle.main.bundleIdentifier ?? "cc.chenx.flclash",
     category: "CoreMessageRouter"
   )
 

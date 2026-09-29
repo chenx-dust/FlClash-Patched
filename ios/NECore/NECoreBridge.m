@@ -83,7 +83,7 @@ static dispatch_queue_t NECoreCallbackQueue(void) {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     callbackQueue = dispatch_queue_create(
-        "com.follow.clash.ne-core.callback",
+        "cc.chenx.flclash.ne-core.callback",
         DISPATCH_QUEUE_SERIAL);
     dispatch_queue_set_specific(
         callbackQueue,
@@ -98,7 +98,7 @@ static os_log_t NECoreLogger(void) {
   static os_log_t logger;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    logger = os_log_create(NSBundle.mainBundle.bundleIdentifier.UTF8String, "Clash");
+    logger = os_log_create(NSBundle.mainBundle.bundleIdentifier.UTF8String, "Mihomo");
   });
   return logger;
 }

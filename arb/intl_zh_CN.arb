@@ -145,7 +145,7 @@
   "allowBypass": "允许应用绕过 VPN",
   "allowBypassDesc": "开启后部分应用可绕过 VPN",
   "externalController": "外部控制器",
-  "externalControllerDesc": "配置 Clash 内核的外部访问",
+  "externalControllerDesc": "配置 Mihomo 内核的外部访问",
   "ipv6Desc": "开启后将可以接收 IPv6 流量",
   "app": "应用",
   "general": "通用",

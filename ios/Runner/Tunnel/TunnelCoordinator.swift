@@ -10,7 +10,7 @@ final class TunnelCoordinator {
   private let onExternalStop: () -> Void
   private let connectTimeout: TimeInterval = 5
   private let logger = Logger(
-    subsystem: Bundle.main.bundleIdentifier ?? "com.follow.clash",
+    subsystem: Bundle.main.bundleIdentifier ?? "cc.chenx.flclash",
     category: "TunnelCoordinator"
   )
 

@@ -62,11 +62,11 @@
 支持下列操作
 
    ```bash
-    com.follow.clash.action.START
+    cc.chenx.flclash.action.START
     
-    com.follow.clash.action.STOP
+    cc.chenx.flclash.action.STOP
     
-    com.follow.clash.action.TOGGLE
+    cc.chenx.flclash.action.TOGGLE
    ```
 
 ## 下载

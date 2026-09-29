@@ -39,7 +39,7 @@ final class TunnelManagerStore {
   private let networkExtensionIdentifier: String
   private let localizedDescription: String
   private let logger = Logger(
-    subsystem: Bundle.main.bundleIdentifier ?? "com.follow.clash",
+    subsystem: Bundle.main.bundleIdentifier ?? "cc.chenx.flclash",
     category: "TunnelManagerStore"
   )
   private let loadTimeout: TimeInterval = 5

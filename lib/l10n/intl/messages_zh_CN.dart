@@ -439,7 +439,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "expressiveScheme": MessageLookupByLibrary.simpleMessage("表现力"),
     "externalController": MessageLookupByLibrary.simpleMessage("外部控制器"),
     "externalControllerDesc": MessageLookupByLibrary.simpleMessage(
-      "配置 Clash 内核的外部访问",
+      "配置 Mihomo 内核的外部访问",
     ),
     "externalFetch": MessageLookupByLibrary.simpleMessage("外部获取"),
     "externalLink": MessageLookupByLibrary.simpleMessage("外部链接"),

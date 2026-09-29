@@ -1,6 +1,6 @@
-package com.follow.clash.service.models
+package cc.chenx.flclash.service.models
 
-import com.follow.clash.common.AccessControlMode
+import cc.chenx.flclash.common.AccessControlMode
 import java.net.Inet4Address
 import java.net.Inet6Address
 import org.junit.Assert.assertEquals

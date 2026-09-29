@@ -1,4 +1,4 @@
-package com.follow.clash.common
+package cc.chenx.flclash.common
 
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors

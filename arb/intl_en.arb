@@ -145,7 +145,7 @@
   "allowBypass": "Allow apps to bypass VPN",
   "allowBypassDesc": "When enabled, some apps can bypass the VPN",
   "externalController": "External controller",
-  "externalControllerDesc": "Configure external access to the Clash core",
+  "externalControllerDesc": "Configure external access to the Mihomo core",
   "ipv6Desc": "When enabled, IPv6 traffic can be received",
   "app": "App",
   "general": "General",

@@ -1150,10 +1150,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Configure external access to the Clash core`
+  /// `Configure external access to the Mihomo core`
   String get externalControllerDesc {
     return Intl.message(
-      'Configure external access to the Clash core',
+      'Configure external access to the Mihomo core',
       name: 'externalControllerDesc',
       desc: '',
       args: [],

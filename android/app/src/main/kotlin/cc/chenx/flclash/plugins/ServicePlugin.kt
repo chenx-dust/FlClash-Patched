@@ -1,0 +1,123 @@
+package cc.chenx.flclash.plugins
+
+import cc.chenx.flclash.ServiceController
+import cc.chenx.flclash.ServiceState
+import cc.chenx.flclash.common.Components
+import cc.chenx.flclash.models.SharedState
+import com.google.gson.Gson
+import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.MethodChannel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+
+class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
+    private lateinit var channel: MethodChannel
+    private lateinit var scope: CoroutineScope
+    private val gson = Gson()
+
+    override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+        channel = MethodChannel(binding.binaryMessenger, "${Components.PACKAGE_NAME}/service")
+        channel.setMethodCallHandler(this)
+    }
+
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        channel.setMethodCallHandler(null)
+        scope.cancel()
+        ServiceController.setEventListener(null)
+    }
+
+    override fun onMethodCall(call: MethodCall, rawResult: MethodChannel.Result) {
+        // Most handlers below reply from a scope worker on Dispatchers.Default,
+        // but a MethodChannel.Result has to be answered on the platform thread.
+        // Wrapping once here covers every branch, including notImplemented.
+        val result = MainThreadResult(rawResult)
+        when (call.method) {
+            "init" -> initialize(result)
+            "shutdown" -> shutdown(result)
+            "invokeMethod" -> invokeMethod(call, result)
+            "getRunTime" -> getRunTime(result)
+            "syncState" -> syncState(call, result)
+            "start" -> start(call, result)
+            "stop" -> stop(result)
+            else -> result.notImplemented()
+        }
+    }
+
+    private fun initialize(result: MethodChannel.Result) {
+        ServiceController.setEventListener(::sendEvent)
+            .onSuccess { result.success("") }
+            .onFailure { error -> result.success(error.message.orEmpty()) }
+    }
+
+    private fun shutdown(result: MethodChannel.Result) {
+        scope.launch {
+            ServiceController.unbind()
+            result.success(true)
+        }
+    }
+
+    private fun invokeMethod(call: MethodCall, result: MethodChannel.Result) {
+        val data = call.arguments as? String
+        if (data == null) {
+            result.error("INVALID_ARGUMENT", "Method call payload must be a string", null)
+            return
+        }
+        scope.launch {
+            ServiceController.invokeMethod(data) { response ->
+                result.success(response)
+            }.onFailure { error ->
+                result.error("CORE_ERROR", error.message, null)
+            }
+        }
+    }
+
+    private fun getRunTime(result: MethodChannel.Result) {
+        scope.launch {
+            result.success(ServiceState.refresh())
+        }
+    }
+
+    private fun syncState(call: MethodCall, result: MethodChannel.Result) {
+        val state = sharedState(call)
+        if (state == null) {
+            result.success("Invalid shared state")
+            return
+        }
+        ServiceState.syncSharedState(state)
+        result.success("")
+    }
+
+    private fun start(call: MethodCall, result: MethodChannel.Result) {
+        val state = sharedState(call)
+        if (state == null) {
+            result.success(false)
+            return
+        }
+        ServiceState.syncSharedState(state)
+        ServiceState.requestStart()
+        result.success(true)
+    }
+
+    private fun sharedState(call: MethodCall): SharedState? {
+        val data = call.arguments as? String ?: return null
+        return runCatching {
+            gson.fromJson(data, SharedState::class.java)
+        }.getOrNull()
+    }
+
+    private fun stop(result: MethodChannel.Result) {
+        ServiceState.requestStop()
+        result.success(true)
+    }
+
+    private fun sendEvent(value: String?) {
+        scope.launch(Dispatchers.Main) {
+            channel.invokeMethod("event", value)
+        }
+    }
+}

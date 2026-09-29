@@ -12,7 +12,7 @@ final class TunnelController {
   private var tunnelStatusObserver: NSObjectProtocol?
   private var appActiveObserver: NSObjectProtocol?
   private let logger = Logger(
-    subsystem: Bundle.main.bundleIdentifier ?? "com.follow.clash",
+    subsystem: Bundle.main.bundleIdentifier ?? "cc.chenx.flclash",
     category: "TunnelController"
   )
 

@@ -6,7 +6,7 @@ final class CoreEventRelay {
   private let sharedStateStore: SharedStateStore
   private let sendEvent: (String, @escaping (Bool) -> Void) -> Void
   private let logger = Logger(
-    subsystem: Bundle.main.bundleIdentifier ?? "com.follow.clash",
+    subsystem: Bundle.main.bundleIdentifier ?? "cc.chenx.flclash",
     category: "CoreEventRelay"
   )
   private var isStarted = false

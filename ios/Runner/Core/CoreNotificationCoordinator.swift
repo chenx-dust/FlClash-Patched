@@ -56,7 +56,7 @@ final class CoreNotificationCoordinator {
 
   private let sendMessage: SendMessage
   private let logger = Logger(
-    subsystem: Bundle.main.bundleIdentifier ?? "com.follow.clash",
+    subsystem: Bundle.main.bundleIdentifier ?? "cc.chenx.flclash",
     category: "CoreNotificationCoordinator"
   )
   private let maxMigrationRetryCount = 1

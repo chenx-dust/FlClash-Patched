@@ -34,9 +34,9 @@ endif()
 # The unique GTK application identifier for this application. See:
 # https://wiki.gnome.org/HowDoI/ChooseApplicationID
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set(APPLICATION_ID "com.follow.clash.debug")
+  set(APPLICATION_ID "cc.chenx.flclash.debug")
 else()
-  set(APPLICATION_ID "com.follow.clash")
+  set(APPLICATION_ID "cc.chenx.flclash")
 endif()
 
 # Compilation settings that should be applied to most targets.
