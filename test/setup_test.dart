@@ -318,6 +318,13 @@ hooks:
         () => setup.pubspecWithGoAmd64(patched, 'v1'),
         throwsArgumentError,
       );
+
+      final crlf = setup.pubspecWithGoAmd64(
+        pubspec.replaceAll('\n', '\r\n'),
+        'v3',
+      );
+      expect(crlf, contains('goamd64: v3'));
+      expect(crlf.replaceAll('\r\n', ''), isNot(contains('\n')));
     });
 
     test('names amd64 microarchitecture packages without renaming v1', () {

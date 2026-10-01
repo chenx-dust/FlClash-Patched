@@ -313,28 +313,30 @@ PackageArchitecture resolvePackageArchitecture({
   return parsed;
 }
 
-const _setupUserDefineBlock = '''
-    setup:
-      build_assets: true
-''';
-
 String pubspecWithGoAmd64(String pubspec, String level) {
   if (!goAmd64Levels.contains(level)) {
     throw ArgumentError.value(level, 'level', 'Expected v1, v2, or v3');
   }
-  if (pubspec.contains('goamd64:')) {
+  final usesCrLf = pubspec.contains('\r\n');
+  final normalized = pubspec.replaceAll('\r\n', '\n');
+  if (RegExp(r'^\s*goamd64\s*:', multiLine: true).hasMatch(normalized)) {
     throw ArgumentError('pubspec.yaml already sets hooks.user_defines goamd64');
   }
-  if (!pubspec.contains(_setupUserDefineBlock)) {
+  final setupAssets = RegExp(
+    r'^([ \t]*setup:[ \t]*\n)([ \t]+)build_assets:[ \t]*true[ \t]*\n',
+    multiLine: true,
+  );
+  final match = setupAssets.firstMatch(normalized);
+  if (match == null) {
     throw ArgumentError(
       'pubspec.yaml must keep hooks.user_defines.setup.build_assets: true',
     );
   }
-  return pubspec.replaceFirst(_setupUserDefineBlock, '''
-    setup:
-      build_assets: true
-      goamd64: $level
-''');
+  final patched = normalized.replaceFirst(
+    setupAssets,
+    '${match[1]}${match[2]}build_assets: true\n${match[2]}goamd64: $level\n',
+  );
+  return usesCrLf ? patched.replaceAll('\n', '\r\n') : patched;
 }
 
 const goAmd64Levels = ['v1', 'v2', 'v3'];
