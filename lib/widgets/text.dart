@@ -20,6 +20,92 @@ String removeLeadingEmoji(String text) {
   return value;
 }
 
+List<TextSpan> _emojiSpans(String text, TextStyle? style) {
+  final spans = <TextSpan>[];
+  final matches = _emojiRegex.allMatches(text);
+  var lastMatchEnd = 0;
+  for (final match in matches) {
+    if (match.start > lastMatchEnd) {
+      spans.add(
+        TextSpan(text: text.substring(lastMatchEnd, match.start), style: style),
+      );
+    }
+    spans.add(
+      TextSpan(
+        text: match.group(0),
+        style: style?.copyWith(fontFamily: FontFamily.twEmoji.value),
+      ),
+    );
+    lastMatchEnd = match.end;
+  }
+  if (lastMatchEnd < text.length) {
+    spans.add(TextSpan(text: text.substring(lastMatchEnd), style: style));
+  }
+  return spans;
+}
+
+bool _emojiTextExceedsMaxLines({
+  required BuildContext context,
+  required String text,
+  required TextStyle? style,
+  required double maxWidth,
+  required int maxLines,
+}) {
+  if (text.isEmpty || maxWidth <= 0 || !maxWidth.isFinite) {
+    return false;
+  }
+  final painter = TextPainter(
+    text: TextSpan(children: _emojiSpans(text, style)),
+    maxLines: maxLines,
+    textScaler: MediaQuery.textScalerOf(context),
+    textDirection: Directionality.of(context),
+    locale: Localizations.maybeLocaleOf(context),
+    ellipsis: '\u2026',
+  )..layout(maxWidth: maxWidth);
+  try {
+    return painter.didExceedMaxLines;
+  } finally {
+    painter.dispose();
+  }
+}
+
+class OverflowHoverTooltip extends StatelessWidget {
+  const OverflowHoverTooltip({
+    super.key,
+    required this.message,
+    required this.maxWidth,
+    required this.style,
+    this.maxLines = 1,
+    required this.child,
+  });
+
+  final String message;
+  final double maxWidth;
+  final TextStyle? style;
+  final int maxLines;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final overflows = _emojiTextExceedsMaxLines(
+      context: context,
+      text: message,
+      style: style,
+      maxWidth: maxWidth,
+      maxLines: maxLines,
+    );
+    if (!overflows) {
+      return child;
+    }
+    return Tooltip(
+      message: message,
+      preferBelow: false,
+      triggerMode: TooltipTriggerMode.longPress,
+      child: child,
+    );
+  }
+}
+
 class TooltipText extends StatelessWidget {
   final Text text;
 
@@ -127,42 +213,13 @@ class EmojiText extends StatelessWidget {
     this.style,
   });
 
-  List<TextSpan> _buildTextSpans(String emojis) {
-    final List<TextSpan> spans = [];
-    final matches = emojiRegex().allMatches(text);
-
-    int lastMatchEnd = 0;
-    for (final match in matches) {
-      if (match.start > lastMatchEnd) {
-        spans.add(
-          TextSpan(
-            text: text.substring(lastMatchEnd, match.start),
-            style: style,
-          ),
-        );
-      }
-      spans.add(
-        TextSpan(
-          text: match.group(0),
-          style: style?.copyWith(fontFamily: FontFamily.twEmoji.value),
-        ),
-      );
-      lastMatchEnd = match.end;
-    }
-    if (lastMatchEnd < text.length) {
-      spans.add(TextSpan(text: text.substring(lastMatchEnd), style: style));
-    }
-
-    return spans;
-  }
-
   @override
   Widget build(BuildContext context) {
     return RichText(
       textScaler: MediaQuery.textScalerOf(context),
       maxLines: maxLines,
       overflow: overflow ?? TextOverflow.clip,
-      text: TextSpan(children: _buildTextSpans(text)),
+      text: TextSpan(children: _emojiSpans(text, style)),
     );
   }
 }
