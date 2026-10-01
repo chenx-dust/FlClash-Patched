@@ -1,17 +1,21 @@
 import 'error.dart';
 
+const _goAmd64Levels = ['v1', 'v2', 'v3'];
+
 class Target {
   const Target({
     required this.goos,
     required this.goarch,
     this.abi,
     this.lowMemory = false,
+    this.goamd64,
   });
 
   final String goos;
   final String goarch;
   final String? abi;
   final bool lowMemory;
+  final String? goamd64;
 
   static const androidArm = Target(
     goos: 'android',
@@ -70,6 +74,34 @@ class Target {
     throw BuildException('No $platform Core target for GOARCH $goarch');
   }
 
+  Target withGoAmd64UserDefine(Object? value) {
+    if (goarch != 'amd64' || value == null) return this;
+    if (value is! String || !_goAmd64Levels.contains(value)) {
+      throw BuildException(
+        'hooks.user_defines.setup.goamd64 must be ${_goAmd64Levels.join(', ')}',
+      );
+    }
+    return withGoAmd64(value);
+  }
+
+  Target withGoAmd64(String level) {
+    if (goarch != 'amd64') {
+      throw BuildException('GOAMD64 applies to amd64 only: $this');
+    }
+    if (level == 'v1') {
+      if (goamd64 == null) return this;
+      return Target(goos: goos, goarch: goarch, abi: abi, lowMemory: lowMemory);
+    }
+    if (goamd64 == level) return this;
+    return Target(
+      goos: goos,
+      goarch: goarch,
+      abi: abi,
+      lowMemory: lowMemory,
+      goamd64: level,
+    );
+  }
+
   bool get isLib => abi != null;
 
   String get dynamicLibExtension => goos == 'ios' ? '.a' : '.so';
@@ -101,5 +133,9 @@ class Target {
   }
 
   @override
-  String toString() => '$goos/$goarch${abi != null ? ' ($abi)' : ''}';
+  String toString() {
+    final abiText = abi != null ? ' ($abi)' : '';
+    final microarch = goamd64 == null ? '' : ' goamd64=$goamd64';
+    return '$goos/$goarch$abiText$microarch';
+  }
 }

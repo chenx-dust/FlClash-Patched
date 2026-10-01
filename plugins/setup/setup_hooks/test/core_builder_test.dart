@@ -126,6 +126,19 @@ void main() {
       expect(request.androidToolchain, isNull);
     });
 
+    test('reads GOAMD64 from the setup user define', () {
+      final request = const CoreBuilder().requestFor(
+        buildInput(
+          os: OS.linux,
+          architecture: Architecture.x64,
+          userDefines: {'goamd64': 'v3'},
+        ),
+      )!;
+
+      expect(request.target.goamd64, 'v3');
+      expect(request.target.goarch, 'amd64');
+    });
+
     test('builds the requested macOS architecture regardless of host', () {
       const builder = CoreBuilder();
 

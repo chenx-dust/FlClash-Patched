@@ -109,9 +109,11 @@ final class CoreBuilder implements Builder {
       Architecture.x64 => 'amd64',
       final other => throw BuildException('No Core build for $platform $other'),
     };
-    final target = Target.resolve(platform: platform, goarch: goarch);
-
     final rootDir = repositoryRoot(input);
+    final target = Target.resolve(
+      platform: platform,
+      goarch: goarch,
+    ).withGoAmd64UserDefine(input.userDefines['goamd64']);
     return BuildRequest(
       rootDir: rootDir,
       harnessDir: p.join(p.fromUri(input.packageRoot), 'setup_hooks'),

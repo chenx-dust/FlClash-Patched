@@ -19,6 +19,43 @@ void main() {
       );
     });
 
+    test('reads a GOAMD64 user define onto amd64 targets', () {
+      expect(
+        Target.linuxAmd64.withGoAmd64UserDefine(null),
+        same(Target.linuxAmd64),
+      );
+      expect(
+        Target.linuxAmd64.withGoAmd64UserDefine('v1'),
+        same(Target.linuxAmd64),
+      );
+      expect(Target.windowsAmd64.withGoAmd64UserDefine('v3').goamd64, 'v3');
+      expect(
+        Target.linuxArm64.withGoAmd64UserDefine('v3'),
+        same(Target.linuxArm64),
+      );
+      expect(
+        () => Target.linuxAmd64.withGoAmd64UserDefine('v4'),
+        throwsA(isA<BuildException>()),
+      );
+      expect(
+        () => Target.linuxAmd64.withGoAmd64UserDefine(3),
+        throwsA(isA<BuildException>()),
+      );
+    });
+
+    test('amd64 can carry a GOAMD64 level', () {
+      expect(Target.linuxAmd64.withGoAmd64('v1'), same(Target.linuxAmd64));
+      expect(Target.windowsAmd64.withGoAmd64('v3').goamd64, 'v3');
+      expect(
+        Target.windowsAmd64.withGoAmd64('v3').toString(),
+        'windows/amd64 goamd64=v3',
+      );
+      expect(
+        () => Target.linuxArm64.withGoAmd64('v3'),
+        throwsA(isA<BuildException>()),
+      );
+    });
+
     test('rejects a GOARCH or platform without a Core', () {
       expect(
         () => Target.resolve(platform: 'linux', goarch: 'riscv64'),

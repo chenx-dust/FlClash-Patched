@@ -76,15 +76,17 @@ Future<void> main(List<String> args) async {
     exit(1);
   }
   final targetArch = results['arch'] as String?;
-  if (targetArch != null &&
-      (platform != 'android' && platform != 'macos' ||
-          platform == 'macos' && targetArch == 'arm')) {
-    stderr.writeln('--arch supports Android and macOS (arm64, amd64) only.');
+  final PackageArchitecture packageArch;
+  try {
+    packageArch = resolvePackageArchitecture(
+      platform: platform,
+      requested: targetArch,
+      hostArch: _detectArch(),
+    );
+  } on ArgumentError catch (error) {
+    stderr.writeln(error.message ?? error);
     exit(64);
   }
-  final arch = platform == 'macos'
-      ? targetArch ?? _detectArch()
-      : _detectArch();
   final targets = createPackageTargets(platform, results['targets']);
   final androidArch = platform == 'android' ? targetArch : null;
   final verbose = results['verbose'] as bool;
@@ -100,20 +102,26 @@ Future<void> main(List<String> args) async {
     exit(64);
   }
 
-  final exitCode = await _package(
-    platform,
-    env,
-    targets,
+  final exitCode = await _withGoAmd64UserDefine(
     rootDir,
-    arch,
-    androidArch: androidArch,
-    iosExportMethod: iosExportMethod,
-    iosExportOptionsPlist: iosExportOptionsPlist,
-    iosBundleId: iosBundleId,
-    iosDevelopmentTeam: iosDevelopmentTeam,
-    iosNoSign: iosNoSign,
-    skipDependencies: skipDependencies,
-    verbose: verbose,
+    packageArch.goamd64,
+    () {
+      return _package(
+        platform,
+        env,
+        targets,
+        rootDir,
+        packageArch,
+        androidArch: androidArch,
+        iosExportMethod: iosExportMethod,
+        iosExportOptionsPlist: iosExportOptionsPlist,
+        iosBundleId: iosBundleId,
+        iosDevelopmentTeam: iosDevelopmentTeam,
+        iosNoSign: iosNoSign,
+        skipDependencies: skipDependencies,
+        verbose: verbose,
+      );
+    },
   );
   exit(exitCode);
 }
@@ -133,9 +141,11 @@ ArgParser createSetupArgParser() {
     )
     ..addOption(
       'arch',
-      valueHelp: 'arm,arm64,amd64',
-      allowed: ['arm', 'arm64', 'amd64'],
-      help: 'Target architecture (Android; macOS: arm64 or amd64)',
+      valueHelp: 'arm,arm64,amd64,amd64-v2,amd64-v3',
+      allowed: ['arm', 'arm64', 'amd64', 'amd64-v1', 'amd64-v2', 'amd64-v3'],
+      help:
+          'Target architecture. amd64-v1 is the baseline amd64 package; '
+          'amd64-v2 and amd64-v3 compile the Core with GOAMD64 on desktop',
     )
     ..addOption(
       'ipa-export-method',
@@ -233,6 +243,118 @@ String createPackageTargets(String platform, String? customTargets) {
   return customTargets ?? _allTargets[platform]!;
 }
 
+class PackageArchitecture {
+  const PackageArchitecture({
+    required this.name,
+    required this.flutterArch,
+    this.goamd64,
+  });
+
+  /// Suffix passed to flutter_distributor. v1 keeps the historical `amd64` name.
+  final String name;
+  final String flutterArch;
+  final String? goamd64;
+}
+
+PackageArchitecture parsePackageArchitecture(String arch) {
+  switch (arch) {
+    case 'arm':
+    case 'arm64':
+      return PackageArchitecture(name: arch, flutterArch: arch);
+    case 'amd64':
+    case 'amd64-v1':
+      return const PackageArchitecture(name: 'amd64', flutterArch: 'amd64');
+    case 'amd64-v2':
+    case 'amd64-v3':
+      final level = arch.substring('amd64-'.length);
+      return PackageArchitecture(
+        name: arch,
+        flutterArch: 'amd64',
+        goamd64: level,
+      );
+    default:
+      throw ArgumentError.value(
+        arch,
+        'arch',
+        'Expected arm, arm64, amd64, amd64-v1, amd64-v2, or amd64-v3',
+      );
+  }
+}
+
+PackageArchitecture resolvePackageArchitecture({
+  required String platform,
+  required String? requested,
+  required String hostArch,
+}) {
+  if (requested != null && platform == 'ios') {
+    throw ArgumentError('--arch is not used for iOS; the package is arm64.');
+  }
+
+  final parsed = parsePackageArchitecture(requested ?? hostArch);
+  final explicitMicroarch = requested != null && requested.startsWith('amd64-');
+  if (explicitMicroarch &&
+      platform != 'linux' &&
+      platform != 'windows' &&
+      platform != 'macos') {
+    throw ArgumentError(
+      '--arch $requested is only supported for Linux, Windows, and macOS.',
+    );
+  }
+  if (platform == 'macos' && parsed.flutterArch == 'arm') {
+    throw ArgumentError('--arch supports arm64 and amd64 on macOS.');
+  }
+  if ((platform == 'linux' || platform == 'windows') &&
+      parsed.flutterArch != hostArch) {
+    throw ArgumentError(
+      '--arch ${parsed.flutterArch} does not match the $hostArch host. '
+      'Linux and Windows packages are built on a matching machine.',
+    );
+  }
+  return parsed;
+}
+
+const _setupUserDefineBlock = '''
+    setup:
+      build_assets: true
+''';
+
+String pubspecWithGoAmd64(String pubspec, String level) {
+  if (!goAmd64Levels.contains(level)) {
+    throw ArgumentError.value(level, 'level', 'Expected v1, v2, or v3');
+  }
+  if (pubspec.contains('goamd64:')) {
+    throw ArgumentError('pubspec.yaml already sets hooks.user_defines goamd64');
+  }
+  if (!pubspec.contains(_setupUserDefineBlock)) {
+    throw ArgumentError(
+      'pubspec.yaml must keep hooks.user_defines.setup.build_assets: true',
+    );
+  }
+  return pubspec.replaceFirst(_setupUserDefineBlock, '''
+    setup:
+      build_assets: true
+      goamd64: $level
+''');
+}
+
+const goAmd64Levels = ['v1', 'v2', 'v3'];
+
+Future<T> _withGoAmd64UserDefine<T>(
+  String rootDir,
+  String? level,
+  Future<T> Function() action,
+) async {
+  if (level == null) return action();
+  final file = File(p.join(rootDir, 'pubspec.yaml'));
+  final original = await file.readAsString();
+  await file.writeAsString(pubspecWithGoAmd64(original, level));
+  try {
+    return await action();
+  } finally {
+    await file.writeAsString(original);
+  }
+}
+
 void _showHelp(ArgParser parser) {
   stderr.writeln('Usage: dart setup.dart [platform] [options]');
   stderr.writeln(
@@ -250,7 +372,7 @@ Future<int> _package(
   String env,
   String targets,
   String rootDir,
-  String arch, {
+  PackageArchitecture packageArch, {
   String? androidArch,
   required String iosExportMethod,
   String? iosExportOptionsPlist,
@@ -280,7 +402,7 @@ Future<int> _package(
   );
   final descriptionArgs = <String>[];
   if (platform != 'android') {
-    descriptionArgs.addAll(['--description', arch]);
+    descriptionArgs.addAll(['--description', packageArch.name]);
   }
 
   if (!skipDependencies) {
@@ -316,9 +438,15 @@ Future<int> _package(
 
   final buildEnvironment = <String, String>{};
   if (platform == 'macos') {
-    final config = File(p.join(rootDir, '.dart_tool', 'macos-$arch.xcconfig'));
+    final config = File(
+      p.join(
+        rootDir,
+        '.dart_tool',
+        'macos-${packageArch.flutterArch}.xcconfig',
+      ),
+    );
     await config.parent.create(recursive: true);
-    await config.writeAsString(createMacosBuildConfig(arch));
+    await config.writeAsString(createMacosBuildConfig(packageArch.flutterArch));
     buildEnvironment['XCODE_XCCONFIG_FILE'] = config.path;
   }
 

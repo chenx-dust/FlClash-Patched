@@ -261,12 +261,18 @@ jobs:
           - platform: windows
             os: Windows-2022
             arch: amd64
+          - platform: windows
+            os: Windows-2022
+            arch: amd64-v3
           - platform: linux
             os: ubuntu-22.04
             arch: amd64
+          - platform: linux
+            os: ubuntu-22.04
+            arch: amd64-v3
           - platform: macos
             os: macos-26
-            arch: amd64
+            arch: amd64-v3
           - platform: macos
             os: macos-26
             arch: arm64
@@ -359,7 +365,7 @@ jobs:
       - name: Setup
         env:
           ANDROID_NDK_HOME: ${{ steps.build-ndk.outputs.ndk-path }}
-        run: dart setup.dart ${{ matrix.platform }} ${{ env.IS_STABLE == 'true' && '--env stable' || '' }} ${{ matrix.platform == 'ios' && '--no-codesign' || '' }} ${{ matrix.platform == 'macos' && format('--arch {0}', matrix.arch) || '' }} -v
+        run: dart setup.dart ${{ matrix.platform }} ${{ env.IS_STABLE == 'true' && '--env stable' || '' }} ${{ matrix.platform == 'ios' && '--no-codesign' || '' }} ${{ (matrix.platform == 'macos' || matrix.platform == 'linux' || matrix.platform == 'windows') && format('--arch {0}', matrix.arch) || '' }} -v
 
       - name: Upload
         uses: actions/upload-artifact@v7

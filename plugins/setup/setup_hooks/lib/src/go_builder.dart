@@ -103,9 +103,10 @@ class GoBuilder {
         : '${config.coreName}${target.executableExtension}';
     final outFile = p.join(outDir, fileName);
 
+    final microarch = target.goamd64 == null ? '' : '-${target.goamd64}';
     final variantKey = target.lowMemory ? '-lowmem' : '';
     return cache.run(
-      key: '${target.platformDir}-${target.goarch}$variantKey-core',
+      key: '${target.platformDir}-${target.goarch}$microarch$variantKey-core',
       fingerprint: () => _calculateFingerprint(target),
       primaryOutput: outFile,
       notice: notice,
@@ -163,7 +164,11 @@ class GoBuilder {
   }
 
   Map<String, String> _buildEnvironment(Target target) {
-    final env = <String, String>{'GOOS': target.goos, 'GOARCH': target.goarch};
+    final env = <String, String>{
+      'GOOS': target.goos,
+      'GOARCH': target.goarch,
+      if (target.goarch == 'amd64') 'GOAMD64': target.goamd64 ?? 'v1',
+    };
     if (target.isLib) {
       env
         ..['CGO_ENABLED'] = '1'
