@@ -12,8 +12,10 @@ Full package build, including Go core, Flutter, and packaging, runs through `set
 
 ```bash
 dart setup.dart macos
-dart setup.dart macos --arch amd64  # Intel package, including on an Apple Silicon host
+dart setup.dart macos --arch amd64     # Intel package, including on an Apple Silicon host
+dart setup.dart macos --arch amd64-v3  # same Intel slice; Core built with GOAMD64=v3
 dart setup.dart linux
+dart setup.dart linux --arch amd64-v3  # amd64 host; Core built with GOAMD64=v3
 dart setup.dart windows
 dart setup.dart android
 dart setup.dart ios --no-codesign  # macOS host, arm64 device IPA

@@ -299,6 +299,87 @@ hooks:
       expect(setup.packagesNotBuildingAssets('name: x\n'), isEmpty);
     });
 
+    test('passes GOAMD64 through the setup user define', () {
+      const pubspec = '''
+hooks:
+  user_defines:
+    setup:
+      build_assets: true
+    rust_api:
+      build_assets: true
+''';
+
+      final patched = setup.pubspecWithGoAmd64(pubspec, 'v3');
+
+      expect(patched, contains('goamd64: v3'));
+      expect(patched, contains('build_assets: true'));
+      expect(patched, isNot(contains('goamd64: v1')));
+      expect(
+        () => setup.pubspecWithGoAmd64(patched, 'v1'),
+        throwsArgumentError,
+      );
+    });
+
+    test('names amd64 microarchitecture packages without renaming v1', () {
+      expect(setup.parsePackageArchitecture('amd64').name, 'amd64');
+      expect(setup.parsePackageArchitecture('amd64').goamd64, isNull);
+      expect(setup.parsePackageArchitecture('amd64-v1').name, 'amd64');
+      expect(setup.parsePackageArchitecture('amd64-v1').goamd64, isNull);
+      expect(setup.parsePackageArchitecture('amd64-v3').name, 'amd64-v3');
+      expect(setup.parsePackageArchitecture('amd64-v3').goamd64, 'v3');
+      expect(setup.parsePackageArchitecture('amd64-v3').flutterArch, 'amd64');
+      expect(
+        () => setup.parsePackageArchitecture('amd64-v4'),
+        throwsArgumentError,
+      );
+    });
+
+    test('accepts desktop microarchitecture builds on a matching host', () {
+      final linux = setup.resolvePackageArchitecture(
+        platform: 'linux',
+        requested: 'amd64-v2',
+        hostArch: 'amd64',
+      );
+      expect(linux.name, 'amd64-v2');
+      expect(linux.goamd64, 'v2');
+
+      final macos = setup.resolvePackageArchitecture(
+        platform: 'macos',
+        requested: 'amd64-v3',
+        hostArch: 'arm64',
+      );
+      expect(macos.flutterArch, 'amd64');
+      expect(macos.goamd64, 'v3');
+
+      expect(
+        () => setup.resolvePackageArchitecture(
+          platform: 'linux',
+          requested: 'amd64-v3',
+          hostArch: 'arm64',
+        ),
+        throwsArgumentError,
+      );
+      expect(
+        () => setup.resolvePackageArchitecture(
+          platform: 'android',
+          requested: 'amd64-v3',
+          hostArch: 'amd64',
+        ),
+        throwsArgumentError,
+      );
+    });
+
+    test('leaves the baseline package on the hook default', () {
+      final baseline = setup.resolvePackageArchitecture(
+        platform: 'linux',
+        requested: null,
+        hostArch: 'amd64',
+      );
+
+      expect(baseline.name, 'amd64');
+      expect(baseline.goamd64, isNull);
+    });
+
     test('pins all macOS targets to the requested package architecture', () {
       expect(
         setup.createMacosBuildConfig('amd64'),
