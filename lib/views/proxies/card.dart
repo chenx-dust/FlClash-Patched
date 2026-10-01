@@ -75,28 +75,16 @@ class ProxyCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildProxyNameText(BuildContext context) {
-    if (type == ProxyCardType.min) {
-      return SizedBox(
-        height: measure.bodyMediumHeight * 1,
-        child: EmojiText(
-          proxy.name,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: context.textTheme.bodyMedium,
-        ),
-      );
-    } else {
-      return SizedBox(
-        height: measure.bodyMediumHeight * 2,
-        child: EmojiText(
-          proxy.name,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: context.textTheme.bodyMedium,
-        ),
-      );
-    }
+  Widget _buildProxyNameText(BuildContext context, int maxLines) {
+    return SizedBox(
+      height: measure.bodyMediumHeight * maxLines,
+      child: EmojiText(
+        proxy.name,
+        maxLines: maxLines,
+        overflow: TextOverflow.ellipsis,
+        style: context.textTheme.bodyMedium,
+      ),
+    );
   }
 
   Future<void> _changeProxy(WidgetRef ref) async {
@@ -123,7 +111,8 @@ class ProxyCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final measure = globalState.measure;
     final delayText = _buildDelayText();
-    final proxyNameText = _buildProxyNameText(context);
+    final nameMaxLines = type == ProxyCardType.min ? 1 : 2;
+    final proxyNameText = _buildProxyNameText(context, nameMaxLines);
     return Stack(
       children: [
         Consumer(
@@ -141,52 +130,64 @@ class ProxyCard extends ConsumerWidget {
               child: child!,
             );
           },
-          child: Container(
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                proxyNameText,
-                const SizedBox(height: 8),
-                if (type == ProxyCardType.standard) ...[
-                  SizedBox(
-                    height: measure.bodySmallHeight,
-                    child: _ProxyDesc(proxy: proxy),
-                  ),
-                  const SizedBox(height: 6),
-                  delayText,
-                ] else
-                  SizedBox(
-                    height: measure.bodySmallHeight,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Flexible(
-                          flex: 1,
-                          child: TooltipText(
-                            text: Text(
-                              proxy.type,
-                              maxLines: 1,
-                              style: context.textTheme.bodySmall?.copyWith(
-                                overflow: TextOverflow.ellipsis,
-                                color: context
-                                    .textTheme
-                                    .bodySmall
-                                    ?.color
-                                    ?.opacity80,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              const padding = EdgeInsets.symmetric(horizontal: 12);
+              return OverflowHoverTooltip(
+                message: proxy.name,
+                maxWidth: constraints.maxWidth - padding.horizontal,
+                maxLines: nameMaxLines,
+                style: context.textTheme.bodyMedium,
+                child: Container(
+                  alignment: Alignment.centerLeft,
+                  padding: padding,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      proxyNameText,
+                      const SizedBox(height: 8),
+                      if (type == ProxyCardType.standard) ...[
+                        SizedBox(
+                          height: measure.bodySmallHeight,
+                          child: _ProxyDesc(proxy: proxy),
+                        ),
+                        const SizedBox(height: 6),
+                        delayText,
+                      ] else
+                        SizedBox(
+                          height: measure.bodySmallHeight,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Flexible(
+                                flex: 1,
+                                child: TooltipText(
+                                  text: Text(
+                                    proxy.type,
+                                    maxLines: 1,
+                                    style: context.textTheme.bodySmall
+                                        ?.copyWith(
+                                          overflow: TextOverflow.ellipsis,
+                                          color: context
+                                              .textTheme
+                                              .bodySmall
+                                              ?.color
+                                              ?.opacity80,
+                                        ),
+                                  ),
+                                ),
                               ),
-                            ),
+                              delayText,
+                            ],
                           ),
                         ),
-                        delayText,
-                      ],
-                    ),
+                    ],
                   ),
-              ],
-            ),
+                ),
+              );
+            },
           ),
         ),
         if (groupType.isComputedSelected)
