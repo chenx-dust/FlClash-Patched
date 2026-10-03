@@ -254,7 +254,7 @@ final class TunnelCoordinator {
       }
 
       manager.isEnabled = true
-      managerStore.applyNetworkExtensionOptions(to: manager)
+      managerStore.applyNetworkExtensionOptions(to: manager, enableOnDemand: true)
       log("start save preferences")
       do {
         try await awaitPreferenceResult { completion in
@@ -580,7 +580,11 @@ final class TunnelCoordinator {
         else {
           return nil
         }
-        managerStore.applyNetworkExtensionOptions(to: manager)
+        let status = manager.connection.status
+        managerStore.applyNetworkExtensionOptions(
+          to: manager,
+          enableOnDemand: status == .connecting || status.tunnelState == .running
+        )
         try await awaitPreferenceResult { completion in
           manager.saveToPreferences(completionHandler: completion)
         }
@@ -601,12 +605,22 @@ final class TunnelCoordinator {
   }
 
   private func performStatusRefresh(notifyExternal: Bool) async {
+    let generation = requestGeneration
     do {
       let manager = try await managerStore.loadManager(createIfNeeded: false)
+      let status = manager?.connection.status ?? .invalid
       recordObservedTunnelStatus(
-        manager?.connection.status ?? .invalid,
-        notifyExternal: notifyExternal
+        status,
+        notifyExternal: false
       )
+      if notifyExternal,
+        generation == requestGeneration,
+        tunnelRequest == nil,
+        let state = status.tunnelState
+      {
+        publishedTunnelState = state
+        notifyExternalState(state)
+      }
     } catch {
       log("refresh status failed: \(error.localizedDescription)")
     }

@@ -58,6 +58,17 @@ class SetupAction extends _$SetupAction {
     }
   }
 
+  void syncRunningState(bool running, {DateTime? startTime}) {
+    final changed = ref.read(isStartProvider) != running;
+    if (running && startTime != null) {
+      _startTime = startTime;
+    }
+    _setLocalRunning(running);
+    if (changed) {
+      ref.read(checkIpNumProvider.notifier).add();
+    }
+  }
+
   void _setLocalRunning(bool running) {
     foregroundTicker.unregister(_updateTickerTag);
     if (!running) {

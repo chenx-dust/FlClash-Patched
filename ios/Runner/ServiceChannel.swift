@@ -62,10 +62,16 @@ final class ServiceChannel {
         channel.invokeMethod("tunnelState", arguments: state)
       },
       onExternalStart: {
-        tileChannel.invokeMethod("start", arguments: nil)
+        tileChannel.invokeMethod("syncRunningState", arguments: [
+          "running": true,
+          "startTime": sharedStateStore.runTime(),
+        ])
       },
       onExternalStop: {
-        tileChannel.invokeMethod("stop", arguments: nil)
+        tileChannel.invokeMethod("syncRunningState", arguments: [
+          "running": false,
+          "startTime": 0,
+        ])
       }
     )
     let coreMessageRouter = CoreMessageRouter(

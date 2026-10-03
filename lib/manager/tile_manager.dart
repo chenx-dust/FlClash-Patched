@@ -26,6 +26,13 @@ class _TileContainerState extends ConsumerState<TileManager> with TileListener {
   bool get isStart => ref.read(isStartProvider);
 
   @override
+  void onRunningState(bool running, DateTime? startTime) {
+    ref
+        .read(setupActionProvider.notifier)
+        .syncRunningState(running, startTime: startTime);
+  }
+
+  @override
   Future<void> onStart() async {
     if (isStart && ref.read(coreStatusProvider) == CoreStatus.connected) {
       return;

@@ -115,7 +115,10 @@ final class TunnelManagerStore {
     return true
   }
 
-  func applyNetworkExtensionOptions(to manager: NETunnelProviderManager) {
+  func applyNetworkExtensionOptions(
+    to manager: NETunnelProviderManager,
+    enableOnDemand: Bool
+  ) {
     let configuration = sharedStateStore.loadTunnelConfiguration()
     let options = configuration.options
     guard
@@ -161,7 +164,7 @@ final class TunnelManagerStore {
     }
 
     manager.onDemandRules = rules.isEmpty ? nil : rules
-    manager.isOnDemandEnabled = !rules.isEmpty
+    manager.isOnDemandEnabled = enableOnDemand && !rules.isEmpty
     log(
       "applyOnDemandRules excludeSSIDs=\(configuration.excludeSSIDs) enabled=\(manager.isOnDemandEnabled)"
     )
