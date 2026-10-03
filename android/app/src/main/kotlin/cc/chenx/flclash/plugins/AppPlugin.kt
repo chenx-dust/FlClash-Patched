@@ -22,6 +22,8 @@ import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.net.toUri
+import cc.chenx.flclash.LOCAL_NETWORK_PERMISSION
+import cc.chenx.flclash.LOCAL_NETWORK_SDK
 import cc.chenx.flclash.R
 import cc.chenx.flclash.common.Components
 import cc.chenx.flclash.common.GlobalState
@@ -68,7 +70,13 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
 
     private val requestInstalledAppsCallback = PendingCallback<Boolean>()
 
+    private val requestLocalNetworkCallback = PendingCallback<Boolean>()
+
     private var isRequestingNotificationPermission = false
+
+    private var isRequestingLocalNetworkPermission = false
+
+    private var skipLocalNetworkPermissionRequest = false
 
     private val gson = Gson()
 
@@ -300,6 +308,42 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
         requestNotificationCallback.resolve(shouldStart)
     }
 
+    fun requestLocalNetworkPermission(callback: (Boolean) -> Unit) = onMainThread {
+        requestLocalNetworkCallback.replace(callback, supersededValue = false)
+        if (Build.VERSION.SDK_INT < LOCAL_NETWORK_SDK || hasLocalNetworkPermission()) {
+            invokeRequestLocalNetworkCallback(true)
+            return@onMainThread
+        }
+        if (skipLocalNetworkPermissionRequest) {
+            invokeRequestLocalNetworkCallback(false)
+            return@onMainThread
+        }
+        if (isRequestingLocalNetworkPermission) {
+            return@onMainThread
+        }
+        val activity = activity
+        if (activity == null) {
+            invokeRequestLocalNetworkCallback(false)
+            return@onMainThread
+        }
+        isRequestingLocalNetworkPermission = true
+        ActivityCompat.requestPermissions(
+            activity,
+            arrayOf(LOCAL_NETWORK_PERMISSION),
+            LOCAL_NETWORK_PERMISSION_REQUEST_CODE,
+        )
+    }
+
+    private fun hasLocalNetworkPermission(): Boolean = ContextCompat.checkSelfPermission(
+        GlobalState.application,
+        LOCAL_NETWORK_PERMISSION,
+    ) == PackageManager.PERMISSION_GRANTED
+
+    private fun invokeRequestLocalNetworkCallback(granted: Boolean) {
+        isRequestingLocalNetworkPermission = false
+        requestLocalNetworkCallback.resolve(granted)
+    }
+
     private fun requestInstalledAppsPermission(callback: (Boolean) -> Unit) = onMainThread {
         requestInstalledAppsCallback.replace(callback, supersededValue = false)
         val activity = activity
@@ -381,6 +425,7 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
         scope.cancel()
         invokeVpnPrepareCallback(false)
         invokeRequestNotificationCallback(false)
+        invokeRequestLocalNetworkCallback(false)
         invokeRequestInstalledAppsCallback(false)
     }
 
@@ -417,6 +462,7 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
         detachFromActivity()
         invokeVpnPrepareCallback(false)
         invokeRequestNotificationCallback(false)
+        invokeRequestLocalNetworkCallback(false)
         invokeRequestInstalledAppsCallback(false)
     }
 
@@ -447,6 +493,15 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
             true
         }
 
+        LOCAL_NETWORK_PERMISSION_REQUEST_CODE -> {
+            skipLocalNetworkPermissionRequest = true
+            invokeRequestLocalNetworkCallback(
+                grantResults.isNotEmpty() &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED,
+            )
+            true
+        }
+
         else -> false
     }
 
@@ -454,5 +509,6 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
         const val VPN_PERMISSION_REQUEST_CODE = 1001
         const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1002
         const val INSTALLED_APPS_PERMISSION_REQUEST_CODE = 1003
+        const val LOCAL_NETWORK_PERMISSION_REQUEST_CODE = 1004
     }
 }

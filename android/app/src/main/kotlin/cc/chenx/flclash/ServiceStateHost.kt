@@ -1,6 +1,8 @@
 package cc.chenx.flclash
 
+import android.content.pm.PackageManager
 import android.net.VpnService
+import androidx.core.content.ContextCompat
 import cc.chenx.flclash.common.GlobalState
 import cc.chenx.flclash.models.SharedState
 import cc.chenx.flclash.plugins.AppPlugin
@@ -22,6 +24,7 @@ internal interface ServiceStateHost {
     val sdkInt: Int
     val startMessage: String
     val stopMessage: String
+    val localNetworkMessage: String
 
     fun log(message: String)
 
@@ -32,6 +35,8 @@ internal interface ServiceStateHost {
     fun loadSharedState(): SharedState
 
     fun isVpnPermissionGranted(): Boolean
+
+    fun isLocalNetworkPermissionGranted(): Boolean
 
     fun tile(): TileGateway?
 
@@ -54,6 +59,8 @@ internal interface TileGateway {
 
 internal interface AppGateway {
     fun requestNotificationPermission(callback: (Boolean) -> Unit)
+
+    fun requestLocalNetworkPermission(callback: (Boolean) -> Unit)
 
     fun prepareVpn(enable: Boolean, callback: (Boolean) -> Unit)
 
@@ -82,6 +89,9 @@ internal object AndroidServiceStateHost : ServiceStateHost {
     override val stopMessage: String
         get() = GlobalState.application.getString(R.string.stop_vpn)
 
+    override val localNetworkMessage: String
+        get() = GlobalState.application.getString(R.string.local_network_fallback)
+
     fun attachFlutterEngine(engine: FlutterEngine) {
         flutterEngine = engine
     }
@@ -104,6 +114,13 @@ internal object AndroidServiceStateHost : ServiceStateHost {
     override fun isVpnPermissionGranted(): Boolean =
         VpnService.prepare(GlobalState.application) == null
 
+    override fun isLocalNetworkPermissionGranted(): Boolean =
+        sdkInt < LOCAL_NETWORK_SDK ||
+            ContextCompat.checkSelfPermission(
+                GlobalState.application,
+                LOCAL_NETWORK_PERMISSION,
+            ) == PackageManager.PERMISSION_GRANTED
+
     override fun tile(): TileGateway? = flutterEngine?.plugin<TilePlugin>()?.let { plugin ->
         object : TileGateway {
             override fun handleStart() = plugin.handleStart()
@@ -116,6 +133,9 @@ internal object AndroidServiceStateHost : ServiceStateHost {
         object : AppGateway {
             override fun requestNotificationPermission(callback: (Boolean) -> Unit) =
                 plugin.requestNotificationPermission(callback)
+
+            override fun requestLocalNetworkPermission(callback: (Boolean) -> Unit) =
+                plugin.requestLocalNetworkPermission(callback)
 
             override fun prepareVpn(enable: Boolean, callback: (Boolean) -> Unit) =
                 plugin.prepareVpn(enable, callback)

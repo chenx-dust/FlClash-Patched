@@ -29,6 +29,9 @@ internal const val INVALID_CONFIG_MESSAGE = "Invalid configuration."
 internal const val VPN_PERMISSION_MESSAGE = "VPN permission required."
 internal const val START_FAILED_MESSAGE = "Failed to start service."
 
+internal const val LOCAL_NETWORK_SDK = 37
+internal const val LOCAL_NETWORK_PERMISSION = "android.permission.ACCESS_LOCAL_NETWORK"
+
 /**
  * Callers request a transition; the newest request always wins. Every step that outlives its own
  * suspension point re-checks [isCurrent] before it publishes anything, so a start that was overtaken
@@ -138,7 +141,13 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
         }
         val app = host.app()
         if (app != null) {
-            app.requestNotificationPermission(launchRequest)
+            app.requestNotificationPermission { shouldStart ->
+                if (shouldStart) {
+                    app.requestLocalNetworkPermission { launchRequest(true) }
+                } else {
+                    launchRequest(false)
+                }
+            }
         } else {
             launchRequest(true)
         }
@@ -249,7 +258,7 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
                 return@transition true
             }
             mutableRunState.value = RunState.STARTING
-            val startedAtMillis = host.startService(options)
+            val startedAtMillis = host.startService(withLocalNetworkFallback(options))
             if (startedAtMillis == 0L) {
                 mutableRunState.value = RunState.STOPPED
                 fail(request)
@@ -261,6 +270,18 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
             mutableRunState.value = RunState.STARTED
             true
         }
+    }
+
+    // system and mixed hand TCP to the kernel through the tun subnet, which
+    // Android 17 drops until the local-network permission is granted.
+    private fun withLocalNetworkFallback(options: VpnOptions): VpnOptions {
+        if (!options.enable || options.stack !in KERNEL_TCP_STACKS ||
+            host.isLocalNetworkPermissionGranted()
+        ) {
+            return options
+        }
+        host.showToast(host.localNetworkMessage)
+        return options.copy(stack = FALLBACK_STACK)
     }
 
     private suspend fun reconcileStopped() = transitionLock.withLock {
@@ -325,6 +346,9 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
     }
 
     internal companion object {
+        val KERNEL_TCP_STACKS = setOf("system", "mixed")
+        const val FALLBACK_STACK = "mips"
+
         /**
          * The Core init payload. The key spelling is a cross-language contract with the Go wrapper,
          * not an implementation detail.

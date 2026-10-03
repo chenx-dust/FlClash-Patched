@@ -18,7 +18,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-private fun vpnOptions(enable: Boolean = true) = VpnOptions(
+private fun vpnOptions(enable: Boolean = true, stack: String = "gvisor") = VpnOptions(
     enable = enable,
     port = 7890,
     ipv6 = false,
@@ -33,15 +33,15 @@ private fun vpnOptions(enable: Boolean = true) = VpnOptions(
     systemProxy = true,
     suspendSupport = null,
     bypassDomain = emptyList(),
-    stack = "gvisor",
+    stack = stack,
     mtu = null,
     routeAddress = emptyList(),
     disableIcmpForwarding = false,
     endpointIndependentNat = false,
 )
 
-private fun configuredState(enable: Boolean = true) = SharedState(
-    vpnOptions = vpnOptions(enable),
+private fun configuredState(enable: Boolean = true, stack: String = "gvisor") = SharedState(
+    vpnOptions = vpnOptions(enable, stack),
     setupParams = SetupParams(testUrl = "https://example.com", selectedMap = emptyMap()),
 )
 
@@ -60,16 +60,23 @@ private class FakeTile : TileGateway {
 
 private class FakeApp(
     private val notificationGranted: Boolean = true,
+    private val localNetworkGranted: Boolean = true,
     private val vpnGranted: Boolean = true,
     private val holdVpnPreparation: Boolean = false,
 ) : AppGateway {
     var beforeVpnPrepared: (() -> Unit)? = null
     var cancelledPreparations = 0
+    var localNetworkRequests = 0
 
     private var heldCallback: ((Boolean) -> Unit)? = null
 
     override fun requestNotificationPermission(callback: (Boolean) -> Unit) =
         callback(notificationGranted)
+
+    override fun requestLocalNetworkPermission(callback: (Boolean) -> Unit) {
+        localNetworkRequests++
+        callback(localNetworkGranted)
+    }
 
     override fun prepareVpn(enable: Boolean, callback: (Boolean) -> Unit) {
         beforeVpnPrepared?.invoke()
@@ -93,6 +100,7 @@ private class FakeHost(override val scope: CoroutineScope) : ServiceStateHost {
     var setupResult: Result<String> = Result.success("")
     var startResult = 1_700_000_000_000L
     var vpnPermissionGranted = true
+    var localNetworkPermissionGranted = true
     var vpnServiceActive = true
     var tile: TileGateway? = null
     var app: AppGateway? = null
@@ -103,6 +111,8 @@ private class FakeHost(override val scope: CoroutineScope) : ServiceStateHost {
     override val sdkInt = 34
     override var startMessage = "Start VPN"
     override var stopMessage = "Stop VPN"
+    override var localNetworkMessage =
+        "Local network permission denied: using the mips stack, LAN is unreachable."
 
     val toasts = mutableListOf<String>()
     val logs = mutableListOf<String>()
@@ -112,6 +122,7 @@ private class FakeHost(override val scope: CoroutineScope) : ServiceStateHost {
     var stopCalls = 0
     var lastInitParams: String? = null
     var lastSetupParams: String? = null
+    var lastStartOptions: VpnOptions? = null
 
     override fun log(message: String) {
         logs += message
@@ -129,6 +140,8 @@ private class FakeHost(override val scope: CoroutineScope) : ServiceStateHost {
 
     override fun isVpnPermissionGranted(): Boolean = vpnPermissionGranted
 
+    override fun isLocalNetworkPermissionGranted(): Boolean = localNetworkPermissionGranted
+
     override fun tile(): TileGateway? = tile
 
     override fun app(): AppGateway? = app
@@ -142,6 +155,7 @@ private class FakeHost(override val scope: CoroutineScope) : ServiceStateHost {
 
     override suspend fun startService(options: VpnOptions): Long {
         startCalls++
+        lastStartOptions = options
         beforeStartService?.invoke()
         runTimeMillis = startResult
         return startResult
@@ -285,6 +299,57 @@ class ServiceStateMachineTest {
 
         assertTrue(machine.requestStart().await())
         assertEquals(1, host.startCalls)
+    }
+
+    /** Android 17 drops the kernel hop system/mixed rely on until the permission is granted. */
+    @Test
+    fun `a denied local network permission falls back to the mips stack`() = runTest {
+        val host = FakeHost(backgroundScope)
+        host.localNetworkPermissionGranted = false
+        val machine = ServiceStateMachine(host)
+        machine.syncSharedState(configuredState(stack = "system"))
+
+        assertTrue(machine.requestStart().await())
+        assertEquals("mips", host.lastStartOptions?.stack)
+        assertTrue(host.toasts.contains(host.localNetworkMessage))
+    }
+
+    @Test
+    fun `a granted local network permission keeps the chosen stack`() = runTest {
+        val host = FakeHost(backgroundScope)
+        val machine = ServiceStateMachine(host)
+        machine.syncSharedState(configuredState(stack = "mixed"))
+
+        assertTrue(machine.requestStart().await())
+        assertEquals("mixed", host.lastStartOptions?.stack)
+        assertFalse(host.toasts.contains(host.localNetworkMessage))
+    }
+
+    @Test
+    fun `a proxy-only start keeps its stack without the local network permission`() = runTest {
+        val host = FakeHost(backgroundScope)
+        host.localNetworkPermissionGranted = false
+        val machine = ServiceStateMachine(host)
+        machine.syncSharedState(configuredState(enable = false, stack = "system"))
+
+        assertTrue(machine.requestStart().await())
+        assertEquals("system", host.lastStartOptions?.stack)
+        assertFalse(host.toasts.contains(host.localNetworkMessage))
+    }
+
+    @Test
+    fun `the local network prompt is asked once and never blocks the start`() = runTest {
+        val host = FakeHost(backgroundScope)
+        val app = FakeApp(localNetworkGranted = false)
+        host.app = app
+        host.localNetworkPermissionGranted = false
+        val machine = ServiceStateMachine(host)
+        machine.syncSharedState(configuredState(stack = "system"))
+
+        assertTrue(machine.requestStart().await())
+        assertEquals(1, app.localNetworkRequests)
+        assertEquals(1, host.startCalls)
+        assertEquals("mips", host.lastStartOptions?.stack)
     }
 
     @Test

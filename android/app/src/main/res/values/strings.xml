@@ -2,4 +2,5 @@
 <resources>
     <string name="start_vpn">Starting VPN...</string>
     <string name="stop_vpn">Stopping VPN...</string>
+    <string name="local_network_fallback">Local network permission denied: using the mips stack, LAN is unreachable.</string>
 </resources>
