@@ -86,7 +86,7 @@ void main() {
     expect(find.byIcon(Symbols.sync), findsNWidgets(5));
     expect(find.byType(FutureBuilder<FileInfo?>), findsNWidgets(4));
     for (final url in defaultGeoXUrl.values) {
-      expect(find.text(url), findsNothing);
+      expect(find.text(url), findsOneWidget);
     }
 
     final mmdbItem = find.ancestor(

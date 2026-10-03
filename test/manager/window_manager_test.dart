@@ -13,6 +13,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:window_manager/window_manager.dart'
     show WindowListener, windowManager;
@@ -358,7 +359,7 @@ void main() {
   testWidgets('AppIcon renders the bundled application icon', (tester) async {
     await tester.pumpWidget(const MaterialApp(home: AppIcon()));
 
-    expect(find.byType(Image), findsOneWidget);
+    expect(find.byType(SvgPicture), findsOneWidget);
   });
 
   group('WindowHeaderActions', () {

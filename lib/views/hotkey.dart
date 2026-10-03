@@ -335,7 +335,7 @@ class _HotKeyRecorderState extends ConsumerState<HotKeyRecorder> {
     HardwareKeyboard.instance.removeHandler(_handleKeyEvent);
     final recording = _recording;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      recording.value = false;
+      recording.stop();
     });
     super.dispose();
   }

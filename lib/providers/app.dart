@@ -699,6 +699,13 @@ class HotKeyRecording extends _$HotKeyRecording with AutoDisposeNotifierMixin {
   bool build() {
     return false;
   }
+
+  void stop() {
+    if (!ref.mounted) {
+      return;
+    }
+    value = false;
+  }
 }
 
 List<Override> buildAppStateOverrides(AppState appState) {

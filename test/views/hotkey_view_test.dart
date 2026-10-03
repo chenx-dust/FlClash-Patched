@@ -126,8 +126,15 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Ctrl'), findsOneWidget);
-      expect(find.text('A'), findsOneWidget);
+      final labels = ShortcutLabels.host();
+      expect(
+        find.text(labels.modifier(KeyboardModifier.control)),
+        findsOneWidget,
+      );
+      expect(
+        find.text(labels.key(PhysicalKeyboardKey.keyA.usbHidUsage)),
+        findsOneWidget,
+      );
       expect(tester.takeException(), null);
     });
   });
@@ -149,9 +156,16 @@ void main() {
         LogicalKeyboardKey.keyA,
       );
 
+      final labels = ShortcutLabels.host();
       expect(find.text(currentAppLocalizations.pressKeyboard), findsNothing);
-      expect(find.text('Ctrl'), findsOneWidget);
-      expect(find.text('A'), findsOneWidget);
+      expect(
+        find.text(labels.modifier(KeyboardModifier.control)),
+        findsOneWidget,
+      );
+      expect(
+        find.text(labels.key(PhysicalKeyboardKey.keyA.usbHidUsage)),
+        findsOneWidget,
+      );
       expect(tester.takeException(), null);
     });
 
@@ -200,7 +214,12 @@ void main() {
         find.widgetWithText(TextButton, currentAppLocalizations.save),
       );
       expect(save.onPressed, isNull);
-      expect(find.textContaining('Ctrl'), findsWidgets);
+      expect(
+        find.textContaining(
+          ShortcutLabels.host().modifier(KeyboardModifier.control),
+        ),
+        findsWidgets,
+      );
       expect(container.read(hotKeyActionsProvider), isEmpty);
     });
 
