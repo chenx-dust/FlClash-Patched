@@ -67,6 +67,10 @@ Map<String, String> _cargoEnvironment(BuildInput input) {
     if (directory.existsSync() && directory.listSync().any(_isLibclang)) {
       return {
         'LIBCLANG_PATH': directory.path,
+        _androidBindgenClangArgsKey(code): _androidBindgenClangArgs(
+          llvmRoot,
+          code,
+        ),
         if (Platform.isWindows)
           'PATH': '${llvmRoot.path}\\bin;${Platform.environment['PATH'] ?? ''}',
       };
@@ -80,4 +84,36 @@ Map<String, String> _cargoEnvironment(BuildInput input) {
 
 bool _isLibclang(FileSystemEntity entity) {
   return entity.path.split(Platform.pathSeparator).last.startsWith('libclang.');
+}
+
+String _androidBindgenClangArgsKey(CodeConfig code) {
+  final triple = _androidRustTriple(
+    code.targetArchitecture,
+  ).replaceAll('-', '_');
+  return 'BINDGEN_EXTRA_CLANG_ARGS_$triple';
+}
+
+// NDK r30 rejects bindgen's unversioned Rust triple; the suffixed variable native_toolchain_rust sets (sysroot only) overrides BINDGEN_EXTRA_CLANG_ARGS.
+String _androidBindgenClangArgs(Directory llvmRoot, CodeConfig code) {
+  final architecture = code.targetArchitecture;
+  final rustTriple = _androidRustTriple(architecture);
+  final clangTriple = architecture == Architecture.arm
+      ? 'armv7a-linux-androideabi'
+      : rustTriple;
+  final includeTriple = architecture == Architecture.arm
+      ? 'arm-linux-androideabi'
+      : rustTriple;
+  final sysroot = '${llvmRoot.path}/sysroot'.replaceAll(r'\', '/');
+  final api = code.android.targetNdkApi;
+  return '--target=$clangTriple$api --sysroot=$sysroot '
+      '-I$sysroot/usr/include/$includeTriple';
+}
+
+String _androidRustTriple(Architecture architecture) {
+  return switch (architecture) {
+    Architecture.arm64 => 'aarch64-linux-android',
+    Architecture.arm => 'armv7-linux-androideabi',
+    Architecture.x64 => 'x86_64-linux-android',
+    _ => throw StateError('No Android Rust triple for $architecture'),
+  };
 }
