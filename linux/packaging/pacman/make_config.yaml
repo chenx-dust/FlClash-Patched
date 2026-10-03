@@ -7,7 +7,7 @@ maintainer:
 licenses:
   - GPL-3.0-or-later
 
-icon: ./assets/images/icon.png
+icon: ./assets/images/icon.svg
 
 dependencies:
   - libayatana-appindicator

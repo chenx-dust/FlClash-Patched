@@ -9,7 +9,7 @@ const icoOutputDir = 'assets/images/tray/windows';
 const statusIconNames = ['status_1', 'status_2', 'status_3'];
 const trayBaseSize = 18;
 const trayScales = [1, 2, 3, 4];
-const appIconSource = 'assets/images/icon.png';
+const appIconSource = 'assets/images/icon.svg';
 const appIconOutput = 'windows/runner/resources/app_icon.ico';
 
 Future<void> main() async {
@@ -41,7 +41,7 @@ Future<void> main() async {
         sizes: trayIcoSizes,
       );
     }
-    final appIcon = await renderer.wrapRaster(File(appIconSource));
+    final appIcon = File(appIconSource);
     await _writeIco(renderer, appIcon, File(appIconOutput));
   } finally {
     if (tempDir.existsSync()) {
@@ -115,21 +115,4 @@ class _Renderer {
     }
     return output.readAsBytes();
   }
-
-  // librsvg only follows image references inside the SVG's own directory, so
-  // the raster is copied next to its wrapper before rendering.
-  Future<File> wrapRaster(File raster) async {
-    final copy = await raster.copy('${tempDir.path}/${_basename(raster)}');
-    final wrapper = File('${tempDir.path}/${_basename(raster)}.svg');
-    await wrapper.writeAsString(
-      '<svg xmlns="http://www.w3.org/2000/svg" '
-      'xmlns:xlink="http://www.w3.org/1999/xlink" '
-      'width="256" height="256" viewBox="0 0 256 256">'
-      '<image xlink:href="${_basename(copy)}" width="256" height="256"/>'
-      '</svg>',
-    );
-    return wrapper;
-  }
-
-  String _basename(File file) => file.uri.pathSegments.last;
 }

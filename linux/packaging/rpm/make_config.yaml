@@ -4,7 +4,7 @@ packager: Chenx Dust
 packagerEmail: chenx_dust@outlook.com
 license: GPL-3.0-or-later
 
-icon: ./assets/images/icon.png
+icon: ./assets/images/icon.svg
 
 auto_req: false
 

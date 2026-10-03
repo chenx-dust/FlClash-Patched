@@ -7,7 +7,7 @@ maintainer:
 priority: optional
 section: net
 essential: false
-icon: ./assets/images/icon.png
+icon: ./assets/images/icon.svg
 
 dependencies:
   - libayatana-appindicator3-1

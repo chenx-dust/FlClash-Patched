@@ -10,6 +10,7 @@ import 'package:fl_clash/state.dart';
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:window_manager/window_manager.dart';
 
 const _windowGeometryDelay = Duration(milliseconds: 120);
@@ -665,7 +666,11 @@ class AppIcon extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       child: Transform.translate(
         offset: const Offset(0, -1),
-        child: Image.asset('assets/images/icon.png', width: 34, height: 34),
+        child: SvgPicture.asset(
+          'assets/images/icon.svg',
+          width: 34,
+          height: 34,
+        ),
       ),
     );
   }

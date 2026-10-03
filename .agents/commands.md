@@ -103,7 +103,7 @@ dart run tool/generate_status_icons.dart
 
 It writes the tray PNGs with Flutter `2.0x/`–`4.0x/` resolution variants to `assets/images/tray/unix/`,
 multi-size tray `.ico` files to `assets/images/tray/windows/`, and `windows/runner/resources/app_icon.ico`
-from `assets/images/icon.png`. `pubspec.yaml` declares the two tray directories with `platforms:` so each
+from `assets/images/icon.svg`. `pubspec.yaml` declares the two tray directories with `platforms:` so each
 build only bundles the format its tray loads; a new status icon needs a source SVG and an entry in the
 script's `statusIconNames`, nothing in `pubspec.yaml`.
 
