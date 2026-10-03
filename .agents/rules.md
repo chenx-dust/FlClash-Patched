@@ -226,24 +226,6 @@ leaving a repo-wide policy as a comment reaches only the reader of that one file
 
 ## Lifecycle Rules
 
-- Crash recovery is owned by `BootGuard` (`lib/common/boot_guard.dart`), and the signal it acts on is the persisted
-  `BootRecord`, never a crash reporter. The record is stamped `starting` before `startCore` and `running` once
-  `_initApp` finishes, so only a launch that died before reaching `running` is a failed launch — a crash after hours of
-  runtime, or a process the system reclaimed in the background, is not one. `ApplicationExitInfo` can only veto a
-  failure (user stop, low memory, signal, package change), never create one, and its timestamp is consumed through
-  `handledExitAt` so the same exit cannot be counted twice.
-- `BootGuard` is an Android-only mechanism and gates itself: on every other platform `evaluate`, `markRunning` and
-  `markClosed` return without touching preferences. The desktop has neither of the two attribution sources — no
-  `ApplicationExitInfo` equivalent and no Crashlytics toggle — so a bare sentinel there would read a window closed on
-  the disclaimer dialog, or a session ended by shutdown, as a failed launch. Keep the platform check inside the guard;
-  callers in `bootstrap.dart` and `SystemAction` stay unconditional.
-- `FirebaseCrashlytics.didCrashOnPreviousExecution()` corroborates a failure and must not trigger one. Its marker file is
-  cleared by a background initialization that `dataCollectionArbiter` blocks while collection is disabled, which is the
-  default here, so one real crash makes it return true on every later launch. That latch is what made the app clear the
-  selected profile on every cold start; it is also why the probe is only read when `crashlytics` is enabled, keeping
-  Firebase uninitialized until the user consents.
-- Recovery is graded: the first failed launch only skips `initStatus`, and `currentProfileId` is cleared only from
-  `crashRecoveryClearThreshold` consecutive failures on. Do not let a single interrupted launch write to the config.
 - Desktop process ownership belongs to `DesktopCoreLifecycle`; do not start/kill `FlClashCore` from providers, widgets,
   managers, or ad hoc exit callbacks. Acquire and release it through a `CoreProcessLease`.
 - `CoreController.close()` and platform `close()` implementations are terminal and idempotent. Application shutdown must

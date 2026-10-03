@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:fl_clash/common/boot_guard.dart';
-import 'package:fl_clash/common/boot_record.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/common/launch.dart';
 import 'package:fl_clash/common/migration.dart';
@@ -32,8 +30,6 @@ class Bootstrap {
     _instance ??= Bootstrap._internal();
     return _instance!;
   }
-
-  BootDecision _bootDecision = const BootDecision();
 
   Future<ProviderContainer> init(int version) async {
     globalState.appEnv = const String.fromEnvironment(
@@ -90,7 +86,7 @@ class Bootstrap {
     DynamicColorSeeds dynamicColor,
   ) async {
     globalState.packageInfo = await PackageInfo.fromPlatform();
-    var config = await migration.run();
+    final config = await migration.run();
     foregroundTicker.updateSettings(
       interval: Duration(
         seconds: config.appSettingProps.foregroundTickerInterval,
@@ -99,13 +95,6 @@ class Bootstrap {
         seconds: config.appSettingProps.foregroundTickerIdleInterval,
       ),
     );
-    _bootDecision = await bootGuard.evaluate(
-      profileId: config.currentProfileId,
-    );
-    if (_bootDecision.recovery == BootRecovery.clearProfile) {
-      config = config.copyWith(currentProfileId: null);
-      await preferences.saveConfig(config);
-    }
     final appState = AppState(
       brightness: WidgetsBinding.instance.platformDispatcher.platformBrightness,
       version: version,
@@ -170,46 +159,10 @@ class Bootstrap {
     }
     await _handleFailedPreference();
     await _handlerDisclaimer();
-    await _showCrashRecoveryTip();
     await _container.read(coreActionProvider.notifier).startCore();
-    if (!_bootDecision.isDegraded) {
-      await _container.read(setupActionProvider.notifier).initStatus();
-    }
+    await _container.read(setupActionProvider.notifier).initStatus();
     _container.read(initProvider.notifier).value = true;
-    await bootGuard.markRunning();
     permissions.check(_container.read);
-  }
-
-  Future<void> _showCrashRecoveryTip() async {
-    switch (_bootDecision.recovery) {
-      case BootRecovery.none:
-        return;
-      case BootRecovery.skipAutoSetup:
-        await dialogs.showMessage(
-          title: currentAppLocalizations.launchInterrupted,
-          cancelable: false,
-          dismissible: false,
-          message: TextSpan(text: currentAppLocalizations.launchInterruptedTip),
-        );
-      case BootRecovery.clearProfile:
-        await dialogs.showMessage(
-          title: currentAppLocalizations.crashDetected,
-          cancelable: false,
-          dismissible: false,
-          message: TextSpan(
-            text: currentAppLocalizations.crashDetectedTip(_failedProfileLabel),
-          ),
-        );
-    }
-  }
-
-  String get _failedProfileLabel {
-    final profileId = _bootDecision.failedProfileId;
-    if (profileId == null) {
-      return '';
-    }
-    final profile = _container.read(profilesProvider).getProfile(profileId);
-    return profile?.label.takeFirstValid(['$profileId']) ?? '$profileId';
   }
 
   Future<void> _handleFailedPreference() async {

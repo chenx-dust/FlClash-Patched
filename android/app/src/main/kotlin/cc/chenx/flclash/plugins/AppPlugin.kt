@@ -179,10 +179,6 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
             "openAppSettings" -> {
                 result.success(openAppSettings())
             }
-
-            "getLastExitInfo" -> reply(result) {
-                GlobalState.lastExitInfo()
-            }
             else -> {
                 result.notImplemented()
             }
