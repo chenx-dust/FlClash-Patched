@@ -330,10 +330,13 @@ void main() {
       expect(result.down, 4);
     });
 
-    test('getMemory delegates numeric memory', () async {
-      when(() => mock.getMemory()).thenAnswer((_) async => 2048);
+    test('getMemory delegates structured memory', () async {
+      when(() => mock.getMemory()).thenAnswer(
+        (_) async => const CoreMemoryInfo(sys: 4096, heapReleased: 2048),
+      );
       final result = await controller.getMemory();
-      expect(result, 2048);
+      expect(result.total, 2048);
+      expect(result.sys, 4096);
     });
 
     test('getGoroutineCount delegates numeric count', () async {

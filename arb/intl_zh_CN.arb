@@ -832,5 +832,16 @@
   "recvMsgX": "启用 RecvMsgX",
   "recvMsgXDesc": "在 Darwin 上批量接收数据包",
   "sendMsgX": "启用 SendMsgX",
-  "sendMsgXDesc": "在 Darwin 上批量发送数据包"
+  "sendMsgXDesc": "在 Darwin 上批量发送数据包",
+  "memoryHeapObjects": "堆对象",
+  "memoryHeapUnused": "堆内未使用空间",
+  "memoryHeapIdle": "保留空闲堆",
+  "memoryHeapReleased": "已归还系统",
+  "memoryStacks": "栈",
+  "memoryMetadata": "运行时元数据",
+  "memoryGC": "GC 元数据",
+  "memoryOther": "其他运行时内存",
+  "memoryTotal": "Go 内存占用",
+  "memoryCleanup": "清理",
+  "memoryReadFailed": "无法读取内存，正在重试…"
 }

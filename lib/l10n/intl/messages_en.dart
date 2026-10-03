@@ -888,7 +888,26 @@ class MessageLookup extends MessageLookupByLibrary {
     "maxFailedTimes": MessageLookupByLibrary.simpleMessage("Max failures"),
     "maxLengthTip": m21,
     "maximize": MessageLookupByLibrary.simpleMessage("Maximize"),
+    "memoryCleanup": MessageLookupByLibrary.simpleMessage("Clean up"),
+    "memoryGC": MessageLookupByLibrary.simpleMessage("GC metadata"),
+    "memoryHeapIdle": MessageLookupByLibrary.simpleMessage(
+      "Retained idle heap",
+    ),
+    "memoryHeapObjects": MessageLookupByLibrary.simpleMessage("Heap objects"),
+    "memoryHeapReleased": MessageLookupByLibrary.simpleMessage(
+      "Returned to OS",
+    ),
+    "memoryHeapUnused": MessageLookupByLibrary.simpleMessage(
+      "Unused heap spans",
+    ),
     "memoryInfo": MessageLookupByLibrary.simpleMessage("Memory info"),
+    "memoryMetadata": MessageLookupByLibrary.simpleMessage("Runtime metadata"),
+    "memoryOther": MessageLookupByLibrary.simpleMessage("Other runtime memory"),
+    "memoryReadFailed": MessageLookupByLibrary.simpleMessage(
+      "Unable to read memory. Retrying…",
+    ),
+    "memoryStacks": MessageLookupByLibrary.simpleMessage("Stacks"),
+    "memoryTotal": MessageLookupByLibrary.simpleMessage("Go memory usage"),
     "messageTest": MessageLookupByLibrary.simpleMessage("Message test"),
     "messageTestTip": MessageLookupByLibrary.simpleMessage(
       "This is a message.",

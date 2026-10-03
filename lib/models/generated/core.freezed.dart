@@ -4056,4 +4056,298 @@ as List<String>,
 
 }
 
+
+/// @nodoc
+mixin _$CoreMemoryInfo {
+
+ int get sys; int get heapObjects; int get heapUnused; int get heapIdle; int get heapReleased; int get stacks; int get metadata; int get gc; int get other;
+/// Create a copy of CoreMemoryInfo
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CoreMemoryInfoCopyWith<CoreMemoryInfo> get copyWith => _$CoreMemoryInfoCopyWithImpl<CoreMemoryInfo>(this as CoreMemoryInfo, _$identity);
+
+  /// Serializes this CoreMemoryInfo to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as CoreMemoryInfo;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CoreMemoryInfo&&(identical(other.sys, _this.sys) || other.sys == _this.sys)&&(identical(other.heapObjects, _this.heapObjects) || other.heapObjects == _this.heapObjects)&&(identical(other.heapUnused, _this.heapUnused) || other.heapUnused == _this.heapUnused)&&(identical(other.heapIdle, _this.heapIdle) || other.heapIdle == _this.heapIdle)&&(identical(other.heapReleased, _this.heapReleased) || other.heapReleased == _this.heapReleased)&&(identical(other.stacks, _this.stacks) || other.stacks == _this.stacks)&&(identical(other.metadata, _this.metadata) || other.metadata == _this.metadata)&&(identical(other.gc, _this.gc) || other.gc == _this.gc)&&(identical(other.other, _this.other) || other.other == _this.other));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as CoreMemoryInfo;
+  return Object.hash(runtimeType,_this.sys,_this.heapObjects,_this.heapUnused,_this.heapIdle,_this.heapReleased,_this.stacks,_this.metadata,_this.gc,_this.other);
+}
+
+@override
+String toString() {
+  final _this = this as CoreMemoryInfo;
+  return 'CoreMemoryInfo(sys: ${_this.sys}, heapObjects: ${_this.heapObjects}, heapUnused: ${_this.heapUnused}, heapIdle: ${_this.heapIdle}, heapReleased: ${_this.heapReleased}, stacks: ${_this.stacks}, metadata: ${_this.metadata}, gc: ${_this.gc}, other: ${_this.other})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CoreMemoryInfoCopyWith<$Res>  {
+  factory $CoreMemoryInfoCopyWith(CoreMemoryInfo value, $Res Function(CoreMemoryInfo) _then) = _$CoreMemoryInfoCopyWithImpl;
+@useResult
+$Res call({
+ int sys, int heapObjects, int heapUnused, int heapIdle, int heapReleased, int stacks, int metadata, int gc, int other
+});
+
+
+
+
+}
+/// @nodoc
+class _$CoreMemoryInfoCopyWithImpl<$Res>
+    implements $CoreMemoryInfoCopyWith<$Res> {
+  _$CoreMemoryInfoCopyWithImpl(this._self, this._then);
+
+  final CoreMemoryInfo _self;
+  final $Res Function(CoreMemoryInfo) _then;
+
+/// Create a copy of CoreMemoryInfo
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? sys = null,Object? heapObjects = null,Object? heapUnused = null,Object? heapIdle = null,Object? heapReleased = null,Object? stacks = null,Object? metadata = null,Object? gc = null,Object? other = null,}) {
+  return _then(CoreMemoryInfo(
+sys: null == sys ? _self.sys : sys // ignore: cast_nullable_to_non_nullable
+as int,heapObjects: null == heapObjects ? _self.heapObjects : heapObjects // ignore: cast_nullable_to_non_nullable
+as int,heapUnused: null == heapUnused ? _self.heapUnused : heapUnused // ignore: cast_nullable_to_non_nullable
+as int,heapIdle: null == heapIdle ? _self.heapIdle : heapIdle // ignore: cast_nullable_to_non_nullable
+as int,heapReleased: null == heapReleased ? _self.heapReleased : heapReleased // ignore: cast_nullable_to_non_nullable
+as int,stacks: null == stacks ? _self.stacks : stacks // ignore: cast_nullable_to_non_nullable
+as int,metadata: null == metadata ? _self.metadata : metadata // ignore: cast_nullable_to_non_nullable
+as int,gc: null == gc ? _self.gc : gc // ignore: cast_nullable_to_non_nullable
+as int,other: null == other ? _self.other : other // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [CoreMemoryInfo].
+extension CoreMemoryInfoPatterns on CoreMemoryInfo {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _CoreMemoryInfo value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _CoreMemoryInfo() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _CoreMemoryInfo value)  $default,){
+final _that = this;
+switch (_that) {
+case _CoreMemoryInfo():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _CoreMemoryInfo value)?  $default,){
+final _that = this;
+switch (_that) {
+case _CoreMemoryInfo() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int sys,  int heapObjects,  int heapUnused,  int heapIdle,  int heapReleased,  int stacks,  int metadata,  int gc,  int other)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _CoreMemoryInfo() when $default != null:
+return $default(_that.sys,_that.heapObjects,_that.heapUnused,_that.heapIdle,_that.heapReleased,_that.stacks,_that.metadata,_that.gc,_that.other);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int sys,  int heapObjects,  int heapUnused,  int heapIdle,  int heapReleased,  int stacks,  int metadata,  int gc,  int other)  $default,) {final _that = this;
+switch (_that) {
+case _CoreMemoryInfo():
+return $default(_that.sys,_that.heapObjects,_that.heapUnused,_that.heapIdle,_that.heapReleased,_that.stacks,_that.metadata,_that.gc,_that.other);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int sys,  int heapObjects,  int heapUnused,  int heapIdle,  int heapReleased,  int stacks,  int metadata,  int gc,  int other)?  $default,) {final _that = this;
+switch (_that) {
+case _CoreMemoryInfo() when $default != null:
+return $default(_that.sys,_that.heapObjects,_that.heapUnused,_that.heapIdle,_that.heapReleased,_that.stacks,_that.metadata,_that.gc,_that.other);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _CoreMemoryInfo extends CoreMemoryInfo {
+  const _CoreMemoryInfo({this.sys = 0, this.heapObjects = 0, this.heapUnused = 0, this.heapIdle = 0, this.heapReleased = 0, this.stacks = 0, this.metadata = 0, this.gc = 0, this.other = 0}): super._();
+  factory _CoreMemoryInfo.fromJson(Map<String, dynamic> json) => _$CoreMemoryInfoFromJson(json);
+
+@override@JsonKey() final  int sys;
+@override@JsonKey() final  int heapObjects;
+@override@JsonKey() final  int heapUnused;
+@override@JsonKey() final  int heapIdle;
+@override@JsonKey() final  int heapReleased;
+@override@JsonKey() final  int stacks;
+@override@JsonKey() final  int metadata;
+@override@JsonKey() final  int gc;
+@override@JsonKey() final  int other;
+
+/// Create a copy of CoreMemoryInfo
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CoreMemoryInfoCopyWith<_CoreMemoryInfo> get copyWith => __$CoreMemoryInfoCopyWithImpl<_CoreMemoryInfo>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$CoreMemoryInfoToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CoreMemoryInfo&&(identical(other.sys, sys) || other.sys == sys)&&(identical(other.heapObjects, heapObjects) || other.heapObjects == heapObjects)&&(identical(other.heapUnused, heapUnused) || other.heapUnused == heapUnused)&&(identical(other.heapIdle, heapIdle) || other.heapIdle == heapIdle)&&(identical(other.heapReleased, heapReleased) || other.heapReleased == heapReleased)&&(identical(other.stacks, stacks) || other.stacks == stacks)&&(identical(other.metadata, metadata) || other.metadata == metadata)&&(identical(other.gc, gc) || other.gc == gc)&&(identical(other.other, this.other) || other.other == this.other));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,sys,heapObjects,heapUnused,heapIdle,heapReleased,stacks,metadata,gc,other);
+}
+
+@override
+String toString() {
+    return 'CoreMemoryInfo(sys: $sys, heapObjects: $heapObjects, heapUnused: $heapUnused, heapIdle: $heapIdle, heapReleased: $heapReleased, stacks: $stacks, metadata: $metadata, gc: $gc, other: $other)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CoreMemoryInfoCopyWith<$Res> implements $CoreMemoryInfoCopyWith<$Res> {
+  factory _$CoreMemoryInfoCopyWith(_CoreMemoryInfo value, $Res Function(_CoreMemoryInfo) _then) = __$CoreMemoryInfoCopyWithImpl;
+@override @useResult
+$Res call({
+ int sys, int heapObjects, int heapUnused, int heapIdle, int heapReleased, int stacks, int metadata, int gc, int other
+});
+
+
+
+
+}
+/// @nodoc
+class __$CoreMemoryInfoCopyWithImpl<$Res>
+    implements _$CoreMemoryInfoCopyWith<$Res> {
+  __$CoreMemoryInfoCopyWithImpl(this._self, this._then);
+
+  final _CoreMemoryInfo _self;
+  final $Res Function(_CoreMemoryInfo) _then;
+
+/// Create a copy of CoreMemoryInfo
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? sys = null,Object? heapObjects = null,Object? heapUnused = null,Object? heapIdle = null,Object? heapReleased = null,Object? stacks = null,Object? metadata = null,Object? gc = null,Object? other = null,}) {
+  return _then(_CoreMemoryInfo(
+sys: null == sys ? _self.sys : sys // ignore: cast_nullable_to_non_nullable
+as int,heapObjects: null == heapObjects ? _self.heapObjects : heapObjects // ignore: cast_nullable_to_non_nullable
+as int,heapUnused: null == heapUnused ? _self.heapUnused : heapUnused // ignore: cast_nullable_to_non_nullable
+as int,heapIdle: null == heapIdle ? _self.heapIdle : heapIdle // ignore: cast_nullable_to_non_nullable
+as int,heapReleased: null == heapReleased ? _self.heapReleased : heapReleased // ignore: cast_nullable_to_non_nullable
+as int,stacks: null == stacks ? _self.stacks : stacks // ignore: cast_nullable_to_non_nullable
+as int,metadata: null == metadata ? _self.metadata : metadata // ignore: cast_nullable_to_non_nullable
+as int,gc: null == gc ? _self.gc : gc // ignore: cast_nullable_to_non_nullable
+as int,other: null == other ? _self.other : other // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
 // dart format on

@@ -690,3 +690,25 @@ abstract class ProxiesData with _$ProxiesData {
   factory ProxiesData.fromJson(Map<String, Object?> json) =>
       _$ProxiesDataFromJson(json);
 }
+
+@freezed
+abstract class CoreMemoryInfo with _$CoreMemoryInfo {
+  const CoreMemoryInfo._();
+
+  const factory CoreMemoryInfo({
+    @Default(0) int sys,
+    @Default(0) int heapObjects,
+    @Default(0) int heapUnused,
+    @Default(0) int heapIdle,
+    @Default(0) int heapReleased,
+    @Default(0) int stacks,
+    @Default(0) int metadata,
+    @Default(0) int gc,
+    @Default(0) int other,
+  }) = _CoreMemoryInfo;
+
+  int get total => sys - heapReleased;
+
+  factory CoreMemoryInfo.fromJson(Map<String, dynamic> json) =>
+      _$CoreMemoryInfoFromJson(json);
+}

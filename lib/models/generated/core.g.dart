@@ -320,3 +320,29 @@ _ProxiesData _$ProxiesDataFromJson(Map<String, dynamic> json) => _ProxiesData(
 
 Map<String, dynamic> _$ProxiesDataToJson(_ProxiesData instance) =>
     <String, dynamic>{'proxies': instance.proxies, 'all': instance.all};
+
+_CoreMemoryInfo _$CoreMemoryInfoFromJson(Map<String, dynamic> json) =>
+    _CoreMemoryInfo(
+      sys: (json['sys'] as num?)?.toInt() ?? 0,
+      heapObjects: (json['heapObjects'] as num?)?.toInt() ?? 0,
+      heapUnused: (json['heapUnused'] as num?)?.toInt() ?? 0,
+      heapIdle: (json['heapIdle'] as num?)?.toInt() ?? 0,
+      heapReleased: (json['heapReleased'] as num?)?.toInt() ?? 0,
+      stacks: (json['stacks'] as num?)?.toInt() ?? 0,
+      metadata: (json['metadata'] as num?)?.toInt() ?? 0,
+      gc: (json['gc'] as num?)?.toInt() ?? 0,
+      other: (json['other'] as num?)?.toInt() ?? 0,
+    );
+
+Map<String, dynamic> _$CoreMemoryInfoToJson(_CoreMemoryInfo instance) =>
+    <String, dynamic>{
+      'sys': instance.sys,
+      'heapObjects': instance.heapObjects,
+      'heapUnused': instance.heapUnused,
+      'heapIdle': instance.heapIdle,
+      'heapReleased': instance.heapReleased,
+      'stacks': instance.stacks,
+      'metadata': instance.metadata,
+      'gc': instance.gc,
+      'other': instance.other,
+    };

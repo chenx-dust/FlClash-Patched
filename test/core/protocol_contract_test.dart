@@ -149,7 +149,17 @@ class _RecordingCoreHandler extends CoreHandlerInterface {
       },
       CoreMethod.convertAgeSecretKeyToPublicKey => 'age1public',
       CoreMethod.decryptAgeConfig => 'mode: rule',
-      CoreMethod.getMemory => 2048,
+      CoreMethod.getMemory => {
+        'sys': 4096,
+        'heapObjects': 1024,
+        'heapUnused': 256,
+        'heapIdle': 128,
+        'stacks': 256,
+        'metadata': 128,
+        'gc': 128,
+        'other': 128,
+        'heapReleased': 2048,
+      },
       CoreMethod.getGoroutineCount => 42,
       _ => '',
     };
@@ -397,7 +407,17 @@ void main() {
       await handler.decryptAgeConfig('encrypted', 'AGE-SECRET-KEY-1'),
       'mode: rule',
     );
-    expect(await handler.getMemory(), 2048);
+    final memory = await handler.getMemory();
+    expect(memory.total, 2048);
+    expect(memory.sys, 4096);
+    expect(memory.heapObjects, 1024);
+    expect(memory.heapUnused, 256);
+    expect(memory.heapIdle, 128);
+    expect(memory.stacks, 256);
+    expect(memory.metadata, 128);
+    expect(memory.gc, 128);
+    expect(memory.other, 128);
+    expect(memory.heapReleased, 2048);
     expect(await handler.getGoroutineCount(), 42);
   });
 

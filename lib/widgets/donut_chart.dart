@@ -1,15 +1,29 @@
 import 'dart:math';
 
 import 'package:fl_clash/common/common.dart';
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:material_ui/material_ui.dart';
 
 @immutable
 class DonutChartData {
   final double _value;
   final Color color;
+  final bool dashed;
+  final bool _exact;
 
-  const DonutChartData({required double value, required this.color})
-    : _value = value + 1;
+  const DonutChartData({
+    required double value,
+    required this.color,
+    this.dashed = false,
+  }) : _value = value + 1,
+       _exact = false;
+
+  const DonutChartData.exact({
+    required double value,
+    required this.color,
+    this.dashed = false,
+  }) : _value = value,
+       _exact = true;
 
   double get value => _value;
 
@@ -24,20 +38,24 @@ class DonutChartData {
       other is DonutChartData &&
           runtimeType == other.runtimeType &&
           _value == other._value &&
-          color == other.color;
+          color == other.color &&
+          dashed == other.dashed &&
+          _exact == other._exact;
 
   @override
-  int get hashCode => _value.hashCode ^ color.hashCode;
+  int get hashCode => Object.hash(_value, color, dashed, _exact);
 }
 
 class DonutChart extends StatefulWidget {
   final List<DonutChartData> data;
   final Duration duration;
+  final double gapScale;
 
   const DonutChart({
     super.key,
     required this.data,
     this.duration = commonDuration,
+    this.gapScale = 1.2,
   });
 
   @override
@@ -48,6 +66,7 @@ class _DonutChartState extends State<DonutChart>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late List<DonutChartData> _oldData;
+  List<_DonutArc>? _fromArcs;
 
   @override
   void initState() {
@@ -62,7 +81,16 @@ class _DonutChartState extends State<DonutChart>
   @override
   void didUpdateWidget(DonutChart oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.data != widget.data) {
+    if (!listEquals(oldWidget.data, widget.data)) {
+      _fromArcs = oldWidget.data.every((item) => item._exact)
+          ? DonutChartPainter._fromArcs(
+              _oldData,
+              oldWidget.data,
+              _animationController.value,
+              fromArcs: _fromArcs,
+              gapScale: oldWidget.gapScale,
+            )._interpolatedArcs
+          : null;
       _oldData = oldWidget.data;
       _animationController.forward(from: 0);
     }
@@ -80,10 +108,12 @@ class _DonutChartState extends State<DonutChart>
       animation: _animationController,
       builder: (context, child) {
         return CustomPaint(
-          painter: DonutChartPainter(
+          painter: DonutChartPainter._fromArcs(
             _oldData,
             widget.data,
             _animationController.value,
+            fromArcs: _fromArcs,
+            gapScale: widget.gapScale,
           ),
         );
       },
@@ -91,20 +121,92 @@ class _DonutChartState extends State<DonutChart>
   }
 }
 
+class _DonutArc {
+  const _DonutArc(
+    this.startTurns,
+    this.sweepTurns,
+    this.startGaps,
+    this.sweepGaps,
+  );
+
+  final double startTurns;
+  final double sweepTurns;
+  final double startGaps;
+  final double sweepGaps;
+
+  _DonutArc lerp(_DonutArc target, double progress) {
+    return _DonutArc(
+      startTurns + (target.startTurns - startTurns) * progress,
+      sweepTurns + (target.sweepTurns - sweepTurns) * progress,
+      startGaps + (target.startGaps - startGaps) * progress,
+      sweepGaps + (target.sweepGaps - sweepGaps) * progress,
+    );
+  }
+
+  static List<_DonutArc> layout(List<DonutChartData> data) {
+    final total = data.fold<double>(0, (sum, item) => sum + item.value);
+    final count = data.where((item) => item.value > 0).length;
+    var prefix = 0.0;
+    var preceding = 0;
+    final arcs = <_DonutArc>[];
+    for (final item in data) {
+      final share = total > 0 ? item.value / total : 0.0;
+      arcs.add(
+        _DonutArc(
+          prefix,
+          share,
+          count > 0 ? 0.5 + preceding - count * prefix : 0,
+          -count * share,
+        ),
+      );
+      prefix += share;
+      if (item.value > 0) {
+        preceding++;
+      }
+    }
+    return arcs;
+  }
+}
+
 class DonutChartPainter extends CustomPainter {
   final List<DonutChartData> oldData;
   final List<DonutChartData> newData;
   final double progress;
+  final double gapScale;
 
-  late final Paint _arcPaint;
+  final List<_DonutArc>? _fromArcs;
+  final Paint _arcPaint = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeCap = StrokeCap.round;
 
   List<DonutChartData>? _cachedInterpolatedData;
   double? _cachedProgress;
 
-  DonutChartPainter(this.oldData, this.newData, this.progress) {
-    _arcPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
+  DonutChartPainter(
+    this.oldData,
+    this.newData,
+    this.progress, {
+    this.gapScale = 1.2,
+  }) : _fromArcs = null;
+
+  DonutChartPainter._fromArcs(
+    this.oldData,
+    this.newData,
+    this.progress, {
+    required List<_DonutArc>? fromArcs,
+    required this.gapScale,
+  }) : _fromArcs = fromArcs;
+
+  List<_DonutArc> get _interpolatedArcs {
+    final target = _DonutArc.layout(newData);
+    final source = _fromArcs ?? _DonutArc.layout(oldData);
+    if (source.length != target.length) {
+      return target;
+    }
+    final t = Curves.easeInOutCubic.transform(progress);
+    return [
+      for (var i = 0; i < target.length; i++) source[i].lerp(target[i], t),
+    ];
   }
 
   static const _logBase = 10.0;
@@ -150,7 +252,17 @@ class DonutChartPainter extends CustomPainter {
       final interpolatedValue = _expTransform(interpolatedLogValue);
 
       result.add(
-        DonutChartData(value: interpolatedValue, color: newData[i].color),
+        newData[i]._exact
+            ? DonutChartData.exact(
+                value: interpolatedValue,
+                color: newData[i].color,
+                dashed: newData[i].dashed,
+              )
+            : DonutChartData(
+                value: interpolatedValue,
+                color: newData[i].color,
+                dashed: newData[i].dashed,
+              ),
       );
     }
 
@@ -161,50 +273,57 @@ class DonutChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final data = _interpolatedData;
+    final exact = newData.every((item) => item._exact);
+    final data = exact ? newData : _interpolatedData;
+    final arcs = exact ? _interpolatedArcs : _DonutArc.layout(data);
     if (data.isEmpty) return;
-
-    double total = 0;
-    for (final item in data) {
-      total += item.value;
-    }
-
-    if (total <= 0) return;
 
     final center = Offset(size.width / 2, size.height / 2);
     final strokeWidth = 10.0.ap;
     final radius = min(size.width / 2, size.height / 2) - strokeWidth / 2;
 
-    final gapAngle = 2 * asin(strokeWidth * 1 / (2 * radius)) * 1.2;
-    final availableAngle = 2 * pi - (data.length * gapAngle);
-    final totalInv = 1.0 / total;
-
-    double startAngle = -pi / 2 + gapAngle / 2;
-
+    final gapAngle = 2 * asin(strokeWidth * 1 / (2 * radius)) * gapScale;
     _arcPaint.strokeWidth = strokeWidth;
 
-    for (final item in data) {
-      final sweepAngle = availableAngle * (item.value * totalInv);
-
+    for (var index = 0; index < data.length; index++) {
+      final item = data[index];
+      final arc = arcs[index];
+      final startAngle =
+          -pi / 2 + arc.startTurns * 2 * pi + arc.startGaps * gapAngle;
+      final sweepAngle = arc.sweepTurns * 2 * pi + arc.sweepGaps * gapAngle;
       if (sweepAngle <= 0) continue;
 
       _arcPaint.color = item.color;
 
-      canvas.drawArc(
-        Rect.fromCircle(center: center, radius: radius),
-        startAngle,
-        sweepAngle,
-        false,
-        _arcPaint,
-      );
-
-      startAngle += sweepAngle + gapAngle;
+      final rect = Rect.fromCircle(center: center, radius: radius);
+      if (item.dashed) {
+        _arcPaint.style = PaintingStyle.fill;
+        final dotCount = max(
+          1,
+          (sweepAngle * radius / (strokeWidth * 2.1)).floor(),
+        );
+        final step = sweepAngle / dotCount;
+        for (var dot = 0; dot < dotCount; dot++) {
+          final angle = startAngle + (dot + 0.5) * step;
+          canvas.drawCircle(
+            center + Offset(cos(angle), sin(angle)) * radius,
+            min(strokeWidth * 0.4, sweepAngle * radius / 2),
+            _arcPaint,
+          );
+        }
+      } else {
+        _arcPaint.style = PaintingStyle.stroke;
+        _arcPaint.strokeCap = StrokeCap.round;
+        canvas.drawArc(rect, startAngle, sweepAngle, false, _arcPaint);
+      }
     }
   }
 
   @override
   bool shouldRepaint(DonutChartPainter oldDelegate) {
-    return oldDelegate.progress != progress ||
+    return oldDelegate.gapScale != gapScale ||
+        oldDelegate.progress != progress ||
+        oldDelegate._fromArcs != _fromArcs ||
         oldDelegate.oldData != oldData ||
         oldDelegate.newData != newData;
   }

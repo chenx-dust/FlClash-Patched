@@ -934,7 +934,30 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "maxLengthTip": m21,
     "maximize": MessageLookupByLibrary.simpleMessage("Развернуть"),
+    "memoryCleanup": MessageLookupByLibrary.simpleMessage("Очистить"),
+    "memoryGC": MessageLookupByLibrary.simpleMessage("Метаданные GC"),
+    "memoryHeapIdle": MessageLookupByLibrary.simpleMessage(
+      "Удерживаемая свободная куча",
+    ),
+    "memoryHeapObjects": MessageLookupByLibrary.simpleMessage("Объекты в куче"),
+    "memoryHeapReleased": MessageLookupByLibrary.simpleMessage("Возвращено ОС"),
+    "memoryHeapUnused": MessageLookupByLibrary.simpleMessage(
+      "Свободное место в блоках кучи",
+    ),
     "memoryInfo": MessageLookupByLibrary.simpleMessage("Память"),
+    "memoryMetadata": MessageLookupByLibrary.simpleMessage(
+      "Метаданные среды выполнения",
+    ),
+    "memoryOther": MessageLookupByLibrary.simpleMessage(
+      "Прочая память среды выполнения",
+    ),
+    "memoryReadFailed": MessageLookupByLibrary.simpleMessage(
+      "Не удалось прочитать данные памяти. Повторная попытка…",
+    ),
+    "memoryStacks": MessageLookupByLibrary.simpleMessage("Стеки"),
+    "memoryTotal": MessageLookupByLibrary.simpleMessage(
+      "Использование памяти Go",
+    ),
     "messageTest": MessageLookupByLibrary.simpleMessage("Тест сообщения"),
     "messageTestTip": MessageLookupByLibrary.simpleMessage("Это сообщение."),
     "min": MessageLookupByLibrary.simpleMessage("Минимальный"),

@@ -832,5 +832,16 @@
   "recvMsgX": "Включить RecvMsgX",
   "recvMsgXDesc": "Пакетный приём пакетов в Darwin",
   "sendMsgX": "Включить SendMsgX",
-  "sendMsgXDesc": "Пакетная отправка пакетов в Darwin"
+  "sendMsgXDesc": "Пакетная отправка пакетов в Darwin",
+  "memoryHeapObjects": "Объекты в куче",
+  "memoryHeapUnused": "Свободное место в блоках кучи",
+  "memoryHeapIdle": "Удерживаемая свободная куча",
+  "memoryHeapReleased": "Возвращено ОС",
+  "memoryStacks": "Стеки",
+  "memoryMetadata": "Метаданные среды выполнения",
+  "memoryGC": "Метаданные GC",
+  "memoryOther": "Прочая память среды выполнения",
+  "memoryTotal": "Использование памяти Go",
+  "memoryCleanup": "Очистить",
+  "memoryReadFailed": "Не удалось прочитать данные памяти. Повторная попытка…"
 }

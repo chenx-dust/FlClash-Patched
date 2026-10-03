@@ -832,5 +832,16 @@
   "recvMsgX": "RecvMsgX を有効にする",
   "recvMsgXDesc": "Darwin でパケットを一括受信",
   "sendMsgX": "SendMsgX を有効にする",
-  "sendMsgXDesc": "Darwin でパケットを一括送信"
+  "sendMsgXDesc": "Darwin でパケットを一括送信",
+  "memoryHeapObjects": "ヒープオブジェクト",
+  "memoryHeapUnused": "ヒープ内の未使用領域",
+  "memoryHeapIdle": "保持された空きヒープ",
+  "memoryHeapReleased": "OS に返却済み",
+  "memoryStacks": "スタック",
+  "memoryMetadata": "ランタイムメタデータ",
+  "memoryGC": "GC メタデータ",
+  "memoryOther": "その他のランタイムメモリ",
+  "memoryTotal": "Go メモリ使用量",
+  "memoryCleanup": "クリーンアップ",
+  "memoryReadFailed": "メモリを読み取れません。再試行中…"
 }

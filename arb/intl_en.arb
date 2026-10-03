@@ -832,5 +832,16 @@
   "recvMsgX": "Enable RecvMsgX",
   "recvMsgXDesc": "Receive packets in batches on Darwin",
   "sendMsgX": "Enable SendMsgX",
-  "sendMsgXDesc": "Send packets in batches on Darwin"
+  "sendMsgXDesc": "Send packets in batches on Darwin",
+  "memoryHeapObjects": "Heap objects",
+  "memoryHeapUnused": "Unused heap spans",
+  "memoryHeapIdle": "Retained idle heap",
+  "memoryHeapReleased": "Returned to OS",
+  "memoryStacks": "Stacks",
+  "memoryMetadata": "Runtime metadata",
+  "memoryGC": "GC metadata",
+  "memoryOther": "Other runtime memory",
+  "memoryTotal": "Go memory usage",
+  "memoryCleanup": "Clean up",
+  "memoryReadFailed": "Unable to read memory. Retrying…"
 }

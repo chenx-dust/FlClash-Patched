@@ -105,7 +105,7 @@ void main() {
   test('calls that legitimately degrade are left alone', () async {
     expect(await core.isInit, isFalse);
     expect(await core.forceGc(), isFalse);
-    expect(await core.getMemory(), 0);
+    expect((await core.getMemory()).total, 0);
     expect(await core.getExternalProviders(), isEmpty);
     expect(await core.getExternalProvider('p'), isNull);
   });

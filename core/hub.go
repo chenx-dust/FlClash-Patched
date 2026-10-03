@@ -1102,10 +1102,10 @@ func cacheDnsQuery(query DnsQuery) {
 	dnsNotifyStart = (dnsNotifyStart + 1) % maxCachedDnsNotify
 }
 
-func handleGetMemory() uint64 {
-	var memStats runtime.MemStats
-	runtime.ReadMemStats(&memStats)
-	return memStats.Sys - memStats.HeapReleased
+func handleGetMemory() MemoryInfo {
+	var stats runtime.MemStats
+	runtime.ReadMemStats(&stats)
+	return memoryInfoFromStats(stats)
 }
 
 func handleGetGoroutineCount() int {

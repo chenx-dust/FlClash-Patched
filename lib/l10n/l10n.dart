@@ -6949,6 +6949,101 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `Heap objects`
+  String get memoryHeapObjects {
+    return Intl.message(
+      'Heap objects',
+      name: 'memoryHeapObjects',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unused heap spans`
+  String get memoryHeapUnused {
+    return Intl.message(
+      'Unused heap spans',
+      name: 'memoryHeapUnused',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Retained idle heap`
+  String get memoryHeapIdle {
+    return Intl.message(
+      'Retained idle heap',
+      name: 'memoryHeapIdle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Returned to OS`
+  String get memoryHeapReleased {
+    return Intl.message(
+      'Returned to OS',
+      name: 'memoryHeapReleased',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Stacks`
+  String get memoryStacks {
+    return Intl.message('Stacks', name: 'memoryStacks', desc: '', args: []);
+  }
+
+  /// `Runtime metadata`
+  String get memoryMetadata {
+    return Intl.message(
+      'Runtime metadata',
+      name: 'memoryMetadata',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `GC metadata`
+  String get memoryGC {
+    return Intl.message('GC metadata', name: 'memoryGC', desc: '', args: []);
+  }
+
+  /// `Other runtime memory`
+  String get memoryOther {
+    return Intl.message(
+      'Other runtime memory',
+      name: 'memoryOther',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Go memory usage`
+  String get memoryTotal {
+    return Intl.message(
+      'Go memory usage',
+      name: 'memoryTotal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Clean up`
+  String get memoryCleanup {
+    return Intl.message('Clean up', name: 'memoryCleanup', desc: '', args: []);
+  }
+
+  /// `Unable to read memory. Retrying…`
+  String get memoryReadFailed {
+    return Intl.message(
+      'Unable to read memory. Retrying…',
+      name: 'memoryReadFailed',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {
