@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/test_app.dart';
+import '../plugins/code_forge/support.dart';
 
 ProviderContainer _containerFor(WidgetTester tester) {
   const size = Size(1400, 1000);
@@ -26,6 +27,7 @@ ProviderContainer _containerFor(WidgetTester tester) {
 }
 
 void main() {
+  setUpAll(initEditorNative);
   testWidgets('lists new, QR code, file, and URL entries', (tester) async {
     final container = _containerFor(tester);
 

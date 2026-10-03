@@ -101,4 +101,43 @@ void main() {
       expect(scrollBar.padding, EdgeInsets.zero);
     },
   );
+
+  testWidgets('the hint follows a forward scrollbar thumb', (tester) async {
+    final controller = ScrollController();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(
+      TestApp(
+        child: SizedBox(
+          width: 300,
+          height: 400,
+          child: FloatingScrollbar(
+            controller: controller,
+            hintBuilder: (_) => 'line',
+            child: ListView.builder(
+              controller: controller,
+              itemCount: 100,
+              itemBuilder: (_, index) =>
+                  SizedBox(height: 40, child: Text('$index')),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.byType(Scrollable)),
+    );
+    await gesture.moveBy(const Offset(0, -40));
+    await tester.pump();
+
+    final scrollable = tester.getRect(find.byType(Scrollable));
+    expect(
+      tester.getCenter(find.byKey(const ValueKey('scrollbarHintPill'))).dy,
+      lessThan(scrollable.center.dy),
+    );
+
+    await gesture.up();
+    await tester.pump(const Duration(milliseconds: 600));
+  });
 }

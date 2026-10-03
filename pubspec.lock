@@ -225,6 +225,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.12.0"
+  code_forge:
+    dependency: "direct main"
+    description:
+      path: "plugins/code_forge"
+      relative: true
+    source: path
+    version: "10.14.0"
   collection:
     dependency: "direct main"
     description:
@@ -765,22 +772,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
-  isolate_contactor:
-    dependency: transitive
-    description:
-      name: isolate_contactor
-      sha256: "6ba8434ceb58238a1389d6365111a3efe7baa1c68a66f4db6d63d351cf6c3a0f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.1.0"
-  isolate_manager:
-    dependency: transitive
-    description:
-      name: isolate_manager
-      sha256: "22ed0c25f80ec3b5f21e3a55d060f4650afff33f27c2dff34c0f9409d5759ae5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.1.5+1"
   jni:
     dependency: transitive
     description:
@@ -1157,14 +1148,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.6.0"
-  re_editor:
-    dependency: "direct main"
-    description:
-      name: re_editor
-      sha256: "66671c4774a6b4c5254c9a53ab35a083e7e7da9ae371c519bcf491c70a2a4e56"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.10.0"
   re_highlight:
     dependency: "direct main"
     description:
@@ -1856,5 +1839,5 @@ packages:
     source: git
     version: "2.1.0"
 sdks:
-  dart: ">=3.13.0 <4.0.0"
-  flutter: ">=3.44.0"
+  dart: ">=3.13.2 <4.0.0"
+  flutter: ">=3.47.2"

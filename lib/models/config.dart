@@ -117,6 +117,13 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default('') String customUserAgent,
     @Default(defaultForegroundTickerInterval) int foregroundTickerInterval,
     @Default(true) bool foregroundTickerIdleWhenUnfocused,
+    @Default(false) bool editorLineWrap,
+    @Default(EditorFontSize.standard)
+    @JsonKey(unknownEnumValue: EditorFontSize.standard)
+    EditorFontSize editorFontSize,
+    @Default(EditorLineHeight.standard)
+    @JsonKey(unknownEnumValue: EditorLineHeight.standard)
+    EditorLineHeight editorLineHeight,
     @Default(defaultForegroundTickerIdleInterval)
     int foregroundTickerIdleInterval,
   }) = _AppSettingProps;

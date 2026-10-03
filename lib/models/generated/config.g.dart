@@ -50,6 +50,21 @@ _AppSettingProps _$AppSettingPropsFromJson(Map<String, dynamic> json) =>
           defaultForegroundTickerInterval,
       foregroundTickerIdleWhenUnfocused:
           json['foregroundTickerIdleWhenUnfocused'] as bool? ?? true,
+      editorLineWrap: json['editorLineWrap'] as bool? ?? false,
+      editorFontSize:
+          $enumDecodeNullable(
+            _$EditorFontSizeEnumMap,
+            json['editorFontSize'],
+            unknownValue: EditorFontSize.standard,
+          ) ??
+          EditorFontSize.standard,
+      editorLineHeight:
+          $enumDecodeNullable(
+            _$EditorLineHeightEnumMap,
+            json['editorLineHeight'],
+            unknownValue: EditorLineHeight.standard,
+          ) ??
+          EditorLineHeight.standard,
       foregroundTickerIdleInterval:
           (json['foregroundTickerIdleInterval'] as num?)?.toInt() ??
           defaultForegroundTickerIdleInterval,
@@ -89,12 +104,28 @@ Map<String, dynamic> _$AppSettingPropsToJson(_AppSettingProps instance) =>
       'foregroundTickerInterval': instance.foregroundTickerInterval,
       'foregroundTickerIdleWhenUnfocused':
           instance.foregroundTickerIdleWhenUnfocused,
+      'editorLineWrap': instance.editorLineWrap,
+      'editorFontSize': _$EditorFontSizeEnumMap[instance.editorFontSize]!,
+      'editorLineHeight': _$EditorLineHeightEnumMap[instance.editorLineHeight]!,
       'foregroundTickerIdleInterval': instance.foregroundTickerIdleInterval,
     };
 
 const _$RestoreStrategyEnumMap = {
   RestoreStrategy.compatible: 'compatible',
   RestoreStrategy.override: 'override',
+};
+
+const _$EditorFontSizeEnumMap = {
+  EditorFontSize.small: 'small',
+  EditorFontSize.standard: 'standard',
+  EditorFontSize.large: 'large',
+  EditorFontSize.extraLarge: 'extraLarge',
+};
+
+const _$EditorLineHeightEnumMap = {
+  EditorLineHeight.small: 'small',
+  EditorLineHeight.standard: 'standard',
+  EditorLineHeight.large: 'large',
 };
 
 const _$DashboardWidgetEnumMap = {

@@ -241,7 +241,7 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
               script: script,
             );
           },
-          languages: const [Language.javaScript],
+          language: Language.javaScript,
           content: raw,
         ),
       ),

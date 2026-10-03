@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/test_app.dart';
+import '../plugins/code_forge/support.dart';
 
 class _StubSetupAction extends SetupAction {
   static String yaml = '';
@@ -23,6 +24,7 @@ class _StubSetupAction extends SetupAction {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(initEditorNative);
 
   late ProviderContainer container;
 

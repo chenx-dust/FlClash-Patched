@@ -2725,6 +2725,66 @@ class AppLocalizations {
     return Intl.message('Redo', name: 'redo', desc: '', args: []);
   }
 
+  /// `Word wrap`
+  String get lineWrap {
+    return Intl.message('Word wrap', name: 'lineWrap', desc: '', args: []);
+  }
+
+  /// `Replace`
+  String get replace {
+    return Intl.message('Replace', name: 'replace', desc: '', args: []);
+  }
+
+  /// `Replace all`
+  String get replaceAll {
+    return Intl.message('Replace all', name: 'replaceAll', desc: '', args: []);
+  }
+
+  /// `Could not write to the clipboard`
+  String get clipboardWriteFailed {
+    return Intl.message(
+      'Could not write to the clipboard',
+      name: 'clipboardWriteFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Editor unavailable`
+  String get editorUnavailable {
+    return Intl.message(
+      'Editor unavailable',
+      name: 'editorUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Size`
+  String get fontSize {
+    return Intl.message('Size', name: 'fontSize', desc: '', args: []);
+  }
+
+  /// `Line spacing`
+  String get lineHeight {
+    return Intl.message('Line spacing', name: 'lineHeight', desc: '', args: []);
+  }
+
+  /// `Small`
+  String get small {
+    return Intl.message('Small', name: 'small', desc: '', args: []);
+  }
+
+  /// `Large`
+  String get large {
+    return Intl.message('Large', name: 'large', desc: '', args: []);
+  }
+
+  /// `Extra large`
+  String get extraLarge {
+    return Intl.message('Extra large', name: 'extraLarge', desc: '', args: []);
+  }
+
   /// `None`
   String get none {
     return Intl.message('None', name: 'none', desc: '', args: []);

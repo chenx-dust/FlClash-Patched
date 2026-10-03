@@ -1,111 +1,59 @@
+import 'package:code_forge/code_forge.dart';
 import 'package:fl_clash/pages/editor.dart';
 import 'package:fl_clash/providers/app.dart';
-import 'package:fl_clash/widgets/widgets.dart';
-import 'package:material_symbols_icons/symbols.dart';
+import 'package:flutter/gestures.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:re_editor/re_editor.dart';
 
 import '../helpers/test_app.dart';
+import '../plugins/code_forge/support.dart';
 
 final _viewSizeOverride = viewSizeProvider.overrideWithBuild(
   (_, _) => const Size(1200, 1000),
 );
 
 void main() {
-  testWidgets('allows predictive pop while guarded content is unchanged', (
+  setUpAll(initEditorNative);
+
+  testWidgets('mounts after the route settles and tracks edits', (
     tester,
   ) async {
     await tester.pumpWidget(
       TestApp(
         overrides: [_viewSizeOverride],
-        child: const EditorPage(title: 'Editor', content: ''),
+        child: const EditorPage(title: 'Editor', content: 'name: a'),
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    expect(
-      tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
-      isTrue,
-    );
+    final view = tester.state<EditorViewState>(find.byType(EditorView));
+    expect(view.isModified, isFalse);
 
-    await tester.pumpWidget(
-      TestApp(
-        overrides: [_viewSizeOverride],
-        child: EditorPage(
-          title: 'Editor',
-          content: '',
-          onPop: (context, title, content) async => true,
-        ),
-      ),
-    );
-    await tester.pump();
-
-    expect(
-      tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
-      isTrue,
-    );
-
-    final controller = tester
-        .widget<CodeEditor>(find.byType(CodeEditor))
-        .controller!;
-    controller.text = 'changed';
-    await tester.pump();
-
-    expect(
-      tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
-      isFalse,
-    );
-
-    controller.text = '';
-    await tester.pump();
-
-    expect(
-      tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
-      isTrue,
-    );
+    tester.widget<CodeForge>(find.byType(CodeForge)).controller.text =
+        'name: b';
+    expect(view.isModified, isTrue);
   });
 
-  testWidgets('import from URL shows a translated error with HTTP status', (
+  testWidgets('right click keeps the menu open under the pointer', (
     tester,
   ) async {
     await tester.pumpWidget(
       TestApp(
         overrides: [_viewSizeOverride],
-        child: const EditorPage(
-          title: 'Editor',
-          content: '',
-          onSave: _noopSave,
-          supportRemoteDownload: true,
-        ),
+        child: const EditorPage(title: 'Editor', content: 'name: a'),
       ),
     );
-    await tester.pump();
-
-    await tester.tap(find.byIcon(Symbols.more_vert));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('External fetch'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Import from URL'));
     await tester.pumpAndSettle();
 
-    await tester.enterText(
-      find.byType(TextFormField),
-      'http://127.0.0.1/anything',
-    );
-    await tester.tap(find.text('Submit'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
-    await tester.pump(const Duration(milliseconds: 100));
+    final editor = find.byType(CodeForge);
+    final click = tester.getCenter(editor);
+    await tester.tap(editor, buttons: kSecondaryButton);
+    await tester.pumpAndSettle();
 
-    // flutter_test's mocked HttpClient answers with HTTP 400.
-    expect(
-      find.text(
-        'Network error, please check your connection and try again [400]',
-      ),
-      findsOneWidget,
-    );
+    expect(find.text('Select all'), findsOneWidget);
+    final item = tester.getTopLeft(find.text('Select all'));
+    expect(item.dx, greaterThan(click.dx));
+    expect(item.dx, lessThan(click.dx + 120));
+    expect(item.dy, greaterThan(click.dy));
   });
 }
-
-void _noopSave(BuildContext context, String title, String content) {}

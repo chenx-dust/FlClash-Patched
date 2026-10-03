@@ -161,11 +161,14 @@ class _FloatingScrollbarState extends State<FloatingScrollbar> {
           )
         : 1.0;
     // Material scrollbar defaults: 48px min thumb length, no main-axis
-    // margin. Reversed lists place the thumb at (1 - fraction).
+    // margin. An upward axis (a reversed list) pins fraction 0 to the
+    // bottom of the track; a downward axis pins it to the top.
     final thumbExtent = max(48.0, track * fractionVisible).clamp(0.0, track);
-    return padding.top +
-        (1 - fraction) * (track - thumbExtent) +
-        thumbExtent / 2;
+    final alongAxis = switch (metrics.axisDirection) {
+      AxisDirection.up || AxisDirection.left => 1 - fraction,
+      AxisDirection.down || AxisDirection.right => fraction,
+    };
+    return padding.top + alongAxis * (track - thumbExtent) + thumbExtent / 2;
   }
 
   @override

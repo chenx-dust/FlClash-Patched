@@ -35,6 +35,9 @@ extension BuildContextExtension on BuildContext {
     }
   }
 
+  // This scaffold paints the app bar outside the body, so nothing overlays it.
+  double get appBarInset => 0;
+
   double get sheetTopPadding {
     final sheetType = SheetProvider.of(this)!.type;
     if (sheetType == SheetType.bottomSheet) {

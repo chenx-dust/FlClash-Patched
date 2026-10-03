@@ -76,6 +76,8 @@ class _CommonCircleLoadingState extends State<CommonCircleLoading>
 
   var _currentMorphIndex = 0;
   var _morphRotationTargetAngle = _quarterRotation;
+  Timer? _morphWait;
+  Completer<void>? _morphWaitDone;
 
   @override
   void initState() {
@@ -94,6 +96,11 @@ class _CommonCircleLoadingState extends State<CommonCircleLoading>
 
   @override
   void dispose() {
+    _morphWait?.cancel();
+    final waitDone = _morphWaitDone;
+    if (waitDone != null && !waitDone.isCompleted) {
+      waitDone.complete();
+    }
     _morphController.dispose();
     _globalRotationController.dispose();
     super.dispose();
@@ -243,7 +250,14 @@ class _CommonCircleLoadingState extends State<CommonCircleLoading>
 
       final elapsed = DateTime.now().difference(startedAt);
       if (elapsed < _morphInterval) {
-        await Future<void>.delayed(_morphInterval - elapsed);
+        final wait = Completer<void>();
+        _morphWaitDone = wait;
+        _morphWait = Timer(_morphInterval - elapsed, () {
+          if (!wait.isCompleted) {
+            wait.complete();
+          }
+        });
+        await wait.future;
       }
       if (!mounted) {
         return;

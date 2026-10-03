@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:animations/animations.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:material_ui/material_ui.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -9,6 +12,31 @@ class BaseNavigator {
       context,
     ).push<T>(CommonRoute(builder: (context) => child));
   }
+}
+
+// Work a page starts on arrival drops frames while the route still animates.
+Future<void> whenRouteSettled(BuildContext context) async {
+  final route = ModalRoute.of(context);
+  // HeroController builds a pushed route offstage for its first frame, with
+  // the animation pinned to completed, so it only tells the truth after that.
+  while (route != null && route.offstage && route.isActive) {
+    await SchedulerBinding.instance.endOfFrame;
+  }
+  final animation = route?.animation;
+  if (animation == null || !animation.isAnimating) {
+    return;
+  }
+  final completer = Completer<void>();
+  void handleStatus(AnimationStatus status) {
+    if (status.isAnimating) {
+      return;
+    }
+    animation.removeStatusListener(handleStatus);
+    completer.complete();
+  }
+
+  animation.addStatusListener(handleStatus);
+  return completer.future;
 }
 
 const commonSharedXPageTransitions = SharedAxisPageTransitionsBuilder(

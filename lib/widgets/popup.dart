@@ -13,6 +13,10 @@ const _screenMargin = 16.0;
 
 const _anchorOverlap = 8.0;
 
+const _avoidGap = 8.0;
+
+enum PopupPlacement { overAnchorEnd, belowPoint }
+
 const _cardInset = 8.0;
 
 const _itemRadius = AppCorner.md;
@@ -35,10 +39,17 @@ class CommonPopupRoute<T> extends PopupRoute<T> {
     required this.builder,
     required this.anchorOf,
     required this.barrierLabel,
+    this.placement = PopupPlacement.overAnchorEnd,
+    this.avoid,
+    super.requestFocus,
   });
 
   final WidgetBuilder builder;
   final PopupAnchorResolver anchorOf;
+  final PopupPlacement placement;
+
+  /// A rect the popup keeps clear of when there is room above or below it.
+  final Rect? avoid;
 
   @override
   final String? barrierLabel;
@@ -81,7 +92,9 @@ class CommonPopupRoute<T> extends PopupRoute<T> {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    const alignment = Alignment.topRight;
+    final alignment = placement == PopupPlacement.belowPoint
+        ? Alignment.topLeft
+        : Alignment.topRight;
     final fade = animation.drive(CurveTween(curve: Curves.easeOut));
     final scale = animation.drive(CurveTween(curve: Curves.easeOutBack));
     return Stack(
@@ -99,6 +112,8 @@ class CommonPopupRoute<T> extends PopupRoute<T> {
             delegate: _PopupLayoutDelegate(
               anchor: anchor,
               safeInsets: safeInsets,
+              placement: placement,
+              avoid: avoid,
             ),
             child: child,
           ),
@@ -176,10 +191,17 @@ class _PopupAnchorTrackerState extends State<_PopupAnchorTracker> {
 }
 
 class _PopupLayoutDelegate extends SingleChildLayoutDelegate {
-  const _PopupLayoutDelegate({required this.anchor, required this.safeInsets});
+  const _PopupLayoutDelegate({
+    required this.anchor,
+    required this.safeInsets,
+    required this.placement,
+    this.avoid,
+  });
 
   final Rect anchor;
   final EdgeInsets safeInsets;
+  final PopupPlacement placement;
+  final Rect? avoid;
 
   EdgeInsets get _insets => safeInsets + const EdgeInsets.all(_screenMargin);
 
@@ -202,21 +224,46 @@ class _PopupLayoutDelegate extends SingleChildLayoutDelegate {
     final insets = _insets;
     final maxX = size.width - insets.right - childSize.width;
     final maxY = size.height - insets.bottom - childSize.height;
+    final (x, y) = switch (placement) {
+      PopupPlacement.overAnchorEnd => (
+        anchor.right - childSize.width,
+        anchor.top - _anchorOverlap,
+      ),
+      PopupPlacement.belowPoint => (
+        anchor.left,
+        _yBelowPoint(childSize.height, insets.top, maxY),
+      ),
+    };
     return Offset(
-      (anchor.right - childSize.width).clamp(
-        insets.left,
-        math.max(insets.left, maxX),
-      ),
-      (anchor.top - _anchorOverlap).clamp(
-        insets.top,
-        math.max(insets.top, maxY),
-      ),
+      x.clamp(insets.left, math.max(insets.left, maxX)),
+      y.clamp(insets.top, math.max(insets.top, maxY)),
     );
+  }
+
+  double _yBelowPoint(double height, double minY, double maxY) {
+    final avoid = this.avoid;
+    if (avoid != null) {
+      final above = avoid.top - _avoidGap - height;
+      if (above >= minY) {
+        return above;
+      }
+      final below = avoid.bottom + _avoidGap;
+      if (below <= maxY) {
+        return below;
+      }
+    }
+    if (anchor.bottom > maxY && anchor.top - height >= minY) {
+      return anchor.top - height;
+    }
+    return anchor.bottom;
   }
 
   @override
   bool shouldRelayout(_PopupLayoutDelegate oldDelegate) {
-    return oldDelegate.anchor != anchor || oldDelegate.safeInsets != safeInsets;
+    return oldDelegate.anchor != anchor ||
+        oldDelegate.safeInsets != safeInsets ||
+        oldDelegate.placement != placement ||
+        oldDelegate.avoid != avoid;
   }
 }
 
@@ -305,6 +352,7 @@ class CommonPopupMenuItem {
     this.icon,
     this.onPressed,
     this.danger = false,
+    this.checked = false,
     this.subItems = const [],
   });
 
@@ -312,6 +360,7 @@ class CommonPopupMenuItem {
   final IconData? icon;
   final VoidCallback? onPressed;
   final bool danger;
+  final bool checked;
   final List<CommonPopupMenuItem> subItems;
 }
 
@@ -545,6 +594,10 @@ class _CommonPopupMenuState extends State<CommonPopupMenu>
                 ),
               ),
             ),
+            if (item.checked) ...[
+              const SizedBox(width: 8),
+              Icon(Symbols.check, size: _itemIconSize, color: foregroundColor),
+            ],
             if (arrow != null) ...[const SizedBox(width: 8), arrow],
           ],
         ),

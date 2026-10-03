@@ -100,6 +100,7 @@ class _ProviderEditorViewState extends ConsumerState<ProviderEditorView> {
           key: const Key('content'),
           title: widget.provider.name,
           content: content,
+          schema: EditorSchema.provider,
           onSave: widget.editable ? _handleSave : null,
           onPop: widget.editable ? _handlePop : null,
         );
