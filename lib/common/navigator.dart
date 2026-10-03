@@ -51,6 +51,48 @@ class CommonRoute<T> extends MaterialPageRoute<T> {
 
   @override
   T? get currentResult => _currentResult ?? super.currentResult;
+
+  @override
+  bool canTransitionFrom(TransitionRoute<dynamic> previousRoute) {
+    // A Material route would also run this transparent exit on the page below.
+    final context = navigator?.context;
+    if (context != null && _usesTransparentSharedAxis(context)) {
+      return false;
+    }
+    return super.canTransitionFrom(previousRoute);
+  }
+
+  @override
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    if (_usesTransparentSharedAxis(context)) {
+      return SharedAxisTransition(
+        animation: animation,
+        secondaryAnimation: secondaryAnimation,
+        transitionType: SharedAxisTransitionType.horizontal,
+        fillColor: Theme.of(context).colorScheme.surface,
+        child: child,
+      );
+    }
+    return super.buildTransitions(
+      context,
+      animation,
+      secondaryAnimation,
+      child,
+    );
+  }
+
+  bool _usesTransparentSharedAxis(BuildContext context) {
+    final theme = Theme.of(context);
+    return identical(
+      theme.pageTransitionsTheme.builders[theme.platform],
+      commonSharedXPageTransitions,
+    );
+  }
 }
 
 final Animatable<Offset> _kRightMiddleTween = Tween<Offset>(
