@@ -316,21 +316,18 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
             ),
             child: Form(
               key: _formKey,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Builder(
-                  builder: (context) => ListView.separated(
-                    padding: kMaterialListPadding.copyWith(
-                      bottom: BottomInsetScope.of(context),
-                    ),
-                    itemBuilder: (_, index) {
-                      return items[index];
-                    },
-                    separatorBuilder: (_, _) {
-                      return const SizedBox(height: 24);
-                    },
-                    itemCount: items.length,
+              child: Builder(
+                builder: (context) => ListView.separated(
+                  padding: kMaterialListPadding.copyWith(
+                    bottom: BottomInsetScope.of(context),
                   ),
+                  itemBuilder: (_, index) {
+                    return items[index];
+                  },
+                  separatorBuilder: (_, _) {
+                    return const SizedBox(height: 24);
+                  },
+                  itemCount: items.length,
                 ),
               ),
             ),

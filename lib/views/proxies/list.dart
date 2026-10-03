@@ -584,10 +584,7 @@ class _GroupIcon extends ConsumerWidget {
         margin: const EdgeInsets.only(left: 2, right: 10),
         child: LayoutBuilder(
           builder: (_, constraints) {
-            return _buildIconContent(
-              constraints.maxHeight - 16.ap,
-              iconSource,
-            );
+            return _buildIconContent(constraints.maxHeight - 16.ap, iconSource);
           },
         ),
       ),

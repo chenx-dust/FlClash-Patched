@@ -251,7 +251,24 @@ class _GeoResourceListItemState extends ConsumerState<_GeoResourceListItem> {
               : () {
                   _updateUrl(url);
                 },
-          title: Text(widget.type.name),
+          title: Row(
+            children: [
+              Text(widget.type.name),
+              if (url != null) ...[
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    url,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: context.colorScheme.onSurface.opacity60,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
           subtitle: fileInfo == null
               ? null
               : Padding(

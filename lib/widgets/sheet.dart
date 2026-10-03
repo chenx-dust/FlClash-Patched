@@ -313,6 +313,8 @@ class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
         : context.colorScheme.surface;
     final appBar = AppBar(
       backgroundColor: backgroundColor,
+      surfaceTintColor: Colors.transparent,
+
       forceMaterialTransparency: isBottomSheet,
       automaticallyImplyLeading: false,
       leading: popAsSuffix ? null : Center(child: popButton),
