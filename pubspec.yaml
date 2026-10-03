@@ -112,7 +112,6 @@ flutter:
     - assets/data/
     - assets/fonts/
     - assets/images/
-    - assets/images/avatar/
     - assets/images/empty/
     - path: assets/images/tray/unix/
       platforms: [ macos, linux ]

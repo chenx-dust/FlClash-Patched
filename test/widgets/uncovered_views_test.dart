@@ -158,6 +158,8 @@ void main() {
 
     expect(find.byType(AboutView), findsOneWidget);
     expect(find.text('Telegram'), findsNothing);
+    expect(find.text('Auto check for updates'), findsOneWidget);
+    expect(find.text('Check for updates'), findsOneWidget);
     expect(tester.takeException(), null);
 
     final scrollables = find.byType(Scrollable);

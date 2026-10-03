@@ -834,7 +834,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "optional": MessageLookupByLibrary.simpleMessage("任意"),
     "options": MessageLookupByLibrary.simpleMessage("オプション"),
     "other": MessageLookupByLibrary.simpleMessage("その他"),
-    "otherContributors": MessageLookupByLibrary.simpleMessage("その他の貢献者"),
     "outboundMode": MessageLookupByLibrary.simpleMessage("アウトバウンドモード"),
     "override": MessageLookupByLibrary.simpleMessage("上書き"),
     "overrideDns": MessageLookupByLibrary.simpleMessage("DNS 上書き"),

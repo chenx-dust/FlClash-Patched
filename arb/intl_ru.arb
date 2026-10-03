@@ -205,7 +205,6 @@
   "proxyGroup": "Группа прокси",
   "go": "Перейти",
   "externalLink": "Внешняя ссылка",
-  "otherContributors": "Другие участники",
   "autoCloseConnections": "Автозакрытие соединений",
   "autoCloseConnectionsDesc": "Автоматически закрывать соединения после смены узла",
   "onlyStatisticsProxy": "Учитывать только прокси",
