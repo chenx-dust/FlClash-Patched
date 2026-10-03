@@ -32,19 +32,24 @@ Future<void>? _nativeInit;
 Future<void> initEditorNative() => _nativeInit ??= () async {
   final overrideDir =
       Platform.environment['FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR'];
-  if (overrideDir != null) return RustLib.init();
-  final path = _libraryCandidates.firstWhere(
-    (path) => File(path).existsSync(),
-    orElse: () => throw StateError(
-      'Editor native library not found; tried ${_libraryCandidates.join(', ')}'
-      ' from ${Directory.current.path}. Keep the rust_api build_assets'
-      ' user-define on, or set FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR'
-      ' to a directory holding the library.',
-    ),
-  );
-  await RustLib.init(
-    externalLibrary: ExternalLibrary.open(File(path).absolute.path),
-  );
+  final path = overrideDir == null
+      ? _libraryCandidates.firstWhere(
+          (path) => File(path).existsSync(),
+          orElse: () => throw StateError(
+            'Editor native library not found; tried ${_libraryCandidates.join(', ')}'
+            ' from ${Directory.current.path}. Keep the rust_api build_assets'
+            ' user-define on, or set FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR'
+            ' to a directory holding the library.',
+          ),
+        )
+      : '$overrideDir/$_libraryFile';
+  final file = File(path);
+  if (!file.existsSync()) {
+    throw StateError(
+      'Editor native library not found at ${file.absolute.path}',
+    );
+  }
+  await RustLib.init(externalLibrary: ExternalLibrary.open(file.absolute.path));
 }();
 
 Future<void> settle(WidgetTester tester, [int rounds = 6]) async {

@@ -53,8 +53,11 @@ hooks:
       build_assets: true   # false does the same for the Rust library
 ```
 
-CI flips both to `false` with `yq` before `dart run tool/changelog.dart` and
-`flutter test`, and restores the file afterwards; no test loads either library.
+CI flips both to `false` with `yq` before `flutter test` and before
+`dart run tool/changelog.dart`. The changelog script loads neither library.
+The editor tests do load `librust_api`, so the Rust job builds that release
+library and the test shards open it through
+`FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR`.
 Never commit `false`: a build with it set stages whatever `libclash/` already
 holds and bundles no Rust library, which is why `setup.dart` refuses to package
 while it is set. Locally, `false` is worth setting for a Dart-only test loop,

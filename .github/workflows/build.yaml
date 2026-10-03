@@ -51,6 +51,7 @@ jobs:
 
   dart-tests:
     name: Dart tests (${{ matrix.shard }})
+    needs: rust
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -72,11 +73,19 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Download editor library
+        uses: actions/download-artifact@v8
+        with:
+          name: editor-library-linux
+          path: build/editor-library
+
       - name: Skip native build hooks
         run: |
           yq -i '.hooks.user_defines.setup.build_assets = false | .hooks.user_defines.rust_api.build_assets = false' pubspec.yaml
 
       - name: Run tests
+        env:
+          FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR: ${{ github.workspace }}/build/editor-library
         run: >-
           flutter test --reporter expanded
           --total-shards=${{ strategy.job-total }}
@@ -230,6 +239,18 @@ jobs:
         run: |
           cargo test --manifest-path services/helper/Cargo.toml
           cargo test --manifest-path plugins/rust_api/rust/Cargo.toml
+
+      # Dart tests keep the rust_api hook off, so they load this library instead.
+      - name: Build the editor library
+        run: cargo build --release --manifest-path plugins/rust_api/rust/Cargo.toml
+
+      - name: Upload editor library
+        uses: actions/upload-artifact@v7
+        with:
+          name: editor-library-linux
+          path: plugins/rust_api/rust/target/release/librust_api.so
+          retention-days: 1
+          if-no-files-found: error
 
   windows-helper-test:
     name: Windows helper test
