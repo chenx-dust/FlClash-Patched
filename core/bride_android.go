@@ -53,6 +53,12 @@ func writeSystemLog(level, message string) {
 }
 
 func handleUpdateDns(value string) {
+	// mihomo turns the [""] that Split returns for no servers into a "udp://:"
+	// nameserver, which keeps the system resolver off its default fallback.
+	var addr []string
+	if value != "" {
+		addr = strings.Split(value, ",")
+	}
 	seq := dnsUpdateSeq.Add(1)
 	safeGoDetached("updateDns", func() {
 		dnsUpdateMu.Lock()
@@ -61,7 +67,7 @@ func handleUpdateDns(value string) {
 			return
 		}
 		log.Infoln("[DNS] updateDns %s", value)
-		dns.UpdateSystemDNS(strings.Split(value, ","))
+		dns.UpdateSystemDNS(addr)
 		dns.FlushCacheWithDefaultResolver()
 	})
 }

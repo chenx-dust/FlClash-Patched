@@ -581,10 +581,13 @@ class _GroupIcon extends ConsumerWidget {
         },
       ),
       ProxiesIconStyle.icon => Container(
-        margin: const EdgeInsets.only(right: 8),
+        margin: const EdgeInsets.only(left: 2, right: 10),
         child: LayoutBuilder(
           builder: (_, constraints) {
-            return _buildIconContent(constraints.maxHeight - 8.ap, iconSource);
+            return _buildIconContent(
+              constraints.maxHeight - 16.ap,
+              iconSource,
+            );
           },
         ),
       ),
