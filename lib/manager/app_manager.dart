@@ -11,6 +11,7 @@ import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/animated_visibility.dart';
 import 'package:fl_clash/widgets/focus.dart';
 import 'package:flutter/foundation.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
@@ -203,7 +204,10 @@ class _SidebarRail extends StatelessWidget {
                 NavigationRailDestination(
                   icon: NavDestinationAnchor(
                     label: item.label,
-                    child: item.icon,
+                    child: IconTheme.merge(
+                      data: const IconThemeData(fill: 1, opticalSize: 24),
+                      child: item.icon,
+                    ),
                   ),
                   label: Text(item.label.label),
                 ),
@@ -319,7 +323,7 @@ class AppSidebarContainer extends ConsumerWidget {
                             );
                       },
                       icon: Icon(
-                        Icons.menu,
+                        Symbols.menu,
                         color: context.colorScheme.onSurfaceVariant,
                       ),
                     ),

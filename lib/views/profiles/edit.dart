@@ -10,6 +10,7 @@ import 'package:fl_clash/pages/editor.dart';
 import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -262,8 +263,8 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
                 },
                 icon: Icon(
                   _obscureAgeSecretKey
-                      ? Icons.visibility
-                      : Icons.visibility_off,
+                      ? Symbols.visibility
+                      : Symbols.visibility_off,
                 ),
               ),
             ),
@@ -308,7 +309,7 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
                 order: const PrimaryFocusOrder(),
                 child: CommonFloatingActionButton(
                   onPressed: _handleConfirm,
-                  icon: const Icon(Icons.save),
+                  icon: const Icon(Symbols.save),
                   label: appLocalizations.save,
                 ),
               ),
@@ -461,12 +462,12 @@ class _ProfileFileItem extends StatelessWidget {
     final appLocalizations = context.appLocalizations;
     return [
       CommonPopupMenuItem(
-        icon: Icons.edit_outlined,
+        icon: Symbols.edit,
         label: appLocalizations.edit,
         onPressed: onEdit,
       ),
       CommonPopupMenuItem(
-        icon: Icons.upload_outlined,
+        icon: Symbols.upload,
         label: appLocalizations.upload,
         onPressed: onUpload,
       ),
@@ -499,7 +500,7 @@ class _ProfileFileItem extends StatelessWidget {
                           return IconButton(
                             tooltip: appLocalizations.more,
                             onPressed: open,
-                            icon: const Icon(Icons.more_vert),
+                            icon: const Icon(Symbols.more_vert),
                           );
                         },
                       ),

@@ -9,6 +9,7 @@ import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/proxies/providers.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -98,7 +99,7 @@ void main() {
           of: find.text(name),
           matching: find.byType(DecorationListItem),
         ),
-        matching: find.byIcon(Icons.more_vert),
+        matching: find.byIcon(Symbols.more_vert),
       ),
     );
     await tester.pumpAndSettle();
@@ -312,13 +313,13 @@ void main() {
     final container = containerFor(tester, [provider]);
     await pump(tester, container);
 
-    expect(find.byIcon(Icons.more_vert), findsOne);
+    expect(find.byIcon(Symbols.more_vert), findsOne);
 
     final updating = container.read(updatingKeysProvider.notifier);
     updating.start(provider.updatingKey);
     await settleTrailing(tester);
 
-    expect(find.byIcon(Icons.more_vert), findsNothing);
+    expect(find.byIcon(Symbols.more_vert), findsNothing);
     expect(find.byType(CommonCircleLoading), findsOne);
   });
 
@@ -379,7 +380,7 @@ void main() {
     ).thenAnswer((_) async => const ProxiesData(proxies: {}, all: []));
     await pump(tester, container);
 
-    await tester.tap(find.byIcon(Icons.sync));
+    await tester.tap(find.byIcon(Symbols.sync));
     await tester.pump();
 
     expect(find.byType(CommonCircleLoading), findsOne);
@@ -407,7 +408,7 @@ void main() {
     ).thenAnswer((_) async => const ProxiesData(proxies: {}, all: []));
     await pump(tester, container);
 
-    await tester.tap(find.byIcon(Icons.sync));
+    await tester.tap(find.byIcon(Symbols.sync));
     await tester.pumpAndSettle();
 
     expect(
@@ -445,14 +446,14 @@ void main() {
     await tester.tap(find.text(currentAppLocalizations.sync));
     await settleTrailing(tester);
 
-    expect(find.byIcon(Icons.more_vert), findsNothing);
+    expect(find.byIcon(Symbols.more_vert), findsNothing);
     expect(find.byType(CommonCircleLoading), findsOne);
 
     completer.complete('');
     await tester.pumpAndSettle();
     await tester.pump(const Duration(milliseconds: 700));
 
-    expect(find.byIcon(Icons.more_vert), findsOne);
+    expect(find.byIcon(Symbols.more_vert), findsOne);
     expect(find.byType(CommonCircleLoading), findsNothing);
   });
 }

@@ -6,6 +6,7 @@ import 'package:fl_clash/features/features.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -71,7 +72,7 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView>
           if (!mounted) return;
           await _refreshConnections();
         },
-        icon: const Icon(Icons.sort),
+        icon: const Icon(Symbols.sort),
       ),
     ];
   }
@@ -232,7 +233,7 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView>
                   await _refreshConnections();
                 },
                 label: appLocalizations.closeAll,
-                icon: const Icon(Icons.clear_all),
+                icon: const Icon(Symbols.clear_all),
               ),
       ),
       body: ValueListenableBuilder<TrackerInfosState>(
@@ -272,7 +273,7 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView>
                         height: 30,
                       ),
                       iconSize: 22,
-                      icon: const Icon(Icons.close),
+                      icon: const Icon(Symbols.close),
                       onPressed: () {
                         _handleCloseConnection(trackerInfo.id);
                       },
@@ -343,7 +344,7 @@ class _ConnectionSortView extends StatelessWidget {
                     isSelected: sortType == type && sortAscending == ascending,
                     onPressed: () => onSortChanged(type, ascending),
                     icon: Icon(
-                      ascending ? Icons.arrow_upward : Icons.arrow_downward,
+                      ascending ? Symbols.arrow_upward : Symbols.arrow_downward,
                     ),
                   ),
               ],

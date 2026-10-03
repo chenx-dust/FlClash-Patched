@@ -9,6 +9,7 @@ import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/core.dart';
 import 'package:fl_clash/state.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -103,8 +104,8 @@ void main() {
       find.text(currentAppLocalizations.geoSkipped(GeoResource.MMDB.name)),
       findsOneWidget,
     );
-    expect(find.byIcon(Icons.check_circle_outline), findsNothing);
-    expect(find.byIcon(Icons.error_outline), findsNothing);
+    expect(find.byIcon(Symbols.check_circle_outline), findsNothing);
+    expect(find.byIcon(Symbols.error_outline), findsNothing);
 
     await tester.pumpWidget(const SizedBox.shrink());
   });
@@ -221,7 +222,7 @@ void main() {
     await tester.pump();
 
     expect(find.text('download failed'), findsOneWidget);
-    expect(find.byIcon(Icons.error_outline), findsOneWidget);
+    expect(find.byIcon(Symbols.error_outline), findsOneWidget);
 
     await tester.pumpWidget(const SizedBox.shrink());
   });

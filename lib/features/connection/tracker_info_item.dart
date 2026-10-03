@@ -4,6 +4,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'tracker_info_filter.dart';
@@ -131,11 +132,11 @@ class TrackerInfoItem extends ConsumerWidget {
       trailing: Text.rich(
         TextSpan(
           children: [
-            arrow(Icons.arrow_upward),
+            arrow(Symbols.arrow_upward),
             TextSpan(
               text: ' ${(trackerInfo.uploadSpeed ?? 0).traffic.show}/s   ',
             ),
-            arrow(Icons.arrow_downward),
+            arrow(Symbols.arrow_downward),
             TextSpan(
               text: ' ${(trackerInfo.downloadSpeed ?? 0).traffic.show}/s',
             ),
@@ -465,10 +466,7 @@ class _DetailRow extends StatelessWidget {
             children: [
               Text(title),
               if (onFilter != null)
-                Icon(
-                  filtered ? Icons.filter_alt : Icons.filter_alt_outlined,
-                  size: 18,
-                ),
+                Icon(Symbols.filter_alt, size: 18, fill: filtered ? 1 : 0),
             ],
           ),
           Expanded(

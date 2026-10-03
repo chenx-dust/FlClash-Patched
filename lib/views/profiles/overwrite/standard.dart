@@ -4,6 +4,7 @@ import 'package:fl_clash/features/overwrite/overwrite.dart';
 import 'package:fl_clash/models/clash_config.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -110,7 +111,7 @@ class _StandardContentState extends ConsumerState<StandardContent> {
                           onPressed: () {
                             _handleDelete();
                           },
-                          icon: const Icon(Icons.delete),
+                          icon: const Icon(Symbols.delete),
                         ),
                       ),
                       const SizedBox(width: 8),

@@ -8,6 +8,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
@@ -178,8 +179,8 @@ class _DnsQueriesViewState extends ConsumerState<DnsQueriesView> {
                 }
               },
               child: autoScrollToEnd
-                  ? const Icon(Icons.pause)
-                  : const Icon(Icons.play_arrow),
+                  ? const Icon(Symbols.pause)
+                  : const Icon(Symbols.play_arrow),
             ),
           );
         },
@@ -539,10 +540,7 @@ class _DnsDetailRow extends StatelessWidget {
             children: [
               Text(title),
               if (onFilter != null)
-                Icon(
-                  filtered ? Icons.filter_alt : Icons.filter_alt_outlined,
-                  size: 18,
-                ),
+                Icon(Symbols.filter_alt, size: 18, fill: filtered ? 1 : 0),
             ],
           ),
           if (!isError)

@@ -6,6 +6,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -194,7 +195,7 @@ void main() {
     final messageText = tester.widget<Text>(find.text(longMessage));
     expect(messageText.maxLines, 2);
     expect(messageText.overflow, TextOverflow.ellipsis);
-    expect(find.byIcon(Icons.error_outline), findsNothing);
+    expect(find.byIcon(Symbols.error_outline), findsNothing);
     expect(
       find.ancestor(
         of: find.text(longMessage),

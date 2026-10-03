@@ -7,6 +7,7 @@ import 'package:fl_clash/providers/core.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 class GoroutineInfo extends ConsumerStatefulWidget {
@@ -69,7 +70,7 @@ class _GoroutineInfoState extends ConsumerState<GoroutineInfo>
           radius: AppCorner.lg,
           onPressed: () {},
           info: Info(
-            iconData: Icons.account_tree_outlined,
+            iconData: Symbols.account_tree,
             label: appLocalizations.goroutineInfo,
           ),
           child: Container(

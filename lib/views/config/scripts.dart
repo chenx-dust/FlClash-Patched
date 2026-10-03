@@ -9,6 +9,7 @@ import 'package:fl_clash/pages/editor.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -312,17 +313,17 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
           popupBuilder: (_) => CommonPopupMenu(
             items: [
               CommonPopupMenuItem(
-                icon: Icons.edit_outlined,
+                icon: Symbols.edit,
                 label: appLocalizations.startFromScratch,
                 onPressed: _handleToEditor,
               ),
               CommonPopupMenuItem(
-                icon: Icons.cloud_download_outlined,
+                icon: Symbols.cloud_download,
                 label: appLocalizations.importUrl,
                 onPressed: _handleImportFromUrl,
               ),
               CommonPopupMenuItem(
-                icon: Icons.upload_file_outlined,
+                icon: Symbols.upload_file,
                 label: appLocalizations.importFile,
                 onPressed: _handleImportFromFile,
               ),
@@ -371,25 +372,25 @@ class _ScriptItemMenu extends ConsumerWidget {
                 popupBuilder: (_) => CommonPopupMenu(
                   items: [
                     CommonPopupMenuItem(
-                      icon: Icons.edit_outlined,
+                      icon: Symbols.edit,
                       label: appLocalizations.edit,
                       onPressed: onEdit,
                     ),
                     if (script.url != null) ...[
                       CommonPopupMenuItem(
-                        icon: Icons.link,
+                        icon: Symbols.link,
                         label: appLocalizations.url,
                         onPressed: onEditUrl,
                       ),
                       CommonPopupMenuItem(
-                        icon: Icons.sync,
+                        icon: Symbols.sync,
                         label: appLocalizations.sync,
                         onPressed: onUpdate,
                       ),
                     ],
                     CommonPopupMenuItem(
                       danger: true,
-                      icon: Icons.delete_outlined,
+                      icon: Symbols.delete,
                       label: appLocalizations.delete,
                       onPressed: onDelete,
                     ),
@@ -405,7 +406,7 @@ class _ScriptItemMenu extends ConsumerWidget {
                     onPressed: () {
                       open();
                     },
-                    icon: const Icon(Icons.more_vert),
+                    icon: const Icon(Symbols.more_vert),
                   );
                 },
               ),

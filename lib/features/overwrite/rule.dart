@@ -7,6 +7,7 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/clash_config.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 final ruleItemHeight =
@@ -77,7 +78,7 @@ class RuleItem extends StatelessWidget {
             ),
           );
         },
-        icon: Icon(Icons.info, size: 16.ap, color: context.colorScheme.error),
+        icon: Icon(Symbols.info, size: 16.ap, color: context.colorScheme.error),
       ),
     );
   }

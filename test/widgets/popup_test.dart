@@ -1,4 +1,5 @@
 import 'package:fl_clash/widgets/popup.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -146,7 +147,7 @@ void main() {
     open();
     await tester.pumpAndSettle();
 
-    expect(find.byIcon(Icons.chevron_right), findsOneWidget);
+    expect(find.byIcon(Symbols.chevron_right), findsOneWidget);
 
     await tester.tap(find.text('parent'));
     await tester.pumpAndSettle();
@@ -325,7 +326,7 @@ void main() {
     final open = await pumpMenu(tester, [
       CommonPopupMenuItem(label: 'plain', onPressed: () {}),
       CommonPopupMenuItem(
-        icon: Icons.delete_outlined,
+        icon: Symbols.delete,
         label: 'delete',
         danger: true,
         onPressed: () {},
@@ -343,7 +344,7 @@ void main() {
       colorScheme.error,
     );
     expect(
-      tester.widget<Icon>(find.byIcon(Icons.delete_outlined)).color,
+      tester.widget<Icon>(find.byIcon(Symbols.delete)).color,
       colorScheme.error,
     );
     expect(

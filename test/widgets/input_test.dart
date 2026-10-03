@@ -5,6 +5,7 @@ import 'package:fl_clash/common/shape.dart';
 import 'package:fl_clash/models/common.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -436,14 +437,14 @@ void main() {
 
     await tester.tap(find.byType(Checkbox).first);
     await tester.pump();
-    expect(find.byIcon(Icons.delete), findsOneWidget);
+    expect(find.byIcon(Symbols.delete), findsOneWidget);
     expect(
       tester.widget<CommonPopScope>(find.byType(CommonPopScope)).canPop,
       isFalse,
     );
     await tester.tap(find.text('Select all'));
     await tester.pump();
-    await tester.tap(find.byIcon(Icons.delete));
+    await tester.tap(find.byIcon(Symbols.delete));
     await tester.pump();
     expect(find.text('No data'), findsOneWidget);
   });
@@ -536,7 +537,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(scrollable.position.pixels, greaterThan(0));
-    expect(find.byIcon(Icons.delete), findsNothing);
+    expect(find.byIcon(Symbols.delete), findsNothing);
   });
 
   testWidgets('MapInputPage adds, reorders, selects, and deletes entries', (
@@ -594,7 +595,7 @@ void main() {
     );
     await tester.tap(find.text('Select all'));
     await tester.pump();
-    await tester.tap(find.byIcon(Icons.delete));
+    await tester.tap(find.byIcon(Symbols.delete));
     await tester.pump();
     expect(find.text('No data'), findsOneWidget);
   });
@@ -655,7 +656,7 @@ void main() {
 
     expect(find.byType(MapEntryListDialog), findsOneWidget);
     expect(find.byType(TextFormField), findsNWidgets(3));
-    await tester.tap(find.byIcon(Icons.remove_circle_outline).first);
+    await tester.tap(find.byIcon(Symbols.remove_circle_outline).first);
     await tester.pump();
     await tester.tap(
       find.descendant(

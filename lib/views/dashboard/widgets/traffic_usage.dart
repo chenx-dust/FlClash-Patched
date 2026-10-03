@@ -5,6 +5,7 @@ import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 class TrafficUsage extends StatelessWidget {
@@ -20,7 +21,7 @@ class TrafficUsage extends StatelessWidget {
           radius: AppCorner.lg,
           info: Info(
             label: appLocalizations.trafficUsage,
-            iconData: Icons.data_saver_off,
+            iconData: Symbols.data_saver_off,
           ),
           onPressed: () {},
           child: Consumer(
@@ -64,12 +65,12 @@ class _TrafficUsageBody extends StatelessWidget {
             ),
           ),
           _TrafficDataItem(
-            icon: Icon(Icons.arrow_upward, color: upColor, size: 14),
+            icon: Icon(Symbols.arrow_upward, color: upColor, size: 14),
             value: up,
           ),
           const SizedBox(height: 8),
           _TrafficDataItem(
-            icon: Icon(Icons.arrow_downward, color: downColor, size: 14),
+            icon: Icon(Symbols.arrow_downward, color: downColor, size: 14),
             value: down,
           ),
         ],

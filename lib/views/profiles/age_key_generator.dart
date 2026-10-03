@@ -4,6 +4,7 @@ import 'package:fl_clash/providers/core.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 class AgeKeyGeneratorDialog extends ConsumerStatefulWidget {
@@ -149,7 +150,11 @@ class _AgeKeyGeneratorDialogState extends ConsumerState<AgeKeyGeneratorDialog> {
                 tooltip: _generateFromPrivateKey
                     ? appLocalizations.paste
                     : appLocalizations.copy,
-                icon: Icon(_generateFromPrivateKey ? Icons.paste : Icons.copy),
+                icon: Icon(
+                  _generateFromPrivateKey
+                      ? Symbols.content_paste
+                      : Symbols.content_copy,
+                ),
                 onPressed: _generateFromPrivateKey
                     ? _pastePrivateKeyFromClipboard
                     : () => copyText(context, _privateKeyController.text),
@@ -178,7 +183,7 @@ class _AgeKeyGeneratorDialogState extends ConsumerState<AgeKeyGeneratorDialog> {
                   : null,
               suffixIcon: IconButton(
                 tooltip: appLocalizations.copy,
-                icon: const Icon(Icons.copy),
+                icon: const Icon(Symbols.content_copy),
                 onPressed: () => copyText(context, _publicKeyController.text),
               ),
             ),

@@ -1,6 +1,7 @@
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/features/features.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -170,8 +171,8 @@ void main() {
     expect(find.textContaining('1.2.3.4:8080'), findsOneWidget);
     expect(find.textContaining('1KB/s'), findsOneWidget);
     expect(find.textContaining('2KB/s'), findsOneWidget);
-    expect(find.byIcon(Icons.arrow_upward), findsOneWidget);
-    expect(find.byIcon(Icons.arrow_downward), findsOneWidget);
+    expect(find.byIcon(Symbols.arrow_upward), findsOneWidget);
+    expect(find.byIcon(Symbols.arrow_downward), findsOneWidget);
     final header = tester.getRect(find.byType(RecordHeader));
     final speed = tester.getRect(find.textContaining('2KB/s'));
     expect(header.right - speed.right, lessThanOrEqualTo(1));
@@ -192,17 +193,20 @@ void main() {
           trackerInfo: _tracker(
             chains: const ['Proxy A', 'Proxy B'],
           ).copyWith(uploadSpeed: 1024, downloadSpeed: 2048),
-          trailing: IconButton(onPressed: () {}, icon: const Icon(Icons.close)),
+          trailing: IconButton(
+            onPressed: () {},
+            icon: const Icon(Symbols.close),
+          ),
         ),
       ),
     );
     await tester.pump();
 
-    expect(find.byIcon(Icons.close), findsOneWidget);
+    expect(find.byIcon(Symbols.close), findsOneWidget);
     expect(
       find.descendant(
         of: find.byType(RecordHeader),
-        matching: find.byIcon(Icons.close),
+        matching: find.byIcon(Symbols.close),
       ),
       findsNothing,
     );

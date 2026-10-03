@@ -2,6 +2,7 @@ import 'dart:ui' show lerpDouble;
 
 import 'package:fl_clash/common/common.dart';
 import 'package:flutter/gestures.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 class CommonChip extends StatelessWidget {
@@ -202,7 +203,7 @@ class _ChipSurface extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsetsDirectional.only(start: 4),
                       child: Icon(
-                        Icons.close,
+                        Symbols.close,
                         size: 14,
                         color: foregroundColor,
                       ),

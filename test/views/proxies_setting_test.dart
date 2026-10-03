@@ -5,6 +5,7 @@ import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/proxies/setting.dart';
 import 'package:fl_clash/widgets/inherited.dart';
 import 'package:fl_clash/widgets/sheet.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -87,7 +88,7 @@ void main() {
     }
 
     expect(height(), 0);
-    await tester.tap(find.byIcon(Icons.view_list));
+    await tester.tap(find.byIcon(Symbols.view_list));
     await tester.pump();
     expect(container.read(proxiesStyleSettingProvider).type, ProxiesType.list);
     await tester.pump(const Duration(milliseconds: 150));

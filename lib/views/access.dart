@@ -7,6 +7,7 @@ import 'package:fl_clash/plugins/app.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -129,14 +130,14 @@ class _AccessViewState extends ConsumerState<AccessView> {
               key: const ValueKey(true),
               onPressed: onPressed,
               label: Text(appLocalizations.cancelSelectAll),
-              icon: const Icon(Icons.deselect),
+              icon: const Icon(Symbols.deselect),
             )
           : FloatingActionButton.extended(
               key: const ValueKey(false),
               tooltip: appLocalizations.selectAll,
               onPressed: onPressed,
               label: Text(appLocalizations.selectAll),
-              icon: const Icon(Icons.select_all),
+              icon: const Icon(Symbols.select_all),
             ),
     );
   }
@@ -301,39 +302,39 @@ class _AccessViewState extends ConsumerState<AccessView> {
       IconButton(
         tooltip: appLocalizations.search,
         onPressed: _handleSearch,
-        icon: const Icon(Icons.search),
+        icon: const Icon(Symbols.search),
       ),
       CommonPopupBox(
         targetBuilder: (open) {
           return IconButton(
             tooltip: appLocalizations.more,
             onPressed: open,
-            icon: const Icon(Icons.more_vert),
+            icon: const Icon(Symbols.more_vert),
           );
         },
         popupBuilder: (_) => CommonPopupMenu(
           items: [
             CommonPopupMenuItem(
-              icon: Icons.tune,
+              icon: Symbols.tune,
               label: appLocalizations.settings,
               onPressed: _handleToSetting,
             ),
             CommonPopupMenuItem(
-              icon: Icons.emergency_outlined,
+              icon: Symbols.emergency,
               label: appLocalizations.action,
               subItems: [
                 CommonPopupMenuItem(
-                  icon: Icons.auto_awesome,
+                  icon: Symbols.auto_awesome,
                   label: appLocalizations.intelligentSelected,
                   onPressed: _intelligentSelected,
                 ),
                 CommonPopupMenuItem(
-                  icon: Icons.content_copy,
+                  icon: Symbols.content_copy,
                   label: appLocalizations.clipboardExport,
                   onPressed: _exportToClipboard,
                 ),
                 CommonPopupMenuItem(
-                  icon: Icons.paste,
+                  icon: Symbols.content_paste,
                   label: appLocalizations.clipboardImport,
                   onPressed: _importFormClipboard,
                 ),
@@ -394,7 +395,7 @@ class _AccessViewState extends ConsumerState<AccessView> {
       illustration: NullStatusIllustration.permission,
       action: FilledButton.tonalIcon(
         onPressed: _handleGrantInstalledAppsPermission,
-        icon: const Icon(Icons.lock_open),
+        icon: const Icon(Symbols.lock_open),
         label: Text(appLocalizations.authorize),
       ),
     );
@@ -408,7 +409,7 @@ class _AccessViewState extends ConsumerState<AccessView> {
     final appLocalizations = context.appLocalizations;
     if (!enable) {
       return MaterialBanner(
-        leading: Icon(Icons.info_outline, color: context.colorScheme.outline),
+        leading: Icon(Symbols.info, color: context.colorScheme.outline),
         content: Text(
           appLocalizations.accessControlDisabledDesc,
           style: TextStyle(color: context.colorScheme.onSurfaceVariant),
@@ -466,7 +467,7 @@ class _AccessViewState extends ConsumerState<AccessView> {
   Widget _buildControlHeader(AccessControlProps accessControl) {
     final appLocalizations = context.appLocalizations;
     return ListItem.toggle(
-      leading: const Icon(Icons.apps),
+      leading: const Icon(Symbols.apps),
       title: Text(appLocalizations.appAccessControl),
       subtitle: Text(appLocalizations.accessControlDesc),
       value: accessControl.enable,
@@ -576,8 +577,8 @@ class AccessControlPanel extends ConsumerStatefulWidget {
 class _AccessControlPanelState extends ConsumerState<AccessControlPanel> {
   IconData _getIconWithAccessControlMode(AccessControlMode mode) {
     return switch (mode) {
-      AccessControlMode.acceptSelected => Icons.adjust_outlined,
-      AccessControlMode.rejectSelected => Icons.block_outlined,
+      AccessControlMode.acceptSelected => Symbols.adjust,
+      AccessControlMode.rejectSelected => Symbols.block,
     };
   }
 
@@ -600,9 +601,9 @@ class _AccessControlPanelState extends ConsumerState<AccessControlPanel> {
 
   IconData _getIconWithProxiesSortType(AccessSortType type) {
     return switch (type) {
-      AccessSortType.none => Icons.sort,
-      AccessSortType.name => Icons.sort_by_alpha,
-      AccessSortType.time => Icons.timeline,
+      AccessSortType.none => Symbols.sort,
+      AccessSortType.name => Symbols.sort_by_alpha,
+      AccessSortType.time => Symbols.timeline,
     };
   }
 

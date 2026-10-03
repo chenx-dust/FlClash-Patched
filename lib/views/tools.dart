@@ -9,6 +9,7 @@ import 'package:fl_clash/views/access.dart';
 import 'package:fl_clash/views/backup_and_restore.dart';
 import 'package:fl_clash/views/hotkey.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' show dirname, join;
@@ -112,7 +113,7 @@ class _LocaleItem extends ConsumerWidget {
     );
     final currentLocale = getLocaleForString(locale);
     return ListItem<Locale?>.options(
-      leading: const Icon(Icons.language_outlined),
+      leading: const Icon(Symbols.language),
       title: Text(context.appLocalizations.language),
       subtitle: Text(_getLocaleString(context, currentLocale)),
       dialogTitle: context.appLocalizations.language,
@@ -134,7 +135,7 @@ class _ThemeItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListItem.open(
-      leading: const Icon(Icons.style),
+      leading: const Icon(Symbols.style),
       title: Text(context.appLocalizations.theme),
       subtitle: Text(context.appLocalizations.themeDesc),
       widget: const ThemeView(),
@@ -148,7 +149,7 @@ class _BackupItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListItem.open(
-      leading: const Icon(Icons.cloud_sync),
+      leading: const Icon(Symbols.cloud_sync),
       title: Text(context.appLocalizations.backupAndRestore),
       subtitle: Text(context.appLocalizations.backupAndRestoreDesc),
       widget: const BackupAndRestore(),
@@ -162,7 +163,7 @@ class _HotkeyItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListItem.open(
-      leading: const Icon(Icons.keyboard),
+      leading: const Icon(Symbols.keyboard),
       title: Text(context.appLocalizations.hotkeyManagement),
       subtitle: Text(context.appLocalizations.hotkeyManagementDesc),
       widget: const HotKeyView(),
@@ -176,7 +177,7 @@ class _LoopbackItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListItem(
-      leading: const Icon(Icons.lock),
+      leading: const Icon(Symbols.lock),
       title: Text(context.appLocalizations.loopback),
       subtitle: Text(context.appLocalizations.loopbackDesc),
       onTap: () {
@@ -195,7 +196,7 @@ class _AccessItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListItem.open(
-      leading: const Icon(Icons.view_list),
+      leading: const Icon(Symbols.view_list),
       title: Text(context.appLocalizations.accessControl),
       subtitle: Text(context.appLocalizations.accessControlDesc),
       widget: const AccessView(),
@@ -209,7 +210,7 @@ class _GeneralItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListItem.open(
-      leading: const Icon(Icons.settings),
+      leading: const Icon(Symbols.settings),
       title: Text(context.appLocalizations.general),
       subtitle: Text(context.appLocalizations.generalDesc),
       widget: const GeneralView(),
@@ -223,7 +224,7 @@ class _AdvancedConfigItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListItem.open(
-      leading: const Icon(Icons.build),
+      leading: const Icon(Symbols.build),
       title: Text(context.appLocalizations.advancedConfig),
       subtitle: Text(context.appLocalizations.advancedConfigDesc),
       widget: const AdvancedConfigView(),
@@ -237,7 +238,7 @@ class _DisclaimerItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     return ListItem(
-      leading: const Icon(Icons.gavel),
+      leading: const Icon(Symbols.gavel),
       title: Text(context.appLocalizations.disclaimer),
       onTap: () async {
         final isDisclaimerAccepted = await dialogs.showDisclaimer();
@@ -255,7 +256,7 @@ class _InfoItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListItem.open(
-      leading: const Icon(Icons.info),
+      leading: const Icon(Symbols.info),
       title: Text(context.appLocalizations.about),
       widget: const AboutView(),
     );
@@ -268,7 +269,7 @@ class _DeveloperItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListItem.open(
-      leading: const Icon(Icons.developer_board),
+      leading: const Icon(Symbols.developer_board),
       title: Text(context.appLocalizations.developerMode),
       widget: const DeveloperView(),
     );

@@ -8,6 +8,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -143,8 +144,8 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
                 }
               },
               child: autoScrollToEnd
-                  ? const Icon(Icons.pause)
-                  : const Icon(Icons.play_arrow),
+                  ? const Icon(Symbols.pause)
+                  : const Icon(Symbols.play_arrow),
             ),
           );
         },

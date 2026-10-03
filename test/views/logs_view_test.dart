@@ -4,6 +4,7 @@ import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/views.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -144,8 +145,8 @@ void main() {
   ) async {
     await pumpLogsView(tester);
 
-    expect(find.byIcon(Icons.save_outlined), findsOneWidget);
-    expect(find.byIcon(Icons.save_as_outlined), findsNothing);
+    expect(find.byIcon(Symbols.save), findsOneWidget);
+    expect(find.byIcon(Symbols.save_as), findsNothing);
     expect(find.byType(CommonChip), findsNothing);
     final payload = tester.widget<SelectableText>(
       find.widgetWithText(SelectableText, 'log 199'),

@@ -6,6 +6,7 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/widgets/activate_box.dart';
 import 'package:fl_clash/widgets/card.dart';
 import 'package:fl_clash/widgets/grid.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/physics.dart';
@@ -1211,7 +1212,7 @@ class _CloseButtonState extends State<_CloseButton>
               ),
             ),
             onPressed: widget.onPressed,
-            icon: const Icon(Icons.close),
+            icon: const Icon(Symbols.close),
           ),
         ],
       ),

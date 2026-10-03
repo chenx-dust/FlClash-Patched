@@ -2,6 +2,7 @@ import 'package:fl_clash/common/color.dart';
 import 'package:fl_clash/common/reset.dart';
 import 'package:fl_clash/common/shape.dart';
 import 'package:fl_clash/common/system.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
@@ -60,7 +61,7 @@ class _InitErrorScreenState extends State<InitErrorScreen> {
               Row(
                 children: [
                   Icon(
-                    Icons.report_problem,
+                    Symbols.report_problem,
                     color: colorScheme.error,
                     size: 32,
                   ),
@@ -76,7 +77,7 @@ class _InitErrorScreenState extends State<InitErrorScreen> {
                   ),
                   OutlinedButton.icon(
                     onPressed: () => _copyToClipboard(context),
-                    icon: const Icon(Icons.copy),
+                    icon: const Icon(Symbols.content_copy),
                     label: const Text('Copy Details'),
                   ),
                 ],
@@ -128,7 +129,7 @@ class _InitErrorScreenState extends State<InitErrorScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _isClearing ? null : _clearData,
         label: const Text('Clear Data'),
-        icon: const Icon(Icons.delete_forever),
+        icon: const Icon(Symbols.delete_forever),
         backgroundColor: colorScheme.error,
         foregroundColor: colorScheme.onError,
       ),

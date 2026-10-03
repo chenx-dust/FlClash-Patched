@@ -6,6 +6,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_color_utilities/hct/hct.dart';
@@ -92,17 +93,17 @@ class _ThemeModeItem extends ConsumerWidget {
     );
     final List<ThemeModeItem> themeModeItems = [
       ThemeModeItem(
-        iconData: Icons.auto_mode,
+        iconData: Symbols.auto_mode,
         label: appLocalizations.auto,
         themeMode: ThemeMode.system,
       ),
       ThemeModeItem(
-        iconData: Icons.light_mode,
+        iconData: Symbols.light_mode,
         label: appLocalizations.light,
         themeMode: ThemeMode.light,
       ),
       ThemeModeItem(
-        iconData: Icons.dark_mode,
+        iconData: Symbols.dark_mode,
         label: appLocalizations.dark,
         themeMode: ThemeMode.dark,
       ),
@@ -111,7 +112,7 @@ class _ThemeModeItem extends ConsumerWidget {
       child: ItemCard(
         info: Info(
           label: appLocalizations.themeMode,
-          iconData: Icons.brightness_high,
+          iconData: Symbols.brightness_high,
         ),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -299,7 +300,7 @@ class _PrimaryColorItemState extends ConsumerState<_PrimaryColorItem> {
         child: ItemCard(
           info: Info(
             label: appLocalizations.themeColor,
-            iconData: Icons.palette,
+            iconData: Symbols.palette,
           ),
           actions: genActions([
             if (_removablePrimaryColor == null)
@@ -325,7 +326,7 @@ class _PrimaryColorItemState extends ConsumerState<_PrimaryColorItem> {
                 padding: const EdgeInsets.all(4),
                 visualDensity: VisualDensity.compact,
                 onPressed: _handleReset,
-                icon: const Icon(Icons.replay),
+                icon: const Icon(Symbols.replay),
               ),
           ], space: 8),
           child: Container(
@@ -459,7 +460,7 @@ class _PrimaryColorTile extends StatelessWidget {
                 onPressed: onDelete,
                 padding: const EdgeInsets.all(12),
                 iconSize: 30,
-                icon: Icon(color: context.colorScheme.primary, Icons.delete),
+                icon: Icon(color: context.colorScheme.primary, Symbols.delete),
               ),
             ),
         ],
@@ -484,7 +485,7 @@ class _AddPrimaryColorTile extends StatelessWidget {
         tooltip: context.appLocalizations.add,
         onPressed: onPressed,
         iconSize: 32,
-        icon: Icon(color: context.colorScheme.primary, Icons.add),
+        icon: Icon(color: context.colorScheme.primary, Symbols.add),
       ),
     );
   }
@@ -501,7 +502,7 @@ class _PrueBlackItem extends ConsumerWidget {
     );
     return SliverToBoxAdapter(
       child: ListItem.toggle(
-        leading: const Icon(Icons.contrast),
+        leading: const Icon(Symbols.contrast),
         horizontalTitleGap: 12,
         title: Text(
           appLocalizations.pureBlackMode,
@@ -533,7 +534,7 @@ class _MonochromeTrayIconItem extends ConsumerWidget {
     );
     return SliverToBoxAdapter(
       child: ListItem.toggle(
-        leading: const Icon(Icons.filter_b_and_w),
+        leading: const Icon(Symbols.filter_b_and_w),
         horizontalTitleGap: 12,
         title: Text(
           context.appLocalizations.monochromeTrayIcon,
@@ -568,7 +569,7 @@ class _PredictiveBackItem extends ConsumerWidget {
     );
     return SliverToBoxAdapter(
       child: ListItem.toggle(
-        leading: const Icon(Icons.swipe_right_alt),
+        leading: const Icon(Symbols.swipe_right_alt),
         horizontalTitleGap: 12,
         title: Text(
           context.appLocalizations.predictiveBack,
@@ -595,7 +596,7 @@ class _TvModeItem extends ConsumerWidget {
     return _appSettingToggle(
       context: context,
       ref: ref,
-      icon: Icons.tv,
+      icon: Symbols.tv,
       title: context.appLocalizations.tvMode,
       select: (state) => state.tvMode,
       update: (state, value) => state.copyWith(tvMode: value),
@@ -611,7 +612,7 @@ class _TabAnimationItem extends ConsumerWidget {
     return _appSettingToggle(
       context: context,
       ref: ref,
-      icon: Icons.animation,
+      icon: Symbols.animation,
       title: context.appLocalizations.tabAnimation,
       select: (state) => state.isAnimateToPage,
       update: (state, value) => state.copyWith(isAnimateToPage: value),
@@ -627,7 +628,7 @@ class _SwipeToSwitchPageItem extends ConsumerWidget {
     return _appSettingToggle(
       context: context,
       ref: ref,
-      icon: Icons.swipe,
+      icon: Symbols.swipe,
       title: context.appLocalizations.swipeToSwitchPage,
       select: (state) => state.isSwipeToPage,
       update: (state, value) => state.copyWith(isSwipeToPage: value),
@@ -681,7 +682,7 @@ class _TextScaleFactorItem extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: ListItem.toggle(
-              leading: const Icon(Icons.text_fields),
+              leading: const Icon(Symbols.text_fields),
               horizontalTitleGap: 12,
               title: Text(
                 appLocalizations.textScale,

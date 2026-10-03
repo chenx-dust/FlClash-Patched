@@ -6,6 +6,7 @@ import 'package:fl_clash/common/context.dart';
 import 'package:fl_clash/common/shape.dart';
 import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/widgets/activate_box.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -100,26 +101,26 @@ class _ScanPageState extends ConsumerState<ScanPage>
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              icon: const Icon(Icons.close),
+              icon: const Icon(Symbols.close),
             ),
             actions: [
               ValueListenableBuilder<MobileScannerState>(
                 valueListenable: controller,
                 builder: (context, state, _) {
-                  var icon = const Icon(Icons.flash_off);
+                  var icon = const Icon(Symbols.flash_off);
                   var backgroundColor = Colors.black12;
                   switch (state.torchState) {
                     case TorchState.off:
-                      icon = const Icon(Icons.flash_off);
+                      icon = const Icon(Symbols.flash_off);
                       backgroundColor = Colors.black12;
                     case TorchState.on:
-                      icon = const Icon(Icons.flash_on);
+                      icon = const Icon(Symbols.flash_on);
                       backgroundColor = Colors.orange;
                     case TorchState.unavailable:
-                      icon = const Icon(Icons.flash_off);
+                      icon = const Icon(Symbols.flash_off);
                       backgroundColor = Colors.transparent;
                     case TorchState.auto:
-                      icon = const Icon(Icons.flash_auto);
+                      icon = const Icon(Symbols.flash_auto);
                       backgroundColor = Colors.orange;
                   }
                   return Container(
@@ -157,7 +158,7 @@ class _ScanPageState extends ConsumerState<ScanPage>
               onPressed: ref
                   .read(profilesActionProvider.notifier)
                   .addProfileFormQrCode,
-              icon: const Icon(Icons.photo_camera_back),
+              icon: const Icon(Symbols.photo_camera_back),
             ),
           ),
         ],

@@ -6,22 +6,23 @@ import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 IconData _iconOf(HotAction action) {
   return switch (action) {
-    HotAction.view => Icons.visibility_outlined,
-    HotAction.start => Icons.play_circle_outline,
-    HotAction.exit => Icons.close,
-    HotAction.mode => Icons.alt_route,
-    HotAction.ruleMode => Icons.rule_folder_outlined,
-    HotAction.globalMode => Icons.public,
-    HotAction.directMode => Icons.near_me_outlined,
-    HotAction.proxy => Icons.shuffle,
-    HotAction.tun => Icons.vpn_lock_outlined,
-    HotAction.copyEnv => Icons.code,
-    HotAction.delayTest => Icons.bolt,
-    HotAction.updateProfiles => Icons.sync,
+    HotAction.view => Symbols.visibility,
+    HotAction.start => Symbols.play_circle,
+    HotAction.exit => Symbols.close,
+    HotAction.mode => Symbols.alt_route,
+    HotAction.ruleMode => Symbols.rule_folder,
+    HotAction.globalMode => Symbols.public,
+    HotAction.directMode => Symbols.near_me,
+    HotAction.proxy => Symbols.shuffle,
+    HotAction.tun => Symbols.vpn_lock,
+    HotAction.copyEnv => Symbols.code,
+    HotAction.delayTest => Symbols.bolt,
+    HotAction.updateProfiles => Symbols.sync,
   };
 }
 
@@ -141,10 +142,7 @@ class _HotKeyIntro extends StatelessWidget {
       child: Row(
         spacing: 14,
         children: [
-          Icon(
-            Icons.keyboard_outlined,
-            color: colorScheme.onSecondaryContainer,
-          ),
+          Icon(Symbols.keyboard, color: colorScheme.onSecondaryContainer),
           Expanded(
             child: Text(
               context.appLocalizations.hotkeyDesc,
@@ -209,7 +207,7 @@ class _HotKeyItem extends ConsumerWidget {
                   onPressed: () {
                     _saveBinding(ref, HotKeyAction(action: action));
                   },
-                  icon: const Icon(Icons.close, size: 20),
+                  icon: const Icon(Symbols.close, size: 20),
                 ),
               ],
             ),

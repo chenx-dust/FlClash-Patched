@@ -1,5 +1,6 @@
 import 'package:fl_clash/widgets/activate_box.dart';
 import 'package:fl_clash/widgets/card.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -44,7 +45,7 @@ void main() {
                       height: 24,
                       child: IconButton.filled(
                         onPressed: () => adds++,
-                        icon: const Icon(Icons.add),
+                        icon: const Icon(Symbols.add),
                       ),
                     ),
                   ),
@@ -67,7 +68,7 @@ void main() {
       });
       expect(excluded, isTrue);
       var cornerExcluded = false;
-      tester.element(find.byIcon(Icons.add)).visitAncestorElements((element) {
+      tester.element(find.byIcon(Symbols.add)).visitAncestorElements((element) {
         final widget = element.widget;
         if (widget is ExcludeFocus && widget.excluding) {
           cornerExcluded = true;

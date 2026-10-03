@@ -8,6 +8,7 @@ import 'package:fl_clash/models/config.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:flutter/foundation.dart' show ValueListenable;
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -539,9 +540,7 @@ class WindowHeaderActions extends StatelessWidget {
                   iconSize: WidgetStatePropertyAll(pinIconSize),
                 ),
                 onPressed: onPin,
-                icon: Icon(
-                  state.isPinned ? Icons.push_pin : Icons.push_pin_outlined,
-                ),
+                icon: Icon(Symbols.push_pin, fill: state.isPinned ? 1 : 0),
               ),
             ),
             IconButton(

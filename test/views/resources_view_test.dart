@@ -7,6 +7,7 @@ import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/resources.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -82,7 +83,7 @@ void main() {
     expect(find.byType(DecorationListItem), findsNWidgets(6));
     expect(find.byType(ItemPositionProvider), findsNWidgets(6));
     expect(find.byType(Switch), findsOneWidget);
-    expect(find.byIcon(Icons.sync), findsNWidgets(5));
+    expect(find.byIcon(Symbols.sync), findsNWidgets(5));
     expect(find.byType(FutureBuilder<FileInfo?>), findsNWidgets(4));
     for (final url in defaultGeoXUrl.values) {
       expect(find.text(url), findsNothing);

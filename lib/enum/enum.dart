@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:fl_clash/common/context.dart';
 import 'package:fl_clash/common/system.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -168,9 +169,9 @@ extension MessageLevelExt on MessageLevel {
   IconData? get icon {
     return switch (this) {
       MessageLevel.info => null,
-      MessageLevel.success => Icons.check_circle_outline,
-      MessageLevel.warning => Icons.warning_amber_outlined,
-      MessageLevel.error => Icons.error_outline,
+      MessageLevel.success => Symbols.check_circle_outline,
+      MessageLevel.warning => Symbols.warning_amber,
+      MessageLevel.error => Symbols.error_outline,
     };
   }
 

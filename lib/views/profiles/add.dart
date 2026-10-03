@@ -9,6 +9,7 @@ import 'package:fl_clash/state.dart';
 import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/views/profiles/age_key_generator.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -125,25 +126,25 @@ class AddProfileView extends ConsumerWidget {
     return ListView(
       children: [
         ListItem(
-          leading: const Icon(Icons.qr_code_sharp),
+          leading: const Icon(Symbols.qr_code_sharp),
           title: Text(appLocalizations.qrcode),
           subtitle: Text(appLocalizations.qrcodeDesc),
           onTap: () => _toScan(ref),
         ),
         ListItem(
-          leading: const Icon(Icons.note_add_sharp),
+          leading: const Icon(Symbols.note_add_sharp),
           title: Text(appLocalizations.newProfile),
           subtitle: Text(appLocalizations.newProfileDesc),
           onTap: () => _createProfile(context, ref),
         ),
         ListItem(
-          leading: const Icon(Icons.upload_file_sharp),
+          leading: const Icon(Symbols.upload_file_sharp),
           title: Text(appLocalizations.file),
           subtitle: Text(appLocalizations.fileDesc),
           onTap: () => _handleAddProfileFormFile(ref),
         ),
         ListItem(
-          leading: const Icon(Icons.cloud_download_sharp),
+          leading: const Icon(Symbols.cloud_download_sharp),
           title: Text(appLocalizations.url),
           subtitle: Text(appLocalizations.urlDesc),
           onTap: () => _toAdd(ref),
@@ -208,7 +209,7 @@ class _URLFormDialogState extends State<URLFormDialog> {
         IconButton(
           tooltip: appLocalizations.ageKeyGenerateTitle,
           onPressed: _showAgeKeyGenerator,
-          icon: const Icon(Icons.key),
+          icon: const Icon(Symbols.key),
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
@@ -240,7 +241,7 @@ class _URLFormDialogState extends State<URLFormDialog> {
                   suffixIcon: IconButton(
                     tooltip: appLocalizations.paste,
                     onPressed: _pasteUrlFromClipboard,
-                    icon: const Icon(Icons.paste),
+                    icon: const Icon(Symbols.content_paste),
                   ),
                 ),
                 validator: (value) {
@@ -271,8 +272,8 @@ class _URLFormDialogState extends State<URLFormDialog> {
                     },
                     icon: Icon(
                       _obscureAgeSecretKey
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+                          ? Symbols.visibility
+                          : Symbols.visibility_off,
                     ),
                   ),
                 ),

@@ -7,6 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../helpers/test_app.dart';
@@ -32,7 +33,7 @@ Finder _glyph(CaptionGlyph glyph) => find.byWidgetPredicate(
 Finder _captionButton(Finder icon) =>
     find.ancestor(of: icon, matching: find.byType(IconButton));
 
-Finder get _pinIcon => find.byIcon(Icons.push_pin_outlined);
+Finder get _pinIcon => find.byIcon(Symbols.push_pin);
 
 List<Finder> get _captionIcons => [
   _glyph(CaptionGlyph.minimize),

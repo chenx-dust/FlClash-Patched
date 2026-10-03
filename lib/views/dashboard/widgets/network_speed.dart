@@ -2,6 +2,7 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -58,7 +59,7 @@ class _NetworkSpeedState extends State<NetworkSpeed> {
                             padding: EdgeInsets.zero,
                             info: Info(
                               label: appLocalizations.networkSpeed,
-                              iconData: Icons.speed_sharp,
+                              iconData: Symbols.speed_sharp,
                             ),
                           ),
                         ),

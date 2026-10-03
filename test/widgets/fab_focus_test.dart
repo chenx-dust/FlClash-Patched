@@ -1,4 +1,5 @@
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,7 +18,7 @@ Widget _buildPage({bool wrapNavigator = false}) {
     ),
     floatingActionButton: CommonFloatingActionButton(
       onPressed: () {},
-      icon: const Icon(Icons.add),
+      icon: const Icon(Symbols.add),
       label: 'add',
     ),
   );
@@ -93,14 +94,14 @@ void main() {
                     child: FloatingActionButton(
                       focusNode: fabFocus,
                       onPressed: () {},
-                      child: const Icon(Icons.play_arrow),
+                      child: const Icon(Symbols.play_arrow),
                     ),
                   ),
                   IconButton(
                     focusNode: actionFocus,
                     tooltip: 'Add',
                     onPressed: () {},
-                    icon: const Icon(Icons.add),
+                    icon: const Icon(Symbols.add),
                   ),
                 ],
               ),

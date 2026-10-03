@@ -1,6 +1,7 @@
 import 'package:fl_clash/features/connection/connection.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -146,10 +147,10 @@ void main() {
     expect(find.text('Proxy group'), findsOneWidget);
     expect(find.text('Network type'), findsOneWidget);
     expect(find.text('Rule'), findsOneWidget);
-    expect(find.byIcon(Icons.apps), findsOneWidget);
-    expect(find.byIcon(Icons.account_tree), findsOneWidget);
-    expect(find.byIcon(Icons.hub), findsOneWidget);
-    expect(find.byIcon(Icons.rule), findsOneWidget);
+    expect(find.byIcon(Symbols.apps), findsOneWidget);
+    expect(find.byIcon(Symbols.account_tree), findsOneWidget);
+    expect(find.byIcon(Symbols.hub), findsOneWidget);
+    expect(find.byIcon(Symbols.rule), findsOneWidget);
   });
 
   testWidgets('filter bar shows its empty state and removes a chip', (
@@ -176,11 +177,11 @@ void main() {
 
     expect(find.byType(CommonChip), findsOneWidget);
     expect(find.text('curl'), findsOneWidget);
-    expect(find.byIcon(Icons.apps), findsOneWidget);
-    expect(find.byIcon(Icons.close), findsNothing);
+    expect(find.byIcon(Symbols.apps), findsOneWidget);
+    expect(find.byIcon(Symbols.close), findsNothing);
     await tester.tap(find.text('curl'));
     await tester.pumpAndSettle();
-    expect(find.byIcon(Icons.close), findsOneWidget);
+    expect(find.byIcon(Symbols.close), findsOneWidget);
     await tester.tap(find.text('curl'));
     await tester.pumpAndSettle();
 
@@ -220,7 +221,7 @@ void main() {
           ),
         ),
       );
-      await tester.tap(find.byIcon(Icons.filter_alt_outlined));
+      await tester.tap(find.byIcon(Symbols.filter_alt));
     }
 
     await pumpButton(visible: false, filter: const TrackerInfoFilter());
@@ -291,7 +292,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.byIcon(Icons.add));
+      await tester.tap(find.byIcon(Symbols.add));
       await tester.pumpAndSettle();
       await tester.tap(find.text(sheetCase.menuLabel));
       await tester.pumpAndSettle();

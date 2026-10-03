@@ -7,6 +7,7 @@ import 'package:fl_clash/widgets/inherited.dart';
 import 'package:fl_clash/widgets/null_status.dart';
 import 'package:fl_clash/widgets/pop_scope.dart';
 import 'package:fl_clash/widgets/scaffold.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -466,7 +467,7 @@ class _MapEntryListDialogState extends State<MapEntryListDialog> {
             children: [
               TextButton.icon(
                 onPressed: _addValue,
-                icon: const Icon(Icons.add),
+                icon: const Icon(Symbols.add),
                 label: Text(appLocalizations.add),
               ),
               const Spacer(),
@@ -531,7 +532,7 @@ class _MapEntryListDialogState extends State<MapEntryListDialog> {
                   IconButton(
                     tooltip: appLocalizations.delete,
                     onPressed: () => _removeValue(index),
-                    icon: const Icon(Icons.remove_circle_outline),
+                    icon: const Icon(Symbols.remove_circle_outline),
                   ),
                 ],
               ),

@@ -9,6 +9,7 @@ import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' hide context;
@@ -96,7 +97,7 @@ class ResourcesView extends ConsumerWidget {
                         silence: false,
                       );
                     },
-              icon: const Icon(Icons.sync),
+              icon: const Icon(Symbols.sync),
             );
           },
         ),
@@ -285,7 +286,7 @@ class _GeoResourceListItemState extends ConsumerState<_GeoResourceListItem> {
                   : IconButton(
                       tooltip: context.appLocalizations.sync,
                       onPressed: _handleUpdateGeoDataItem,
-                      icon: const Icon(Icons.sync),
+                      icon: const Icon(Symbols.sync),
                     ),
             ),
           ),

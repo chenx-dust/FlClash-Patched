@@ -125,7 +125,10 @@ class _HomeShell extends ConsumerWidget {
                       NavigationDestination(
                         icon: NavDestinationAnchor(
                           label: item.label,
-                          child: item.icon,
+                          child: IconTheme.merge(
+                            data: const IconThemeData(fill: 1, opticalSize: 24),
+                            child: item.icon,
+                          ),
                         ),
                         label: item.label.label,
                       ),

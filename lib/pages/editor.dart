@@ -5,6 +5,7 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -310,7 +311,7 @@ class _EditorSaveAction extends StatelessWidget {
             onPressed: isDirty
                 ? () => onSave(context, titleController.text, controller.text)
                 : null,
-            icon: const Icon(Icons.save),
+            icon: const Icon(Symbols.save),
           );
         },
       ),
@@ -349,29 +350,29 @@ class _EditorMenuAction extends ConsumerWidget {
                 final isMobile = ref.read(isMobileViewProvider);
                 open(offset: Offset(0, isMobile ? 0 : 20));
               },
-              icon: const Icon(Icons.more_vert),
+              icon: const Icon(Symbols.more_vert),
             );
           },
           popupBuilder: (_) => CommonPopupMenu(
             items: [
               CommonPopupMenuItem(
-                icon: Icons.search,
+                icon: Symbols.search,
                 label: appLocalizations.search,
                 onPressed: onSearch,
               ),
               CommonPopupMenuItem(
-                icon: Icons.undo,
+                icon: Symbols.undo,
                 label: appLocalizations.undo,
                 onPressed: controller.canUndo ? controller.undo : null,
               ),
               CommonPopupMenuItem(
-                icon: Icons.redo,
+                icon: Symbols.redo,
                 label: appLocalizations.redo,
                 onPressed: controller.canRedo ? controller.redo : null,
               ),
               if (supportRemoteDownload && !readOnly)
                 CommonPopupMenuItem(
-                  icon: Icons.arrow_downward,
+                  icon: Symbols.arrow_downward,
                   label: appLocalizations.externalFetch,
                   subItems: [
                     CommonPopupMenuItem(
@@ -579,7 +580,7 @@ class FindPanel extends StatelessWidget implements PreferredSizeWidget {
                       : () {
                           controller.previousMatch();
                         },
-                  icon: Icons.arrow_upward,
+                  icon: Symbols.arrow_upward,
                   tooltip: context.appLocalizations.previousMatch,
                 ),
                 _buildIconButton(
@@ -588,14 +589,14 @@ class FindPanel extends StatelessWidget implements PreferredSizeWidget {
                       : () {
                           controller.nextMatch();
                         },
-                  icon: Icons.arrow_downward,
+                  icon: Symbols.arrow_downward,
                   tooltip: context.appLocalizations.nextMatch,
                 ),
                 const SizedBox(width: 2),
                 IconButton.filledTonal(
                   tooltip: context.appLocalizations.close,
                   onPressed: controller.close,
-                  icon: const Icon(Icons.close, size: 16),
+                  icon: const Icon(Symbols.close, size: 16),
                 ),
               ],
             ),

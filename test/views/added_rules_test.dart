@@ -4,6 +4,7 @@ import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/config/rules.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -86,7 +87,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(currentAppLocalizations.selectAll), findsOneWidget);
-    expect(find.byIcon(Icons.delete), findsOneWidget);
+    expect(find.byIcon(Symbols.delete), findsOneWidget);
   });
 
   testWidgets('select all covers every rule and toggles back off', (
@@ -99,7 +100,7 @@ void main() {
     await tester.tap(find.text(currentAppLocalizations.selectAll));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.delete));
+    await tester.tap(find.byIcon(Symbols.delete));
     await tester.pumpAndSettle();
     await tester.tap(find.text(currentAppLocalizations.confirm));
     await tester.pumpAndSettle();
@@ -114,7 +115,7 @@ void main() {
 
     await tester.tap(find.byType(CommonCheckBox).first);
     await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.delete));
+    await tester.tap(find.byIcon(Symbols.delete));
     await tester.pumpAndSettle();
     await tester.tap(find.text(currentAppLocalizations.cancel));
     await tester.pumpAndSettle();
@@ -128,7 +129,7 @@ void main() {
 
     await tester.tap(find.byType(CommonCheckBox).last);
     await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.delete));
+    await tester.tap(find.byIcon(Symbols.delete));
     await tester.pumpAndSettle();
     await tester.tap(find.text(currentAppLocalizations.confirm));
     await tester.pumpAndSettle();

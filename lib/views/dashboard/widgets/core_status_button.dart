@@ -6,6 +6,7 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -106,7 +107,7 @@ class _CoreStatusButtonState extends ConsumerState<CoreStatusButton> {
                   },
                 ),
                 onPressed: _handleConnection,
-                icon: const Icon(Icons.check, fontWeight: FontWeight.w900),
+                icon: const Icon(Symbols.check, fontWeight: FontWeight.w900),
               )
             : FilledButton.icon(
                 key: ValueKey(coreStatus),
@@ -141,11 +142,11 @@ class _CoreStatusButtonState extends ConsumerState<CoreStatusButton> {
                       ),
                     ),
                     CoreStatus.connected => const Icon(
-                      Icons.check_sharp,
+                      Symbols.check_sharp,
                       fontWeight: FontWeight.w900,
                     ),
                     CoreStatus.disconnected => const Icon(
-                      Icons.restart_alt_sharp,
+                      Symbols.restart_alt_sharp,
                       fontWeight: FontWeight.w900,
                     ),
                   },

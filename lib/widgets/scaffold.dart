@@ -1,6 +1,7 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/widgets/pop_scope.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/rendering.dart';
 
@@ -211,14 +212,14 @@ class CommonScaffoldState extends State<CommonScaffold> {
       return IconButton(
         tooltip: context.appLocalizations.close,
         onPressed: _popAppBarLayer,
-        icon: const Icon(Icons.close),
+        icon: const Icon(Symbols.close),
       );
     }
     if (_isSearch) {
       return IconButton(
         tooltip: context.appLocalizations.back,
         onPressed: _popAppBarLayer,
-        icon: const Icon(Icons.arrow_back),
+        icon: const Icon(Symbols.arrow_back),
       );
     }
     return backAction != null
@@ -272,11 +273,10 @@ class CommonScaffoldState extends State<CommonScaffold> {
   }
 
   Widget _buildRegexSearchButton(AppBarSearchState searchState) {
-    final icon = searchState.useRegex ? Icons.code : Icons.code_outlined;
     final button = IconButton(
       tooltip: context.appLocalizations.regexSearch,
       onPressed: () => _toggleRegexSearch(searchState),
-      icon: Icon(icon),
+      icon: Icon(Symbols.code, fill: searchState.useRegex ? 1 : 0),
     );
     return searchState.useRegex
         ? IconButtonTheme(
@@ -306,7 +306,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
           IconButton(
             tooltip: context.appLocalizations.clear,
             onPressed: _handleClearInput,
-            icon: const Icon(Icons.close),
+            icon: const Icon(Symbols.close),
           ),
         if (searchState?.onRegexChange != null)
           _buildRegexSearchButton(searchState!),
@@ -330,7 +330,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
           onPressed: () {
             _updateSearchState((state) => state?.copyWith(query: ''));
           },
-          icon: const Icon(Icons.search),
+          icon: const Icon(Symbols.search),
         ),
       ...actions,
     ]);

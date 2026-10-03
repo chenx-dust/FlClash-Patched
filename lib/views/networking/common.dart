@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 typedef OverlayNetworkDetailItem = ({String name, String value, bool copyable});
@@ -16,7 +17,7 @@ class OverlayNetworkLoginItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     return DecorationListItem(
-      leading: const Icon(Icons.login),
+      leading: const Icon(Symbols.login),
       title: Text(
         url,
         style: context.textTheme.bodyMedium?.copyWith(
@@ -27,7 +28,7 @@ class OverlayNetworkLoginItem extends StatelessWidget {
         onPressed: () {
           dialogs.openUrl(url);
         },
-        icon: const Icon(Icons.open_in_new),
+        icon: const Icon(Symbols.open_in_new),
         label: Text(appLocalizations.signIn),
       ),
     );
@@ -83,7 +84,7 @@ class OverlayNetworkDetailsDialog extends StatelessWidget {
       trailing: item.copyable
           ? IconButton(
               tooltip: context.appLocalizations.copy,
-              icon: const Icon(Icons.content_copy, size: 14),
+              icon: const Icon(Symbols.content_copy, size: 14),
               onPressed: () => copyText(context, item.value),
             )
           : null,

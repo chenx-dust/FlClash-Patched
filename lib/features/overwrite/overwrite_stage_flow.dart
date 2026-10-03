@@ -4,6 +4,7 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -59,7 +60,7 @@ class OverwriteDismissItem extends ConsumerWidget {
               child: IconButton.filledTonal(
                 tooltip: context.appLocalizations.remove,
                 onPressed: onRemove,
-                icon: const Icon(Icons.remove, size: 18),
+                icon: const Icon(Symbols.remove, size: 18),
                 padding: EdgeInsets.zero,
               ),
             ),
@@ -73,7 +74,7 @@ class OverwriteDismissItem extends ConsumerWidget {
                   child: Container(
                     color: Colors.transparent,
                     padding: EdgeInsets.all(dragIconPadding),
-                    child: const Icon(Icons.drag_handle),
+                    child: const Icon(Symbols.drag_handle),
                   ),
                 ),
               ],

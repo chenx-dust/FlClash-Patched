@@ -29,6 +29,7 @@ import 'package:fl_clash/widgets/inherited.dart';
 import 'package:fl_clash/widgets/list.dart';
 import 'package:fl_clash/widgets/paged_sheet.dart';
 import 'package:fl_clash/widgets/sheet.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart' as flutter;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
@@ -410,9 +411,9 @@ void main() {
           ),
           findsOneWidget,
         );
-        expect(find.byIcon(Icons.desktop_windows_outlined), findsOneWidget);
-        expect(find.byIcon(Icons.bolt), findsOneWidget);
-        await tester.tap(find.byIcon(Icons.bolt));
+        expect(find.byIcon(Symbols.desktop_windows), findsOneWidget);
+        expect(find.byIcon(Symbols.bolt), findsOneWidget);
+        await tester.tap(find.byIcon(Symbols.bolt));
         await tester.pumpAndSettle();
         expect(find.text('23 ms'), findsOneWidget);
         verify(
@@ -504,8 +505,8 @@ void main() {
         expect(find.text('Local'), findsOneWidget);
         expect(find.text('abcdef1234'), findsOneWidget);
         expect(find.text('10.0.0.2/24'), findsOneWidget);
-        expect(find.byIcon(Icons.device_hub), findsOneWidget);
-        expect(find.byIcon(Icons.public), findsOneWidget);
+        expect(find.byIcon(Symbols.device_hub), findsOneWidget);
+        expect(find.byIcon(Symbols.public), findsOneWidget);
         expect(find.text('leaf · 1.14.2 · Direct'), findsOneWidget);
         expect(find.text('planet'), findsOneWidget);
         expect(find.text('Relayed'), findsNothing);

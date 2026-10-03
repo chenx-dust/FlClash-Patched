@@ -9,6 +9,7 @@ import 'package:fl_clash/manager/window_manager.dart';
 import 'package:fl_clash/models/config.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -404,7 +405,7 @@ void main() {
       await pumpActions(tester);
 
       expect(
-        tooltipOf(tester, find.byIcon(Icons.push_pin_outlined)),
+        tooltipOf(tester, find.byIcon(Symbols.push_pin)),
         currentAppLocalizations.pinWindow,
       );
       expect(
@@ -433,7 +434,7 @@ void main() {
       await tester.pump();
 
       expect(
-        tooltipOf(tester, find.byIcon(Icons.push_pin)),
+        tooltipOf(tester, find.byIcon(Symbols.push_pin)),
         currentAppLocalizations.unpinWindow,
       );
       expect(
@@ -463,7 +464,7 @@ void main() {
     testWidgets('each button reports its own press', (tester) async {
       await pumpActions(tester);
 
-      await tester.tap(find.byIcon(Icons.push_pin_outlined));
+      await tester.tap(find.byIcon(Symbols.push_pin));
       await tester.tap(glyph(CaptionGlyph.minimize));
       await tester.tap(glyph(CaptionGlyph.maximize));
       await tester.tap(glyph(CaptionGlyph.close));

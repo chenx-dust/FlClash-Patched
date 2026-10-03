@@ -9,6 +9,7 @@ import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/profiles/overwrite/custom/groups.dart';
 import 'package:fl_clash/views/profiles/overwrite/custom/rules.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -237,7 +238,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.byIcon(Icons.info), findsOneWidget);
+    expect(find.byIcon(Symbols.info), findsOneWidget);
 
     container.read(_testOverwriteDataProvider.notifier).setRuleTargets({
       ...container.read(_testOverwriteDataProvider).ruleTargets,
@@ -245,7 +246,7 @@ void main() {
     });
     await tester.pump();
 
-    expect(find.byIcon(Icons.info), findsNothing);
+    expect(find.byIcon(Symbols.info), findsNothing);
 
     await tester.pumpWidget(const SizedBox.shrink());
   });

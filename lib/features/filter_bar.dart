@@ -1,5 +1,6 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 class FilterChipData {
@@ -137,7 +138,7 @@ class _FilterAddButton extends StatelessWidget {
           visualDensity: VisualDensity.compact,
           tooltip: context.appLocalizations.filter,
           onPressed: () => open(targetContext: context),
-          icon: const Icon(Icons.add),
+          icon: const Icon(Symbols.add),
         );
       },
     );
@@ -227,7 +228,7 @@ class FilterToggleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const icon = Icon(Icons.filter_alt_outlined);
+    const icon = Icon(Symbols.filter_alt);
     final tooltip = context.appLocalizations.filter;
     if (visible || active) {
       return IconButton.filledTonal(

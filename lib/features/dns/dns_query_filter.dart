@@ -3,6 +3,7 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/features/filter_bar.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 enum DnsQueryFilterType { type, initiator, upstream, rcode, cache }
@@ -28,11 +29,11 @@ extension DnsQueryFilterTypeExt on DnsQueryFilterType {
 
   IconData get icon {
     return switch (this) {
-      DnsQueryFilterType.type => Icons.dns_outlined,
-      DnsQueryFilterType.initiator => Icons.apps,
-      DnsQueryFilterType.upstream => Icons.cloud_outlined,
-      DnsQueryFilterType.rcode => Icons.tag,
-      DnsQueryFilterType.cache => Icons.cached,
+      DnsQueryFilterType.type => Symbols.dns,
+      DnsQueryFilterType.initiator => Symbols.apps,
+      DnsQueryFilterType.upstream => Symbols.cloud,
+      DnsQueryFilterType.rcode => Symbols.tag,
+      DnsQueryFilterType.cache => Symbols.cached,
     };
   }
 }

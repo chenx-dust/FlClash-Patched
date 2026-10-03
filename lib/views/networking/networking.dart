@@ -8,6 +8,7 @@ import 'package:fl_clash/views/networking/tailscale.dart';
 import 'package:fl_clash/views/networking/zerotier.dart';
 import 'package:fl_clash/views/networking/easytier.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -422,7 +423,7 @@ class _NetworkingViewState extends ConsumerState<NetworkingView>
     }
     final label = _stateLabel(context, status);
     return DecorationListItem(
-      leading: Icon(Icons.error_outline, color: context.colorScheme.error),
+      leading: Icon(Symbols.error_outline, color: context.colorScheme.error),
       title: Text(label),
       subtitle: status.error == label ? null : Text(status.error),
     );
@@ -446,7 +447,7 @@ class _NetworkingViewState extends ConsumerState<NetworkingView>
           items: [
             DecorationListItem(
               leading: Icon(
-                Icons.error_outline,
+                Symbols.error_outline,
                 color: context.colorScheme.error,
               ),
               title: Text(error.toString()),
@@ -466,7 +467,7 @@ class _NetworkingViewState extends ConsumerState<NetworkingView>
               OverlayNetworkState.stopped,
             }.contains(status.state)
         ? DecorationListItem(
-            leading: const Icon(Icons.power_settings_new),
+            leading: const Icon(Symbols.power_settings_new),
             title: Text(_stateLabel(context, status)),
             trailing: FilledButton.tonalIcon(
               onPressed: _activating.contains(key)
@@ -478,7 +479,7 @@ class _NetworkingViewState extends ConsumerState<NetworkingView>
                       height: 18,
                       child: CommonCircleLoading(),
                     )
-                  : const Icon(Icons.play_arrow),
+                  : const Icon(Symbols.play_arrow),
               label: Text(context.appLocalizations.initialize),
             ),
           )
@@ -575,7 +576,7 @@ class _NetworkingViewState extends ConsumerState<NetworkingView>
         }
       },
       leading: error != null || status?.state == OverlayNetworkState.error
-          ? Icon(Icons.error_outline, color: context.colorScheme.error)
+          ? Icon(Symbols.error_outline, color: context.colorScheme.error)
           : SvgPicture.asset(
               'assets/images/networking/${proxy.type}.svg',
               key: ValueKey('networking-${proxy.type}-icon'),
@@ -628,7 +629,9 @@ class _NetworkingViewState extends ConsumerState<NetworkingView>
                 ? appLocalizations.expand
                 : appLocalizations.collapse,
             onPressed: () => _toggleAll(proxies),
-            icon: Icon(allCollapsed ? Icons.unfold_more : Icons.unfold_less),
+            icon: Icon(
+              allCollapsed ? Symbols.unfold_more : Symbols.unfold_less,
+            ),
           ),
         IconButton(
           tooltip: appLocalizations.sync,
@@ -639,7 +642,7 @@ class _NetworkingViewState extends ConsumerState<NetworkingView>
                   height: 20,
                   child: CommonCircleLoading(),
                 )
-              : const Icon(Icons.sync),
+              : const Icon(Symbols.sync),
         ),
       ],
       body: _buildBody(context, proxies),

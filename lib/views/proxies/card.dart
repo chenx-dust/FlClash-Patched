@@ -4,6 +4,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -52,7 +53,7 @@ class ProxyCard extends ConsumerWidget {
                         ? const CommonCircleLoading()
                         : IconButton(
                             tooltip: context.appLocalizations.delayTest,
-                            icon: const Icon(Icons.bolt),
+                            icon: const Icon(Symbols.bolt, fill: 1),
                             iconSize: globalState.measure.labelSmallHeight,
                             padding: EdgeInsets.zero,
                             onPressed: () => _handleTestCurrentDelay(ref),

@@ -4,6 +4,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/networking/common.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 List<Widget> buildTailscaleChildren({
@@ -44,7 +45,7 @@ List<Widget> buildTailscaleChildren({
     if (details.health.isNotEmpty)
       DecorationListItem(
         leading: Icon(
-          Icons.health_and_safety_outlined,
+          Symbols.health_and_safety,
           color: context.colorScheme.error,
         ),
         title: Text(appLocalizations.tailscaleHealthWarnings),
@@ -86,12 +87,12 @@ String _tailscaleNodeDisplayName(TailscaleNode node, String magicDnsSuffix) {
 
 IconData _nodeIcon(String os) {
   return switch (os.toLowerCase()) {
-    'android' => Icons.android,
-    'chrome' => Icons.laptop_chromebook,
-    'ios' || 'macos' || 'tvos' => Icons.apple,
-    'linux' => Icons.terminal,
-    'windows' => Icons.desktop_windows_outlined,
-    _ => Icons.device_unknown,
+    'android' => Symbols.android,
+    'chrome' => Symbols.laptop_chromebook,
+    'ios' || 'macos' || 'tvos' => Symbols.laptop_mac,
+    'linux' => Symbols.terminal,
+    'windows' => Symbols.desktop_windows,
+    _ => Symbols.device_unknown,
   };
 }
 
@@ -110,7 +111,7 @@ class _AccountItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     return DecorationListItem(
-      leading: const Icon(Icons.account_circle_outlined),
+      leading: const Icon(Symbols.account_circle),
       title: Text(appLocalizations.account),
       subtitle: Text(
         tailnetName.isNotEmpty ? tailnetName : appLocalizations.signedIn,
@@ -125,7 +126,7 @@ class _AccountItem extends StatelessWidget {
                       height: 18,
                       child: CommonCircleLoading(),
                     )
-                  : const Icon(Icons.logout),
+                  : const Icon(Symbols.logout),
               label: Text(appLocalizations.signOut),
             ),
     );
@@ -171,7 +172,11 @@ class _TailscaleNodeItemState extends State<_TailscaleNodeItem> {
                     ? null
                     : _ping,
                 child: _latencyMs == null
-                    ? Icon(Icons.bolt, size: measure.bodyMediumHeight)
+                    ? Icon(
+                        Symbols.bolt,
+                        fill: 1,
+                        size: measure.bodyMediumHeight,
+                      )
                     : Text(
                         '$_latencyMs ms',
                         style: context.textTheme.bodyMedium?.copyWith(

@@ -11,6 +11,7 @@ import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -99,7 +100,7 @@ class _ProvidersViewState extends ConsumerState<ProvidersView> {
     return AdaptiveSheetScaffold(
       actions: [
         IconButtonData(
-          icon: Icons.sync,
+          icon: Symbols.sync,
           onPressed: _updateProviders,
           tooltip: appLocalizations.update,
         ),
@@ -246,7 +247,7 @@ class ProviderItem extends ConsumerWidget {
     return [
       if (provider.canEditAsText && provider.path != null)
         CommonPopupMenuItem(
-          icon: Icons.visibility_outlined,
+          icon: Symbols.visibility,
           label: appLocalizations.preview,
           onPressed: () {
             _handlePreview(context);
@@ -254,7 +255,7 @@ class ProviderItem extends ConsumerWidget {
         ),
       if (provider.canEditAsText && provider.path != null)
         CommonPopupMenuItem(
-          icon: Icons.edit_outlined,
+          icon: Symbols.edit,
           label: appLocalizations.edit,
           onPressed: () {
             _handleEdit(context);
@@ -262,7 +263,7 @@ class ProviderItem extends ConsumerWidget {
         ),
       if (provider.canEditAsText)
         CommonPopupMenuItem(
-          icon: Icons.upload_outlined,
+          icon: Symbols.upload,
           label: appLocalizations.upload,
           onPressed: () {
             _handleSideLoadProvider(ref);
@@ -270,7 +271,7 @@ class ProviderItem extends ConsumerWidget {
         ),
       if (provider.path != null)
         CommonPopupMenuItem(
-          icon: Icons.file_copy_outlined,
+          icon: Symbols.file_copy,
           label: appLocalizations.exportFile,
           onPressed: () {
             _handleExportFile(context);
@@ -278,7 +279,7 @@ class ProviderItem extends ConsumerWidget {
         ),
       if (provider.vehicleType == 'HTTP')
         CommonPopupMenuItem(
-          icon: Icons.sync,
+          icon: Symbols.sync,
           label: appLocalizations.sync,
           onPressed: () {
             _handleUpdateProvider(ref);
@@ -286,7 +287,7 @@ class ProviderItem extends ConsumerWidget {
         ),
       if (subscriptionInfo != null && subscriptionInfo.total > 0)
         CommonPopupMenuItem(
-          icon: Icons.data_usage_outlined,
+          icon: Symbols.data_usage,
           label: appLocalizations.subscriptionInfo,
           onPressed: _handleShowSubscriptionInfo,
         ),
@@ -324,7 +325,7 @@ class ProviderItem extends ConsumerWidget {
                       onPressed: () {
                         open();
                       },
-                      icon: const Icon(Icons.more_vert),
+                      icon: const Icon(Symbols.more_vert),
                     );
                   },
                 ),

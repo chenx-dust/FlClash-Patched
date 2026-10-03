@@ -1,4 +1,5 @@
 import 'package:fl_clash/common/common.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'builder.dart';
@@ -143,7 +144,7 @@ class MoreActionButton extends StatelessWidget {
             vertical: 16,
           ),
           title: Text(label, style: context.textTheme.bodyLarge),
-          trailing: trailing ?? const Icon(Icons.arrow_forward_ios, size: 18),
+          trailing: trailing ?? const Icon(Symbols.arrow_forward_ios, size: 18),
         ),
       ),
     );

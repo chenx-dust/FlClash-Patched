@@ -2,6 +2,7 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/views/networking/common.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 List<Widget> buildZeroTierChildren({
@@ -48,7 +49,7 @@ List<Widget> buildZeroTierChildren({
         if (status.authUrl.isNotEmpty)
           OverlayNetworkLoginItem(url: status.authUrl),
         DecorationListItem(
-          leading: const Icon(Icons.hub_outlined),
+          leading: const Icon(Symbols.hub),
           title: Text(networkTitle),
           subtitle: status.networkName.isEmpty || details.networkId.isEmpty
               ? null
@@ -103,7 +104,7 @@ class _ZeroTierLocalNodeItem extends StatelessWidget {
         ),
     ];
     return DecorationListItem(
-      leading: Icon(Icons.devices_outlined, color: color),
+      leading: Icon(Symbols.devices, color: color),
       title: Text(
         details.node.isNotEmpty ? details.node : appLocalizations.local,
       ),
@@ -132,9 +133,9 @@ class _ZeroTierLocalNodeItem extends StatelessWidget {
 
 IconData _peerIcon(String role) {
   return switch (role.toLowerCase()) {
-    'planet' => Icons.public,
-    'leaf' => Icons.device_hub,
-    _ => Icons.hub_outlined,
+    'planet' => Symbols.public,
+    'leaf' => Symbols.device_hub,
+    _ => Symbols.hub,
   };
 }
 

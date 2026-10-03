@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fl_clash/features/overwrite/overwrite.dart';
 import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/providers/app.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -37,7 +38,7 @@ class _EditorHarness extends StatelessWidget {
               return ListTile(
                 title: Text(item),
                 onTap: onToggleSelected,
-                trailing: isSelected ? const Icon(Icons.check) : null,
+                trailing: isSelected ? const Icon(Symbols.check) : null,
               );
             },
         onReorder: (oldIndex, newIndex) {},
@@ -73,16 +74,16 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.byIcon(Icons.delete), findsNothing);
+    expect(find.byIcon(Symbols.delete), findsNothing);
 
     await tester.tap(find.text('a'));
     await tester.pump();
-    expect(find.byIcon(Icons.delete), findsOneWidget);
+    expect(find.byIcon(Symbols.delete), findsOneWidget);
     expect(find.text(AppLocalizations.current.selectAll), findsOneWidget);
 
     await tester.tap(find.text('a'));
     await tester.pump();
-    expect(find.byIcon(Icons.delete), findsNothing);
+    expect(find.byIcon(Symbols.delete), findsNothing);
 
     await tester.pumpWidget(const SizedBox.shrink());
   });
@@ -99,11 +100,11 @@ void main() {
     await tester.pump();
     await tester.tap(find.text(AppLocalizations.current.selectAll));
     await tester.pump();
-    expect(find.byIcon(Icons.check), findsNWidgets(3));
+    expect(find.byIcon(Symbols.check), findsNWidgets(3));
 
     await tester.tap(find.text(AppLocalizations.current.selectAll));
     await tester.pump();
-    expect(find.byIcon(Icons.check), findsNothing);
+    expect(find.byIcon(Symbols.check), findsNothing);
 
     await tester.pumpWidget(const SizedBox.shrink());
   });
@@ -130,13 +131,13 @@ void main() {
 
     await tester.tap(find.text('a'));
     await tester.pump();
-    await tester.tap(find.byIcon(Icons.delete));
+    await tester.tap(find.byIcon(Symbols.delete));
     await tester.pump();
 
     expect(deleted.single, {'a'});
     expect(find.text('a'), findsNothing);
     expect(find.text('b'), findsOneWidget);
-    expect(find.byIcon(Icons.delete), findsNothing);
+    expect(find.byIcon(Symbols.delete), findsNothing);
 
     await tester.pumpWidget(const SizedBox.shrink());
   });
@@ -151,11 +152,11 @@ void main() {
 
     await tester.tap(find.text('a'));
     await tester.pump();
-    await tester.tap(find.byIcon(Icons.delete));
+    await tester.tap(find.byIcon(Symbols.delete));
     await tester.pump();
 
     expect(find.text('a'), findsOneWidget);
-    expect(find.byIcon(Icons.delete), findsOneWidget);
+    expect(find.byIcon(Symbols.delete), findsOneWidget);
 
     await tester.pumpWidget(const SizedBox.shrink());
   });
@@ -176,7 +177,7 @@ void main() {
 
     await tester.tap(find.text('a'));
     await tester.pump();
-    await tester.tap(find.byIcon(Icons.delete));
+    await tester.tap(find.byIcon(Symbols.delete));
     await tester.pump();
 
     await tester.pumpWidget(const SizedBox.shrink());
@@ -197,7 +198,7 @@ void main() {
     await tester.tap(find.text('a'));
     await tester.pump();
 
-    expect(find.byIcon(Icons.delete), findsNothing);
+    expect(find.byIcon(Symbols.delete), findsNothing);
     expect(find.text(AppLocalizations.current.selectAll), findsOneWidget);
 
     await tester.pumpWidget(const SizedBox.shrink());

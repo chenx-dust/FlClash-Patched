@@ -1,6 +1,7 @@
 import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,7 +21,7 @@ Widget _action() {
   return CommonFloatingActionButton(
     key: const ValueKey('action'),
     onPressed: () {},
-    icon: const Icon(Icons.add),
+    icon: const Icon(Symbols.add),
     label: 'action',
   );
 }
@@ -108,7 +109,7 @@ void main() {
     );
 
     final action = find.byKey(const ValueKey('action'));
-    final search = find.byIcon(Icons.search);
+    final search = find.byIcon(Symbols.search);
     final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
 
     expect(scaffold.floatingActionButton, isNull);

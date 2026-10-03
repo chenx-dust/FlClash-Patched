@@ -12,6 +12,7 @@ import 'package:fl_clash/views/config/general.dart';
 import 'package:fl_clash/views/tools.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:fl_clash/views/navigation.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
@@ -120,12 +121,12 @@ void main() {
           NavigationItemsState(
             value: [
               NavigationItem(
-                icon: const Icon(Icons.space_dashboard),
+                icon: const Icon(Symbols.space_dashboard),
                 label: PageLabel.dashboard,
                 builder: (_) => const SizedBox.shrink(),
               ),
               NavigationItem(
-                icon: const Icon(Icons.construction),
+                icon: const Icon(Symbols.construction),
                 label: PageLabel.tools,
                 builder: (_) => const SizedBox.shrink(),
               ),
@@ -174,14 +175,14 @@ void main() {
             NavigationItemsState(
               value: [
                 NavigationItem(
-                  icon: const Icon(Icons.space_dashboard),
+                  icon: const Icon(Symbols.space_dashboard),
                   label: PageLabel.dashboard,
                   builder: (_) => const _StatefulContent(
                     key: GlobalObjectKey(PageLabel.dashboard),
                   ),
                 ),
                 NavigationItem(
-                  icon: const Icon(Icons.construction),
+                  icon: const Icon(Symbols.construction),
                   label: PageLabel.tools,
                   builder: (_) => const SizedBox.shrink(),
                 ),
@@ -239,7 +240,7 @@ void main() {
 
       final outgoingTools = find.descendant(
         of: find.byType(NavigationRail),
-        matching: find.byIcon(Icons.construction),
+        matching: find.byIcon(Symbols.construction),
       );
       await tester.tap(outgoingTools, warnIfMissed: false);
       await tester.pump();
@@ -278,14 +279,14 @@ void main() {
             NavigationItemsState(
               value: [
                 NavigationItem(
-                  icon: const Icon(Icons.space_dashboard),
+                  icon: const Icon(Symbols.space_dashboard),
                   label: PageLabel.dashboard,
                   builder: (_) => const ToolsView(
                     key: GlobalObjectKey(PageLabel.dashboard),
                   ),
                 ),
                 NavigationItem(
-                  icon: const Icon(Icons.construction),
+                  icon: const Icon(Symbols.construction),
                   label: PageLabel.tools,
                   builder: (_) => const SizedBox.shrink(),
                 ),
@@ -329,12 +330,12 @@ void main() {
             NavigationItemsState(
               value: [
                 NavigationItem(
-                  icon: const Icon(Icons.space_dashboard),
+                  icon: const Icon(Symbols.space_dashboard),
                   label: PageLabel.dashboard,
                   builder: (_) => const SizedBox.shrink(),
                 ),
                 NavigationItem(
-                  icon: const Icon(Icons.article),
+                  icon: const Icon(Symbols.article),
                   label: PageLabel.logs,
                   modes: const [
                     NavigationItemMode.desktop,
@@ -343,7 +344,7 @@ void main() {
                   builder: (_) => const SizedBox.shrink(),
                 ),
                 NavigationItem(
-                  icon: const Icon(Icons.link),
+                  icon: const Icon(Symbols.link),
                   label: PageLabel.connections,
                   modes: const [
                     NavigationItemMode.desktop,
@@ -352,7 +353,7 @@ void main() {
                   builder: (_) => const SizedBox.shrink(),
                 ),
                 NavigationItem(
-                  icon: const Icon(Icons.construction),
+                  icon: const Icon(Symbols.construction),
                   label: PageLabel.tools,
                   builder: (_) =>
                       const ToolsView(key: GlobalObjectKey(PageLabel.tools)),
@@ -517,24 +518,24 @@ void main() {
             NavigationItemsState(
               value: [
                 NavigationItem(
-                  icon: const Icon(Icons.space_dashboard),
+                  icon: const Icon(Symbols.space_dashboard),
                   label: PageLabel.dashboard,
                   builder: (_) => Align(
                     alignment: Alignment.topLeft,
                     child: IconButton(
                       onPressed: () {},
-                      icon: const Icon(Icons.more_horiz),
+                      icon: const Icon(Symbols.more_horiz),
                     ),
                   ),
                 ),
                 NavigationItem(
-                  icon: const Icon(Icons.article),
+                  icon: const Icon(Symbols.article),
                   label: PageLabel.proxies,
                   builder: (_) => Align(
                     alignment: Alignment.topLeft,
                     child: IconButton(
                       onPressed: () {},
-                      icon: const Icon(Icons.more_vert),
+                      icon: const Icon(Symbols.more_vert),
                     ),
                   ),
                 ),
@@ -566,7 +567,10 @@ void main() {
         if (!focusInRail() || focusNode == null) {
           return null;
         }
-        return [Icons.space_dashboard, Icons.article].reduce((closest, icon) {
+        return [Symbols.space_dashboard, Symbols.article].reduce((
+          closest,
+          icon,
+        ) {
           final closestDistance =
               (tester.getCenter(find.byIcon(closest)).dy -
                       focusNode.rect.center.dy)
@@ -584,32 +588,32 @@ void main() {
         await tester.pump();
       }
       expect(focusInRail(), isTrue);
-      expect(focusedRailIcon(), Icons.space_dashboard);
+      expect(focusedRailIcon(), Symbols.space_dashboard);
 
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
       await tester.pump();
-      expect(focusedRailIcon(), Icons.article);
+      expect(focusedRailIcon(), Symbols.article);
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pump();
 
       expect(container.read(currentPageLabelProvider), PageLabel.proxies);
       final rail = tester.widget<NavigationRail>(find.byType(NavigationRail));
       expect(rail.selectedIndex, 1);
-      expect(focusedRailIcon(), Icons.article);
+      expect(focusedRailIcon(), Symbols.article);
 
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
       await tester.pump();
-      expect(focusedRailIcon(), Icons.space_dashboard);
+      expect(focusedRailIcon(), Symbols.space_dashboard);
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pump();
 
       expect(container.read(currentPageLabelProvider), PageLabel.dashboard);
-      expect(focusedRailIcon(), Icons.space_dashboard);
+      expect(focusedRailIcon(), Symbols.space_dashboard);
 
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
       await tester.pump();
 
-      expect(focusedRailIcon(), Icons.article);
+      expect(focusedRailIcon(), Symbols.article);
       expect(container.read(currentPageLabelProvider), PageLabel.dashboard);
     },
   );
@@ -633,7 +637,7 @@ void main() {
             child: IconButton(
               key: const ValueKey('content-action'),
               onPressed: () {},
-              icon: const Icon(Icons.more_horiz),
+              icon: const Icon(Symbols.more_horiz),
             ),
           ),
         ],
@@ -646,22 +650,22 @@ void main() {
           NavigationItemsState(
             value: [
               NavigationItem(
-                icon: const Icon(Icons.space_dashboard),
+                icon: const Icon(Symbols.space_dashboard),
                 label: PageLabel.dashboard,
                 builder: (_) => page('dashboard'),
               ),
               NavigationItem(
-                icon: const Icon(Icons.folder),
+                icon: const Icon(Symbols.folder),
                 label: PageLabel.profiles,
                 builder: (_) => page('profiles'),
               ),
               NavigationItem(
-                icon: const Icon(Icons.construction),
+                icon: const Icon(Symbols.construction),
                 label: PageLabel.tools,
                 builder: (_) => page('tools'),
               ),
               NavigationItem(
-                icon: const Icon(Icons.article),
+                icon: const Icon(Symbols.article),
                 label: PageLabel.logs,
                 builder: (_) => page('logs'),
               ),
@@ -686,7 +690,7 @@ void main() {
     NavigationBar navBar() =>
         tester.widget<NavigationBar>(find.byType(NavigationBar));
 
-    await tester.tap(find.byIcon(Icons.construction));
+    await tester.tap(find.byIcon(Symbols.construction));
     await tester.pumpAndSettle();
     expect(container.read(currentPageLabelProvider), PageLabel.tools);
     expect(navBar().selectedIndex, 2);
@@ -711,11 +715,11 @@ void main() {
     expect(navBar().selectedIndex, 1);
     expect(find.text('page:profiles'), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.construction));
+    await tester.tap(find.byIcon(Symbols.construction));
     await tester.pump(const Duration(milliseconds: 100));
-    await tester.tap(find.byIcon(Icons.article));
+    await tester.tap(find.byIcon(Symbols.article));
     await tester.pump(const Duration(milliseconds: 100));
-    await tester.tap(find.byIcon(Icons.folder));
+    await tester.tap(find.byIcon(Symbols.folder));
     await tester.pumpAndSettle();
     expect(container.read(currentPageLabelProvider), PageLabel.profiles);
     expect(navBar().selectedIndex, 1);
@@ -749,7 +753,7 @@ void main() {
           NavigationItemsState(
             value: [
               NavigationItem(
-                icon: const Icon(Icons.space_dashboard),
+                icon: const Icon(Symbols.space_dashboard),
                 label: PageLabel.dashboard,
                 builder: (_) => CommonScaffold(
                   title: 'Search page',
@@ -762,7 +766,7 @@ void main() {
                 ),
               ),
               NavigationItem(
-                icon: const Icon(Icons.construction),
+                icon: const Icon(Symbols.construction),
                 label: PageLabel.tools,
                 builder: (_) => const SizedBox.shrink(),
               ),
@@ -783,16 +787,16 @@ void main() {
     );
     await tester.pump();
 
-    await tester.tap(find.byIcon(Icons.search));
+    await tester.tap(find.byIcon(Symbols.search));
     await tester.pumpAndSettle();
     expect(find.byType(TextField), findsOneWidget);
     await tester.enterText(find.byType(TextField), 'needle');
     expect(query, 'needle');
 
-    await tester.tap(find.byIcon(Icons.construction));
+    await tester.tap(find.byIcon(Symbols.construction));
     await tester.pumpAndSettle();
     expect(query, isEmpty);
-    await tester.tap(find.byIcon(Icons.space_dashboard));
+    await tester.tap(find.byIcon(Symbols.space_dashboard));
     await tester.pumpAndSettle();
 
     expect(find.byType(TextField), findsNothing);
@@ -813,7 +817,7 @@ void main() {
           NavigationItemsState(
             value: [
               NavigationItem(
-                icon: const Icon(Icons.space_dashboard),
+                icon: const Icon(Symbols.space_dashboard),
                 label: PageLabel.dashboard,
                 builder: (_) => _NestedSearchLauncher(
                   onSearch: (value) {
@@ -822,7 +826,7 @@ void main() {
                 ),
               ),
               NavigationItem(
-                icon: const Icon(Icons.construction),
+                icon: const Icon(Symbols.construction),
                 label: PageLabel.tools,
                 builder: (_) => const SizedBox.shrink(),
               ),
@@ -845,7 +849,7 @@ void main() {
 
     await tester.tap(find.text('Open nested search'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.search));
+    await tester.tap(find.byIcon(Symbols.search));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'needle');
     expect(query, 'needle');
@@ -854,7 +858,7 @@ void main() {
     await tester.tap(
       find.descendant(
         of: navigationRail,
-        matching: find.byIcon(Icons.construction),
+        matching: find.byIcon(Symbols.construction),
       ),
     );
     await tester.pumpAndSettle();
@@ -863,7 +867,7 @@ void main() {
     await tester.tap(
       find.descendant(
         of: navigationRail,
-        matching: find.byIcon(Icons.space_dashboard),
+        matching: find.byIcon(Symbols.space_dashboard),
       ),
     );
     await tester.pumpAndSettle();
@@ -899,12 +903,12 @@ void main() {
             NavigationItemsState(
               value: [
                 NavigationItem(
-                  icon: const Icon(Icons.space_dashboard),
+                  icon: const Icon(Symbols.space_dashboard),
                   label: PageLabel.dashboard,
                   builder: (_) => pageContent('dashboard'),
                 ),
                 NavigationItem(
-                  icon: const Icon(Icons.folder),
+                  icon: const Icon(Symbols.folder),
                   label: PageLabel.profiles,
                   builder: (_) => pageContent('profiles'),
                 ),
@@ -932,10 +936,10 @@ void main() {
       );
 
       // Visit another page so its content stays alive in the PageView cache.
-      await tester.tap(railIcon(Icons.folder));
+      await tester.tap(railIcon(Symbols.folder));
       await tester.pumpAndSettle();
       expect(container.read(currentPageLabelProvider), PageLabel.profiles);
-      await tester.tap(railIcon(Icons.space_dashboard));
+      await tester.tap(railIcon(Symbols.space_dashboard));
       await tester.pumpAndSettle();
       expect(container.read(currentPageLabelProvider), PageLabel.dashboard);
 

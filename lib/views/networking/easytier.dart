@@ -2,6 +2,7 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/views/networking/common.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 List<Widget> buildEasyTierChildren({
@@ -50,7 +51,7 @@ List<Widget> buildEasyTierChildren({
         ?statusErrorItem,
         ?activationItem,
         DecorationListItem(
-          leading: const Icon(Icons.hub_outlined),
+          leading: const Icon(Symbols.hub),
           title: Text(networkTitle),
           onPressed: networkItems.isEmpty
               ? null
@@ -233,10 +234,10 @@ class _EasyTierNodeItem extends StatelessWidget {
     return DecorationListItem(
       leading: Icon(
         local
-            ? Icons.devices_outlined
+            ? Symbols.devices
             : node.isPublicServer
-            ? Icons.public
-            : Icons.device_hub,
+            ? Symbols.public
+            : Symbols.device_hub,
       ),
       title: Text(title),
       subtitle: subtitle.isEmpty ? null : Text(subtitle),

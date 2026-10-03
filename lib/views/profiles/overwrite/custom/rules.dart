@@ -6,6 +6,7 @@ import 'package:fl_clash/models/common.dart';
 import 'package:fl_clash/models/state.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -187,7 +188,7 @@ class _AddOrEditRuleViewState extends ConsumerState<_AddOrEditRuleView> {
               ),
             ),
           ),
-          const Icon(Icons.arrow_forward_ios),
+          const Icon(Symbols.arrow_forward_ios),
         ],
       ),
     );
@@ -270,7 +271,7 @@ class _AddOrEditRuleViewState extends ConsumerState<_AddOrEditRuleView> {
               ),
             ),
           ),
-          const Icon(Icons.arrow_forward_ios),
+          const Icon(Symbols.arrow_forward_ios),
         ],
       ),
     );
@@ -351,7 +352,11 @@ class _AddOrEditRuleViewState extends ConsumerState<_AddOrEditRuleView> {
                         ),
                       );
                     },
-                    icon: Icon(Icons.info, size: 16.ap, color: foregroundColor),
+                    icon: Icon(
+                      Symbols.info,
+                      size: 16.ap,
+                      color: foregroundColor,
+                    ),
                   ),
                 ),
               Flexible(
@@ -368,7 +373,7 @@ class _AddOrEditRuleViewState extends ConsumerState<_AddOrEditRuleView> {
                 ),
               ),
               const SizedBox(width: 4),
-              Icon(Icons.arrow_forward_ios, color: foregroundColor),
+              Icon(Symbols.arrow_forward_ios, color: foregroundColor),
             ],
           ),
         );
@@ -432,7 +437,7 @@ class _AddOrEditRuleViewState extends ConsumerState<_AddOrEditRuleView> {
               ),
             ),
           ),
-          const Icon(Icons.arrow_forward_ios),
+          const Icon(Symbols.arrow_forward_ios),
         ],
       ),
     );
@@ -497,7 +502,7 @@ class _AddOrEditRuleViewState extends ConsumerState<_AddOrEditRuleView> {
     return AdaptiveSheetScaffold(
       actions: [
         IconButtonData(
-          icon: Icons.check,
+          icon: Symbols.check,
           onPressed: _handleSave,
           tooltip: context.appLocalizations.save,
         ),

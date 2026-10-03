@@ -1,5 +1,6 @@
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/common/shape.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -68,7 +69,7 @@ class ColorSchemeBox extends StatelessWidget {
                   const Positioned(
                     bottom: 4,
                     right: 4,
-                    child: Icon(Icons.colorize, size: 20),
+                    child: Icon(Symbols.colorize, size: 20),
                   ),
               ],
             );

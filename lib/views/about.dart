@@ -7,6 +7,7 @@ import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/config_item.dart';
 import 'package:fl_clash/widgets/list.dart';
 import 'package:fl_clash/widgets/scaffold.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -51,7 +52,7 @@ class AboutView extends ConsumerWidget {
           onTap: () {
             dialogs.openUrl('https://github.com/$repository');
           },
-          trailing: const Icon(Icons.launch),
+          trailing: const Icon(Symbols.launch),
         ),
         ListItem(
           title: Text(appLocalizations.core),
@@ -60,7 +61,7 @@ class AboutView extends ConsumerWidget {
               'https://github.com/chenx-dust/mihomo/tree/FlClash',
             );
           },
-          trailing: const Icon(Icons.launch),
+          trailing: const Icon(Symbols.launch),
         ),
       ],
     );

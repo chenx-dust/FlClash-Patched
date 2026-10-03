@@ -11,6 +11,7 @@ import 'package:fl_clash/views/dashboard/dashboard.dart';
 import 'package:fl_clash/views/logs.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/services.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -205,7 +206,7 @@ void main() {
       ),
     );
 
-    await tester.tap(find.byIcon(Icons.search));
+    await tester.tap(find.byIcon(Symbols.search));
     await tester.pumpAndSettle();
     expect(find.byType(TextField), findsOneWidget);
 
@@ -238,13 +239,13 @@ void main() {
       ),
     );
 
-    await tester.tap(find.byIcon(Icons.search));
+    await tester.tap(find.byIcon(Symbols.search));
     await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.code_outlined));
+    await tester.tap(find.byIcon(Symbols.code));
     await tester.pumpAndSettle();
 
     expect(useRegex, isTrue);
-    expect(find.byIcon(Icons.code), findsOneWidget);
+    expect(find.byIcon(Symbols.code), findsOneWidget);
 
     await tester.enterText(find.byType(TextField), '[');
     await tester.pump();
@@ -280,7 +281,7 @@ void main() {
       ),
     );
 
-    await tester.tap(find.byIcon(Icons.search));
+    await tester.tap(find.byIcon(Symbols.search));
     await tester.pumpAndSettle();
     expect(find.byType(TextField), findsOneWidget);
 
@@ -442,7 +443,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
 
     final deleteButton = find.ancestor(
-      of: find.byIcon(Icons.close).first,
+      of: find.byIcon(Symbols.close).first,
       matching: find.byType(IconButton),
     );
     tester.widget<IconButton>(deleteButton).onPressed!();

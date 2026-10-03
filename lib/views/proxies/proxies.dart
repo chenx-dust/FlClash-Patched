@@ -6,6 +6,7 @@ import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/views/proxies/list.dart';
 import 'package:fl_clash/views/proxies/providers.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -37,7 +38,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
           onPressed: () {
             _proxiesTabKey.currentState?.scrollToGroupSelected();
           },
-          icon: const Icon(Icons.adjust, weight: 1),
+          icon: const Icon(Symbols.adjust, weight: 1),
         ),
       if (!_isTab) _buildListUnfoldButton(),
       CommonPopupBox(
@@ -48,13 +49,13 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
               final isMobile = ref.read(isMobileViewProvider);
               open(offset: Offset(0, isMobile ? 0 : 20));
             },
-            icon: const Icon(Icons.more_vert),
+            icon: const Icon(Symbols.more_vert),
           );
         },
         popupBuilder: (_) => CommonPopupMenu(
           items: [
             CommonPopupMenuItem(
-              icon: Icons.tune,
+              icon: Symbols.tune,
               label: appLocalizations.styleSettings,
               onPressed: () {
                 showSheet(
@@ -72,8 +73,8 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
             ),
             CommonPopupMenuItem(
               icon: hideUnavailable
-                  ? Icons.filter_alt_off_outlined
-                  : Icons.filter_alt_outlined,
+                  ? Symbols.filter_alt_off
+                  : Symbols.filter_alt,
               label: hideUnavailable
                   ? appLocalizations.showUnavailable
                   : appLocalizations.hideUnavailable,
@@ -87,8 +88,8 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
             ),
             CommonPopupMenuItem(
               icon: showHiddenGroups
-                  ? Icons.visibility_off_outlined
-                  : Icons.visibility_outlined,
+                  ? Symbols.visibility_off
+                  : Symbols.visibility,
               label: showHiddenGroups
                   ? appLocalizations.restoreHiddenGroups
                   : appLocalizations.showHiddenGroups,
@@ -102,7 +103,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
             ),
             if (_hasProviders)
               CommonPopupMenuItem(
-                icon: Icons.poll_outlined,
+                icon: Symbols.poll,
                 label: appLocalizations.providers,
                 onPressed: () {
                   showExtend(
@@ -136,7 +137,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
             .read(proxiesActionProvider.notifier)
             .updateCurrentUnfoldSet(unfoldSet);
       },
-      icon: Icon(allCollapsed ? Icons.unfold_more : Icons.unfold_less),
+      icon: Icon(allCollapsed ? Symbols.unfold_more : Symbols.unfold_less),
     );
   }
 

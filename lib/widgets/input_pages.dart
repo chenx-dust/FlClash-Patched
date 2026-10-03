@@ -308,7 +308,7 @@ class _ListInputPageState extends ConsumerState<ListInputPage>
               child: IconButton.filledTonal(
                 tooltip: context.appLocalizations.delete,
                 onPressed: _handleDelete,
-                icon: const Icon(Icons.delete),
+                icon: const Icon(Symbols.delete),
               ),
             ),
             const SizedBox(width: 2),
@@ -317,7 +317,7 @@ class _ListInputPageState extends ConsumerState<ListInputPage>
               child: IconButton.filledTonal(
                 tooltip: context.appLocalizations.reset,
                 onPressed: _handleReset,
-                icon: const Icon(Icons.replay),
+                icon: const Icon(Symbols.replay),
               ),
             ),
             const SizedBox(width: 2),
@@ -644,7 +644,7 @@ class _MapInputPageState extends ConsumerState<MapInputPage>
               child: IconButton.filledTonal(
                 tooltip: context.appLocalizations.delete,
                 onPressed: _handleDelete,
-                icon: const Icon(Icons.delete),
+                icon: const Icon(Symbols.delete),
               ),
             ),
             const SizedBox(width: 2),
@@ -656,7 +656,7 @@ class _MapInputPageState extends ConsumerState<MapInputPage>
               child: IconButton.filledTonal(
                 tooltip: context.appLocalizations.reset,
                 onPressed: _handleReset,
-                icon: const Icon(Icons.replay),
+                icon: const Icon(Symbols.replay),
               ),
             ),
             const SizedBox(width: 2),

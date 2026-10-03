@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:fl_clash/widgets/inherited.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 class EffectGestureDetector extends StatefulWidget {
@@ -119,7 +120,7 @@ class _CommonExpandIconState extends State<CommonExpandIcon>
       builder: (_, child) {
         return RotationTransition(turns: _iconTurns, child: child!);
       },
-      child: const Icon(Icons.expand_more),
+      child: const Icon(Symbols.expand_more),
     );
   }
 }

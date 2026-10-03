@@ -10,6 +10,7 @@ import 'package:fl_clash/views/profiles/age_key_generator.dart';
 import 'package:fl_clash/views/profiles/overwrite/overwrite.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -82,7 +83,7 @@ class _ProfilesViewState extends ConsumerState<ProfilesView> {
               onPressed: () {
                 _updateProfiles(profiles);
               },
-              icon: const Icon(Icons.sync),
+              icon: const Icon(Symbols.sync),
             ),
             IconButton(
               tooltip: context.appLocalizations.profilesSort,
@@ -94,7 +95,7 @@ class _ProfilesViewState extends ConsumerState<ProfilesView> {
                   },
                 );
               },
-              icon: const Icon(Icons.sort),
+              icon: const Icon(Symbols.sort),
               iconSize: 26,
             ),
           ]
@@ -104,7 +105,7 @@ class _ProfilesViewState extends ConsumerState<ProfilesView> {
   Widget _buildFAB() {
     return CommonFloatingActionButton(
       onPressed: _handleShowAddExtendPage,
-      icon: const Icon(Icons.add),
+      icon: const Icon(Symbols.add),
       label: context.appLocalizations.addProfile,
     );
   }
@@ -267,7 +268,7 @@ class ProfileItem extends ConsumerWidget {
         title: context.appLocalizations.edit,
         actions: [
           IconButtonData(
-            icon: Icons.key_outlined,
+            icon: Symbols.key,
             tooltip: context.appLocalizations.ageKeyGenerateTitle,
             onPressed: () {
               dialogs.showCommonDialog<void>(
@@ -347,14 +348,14 @@ class ProfileItem extends ConsumerWidget {
         isUrl && subscriptionInfo != null && subscriptionInfo.total > 0;
     return [
       CommonPopupMenuItem(
-        icon: Icons.edit_outlined,
+        icon: Symbols.edit,
         label: appLocalizations.edit,
         onPressed: () {
           _handleShowEditExtendPage(context);
         },
       ),
       CommonPopupMenuItem(
-        icon: Icons.visibility_outlined,
+        icon: Symbols.visibility,
         label: appLocalizations.preview,
         onPressed: () {
           _handlePreview(context);
@@ -362,18 +363,18 @@ class ProfileItem extends ConsumerWidget {
       ),
       if (isUrl)
         CommonPopupMenuItem(
-          icon: Icons.sync_alt_sharp,
+          icon: Symbols.sync_alt_sharp,
           label: appLocalizations.sync,
           onPressed: () {
             updateProfile(ref);
           },
         ),
       CommonPopupMenuItem(
-        icon: Icons.emergency_outlined,
+        icon: Symbols.emergency,
         label: appLocalizations.more,
         subItems: [
           CommonPopupMenuItem(
-            icon: Icons.extension_outlined,
+            icon: Symbols.extension,
             label: appLocalizations.override,
             onPressed: () {
               _handlePushGenProfilePage(context, profile.id);
@@ -381,7 +382,7 @@ class ProfileItem extends ConsumerWidget {
           ),
           if (hasSubscriptionInfo)
             CommonPopupMenuItem(
-              icon: Icons.data_usage,
+              icon: Symbols.data_usage,
               label: appLocalizations.subscriptionInfo,
               onPressed: () {
                 _handleShowSubscriptionInfo(context);
@@ -389,14 +390,14 @@ class ProfileItem extends ConsumerWidget {
             ),
           if (isUrl)
             CommonPopupMenuItem(
-              icon: Icons.copy,
+              icon: Symbols.content_copy,
               label: appLocalizations.copyLink,
               onPressed: () {
                 _handleCopyLink(context);
               },
             ),
           CommonPopupMenuItem(
-            icon: Icons.file_copy_outlined,
+            icon: Symbols.file_copy,
             label: appLocalizations.exportFile,
             onPressed: () {
               _handleExportFile(context);
@@ -406,7 +407,7 @@ class ProfileItem extends ConsumerWidget {
       ),
       CommonPopupMenuItem(
         danger: true,
-        icon: Icons.delete_outlined,
+        icon: Symbols.delete,
         label: appLocalizations.delete,
         onPressed: () {
           _handleDeleteProfile(context, ref);
@@ -473,7 +474,7 @@ class ProfileItem extends ConsumerWidget {
                                   onPressed: () {
                                     open(targetContext: buttonContext);
                                   },
-                                  icon: const Icon(Icons.more_vert),
+                                  icon: const Icon(Symbols.more_vert),
                                 );
                               },
                             ),
@@ -578,7 +579,7 @@ class _ReorderableProfilesSheetState
       child: ReorderableDelayedDragStartListener(
         index: index,
         child: DecorationListItem(
-          trailing: const Icon(Icons.drag_handle),
+          trailing: const Icon(Symbols.drag_handle),
           title: Text(profile.realLabel),
         ),
       ),
@@ -597,7 +598,7 @@ class _ReorderableProfilesSheetState
       sheetTransparentToolBar: true,
       actions: [
         IconButtonData(
-          icon: Icons.check,
+          icon: Symbols.check,
           onPressed: _handleSave,
           tooltip: context.appLocalizations.save,
         ),

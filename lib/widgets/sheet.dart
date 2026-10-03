@@ -3,6 +3,7 @@ import 'package:fl_clash/models/common.dart';
 import 'package:fl_clash/widgets/inherited.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'focus.dart';
@@ -231,17 +232,17 @@ class AdaptiveSheetScaffold extends StatefulWidget {
 class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
   IconData get backIconData {
     if (kIsWeb) {
-      return Icons.arrow_back;
+      return Symbols.arrow_back;
     }
     switch (Theme.of(context).platform) {
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
-        return Icons.arrow_back;
+        return Symbols.arrow_back;
       case TargetPlatform.iOS:
       case TargetPlatform.macOS:
-        return Icons.arrow_back_ios_new_rounded;
+        return Symbols.arrow_back_ios_new_rounded;
     }
   }
 
@@ -263,7 +264,7 @@ class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
   }) {
     if (useCloseIcon) {
       return IconButtonData(
-        icon: Icons.close,
+        icon: Symbols.close,
         onPressed: context.safeNestedPop,
         tooltip: context.appLocalizations.close,
       );

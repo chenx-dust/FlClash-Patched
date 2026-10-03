@@ -2,6 +2,7 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/manager/status_manager.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -279,7 +280,7 @@ void main() {
     state.message('boom', level: MessageLevel.error);
     await tester.pump();
 
-    expect(find.byIcon(Icons.error_outline), findsOneWidget);
+    expect(find.byIcon(Symbols.error_outline), findsOneWidget);
 
     await tester.pump(const Duration(seconds: 4));
     await tester.pump(const Duration(milliseconds: 500));

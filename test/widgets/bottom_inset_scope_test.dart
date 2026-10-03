@@ -2,6 +2,7 @@ import 'package:fl_clash/widgets/float_layout.dart';
 import 'package:fl_clash/widgets/inherited.dart';
 import 'package:fl_clash/widgets/scaffold.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../helpers/test_app.dart';
@@ -32,7 +33,7 @@ void main() {
         body: const SizedBox(),
         floatingActionButton: FloatingActionButton(
           onPressed: () {},
-          child: const Icon(Icons.add),
+          child: const Icon(Symbols.add),
         ),
       );
       return TestApp(
@@ -69,7 +70,7 @@ void main() {
             floatingActionButton: withFab
                 ? FloatingActionButton(
                     onPressed: () {},
-                    child: const Icon(Icons.add),
+                    child: const Icon(Symbols.add),
                   )
                 : null,
           ),
@@ -110,7 +111,7 @@ void main() {
             floatingActionButton: withFab
                 ? FloatingActionButton(
                     onPressed: () {},
-                    child: const Icon(Icons.add),
+                    child: const Icon(Symbols.add),
                   )
                 : null,
           ),
@@ -141,7 +142,7 @@ void main() {
             body: contentProbe(),
             floatingActionButton: FloatingActionButton(
               onPressed: () {},
-              child: const Icon(Icons.add),
+              child: const Icon(Symbols.add),
             ),
           ),
         ),
@@ -166,7 +167,7 @@ void main() {
               floatingWidget: FloatWrapper(
                 child: FloatingActionButton(
                   onPressed: () {},
-                  child: const Icon(Icons.save),
+                  child: const Icon(Symbols.save),
                 ),
               ),
               child: contentProbe(),

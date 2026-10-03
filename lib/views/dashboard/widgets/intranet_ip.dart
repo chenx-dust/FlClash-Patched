@@ -5,6 +5,7 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -37,7 +38,7 @@ class IntranetIP extends ConsumerWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Icon(Icons.devices, color: titleTextStyle),
+                  Icon(Symbols.devices, color: titleTextStyle),
                   const SizedBox(width: 8),
                   Flexible(
                     flex: 1,
@@ -62,7 +63,7 @@ class IntranetIP extends ConsumerWidget {
                         onPressed: _showInterfaceIpDialog,
                         icon: Icon(
                           size: 16.ap,
-                          Icons.info_outline,
+                          Symbols.info,
                           color: context.colorScheme.onSurfaceVariant,
                         ),
                       ),
@@ -156,7 +157,7 @@ class _IntranetIpDialogState extends State<_IntranetIpDialog> {
       ),
       trailing: IconButton(
         tooltip: context.appLocalizations.copy,
-        icon: const Icon(Icons.content_copy, size: 14),
+        icon: const Icon(Symbols.content_copy, size: 14),
         onPressed: ip.isNotEmpty ? () => copyText(context, ip) : null,
       ),
     );

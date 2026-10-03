@@ -7,6 +7,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
@@ -97,7 +98,7 @@ class _LogsViewState extends ConsumerState<LogsView> {
         onPressed: () {
           _handleExport();
         },
-        icon: const Icon(Icons.save_outlined),
+        icon: const Icon(Symbols.save),
       ),
     ];
   }
@@ -195,8 +196,8 @@ class _LogsViewState extends ConsumerState<LogsView> {
                 }
               },
               child: autoScrollToEnd
-                  ? const Icon(Icons.pause)
-                  : const Icon(Icons.play_arrow),
+                  ? const Icon(Symbols.pause)
+                  : const Icon(Symbols.play_arrow),
             ),
           );
         },
@@ -276,7 +277,7 @@ class _LogFilterButton extends StatelessWidget {
     final l10n = context.appLocalizations;
     return [
       CommonPopupMenuItem(
-        icon: Icons.source_outlined,
+        icon: Symbols.source,
         label: l10n.source,
         subItems: [
           for (final source in LogSource.values)
@@ -287,7 +288,7 @@ class _LogFilterButton extends StatelessWidget {
         ],
       ),
       CommonPopupMenuItem(
-        icon: Icons.flag_outlined,
+        icon: Symbols.flag,
         label: l10n.level,
         subItems: [
           for (final level in LogLevel.values)
@@ -299,7 +300,7 @@ class _LogFilterButton extends StatelessWidget {
         ],
       ),
       CommonPopupMenuItem(
-        icon: Icons.filter_alt_off_outlined,
+        icon: Symbols.filter_alt_off,
         label: l10n.reset,
         onPressed: onClear,
       ),
@@ -311,7 +312,7 @@ class _LogFilterButton extends StatelessWidget {
     return CommonPopupBox(
       popupBuilder: (_) => CommonPopupMenu(items: _buildItems(context)),
       targetBuilder: (open) {
-        const icon = Icon(Icons.filter_alt_outlined);
+        const icon = Icon(Symbols.filter_alt);
         void onPressed() => open(targetContext: context);
         return logsState.hasFilters
             ? IconButton.filledTonal(

@@ -6,6 +6,7 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sliver_tools/sliver_tools.dart';
@@ -749,7 +750,7 @@ class _GroupActions extends StatelessWidget {
             onPressed: onScrollToSelected,
             style: _shrinkWrap,
             iconSize: 19,
-            icon: const Icon(Icons.adjust),
+            icon: const Icon(Symbols.adjust),
           ),
           const SizedBox(width: 2),
           IconButton(
@@ -759,7 +760,7 @@ class _GroupActions extends StatelessWidget {
             padding: const EdgeInsets.all(2),
             onPressed: onDelayTest,
             style: _shrinkWrap,
-            icon: const Icon(Icons.network_ping),
+            icon: const Icon(Symbols.network_ping),
           ),
           const SizedBox(width: 6),
         ] else

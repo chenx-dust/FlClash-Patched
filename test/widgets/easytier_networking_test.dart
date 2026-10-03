@@ -11,6 +11,7 @@ import 'package:fl_clash/providers/core.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/networking/networking.dart';
 import 'package:fl_clash/widgets/inherited.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -230,7 +231,7 @@ void main() {
       tester.getTopLeft(find.text('a-peer')).dy,
       lessThan(tester.getTopLeft(find.text('z-peer')).dy),
     );
-    expect(find.byIcon(Icons.bolt), findsNothing);
+    expect(find.byIcon(Symbols.bolt), findsNothing);
     expect(find.text('23 ms'), findsOneWidget);
     expect(find.text('Relayed'), findsOneWidget);
     expect(find.text('10.1.0.3 · Relayed · Public server'), findsOneWidget);

@@ -3,6 +3,7 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -76,7 +77,7 @@ class NetworkDetection extends ConsumerWidget {
                             style: emojiTextStyle,
                           ),
                         )
-                      : Icon(Icons.network_check, color: titleTextStyle),
+                      : Icon(Symbols.network_check, color: titleTextStyle),
                   const SizedBox(width: 8),
                   Flexible(
                     flex: 1,
@@ -106,8 +107,8 @@ class NetworkDetection extends ConsumerWidget {
                         icon: Icon(
                           size: 16.ap,
                           networkDetection.isIpVisible
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
+                              ? Symbols.visibility
+                              : Symbols.visibility_off,
                           color: context.colorScheme.onSurfaceVariant,
                         ),
                       ),

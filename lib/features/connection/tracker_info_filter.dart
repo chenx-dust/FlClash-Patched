@@ -2,6 +2,7 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/features/filter_bar.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 enum TrackerInfoFilterType { process, chain, network, rule }
@@ -19,10 +20,10 @@ extension TrackerInfoFilterTypeExt on TrackerInfoFilterType {
 
   IconData get icon {
     return switch (this) {
-      TrackerInfoFilterType.process => Icons.apps,
-      TrackerInfoFilterType.chain => Icons.account_tree,
-      TrackerInfoFilterType.network => Icons.hub,
-      TrackerInfoFilterType.rule => Icons.rule,
+      TrackerInfoFilterType.process => Symbols.apps,
+      TrackerInfoFilterType.chain => Symbols.account_tree,
+      TrackerInfoFilterType.network => Symbols.hub,
+      TrackerInfoFilterType.rule => Symbols.rule,
     };
   }
 }

@@ -7,6 +7,7 @@ import 'package:fl_clash/views/about.dart';
 import 'package:fl_clash/views/config/advanced.dart';
 import 'package:fl_clash/views/config/general.dart';
 import 'package:fl_clash/views/theme.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -289,14 +290,14 @@ void main() {
     );
     await _scrollTo(tester, 'Tab animation');
     expect(find.text('Tab animation'), findsOneWidget);
-    expect(find.byIcon(Icons.animation), findsOneWidget);
+    expect(find.byIcon(Symbols.animation), findsOneWidget);
     await _scrollTo(tester, 'Swipe to switch pages');
     expect(find.text('Swipe to switch pages'), findsOneWidget);
-    expect(find.byIcon(Icons.swipe), findsOneWidget);
+    expect(find.byIcon(Symbols.swipe), findsOneWidget);
     if (!system.isTV) {
       await _scrollTo(tester, 'TV mode');
       expect(find.text('TV mode'), findsOneWidget);
-      expect(find.byIcon(Icons.tv), findsOneWidget);
+      expect(find.byIcon(Symbols.tv), findsOneWidget);
     }
 
     globalState.packageInfo = PackageInfo(

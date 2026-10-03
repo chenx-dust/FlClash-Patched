@@ -7,6 +7,7 @@ import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/profiles/overwrite/custom/name_add_picker.dart';
 import 'package:fl_clash/widgets/inherited.dart';
 import 'package:fl_clash/widgets/sheet.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -203,7 +204,7 @@ void main() {
 
     holdStageKey(tester);
 
-    await tester.tap(find.byIcon(Icons.add));
+    await tester.tap(find.byIcon(Symbols.add));
     await tester.pump();
     // The staging flow debounces before it writes through.
     await tester.pump(const Duration(milliseconds: 400));
@@ -235,13 +236,13 @@ void main() {
 
     holdStageKey(tester, scenes: const ['a', 'b']);
 
-    await tester.tap(find.byIcon(Icons.add).first);
+    await tester.tap(find.byIcon(Symbols.add).first);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
 
     expect(container.read(proxyGroupProvider).proxies, ['alpha']);
 
-    await tester.tap(find.byIcon(Icons.add).last);
+    await tester.tap(find.byIcon(Symbols.add).last);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
 

@@ -4,6 +4,7 @@ import 'package:fl_clash/core/core.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -88,7 +89,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
             onPressed: () {
               _showAddWidgetsModal();
             },
-            icon: const Icon(Icons.add_circle),
+            icon: const Icon(Symbols.add_circle),
           ),
         ),
       FadeRotationScaleBox(
@@ -96,13 +97,13 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
             ? IconButton(
                 tooltip: context.appLocalizations.save,
                 key: const ValueKey(true),
-                icon: const Icon(Icons.save, key: ValueKey('save-icon')),
+                icon: const Icon(Symbols.save, key: ValueKey('save-icon')),
                 onPressed: _handleSaveAndExit,
               )
             : IconButton(
                 tooltip: context.appLocalizations.edit,
                 key: const ValueKey(false),
-                icon: const Icon(Icons.edit, key: ValueKey('edit-icon')),
+                icon: const Icon(Symbols.edit, key: ValueKey('edit-icon')),
                 onPressed: _handleEnterEdit,
               ),
       ),
@@ -363,7 +364,7 @@ class _AddedContainerState extends State<_AddedContainer> {
                     foregroundColor: context.colorScheme.onPrimary,
                   ),
                   onPressed: _handleAdd,
-                  icon: const Icon(Icons.add),
+                  icon: const Icon(Symbols.add),
                 ),
               ),
             ),

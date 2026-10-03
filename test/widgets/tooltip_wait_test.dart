@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 void main() {
@@ -19,12 +20,12 @@ void main() {
               IconButton(
                 onPressed: _noop,
                 tooltip: 'Alpha',
-                icon: Icon(Icons.add),
+                icon: Icon(Symbols.add),
               ),
               IconButton(
                 onPressed: _noop,
                 tooltip: 'Beta',
-                icon: Icon(Icons.remove),
+                icon: Icon(Symbols.remove),
               ),
             ],
           ),
@@ -37,14 +38,14 @@ void main() {
     addTearDown(gesture.removePointer);
     await tester.pump();
 
-    await gesture.moveTo(tester.getCenter(find.byIcon(Icons.add)));
+    await gesture.moveTo(tester.getCenter(find.byIcon(Symbols.add)));
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.text('Alpha'), findsNothing);
 
     await tester.pump(const Duration(milliseconds: 200));
     expect(find.text('Alpha'), findsOneWidget);
 
-    await gesture.moveTo(tester.getCenter(find.byIcon(Icons.remove)));
+    await gesture.moveTo(tester.getCenter(find.byIcon(Symbols.remove)));
     await tester.pump(const Duration(milliseconds: 50));
     expect(find.text('Beta'), findsOneWidget);
 
@@ -52,7 +53,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
     expect(find.text('Beta'), findsNothing);
 
-    await gesture.moveTo(tester.getCenter(find.byIcon(Icons.add)));
+    await gesture.moveTo(tester.getCenter(find.byIcon(Symbols.add)));
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.text('Alpha'), findsNothing);
     await tester.pump(const Duration(milliseconds: 200));

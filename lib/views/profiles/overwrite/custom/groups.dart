@@ -9,6 +9,7 @@ import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/profiles/overwrite/custom/proxy_providers.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -149,7 +150,7 @@ class _ProxyGroupItem extends ConsumerWidget {
             child: Container(
               padding: const EdgeInsets.all(12),
               color: Colors.transparent,
-              child: const Icon(Icons.drag_handle),
+              child: const Icon(Symbols.drag_handle),
             ),
           ),
         ],
@@ -276,7 +277,7 @@ class _EditProxyGroupViewState extends ConsumerState<_EditProxyGroupView> {
                   : (!includeAllProviders
                         ? _NumberCard(number: use.length)
                         : const _CheckIcon()),
-              const Icon(Icons.arrow_forward_ios),
+              const Icon(Symbols.arrow_forward_ios),
             ],
           ),
           onPressed: _handleToProvidersView,
@@ -459,7 +460,7 @@ class _EditProxyGroupViewState extends ConsumerState<_EditProxyGroupView> {
                   : (!includeAllProxies
                         ? _NumberCard(number: proxies.length)
                         : const _CheckIcon()),
-              const Icon(Icons.arrow_forward_ios),
+              const Icon(Symbols.arrow_forward_ios),
             ],
           ),
           onPressed: _handleToProxiesView,
@@ -623,7 +624,7 @@ class _EditProxyGroupViewState extends ConsumerState<_EditProxyGroupView> {
       sheetTransparentToolBar: true,
       actions: [
         IconButtonData(
-          icon: Icons.check,
+          icon: Symbols.check,
           onPressed: _handleSave,
           tooltip: context.appLocalizations.save,
         ),
@@ -713,7 +714,7 @@ class _CheckIcon extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(6),
       child: Icon(
-        Icons.check_circle_outline,
+        Symbols.check_circle_outline,
         size: 20.ap,
         color: Colors.greenAccent.harmonizeWith(context.colorScheme.primary),
       ),

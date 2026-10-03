@@ -4,6 +4,7 @@ import 'package:fl_clash/core/method.dart';
 import 'package:fl_clash/providers/core.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -64,7 +65,7 @@ class _MemoryInfoState extends ConsumerState<MemoryInfo>
         child: CommonCard(
           radius: AppCorner.lg,
           info: Info(
-            iconData: Icons.memory,
+            iconData: Symbols.memory,
             label: appLocalizations.memoryInfo,
           ),
           onPressed: () {

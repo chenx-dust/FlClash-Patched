@@ -2,6 +2,7 @@ import 'package:fl_clash/common/shape.dart';
 import 'package:fl_clash/widgets/chip.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -72,12 +73,12 @@ void main() {
       ),
     );
 
-    expect(find.byIcon(Icons.close), findsNothing);
+    expect(find.byIcon(Symbols.close), findsNothing);
     await tester.tap(find.text('direct'));
     await tester.pump();
 
     expect(presses, 1);
-    expect(find.byIcon(Icons.close), findsNothing);
+    expect(find.byIcon(Symbols.close), findsNothing);
   });
 
   testWidgets(
@@ -100,7 +101,7 @@ void main() {
         tester.element(find.byType(CommonChip)),
       ).colorScheme;
       expect(chipMaterial(tester).color, scheme.surfaceContainerHighest);
-      expect(find.byIcon(Icons.close), findsNothing);
+      expect(find.byIcon(Symbols.close), findsNothing);
 
       await tester.tap(find.text('curl'));
       await tester.pump();
@@ -109,9 +110,9 @@ void main() {
       expect(deletions, 0);
       await tester.pumpAndSettle();
       expect(chipMaterial(tester).color, scheme.errorContainer);
-      expect(find.byIcon(Icons.close), findsOneWidget);
+      expect(find.byIcon(Symbols.close), findsOneWidget);
 
-      await tester.tap(find.byIcon(Icons.close));
+      await tester.tap(find.byIcon(Symbols.close));
       await tester.pump();
 
       expect(presses, 0);
@@ -202,7 +203,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(chipMaterial(tester).color, scheme.errorContainer);
-    expect(find.byIcon(Icons.close), findsOneWidget);
+    expect(find.byIcon(Symbols.close), findsOneWidget);
     expect(deletions, 0);
 
     await gesture.moveTo(Offset.zero);
@@ -210,7 +211,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(chipMaterial(tester).color, scheme.surfaceContainerHighest);
-    expect(find.byIcon(Icons.close), findsNothing);
+    expect(find.byIcon(Symbols.close), findsNothing);
 
     await gesture.moveTo(tester.getCenter(find.text('curl')));
     await tester.pump();
@@ -243,14 +244,14 @@ void main() {
 
     expect(deletions, 0);
     expect(chipMaterial(tester).color, scheme.errorContainer);
-    expect(find.byIcon(Icons.close), findsOneWidget);
+    expect(find.byIcon(Symbols.close), findsOneWidget);
 
     Focus.of(tester.element(find.text('curl'))).unfocus();
     await tester.pump();
     await tester.pumpAndSettle();
 
     expect(chipMaterial(tester).color, scheme.surfaceContainerHighest);
-    expect(find.byIcon(Icons.close), findsNothing);
+    expect(find.byIcon(Symbols.close), findsNothing);
 
     Focus.of(tester.element(find.text('curl'))).requestFocus();
     await tester.pumpAndSettle();
@@ -263,7 +264,7 @@ void main() {
   Finder closeIconOf(String label) {
     return find.descendant(
       of: find.widgetWithText(CommonChip, label),
-      matching: find.byIcon(Icons.close),
+      matching: find.byIcon(Symbols.close),
     );
   }
 
@@ -283,19 +284,19 @@ void main() {
 
     await tester.tap(find.text('curl'));
     await tester.pumpAndSettle();
-    expect(find.byIcon(Icons.close), findsOneWidget);
+    expect(find.byIcon(Symbols.close), findsOneWidget);
 
     final chip = tester.getRect(find.byType(CommonChip));
     await tester.tapAt(chip.bottomRight + const Offset(32, 32));
     await tester.pumpAndSettle();
 
     expect(deletions, 0);
-    expect(find.byIcon(Icons.close), findsNothing);
+    expect(find.byIcon(Symbols.close), findsNothing);
 
     await tester.tap(find.text('curl'));
     await tester.pumpAndSettle();
     expect(deletions, 0);
-    expect(find.byIcon(Icons.close), findsOneWidget);
+    expect(find.byIcon(Symbols.close), findsOneWidget);
   });
 
   testWidgets(
@@ -334,12 +335,12 @@ void main() {
   testWidgets('CommonChip shows a leading category icon', (tester) async {
     await tester.pumpWidget(
       TestApp(
-        child: CommonChip(icon: Icons.hub, label: 'tcp', onDeleted: () {}),
+        child: CommonChip(icon: Symbols.hub, label: 'tcp', onDeleted: () {}),
       ),
     );
 
-    expect(find.byIcon(Icons.hub), findsOneWidget);
+    expect(find.byIcon(Symbols.hub), findsOneWidget);
     expect(find.text('tcp'), findsOneWidget);
-    expect(find.byIcon(Icons.close), findsNothing);
+    expect(find.byIcon(Symbols.close), findsNothing);
   });
 }
