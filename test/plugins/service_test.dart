@@ -86,6 +86,37 @@ void main() {
     expect(Service(), same(Service()));
   });
 
+  test('retains tunnel state snapshots independently of Core events', () async {
+    final service = Service();
+    for (final state in TunnelState.values) {
+      await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .handlePlatformMessage(
+            channelName,
+            codec.encodeMethodCall(MethodCall('tunnelState', state.name)),
+            null,
+          );
+      expect(service.tunnelState.value, state);
+    }
+  });
+
+  test('repeated native snapshots do not notify tunnel observers', () async {
+    final service = Service();
+    var changes = 0;
+    void onChanged() => changes++;
+    service.tunnelState.addListener(onChanged);
+    addTearDown(() => service.tunnelState.removeListener(onChanged));
+
+    final state = service.tunnelState.value;
+    await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .handlePlatformMessage(
+          channelName,
+          codec.encodeMethodCall(MethodCall('tunnelState', state.name)),
+          null,
+        );
+
+    expect(changes, 0);
+  });
+
   group('lifecycle commands', () {
     test('start and stop report the platform result', () async {
       mockChannel((call) async => call.method == 'start');

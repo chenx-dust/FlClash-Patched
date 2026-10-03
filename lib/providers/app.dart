@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
+import 'package:fl_clash/plugins/service.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/providers/core.dart';
 import 'package:fl_clash/providers/state.dart';
@@ -533,6 +534,17 @@ bool isUpdating(Ref ref, String name) {
 }
 
 @Riverpod(keepAlive: true)
+TunnelState? tunnelState(Ref ref) {
+  if (!system.isIOS) {
+    return null;
+  }
+  final source = Service().tunnelState;
+  source.addListener(ref.invalidateSelf);
+  ref.onDispose(() => source.removeListener(ref.invalidateSelf));
+  return source.value;
+}
+
+@Riverpod(keepAlive: true)
 class NetworkDetection extends _$NetworkDetection
     with AutoDisposeNotifierMixin {
   static const _timeoutDisplayDelay = Duration(seconds: 2);
@@ -544,10 +556,37 @@ class NetworkDetection extends _$NetworkDetection
 
   @override
   NetworkDetectionState build() {
+    ref.listen(tunnelStateProvider, (_, _) => _onTunnelStateChanged());
+    ref.listen(isStartProvider, (_, _) {
+      if (ref.read(tunnelStateProvider) != null) {
+        _onTunnelStateChanged();
+      }
+    });
     ref.onDispose(() {
+      debouncer.cancel(FunctionTag.checkIp);
       _resetCheckSession(null);
     });
     return const NetworkDetectionState(isLoading: true, ipInfo: null);
+  }
+
+  bool get _canCheck {
+    final tunnelState = ref.read(tunnelStateProvider);
+    if (tunnelState == null) {
+      return true;
+    }
+    return ref.read(isStartProvider)
+        ? tunnelState == TunnelState.connected
+        : tunnelState == TunnelState.disconnected;
+  }
+
+  void _onTunnelStateChanged() {
+    debouncer.cancel(FunctionTag.checkIp);
+    _resetCheckSession(null);
+    _preIsStart = null;
+    state = state.copyWith(isLoading: true, ipInfo: null);
+    if (_canCheck && ref.read(checkIpProvider).containsDetection) {
+      startCheck();
+    }
   }
 
   void startCheck() {
@@ -562,7 +601,7 @@ class NetworkDetection extends _$NetworkDetection
 
   Future<void> _checkIp() async {
     final isInit = ref.read(initProvider);
-    if (!isInit) {
+    if (!isInit || !_canCheck) {
       return;
     }
     final isStart = ref.read(isStartProvider);
@@ -578,6 +617,7 @@ class NetworkDetection extends _$NetworkDetection
     commonPrint.log('checkIp res: $res');
 
     if (!ref.mounted ||
+        !_canCheck ||
         version != _checkVersion ||
         cancelToken != _cancelToken) {
       return;
@@ -603,7 +643,10 @@ class NetworkDetection extends _$NetworkDetection
     _cancelTimeoutTimer();
     _timeoutTimer = Timer(_timeoutDisplayDelay, () {
       _timeoutTimer = null;
-      if (!ref.mounted || version != _checkVersion || state.ipInfo != null) {
+      if (!ref.mounted ||
+          !_canCheck ||
+          version != _checkVersion ||
+          state.ipInfo != null) {
         return;
       }
       state = state.copyWith(isLoading: false, ipInfo: null);

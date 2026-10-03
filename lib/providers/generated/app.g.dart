@@ -1994,6 +1994,47 @@ final class IsUpdatingFamily extends $Family
   String toString() => r'isUpdatingProvider';
 }
 
+@ProviderFor(tunnelState)
+final tunnelStateProvider = TunnelStateProvider._();
+
+final class TunnelStateProvider
+    extends $FunctionalProvider<TunnelState?, TunnelState?, TunnelState?>
+    with $Provider<TunnelState?> {
+  TunnelStateProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'tunnelStateProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$tunnelStateHash();
+
+  @$internal
+  @override
+  $ProviderElement<TunnelState?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  TunnelState? create(Ref ref) {
+    return tunnelState(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(TunnelState? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<TunnelState?>(value),
+    );
+  }
+}
+
+String _$tunnelStateHash() => r'ee8cebd111275876956af3eb7e7906496949e6f2';
+
 @ProviderFor(NetworkDetection)
 final networkDetectionProvider = NetworkDetectionProvider._();
 
@@ -2026,7 +2067,7 @@ final class NetworkDetectionProvider
   }
 }
 
-String _$networkDetectionHash() => r'2be4d5c3beff36e46180a42e168712559d027295';
+String _$networkDetectionHash() => r'f6bbb9e41e4719c39ab650ebe7c9c6e883c4423f';
 
 abstract class _$NetworkDetection extends $Notifier<NetworkDetectionState> {
   NetworkDetectionState build();

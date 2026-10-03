@@ -58,6 +58,9 @@ final class ServiceChannel {
       onTunnelStateChanged: { state in
         routerReference.value?.updateTunnelState(state)
       },
+      onConnectionStateChanged: { state in
+        channel.invokeMethod("tunnelState", arguments: state)
+      },
       onExternalStart: {
         tileChannel.invokeMethod("start", arguments: nil)
       },
@@ -118,6 +121,7 @@ final class ServiceChannel {
       tunnelController.stop()
       result(true)
     case "init":
+      tunnelController.publishConnectionState()
       coreEventRelay.drainEventQueue()
       result("")
     case "syncState":

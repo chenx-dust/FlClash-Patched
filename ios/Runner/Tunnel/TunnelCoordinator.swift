@@ -6,6 +6,7 @@ import os
 final class TunnelCoordinator {
   private let managerStore: TunnelManagerStore
   private let onTunnelStateChanged: (TunnelTarget) -> Void
+  private let onConnectionStateChanged: (String) -> Void
   private let onExternalStart: () -> Void
   private let onExternalStop: () -> Void
   private let connectTimeout: TimeInterval = 5
@@ -30,11 +31,13 @@ final class TunnelCoordinator {
   init(
     managerStore: TunnelManagerStore,
     onTunnelStateChanged: @escaping (TunnelTarget) -> Void,
+    onConnectionStateChanged: @escaping (String) -> Void,
     onExternalStart: @escaping () -> Void,
     onExternalStop: @escaping () -> Void
   ) {
     self.managerStore = managerStore
     self.onTunnelStateChanged = onTunnelStateChanged
+    self.onConnectionStateChanged = onConnectionStateChanged
     self.onExternalStart = onExternalStart
     self.onExternalStop = onExternalStop
   }
@@ -63,6 +66,7 @@ final class TunnelCoordinator {
       notifyExternalOnCompletion: notifyExternalOnCompletion
     )
     tunnelRequest = request
+    publishConnectionState()
     publishedTunnelState = target
     cancelTunnelWait()
     log(
@@ -96,6 +100,23 @@ final class TunnelCoordinator {
     statusRefreshShouldNotify =
       statusRefreshShouldNotify || notifyExternal
     driveCoordinator()
+  }
+
+  func publishConnectionState() {
+    let state: String
+    if tunnelRequest != nil {
+      state = "pending"
+    } else {
+      switch observedTunnelStatus {
+      case .connected:
+        state = "connected"
+      case .disconnected, .invalid:
+        state = "disconnected"
+      default:
+        state = "pending"
+      }
+    }
+    onConnectionStateChanged(state)
   }
 
   func handleTunnelStatusNotification(_ notification: Notification) {
@@ -214,6 +235,7 @@ final class TunnelCoordinator {
         return
       }
       guard let manager = loadedManager else {
+        recordObservedTunnelStatus(.invalid, notifyExternal: false)
         finishTunnelRequest(request, actualState: .stopped)
         return
       }
@@ -352,6 +374,7 @@ final class TunnelCoordinator {
         createIfNeeded: false
       )
     else {
+      recordObservedTunnelStatus(.invalid, notifyExternal: false)
       finishTunnelRequest(request, actualState: .stopped)
       return
     }
@@ -512,6 +535,7 @@ final class TunnelCoordinator {
       return
     }
     tunnelRequest = nil
+    defer { publishConnectionState() }
     guard let actualState else {
       log(
         "\(request.target.description) completed actual=unknown generation=\(request.generation)"
@@ -594,6 +618,7 @@ final class TunnelCoordinator {
   ) {
     let previousStatus = observedTunnelStatus
     observedTunnelStatus = status
+    defer { publishConnectionState() }
     if previousStatus != status {
       log(
         "status changed \(statusDescription(previousStatus ?? .invalid)) -> \(statusDescription(status)) target=\(tunnelRequest?.target.description ?? "none")"

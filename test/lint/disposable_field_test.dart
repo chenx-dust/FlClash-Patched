@@ -22,6 +22,8 @@ const _allowed = {
   'lib/core/event.dart#_controller',
   // `GlobalState` is process-scoped and owns foreground state until exit.
   'lib/state.dart#isBackground',
+  // The Service singleton retains native tunnel snapshots until process exit.
+  'lib/plugins/service.dart#_tunnelState',
 };
 
 final _declaration = RegExp(

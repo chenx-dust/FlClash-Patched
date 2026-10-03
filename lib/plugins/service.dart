@@ -13,9 +13,14 @@ abstract mixin class ServiceListener {
   void onServiceEvent(CoreEvent event) {}
 }
 
+enum TunnelState { pending, connected, disconnected }
+
 class Service {
   static Service? _instance;
   late MethodChannel methodChannel;
+  final _tunnelState = ValueNotifier(TunnelState.pending);
+
+  ValueListenable<TunnelState> get tunnelState => _tunnelState;
 
   final ObserverList<ServiceListener> _listeners =
       ObserverList<ServiceListener>();
@@ -29,6 +34,11 @@ class Service {
     methodChannel = const MethodChannel('$packageName/service');
     methodChannel.setMethodCallHandler((call) async {
       switch (call.method) {
+        case 'tunnelState':
+          _tunnelState.value = TunnelState.values.byName(
+            call.arguments as String,
+          );
+          break;
         case 'event':
           final data = call.arguments as String? ?? '';
           final methodCall = CoreMethodCall.fromJson(
