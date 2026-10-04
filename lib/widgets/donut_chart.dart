@@ -155,8 +155,8 @@ class _DonutArc {
         _DonutArc(
           prefix,
           share,
-          count > 0 ? 0.5 + preceding - count * prefix : 0,
-          -count * share,
+          count > 1 ? 0.5 + preceding - count * prefix : 0,
+          count > 1 ? -count * share : 0,
         ),
       );
       prefix += share;
