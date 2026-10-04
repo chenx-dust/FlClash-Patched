@@ -287,9 +287,28 @@ void main() {
     expect(find.text('Go memory usage'), findsOneWidget);
     expect(
       find.descendant(
-        of: find.byType(CommonDialog),
+        of: find
+            .ancestor(
+              of: find.text('Go memory usage'),
+              matching: find.byType(Column),
+            )
+            .first,
         matching: find.text('2 KB'),
       ),
+      findsOneWidget,
+    );
+    final releasedRow = find
+        .ancestor(
+          of: find.text('Returned to OS'),
+          matching: find.byType(Padding),
+        )
+        .first;
+    expect(
+      find.descendant(of: releasedRow, matching: find.text('2 KB')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: releasedRow, matching: find.text('50.0%')),
       findsOneWidget,
     );
     expect(find.textContaining('50.0%'), findsOneWidget);

@@ -241,11 +241,14 @@ void main() {
 
     await tester.tap(find.byIcon(Symbols.search));
     await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Symbols.code));
+    await tester.tap(find.byTooltip('Regex search'));
     await tester.pumpAndSettle();
 
     expect(useRegex, isTrue);
-    expect(find.byIcon(Symbols.code), findsOneWidget);
+    expect(
+      tester.widget<Icon>(find.byIcon(Symbols.regular_expression)).fill,
+      1,
+    );
 
     await tester.enterText(find.byType(TextField), '[');
     await tester.pump();
