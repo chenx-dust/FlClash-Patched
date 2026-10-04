@@ -21,6 +21,7 @@ class CommonScaffold extends StatefulWidget {
   final Widget body;
   final Color? backgroundColor;
   final String? title;
+  final Widget? titleWidget;
   final bool isLoading;
   final List<Widget>? actions;
   final bool? centerTitle;
@@ -37,6 +38,7 @@ class CommonScaffold extends StatefulWidget {
     required this.body,
     this.backgroundColor,
     this.title,
+    this.titleWidget,
     this.actions,
     this.centerTitle,
     this.editState,
@@ -257,13 +259,13 @@ class CommonScaffoldState extends State<CommonScaffold> {
             },
             decoration: InputDecoration(hintText: appLocalizations.search),
           )
-        : Text(
-            !_isEdit
-                ? widget.title!
-                : appLocalizations.selectedCountTitle(
-                    '${_appBarState.value.editState?.editCount ?? 0}',
-                  ),
-          );
+        : _isEdit
+        ? Text(
+            appLocalizations.selectedCountTitle(
+              '${_appBarState.value.editState?.editCount ?? 0}',
+            ),
+          )
+        : widget.titleWidget ?? Text(widget.title!);
   }
 
   void _toggleRegexSearch(AppBarSearchState searchState) {
@@ -399,7 +401,11 @@ class CommonScaffoldState extends State<CommonScaffold> {
   }
 
   Widget _buildScaffold(BuildContext context, bool isTV) {
-    assert(widget.appBar != null || widget.title != null);
+    assert(
+      widget.appBar != null ||
+          widget.title != null ||
+          widget.titleWidget != null,
+    );
     final backActionProvider = CommonScaffoldBackActionProvider.of(context);
     final bottomInset = BottomInsetScope.of(context);
     final hasFab = !isTV && widget.floatingActionButton != null;

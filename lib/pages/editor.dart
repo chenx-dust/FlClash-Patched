@@ -280,103 +280,93 @@ class _EditorPageState extends ConsumerState<EditorPage> {
         child: Focus(
           autofocus: true,
           child: CommonScaffold(
-            appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              surfaceTintColor: Colors.transparent,
-              title: _EditorTitleField(
-                controller: _titleController,
-                enabled: widget.titleEditable,
-              ),
-              actions: genActions([
-                IconButton(
-                  tooltip: appLocalizations.search,
-                  onPressed: isReady ? _handleSearch : null,
-                  icon: const Icon(Symbols.search),
-                ),
-                if (widget.onSave != null)
-                  IconButton(
-                    tooltip: appLocalizations.save,
-                    onPressed: _barState.isDirty && !_saving
-                        ? _handleSave
-                        : null,
-                    icon: const Icon(Symbols.check),
-                  ),
-                CommonPopupBox(
-                  targetBuilder: (open) => IconButton(
-                    tooltip: appLocalizations.more,
-                    onPressed: () => open(),
-                    icon: const Icon(Symbols.more_vert),
-                  ),
-                  popupBuilder: (_) => CommonPopupMenu(
-                    items: [
-                      CommonPopupMenuItem(
-                        icon: Symbols.undo,
-                        label: appLocalizations.undo,
-                        onPressed: _barState.canUndo
-                            ? _undoController.undo
-                            : null,
-                      ),
-                      CommonPopupMenuItem(
-                        icon: Symbols.redo,
-                        label: appLocalizations.redo,
-                        onPressed: _barState.canRedo
-                            ? _undoController.redo
-                            : null,
-                      ),
-                      CommonPopupMenuItem(
-                        icon: Symbols.format_size,
-                        label: appLocalizations.fontSize,
-                        subItems: [
-                          for (final size in EditorFontSize.values)
-                            CommonPopupMenuItem(
-                              label: _editorScaleLabel(appLocalizations, size),
-                              checked: size == fontSize,
-                              onPressed: () => ref
-                                  .read(appSettingProvider.notifier)
-                                  .update(
-                                    (state) =>
-                                        state.copyWith(editorFontSize: size),
-                                  ),
-                            ),
-                        ],
-                      ),
-                      CommonPopupMenuItem(
-                        icon: Symbols.format_line_spacing,
-                        label: appLocalizations.lineHeight,
-                        subItems: [
-                          for (final spacing in EditorLineHeight.values)
-                            CommonPopupMenuItem(
-                              label: _editorScaleLabel(
-                                appLocalizations,
-                                spacing,
-                              ),
-                              checked: spacing == lineHeight,
-                              onPressed: () => ref
-                                  .read(appSettingProvider.notifier)
-                                  .update(
-                                    (state) => state.copyWith(
-                                      editorLineHeight: spacing,
-                                    ),
-                                  ),
-                            ),
-                        ],
-                      ),
-                      CommonPopupMenuItem(
-                        icon: Symbols.wrap_text,
-                        label: appLocalizations.lineWrap,
-                        checked: lineWrap,
-                        onPressed: () => ref
-                            .read(appSettingProvider.notifier)
-                            .update(
-                              (state) =>
-                                  state.copyWith(editorLineWrap: !lineWrap),
-                            ),
-                      ),
-                    ],
-                  ),
-                ),
-              ]),
+            titleWidget: _EditorTitleField(
+              controller: _titleController,
+              enabled: widget.titleEditable,
             ),
+            actions: [
+              IconButton(
+                tooltip: appLocalizations.search,
+                onPressed: isReady ? _handleSearch : null,
+                icon: const Icon(Symbols.search),
+              ),
+              if (widget.onSave != null)
+                IconButton(
+                  tooltip: appLocalizations.save,
+                  onPressed: _barState.isDirty && !_saving ? _handleSave : null,
+                  icon: const Icon(Symbols.check),
+                ),
+              CommonPopupBox(
+                targetBuilder: (open) => IconButton(
+                  tooltip: appLocalizations.more,
+                  onPressed: () => open(),
+                  icon: const Icon(Symbols.more_vert),
+                ),
+                popupBuilder: (_) => CommonPopupMenu(
+                  items: [
+                    CommonPopupMenuItem(
+                      icon: Symbols.undo,
+                      label: appLocalizations.undo,
+                      onPressed: _barState.canUndo
+                          ? _undoController.undo
+                          : null,
+                    ),
+                    CommonPopupMenuItem(
+                      icon: Symbols.redo,
+                      label: appLocalizations.redo,
+                      onPressed: _barState.canRedo
+                          ? _undoController.redo
+                          : null,
+                    ),
+                    CommonPopupMenuItem(
+                      icon: Symbols.format_size,
+                      label: appLocalizations.fontSize,
+                      subItems: [
+                        for (final size in EditorFontSize.values)
+                          CommonPopupMenuItem(
+                            label: _editorScaleLabel(appLocalizations, size),
+                            checked: size == fontSize,
+                            onPressed: () => ref
+                                .read(appSettingProvider.notifier)
+                                .update(
+                                  (state) =>
+                                      state.copyWith(editorFontSize: size),
+                                ),
+                          ),
+                      ],
+                    ),
+                    CommonPopupMenuItem(
+                      icon: Symbols.format_line_spacing,
+                      label: appLocalizations.lineHeight,
+                      subItems: [
+                        for (final spacing in EditorLineHeight.values)
+                          CommonPopupMenuItem(
+                            label: _editorScaleLabel(appLocalizations, spacing),
+                            checked: spacing == lineHeight,
+                            onPressed: () => ref
+                                .read(appSettingProvider.notifier)
+                                .update(
+                                  (state) =>
+                                      state.copyWith(editorLineHeight: spacing),
+                                ),
+                          ),
+                      ],
+                    ),
+                    CommonPopupMenuItem(
+                      icon: Symbols.wrap_text,
+                      label: appLocalizations.lineWrap,
+                      checked: lineWrap,
+                      onPressed: () => ref
+                          .read(appSettingProvider.notifier)
+                          .update(
+                            (state) =>
+                                state.copyWith(editorLineWrap: !lineWrap),
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             body: AbsorbPointer(
               absorbing: _saving,
               child: EditorView(
