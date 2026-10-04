@@ -23,7 +23,7 @@ class AdvancedConfigView extends StatelessWidget {
       ListItem.open(
         title: Text(appLocalizations.network),
         subtitle: Text(appLocalizations.networkDesc),
-        leading: const Icon(Symbols.vpn_key),
+        leading: const Icon(Symbols.link),
         blur: false,
         widget: BaseScaffold(
           title: appLocalizations.network,
@@ -105,7 +105,7 @@ class AdvancedConfigView extends StatelessWidget {
       ListItem.open(
         title: Text(appLocalizations.script),
         subtitle: Text(appLocalizations.overrideScript),
-        leading: const Icon(Symbols.rocket, fontWeight: FontWeight.w900),
+        leading: const Icon(Symbols.code_xml),
         widget: const ScriptsView(),
         blur: false,
       ),
