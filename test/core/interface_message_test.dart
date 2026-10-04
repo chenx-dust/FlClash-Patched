@@ -88,6 +88,11 @@ void main() {
     });
   });
 
+  test('node traffic returns an empty list without a response', () async {
+    expect(await core.getNodeTraffic(), isEmpty);
+    expect(core.invoked, [CoreMethod.getNodeTraffic]);
+  });
+
   test('an answered call still returns the core message verbatim', () async {
     final core = _AnsweringCore('nameserver is empty');
     expect(await core.setupConfig(_setupParams), 'nameserver is empty');

@@ -281,7 +281,12 @@ func handleGetTotalTraffic(onlyStatisticsProxy bool) Traffic {
 	}
 }
 
+func handleGetNodeTraffic() []statistic.NodeTraffic {
+	return tunnel.NodeTraffic()
+}
+
 func handleResetTraffic() {
+	tunnel.ResetNodeTraffic()
 	statistic.DefaultManager.ResetStatistic()
 }
 

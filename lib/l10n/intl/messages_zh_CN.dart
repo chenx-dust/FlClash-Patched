@@ -737,6 +737,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "noRemoteBackups": MessageLookupByLibrary.simpleMessage("未找到远端备份"),
     "noResolve": MessageLookupByLibrary.simpleMessage("不解析 IP"),
     "noResolveHostname": MessageLookupByLibrary.simpleMessage("不解析主机名"),
+    "nodeTrafficReadFailed": MessageLookupByLibrary.simpleMessage(
+      "无法读取流量，正在重试…",
+    ),
+    "nodeTrafficUsage": MessageLookupByLibrary.simpleMessage("节点流量"),
     "nodes": MessageLookupByLibrary.simpleMessage("节点"),
     "none": MessageLookupByLibrary.simpleMessage("无"),
     "notSelectedTip": MessageLookupByLibrary.simpleMessage("当前代理组无法选中"),
@@ -1147,6 +1151,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "torch": MessageLookupByLibrary.simpleMessage("手电筒"),
     "totalTraffic": MessageLookupByLibrary.simpleMessage("总流量"),
     "tproxyPort": MessageLookupByLibrary.simpleMessage("TProxy 端口"),
+    "trafficBoth": MessageLookupByLibrary.simpleMessage("双向"),
     "trafficUsage": MessageLookupByLibrary.simpleMessage("流量统计"),
     "tun": MessageLookupByLibrary.simpleMessage("虚拟网卡"),
     "tunDesc": MessageLookupByLibrary.simpleMessage("仅在管理员模式生效"),

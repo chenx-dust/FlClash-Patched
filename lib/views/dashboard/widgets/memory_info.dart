@@ -441,8 +441,15 @@ class _MemoryDetailsState extends State<_MemoryDetails> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        '${_formatMemory(item.value)}  ${data.sys == 0 ? '0.0' : (item.value / data.sys * 100).toStringAsFixed(1)}%',
+                        _formatMemory(item.value),
                         style: context.textTheme.bodySmall,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        '${(item.value / data.sys * 100).toStringAsFixed(1)}%',
+                        style: context.textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ),

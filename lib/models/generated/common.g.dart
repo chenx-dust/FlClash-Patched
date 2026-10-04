@@ -77,6 +77,21 @@ const _$DnsModeEnumMap = {
   DnsMode.hosts: 'hosts',
 };
 
+_NodeTraffic _$NodeTrafficFromJson(Map<String, dynamic> json) => _NodeTraffic(
+  name: json['name'] as String,
+  provider: json['provider'] as String? ?? '',
+  up: (json['up'] as num?)?.toInt() ?? 0,
+  down: (json['down'] as num?)?.toInt() ?? 0,
+);
+
+Map<String, dynamic> _$NodeTrafficToJson(_NodeTraffic instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+      'provider': instance.provider,
+      'up': instance.up,
+      'down': instance.down,
+    };
+
 _TrackerInfo _$TrackerInfoFromJson(Map<String, dynamic> json) => _TrackerInfo(
   id: json['id'] as String,
   upload: (json['upload'] as num?)?.toInt() ?? 0,

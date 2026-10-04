@@ -911,6 +911,285 @@ as String,
 
 
 /// @nodoc
+mixin _$NodeTraffic {
+
+ String get name; String get provider; int get up; int get down;
+/// Create a copy of NodeTraffic
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$NodeTrafficCopyWith<NodeTraffic> get copyWith => _$NodeTrafficCopyWithImpl<NodeTraffic>(this as NodeTraffic, _$identity);
+
+  /// Serializes this NodeTraffic to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as NodeTraffic;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NodeTraffic&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.provider, _this.provider) || other.provider == _this.provider)&&(identical(other.up, _this.up) || other.up == _this.up)&&(identical(other.down, _this.down) || other.down == _this.down));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as NodeTraffic;
+  return Object.hash(runtimeType,_this.name,_this.provider,_this.up,_this.down);
+}
+
+@override
+String toString() {
+  final _this = this as NodeTraffic;
+  return 'NodeTraffic(name: ${_this.name}, provider: ${_this.provider}, up: ${_this.up}, down: ${_this.down})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $NodeTrafficCopyWith<$Res>  {
+  factory $NodeTrafficCopyWith(NodeTraffic value, $Res Function(NodeTraffic) _then) = _$NodeTrafficCopyWithImpl;
+@useResult
+$Res call({
+ String name, String provider, int up, int down
+});
+
+
+
+
+}
+/// @nodoc
+class _$NodeTrafficCopyWithImpl<$Res>
+    implements $NodeTrafficCopyWith<$Res> {
+  _$NodeTrafficCopyWithImpl(this._self, this._then);
+
+  final NodeTraffic _self;
+  final $Res Function(NodeTraffic) _then;
+
+/// Create a copy of NodeTraffic
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? provider = null,Object? up = null,Object? down = null,}) {
+  return _then(NodeTraffic(
+name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,provider: null == provider ? _self.provider : provider // ignore: cast_nullable_to_non_nullable
+as String,up: null == up ? _self.up : up // ignore: cast_nullable_to_non_nullable
+as int,down: null == down ? _self.down : down // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [NodeTraffic].
+extension NodeTrafficPatterns on NodeTraffic {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _NodeTraffic value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _NodeTraffic() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _NodeTraffic value)  $default,){
+final _that = this;
+switch (_that) {
+case _NodeTraffic():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _NodeTraffic value)?  $default,){
+final _that = this;
+switch (_that) {
+case _NodeTraffic() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  String provider,  int up,  int down)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _NodeTraffic() when $default != null:
+return $default(_that.name,_that.provider,_that.up,_that.down);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  String provider,  int up,  int down)  $default,) {final _that = this;
+switch (_that) {
+case _NodeTraffic():
+return $default(_that.name,_that.provider,_that.up,_that.down);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  String provider,  int up,  int down)?  $default,) {final _that = this;
+switch (_that) {
+case _NodeTraffic() when $default != null:
+return $default(_that.name,_that.provider,_that.up,_that.down);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _NodeTraffic implements NodeTraffic {
+  const _NodeTraffic({required this.name, this.provider = '', this.up = 0, this.down = 0});
+  factory _NodeTraffic.fromJson(Map<String, dynamic> json) => _$NodeTrafficFromJson(json);
+
+@override final  String name;
+@override@JsonKey() final  String provider;
+@override@JsonKey() final  int up;
+@override@JsonKey() final  int down;
+
+/// Create a copy of NodeTraffic
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$NodeTrafficCopyWith<_NodeTraffic> get copyWith => __$NodeTrafficCopyWithImpl<_NodeTraffic>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$NodeTrafficToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _NodeTraffic&&(identical(other.name, name) || other.name == name)&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.up, up) || other.up == up)&&(identical(other.down, down) || other.down == down));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,name,provider,up,down);
+}
+
+@override
+String toString() {
+    return 'NodeTraffic(name: $name, provider: $provider, up: $up, down: $down)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$NodeTrafficCopyWith<$Res> implements $NodeTrafficCopyWith<$Res> {
+  factory _$NodeTrafficCopyWith(_NodeTraffic value, $Res Function(_NodeTraffic) _then) = __$NodeTrafficCopyWithImpl;
+@override @useResult
+$Res call({
+ String name, String provider, int up, int down
+});
+
+
+
+
+}
+/// @nodoc
+class __$NodeTrafficCopyWithImpl<$Res>
+    implements _$NodeTrafficCopyWith<$Res> {
+  __$NodeTrafficCopyWithImpl(this._self, this._then);
+
+  final _NodeTraffic _self;
+  final $Res Function(_NodeTraffic) _then;
+
+/// Create a copy of NodeTraffic
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? provider = null,Object? up = null,Object? down = null,}) {
+  return _then(_NodeTraffic(
+name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,provider: null == provider ? _self.provider : provider // ignore: cast_nullable_to_non_nullable
+as String,up: null == up ? _self.up : up // ignore: cast_nullable_to_non_nullable
+as int,down: null == down ? _self.down : down // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
 mixin _$TrackerInfo {
 
  String get id; int get upload; int get download; DateTime get start; Metadata get metadata; List<String> get chains; String get rule; String get rulePayload; int? get downloadSpeed; int? get uploadSpeed;

@@ -78,6 +78,8 @@ mixin CoreInterface {
 
   FutureOr<Traffic> getTotalTraffic(bool onlyStatisticsProxy);
 
+  FutureOr<List<NodeTraffic>> getNodeTraffic();
+
   FutureOr<CoreMemoryInfo> getMemory();
 
   FutureOr<int> getGoroutineCount();
@@ -425,6 +427,20 @@ abstract class CoreHandlerInterface with CoreInterface {
       arguments: onlyStatisticsProxy,
     );
     return data == null ? const Traffic() : Traffic.fromJson(data);
+  }
+
+  @override
+  Future<List<NodeTraffic>> getNodeTraffic() async {
+    final data = await _invokeMethod<List<dynamic>>(
+      method: CoreMethod.getNodeTraffic,
+    );
+    return data
+            ?.map(
+              (item) =>
+                  NodeTraffic.fromJson(Map<String, Object?>.from(item as Map)),
+            )
+            .toList() ??
+        const [];
   }
 
   @override

@@ -140,6 +140,31 @@ class AppLocalizations {
     );
   }
 
+  /// `Node traffic`
+  String get nodeTrafficUsage {
+    return Intl.message(
+      'Node traffic',
+      name: 'nodeTrafficUsage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Both`
+  String get trafficBoth {
+    return Intl.message('Both', name: 'trafficBoth', desc: '', args: []);
+  }
+
+  /// `Unable to read traffic. Retrying…`
+  String get nodeTrafficReadFailed {
+    return Intl.message(
+      'Unable to read traffic. Retrying…',
+      name: 'nodeTrafficReadFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Network speed`
   String get networkSpeed {
     return Intl.message(

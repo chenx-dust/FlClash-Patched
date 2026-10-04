@@ -8,8 +8,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
+import 'traffic_details.dart';
+
 class TrafficUsage extends StatelessWidget {
   const TrafficUsage({super.key});
+
+  void _showDetails(BuildContext context) {
+    dialogs.showCommonDialog<void>(
+      context: context,
+      child: const TrafficDetails(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,19 +28,67 @@ class TrafficUsage extends StatelessWidget {
       child: RepaintBoundary(
         child: CommonCard(
           radius: AppCorner.lg,
-          info: Info(
-            label: appLocalizations.trafficUsage,
-            iconData: Symbols.data_saver_off,
-          ),
-          onPressed: () {},
-          child: Consumer(
-            builder: (_, ref, _) {
-              final totalTraffic = ref.watch(totalTrafficProvider);
-              return _TrafficUsageBody(
-                up: totalTraffic.up,
-                down: totalTraffic.down,
-              );
-            },
+          onPressed: () => _showDetails(context),
+          onLongPress: () => _showDetails(context),
+          child: Column(
+            children: [
+              Container(
+                height:
+                    max(20, globalState.measure.titleSmallHeight) +
+                    baseInfoEdgeInsets.top,
+                padding: baseInfoEdgeInsets.copyWith(bottom: 0),
+                child: Row(
+                  children: [
+                    Icon(
+                      Symbols.data_usage,
+                      color: context.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: TooltipText(
+                        text: Text(
+                          appLocalizations.trafficUsage,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.textTheme.titleSmall?.copyWith(
+                            color: context.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    AspectRatio(
+                      aspectRatio: 1,
+                      child: ExcludeFocus(
+                        child: IconButton(
+                          tooltip: appLocalizations.details(
+                            appLocalizations.trafficUsage,
+                          ),
+                          padding: EdgeInsets.zero,
+                          onPressed: () => _showDetails(context),
+                          icon: Icon(
+                            Symbols.info,
+                            size: 16.ap,
+                            color: context.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Consumer(
+                  builder: (_, ref, _) {
+                    final totalTraffic = ref.watch(totalTrafficProvider);
+                    return _TrafficUsageBody(
+                      up: totalTraffic.up,
+                      down: totalTraffic.down,
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -133,11 +190,11 @@ class _TrafficLegend extends StatelessWidget {
       builder: (_, container) {
         final uploadLabel = _label(appLocalizations.upload, labelStyle);
         final downloadLabel = _label(appLocalizations.download, labelStyle);
-        final maxLabelWidth = max(
-          globalState.measure.computeTextSize(uploadLabel).width,
-          globalState.measure.computeTextSize(downloadLabel).width,
-        );
-        if (maxLabelWidth + 24 > container.maxWidth) {
+        final uploadSize = _measureLabel(context, uploadLabel);
+        final downloadSize = _measureLabel(context, downloadLabel);
+        final maxLabelWidth = max(uploadSize.width, downloadSize.width);
+        if (maxLabelWidth + 24 > container.maxWidth ||
+            uploadSize.height + downloadSize.height + 4 > container.maxHeight) {
           return Container();
         }
         return Column(
@@ -150,6 +207,18 @@ class _TrafficLegend extends StatelessWidget {
         );
       },
     );
+  }
+
+  Size _measureLabel(BuildContext context, Text label) {
+    final painter = TextPainter(
+      text: TextSpan(text: label.data, style: label.style),
+      textScaler: MediaQuery.textScalerOf(context),
+      textDirection: Directionality.of(context),
+      maxLines: 1,
+    )..layout();
+    final size = painter.size;
+    painter.dispose();
+    return size;
   }
 
   Text _label(String text, TextStyle? style) {

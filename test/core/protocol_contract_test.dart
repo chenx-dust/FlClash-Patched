@@ -38,6 +38,10 @@ class _RecordingCoreHandler extends CoreHandlerInterface {
       CoreMethod.initClash => true as T,
       CoreMethod.getTraffic ||
       CoreMethod.getTotalTraffic => {'up': 12, 'down': 34},
+      CoreMethod.getNodeTraffic => [
+        {'name': 'node', 'provider': 'provider', 'up': 12, 'down': 34},
+        {'name': 'node', 'provider': 'other', 'up': 56, 'down': 78},
+      ],
       CoreMethod.asyncTestDelay => {
         'name': 'DIRECT',
         'url': 'https://example.com',
@@ -320,6 +324,11 @@ void main() {
       await handler.asyncTestDelay('https://example.com', 'DIRECT'),
       const Delay(name: 'DIRECT', url: 'https://example.com', value: 42),
     );
+    expect(await handler.getNodeTraffic(), const [
+      NodeTraffic(name: 'node', provider: 'provider', up: 12, down: 34),
+      NodeTraffic(name: 'node', provider: 'other', up: 56, down: 78),
+    ]);
+    expect(handler.calls, containsPair(CoreMethod.getNodeTraffic, null));
     expect((await handler.getConnections()).single.id, 'connection-1');
     expect((await handler.getExternalProviders()).single.name, 'provider-1');
     expect(

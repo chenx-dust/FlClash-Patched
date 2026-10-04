@@ -15,6 +15,7 @@ enum CoreMethod {
   changeProxy,
   getTraffic,
   getTotalTraffic,
+  getNodeTraffic,
   resetTraffic,
   asyncTestDelay,
   getConnections,

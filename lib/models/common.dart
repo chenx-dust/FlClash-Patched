@@ -95,6 +95,19 @@ abstract class Metadata with _$Metadata {
 }
 
 @freezed
+abstract class NodeTraffic with _$NodeTraffic {
+  const factory NodeTraffic({
+    required String name,
+    @Default('') String provider,
+    @Default(0) int up,
+    @Default(0) int down,
+  }) = _NodeTraffic;
+
+  factory NodeTraffic.fromJson(Map<String, Object?> json) =>
+      _$NodeTrafficFromJson(json);
+}
+
+@freezed
 abstract class TrackerInfo with _$TrackerInfo {
   const factory TrackerInfo({
     required String id,

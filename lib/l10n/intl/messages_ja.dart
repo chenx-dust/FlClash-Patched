@@ -841,6 +841,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "noResolve": MessageLookupByLibrary.simpleMessage("IP を解決しない"),
     "noResolveHostname": MessageLookupByLibrary.simpleMessage("ホスト名を解決しない"),
+    "nodeTrafficReadFailed": MessageLookupByLibrary.simpleMessage(
+      "通信量を取得できません。再試行しています…",
+    ),
+    "nodeTrafficUsage": MessageLookupByLibrary.simpleMessage("ノード別通信量"),
     "nodes": MessageLookupByLibrary.simpleMessage("ノード"),
     "none": MessageLookupByLibrary.simpleMessage("なし"),
     "notSelectedTip": MessageLookupByLibrary.simpleMessage(
@@ -1319,6 +1323,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "torch": MessageLookupByLibrary.simpleMessage("ライト"),
     "totalTraffic": MessageLookupByLibrary.simpleMessage("合計トラフィック"),
     "tproxyPort": MessageLookupByLibrary.simpleMessage("TProxy ポート"),
+    "trafficBoth": MessageLookupByLibrary.simpleMessage("送受信"),
     "trafficUsage": MessageLookupByLibrary.simpleMessage("トラフィック統計"),
     "tun": MessageLookupByLibrary.simpleMessage("TUN"),
     "tunDesc": MessageLookupByLibrary.simpleMessage("管理者モードでのみ有効"),
