@@ -226,6 +226,30 @@ void main() {
       );
     });
 
+    test('writes KDE https proxy over HTTP and keeps bypass exceptions', () {
+      final commands = LinuxProxyCommands.buildStart(
+        port: 7890,
+        bypassDomain: ['localhost'],
+        desktop: 'KDE',
+        homeDir: '/home/user',
+      );
+
+      String? valueFor(String key) {
+        for (final command in commands) {
+          final keyIndex = command.args.indexOf('--key');
+          if (keyIndex >= 0 && command.args[keyIndex + 1] == key) {
+            return command.args[keyIndex + 2];
+          }
+        }
+        return null;
+      }
+
+      expect(valueFor('httpProxy'), 'http://127.0.0.1:7890');
+      expect(valueFor('httpsProxy'), 'http://127.0.0.1:7890');
+      expect(valueFor('socksProxy'), 'socks://127.0.0.1:7890');
+      expect(valueFor('ReversedException'), 'false');
+    });
+
     test('prefers kwriteconfig6 for KDE when available', () {
       final commands = LinuxProxyCommands.buildStart(
         port: 7890,

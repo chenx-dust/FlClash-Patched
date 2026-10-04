@@ -332,8 +332,17 @@ class LinuxProxyCommands {
           'Proxy Settings',
           '--key',
           '${type.name}Proxy',
-          '${type.name}://$proxyHost:$port',
+          _kdeProxyUrl(type, port),
         ]),
+      ProxyCommand(executable, [
+        '--file',
+        configFile,
+        '--group',
+        'Proxy Settings',
+        '--key',
+        'ReversedException',
+        'false',
+      ]),
       ProxyCommand(executable, [
         '--file',
         configFile,
@@ -344,6 +353,15 @@ class LinuxProxyCommands {
         '1',
       ]),
     ];
+  }
+
+  static String _kdeProxyUrl(_ProxyType type, int port) {
+    // kioslaverc scheme is the transport to the proxy. Mixed ports speak HTTP.
+    final scheme = switch (type) {
+      _ProxyType.socks => 'socks',
+      _ProxyType.http || _ProxyType.https => 'http',
+    };
+    return '$scheme://$proxyHost:$port';
   }
 
   static List<ProxyCommand> _buildKdeStop({
