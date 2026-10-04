@@ -8,7 +8,7 @@ require (
 	github.com/Microsoft/go-winio v0.6.2
 	github.com/metacubex/mihomo v0.0.0-00010101000000-000000000000
 	github.com/metacubex/tailscale v0.0.0-20260821153257-ff0ecd818181
-	github.com/miekg/dns v1.1.63
+	github.com/miekg/dns v1.1.73
 )
 
 require (

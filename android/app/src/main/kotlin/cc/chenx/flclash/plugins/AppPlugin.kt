@@ -265,12 +265,14 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
 
     @Suppress("DEPRECATION")
     private fun updateExcludeFromRecents(value: Boolean?) {
+        val taskId = activity?.taskId ?: return
         val am = getSystemService(GlobalState.application, ActivityManager::class.java)
         val task = am?.appTasks?.firstOrNull {
+            val taskInfo = it.taskInfo ?: return@firstOrNull false
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                it.taskInfo.taskId == activity?.taskId
+                taskInfo.taskId == taskId
             } else {
-                it.taskInfo.id == activity?.taskId
+                taskInfo.id == taskId
             }
         }
         task?.setExcludeFromRecents(value ?: false)

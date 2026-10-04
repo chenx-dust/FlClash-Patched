@@ -37,7 +37,7 @@ impl MessageSender {
     // draining ahead of it.
     fn try_reserve(&self, len: usize) -> bool {
         self.pending_bytes
-            .fetch_update(Ordering::SeqCst, Ordering::SeqCst, |pending| {
+            .try_update(Ordering::SeqCst, Ordering::SeqCst, |pending| {
                 let next = pending.checked_add(len)?;
                 (pending == 0 || next <= MAX_PENDING_BYTES).then_some(next)
             })

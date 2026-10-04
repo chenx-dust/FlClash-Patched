@@ -3,6 +3,10 @@ use crate::service::hub::{
 };
 
 use anyhow::{bail, Context, Result};
+use hyper_util::rt::{TokioExecutor, TokioIo};
+use hyper_util::server::conn::auto::Builder as ConnectionBuilder;
+use hyper_util::server::graceful::GracefulShutdown;
+use hyper_util::service::TowerToHyperService;
 use std::ffi::{OsStr, OsString};
 use std::fs;
 use std::future::Future;
@@ -17,7 +21,7 @@ use tokio::net::{UnixListener, UnixStream};
 use tokio::runtime::Runtime;
 use tokio::signal::unix::{signal, SignalKind};
 use tokio::time::Sleep;
-use tokio_stream::Stream;
+use tokio_stream::{Stream, StreamExt};
 
 const SERVICE_NAME: &str = "flclash-helper";
 const UNIT_PATH: &str = "/etc/systemd/system/flclash-helper.service";
@@ -257,10 +261,30 @@ fn run_service() -> Result<()> {
                 _ = interrupt.recv() => {}
             }
         };
-        let incoming = AuthorizedIncoming::bind(owner)?;
-        warp::serve(routes())
-            .serve_incoming_with_graceful_shutdown(incoming, shutdown)
-            .await;
+        let mut incoming = AuthorizedIncoming::bind(owner)?;
+        let graceful = GracefulShutdown::new();
+        tokio::pin!(shutdown);
+        loop {
+            let stream = tokio::select! {
+                _ = &mut shutdown => break,
+                stream = incoming.next() => match stream {
+                    Some(stream) => stream.context("accept helper connection")?,
+                    None => break,
+                },
+            };
+            let service = TowerToHyperService::new(warp::service(routes()));
+            let watcher = graceful.watcher();
+            tokio::spawn(async move {
+                let builder = ConnectionBuilder::new(TokioExecutor::new());
+                let connection =
+                    builder.serve_connection_with_upgrades(TokioIo::new(stream), service);
+                if let Err(error) = watcher.watch(connection).await {
+                    log_message(format!("Helper connection failed: {error}"));
+                }
+            });
+        }
+        drop(incoming);
+        graceful.shutdown().await;
         release_managed_core_on_shutdown();
         Ok(())
     })
@@ -299,8 +323,6 @@ fn is_authorized_peer(stream: &UnixStream, owner: Owner) -> bool {
 impl Stream for AuthorizedIncoming {
     type Item = Result<UnixStream, Error>;
 
-    /// hyper ends the whole server on the first accept error it is handed, so
-    /// resource exhaustion is logged and retried after a pause instead.
     fn poll_next(
         mut self: Pin<&mut Self>,
         context: &mut TaskContext<'_>,

@@ -678,14 +678,16 @@ String createIOSNoSignEntitlements({
       final element = elements[index];
       if (element.name.local == 'key' && element.innerText == key) {
         elements[index + 1].replace(
-          XmlElement(XmlName('string'), const [], [XmlText(value)]),
+          XmlElement(const XmlName.parts('string'), const [], [XmlText(value)]),
         );
         return;
       }
     }
     dictionary.children
-      ..add(XmlElement(XmlName('key'), const [], [XmlText(key)]))
-      ..add(XmlElement(XmlName('string'), const [], [XmlText(value)]));
+      ..add(XmlElement(const XmlName.parts('key'), const [], [XmlText(key)]))
+      ..add(
+        XmlElement(const XmlName.parts('string'), const [], [XmlText(value)]),
+      );
   }
 
   final normalizedTeamIdentifier = teamIdentifier?.trim();

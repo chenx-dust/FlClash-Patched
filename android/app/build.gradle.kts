@@ -25,6 +25,7 @@ val hasReleaseSigning = releaseStoreFile.exists() &&
 android {
     namespace = "cc.chenx.flclash"
     compileSdk = libs.versions.compileSdk.get().toInt()
+    compileSdkMinor = libs.versions.compileSdkMinor.get().toInt()
     ndkVersion = libs.versions.ndkVersion.get()
 
     compileOptions {

@@ -15,7 +15,7 @@ use std::io::{BufRead, Error, Read};
 #[cfg(windows)]
 use std::os::windows::fs::OpenOptionsExt;
 #[cfg(windows)]
-use std::os::windows::io::AsRawHandle;
+use std::os::windows::io::{AsRawHandle, FromRawHandle, OwnedHandle};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::sync::{Mutex, MutexGuard};
@@ -23,8 +23,6 @@ use std::time::{Duration, Instant};
 use std::{io, thread};
 use warp::http::StatusCode;
 use warp::{Filter, Rejection, Reply};
-#[cfg(windows)]
-use windows_sys::Win32::Foundation::{CloseHandle, HANDLE};
 #[cfg(windows)]
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 #[cfg(windows)]
@@ -162,7 +160,7 @@ impl ManagedCore {
 /// Windows has no cgroup to take the Core down with a crashed Helper, so the
 /// Core lives in a job that the kernel kills when the Helper's handle closes.
 #[cfg(windows)]
-struct CoreJob(HANDLE);
+struct CoreJob(OwnedHandle);
 
 #[cfg(windows)]
 impl CoreJob {
@@ -171,14 +169,14 @@ impl CoreJob {
         // handle is closed by Drop and the process handle stays with `child`.
         unsafe {
             let job = CreateJobObjectW(std::ptr::null(), std::ptr::null());
-            if job == 0 {
+            if job.is_null() {
                 return Err(Error::last_os_error());
             }
-            let job = Self(job);
+            let job = Self(OwnedHandle::from_raw_handle(job));
             let mut limits: JOBOBJECT_EXTENDED_LIMIT_INFORMATION = std::mem::zeroed();
             limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
             if SetInformationJobObject(
-                job.0,
+                job.0.as_raw_handle(),
                 JobObjectExtendedLimitInformation,
                 &limits as *const _ as *const _,
                 std::mem::size_of::<JOBOBJECT_EXTENDED_LIMIT_INFORMATION>() as u32,
@@ -186,20 +184,10 @@ impl CoreJob {
             {
                 return Err(Error::last_os_error());
             }
-            if AssignProcessToJobObject(job.0, child.as_raw_handle() as HANDLE) == 0 {
+            if AssignProcessToJobObject(job.0.as_raw_handle(), child.as_raw_handle()) == 0 {
                 return Err(Error::last_os_error());
             }
             Ok(job)
-        }
-    }
-}
-
-#[cfg(windows)]
-impl Drop for CoreJob {
-    fn drop(&mut self) {
-        // SAFETY: the handle came from CreateJobObjectW and is closed once.
-        unsafe {
-            CloseHandle(self.0);
         }
     }
 }
@@ -291,7 +279,7 @@ fn sha256_file(file: &mut File) -> Result<String, Error> {
         hasher.update(&buffer[..bytes_read]);
     }
 
-    Ok(format!("{:x}", hasher.finalize()))
+    Ok(hex::encode(hasher.finalize()))
 }
 
 fn open_verified_core(path: &Path, expected_sha256: &str) -> Result<File, Error> {
@@ -739,11 +727,12 @@ where
 {
     ensure_core_sha256_configured()?;
 
-    let (_, server) = warp::serve(routes())
-        .try_bind_with_graceful_shutdown(([127, 0, 0, 1], LISTEN_PORT), shutdown)
+    let listener = tokio::net::TcpListener::bind((std::net::Ipv4Addr::LOCALHOST, LISTEN_PORT))
+        .await
         .map_err(|error| anyhow::anyhow!("bind helper server: {error}"))?;
+    let server = warp::serve(routes()).incoming(listener).graceful(shutdown);
     on_started()?;
-    server.await;
+    server.run().await;
     release_managed_core_on_shutdown();
 
     Ok(())
@@ -752,6 +741,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use http_body_util::BodyExt;
     use std::io::Write;
 
     static PROCESS_STATE: Mutex<()> = Mutex::new(());
@@ -842,9 +832,7 @@ mod tests {
             PROTOCOL_VERSION
         );
         assert_eq!(
-            warp::hyper::body::to_bytes(response.into_body())
-                .await
-                .unwrap(),
+            response.into_body().collect().await.unwrap().to_bytes(),
             "FlClashHelperService.exe"
         );
     }
@@ -859,9 +847,7 @@ mod tests {
             PROTOCOL_VERSION
         );
         assert_eq!(
-            warp::hyper::body::to_bytes(response.into_body())
-                .await
-                .unwrap(),
+            response.into_body().collect().await.unwrap().to_bytes(),
             "Core executable SHA256 mismatch"
         );
     }
@@ -963,12 +949,9 @@ mod tests {
         let response = launch_failure_response(&Error::from_raw_os_error(577));
 
         assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
-        let body: serde_json::Value = serde_json::from_slice(
-            &warp::hyper::body::to_bytes(response.into_body())
-                .await
-                .unwrap(),
-        )
-        .unwrap();
+        let body: serde_json::Value =
+            serde_json::from_slice(&response.into_body().collect().await.unwrap().to_bytes())
+                .unwrap();
         assert_eq!(body["code"], "processLaunchFailed");
         assert_eq!(body["details"]["osError"], 577);
     }
@@ -977,12 +960,9 @@ mod tests {
     async fn a_launch_failure_without_an_os_error_omits_the_details() {
         let response = launch_failure_response(&Error::other("spawn refused"));
 
-        let body: serde_json::Value = serde_json::from_slice(
-            &warp::hyper::body::to_bytes(response.into_body())
-                .await
-                .unwrap(),
-        )
-        .unwrap();
+        let body: serde_json::Value =
+            serde_json::from_slice(&response.into_body().collect().await.unwrap().to_bytes())
+                .unwrap();
         assert_eq!(body["message"], "spawn refused");
         assert!(body.get("details").is_none());
     }

@@ -10,7 +10,7 @@ crate-type = ["cdylib", "staticlib"]
 [dependencies]
 flutter_rust_bridge = "=2.13.0"
 ropey = { version = "1.6.1", default-features = false, features = ["simd"] }
-rquickjs = { version = "0.12", default-features = false }
+rquickjs = { version = "0.14", default-features = false }
 
 # The IPC server exists so a desktop Core process can talk to the app. Android
 # loads the Core in-process, so nothing below is built into the Android library.
@@ -24,7 +24,7 @@ libc = "0.2"
 # rquickjs does not ship pre-generated bindings for Android or iOS, so generate
 # them from the target SDK headers during the build.
 [target.'cfg(any(target_os = "android", target_os = "ios"))'.dependencies]
-rquickjs = { version = "0.12", default-features = false, features = ["bindgen"] }
+rquickjs = { version = "0.14", default-features = false, features = ["bindgen"] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 dispatch2 = "0.3"

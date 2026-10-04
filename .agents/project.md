@@ -4,11 +4,10 @@ FlClash is a multi-platform proxy client based on mihomo, built with Flutter. It
 
 ## Version Notes
 
-- Release CI pins Flutter 3.47.4. Local SDK may diverge, so trust the CI
+- Release CI pins Flutter 3.47.6. Local SDK may diverge, so trust the CI
   version as the source of truth for release builds.
-- Dart SDK constraint: `>=3.8.0 <4.0.0`. The lower bound is load-bearing and
-  must not be raised to the Dart version the SDK actually ships; see
-  Dependency Ceilings.
+- Root Dart SDK constraint: `>=3.10.0 <4.0.0`. Keep dependency upgrades separate
+  from language-version changes; local packages may impose a higher SDK minimum.
 
 ## Forked Dependencies
 
@@ -70,58 +69,32 @@ version 0.5.2, tracking `main` on top of
 
 ## Dependency Ceilings
 
-Several dependencies cannot be advanced from this repository, and re-running
-`flutter pub outdated` will keep listing them. The blocker is upstream in every
-case, so treat the list as resolved-until-the-ceiling-moves rather than as debt:
+Dependency resolution was rechecked with Flutter 3.47.6 / Dart 3.13.5. The
+remaining root-package upgrades are blocked by upstream constraints:
 
-`freezed` is pinned exactly to `3.2.6-dev.1`, which is a pre-release *ahead* of
-the newest stable `3.2.5`. It is not a stale pin and must not be "fixed" by
-moving to `3.2.5`: stable `3.2.5` requires `analyzer >=9.0.0 <11.0.0`, while the
-pinned Flutter SDK resolves `analyzer` 12. `3.2.6-dev.1` is the only published
-freezed release that accepts `analyzer` 12. Move to a stable release only once
-one exists that accepts the analyzer the SDK actually resolves.
+- `intl_utils` 2.8.16 requires `analyzer: ^13.0.0`, holding analyzer at 13.3.0.
+  `freezed` 4.0.2 requires analyzer 14, so retain stable `freezed` 4.0.1 until
+  intl_utils supports it. Do not restore the obsolete 3.2.6-dev.1 pin.
+- `flutter_test` pins `test_api` to 0.7.12; `test` 1.32.0 requires 0.7.14.
+  The pure Dart `plugins/setup/setup_hooks` package can use test 1.32.0 because
+  it has no Flutter SDK dependency.
+- Flutter pins `material_color_utilities` to 0.13.0. `intl` remains intentionally
+  unbounded (`any`) so SDK localization constraints can resolve it.
+- `vector_graphics_compiler` 1.3.0 constrains `xml` to `>=6.3.0 <=7.0.1`.
+  Keep xml at 7.0.1 until that upper bound moves; 7.1.0 cannot co-resolve.
+- `cross_file` 0.4.0 cannot co-resolve with the current image picker and file
+  selector platform packages, which still require 0.3.x.
 
-The `>=3.8.0` Dart lower bound is a language-version floor, not a stale minimum.
-Dart 3.13 makes `final` on a parameter an error, and `freezed` still emits it in
-the constructors it generates for every collection field it backs with a private
-field (`const _LogsState({final  List<Log> logs = const [], ...})`); 4.0.0-dev.3
-emits it too. A pubspec's lower bound sets the package language version, so
-`>=3.8.0` keeps that generated code legal while the SDK itself runs 3.13. Raising
-the bound makes every `*.freezed.dart` fail to parse, which `flutter analyze`
-does not catch because `lib/**/generated/**` is excluded. Raise it only once
-freezed stops emitting the modifier.
+The root and local build packages use `code_assets` 2.1.0. Upgrading both
+`plugins/rust_api` and `plugins/setup/setup_hooks` together lets
+`native_toolchain_c`, `native_toolchain_rust`, and `objective_c` move to their
+latest compatible releases. OS and architecture values can no longer be keys
+in const maps or sets; use runtime collections in build hooks.
 
-One `analyzer` ceiling holds most of the remaining `flutter pub outdated` list.
-The newest `build_runner`, `drift_dev`, `intl_utils`, `test`, and
-`riverpod_generator` all require `analyzer` 13; `test` 1.31.2 additionally
-requires `test_api` 0.7.13, while `flutter_test` from the pinned SDK depends on
-`test_api` 0.7.12. Raising any of those bounds therefore fails version solving.
-
-The `riverpod` chain is the visible symptom. It is held at
-`riverpod`/`flutter_riverpod` 3.3.2, `riverpod_annotation` 4.0.3, and
-`riverpod_generator` 4.0.4 as one rigid unit, because `riverpod_annotation`
-4.0.3 depends on `riverpod` exactly 3.3.2: the runtime cannot move without the
-generator, and the generator cannot move without `analyzer` 13. Retry the whole
-set after a Flutter SDK bump raises `test_api`, not before.
-
-`intl` is intentionally unbounded (`any`) and `material_color_utilities` is
-resolved by the SDK; neither is a bound this repository sets.
-
-`isolate_contactor` is discontinued and `isolate_manager` is several majors
-behind. Both arrive through `re_editor`, which pins `isolate_manager: ^4.1.5+1`
-and is already at its own latest release. Nothing in this repository can advance
-them.
-
-`CorePalette` is deprecated in `material_color_utilities` in favour of
-`DynamicScheme`/`CorePalettes`, but `dynamic_color` 1.9.0 — its newest release —
-still exposes only `DynamicColorPlugin.getCorePalette()`, which returns the
-deprecated type. There is no migration available from this repository short of
-calling the `io.material.plugins/dynamic_color` method channel directly and
-decoding the palette int list by hand, which is not worth owning. The deprecated
-type is therefore confined to `GlobalState._initDynamicColor`, which converts it
-to the two plain seed colours the app actually consumes; everything downstream
-sees `DynamicColorSeeds`. Revisit when `dynamic_color` ships a non-deprecated
-accessor — only that one function has to change.
+Android builds use AGP 9.4.1, Gradle 9.6.0, Kotlin 2.4.20, NDK r30, and compile SDK 37.2
+(API 37 with `compileSdkMinor = 2`), satisfying AndroidX Core 1.19.1's API 37 minimum.
+Keep target SDK changes separate: they alter runtime compatibility behavior.
+Flutter still needs the legacy Kotlin/DSL opt-outs in `android/gradle.properties`.
 
 ## Build Dependencies
 
