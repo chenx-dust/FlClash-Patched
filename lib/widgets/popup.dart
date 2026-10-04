@@ -92,6 +92,79 @@ class CommonPopupRoute<T> extends PopupRoute<T> {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
+    return _PopupTransition(
+      animation: animation,
+      anchorOf: anchorOf,
+      placement: placement,
+      avoid: avoid,
+      onDismiss: _handleDismiss,
+      child: child,
+    );
+  }
+}
+
+VoidCallback showCommonPopupOverlay({
+  required BuildContext context,
+  required PopupAnchorResolver anchorOf,
+  required Widget Function(BuildContext, VoidCallback) builder,
+  required VoidCallback onDismiss,
+  Rect? avoid,
+}) {
+  late OverlayEntry entry;
+  late LocalHistoryEntry history;
+  var closed = false;
+  void dismiss() {
+    if (closed) return;
+    closed = true;
+    history.remove();
+    entry.remove();
+    entry.dispose();
+    onDismiss();
+  }
+
+  history = LocalHistoryEntry(onRemove: dismiss);
+  entry = OverlayEntry(
+    builder: (context) => TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: const Duration(milliseconds: 180),
+      builder: (_, value, child) => _PopupTransition(
+        animation: AlwaysStoppedAnimation(value),
+        anchorOf: anchorOf,
+        placement: PopupPlacement.belowPoint,
+        avoid: avoid,
+        consumeOutsideTaps: false,
+        onDismiss: dismiss,
+        child: child!,
+      ),
+      child: builder(context, dismiss),
+    ),
+  );
+  Overlay.of(context).insert(entry);
+  ModalRoute.of(context)?.addLocalHistoryEntry(history);
+  return dismiss;
+}
+
+class _PopupTransition extends StatelessWidget {
+  const _PopupTransition({
+    required this.animation,
+    required this.anchorOf,
+    required this.placement,
+    required this.avoid,
+    required this.onDismiss,
+    required this.child,
+    this.consumeOutsideTaps = true,
+  });
+
+  final Animation<double> animation;
+  final PopupAnchorResolver anchorOf;
+  final PopupPlacement placement;
+  final Rect? avoid;
+  final VoidCallback onDismiss;
+  final Widget child;
+  final bool consumeOutsideTaps;
+
+  @override
+  Widget build(BuildContext context) {
     final alignment = placement == PopupPlacement.belowPoint
         ? Alignment.topLeft
         : Alignment.topRight;
@@ -99,13 +172,14 @@ class CommonPopupRoute<T> extends PopupRoute<T> {
     final scale = animation.drive(CurveTween(curve: Curves.easeOutBack));
     return Stack(
       children: [
-        Positioned.fill(
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            excludeFromSemantics: true,
-            onTap: _handleDismiss,
+        if (consumeOutsideTaps)
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              excludeFromSemantics: true,
+              onTap: onDismiss,
+            ),
           ),
-        ),
         _PopupAnchorTracker(
           anchorOf: anchorOf,
           builder: (anchor, safeInsets, child) => CustomSingleChildLayout(
@@ -126,7 +200,11 @@ class CommonPopupRoute<T> extends PopupRoute<T> {
                 position: scale.drive(
                   Tween(begin: const Offset(0, -0.02), end: Offset.zero),
                 ),
-                child: child,
+                child: TapRegion(
+                  enabled: !consumeOutsideTaps,
+                  onTapOutside: (_) => onDismiss(),
+                  child: child,
+                ),
               ),
             ),
           ),
@@ -370,11 +448,13 @@ class CommonPopupMenu extends StatefulWidget {
     required this.items,
     this.minWidth = 160,
     this.maxWidth = 280,
+    this.onDismiss,
   });
 
   final List<CommonPopupMenuItem> items;
   final double minWidth;
   final double maxWidth;
+  final VoidCallback? onDismiss;
 
   @override
   State<CommonPopupMenu> createState() => _CommonPopupMenuState();
@@ -544,7 +624,12 @@ class _CommonPopupMenuState extends State<CommonPopupMenu>
   }
 
   void _select(VoidCallback onPressed) {
-    Navigator.of(context).pop();
+    final dismiss = widget.onDismiss;
+    if (dismiss != null) {
+      dismiss();
+    } else {
+      Navigator.of(context).pop();
+    }
     onPressed();
   }
 

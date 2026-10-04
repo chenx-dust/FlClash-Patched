@@ -23,7 +23,8 @@ class _CodeForgeState extends State<CodeForge>
     MagnifierInfo.empty,
   );
   final MagnifierController _magnifierController = MagnifierController();
-  final _isMobile = Platform.isAndroid || Platform.isIOS;
+  bool get _isMobile =>
+      widget.isMobile ?? (Platform.isAndroid || Platform.isIOS);
   GlobalKey _codeFieldKey = GlobalKey();
   final GlobalKey _editorStackKey = GlobalKey();
   TextInputConnection? _connection;

@@ -21,6 +21,7 @@ extension _EditorStateOverlays on _CodeForgeState {
     widget.onContextMenu(
       context,
       CodeForgeContextMenuRequest(
+        isMobile: _isMobile,
         globalPosition: stack.localToGlobal(offset),
         hasSelection: !selection.isCollapsed,
         selectionRect: selectionRect,

@@ -71,6 +71,7 @@ Future<void> pumpEditor(
   FindController? findController,
   bool lineWrap = false,
   bool readOnly = false,
+  bool? isMobile,
   bool enableLocalSuggestions = false,
   Widget Function(BuildContext, CodeForgeSuggestionDetails)?
   suggestionPopupBuilder,
@@ -100,6 +101,7 @@ Future<void> pumpEditor(
     innerPadding: const EdgeInsets.only(top: editorTopPadding),
     lineWrap: lineWrap,
     readOnly: readOnly,
+    isMobile: isMobile,
     onContextMenu: onContextMenu ?? (_, _) {},
     suggestionPopupBuilder:
         suggestionPopupBuilder ?? (_, _) => const SizedBox.shrink(),

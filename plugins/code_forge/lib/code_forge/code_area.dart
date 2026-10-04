@@ -68,6 +68,7 @@ class CodeForge extends StatefulWidget {
   ///
   /// When true, the user cannot modify the text content.
   final bool readOnly;
+  final bool? isMobile;
 
   /// Whether to wrap long lines.
   ///
@@ -140,6 +141,7 @@ class CodeForge extends StatefulWidget {
     this.textStyle,
     this.innerPadding,
     this.readOnly = false,
+    this.isMobile,
     this.lineWrap = false,
     this.lineNumberStyle,
     this.tabSize,
@@ -237,6 +239,7 @@ class _CodeField extends LeafRenderObjectWidget {
 }
 
 class CodeForgeContextMenuRequest {
+  final bool isMobile;
   final Offset globalPosition;
   final bool hasSelection;
 
@@ -256,6 +259,7 @@ class CodeForgeContextMenuRequest {
   final VoidCallback selectAll;
 
   const CodeForgeContextMenuRequest({
+    this.isMobile = false,
     required this.globalPosition,
     required this.hasSelection,
     this.selectionRect,

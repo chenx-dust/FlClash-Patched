@@ -270,6 +270,10 @@ class _EditorPageState extends ConsumerState<EditorPage> {
       appSettingProvider.select((state) => state.editorLineHeight),
     );
     return CommonPopScope(
+      canPop:
+          widget.onPop == null ||
+          !_barState.isDirty ||
+          ModalRoute.of(context)?.willHandlePopInternally == true,
       onPop: _handlePop,
       child: CallbackShortcuts(
         bindings: {
@@ -652,6 +656,7 @@ class _CodeEditor extends ConsumerStatefulWidget {
 }
 
 class _CodeEditorState extends ConsumerState<_CodeEditor> {
+  VoidCallback? _dismissMobileContextMenu;
   // CodeForge compares these by identity and rebuilds its whole layout and
   // highlighter on any change, so each is rebuilt only when its inputs change.
   ColorScheme? _colorScheme;
@@ -691,6 +696,7 @@ class _CodeEditorState extends ConsumerState<_CodeEditor> {
 
   @override
   void dispose() {
+    _dismissMobileContextMenu?.call();
     widget.findController.removeListener(_handleFindChanged);
     super.dispose();
   }
@@ -758,6 +764,7 @@ class _CodeEditorState extends ConsumerState<_CodeEditor> {
     BuildContext context,
     CodeForgeContextMenuRequest request,
   ) {
+    _dismissMobileContextMenu?.call();
     final appLocalizations = context.appLocalizations;
     final items = [
       if (request.hasSelection && !request.readOnly)
@@ -792,6 +799,20 @@ class _CodeEditorState extends ConsumerState<_CodeEditor> {
     }
     final point = navigatorBox.globalToLocal(request.globalPosition);
     final selectionRect = request.selectionRect;
+    if (request.isMobile) {
+      _showMobileContextMenu(
+        context,
+        point,
+        selectionRect == null
+            ? null
+            : Rect.fromPoints(
+                navigatorBox.globalToLocal(selectionRect.topLeft),
+                navigatorBox.globalToLocal(selectionRect.bottomRight),
+              ),
+        items,
+      );
+      return;
+    }
     final route = CommonPopupRoute<void>(
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
       placement: PopupPlacement.belowPoint,
@@ -827,6 +848,43 @@ class _CodeEditorState extends ConsumerState<_CodeEditor> {
       controller.removeListener(closeOnceOutdated);
       focusNode?.removeListener(closeOnceOutdated);
     });
+  }
+
+  void _showMobileContextMenu(
+    BuildContext context,
+    Offset point,
+    Rect? selectionRect,
+    List<CommonPopupMenuItem> items,
+  ) {
+    final controller = widget.controller;
+    final selection = controller.selection;
+    final version = controller.contentVersion;
+    final composition = controller.imeComposition;
+    final focusNode = controller.focusNode;
+    final hadFocus = focusNode?.hasFocus ?? false;
+    late VoidCallback dismiss;
+    void closeOnceOutdated() {
+      if (controller.selection != selection ||
+          controller.contentVersion != version ||
+          controller.imeComposition != composition ||
+          hadFocus && !focusNode!.hasFocus) {
+        scheduleMicrotask(dismiss);
+      }
+    }
+
+    controller.addListener(closeOnceOutdated);
+    focusNode?.addListener(closeOnceOutdated);
+    _dismissMobileContextMenu = dismiss = showCommonPopupOverlay(
+      context: context,
+      anchorOf: () => point & Size.zero,
+      avoid: selectionRect,
+      builder: (_, close) => CommonPopupMenu(items: items, onDismiss: close),
+      onDismiss: () {
+        controller.removeListener(closeOnceOutdated);
+        focusNode?.removeListener(closeOnceOutdated);
+        _dismissMobileContextMenu = null;
+      },
+    );
   }
 
   @override
@@ -956,13 +1014,16 @@ class FindPanel extends StatelessWidget implements PreferredSizeWidget {
 
   bool get _showReplace => controller.isReplaceMode && !readOnly;
 
-  double get height {
-    final rows = (isMobileView ? 2 : 1) + (_showReplace ? 1 : 0);
-    return _kDefaultFindPanelHeight * rows + 8;
-  }
-
+  // CodeForge requires a PreferredSizeWidget, then places this panel in a
+  // column and never reads preferredSize. The painted height is the child's.
   @override
-  Size get preferredSize => Size(double.infinity, height + topInset);
+  Size get preferredSize {
+    final rows = (isMobileView ? 2 : 1) + (_showReplace ? 1 : 0);
+    return Size(
+      double.infinity,
+      _kDefaultFindPanelHeight * rows + 8 + topInset,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -981,11 +1042,9 @@ class FindPanel extends StatelessWidget implements PreferredSizeWidget {
               controller.previous,
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          margin: EdgeInsets.only(top: topInset, bottom: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          margin: EdgeInsets.only(top: topInset, bottom: 4),
           color: context.colorScheme.surface,
-          alignment: Alignment.centerLeft,
-          height: height,
           child: _buildFindInputView(context),
         ),
       ),
