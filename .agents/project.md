@@ -91,6 +91,10 @@ The root and local build packages use `code_assets` 2.1.0. Upgrading both
 latest compatible releases. OS and architecture values can no longer be keys
 in const maps or sets; use runtime collections in build hooks.
 
+The Rust API pins `libc` to 0.2.189 for iOS: 0.2.190 restricts dyld declarations
+to macOS, breaking the iOS build of `backtrace` 0.3.76. Keep this pin until
+backtrace supports the changed declarations.
+
 Android builds use AGP 9.4.1, Gradle 9.6.0, Kotlin 2.4.20, NDK r30, and compile SDK 37.2
 (API 37 with `compileSdkMinor = 2`), satisfying AndroidX Core 1.19.1's API 37 minimum.
 Keep target SDK changes separate: they alter runtime compatibility behavior.
