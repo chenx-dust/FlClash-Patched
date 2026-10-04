@@ -219,7 +219,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "backupAndRestoreDesc": MessageLookupByLibrary.simpleMessage(
       "WebDAV またはファイルを介してデータを同期する",
     ),
+    "backupDateDescription": MessageLookupByLibrary.simpleMessage(
+      "ローカル日付（YYYY-MM-DD）",
+    ),
+    "backupPlatformDescription": MessageLookupByLibrary.simpleMessage(
+      "現在のプラットフォーム",
+    ),
     "backupSuccess": MessageLookupByLibrary.simpleMessage("バックアップが完了しました"),
+    "backupTimeDescription": MessageLookupByLibrary.simpleMessage(
+      "ローカル時刻（HHmmss）",
+    ),
+    "backupVersionDescription": MessageLookupByLibrary.simpleMessage(
+      "アプリのバージョン",
+    ),
     "basicConfig": MessageLookupByLibrary.simpleMessage("基本設定"),
     "basicConfigDesc": MessageLookupByLibrary.simpleMessage("基本設定をグローバルに変更します"),
     "basicInfo": MessageLookupByLibrary.simpleMessage("基本情報"),
@@ -233,6 +245,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "bind": MessageLookupByLibrary.simpleMessage("連携"),
     "blacklistMode": MessageLookupByLibrary.simpleMessage("ブラックリストモード"),
     "blockConnection": MessageLookupByLibrary.simpleMessage("接続をブロック"),
+    "browse": MessageLookupByLibrary.simpleMessage("参照"),
     "bypassDomain": MessageLookupByLibrary.simpleMessage("除外ドメイン"),
     "bypassDomainDesc": MessageLookupByLibrary.simpleMessage(
       "システムプロキシが有効な場合のみ適用されます",
@@ -348,6 +361,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "databaseWriteFailedTip": MessageLookupByLibrary.simpleMessage(
       "変更の保存に失敗したため、元に戻しました",
     ),
+    "davDirectory": MessageLookupByLibrary.simpleMessage("ディレクトリ"),
     "daysAgo": m2,
     "defaultNameserver": MessageLookupByLibrary.simpleMessage("デフォルトネームサーバー"),
     "defaultNameserverDesc": MessageLookupByLibrary.simpleMessage(
@@ -529,6 +543,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "fileIsUpdate": MessageLookupByLibrary.simpleMessage(
       "ファイルが変更されています。変更を保存しますか？",
     ),
+    "fileName": MessageLookupByLibrary.simpleMessage("ファイル名"),
     "filter": MessageLookupByLibrary.simpleMessage("フィルター"),
     "findProcessMode": MessageLookupByLibrary.simpleMessage("プロセス検出"),
     "findProcessModeDesc": MessageLookupByLibrary.simpleMessage(
@@ -676,6 +691,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "interval": MessageLookupByLibrary.simpleMessage("間隔"),
     "intranetIP": MessageLookupByLibrary.simpleMessage("イントラネット IP"),
     "invalidBackupFile": MessageLookupByLibrary.simpleMessage("無効なバックアップファイル"),
+    "invalidBackupFileName": MessageLookupByLibrary.simpleMessage(
+      "パス区切りや特殊文字を含まず、255 バイト以内の有効なファイル名を入力してください。",
+    ),
+    "invalidDavDirectory": MessageLookupByLibrary.simpleMessage(
+      ". や ..、バックスラッシュ、特殊文字を含まない有効なディレクトリを入力してください。",
+    ),
     "invalidPolicy": m16,
     "invalidProxy": m17,
     "invalidProxyProvider": m18,
@@ -807,6 +828,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "nextMatch": MessageLookupByLibrary.simpleMessage("次の一致"),
     "no": MessageLookupByLibrary.simpleMessage("いいえ"),
     "noData": MessageLookupByLibrary.simpleMessage("データがありません"),
+    "noDirectories": MessageLookupByLibrary.simpleMessage("サブディレクトリはありません"),
     "noFilterCondition": MessageLookupByLibrary.simpleMessage("フィルター条件なし"),
     "noHotKey": MessageLookupByLibrary.simpleMessage("ホットキーはまだありません"),
     "noInfo": MessageLookupByLibrary.simpleMessage("情報がありません"),
@@ -814,6 +836,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "noNetwork": MessageLookupByLibrary.simpleMessage("ネットワークがありません"),
     "noNetworkApp": MessageLookupByLibrary.simpleMessage("ネットワーク不使用アプリ"),
     "noRecords": MessageLookupByLibrary.simpleMessage("記録がありません"),
+    "noRemoteBackups": MessageLookupByLibrary.simpleMessage(
+      "リモートバックアップが見つかりません",
+    ),
     "noResolve": MessageLookupByLibrary.simpleMessage("IP を解決しない"),
     "noResolveHostname": MessageLookupByLibrary.simpleMessage("ホスト名を解決しない"),
     "nodes": MessageLookupByLibrary.simpleMessage("ノード"),
@@ -864,6 +889,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "カスタムモード：プロキシグループとルールを完全にカスタマイズできます",
     ),
     "palette": MessageLookupByLibrary.simpleMessage("パレット"),
+    "parentDirectory": MessageLookupByLibrary.simpleMessage("親ディレクトリ"),
     "password": MessageLookupByLibrary.simpleMessage("パスワード"),
     "paste": MessageLookupByLibrary.simpleMessage("貼り付け"),
     "pickFromAlbum": MessageLookupByLibrary.simpleMessage("アルバムから選択"),
@@ -1017,6 +1043,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "restoreStrategyCompatible": MessageLookupByLibrary.simpleMessage("互換"),
     "restoreStrategyOverride": MessageLookupByLibrary.simpleMessage("上書き"),
     "restoreSuccess": MessageLookupByLibrary.simpleMessage("復元が完了しました"),
+    "retry": MessageLookupByLibrary.simpleMessage("再試行"),
     "role": MessageLookupByLibrary.simpleMessage("ロール"),
     "routeAddress": MessageLookupByLibrary.simpleMessage("ルートアドレス"),
     "routeAddressDesc": MessageLookupByLibrary.simpleMessage(
@@ -1155,6 +1182,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectProxyProviders": MessageLookupByLibrary.simpleMessage(
       "プロキシプロバイダーを選択",
     ),
+    "selectRemoteBackup": MessageLookupByLibrary.simpleMessage("バックアップを選択"),
     "selectRuleSet": MessageLookupByLibrary.simpleMessage("ルールセットを選択してください"),
     "selectSplitStrategy": MessageLookupByLibrary.simpleMessage(
       "振り分け戦略を選択してください",
@@ -1274,6 +1302,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "testInterval": MessageLookupByLibrary.simpleMessage("テスト間隔"),
     "testUrl": MessageLookupByLibrary.simpleMessage("URL テスト"),
     "testWhenUsed": MessageLookupByLibrary.simpleMessage("使用時にテスト"),
+    "textReplacement": MessageLookupByLibrary.simpleMessage("テキスト置換："),
     "textScale": MessageLookupByLibrary.simpleMessage("テキストの拡大縮小"),
     "theme": MessageLookupByLibrary.simpleMessage("テーマ"),
     "themeColor": MessageLookupByLibrary.simpleMessage("テーマカラー"),
@@ -1317,6 +1346,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "uninitialized": MessageLookupByLibrary.simpleMessage("未初期化"),
     "unknown": MessageLookupByLibrary.simpleMessage("不明"),
+    "unknownBackupVariable": MessageLookupByLibrary.simpleMessage(
+      "不明な変数です。下の変数から選択してください。",
+    ),
     "unknownNetworkError": MessageLookupByLibrary.simpleMessage("不明なネットワークエラー"),
     "unmaximize": MessageLookupByLibrary.simpleMessage("元に戻す"),
     "unnamed": MessageLookupByLibrary.simpleMessage("名称未設定"),

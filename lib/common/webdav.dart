@@ -1,9 +1,18 @@
 import 'dart:convert';
 import 'dart:math';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:fl_clash/common/string.dart';
+import 'package:xml/xml.dart';
+
+class DAVFile {
+  final String name;
+  final DateTime? modified;
+
+  const DAVFile({required this.name, this.modified});
+}
 
 final class DAVException implements Exception {
   final String method;
@@ -105,6 +114,103 @@ class DAVTransport {
     );
     final data = response.data;
     return data is List<int> ? Uint8List.fromList(data) : Uint8List(0);
+  }
+
+  Future<void> delete(String path) async {
+    await _send('DELETE', path, accept: const {200, 202, 204, 404});
+  }
+
+  Future<List<DAVFile>> list(
+    String path, {
+    bool directoriesOnly = false,
+  }) async {
+    const body =
+        '<d:propfind xmlns:d="DAV:"><d:prop>'
+        '<d:resourcetype/><d:getlastmodified/>'
+        '</d:prop></d:propfind>';
+    final response = await _send(
+      'PROPFIND',
+      path,
+      collection: true,
+      body: utf8.encode(body),
+      headers: const {
+        'depth': '1',
+        Headers.contentTypeHeader: 'application/xml',
+      },
+      accept: const {207, 404},
+    );
+    if (response.statusCode == 404) return [];
+    final collection = resolve(path, collection: true);
+    final parent = collection.pathSegments
+        .where((part) => part.isNotEmpty)
+        .toList();
+    final files = <String, DAVFile>{};
+    final document = XmlDocument.parse(response.data as String);
+    for (final entry in document.findAllElements(
+      'response',
+      namespaceUri: 'DAV:',
+    )) {
+      final href = entry.getElement('href', namespaceUri: 'DAV:')?.innerText;
+      if (href == null) continue;
+      final uri = collection.resolve(href);
+      final segments = uri.pathSegments.toList();
+      if (segments.isNotEmpty && segments.last.isEmpty) segments.removeLast();
+      if (!_sameOrigin(uri, collection) ||
+          segments.length != parent.length + 1 ||
+          parent.indexed.any((entry) => segments[entry.$1] != entry.$2)) {
+        continue;
+      }
+      final name = segments.last;
+      if (name.isEmpty ||
+          name == '.' ||
+          name == '..' ||
+          name.contains('/') ||
+          name.contains('\\')) {
+        continue;
+      }
+      DateTime? modified;
+      var isFile = false;
+      var isCollection = false;
+      for (final propstat in entry.findElements(
+        'propstat',
+        namespaceUri: 'DAV:',
+      )) {
+        final status = propstat
+            .getElement('status', namespaceUri: 'DAV:')
+            ?.innerText;
+        if (status == null ||
+            !RegExp(r'^HTTP/\S+ 2\d\d(?:\s|$)').hasMatch(status.trim())) {
+          continue;
+        }
+        final prop = propstat.getElement('prop', namespaceUri: 'DAV:');
+        if (prop == null) continue;
+        isFile = true;
+        isCollection |=
+            prop
+                .getElement('resourcetype', namespaceUri: 'DAV:')
+                ?.getElement('collection', namespaceUri: 'DAV:') !=
+            null;
+        final rawDate = prop
+            .getElement('getlastmodified', namespaceUri: 'DAV:')
+            ?.innerText;
+        if (rawDate != null) {
+          try {
+            modified = HttpDate.parse(rawDate);
+          } on HttpException {
+            modified = DateTime.tryParse(rawDate);
+          }
+        }
+      }
+      if (isFile && isCollection == directoriesOnly) {
+        files[name] = DAVFile(name: name, modified: modified);
+      }
+    }
+    return files.values.toList()..sort((a, b) {
+      if (directoriesOnly) return a.name.compareTo(b.name);
+      final dateOrder = (b.modified ?? DateTime.fromMillisecondsSinceEpoch(0))
+          .compareTo(a.modified ?? DateTime.fromMillisecondsSinceEpoch(0));
+      return dateOrder != 0 ? dateOrder : a.name.compareTo(b.name);
+    });
   }
 
   Future<Response<dynamic>> _send(

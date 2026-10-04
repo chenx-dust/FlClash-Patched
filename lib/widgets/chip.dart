@@ -10,6 +10,7 @@ class CommonChip extends StatelessWidget {
   final IconData? icon;
   final VoidCallback? onPressed;
   final VoidCallback? onDeleted;
+  final bool isLarge;
 
   const CommonChip({
     super.key,
@@ -17,6 +18,7 @@ class CommonChip extends StatelessWidget {
     this.icon,
     this.onPressed,
     this.onDeleted,
+    this.isLarge = false,
   });
 
   @override
@@ -25,7 +27,12 @@ class CommonChip extends StatelessWidget {
     if (onDeleted != null) {
       return _ConfirmDeleteChip(label: label, icon: icon, onDeleted: onDeleted);
     }
-    return _ChipSurface(label: label, icon: icon, onPressed: onPressed);
+    return _ChipSurface(
+      label: label,
+      icon: icon,
+      onPressed: onPressed,
+      isLarge: isLarge,
+    );
   }
 }
 

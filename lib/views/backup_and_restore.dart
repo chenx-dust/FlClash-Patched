@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/common/backup_file_name.dart';
 import 'package:fl_clash/common/dav_client.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
@@ -10,6 +11,7 @@ import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/state.dart';
+import 'package:fl_clash/widgets/chip.dart';
 import 'package:fl_clash/widgets/dialog.dart';
 import 'package:fl_clash/widgets/fade_box.dart';
 import 'package:fl_clash/widgets/input.dart';
@@ -58,58 +60,110 @@ class _BackupAndRestoreState extends ConsumerState<BackupAndRestore>
 
   Future<void> _backupOnWebDAV() async {
     final appLocalizations = context.appLocalizations;
-    final res = await globalState.loadingRun<bool>(
+    final fileName = await globalState.loadingRun<String?>(
       () async {
         final client = _davConnection.client;
         if (client == null) {
-          return false;
+          return null;
         }
-        return ref
+        final now = DateTime.now();
+        final version = globalState.packageInfo.version;
+        final error = BackupFileName.validate(
+          client.fileName,
+          version: version,
+          platform: Platform.operatingSystem,
+          now: now,
+        );
+        if (error != null) {
+          throw MessageException(appLocalizations.invalidBackupFileName);
+        }
+        final name = BackupFileName.render(
+          client.fileName,
+          version: version,
+          platform: Platform.operatingSystem,
+          now: now,
+        );
+        final success = await ref
             .read(backupActionProvider.notifier)
-            .consumeBackup(client.backup);
+            .consumeBackup((path) => client.backup(path, name: name));
+        return success ? name : null;
       },
       tag: LoadingTag.backup_restore,
       title: appLocalizations.backup,
     );
-    if (res != true) return;
+    if (fileName == null || !mounted) return;
     unawaited(
       dialogs.showMessage(
         title: appLocalizations.backup,
-        message: TextSpan(text: appLocalizations.backupSuccess),
+        cancelable: false,
+        message: TextSpan(
+          children: [
+            TextSpan(text: '${appLocalizations.backupSuccess}\n'),
+            TextSpan(
+              text: fileName,
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.colorScheme.onSurface,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Future<void> _restoreOnWebDAV(RestoreOption option) async {
+  Future<void> _restoreOnWebDAV(
+    RestoreOption option,
+    DAVClient client,
+    String name,
+  ) async {
     final appLocalizations = context.appLocalizations;
+    final backupAction = ref.read(backupActionProvider.notifier);
     final res = await globalState.loadingRun<bool>(
       () async {
-        final client = _davConnection.client;
-        if (client == null) {
-          return false;
-        }
-        await client.restore();
-        await ref.read(backupActionProvider.notifier).restore(option);
+        await client.restore(name: name);
+        await backupAction.restore(option);
         return true;
       },
       tag: LoadingTag.backup_restore,
       title: appLocalizations.restore,
     );
-    if (res != true) return;
+    if (res != true || !mounted) return;
     unawaited(
       dialogs.showMessage(
         title: appLocalizations.restore,
+        cancelable: false,
         message: TextSpan(text: appLocalizations.restoreSuccess),
       ),
     );
   }
 
   Future<void> _handleRestoreOnWebDAV() async {
+    final client = _davConnection.client;
+    if (client == null) return;
+    final appLocalizations = context.appLocalizations;
+    final files = await globalState.loadingRun<List<DAVFile>>(
+      client.listBackups,
+      tag: LoadingTag.backup_restore,
+      title: appLocalizations.restore,
+    );
+    if (files == null || !mounted) return;
+    if (files.isEmpty) {
+      await dialogs.showMessage(
+        title: appLocalizations.restore,
+        cancelable: false,
+        message: TextSpan(text: appLocalizations.noRemoteBackups),
+      );
+      return;
+    }
+    final name = await dialogs.showCommonDialog<String>(
+      child: RemoteBackupsDialog(files: files, onDelete: client.deleteBackup),
+    );
+    if (name == null || !mounted) return;
     final restoreOption = await dialogs.showCommonDialog<RestoreOption>(
       child: const RestoreOptionsDialog(),
     );
     if (restoreOption == null || !context.mounted) return;
-    unawaited(_restoreOnWebDAV(restoreOption));
+    unawaited(_restoreOnWebDAV(restoreOption, client, name));
   }
 
   Future<void> _backupOnLocal() async {
@@ -133,6 +187,7 @@ class _BackupAndRestoreState extends ConsumerState<BackupAndRestore>
     unawaited(
       dialogs.showMessage(
         title: appLocalizations.backup,
+        cancelable: false,
         message: TextSpan(text: appLocalizations.backupSuccess),
       ),
     );
@@ -157,6 +212,7 @@ class _BackupAndRestoreState extends ConsumerState<BackupAndRestore>
     unawaited(
       dialogs.showMessage(
         title: appLocalizations.restore,
+        cancelable: false,
         message: TextSpan(text: appLocalizations.restoreSuccess),
       ),
     );
@@ -170,13 +226,49 @@ class _BackupAndRestoreState extends ConsumerState<BackupAndRestore>
     unawaited(_restoreOnLocal(option));
   }
 
-  void _handleChange(String? value, WidgetRef ref) {
-    if (value == null) {
-      return;
-    }
+  Future<void> _editFileName(DAVProps dav) async {
+    final value = await dialogs.showCommonDialog<String>(
+      child: BackupFileNameDialog(
+        value: dav.fileName,
+        version: globalState.packageInfo.version,
+        platform: Platform.operatingSystem,
+      ),
+    );
+    if (value == null || !mounted) return;
+    if (ref.read(davSettingProvider) != dav) return;
     ref
         .read(davSettingProvider.notifier)
         .update((state) => state?.copyWith(fileName: value));
+  }
+
+  Future<void> _editDirectory(DAVProps dav) async {
+    final appLocalizations = context.appLocalizations;
+    final value = await dialogs.showCommonDialog<String>(
+      child: InputDialog(
+        title: appLocalizations.davDirectory,
+        value: dav.directory,
+        labelText: appLocalizations.davDirectory,
+        maxLength: TextInputLimits.uri,
+        keyboardType: TextInputType.text,
+        validator: (value) => DAVDirectory.isValid(value ?? '')
+            ? null
+            : appLocalizations.invalidDavDirectory,
+        actionsBuilder: (controller, submit) => [
+          _DAVDirectoryActions(
+            controller: controller,
+            loadDirectories: DAVClient(dav).listDirectories,
+            submit: submit,
+          ),
+        ],
+      ),
+    );
+    if (value == null || !mounted) return;
+    if (ref.read(davSettingProvider) != dav) return;
+    ref
+        .read(davSettingProvider.notifier)
+        .update(
+          (state) => state?.copyWith(directory: DAVDirectory.normalize(value)),
+        );
   }
 
   Future<void> _handleUpdateRestoreStrategy() async {
@@ -271,16 +363,15 @@ class _BackupAndRestoreState extends ConsumerState<BackupAndRestore>
                     child: Text(appLocalizations.edit),
                   ),
                 ),
-                ListItem.input(
-                  title: Text(appLocalizations.file),
+                ListItem(
+                  title: Text(appLocalizations.fileName),
                   subtitle: Text(dav.fileName),
-                  dialogTitle: appLocalizations.file,
-                  value: dav.fileName,
-                  resetValue: defaultDavFileName,
-                  maxLength: TextInputLimits.fileName,
-                  onChanged: (value) {
-                    _handleChange(value, ref);
-                  },
+                  onTap: () => _editFileName(dav),
+                ),
+                ListItem(
+                  title: Text(appLocalizations.davDirectory),
+                  subtitle: Text(DAVDirectory.normalize(dav.directory)),
+                  onTap: () => _editDirectory(dav),
                 ),
                 ListItem(
                   onTap: _backupOnWebDAV,
@@ -506,6 +597,517 @@ class _RestoreOptionsDialogState extends State<RestoreOptionsDialog> {
   }
 }
 
+class BackupFileNameDialog extends StatefulWidget {
+  final String value;
+  final String version;
+  final String platform;
+
+  const BackupFileNameDialog({
+    super.key,
+    required this.value,
+    required this.version,
+    required this.platform,
+  });
+
+  @override
+  State<BackupFileNameDialog> createState() => _BackupFileNameDialogState();
+}
+
+class _BackupFileNameDialogState extends State<BackupFileNameDialog> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _controller;
+  late final DateTime _previewTime;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.value);
+    _previewTime = DateTime.now();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  String _render(String value) => BackupFileName.render(
+    value,
+    version: widget.version,
+    platform: widget.platform,
+    now: _previewTime,
+  );
+
+  String? _validate(String? value) {
+    final appLocalizations = context.appLocalizations;
+    final error = BackupFileName.validate(
+      value ?? '',
+      version: widget.version,
+      platform: widget.platform,
+      now: _previewTime,
+    );
+    return switch (error) {
+      null => null,
+      BackupFileNameError.empty => appLocalizations.emptyTip(
+        appLocalizations.fileName,
+      ),
+      BackupFileNameError.unknownVariable =>
+        appLocalizations.unknownBackupVariable,
+      _ => appLocalizations.invalidBackupFileName,
+    };
+  }
+
+  void _insert(String variable) {
+    final selection = _controller.selection;
+    final start = selection.isValid ? selection.start : _controller.text.length;
+    final end = selection.isValid ? selection.end : start;
+    final token = '{$variable}';
+    _controller.value = TextEditingValue(
+      text: _controller.text.replaceRange(start, end, token),
+      selection: TextSelection.collapsed(offset: start + token.length),
+    );
+  }
+
+  void _submit() {
+    if (_formKey.currentState?.validate() != true) return;
+    final value = _controller.text;
+    Navigator.of(context).pop(BackupFileName.ensureZipExtension(value));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final appLocalizations = context.appLocalizations;
+    final replacements = {
+      'version': appLocalizations.backupVersionDescription,
+      'date': appLocalizations.backupDateDescription,
+      'time': appLocalizations.backupTimeDescription,
+      'platform': appLocalizations.backupPlatformDescription,
+    };
+    return CommonDialog(
+      title: appLocalizations.fileName,
+      maxWidth: 420,
+      actions: [
+        TextButton(
+          onPressed: () => _controller.text = defaultDavFileName,
+          child: Text(appLocalizations.reset),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(appLocalizations.cancel),
+        ),
+        TextButton(onPressed: _submit, child: Text(appLocalizations.save)),
+      ],
+      child: Form(
+        key: _formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: _controller,
+              maxLength: TextInputLimits.fileName,
+              minLines: 1,
+              maxLines: 3,
+              textInputAction: TextInputAction.done,
+              onFieldSubmitted: (_) => _submit(),
+              decoration: InputDecoration(
+                labelText: appLocalizations.fileName,
+                hintText: defaultDavFileName,
+              ),
+              validator: _validate,
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 8,
+              children: [
+                Text(appLocalizations.textReplacement),
+                for (final entry in replacements.entries)
+                  Row(
+                    spacing: 12,
+                    children: [
+                      TonalChip(
+                        label: '{${entry.key}}',
+                        color: context.colorScheme.secondaryContainer,
+                        foregroundColor:
+                            context.colorScheme.onSecondaryContainer,
+                        onPressed: () => _insert(entry.key),
+                      ),
+                      Expanded(
+                        child: Text(
+                          entry.value,
+                          style: context.textTheme.bodySmall?.copyWith(
+                            color: context.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('${appLocalizations.preview}: '),
+                Expanded(
+                  child: ValueListenableBuilder(
+                    valueListenable: _controller,
+                    builder: (_, value, _) => Text(
+                      _render(value.text),
+                      style: context.textTheme.bodyMedium?.copyWith(
+                        color: context.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DAVDirectoryActions extends StatefulWidget {
+  final TextEditingController controller;
+  final Future<List<String>> Function(String path) loadDirectories;
+  final VoidCallback submit;
+
+  const _DAVDirectoryActions({
+    required this.controller,
+    required this.loadDirectories,
+    required this.submit,
+  });
+
+  @override
+  State<_DAVDirectoryActions> createState() => _DAVDirectoryActionsState();
+}
+
+class _DAVDirectoryActionsState extends State<_DAVDirectoryActions> {
+  bool _browsing = false;
+
+  Future<void> _browse() async {
+    if (_browsing) return;
+    setState(() => _browsing = true);
+    try {
+      final value = await dialogs.showCommonDialog<String>(
+        context: context,
+        child: DAVDirectoryBrowserDialog(
+          directory: DAVDirectory.isValid(widget.controller.text)
+              ? DAVDirectory.normalize(widget.controller.text)
+              : '/',
+          loadDirectories: widget.loadDirectories,
+        ),
+      );
+      if (mounted && value != null) widget.controller.text = value;
+    } finally {
+      if (mounted) setState(() => _browsing = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final appLocalizations = context.appLocalizations;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        TextButton(
+          onPressed: _browsing ? null : _browse,
+          child: Text(appLocalizations.browse),
+        ),
+        Expanded(
+          child: Wrap(
+            alignment: WrapAlignment.end,
+            children: [
+              TextButton(
+                onPressed: _browsing
+                    ? null
+                    : () => Navigator.of(context).pop(defaultDavDirectory),
+                child: Text(appLocalizations.reset),
+              ),
+              TextButton(
+                onPressed: _browsing ? null : widget.submit,
+                child: Text(appLocalizations.submit),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class DAVDirectoryBrowserDialog extends StatefulWidget {
+  final String directory;
+  final Future<List<String>> Function(String path) loadDirectories;
+
+  const DAVDirectoryBrowserDialog({
+    super.key,
+    required this.directory,
+    required this.loadDirectories,
+  });
+
+  @override
+  State<DAVDirectoryBrowserDialog> createState() =>
+      _DAVDirectoryBrowserDialogState();
+}
+
+class _DAVDirectoryBrowserDialogState extends State<DAVDirectoryBrowserDialog> {
+  late String _directory;
+  List<String> _directories = [];
+  bool _loading = true;
+  Object? _error;
+  int _requestId = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _directory = DAVDirectory.normalize(widget.directory);
+    unawaited(_load(_directory));
+  }
+
+  Future<void> _load(String path) async {
+    final requestId = ++_requestId;
+    setState(() {
+      _directory = DAVDirectory.normalize(path);
+      _directories = [];
+      _error = null;
+      _loading = true;
+    });
+    try {
+      final directories = await widget.loadDirectories(_directory);
+      if (mounted && requestId == _requestId) {
+        setState(() => _directories = directories);
+      }
+    } catch (error) {
+      if (mounted && requestId == _requestId) setState(() => _error = error);
+    } finally {
+      if (mounted && requestId == _requestId) setState(() => _loading = false);
+    }
+  }
+
+  void _parent() {
+    final segments = _directory
+        .split('/')
+        .where((part) => part.isNotEmpty)
+        .toList();
+    if (segments.isEmpty) return;
+    segments.removeLast();
+    unawaited(_load('/${segments.join('/')}'));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final appLocalizations = context.appLocalizations;
+    return CommonDialog(
+      title: appLocalizations.browse,
+      maxWidth: 360,
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(appLocalizations.cancel),
+        ),
+        TextButton(
+          onPressed: _loading || _error != null
+              ? null
+              : () => Navigator.of(context).pop(_directory),
+          child: Text(appLocalizations.confirm),
+        ),
+      ],
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              _directory,
+              style: context.textTheme.bodyMedium?.copyWith(
+                color: context.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (_directory != '/')
+            ListItem(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              leading: const Icon(Symbols.arrow_upward),
+              title: Text(appLocalizations.parentDirectory),
+              onTap: _parent,
+            ),
+          if (_loading)
+            const Center(child: CircularProgressIndicator())
+          else if (_error != null) ...[
+            Text(userFacingErrorMessage(_error!, appLocalizations)),
+            TextButton(
+              onPressed: () => _load(_directory),
+              child: Text(appLocalizations.retry),
+            ),
+          ] else if (_directories.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  appLocalizations.noDirectories,
+                  style: context.textTheme.bodyMedium?.copyWith(
+                    color: context.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            )
+          else
+            for (final directory in _directories)
+              ListItem(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                leading: const Icon(Symbols.folder),
+                title: Text(directory),
+                onTap: () =>
+                    _load(DAVDirectory.normalize('$_directory/$directory')),
+              ),
+        ],
+      ),
+    );
+  }
+}
+
+class RemoteBackupsDialog extends StatefulWidget {
+  final List<DAVFile> files;
+  final Future<void> Function(String name)? onDelete;
+
+  const RemoteBackupsDialog({super.key, required this.files, this.onDelete});
+
+  @override
+  State<RemoteBackupsDialog> createState() => _RemoteBackupsDialogState();
+}
+
+class _RemoteBackupsDialogState extends State<RemoteBackupsDialog> {
+  late List<DAVFile> _files;
+  String? _selected;
+  bool _deleting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _files = [...widget.files];
+    _selected = _files.firstOrNull?.name;
+  }
+
+  Future<void> _delete() async {
+    final name = _selected;
+    final onDelete = widget.onDelete;
+    if (_deleting || name == null || onDelete == null) return;
+    final appLocalizations = context.appLocalizations;
+    setState(() => _deleting = true);
+    try {
+      final confirmed = await dialogs.showMessage(
+        context: context,
+        title: appLocalizations.delete,
+        message: TextSpan(text: appLocalizations.deleteTip(name)),
+      );
+      if (confirmed != true || !mounted) return;
+      final deleted = await globalState.safeRun<bool>(
+        () async {
+          await onDelete(name);
+          return true;
+        },
+        title: appLocalizations.delete,
+        silence: false,
+      );
+      if (deleted != true || !mounted) return;
+      setState(() {
+        _files.removeWhere((file) => file.name == name);
+        _selected = _files.firstOrNull?.name;
+      });
+    } finally {
+      if (mounted) setState(() => _deleting = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final appLocalizations = context.appLocalizations;
+    return PopScope(
+      canPop: !_deleting,
+      child: CommonDialog(
+        title: appLocalizations.selectRemoteBackup,
+        maxWidth: 420,
+        actions: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (widget.onDelete != null)
+                TextButton(
+                  onPressed: _deleting || _selected == null ? null : _delete,
+                  style: TextButton.styleFrom(
+                    foregroundColor: context.colorScheme.error,
+                  ),
+                  child: Text(appLocalizations.delete),
+                ),
+              Expanded(
+                child: Wrap(
+                  alignment: WrapAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: _deleting
+                          ? null
+                          : () => Navigator.of(context).pop(),
+                      child: Text(appLocalizations.cancel),
+                    ),
+                    TextButton(
+                      onPressed: _deleting || _selected == null
+                          ? null
+                          : () => Navigator.of(context).pop(_selected),
+                      child: Text(appLocalizations.confirm),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+        child: _files.isEmpty
+            ? Text(appLocalizations.noRemoteBackups)
+            : RadioGroup<String>(
+                groupValue: _selected,
+                onChanged: (value) {
+                  if (_deleting || value == null) return;
+                  setState(() => _selected = value);
+                },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    for (final file in _files)
+                      ListItem.radio(
+                        value: file.name,
+                        padding: EdgeInsets.zero,
+                        title: Text(
+                          file.name,
+                          style: context.textTheme.bodyMedium,
+                        ),
+                        subtitle: file.modified == null
+                            ? null
+                            : Text(
+                                file.modified!.toLocal().show,
+                                style: context.textTheme.bodySmall?.copyWith(
+                                  color: context.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                        onTap: _deleting
+                            ? null
+                            : () => setState(() => _selected = file.name),
+                      ),
+                  ],
+                ),
+              ),
+      ),
+    );
+  }
+}
+
 class WebDAVFormDialog extends ConsumerStatefulWidget {
   final DAVProps? dav;
 
@@ -540,6 +1142,7 @@ class _WebDAVFormDialogState extends ConsumerState<WebDAVFormDialog> {
             user: _userController.text,
             password: _passwordController.text,
             fileName: widget.dav?.fileName ?? defaultDavFileName,
+            directory: widget.dav?.directory ?? defaultDavDirectory,
           ),
         );
     Navigator.pop(context);
@@ -630,14 +1233,6 @@ class _WebDAVFormDialogState extends ConsumerState<WebDAVFormDialog> {
                     ),
                     labelText: appLocalizations.password,
                   ),
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return appLocalizations.emptyTip(
-                        appLocalizations.password,
-                      );
-                    }
-                    return null;
-                  },
                 );
               },
             ),

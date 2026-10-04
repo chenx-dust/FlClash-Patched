@@ -177,6 +177,7 @@ _DAVProps _$DAVPropsFromJson(Map<String, dynamic> json) => _DAVProps(
       ? ''
       : _decodeDavPassword(json['password'] as String?),
   fileName: json['fileName'] as String? ?? defaultDavFileName,
+  directory: json['directory'] as String? ?? defaultDavDirectory,
 );
 
 Map<String, dynamic> _$DAVPropsToJson(_DAVProps instance) => <String, dynamic>{
@@ -184,6 +185,7 @@ Map<String, dynamic> _$DAVPropsToJson(_DAVProps instance) => <String, dynamic>{
   'user': instance.user,
   'password': _encodeDavPassword(instance.password),
   'fileName': instance.fileName,
+  'directory': instance.directory,
 };
 
 _VersionInfo _$VersionInfoFromJson(Map<String, dynamic> json) => _VersionInfo(

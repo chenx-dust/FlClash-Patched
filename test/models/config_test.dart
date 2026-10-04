@@ -586,6 +586,23 @@ void main() {
   });
 
   group('Config composite serialization', () {
+    test(
+      'legacy DAV settings keep their directory and custom directories round-trip',
+      () {
+        final legacy = DAVProps.fromJson({
+          'uri': 'https://dav.example.com',
+          'user': '',
+          'fileName': 'backup.zip',
+        });
+        expect(legacy.directory, defaultDavDirectory);
+        expect(legacy.fileName, 'backup.zip');
+        final custom = legacy.copyWith(directory: '/backups/nightly');
+        expect(DAVProps.fromJson(custom.toJson()), custom);
+        final root = legacy.copyWith(directory: '/');
+        expect(DAVProps.fromJson(root.toJson()).directory, '/');
+      },
+    );
+
     test('DAVProps obfuscates and restores its password', () {
       const props = DAVProps(
         uri: 'https://dav.example.com',

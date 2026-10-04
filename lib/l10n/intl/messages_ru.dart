@@ -285,8 +285,20 @@ class MessageLookup extends MessageLookupByLibrary {
     "backupAndRestoreDesc": MessageLookupByLibrary.simpleMessage(
       "Синхронизация данных через WebDAV или файлы",
     ),
+    "backupDateDescription": MessageLookupByLibrary.simpleMessage(
+      "Местная дата (YYYY-MM-DD)",
+    ),
+    "backupPlatformDescription": MessageLookupByLibrary.simpleMessage(
+      "Текущая платформа",
+    ),
     "backupSuccess": MessageLookupByLibrary.simpleMessage(
       "Резервная копия создана",
+    ),
+    "backupTimeDescription": MessageLookupByLibrary.simpleMessage(
+      "Местное время (HHmmss)",
+    ),
+    "backupVersionDescription": MessageLookupByLibrary.simpleMessage(
+      "Версия приложения",
     ),
     "basicConfig": MessageLookupByLibrary.simpleMessage("Базовая конфигурация"),
     "basicConfigDesc": MessageLookupByLibrary.simpleMessage(
@@ -307,6 +319,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "blockConnection": MessageLookupByLibrary.simpleMessage(
       "Заблокировать соединение",
     ),
+    "browse": MessageLookupByLibrary.simpleMessage("Обзор"),
     "bypassDomain": MessageLookupByLibrary.simpleMessage("Исключённые домены"),
     "bypassDomainDesc": MessageLookupByLibrary.simpleMessage(
       "Действует только при включённом системном прокси",
@@ -448,6 +461,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "databaseWriteFailedTip": MessageLookupByLibrary.simpleMessage(
       "Не удалось сохранить изменение; оно отменено",
     ),
+    "davDirectory": MessageLookupByLibrary.simpleMessage("Каталог"),
     "daysAgo": m2,
     "defaultNameserver": MessageLookupByLibrary.simpleMessage(
       "DNS-сервер по умолчанию",
@@ -685,6 +699,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "fileIsUpdate": MessageLookupByLibrary.simpleMessage(
       "Файл изменён. Сохранить изменения?",
     ),
+    "fileName": MessageLookupByLibrary.simpleMessage("Имя файла"),
     "filter": MessageLookupByLibrary.simpleMessage("Фильтр"),
     "findProcessMode": MessageLookupByLibrary.simpleMessage("Поиск процесса"),
     "findProcessModeDesc": MessageLookupByLibrary.simpleMessage(
@@ -829,9 +844,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "inputRuleContent": MessageLookupByLibrary.simpleMessage(
       "Введите содержимое правила",
     ),
-    "installedAppsPermissionDeniedMessage": MessageLookupByLibrary.simpleMessage(
-      "Разрешение на список приложений отклонено, поэтому установленные приложения недоступны. Предоставьте его вручную в системных настройках.",
-    ),
+    "installedAppsPermissionDeniedMessage":
+        MessageLookupByLibrary.simpleMessage(
+          "Разрешение на список приложений отклонено, поэтому установленные приложения недоступны. Предоставьте его вручную в системных настройках.",
+        ),
     "installedAppsPermissionDesc": MessageLookupByLibrary.simpleMessage(
       "Эта система не выдаёт список установленных приложений без разрешения. Предоставьте его, чтобы настроить прокси для отдельных приложений.",
     ),
@@ -856,6 +872,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "intranetIP": MessageLookupByLibrary.simpleMessage("Внутренний IP"),
     "invalidBackupFile": MessageLookupByLibrary.simpleMessage(
       "Недопустимый файл резервной копии",
+    ),
+    "invalidBackupFileName": MessageLookupByLibrary.simpleMessage(
+      "Введите допустимое имя файла без разделителей пути и специальных символов, длиной до 255 байт.",
+    ),
+    "invalidDavDirectory": MessageLookupByLibrary.simpleMessage(
+      "Введите допустимый каталог без сегментов . или .., обратных косых черт и специальных символов.",
     ),
     "invalidPolicy": m16,
     "invalidProxy": m17,
@@ -1032,6 +1054,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "nextMatch": MessageLookupByLibrary.simpleMessage("Следующее совпадение"),
     "no": MessageLookupByLibrary.simpleMessage("Нет"),
     "noData": MessageLookupByLibrary.simpleMessage("Нет данных"),
+    "noDirectories": MessageLookupByLibrary.simpleMessage("Нет подкаталогов"),
     "noFilterCondition": MessageLookupByLibrary.simpleMessage(
       "Нет условий фильтрации",
     ),
@@ -1043,6 +1066,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "noNetwork": MessageLookupByLibrary.simpleMessage("Нет сети"),
     "noNetworkApp": MessageLookupByLibrary.simpleMessage("Приложения без сети"),
     "noRecords": MessageLookupByLibrary.simpleMessage("Записей пока нет"),
+    "noRemoteBackups": MessageLookupByLibrary.simpleMessage(
+      "Удалённые резервные копии не найдены",
+    ),
     "noResolve": MessageLookupByLibrary.simpleMessage("Не разрешать IP"),
     "noResolveHostname": MessageLookupByLibrary.simpleMessage(
       "Не разрешать имя хоста",
@@ -1109,6 +1135,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Пользовательский режим: полная настройка групп прокси и правил",
     ),
     "palette": MessageLookupByLibrary.simpleMessage("Палитра"),
+    "parentDirectory": MessageLookupByLibrary.simpleMessage(
+      "Родительский каталог",
+    ),
     "password": MessageLookupByLibrary.simpleMessage("Пароль"),
     "paste": MessageLookupByLibrary.simpleMessage("Вставить"),
     "pickFromAlbum": MessageLookupByLibrary.simpleMessage("Выбрать из галереи"),
@@ -1310,6 +1339,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "restoreSuccess": MessageLookupByLibrary.simpleMessage(
       "Восстановление выполнено",
     ),
+    "retry": MessageLookupByLibrary.simpleMessage("Повторить"),
     "role": MessageLookupByLibrary.simpleMessage("Роль"),
     "routeAddress": MessageLookupByLibrary.simpleMessage("Адреса маршрутов"),
     "routeAddressDesc": MessageLookupByLibrary.simpleMessage(
@@ -1461,6 +1491,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectProxies": MessageLookupByLibrary.simpleMessage("Выбрать прокси"),
     "selectProxyProviders": MessageLookupByLibrary.simpleMessage(
       "Выбрать провайдеров прокси",
+    ),
+    "selectRemoteBackup": MessageLookupByLibrary.simpleMessage(
+      "Выберите резервную копию",
     ),
     "selectRuleSet": MessageLookupByLibrary.simpleMessage(
       "Выберите набор правил",
@@ -1631,6 +1664,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "testWhenUsed": MessageLookupByLibrary.simpleMessage(
       "Тестировать при использовании",
     ),
+    "textReplacement": MessageLookupByLibrary.simpleMessage(
+      "Подстановка текста:",
+    ),
     "textScale": MessageLookupByLibrary.simpleMessage("Масштаб текста"),
     "theme": MessageLookupByLibrary.simpleMessage("Тема"),
     "themeColor": MessageLookupByLibrary.simpleMessage("Цвет темы"),
@@ -1684,6 +1720,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Не инициализировано",
     ),
     "unknown": MessageLookupByLibrary.simpleMessage("Неизвестно"),
+    "unknownBackupVariable": MessageLookupByLibrary.simpleMessage(
+      "Неизвестная переменная. Выберите одну из переменных ниже.",
+    ),
     "unknownNetworkError": MessageLookupByLibrary.simpleMessage(
       "Неизвестная сетевая ошибка",
     ),

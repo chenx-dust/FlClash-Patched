@@ -585,6 +585,146 @@ class AppLocalizations {
     return Intl.message('File', name: 'file', desc: '', args: []);
   }
 
+  /// `Unknown variable. Choose one of the variables below.`
+  String get unknownBackupVariable {
+    return Intl.message(
+      'Unknown variable. Choose one of the variables below.',
+      name: 'unknownBackupVariable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter a valid file name without path separators or special characters, within 255 bytes.`
+  String get invalidBackupFileName {
+    return Intl.message(
+      'Enter a valid file name without path separators or special characters, within 255 bytes.',
+      name: 'invalidBackupFileName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select a backup`
+  String get selectRemoteBackup {
+    return Intl.message(
+      'Select a backup',
+      name: 'selectRemoteBackup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No remote backups found`
+  String get noRemoteBackups {
+    return Intl.message(
+      'No remote backups found',
+      name: 'noRemoteBackups',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Browse`
+  String get browse {
+    return Intl.message('Browse', name: 'browse', desc: '', args: []);
+  }
+
+  /// `Parent directory`
+  String get parentDirectory {
+    return Intl.message(
+      'Parent directory',
+      name: 'parentDirectory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Retry`
+  String get retry {
+    return Intl.message('Retry', name: 'retry', desc: '', args: []);
+  }
+
+  /// `No subdirectories`
+  String get noDirectories {
+    return Intl.message(
+      'No subdirectories',
+      name: 'noDirectories',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Directory`
+  String get davDirectory {
+    return Intl.message('Directory', name: 'davDirectory', desc: '', args: []);
+  }
+
+  /// `Enter a valid directory without . or .. segments, backslashes, or special characters.`
+  String get invalidDavDirectory {
+    return Intl.message(
+      'Enter a valid directory without . or .. segments, backslashes, or special characters.',
+      name: 'invalidDavDirectory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Text replacement:`
+  String get textReplacement {
+    return Intl.message(
+      'Text replacement:',
+      name: 'textReplacement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Application version`
+  String get backupVersionDescription {
+    return Intl.message(
+      'Application version',
+      name: 'backupVersionDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Local date (YYYY-MM-DD)`
+  String get backupDateDescription {
+    return Intl.message(
+      'Local date (YYYY-MM-DD)',
+      name: 'backupDateDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Local time (HHmmss)`
+  String get backupTimeDescription {
+    return Intl.message(
+      'Local time (HHmmss)',
+      name: 'backupTimeDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Current platform`
+  String get backupPlatformDescription {
+    return Intl.message(
+      'Current platform',
+      name: 'backupPlatformDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `File name`
+  String get fileName {
+    return Intl.message('File name', name: 'fileName', desc: '', args: []);
+  }
+
   /// `Upload a profile file directly`
   String get fileDesc {
     return Intl.message(

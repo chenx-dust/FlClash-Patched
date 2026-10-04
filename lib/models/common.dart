@@ -334,7 +334,8 @@ extension TrackerInfosStateExt on TrackerInfosState {
   }
 }
 
-const defaultDavFileName = 'backup.zip';
+const defaultDavFileName = 'FlClash_{version}_{platform}_{date}_{time}.zip';
+const defaultDavDirectory = '/FlClash';
 const _davPasswordFormatVersion = 'v1';
 const _davPasswordNonceLength = 16;
 const _davPasswordObfuscationMask = <int>[
@@ -424,6 +425,7 @@ abstract class DAVProps with _$DAVProps {
     @Default('')
     String password,
     @Default(defaultDavFileName) String fileName,
+    @Default(defaultDavDirectory) String directory,
   }) = _DAVProps;
 
   factory DAVProps.fromJson(Map<String, Object?> json) =>
@@ -431,7 +433,7 @@ abstract class DAVProps with _$DAVProps {
 
   @override
   String toString() =>
-      'DAVProps(uri: $uri, user: $user, password: ***, fileName: $fileName)';
+      'DAVProps(uri: $uri, user: $user, password: ***, fileName: $fileName, directory: $directory)';
 }
 
 @freezed

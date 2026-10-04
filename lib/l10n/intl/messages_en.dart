@@ -277,7 +277,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "backupAndRestoreDesc": MessageLookupByLibrary.simpleMessage(
       "Sync data via WebDAV or files",
     ),
+    "backupDateDescription": MessageLookupByLibrary.simpleMessage(
+      "Local date (YYYY-MM-DD)",
+    ),
+    "backupPlatformDescription": MessageLookupByLibrary.simpleMessage(
+      "Current platform",
+    ),
     "backupSuccess": MessageLookupByLibrary.simpleMessage("Backup successful"),
+    "backupTimeDescription": MessageLookupByLibrary.simpleMessage(
+      "Local time (HHmmss)",
+    ),
+    "backupVersionDescription": MessageLookupByLibrary.simpleMessage(
+      "Application version",
+    ),
     "basicConfig": MessageLookupByLibrary.simpleMessage("Basic configuration"),
     "basicConfigDesc": MessageLookupByLibrary.simpleMessage(
       "Modify the basic configuration globally",
@@ -293,6 +305,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "bind": MessageLookupByLibrary.simpleMessage("Bind"),
     "blacklistMode": MessageLookupByLibrary.simpleMessage("Blacklist mode"),
     "blockConnection": MessageLookupByLibrary.simpleMessage("Block connection"),
+    "browse": MessageLookupByLibrary.simpleMessage("Browse"),
     "bypassDomain": MessageLookupByLibrary.simpleMessage("Bypass domains"),
     "bypassDomainDesc": MessageLookupByLibrary.simpleMessage(
       "Only takes effect while the system proxy is enabled",
@@ -428,6 +441,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "databaseWriteFailedTip": MessageLookupByLibrary.simpleMessage(
       "Failed to save the change; it has been rolled back",
     ),
+    "davDirectory": MessageLookupByLibrary.simpleMessage("Directory"),
     "daysAgo": m2,
     "defaultNameserver": MessageLookupByLibrary.simpleMessage(
       "Default nameserver",
@@ -645,6 +659,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "fileIsUpdate": MessageLookupByLibrary.simpleMessage(
       "The file has been modified. Save the changes?",
     ),
+    "fileName": MessageLookupByLibrary.simpleMessage("File name"),
     "filter": MessageLookupByLibrary.simpleMessage("Filter"),
     "findProcessMode": MessageLookupByLibrary.simpleMessage("Find process"),
     "findProcessModeDesc": MessageLookupByLibrary.simpleMessage(
@@ -789,9 +804,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "inputRuleContent": MessageLookupByLibrary.simpleMessage(
       "Enter the rule content",
     ),
-    "installedAppsPermissionDeniedMessage": MessageLookupByLibrary.simpleMessage(
-      "The app list permission was denied, so installed apps cannot be listed. Please grant it manually in system settings.",
-    ),
+    "installedAppsPermissionDeniedMessage":
+        MessageLookupByLibrary.simpleMessage(
+          "The app list permission was denied, so installed apps cannot be listed. Please grant it manually in system settings.",
+        ),
     "installedAppsPermissionDesc": MessageLookupByLibrary.simpleMessage(
       "This system hides the installed app list until the permission is granted. Authorize it to configure the per-app proxy.",
     ),
@@ -818,6 +834,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "intranetIP": MessageLookupByLibrary.simpleMessage("Intranet IP"),
     "invalidBackupFile": MessageLookupByLibrary.simpleMessage(
       "Invalid backup file",
+    ),
+    "invalidBackupFileName": MessageLookupByLibrary.simpleMessage(
+      "Enter a valid file name without path separators or special characters, within 255 bytes.",
+    ),
+    "invalidDavDirectory": MessageLookupByLibrary.simpleMessage(
+      "Enter a valid directory without . or .. segments, backslashes, or special characters.",
     ),
     "invalidPolicy": m16,
     "invalidProxy": m17,
@@ -986,6 +1008,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "nextMatch": MessageLookupByLibrary.simpleMessage("Next match"),
     "no": MessageLookupByLibrary.simpleMessage("No"),
     "noData": MessageLookupByLibrary.simpleMessage("No data"),
+    "noDirectories": MessageLookupByLibrary.simpleMessage("No subdirectories"),
     "noFilterCondition": MessageLookupByLibrary.simpleMessage(
       "No filter conditions",
     ),
@@ -997,6 +1020,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "noNetwork": MessageLookupByLibrary.simpleMessage("No network"),
     "noNetworkApp": MessageLookupByLibrary.simpleMessage("No-network apps"),
     "noRecords": MessageLookupByLibrary.simpleMessage("No records"),
+    "noRemoteBackups": MessageLookupByLibrary.simpleMessage(
+      "No remote backups found",
+    ),
     "noResolve": MessageLookupByLibrary.simpleMessage("Don\'t resolve IP"),
     "noResolveHostname": MessageLookupByLibrary.simpleMessage(
       "Don\'t resolve hostname",
@@ -1055,6 +1081,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Custom mode: fully customize proxy groups and rules",
     ),
     "palette": MessageLookupByLibrary.simpleMessage("Palette"),
+    "parentDirectory": MessageLookupByLibrary.simpleMessage("Parent directory"),
     "password": MessageLookupByLibrary.simpleMessage("Password"),
     "paste": MessageLookupByLibrary.simpleMessage("Paste"),
     "pickFromAlbum": MessageLookupByLibrary.simpleMessage("Choose from album"),
@@ -1240,6 +1267,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "restoreSuccess": MessageLookupByLibrary.simpleMessage(
       "Restore successful",
     ),
+    "retry": MessageLookupByLibrary.simpleMessage("Retry"),
     "role": MessageLookupByLibrary.simpleMessage("Role"),
     "routeAddress": MessageLookupByLibrary.simpleMessage("Route addresses"),
     "routeAddressDesc": MessageLookupByLibrary.simpleMessage(
@@ -1388,6 +1416,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectProxyProviders": MessageLookupByLibrary.simpleMessage(
       "Select proxy providers",
     ),
+    "selectRemoteBackup": MessageLookupByLibrary.simpleMessage(
+      "Select a backup",
+    ),
     "selectRuleSet": MessageLookupByLibrary.simpleMessage(
       "Please select a rule set",
     ),
@@ -1535,6 +1566,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "testInterval": MessageLookupByLibrary.simpleMessage("Test interval"),
     "testUrl": MessageLookupByLibrary.simpleMessage("Test URL"),
     "testWhenUsed": MessageLookupByLibrary.simpleMessage("Test when used"),
+    "textReplacement": MessageLookupByLibrary.simpleMessage(
+      "Text replacement:",
+    ),
     "textScale": MessageLookupByLibrary.simpleMessage("Text scaling"),
     "theme": MessageLookupByLibrary.simpleMessage("Theme"),
     "themeColor": MessageLookupByLibrary.simpleMessage("Theme color"),
@@ -1586,6 +1620,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "uninitialized": MessageLookupByLibrary.simpleMessage("Uninitialized"),
     "unknown": MessageLookupByLibrary.simpleMessage("Unknown"),
+    "unknownBackupVariable": MessageLookupByLibrary.simpleMessage(
+      "Unknown variable. Choose one of the variables below.",
+    ),
     "unknownNetworkError": MessageLookupByLibrary.simpleMessage(
       "Unknown network error",
     ),

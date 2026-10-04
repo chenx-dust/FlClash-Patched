@@ -8,6 +8,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:xml/xml.dart';
 
 class _FakeDAVClient extends DAVClient {
   _FakeDAVClient(super.dav, this.result, [this.onPing]);
@@ -66,6 +67,7 @@ class _TestServer {
   final HttpServer _server;
   final List<_RecordedRequest> requests = [];
   final Map<String, List<int>> files = {};
+  bool supportListing = false;
 
   final List<_ScriptedResponse> responses = [];
 
@@ -79,7 +81,7 @@ class _TestServer {
       requests.add(
         _RecordedRequest(
           request.method,
-          request.uri.path,
+          '/${request.uri.pathSegments.join('/')}',
           request.headers.value(HttpHeaders.authorizationHeader),
           body,
         ),
@@ -108,7 +110,7 @@ class _TestServer {
 
   Future<void> _respond(HttpRequest request, List<int> body) async {
     final response = request.response;
-    final path = request.uri.path;
+    final path = '/${request.uri.pathSegments.join('/')}';
     switch (request.method) {
       case 'OPTIONS':
         response.headers.set('dav', '1,2');
@@ -129,6 +131,63 @@ class _TestServer {
           response.statusCode = HttpStatus.ok;
           response.add(stored);
         }
+      case 'DELETE':
+        response.statusCode = files.remove(path) == null
+            ? HttpStatus.notFound
+            : HttpStatus.noContent;
+      case 'PROPFIND':
+        if (!supportListing) {
+          response.statusCode = HttpStatus.methodNotAllowed;
+          break;
+        }
+        final xml = XmlBuilder();
+        xml.element(
+          'multistatus',
+          namespaceUri: 'DAV:',
+          namespaceUris: {'d': 'DAV:'},
+          nest: () {
+            for (final entry in files.entries.where(
+              (entry) => entry.key.startsWith(path),
+            )) {
+              xml.element(
+                'response',
+                namespaceUri: 'DAV:',
+                nest: () {
+                  xml.element(
+                    'href',
+                    namespaceUri: 'DAV:',
+                    nest: Uri(path: entry.key).toString(),
+                  );
+                  xml.element(
+                    'propstat',
+                    namespaceUri: 'DAV:',
+                    nest: () {
+                      xml.element(
+                        'prop',
+                        namespaceUri: 'DAV:',
+                        nest: () => xml.element(
+                          'resourcetype',
+                          namespaceUri: 'DAV:',
+                          nest: () {
+                            if (!entry.key.endsWith('/')) return;
+                            xml.element('collection', namespaceUri: 'DAV:');
+                          },
+                        ),
+                      );
+                      xml.element(
+                        'status',
+                        namespaceUri: 'DAV:',
+                        nest: 'HTTP/1.1 200 OK',
+                      );
+                    },
+                  );
+                },
+              );
+            }
+          },
+        );
+        response.statusCode = HttpStatus.multiStatus;
+        response.write(xml.buildDocument().toXmlString());
       default:
         response.statusCode = HttpStatus.methodNotAllowed;
     }
@@ -208,6 +267,39 @@ void main() {
     expect(controller.value, isTrue);
   });
 
+  test('directory paths normalize separators and reject traversal', () {
+    expect(DAVDirectory.normalize(' backups//nightly/ '), '/backups/nightly');
+    expect(DAVDirectory.normalize(''), '/');
+    expect(DAVDirectory.normalize('/'), '/');
+    for (final directory in [
+      '../backup',
+      '/one/./two',
+      r'one\two',
+      '/bad?name',
+    ]) {
+      expect(DAVDirectory.isValid(directory), isFalse);
+    }
+    expect(DAVDirectory.isValid('/备份/nightly'), isTrue);
+  });
+
+  test(
+    'changing the directory rebuilds the client without pinging again',
+    () async {
+      var pingCount = 0;
+      final controller = DAVConnectionController(
+        createClient: (props) =>
+            _FakeDAVClient(props, Future.value(true), () => pingCount++),
+      );
+      addTearDown(controller.dispose);
+      await controller.update(firstProps);
+      await controller.update(
+        firstProps.copyWith(directory: '/backups/nightly'),
+      );
+      expect(pingCount, 1);
+      expect(controller.client?.root, '/backups/nightly');
+    },
+  );
+
   group('against a live server', () {
     late _TestServer server;
     late Directory root;
@@ -272,7 +364,10 @@ void main() {
     test('backup creates the collection and uploads the archive', () async {
       final archive = writeArchive(List<int>.generate(32, (index) => index));
 
-      expect(await buildClient().backup(archive.path), isTrue);
+      expect(
+        await buildClient().backup(archive.path, name: 'backup.zip'),
+        isTrue,
+      );
 
       expect(server.requests.map((item) => item.method), ['MKCOL', 'PUT']);
       expect(server.requests.last.path, '/$appName/backup.zip');
@@ -289,23 +384,184 @@ void main() {
       final archive = writeArchive(const [1, 2, 3]);
       final client = buildClient();
 
-      await client.backup(archive.path);
+      await client.backup(archive.path, name: 'backup.zip');
 
-      expect(await client.backup(archive.path), isTrue);
+      expect(await client.backup(archive.path, name: 'backup.zip'), isTrue);
     });
+
+    for (final directory in ['/', '/backups/nightly']) {
+      test(
+        'backup, listing and restore use configured directory "$directory"',
+        () async {
+          server.supportListing = true;
+          final archive = writeArchive(const [7, 8, 9]);
+          final client = DAVClient(
+            DAVProps(
+              uri: '${server.uri}/dav',
+              user: '',
+              directory: directory,
+              fileName: 'backup.zip',
+            ),
+          );
+          await client.backup(archive.path, name: 'backup.zip');
+          final files = await client.listBackups();
+          expect(files.single.name, 'backup.zip');
+          await client.restore(name: files.single.name);
+          final prefix = directory == '/' ? '/dav' : '/dav$directory';
+          expect(server.requests.last.path, '$prefix/backup.zip');
+          expect(File(join(root.path, 'backup.zip')).readAsBytesSync(), [
+            7,
+            8,
+            9,
+          ]);
+          expect(
+            server.requests
+                .where((request) => request.method == 'MKCOL')
+                .map((request) => request.path),
+            directory == '/'
+                ? <String>[]
+                : ['/dav/backups/', '/dav/backups/nightly/'],
+          );
+        },
+      );
+    }
 
     test('restore writes the downloaded archive to the backup file', () async {
       final payload = List<int>.generate(64, (index) => index);
       server.files['/$appName/backup.zip'] = payload;
 
-      expect(await buildClient().restore(), isTrue);
+      await buildClient().restore(name: 'backup.zip');
 
       expect(File(join(root.path, 'backup.zip')).readAsBytesSync(), payload);
     });
 
+    test(
+      'backup uploads a resolved name and restore downloads the selected name',
+      () async {
+        final archive = writeArchive(const [4, 5, 6]);
+        final client = buildClient();
+        const name = 'FlClash_android_2026-10-04_153025.zip';
+
+        await client.backup(archive.path, name: name);
+        await client.restore(name: name);
+
+        expect(server.requests.last.path, '/$appName/$name');
+        expect(server.files['/$appName/$name'], [4, 5, 6]);
+        expect(File(join(root.path, 'backup.zip')).readAsBytesSync(), [
+          4,
+          5,
+          6,
+        ]);
+      },
+    );
+
+    test('fixed names can restore when listing is unsupported', () async {
+      final files = await buildClient().listBackups();
+      expect(files.single.name, 'backup.zip');
+    });
+
+    test('lists archives and restores a selected historical backup', () async {
+      server.supportListing = true;
+      server.files['/$appName/old backup.zip'] = [1, 2];
+      server.files['/$appName/new.zip'] = [3, 4];
+      server.files['/$appName/readme.txt'] = [5];
+      final client = buildClient()..fileName = '{date}_{time}.zip';
+
+      final files = await client.listBackups();
+      expect(files.map((file) => file.name), ['new.zip', 'old backup.zip']);
+      await client.restore(name: files.last.name);
+      expect(File(join(root.path, 'backup.zip')).readAsBytesSync(), [1, 2]);
+      expect(server.requests.last.path, '/$appName/old backup.zip');
+    });
+
+    test(
+      'templates surface unsupported listing instead of guessing a file',
+      () async {
+        final client = buildClient()..fileName = '{date}.zip';
+        await expectLater(client.listBackups(), throwsA(isA<DAVException>()));
+      },
+    );
+
+    test(
+      'listing does not hide authorization errors for fixed names',
+      () async {
+        server.responses.add((
+          method: 'PROPFIND',
+          status: HttpStatus.unauthorized,
+          headers: const {},
+        ));
+        await expectLater(
+          buildClient().listBackups(),
+          throwsA(isA<DAVException>()),
+        );
+      },
+    );
+
+    test(
+      'delete removes only the selected backup in the configured directory',
+      () async {
+        server.files['/archives/old backup.zip'] = [1];
+        server.files['/archives/keep.zip'] = [2];
+        final client = DAVClient(
+          DAVProps(uri: server.uri, user: '', directory: '/archives'),
+        );
+        await client.deleteBackup('old backup.zip');
+        expect(server.requests.single.method, 'DELETE');
+        expect(server.requests.single.path, '/archives/old backup.zip');
+        expect(server.files, {
+          '/archives/keep.zip': [2],
+        });
+      },
+    );
+
+    test('delete rejects paths and surfaces remote failures', () async {
+      final client = buildClient();
+      for (final name in [
+        '',
+        '.',
+        '..',
+        '../backup.zip',
+        r'folder\backup.zip',
+      ]) {
+        await expectLater(client.deleteBackup(name), throwsArgumentError);
+      }
+      expect(server.requests, isEmpty);
+      server.responses.add((
+        method: 'DELETE',
+        status: HttpStatus.forbidden,
+        headers: const {},
+      ));
+      await expectLater(
+        client.deleteBackup('backup.zip'),
+        throwsA(isA<DAVException>()),
+      );
+    });
+
+    test('delete tolerates an already removed backup', () async {
+      await buildClient().deleteBackup('missing.zip');
+      expect(server.requests.single.method, 'DELETE');
+    });
+
+    test(
+      'browses directories relative to the configured WebDAV address',
+      () async {
+        server.supportListing = true;
+        server.files.addAll({
+          '/dav/archives/': [],
+          '/dav/中文 目录/': [],
+          '/dav/backup.zip': [1],
+          '/dav/archives/nightly/': [],
+        });
+        final client = DAVClient(DAVProps(uri: '${server.uri}/dav', user: ''));
+        expect(await client.listDirectories('/'), ['archives', '中文 目录']);
+        expect(await client.listDirectories('/archives'), ['nightly']);
+        expect(server.requests.last.path, '/dav/archives/');
+      },
+    );
+
     test('restore reports the status the server sent', () async {
       await expectLater(
-        buildClient().restore(),
+        buildClient().restore(name: 'backup.zip'),
         throwsA(
           isA<DAVException>().having(
             (error) => error.toString(),
@@ -325,7 +581,7 @@ void main() {
         headers: const {'location': '/moved/backup.zip'},
       ));
 
-      expect(await buildClient().restore(), isTrue);
+      await buildClient().restore(name: 'backup.zip');
 
       expect(server.requests.map((item) => item.method), ['GET', 'GET']);
       expect(File(join(root.path, 'backup.zip')).readAsBytesSync(), payload);
