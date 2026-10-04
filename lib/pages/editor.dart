@@ -95,7 +95,7 @@ class _EditorPageState extends ConsumerState<EditorPage> {
   late TextEditingController _titleController;
   late bool readOnly = false;
   String? _loaded;
-  bool _loadStarted = false, _saving = false;
+  bool _loadStarted = false, _saving = false, _findActive = false;
   ({bool isDirty, bool canUndo, bool canRedo}) _barState = (
     isDirty: false,
     canUndo: false,
@@ -217,6 +217,17 @@ class _EditorPageState extends ConsumerState<EditorPage> {
     _editor?.search(replace: replace);
   }
 
+  void _handleFindActive(bool active) {
+    if (active == _findActive) {
+      return;
+    }
+    setState(() => _findActive = active);
+  }
+
+  void _toggleSearch() {
+    _editor?.toggleSearch();
+  }
+
   void _commitComposing() {
     _editor?.controller?.commitComposition();
   }
@@ -289,11 +300,17 @@ class _EditorPageState extends ConsumerState<EditorPage> {
               enabled: widget.titleEditable,
             ),
             actions: [
-              IconButton(
-                tooltip: appLocalizations.search,
-                onPressed: isReady ? _handleSearch : null,
-                icon: const Icon(Symbols.search),
-              ),
+              _findActive
+                  ? IconButton.filledTonal(
+                      tooltip: appLocalizations.search,
+                      onPressed: _toggleSearch,
+                      icon: const Icon(Symbols.search),
+                    )
+                  : IconButton(
+                      tooltip: appLocalizations.search,
+                      onPressed: isReady ? _toggleSearch : null,
+                      icon: const Icon(Symbols.search),
+                    ),
               if (widget.onSave != null)
                 IconButton(
                   tooltip: appLocalizations.save,
@@ -381,6 +398,7 @@ class _EditorPageState extends ConsumerState<EditorPage> {
                 readOnly: readOnly,
                 undoController: _undoController,
                 onReady: _handleReady,
+                onFindActive: _handleFindActive,
               ),
             ),
           ),
@@ -400,6 +418,7 @@ class EditorView extends ConsumerStatefulWidget {
   final bool readOnly;
   final UndoRedoController? undoController;
   final VoidCallback? onReady;
+  final ValueChanged<bool>? onFindActive;
 
   const EditorView({
     super.key,
@@ -409,6 +428,7 @@ class EditorView extends ConsumerStatefulWidget {
     this.readOnly = false,
     this.undoController,
     this.onReady,
+    this.onFindActive,
   });
 
   @override
@@ -490,11 +510,17 @@ class EditorViewState extends ConsumerState<EditorView> {
     }
     final controller = CodeForgeController();
     _loadContent(controller, content);
+    final findController = FindController(controller)
+      ..addListener(_handleFindActive);
     setState(() {
       _controller = controller;
-      _findController = FindController(controller);
+      _findController = findController;
     });
     widget.onReady?.call();
+  }
+
+  void _handleFindActive() {
+    widget.onFindActive?.call(_findController?.isActive ?? false);
   }
 
   @override
@@ -518,7 +544,9 @@ class EditorViewState extends ConsumerState<EditorView> {
 
   @override
   void dispose() {
-    _findController?.dispose();
+    final findController = _findController;
+    findController?.removeListener(_handleFindActive);
+    findController?.dispose();
     _controller?.dispose();
     _ownedUndoController?.dispose();
     super.dispose();
@@ -533,6 +561,18 @@ class EditorViewState extends ConsumerState<EditorView> {
 
   void search({bool replace = false}) {
     _findController?.show(replace: replace && !widget.readOnly);
+  }
+
+  void toggleSearch() {
+    final controller = _findController;
+    if (controller == null) {
+      return;
+    }
+    if (controller.isActive) {
+      controller.hide();
+      return;
+    }
+    controller.show();
   }
 
   @override
@@ -1042,8 +1082,8 @@ class FindPanel extends StatelessWidget implements PreferredSizeWidget {
               controller.previous,
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          margin: EdgeInsets.only(top: topInset, bottom: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          margin: EdgeInsets.only(top: topInset, bottom: 12),
           color: context.colorScheme.surface,
           child: _buildFindInputView(context),
         ),
@@ -1078,27 +1118,21 @@ class FindPanel extends StatelessWidget implements PreferredSizeWidget {
               children: [
                 _buildIconButton(
                   onPressed: hasMatches ? controller.previous : null,
-                  icon: const Icon(Symbols.arrow_upward, size: 16),
+                  icon: const Icon(Symbols.arrow_upward),
                   tooltip: context.appLocalizations.previousMatch,
                 ),
                 _buildIconButton(
                   onPressed: hasMatches ? controller.next : null,
-                  icon: const Icon(Symbols.arrow_downward, size: 16),
+                  icon: const Icon(Symbols.arrow_downward),
                   tooltip: context.appLocalizations.nextMatch,
                 ),
                 if (!readOnly)
                   _buildIconButton(
                     onPressed: controller.toggleReplaceMode,
-                    icon: const Icon(Symbols.find_replace, size: 16),
+                    icon: const Icon(Symbols.find_replace),
                     tooltip: context.appLocalizations.replace,
                     isSelected: _showReplace,
                   ),
-                const SizedBox(width: 2),
-                IconButton.filledTonal(
-                  tooltip: context.appLocalizations.close,
-                  onPressed: controller.hide,
-                  icon: const Icon(Symbols.close, size: 16, fill: 1),
-                ),
               ],
             ),
           ),
@@ -1112,7 +1146,7 @@ class FindPanel extends StatelessWidget implements PreferredSizeWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           bar,
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           _buildFindInput(context),
           if (_showReplace) ...[const SizedBox(height: 12), replaceInput],
         ],
@@ -1151,12 +1185,12 @@ class FindPanel extends StatelessWidget implements PreferredSizeWidget {
       ),
       actions: [
         _buildIconButton(
-          icon: Text('Aa', style: context.textTheme.bodySmall),
+          icon: const Icon(Symbols.match_case),
           isSelected: controller.caseSensitive,
           onPressed: controller.toggleCaseSensitive,
         ),
         _buildIconButton(
-          icon: Text('.*', style: context.textTheme.bodySmall),
+          icon: const Icon(Symbols.regular_expression),
           isSelected: controller.isRegex,
           onPressed: controller.toggleRegex,
         ),

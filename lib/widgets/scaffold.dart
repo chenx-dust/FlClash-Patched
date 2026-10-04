@@ -278,7 +278,10 @@ class CommonScaffoldState extends State<CommonScaffold> {
     final button = IconButton(
       tooltip: context.appLocalizations.regexSearch,
       onPressed: () => _toggleRegexSearch(searchState),
-      icon: Icon(Symbols.code, fill: searchState.useRegex ? 1 : 0),
+      icon: Icon(
+        Symbols.regular_expression,
+        fill: searchState.useRegex ? 1 : 0,
+      ),
     );
     return searchState.useRegex
         ? IconButtonTheme(

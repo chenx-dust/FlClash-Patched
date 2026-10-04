@@ -4,6 +4,7 @@ import 'package:fl_clash/pages/editor.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/widgets/popup.dart';
 import 'package:flutter/gestures.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -254,6 +255,47 @@ void main() {
     expect(find.byType(EditorPage), findsOneWidget);
   });
 
+  testWidgets('the search button toggles the find panel', (tester) async {
+    await tester.pumpWidget(
+      TestApp(
+        overrides: [_viewSizeOverride],
+        child: const EditorPage(title: 'Editor', content: 'name: a'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final search = find.widgetWithIcon(IconButton, Symbols.search);
+    expect(find.byType(FindPanel), findsNothing);
+    expect(tester.widget<IconButton>(search).onPressed, isNotNull);
+
+    OutlinedBorder? searchShape() {
+      final material = tester.widget<Material>(
+        find.descendant(of: search, matching: find.byType(Material)),
+      );
+      final shape = material.shape;
+      return shape is OutlinedBorder ? shape : null;
+    }
+
+    await tester.tap(search);
+    await tester.pumpAndSettle();
+    expect(find.byType(FindPanel), findsOneWidget);
+    expect(find.byTooltip('Close'), findsNothing);
+    expect(searchShape()?.side.width ?? 0, 0);
+    expect(
+      tester
+          .widget<Material>(
+            find.descendant(of: search, matching: find.byType(Material)),
+          )
+          .color,
+      Theme.of(tester.element(search)).colorScheme.secondaryContainer,
+    );
+
+    await tester.tap(search);
+    await tester.pumpAndSettle();
+    expect(find.byType(FindPanel), findsNothing);
+    expect(searchShape()?.side.width ?? 0, 0);
+  });
+
   testWidgets('find panel height follows its content', (tester) async {
     final code = CodeForgeController()..text = 'name: a';
     final finder = FindController(code);
@@ -293,7 +335,7 @@ void main() {
     await tester.pumpAndSettle();
     final mobileHeight = tester.getSize(find.byType(FindPanel)).height;
 
-    expect(searchHeight, closeTo(fieldHeight + 20, 1));
+    expect(searchHeight, closeTo(fieldHeight + 12, 1));
     expect(replaceHeight - searchHeight, closeTo(fieldHeight + 12, 1));
     expect(mobileHeight, greaterThan(replaceHeight));
   });
