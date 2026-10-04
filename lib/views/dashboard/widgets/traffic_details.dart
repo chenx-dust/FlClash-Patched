@@ -115,7 +115,14 @@ class _TrafficDetailsState extends ConsumerState<TrafficDetails>
     if (total == 0) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 32),
-        child: Center(child: Text(l10n.noData)),
+        child: Center(
+          child: Text(
+            l10n.noData,
+            style: context.textTheme.bodyMedium?.copyWith(
+              color: context.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
       );
     }
     final colors = context.colorScheme;

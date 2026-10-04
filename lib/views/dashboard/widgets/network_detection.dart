@@ -64,7 +64,7 @@ class NetworkDetection extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              height: globalState.measure.titleMediumHeight + 16,
+              height: globalState.measure.titleMediumHeight + 12,
               padding: baseInfoEdgeInsets.copyWith(bottom: 0),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
