@@ -1,6 +1,5 @@
 import 'package:fl_clash/enum/enum.dart';
 import 'package:flutter/services.dart';
-import 'package:uni_platform/uni_platform.dart';
 
 import 'system.dart';
 
@@ -93,15 +92,9 @@ final Map<PhysicalKeyboardKey, String> _knownKeyLabels =
       PhysicalKeyboardKey.fn: 'FN',
     };
 
-extension KeyboardKeyExt on KeyboardKey {
+extension KeyboardKeyExt on PhysicalKeyboardKey {
   String get label {
-    PhysicalKeyboardKey? physicalKey;
-    if (this is LogicalKeyboardKey) {
-      physicalKey = (this as LogicalKeyboardKey).physicalKey;
-    } else if (this is PhysicalKeyboardKey) {
-      physicalKey = this as PhysicalKeyboardKey;
-    }
-    return _knownKeyLabels[physicalKey] ?? physicalKey?.debugName ?? 'Unknown';
+    return _knownKeyLabels[this] ?? debugName ?? 'Unknown';
   }
 }
 
