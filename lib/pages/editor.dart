@@ -1082,8 +1082,8 @@ class FindPanel extends StatelessWidget implements PreferredSizeWidget {
               controller.previous,
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          margin: EdgeInsets.only(top: topInset, bottom: 12),
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+          margin: EdgeInsets.only(top: topInset, bottom: 4),
           color: context.colorScheme.surface,
           child: _buildFindInputView(context),
         ),

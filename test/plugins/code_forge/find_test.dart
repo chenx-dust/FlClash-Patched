@@ -109,11 +109,21 @@ void main() {
 
     findController.isActive = true;
     findController.find('name');
-    await tester.pump();
+    await tester.pumpAndSettle();
     expect(find.textContaining('matches: 2'), findsOneWidget);
+    final slot = find.ancestor(
+      of: find.textContaining('matches:'),
+      matching: find.byType(SizeTransition),
+    );
+    final openHeight = tester.getSize(slot).height;
+    expect(openHeight, greaterThan(0));
 
     findController.isActive = false;
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 60));
+    expect(find.textContaining('matches:'), findsOneWidget);
+    expect(tester.getSize(slot).height, lessThan(openHeight));
+    await tester.pumpAndSettle();
     expect(find.textContaining('matches:'), findsNothing);
   });
 

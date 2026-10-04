@@ -251,10 +251,34 @@ class _CodeForgeState extends State<CodeForge>
           ListenableBuilder(
             listenable: _findController,
             builder: (context, _) {
-              if (!_findController.isActive) {
-                return const SizedBox.shrink();
-              }
-              return widget.finderBuilder!(context, _findController);
+              final visible = _findController.isActive;
+              return ExcludeFocus(
+                excluding: !visible,
+                child: IgnorePointer(
+                  ignoring: !visible,
+                  child: AnimatedSwitcher(
+                    duration: MediaQuery.disableAnimationsOf(context)
+                        ? Duration.zero
+                        : const Duration(milliseconds: 120),
+                    switchInCurve: Easing.standardDecelerate,
+                    switchOutCurve: Easing.standardAccelerate,
+                    transitionBuilder: (child, animation) => SizeTransition(
+                      sizeFactor: animation,
+                      alignment: Alignment.topCenter,
+                      child: FadeTransition(opacity: animation, child: child),
+                    ),
+                    child: visible
+                        ? KeyedSubtree(
+                            key: const ValueKey(true),
+                            child: widget.finderBuilder!(
+                              context,
+                              _findController,
+                            ),
+                          )
+                        : const SizedBox.shrink(key: ValueKey(false)),
+                  ),
+                ),
+              );
             },
           ),
         Expanded(
