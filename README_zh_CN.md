@@ -37,7 +37,7 @@
 
 ## 特性
 
-✈️ 多平台: Android, Windows, macOS and Linux
+✈️ 多平台: Android, iOS, Windows, macOS and Linux
 
 💻 自适应多个屏幕尺寸,多种颜色主题可供选择
 
