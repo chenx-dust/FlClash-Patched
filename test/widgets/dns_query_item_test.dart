@@ -29,6 +29,43 @@ DnsQuery _query({
 }
 
 void main() {
+  testWidgets('DNS detail wraps long errors within a narrow viewport', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(360, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final error = List.filled(
+      8,
+      'exchange failed: read udp 192.168.1.2:54321->1.1.1.1:53: i/o timeout',
+    ).join(' ');
+    await tester.pumpWidget(
+      TestApp(
+        wrapInProviderScope: true,
+        homeBuilder: (child) => Scaffold(body: child),
+        child: DnsQueryItem(
+          dnsQuery: _query(error: error, answers: const []),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('example.com'));
+    await tester.pumpAndSettle();
+    final detailError = find.descendant(
+      of: find.byType(DnsQueryDetailView),
+      matching: find.text(error),
+    );
+    await tester.ensureVisible(detailError);
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    final errorRect = tester.getRect(detailError);
+    expect(errorRect.left, greaterThanOrEqualTo(0));
+    expect(errorRect.right, lessThanOrEqualTo(360));
+    expect(errorRect.height, greaterThan(100));
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('DnsQueryItem lays out a record and filters from its tags', (
     tester,
   ) async {

@@ -530,31 +530,39 @@ class _DnsDetailRow extends StatelessWidget {
     return DecorationListItem(
       onPressed: onFilter ?? () => copyText(context, value),
       minVerticalPadding: 14,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 20,
-        children: [
-          Row(
-            spacing: 4,
-            children: [
-              Text(title),
-              if (onFilter != null)
-                Icon(Symbols.filter_alt, size: 18, fill: filtered ? 1 : 0),
-            ],
-          ),
-          if (!isError)
-            Flexible(
-              child: Text(
-                value,
-                textAlign: TextAlign.end,
-                style: context.textTheme.bodyMedium?.copyWith(
-                  color: valueColor,
+      title: isError
+          ? Text(
+              value,
+              style: context.textTheme.bodyMedium?.copyWith(color: valueColor),
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 20,
+              children: [
+                Row(
+                  spacing: 4,
+                  children: [
+                    Text(title),
+                    if (onFilter != null)
+                      Icon(
+                        Symbols.filter_alt,
+                        size: 18,
+                        fill: filtered ? 1 : 0,
+                      ),
+                  ],
                 ),
-              ),
+                Flexible(
+                  child: Text(
+                    value,
+                    textAlign: TextAlign.end,
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      color: valueColor,
+                    ),
+                  ),
+                ),
+              ],
             ),
-        ],
-      ),
     );
   }
 }
