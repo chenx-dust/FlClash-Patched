@@ -297,7 +297,12 @@ class CommonScaffoldState extends State<CommonScaffold> {
   }
 
   Widget _buildTvFloatingActionButton() {
-    return FabFocusOutline(child: widget.floatingActionButton!);
+    return FabFocusOutline(
+      child: IconTheme.merge(
+        data: const IconThemeData(fill: 1, opticalSize: 24),
+        child: widget.floatingActionButton!,
+      ),
+    );
   }
 
   List<Widget> _buildActions(
@@ -474,7 +479,10 @@ class CommonScaffoldState extends State<CommonScaffold> {
           child: child!,
         );
       },
-      child: widget.floatingActionButton,
+      child: IconTheme.merge(
+        data: const IconThemeData(fill: 1, opticalSize: 24),
+        child: widget.floatingActionButton ?? const SizedBox.shrink(),
+      ),
     );
     return Scaffold(
       appBar: _buildAppBar(backActionProvider?.backAction, isTV),
