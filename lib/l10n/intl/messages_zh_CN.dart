@@ -187,10 +187,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "autoLaunchDesc": MessageLookupByLibrary.simpleMessage("跟随系统自启动"),
     "autoRun": MessageLookupByLibrary.simpleMessage("自动运行"),
     "autoRunDesc": MessageLookupByLibrary.simpleMessage("应用打开时自动运行"),
-    "autoSetSystemDns": MessageLookupByLibrary.simpleMessage("自动设置系统 DNS"),
-    "autoSetSystemDnsDesc": MessageLookupByLibrary.simpleMessage(
-      "向系统添加备用 DNS 服务器",
-    ),
     "autoUpdate": MessageLookupByLibrary.simpleMessage("自动更新"),
     "autoUpdateInterval": MessageLookupByLibrary.simpleMessage("自动更新间隔（分钟）"),
     "back": MessageLookupByLibrary.simpleMessage("返回"),

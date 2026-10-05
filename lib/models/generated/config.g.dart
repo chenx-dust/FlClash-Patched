@@ -280,7 +280,6 @@ _NetworkProps _$NetworkPropsFromJson(Map<String, dynamic> json) =>
             unknownValue: RouteMode.config,
           ) ??
           RouteMode.config,
-      autoSetSystemDns: json['autoSetSystemDns'] as bool? ?? true,
       appendSystemDns: json['appendSystemDns'] as bool? ?? false,
       authentication: json['authentication'] == null
           ? defaultAuthenticationProps
@@ -294,7 +293,6 @@ Map<String, dynamic> _$NetworkPropsToJson(_NetworkProps instance) =>
       'systemProxy': instance.systemProxy,
       'bypassDomain': instance.bypassDomain,
       'routeMode': _$RouteModeEnumMap[instance.routeMode]!,
-      'autoSetSystemDns': instance.autoSetSystemDns,
       'appendSystemDns': instance.appendSystemDns,
       'authentication': instance.authentication,
     };

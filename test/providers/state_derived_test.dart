@@ -332,7 +332,7 @@ void main() {
     },
   );
 
-  test('runtime, VPN, tray, and DNS states follow live state', () {
+  test('runtime, VPN, and tray states follow live state', () {
     container
         .read(runTimeProvider.notifier)
         .update((_) => DateTime(2026).millisecondsSinceEpoch);
@@ -342,7 +342,6 @@ void main() {
           (state) => state.copyWith(
             systemProxy: false,
             bypassDomain: const ['localhost'],
-            autoSetSystemDns: true,
           ),
         );
     container
@@ -354,7 +353,6 @@ void main() {
             tun: state.tun.copyWith(enable: true),
           ),
         );
-    expect(container.read(shouldPatchSystemDnsProvider), isFalse);
 
     container
         .read(authorizedTunEnableProvider.notifier)
@@ -382,21 +380,6 @@ void main() {
     final vpn = container.read(vpnStateProvider);
     expect(vpn.stack, container.read(patchClashConfigProvider).tun.stack);
     expect(vpn.vpnProps, container.read(vpnSettingProvider));
-
-    expect(container.read(shouldPatchSystemDnsProvider), isTrue);
-
-    container
-        .read(networkSettingProvider.notifier)
-        .update((state) => state.copyWith(autoSetSystemDns: false));
-    expect(container.read(shouldPatchSystemDnsProvider), isFalse);
-    container
-        .read(networkSettingProvider.notifier)
-        .update((state) => state.copyWith(autoSetSystemDns: true));
-
-    container
-        .read(authorizedTunEnableProvider.notifier)
-        .update((_) => TunAuthorizationState.unauthorized);
-    expect(container.read(shouldPatchSystemDnsProvider), isFalse);
 
     container.read(excludeSSIDsProvider.notifier).update((_) => ['Office']);
     container.read(currentSSIDProvider.notifier).update((_) => 'Office');

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/common/system_dns.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -99,36 +98,6 @@ class Preferences {
   Future<bool> saveConfig(Config config) async {
     final preferences = await sharedPreferencesCompleter.future;
     return preferences?.setString(configKey, json.encode(config)) ?? false;
-  }
-
-  Future<SystemDnsRecord?> getSystemDnsRecord() async {
-    try {
-      final sharedPreferencesIns = await sharedPreferencesCompleter.future;
-      final raw = sharedPreferencesIns?.getString(systemDnsRecordKey);
-      if (raw == null) {
-        return null;
-      }
-      return SystemDnsRecord.fromJson(json.decode(raw));
-    } catch (e) {
-      commonPrint.log(
-        'getSystemDnsRecord error ${e.toString()}',
-        logLevel: LogLevel.warning,
-      );
-      return null;
-    }
-  }
-
-  Future<void> saveSystemDnsRecord(SystemDnsRecord record) async {
-    final sharedPreferencesIns = await sharedPreferencesCompleter.future;
-    await sharedPreferencesIns?.setString(
-      systemDnsRecordKey,
-      json.encode(record),
-    );
-  }
-
-  Future<void> clearSystemDnsRecord() async {
-    final sharedPreferencesIns = await sharedPreferencesCompleter.future;
-    await sharedPreferencesIns?.remove(systemDnsRecordKey);
   }
 
   Future<void> clearPreferences() async {

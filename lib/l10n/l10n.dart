@@ -3520,16 +3520,6 @@ class AppLocalizations {
     );
   }
 
-  /// `Auto-set system DNS`
-  String get autoSetSystemDns {
-    return Intl.message(
-      'Auto-set system DNS',
-      name: 'autoSetSystemDns',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `{label} details`
   String details(Object label) {
     return Intl.message(
@@ -6345,16 +6335,6 @@ class AppLocalizations {
     return Intl.message(
       'Please enter an integer greater than 0',
       name: 'positiveIntegerTip',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Add a fallback DNS server to the system`
-  String get autoSetSystemDnsDesc {
-    return Intl.message(
-      'Add a fallback DNS server to the system',
-      name: 'autoSetSystemDnsDesc',
       desc: '',
       args: [],
     );

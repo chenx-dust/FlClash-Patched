@@ -203,10 +203,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "autoLaunchDesc": MessageLookupByLibrary.simpleMessage("システム起動時に自動的に起動します"),
     "autoRun": MessageLookupByLibrary.simpleMessage("自動実行"),
     "autoRunDesc": MessageLookupByLibrary.simpleMessage("アプリを開いたときに自動的に実行します"),
-    "autoSetSystemDns": MessageLookupByLibrary.simpleMessage("オートセットシステム DNS"),
-    "autoSetSystemDnsDesc": MessageLookupByLibrary.simpleMessage(
-      "予備の DNS サーバーをシステムに追加",
-    ),
     "autoUpdate": MessageLookupByLibrary.simpleMessage("自動更新"),
     "autoUpdateInterval": MessageLookupByLibrary.simpleMessage("自動更新間隔（分）"),
     "back": MessageLookupByLibrary.simpleMessage("戻る"),

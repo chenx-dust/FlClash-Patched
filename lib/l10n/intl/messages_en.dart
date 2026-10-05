@@ -253,12 +253,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "autoRunDesc": MessageLookupByLibrary.simpleMessage(
       "Run automatically when the app opens",
     ),
-    "autoSetSystemDns": MessageLookupByLibrary.simpleMessage(
-      "Auto-set system DNS",
-    ),
-    "autoSetSystemDnsDesc": MessageLookupByLibrary.simpleMessage(
-      "Add a fallback DNS server to the system",
-    ),
     "autoUpdate": MessageLookupByLibrary.simpleMessage("Auto update"),
     "autoUpdateInterval": MessageLookupByLibrary.simpleMessage(
       "Auto-update interval (minutes)",

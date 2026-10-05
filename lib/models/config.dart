@@ -244,7 +244,6 @@ abstract class NetworkProps with _$NetworkProps {
     @Default(RouteMode.config)
     @JsonKey(unknownEnumValue: RouteMode.config)
     RouteMode routeMode,
-    @Default(true) bool autoSetSystemDns,
     @Default(false) bool appendSystemDns,
     @Default(defaultAuthenticationProps) AuthenticationProps authentication,
   }) = _NetworkProps;

@@ -88,7 +88,6 @@ class TUNButton extends StatelessWidget {
       iconData: Symbols.stacked_line_chart,
       items: [
         if (system.isDesktop) const TUNItem(),
-        if (system.isMacOS) const AutoSetSystemDnsItem(),
         const TunStackItem(),
         const TunMtuItem(),
       ],
