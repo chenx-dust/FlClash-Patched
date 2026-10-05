@@ -151,6 +151,46 @@ void main() {
     verifyNever(() => canvas.drawCircle(any(), any(), any()));
   });
 
+  testWidgets('solid slices shrink in thickness before disappearing', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const TestApp(child: SizedBox()));
+    const before = [
+      DonutChartData.exact(value: 2048, color: Colors.blue),
+      DonutChartData.exact(value: 2048, color: Colors.grey),
+    ];
+    const after = [
+      DonutChartData.exact(value: 0, color: Colors.blue),
+      DonutChartData.exact(value: 2048, color: Colors.grey),
+    ];
+    List<double> widths(double progress) {
+      final canvas = _Canvas();
+      final result = <double>[];
+      when(() => canvas.drawArc(any(), any(), any(), any(), any())).thenAnswer((
+        call,
+      ) {
+        result.add((call.positionalArguments[4] as Paint).strokeWidth);
+      });
+      DonutChartPainter(
+        before,
+        after,
+        progress,
+      ).paint(canvas, const Size.square(180));
+      return result;
+    }
+
+    final initial = widths(0);
+    final late = widths(0.99);
+    final later = widths(0.999);
+    expect(initial.first, initial.last);
+    expect(late.first, greaterThan(0));
+    expect(late.first, lessThan(initial.first));
+    expect(later.first, lessThan(late.first));
+    expect(late.last, initial.last);
+    expect(later.last, initial.last);
+    expect(widths(1), [initial.last]);
+  });
+
   testWidgets('memory geometry closes continuously regardless of byte units', (
     tester,
   ) async {
@@ -201,7 +241,8 @@ void main() {
     final end = frame(1, 1);
     expect(late, hasLength(5));
     expect(end, hasLength(2));
-    expect(late.last, lessThan(0.01));
+    expect(late.last, lessThan(0.02));
+    expect(frame(0.999, 1).last, lessThan(late.last));
     expect(late[1], closeTo(end[1], 0.001));
     expect(
       frame(0.5, 1)[1],

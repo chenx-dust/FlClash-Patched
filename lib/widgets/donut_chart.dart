@@ -307,13 +307,14 @@ class DonutChartPainter extends CustomPainter {
           final angle = startAngle + (dot + 0.5) * step;
           canvas.drawCircle(
             center + Offset(cos(angle), sin(angle)) * radius,
-            min(strokeWidth * 0.4, sweepAngle * radius / 2),
+            min(strokeWidth * 0.4, sweepAngle * radius / 1.5),
             _arcPaint,
           );
         }
       } else {
         _arcPaint.style = PaintingStyle.stroke;
         _arcPaint.strokeCap = StrokeCap.round;
+        _arcPaint.strokeWidth = min(strokeWidth, sweepAngle * radius / 1.5 * 2);
         canvas.drawArc(rect, startAngle, sweepAngle, false, _arcPaint);
       }
     }

@@ -30,6 +30,7 @@ class TrafficDetails extends ConsumerStatefulWidget {
 
 class _TrafficDetailsState extends ConsumerState<TrafficDetails>
     with WidgetsBindingObserver, ActivePollingMixin<TrafficDetails> {
+  final _colorSlots = List<(String, String)?>.filled(6, null);
   bool _showDirect = true;
   _TrafficDirection _direction = _TrafficDirection.both;
   AsyncSnapshot<List<NodeTraffic>> _snapshot = const AsyncSnapshot.waiting();
@@ -128,8 +129,7 @@ class _TrafficDetailsState extends ConsumerState<TrafficDetails>
     _TrafficDirection direction,
     String label,
   ) {
-    final nodes = _snapshot.data;
-    final value = nodes
+    final value = _snapshot.data
         ?.where((node) => _showDirect || node.name != 'DIRECT')
         .fold(0, (sum, node) => sum + direction.value(node));
     return FittedBox(
@@ -138,23 +138,34 @@ class _TrafficDetailsState extends ConsumerState<TrafficDetails>
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(label),
-          if (value != null && direction != _direction)
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(switch (direction) {
-                    _TrafficDirection.upload => Symbols.arrow_upward,
-                    _TrafficDirection.download => Symbols.arrow_downward,
-                    _TrafficDirection.both => Symbols.mobiledata_arrows,
-                  }, size: 12),
-                  const SizedBox(width: 2),
-                  Text(
-                    _formatTraffic(value),
-                    style: context.textTheme.bodySmall,
-                  ),
-                ],
+          if (value != null)
+            TweenAnimationBuilder<double>(
+              tween: Tween(end: direction == _direction ? 0 : 1),
+              duration: midDuration,
+              curve: Curves.easeInOutCubic,
+              builder: (context, progress, child) => ClipRect(
+                child: Align(
+                  heightFactor: progress,
+                  child: Opacity(opacity: progress, child: child),
+                ),
+              ),
+              child: ExcludeSemantics(
+                excluding: direction == _direction,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(switch (direction) {
+                      _TrafficDirection.upload => Symbols.arrow_upward,
+                      _TrafficDirection.download => Symbols.arrow_downward,
+                      _TrafficDirection.both => Symbols.mobiledata_arrows,
+                    }, size: 12),
+                    const SizedBox(width: 2),
+                    Text(
+                      _formatTraffic(value),
+                      style: context.textTheme.bodySmall,
+                    ),
+                  ],
+                ),
               ),
             ),
         ],
@@ -169,19 +180,6 @@ class _TrafficDetailsState extends ConsumerState<TrafficDetails>
     final directValue = direct == null ? 0 : _direction.value(direct);
     final proxyTotal = total - directValue;
     final chartTotal = _showDirect ? total : proxyTotal;
-    if (total == 0) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 32),
-        child: Center(
-          child: Text(
-            l10n.noData,
-            style: context.textTheme.bodyMedium?.copyWith(
-              color: context.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ),
-      );
-    }
     final colors = context.colorScheme;
     final palette = [
       colors.primary,
@@ -193,42 +191,65 @@ class _TrafficDetailsState extends ConsumerState<TrafficDetails>
     ];
     final ordered = nodes.where((node) => node.name != 'DIRECT').toList()
       ..sort((a, b) {
+        final value = _direction.value(b).compareTo(_direction.value(a));
+        if (value != 0) return value;
         final provider = a.provider.compareTo(b.provider);
         return provider != 0 ? provider : a.name.compareTo(b.name);
       });
+    final selectedById = {
+      for (final node
+          in ordered
+              .where((node) => _direction.value(node) * 20 > chartTotal)
+              .take(palette.length))
+        (node.provider, node.name): node,
+    };
+    final otherNodes = ordered
+        .where(
+          (node) =>
+              _direction.value(node) > 0 &&
+              !selectedById.containsKey((node.provider, node.name)),
+        )
+        .toList();
+    if (otherNodes.length == 1 && selectedById.length < palette.length) {
+      final node = otherNodes.single;
+      selectedById[(node.provider, node.name)] = node;
+    }
+    for (var index = 0; index < _colorSlots.length; index++) {
+      if (!selectedById.containsKey(_colorSlots[index])) {
+        _colorSlots[index] = null;
+      }
+    }
+    for (final id in selectedById.keys) {
+      if (!_colorSlots.contains(id)) {
+        _colorSlots[_colorSlots.indexOf(null)] = id;
+      }
+    }
     final slices = <_TrafficSlice>[];
-    var other = 0;
-    for (var index = 0; index < ordered.length; index++) {
-      final node = ordered[index];
-      final value = _direction.value(node);
-      if (value * 20 <= chartTotal) {
-        other += value;
-        continue;
-      }
-      final base = HSVColor.fromColor(palette[index % palette.length]);
-      final color = base
-          .withHue((base.hue + 137.5 * (index ~/ palette.length)) % 360)
-          .toColor();
-      slices.add((node: node, value: value, color: color));
-    }
-    slices.sort((a, b) {
-      final value = b.value.compareTo(a.value);
-      if (value != 0) {
-        return value;
-      }
-      final provider = a.node!.provider.compareTo(b.node!.provider);
-      return provider != 0 ? provider : a.node!.name.compareTo(b.node!.name);
-    });
-    if (other > 0) {
-      slices.add((node: null, value: other, color: colors.outline));
-    }
-    if (direct != null) {
+    for (var index = 0; index < palette.length; index++) {
+      final node = selectedById[_colorSlots[index]];
       slices.add((
-        node: direct,
-        value: directValue,
-        color: colors.onSurfaceVariant.opacity38,
+        node: node,
+        value: node == null ? 0 : _direction.value(node),
+        color: palette[index],
       ));
     }
+    slices.addAll([
+      (
+        node: null,
+        value:
+            proxyTotal -
+            selectedById.values.fold(
+              0,
+              (sum, node) => sum + _direction.value(node),
+            ),
+        color: colors.outline,
+      ),
+      (
+        node: direct ?? const NodeTraffic(name: 'DIRECT'),
+        value: directValue,
+        color: colors.onSurfaceVariant.opacity38,
+      ),
+    ]);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -283,107 +304,136 @@ class _TrafficDetailsState extends ConsumerState<TrafficDetails>
           ),
         ),
         const SizedBox(height: 12),
-        for (final slice in slices)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 20,
-                  child: slice.node?.name == 'DIRECT'
-                      ? Row(
-                          children: [
-                            for (var i = 0; i < 3; i++) ...[
-                              Container(
-                                width: 4,
-                                height: 4,
-                                decoration: ShapeDecoration(
-                                  color: slice.color,
-                                  shape: AppShape.circle,
-                                ),
-                              ),
-                              if (i < 2) const SizedBox(width: 3),
-                            ],
-                          ],
-                        )
-                      : Container(
-                          height: 8,
-                          decoration: ShapeDecoration(
-                            color: slice.color,
-                            shape: AppShape.full,
-                          ),
-                        ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+        if (total == 0) Text(l10n.noData),
+        for (final slice in slices.where((slice) => slice.value > 0))
+          _buildLegendRow(context, slice, chartTotal),
+      ],
+    );
+  }
+
+  Widget _buildLegendRow(
+    BuildContext context,
+    _TrafficSlice slice,
+    int chartTotal,
+  ) {
+    final l10n = context.appLocalizations;
+    final colors = context.colorScheme;
+    final isDirect = slice.node?.name == 'DIRECT';
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final textScaler = MediaQuery.textScalerOf(context);
+          final horizontal = constraints.maxWidth >= textScaler.scale(280);
+          final wideSpacing = constraints.maxWidth >= textScaler.scale(240);
+          return Row(
+            children: [
+              SizedBox(
+                width: 20,
+                child: isDirect
+                    ? Row(
                         children: [
-                          Flexible(
-                            child: TooltipText(
-                              text: Text(
-                                slice.node?.name == 'DIRECT'
-                                    ? l10n.direct
-                                    : slice.node?.name ?? l10n.other,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: context.textTheme.bodyMedium,
+                          for (var i = 0; i < 3; i++) ...[
+                            Container(
+                              width: 4,
+                              height: 4,
+                              decoration: ShapeDecoration(
+                                color: slice.color,
+                                shape: AppShape.circle,
                               ),
                             ),
-                          ),
-                          if (slice.node?.name == 'DIRECT') ...[
-                            const SizedBox(width: 4),
-                            SizedBox.square(
-                              dimension: 24.ap,
-                              child: IconButton(
-                                tooltip: _showDirect ? l10n.hide : l10n.show,
-                                padding: EdgeInsets.zero,
-                                onPressed: () =>
-                                    setState(() => _showDirect = !_showDirect),
-                                icon: Icon(
-                                  _showDirect
-                                      ? Symbols.visibility
-                                      : Symbols.visibility_off,
-                                  size: 16.ap,
-                                  color: colors.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
+                            if (i < 2) const SizedBox(width: 3),
                           ],
                         ],
+                      )
+                    : Container(
+                        height: 8,
+                        decoration: ShapeDecoration(
+                          color: slice.color,
+                          shape: AppShape.full,
+                        ),
                       ),
-                      if (slice.node?.provider.isNotEmpty ?? false)
-                        Text(
-                          slice.node!.provider,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: context.textTheme.bodySmall?.copyWith(
-                            color: colors.onSurfaceVariant,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: TooltipText(
+                            text: Text(
+                              isDirect
+                                  ? l10n.direct
+                                  : slice.node?.name ?? l10n.other,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: context.textTheme.bodyMedium,
+                            ),
                           ),
                         ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  _formatTraffic(slice.value),
-                  style: context.textTheme.bodySmall,
-                ),
-                if (slice.node?.name != 'DIRECT' || _showDirect) ...[
-                  const SizedBox(width: 6),
-                  Text(
-                    '${(chartTotal == 0 ? 0 : slice.value / chartTotal * 100).toStringAsFixed(1)}%',
-                    style: context.textTheme.bodySmall?.copyWith(
-                      color: colors.onSurfaceVariant,
+                        if (isDirect) ...[
+                          const SizedBox(width: 4),
+                          SizedBox.square(
+                            dimension: 24.ap,
+                            child: IconButton(
+                              tooltip: _showDirect ? l10n.hide : l10n.show,
+                              padding: EdgeInsets.zero,
+                              onPressed: () =>
+                                  setState(() => _showDirect = !_showDirect),
+                              icon: Icon(
+                                _showDirect
+                                    ? Symbols.visibility
+                                    : Symbols.visibility_off,
+                                size: 16.ap,
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
+                    if (slice.node?.provider.isNotEmpty ?? false)
+                      Text(
+                        slice.node!.provider,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Flex(
+                direction: horizontal ? Axis.horizontal : Axis.vertical,
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    _formatTraffic(slice.value),
+                    style: context.textTheme.bodySmall,
                   ),
+                  if (!isDirect || _showDirect) ...[
+                    SizedBox(
+                      width: wideSpacing ? 6 : 0,
+                      height: wideSpacing ? 0 : 2,
+                    ),
+                    Text(
+                      '${(chartTotal == 0 ? 0 : slice.value / chartTotal * 100).toStringAsFixed(1)}%',
+                      style: context.textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ],
-              ],
-            ),
-          ),
-      ],
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }
