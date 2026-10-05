@@ -4,6 +4,8 @@ go 1.26.0
 
 replace github.com/metacubex/mihomo => ./mihomo
 
+replace github.com/metacubex/sing-tun => github.com/chenx-dust/sing-tun v0.4.27-0.20261005145226-26cefe1bf6d6
+
 require (
 	github.com/Microsoft/go-winio v0.6.2
 	github.com/metacubex/mihomo v0.0.0-00010101000000-000000000000
@@ -25,6 +27,7 @@ require (
 	github.com/dlclark/regexp2 v1.12.0 // indirect
 	github.com/dunglas/httpsfv v1.0.2 // indirect
 	github.com/easytier/easytier/easytier-go v0.0.0-20260910071355-3d0c9c3ca5e2 // indirect
+	github.com/ebitengine/purego v0.10.2 // indirect
 	github.com/enfein/mieru/v3 v3.38.0 // indirect
 	github.com/ericlagergren/aegis v0.0.0-20250325060835-cd0defd64358 // indirect
 	github.com/ericlagergren/polyval v0.0.0-20220411101811-e25bc10ba391 // indirect
