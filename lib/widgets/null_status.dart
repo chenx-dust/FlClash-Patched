@@ -232,7 +232,7 @@ class _EmptyIllustration extends StatelessWidget {
       NullStatusIllustration.proxies => (
         'assets/images/empty/proxy.svg',
         MaterialShapes.cookie12Sided,
-        colorScheme.tertiaryContainer,
+        colorScheme.secondaryContainer,
       ),
       NullStatusIllustration.profile => (
         'assets/images/empty/profile.svg',
@@ -246,8 +246,8 @@ class _EmptyIllustration extends StatelessWidget {
       ),
       NullStatusIllustration.rules => (
         'assets/images/empty/rule.svg',
-        MaterialShapes.flower,
-        colorScheme.tertiaryContainer,
+        MaterialShapes.cookie12Sided,
+        colorScheme.secondaryContainer,
       ),
       NullStatusIllustration.connections => (
         'assets/images/empty/connection.svg',
@@ -262,7 +262,7 @@ class _EmptyIllustration extends StatelessWidget {
       NullStatusIllustration.wifi => (
         'assets/images/empty/wifi.svg',
         MaterialShapes.clamShell,
-        colorScheme.tertiaryContainer,
+        colorScheme.secondaryContainer,
       ),
       NullStatusIllustration.apps => (
         'assets/images/empty/apps.svg',
@@ -277,7 +277,7 @@ class _EmptyIllustration extends StatelessWidget {
       NullStatusIllustration.permission => (
         'assets/images/empty/permission.svg',
         MaterialShapes.circle,
-        colorScheme.tertiaryContainer,
+        colorScheme.secondaryContainer,
       ),
     };
     return CustomPaint(
