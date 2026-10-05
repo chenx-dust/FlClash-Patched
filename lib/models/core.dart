@@ -61,7 +61,7 @@ abstract class VpnOptions with _$VpnOptions {
     @JsonKey(unknownEnumValue: TunCongestionController.cubic)
     TunCongestionController congestionController,
     @Default(true) bool recvMsgX,
-    @Default(false) bool sendMsgX,
+    @Default(true) bool sendMsgX,
     @Default(false) bool includeAllNetworks,
     @Default(true) bool excludeLocalNetworks,
     @Default(true) bool excludeAPNs,

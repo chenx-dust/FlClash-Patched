@@ -177,7 +177,7 @@ _Tun _$TunFromJson(Map<String, dynamic> json) => _Tun(
       ) ??
       TunStack.mips,
   recvMsgX: json['recvmsgx'] as bool? ?? true,
-  sendMsgX: json['sendmsgx'] as bool? ?? false,
+  sendMsgX: json['sendmsgx'] as bool? ?? true,
   dnsHijack:
       (json['dns-hijack'] as List<dynamic>?)
           ?.map((e) => e as String)

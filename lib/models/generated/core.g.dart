@@ -110,7 +110,7 @@ _VpnOptions _$VpnOptionsFromJson(Map<String, dynamic> json) => _VpnOptions(
       ) ??
       TunCongestionController.cubic,
   recvMsgX: json['recvMsgX'] as bool? ?? true,
-  sendMsgX: json['sendMsgX'] as bool? ?? false,
+  sendMsgX: json['sendMsgX'] as bool? ?? true,
   includeAllNetworks: json['includeAllNetworks'] as bool? ?? false,
   excludeLocalNetworks: json['excludeLocalNetworks'] as bool? ?? true,
   excludeAPNs: json['excludeAPNs'] as bool? ?? true,

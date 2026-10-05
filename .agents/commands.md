@@ -81,7 +81,7 @@ Use `flutter test`, not `dart test`, because models pull in Flutter types.
 Run code generation after modifying models, providers, or database schema:
 
 ```bash
-dart run build_runner build --delete-conflicting-outputs
+dart run build_runner build
 dart run build_runner watch
 ```
 

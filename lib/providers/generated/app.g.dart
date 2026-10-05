@@ -2331,7 +2331,7 @@ final class HotKeyRecordingProvider
   }
 }
 
-String _$hotKeyRecordingHash() => r'8cbbdb394fcc10ae564e4e91696668cc8a327507';
+String _$hotKeyRecordingHash() => r'769a1cb2eafe5b4202d165c6de6cb251d01c5590';
 
 abstract class _$HotKeyRecording extends $Notifier<bool> {
   bool build();
