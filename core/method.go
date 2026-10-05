@@ -298,6 +298,16 @@ var methodHandlers = map[CoreMethod]methodHandler{
 		handleStopDnsNotify()
 		response.success(true)
 	}),
+	queryDnsMethod: withArguments(func(params *DnsQueryParams, response MethodResponse) {
+		safeGo(response, func() {
+			query, err := handleQueryDns(params)
+			if err != nil {
+				response.failure("core_error", err.Error(), nil)
+				return
+			}
+			response.success(query)
+		})
+	}),
 	startListenerMethod: withoutArguments(func(response MethodResponse) {
 		response.success(handleStartListener())
 	}),

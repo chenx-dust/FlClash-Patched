@@ -98,6 +98,8 @@ mixin CoreInterface {
 
   FutureOr<void> stopDnsNotify();
 
+  Future<DnsQuery> queryDns(String domain, String type);
+
   Future<bool> crash();
 
   FutureOr<List<TrackerInfo>> getConnections();
@@ -525,6 +527,21 @@ abstract class CoreHandlerInterface with CoreInterface {
   @override
   FutureOr<void> stopDnsNotify() {
     _invokeMethod<bool>(method: CoreMethod.stopDnsNotify);
+  }
+
+  @override
+  Future<DnsQuery> queryDns(String domain, String type) async {
+    final data = await _invokeMethod<Map<String, dynamic>>(
+      method: CoreMethod.queryDns,
+      arguments: {'domain': domain, 'type': type},
+    );
+    if (data == null) {
+      throw const CoreMethodException(
+        code: 'invalid_response',
+        message: 'Missing DNS query result',
+      );
+    }
+    return DnsQuery.fromJson(data);
   }
 
   @override

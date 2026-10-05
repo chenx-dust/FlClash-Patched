@@ -1480,6 +1480,21 @@ class AppLocalizations {
     );
   }
 
+  /// `Query DNS`
+  String get queryDns {
+    return Intl.message('Query DNS', name: 'queryDns', desc: '', args: []);
+  }
+
+  /// `Query`
+  String get query {
+    return Intl.message('Query', name: 'query', desc: '', args: []);
+  }
+
+  /// `Manual`
+  String get manual {
+    return Intl.message('Manual', name: 'manual', desc: '', args: []);
+  }
+
   /// `Initiator`
   String get initiator {
     return Intl.message('Initiator', name: 'initiator', desc: '', args: []);

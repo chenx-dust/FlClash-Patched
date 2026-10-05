@@ -171,12 +171,11 @@ class _FilterAddButtonState extends State<_FilterAddButton> {
   @override
   void dispose() {
     final route = _menuRoute;
-    final groups = _groups;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (route != null && route.isActive) {
         route.navigator?.removeRoute(route);
       }
-      groups.dispose();
+      _groups.dispose();
     });
     super.dispose();
   }

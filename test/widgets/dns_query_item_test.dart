@@ -1,8 +1,13 @@
+import 'dart:async';
+
+import 'package:fl_clash/core/method.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/features/features.dart';
 import 'package:fl_clash/models/models.dart';
+import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/views/dns_queries.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -25,6 +30,21 @@ DnsQuery _query({
     error: error,
     delay: 12,
     time: DateTime(2026, 9, 26, 12, 0),
+  );
+}
+
+Future<void> _pumpWithViewSize(WidgetTester tester, Widget child) async {
+  final container = ProviderContainer();
+  addTearDown(container.dispose);
+  container.read(viewSizeProvider.notifier).update((_) => const Size(800, 600));
+  await tester.pumpWidget(
+    UncontrolledProviderScope(
+      container: container,
+      child: TestApp(
+        homeBuilder: (child) => Scaffold(body: child),
+        child: child,
+      ),
+    ),
   );
 }
 
@@ -101,6 +121,95 @@ void main() {
       (DnsQueryFilterType.type, 'A'),
       (DnsQueryFilterType.cache, dnsQueryCachedFilterValue),
     ]);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('DnsLookupDialog queries the selected type and returns it', (
+    tester,
+  ) async {
+    final requests = <(String, String)>[];
+    final result = Completer<DnsQuery>();
+    DnsQuery? popped;
+    await _pumpWithViewSize(
+      tester,
+      Builder(
+        builder: (context) => TextButton(
+          onPressed: () async {
+            popped = await Navigator.of(context).push<DnsQuery>(
+              MaterialPageRoute(
+                builder: (_) => DnsLookupDialog(
+                  onQuery: (domain, type) {
+                    requests.add((domain, type));
+                    return result.future;
+                  },
+                ),
+              ),
+            );
+          },
+          child: const Text('open'),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Query'));
+    await tester.pump();
+    expect(requests, isEmpty);
+
+    await tester.enterText(find.byType(TextFormField), ' example.com ');
+    await tester.tap(find.text('AAAA'));
+    await tester.tap(find.text('Query'));
+    await tester.pump();
+
+    final queryButton = find.widgetWithText(TextButton, 'Query');
+    expect(
+      find.descendant(
+        of: queryButton,
+        matching: find.byType(CommonCircleLoading),
+      ),
+      findsOneWidget,
+    );
+    expect(tester.widget<TextButton>(queryButton).onPressed, isNull);
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+
+    result.complete(_query());
+    await tester.pumpAndSettle();
+
+    expect(requests, [('example.com', 'AAAA')]);
+    expect(popped?.domain, 'example.com');
+    expect(find.byType(DnsLookupDialog), findsNothing);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('DnsLookupDialog keeps the dialog open on core errors', (
+    tester,
+  ) async {
+    await _pumpWithViewSize(
+      tester,
+      DnsLookupDialog(
+        onQuery: (_, _) async {
+          throw const CoreMethodException(
+            code: 'core_error',
+            message: 'DNS section is disabled',
+          );
+        },
+      ),
+    );
+    await tester.enterText(find.byType(TextFormField), 'example.com');
+    await tester.tap(find.text('Query'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(DnsLookupDialog), findsOneWidget);
+    expect(find.textContaining('DNS section is disabled'), findsOneWidget);
+    expect(
+      tester
+          .widget<TextButton>(find.widgetWithText(TextButton, 'Query'))
+          .onPressed,
+      isNotNull,
+    );
 
     await tester.pumpWidget(const SizedBox.shrink());
   });

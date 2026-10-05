@@ -45,6 +45,7 @@ extension DnsQueryInitiatorL10n on DnsQueryInitiator {
       DnsQueryInitiator.rule => appLocalizations.rule,
       DnsQueryInitiator.direct => appLocalizations.direct,
       DnsQueryInitiator.proxy => appLocalizations.proxy,
+      DnsQueryInitiator.manual => appLocalizations.manual,
       DnsQueryInitiator.other => appLocalizations.other,
     };
   }

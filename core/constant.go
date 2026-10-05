@@ -236,6 +236,7 @@ const (
 	stopRequestNotifyMethod              CoreMethod = "stopRequestNotify"
 	startDnsNotifyMethod                 CoreMethod = "startDnsNotify"
 	stopDnsNotifyMethod                  CoreMethod = "stopDnsNotify"
+	queryDnsMethod                       CoreMethod = "queryDns"
 	startListenerMethod                  CoreMethod = "startListener"
 	stopListenerMethod                   CoreMethod = "stopListener"
 	updateDnsMethod                      CoreMethod = "updateDns"

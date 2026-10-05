@@ -165,6 +165,16 @@ class _RecordingCoreHandler extends CoreHandlerInterface {
         'heapReleased': 2048,
       },
       CoreMethod.getGoroutineCount => 42,
+      CoreMethod.queryDns => {
+        'domain': 'example.com',
+        'type': 'AAAA',
+        'initiator': 'manual',
+        'upstream': 'udp://1.1.1.1:53',
+        'answers': ['2606:2800:220:1::248'],
+        'rcode': 'NOERROR',
+        'delay': 8,
+        'time': '2026-10-06T00:00:00.000Z',
+      },
       _ => '',
     };
     return result as T;
@@ -428,6 +438,13 @@ void main() {
     expect(memory.other, 128);
     expect(memory.heapReleased, 2048);
     expect(await handler.getGoroutineCount(), 42);
+    final dnsQuery = await handler.queryDns('example.com', 'AAAA');
+    expect(handler.calls[CoreMethod.queryDns], {
+      'domain': 'example.com',
+      'type': 'AAAA',
+    });
+    expect(dnsQuery.initiator, DnsQueryInitiator.manual);
+    expect(dnsQuery.answers, ['2606:2800:220:1::248']);
   });
 
   test('getProfileConfig preserves structured core errors', () async {

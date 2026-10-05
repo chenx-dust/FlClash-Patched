@@ -893,6 +893,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Used for UWP loopback exemption",
     ),
     "loose": MessageLookupByLibrary.simpleMessage("Loose"),
+    "manual": MessageLookupByLibrary.simpleMessage("Manual"),
     "matchSourceIp": MessageLookupByLibrary.simpleMessage("Match source IP"),
     "matchTarget": MessageLookupByLibrary.simpleMessage("MATCH-TARGET"),
     "matchTargetDesc": MessageLookupByLibrary.simpleMessage(
@@ -1188,6 +1189,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "qrcodeDesc": MessageLookupByLibrary.simpleMessage(
       "Scan a QR code to obtain a profile",
     ),
+    "query": MessageLookupByLibrary.simpleMessage("Query"),
+    "queryDns": MessageLookupByLibrary.simpleMessage("Query DNS"),
     "quickFill": MessageLookupByLibrary.simpleMessage("Quick fill"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("Rainbow"),
     "random": MessageLookupByLibrary.simpleMessage("Random"),

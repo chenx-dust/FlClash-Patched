@@ -182,6 +182,7 @@ const _$DnsQueryInitiatorEnumMap = {
   DnsQueryInitiator.rule: 'rule',
   DnsQueryInitiator.direct: 'direct',
   DnsQueryInitiator.proxy: 'proxy',
+  DnsQueryInitiator.manual: 'manual',
   DnsQueryInitiator.other: 'other',
 };
 

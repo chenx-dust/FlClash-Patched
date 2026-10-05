@@ -668,6 +668,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "loopback": MessageLookupByLibrary.simpleMessage("迴路解鎖工具"),
     "loopbackDesc": MessageLookupByLibrary.simpleMessage("解除 UWP 迴路限制"),
     "loose": MessageLookupByLibrary.simpleMessage("寬鬆"),
+    "manual": MessageLookupByLibrary.simpleMessage("手動"),
     "matchSourceIp": MessageLookupByLibrary.simpleMessage("比對來源 IP"),
     "matchTarget": MessageLookupByLibrary.simpleMessage("MATCH-TARGET"),
     "matchTargetDesc": MessageLookupByLibrary.simpleMessage(
@@ -877,6 +878,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "pureBlackMode": MessageLookupByLibrary.simpleMessage("純黑模式"),
     "qrcode": MessageLookupByLibrary.simpleMessage("QR 碼"),
     "qrcodeDesc": MessageLookupByLibrary.simpleMessage("掃描 QR 碼取得設定檔"),
+    "query": MessageLookupByLibrary.simpleMessage("查詢"),
+    "queryDns": MessageLookupByLibrary.simpleMessage("查詢 DNS"),
     "quickFill": MessageLookupByLibrary.simpleMessage("一鍵填入"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("彩虹"),
     "random": MessageLookupByLibrary.simpleMessage("隨機"),
