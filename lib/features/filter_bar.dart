@@ -15,30 +15,58 @@ class FilterChipData {
   });
 }
 
-class FilterMenuAction {
+class FilterMenuGroup {
   final IconData icon;
   final String label;
-  final VoidCallback onPressed;
+  final Iterable<String> values;
+  final Set<String> selected;
+  final String Function(String value) labelOf;
+  final ValueChanged<String> onToggled;
 
-  const FilterMenuAction({
+  const FilterMenuGroup({
     required this.icon,
     required this.label,
-    required this.onPressed,
+    required this.values,
+    required this.selected,
+    required this.labelOf,
+    required this.onToggled,
   });
+
+  List<CommonPopupMenuItem> buildOptions() {
+    final counts = <String, int>{};
+    for (final value in values) {
+      if (value.trim().isEmpty) {
+        continue;
+      }
+      counts[value] = (counts[value] ?? 0) + 1;
+    }
+    final options = {...counts.keys, ...selected}.toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    return [
+      for (final option in options)
+        CommonPopupMenuItem(
+          label: labelOf(option),
+          trailing: '${counts[option] ?? 0}',
+          checked: selected.contains(option),
+          keepOpen: true,
+          onPressed: () => onToggled(option),
+        ),
+    ];
+  }
 }
 
 class FilterChipBar extends StatelessWidget {
   final bool visible;
   final bool active;
   final List<FilterChipData> chips;
-  final List<FilterMenuAction> actions;
+  final List<FilterMenuGroup> groups;
 
   const FilterChipBar({
     super.key,
     required this.visible,
     required this.active,
     required this.chips,
-    required this.actions,
+    required this.groups,
   });
 
   @override
@@ -104,7 +132,7 @@ class FilterChipBar extends StatelessWidget {
                                 ),
                               ),
                       ),
-                      _FilterAddButton(actions: actions),
+                      _FilterAddButton(groups: groups),
                     ],
                   ),
                 ),
@@ -115,23 +143,63 @@ class FilterChipBar extends StatelessWidget {
   }
 }
 
-class _FilterAddButton extends StatelessWidget {
-  final List<FilterMenuAction> actions;
+class _FilterAddButton extends StatefulWidget {
+  final List<FilterMenuGroup> groups;
 
-  const _FilterAddButton({required this.actions});
+  const _FilterAddButton({required this.groups});
+
+  @override
+  State<_FilterAddButton> createState() => _FilterAddButtonState();
+}
+
+class _FilterAddButtonState extends State<_FilterAddButton> {
+  late final _groups = ValueNotifier(widget.groups);
+  ModalRoute<Object?>? _menuRoute;
+
+  @override
+  void didUpdateWidget(_FilterAddButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // The open menu lives in another route, so it cannot be marked dirty
+    // while this subtree is building.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _groups.value = widget.groups;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    final route = _menuRoute;
+    final groups = _groups;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (route != null && route.isActive) {
+        route.navigator?.removeRoute(route);
+      }
+      groups.dispose();
+    });
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final items = [
-      for (final action in actions)
-        CommonPopupMenuItem(
-          icon: action.icon,
-          label: action.label,
-          onPressed: action.onPressed,
-        ),
-    ];
     return CommonPopupBox(
-      popupBuilder: (_) => CommonPopupMenu(items: items),
+      popupBuilder: (menuContext) {
+        _menuRoute = ModalRoute.of(menuContext);
+        return ValueListenableBuilder(
+          valueListenable: _groups,
+          builder: (_, groups, _) => CommonPopupMenu(
+            items: [
+              for (final group in groups)
+                CommonPopupMenuItem(
+                  icon: group.icon,
+                  label: group.label,
+                  subItems: group.buildOptions(),
+                ),
+            ],
+          ),
+        );
+      },
       targetBuilder: (open) {
         return IconButton(
           padding: EdgeInsets.zero,
@@ -238,72 +306,5 @@ class FilterToggleButton extends StatelessWidget {
       );
     }
     return IconButton(tooltip: tooltip, onPressed: onPressed, icon: icon);
-  }
-}
-
-class FilterValueSheet extends StatelessWidget {
-  final String title;
-  final Iterable<String> values;
-  final Set<String> selected;
-  final String Function(String value) labelOf;
-  final ValueChanged<String> onSelected;
-
-  const FilterValueSheet({
-    super.key,
-    required this.title,
-    required this.values,
-    required this.selected,
-    required this.labelOf,
-    required this.onSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final options = values
-        .where((value) => value.trim().isNotEmpty)
-        .toSet()
-        .toList();
-    options.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-    final counts = <String, int>{};
-    for (final value in values) {
-      if (value.trim().isEmpty) {
-        continue;
-      }
-      counts[value] = (counts[value] ?? 0) + 1;
-    }
-    final unselected = options
-        .where((option) => !selected.contains(option))
-        .toList();
-    final section = unselected.isEmpty
-        ? null
-        : generateSectionV3(
-            isFirst: true,
-            title: title,
-            items: unselected.map((option) {
-              return ListItem(
-                title: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  spacing: 8,
-                  children: [
-                    Flexible(child: Text(labelOf(option))),
-                    Text(
-                      '${counts[option] ?? 0}',
-                      style: context.textTheme.bodySmall?.copyWith(
-                        color: context.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-                onTap: () => onSelected(option),
-              );
-            }),
-          );
-    return AdaptiveSheetScaffold(
-      title: title,
-      body: section == null
-          ? NullStatus(label: context.appLocalizations.noData)
-          : ListView(padding: sectionPagePadding, children: [section]),
-    );
   }
 }

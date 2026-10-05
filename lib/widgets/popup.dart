@@ -428,17 +428,21 @@ class CommonPopupMenuItem {
   const CommonPopupMenuItem({
     required this.label,
     this.icon,
+    this.trailing,
     this.onPressed,
     this.danger = false,
     this.checked = false,
+    this.keepOpen = false,
     this.subItems = const [],
   });
 
   final String label;
   final IconData? icon;
+  final String? trailing;
   final VoidCallback? onPressed;
   final bool danger;
   final bool checked;
+  final bool keepOpen;
   final List<CommonPopupMenuItem> subItems;
 }
 
@@ -473,6 +477,7 @@ class _CommonPopupMenuState extends State<CommonPopupMenu>
   late final AnimationController _controller = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 260),
+    reverseDuration: const Duration(milliseconds: 150),
     value: 1,
   );
 
@@ -679,6 +684,17 @@ class _CommonPopupMenuState extends State<CommonPopupMenu>
                 ),
               ),
             ),
+            if (item.trailing case final trailing?) ...[
+              const SizedBox(width: 12),
+              Text(
+                trailing,
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: enabled
+                      ? colorScheme.onSurfaceVariant
+                      : colorScheme.onSurfaceVariant.opacity30,
+                ),
+              ),
+            ],
             if (item.checked) ...[
               const SizedBox(width: 8),
               Icon(Symbols.check, size: _itemIconSize, color: foregroundColor),
@@ -705,7 +721,11 @@ class _CommonPopupMenuState extends State<CommonPopupMenu>
     return _buildRow(
       context,
       item: item,
-      onTap: onPressed == null ? null : () => _select(onPressed),
+      onTap: onPressed == null
+          ? null
+          : item.keepOpen
+          ? onPressed
+          : () => _select(onPressed),
     );
   }
 
@@ -799,25 +819,38 @@ class _CommonPopupMenuState extends State<CommonPopupMenu>
     );
   }
 
+  void _popTo(int levelIndex) {
+    if (_closing || levelIndex >= _path.length) {
+      return;
+    }
+    if (levelIndex < _path.length - 1) {
+      setState(() => _path.length = levelIndex + 1);
+    }
+    _pop();
+  }
+
   Widget _buildRecedingLevel(
     BuildContext context,
     _MenuLevel level, {
+    required int index,
     required int depth,
     required double origin,
   }) {
     final scrim = context.colorScheme.scrim;
-    return IgnorePointer(
-      child: ExcludeSemantics(
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            final scaleDistance = depth - (1 - _recedeScale.value);
-            final scrimDistance = depth - (1 - _recedeScrim.value);
-            final scale = math.max(0.0, 1 - _levelScaleStep * scaleDistance);
-            return Transform(
-              transform: Matrix4.diagonal3Values(scale, scale, 1),
-              alignment: Alignment.topRight,
-              origin: Offset(0, origin),
+    return ExcludeSemantics(
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          final scaleDistance = depth - (1 - _recedeScale.value);
+          final scrimDistance = depth - (1 - _recedeScrim.value);
+          final scale = math.max(0.0, 1 - _levelScaleStep * scaleDistance);
+          return Transform(
+            transform: Matrix4.diagonal3Values(scale, scale, 1),
+            alignment: Alignment.topRight,
+            origin: Offset(0, origin),
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => _popTo(index),
               child: DecoratedBox(
                 position: DecorationPosition.foreground,
                 decoration: ShapeDecoration(
@@ -832,8 +865,10 @@ class _CommonPopupMenuState extends State<CommonPopupMenu>
                 ),
                 child: child,
               ),
-            );
-          },
+            ),
+          );
+        },
+        child: IgnorePointer(
           child: RepaintBoundary(
             child: _buildCard(
               context,
@@ -872,6 +907,7 @@ class _CommonPopupMenuState extends State<CommonPopupMenu>
                   : _buildRecedingLevel(
                       context,
                       levels[index],
+                      index: index,
                       depth: topIndex - index,
                       origin:
                           levels[index + 1].top +

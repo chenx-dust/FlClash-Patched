@@ -2,7 +2,6 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/features/filter_bar.dart';
 import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -70,14 +69,18 @@ class DnsQueryFilter {
 
   bool get isNotEmpty => !isEmpty;
 
-  bool contains(DnsQueryFilterType type, String value) {
+  Set<String> valuesOf(DnsQueryFilterType type) {
     return switch (type) {
-      DnsQueryFilterType.type => types.contains(value),
-      DnsQueryFilterType.initiator => initiators.contains(value),
-      DnsQueryFilterType.upstream => upstreams.contains(value),
-      DnsQueryFilterType.rcode => rcodes.contains(value),
-      DnsQueryFilterType.cache => caches.contains(value),
+      DnsQueryFilterType.type => types,
+      DnsQueryFilterType.initiator => initiators,
+      DnsQueryFilterType.upstream => upstreams,
+      DnsQueryFilterType.rcode => rcodes,
+      DnsQueryFilterType.cache => caches,
     };
+  }
+
+  bool contains(DnsQueryFilterType type, String value) {
+    return valuesOf(type).contains(value);
   }
 
   DnsQueryFilter copyWith({
@@ -226,22 +229,18 @@ class DnsQueryFilterBar extends StatelessWidget {
     required this.onChanged,
   });
 
-  Future<void> _showFilterSheet(
-    BuildContext context,
-    DnsQueryFilterType type,
-  ) async {
-    await showSheet(
-      context: context,
-      props: const SheetProps(isScrollControlled: true),
-      builder: (_) {
-        return _DnsQueryFilterSheet(
-          type: type,
-          dnsQueries: dnsQueries,
-          filter: filter,
-          onChanged: onChanged,
-        );
-      },
-    );
+  Iterable<String> _valuesOf(DnsQueryFilterType type) {
+    return switch (type) {
+      DnsQueryFilterType.type => dnsQueries.map((item) => item.type),
+      DnsQueryFilterType.initiator => dnsQueries.map(
+        (item) => item.initiator?.name ?? '',
+      ),
+      DnsQueryFilterType.upstream => dnsQueries.map((item) => item.upstream),
+      DnsQueryFilterType.rcode => dnsQueries.map((item) => item.rcode),
+      DnsQueryFilterType.cache => dnsQueries.map(
+        (item) => dnsQueryCacheFilterValue(item.cached),
+      ),
+    };
   }
 
   @override
@@ -259,14 +258,15 @@ class DnsQueryFilterBar extends StatelessWidget {
             },
           ),
       ],
-      actions: [
+      groups: [
         for (final type in DnsQueryFilterType.values)
-          FilterMenuAction(
+          FilterMenuGroup(
             icon: type.icon,
             label: type.getLabel(context),
-            onPressed: () {
-              _showFilterSheet(context, type);
-            },
+            values: _valuesOf(type),
+            selected: filter.valuesOf(type),
+            labelOf: (value) => dnsQueryFilterLabel(type, value),
+            onToggled: (value) => onChanged(filter.toggle(type, value)),
           ),
       ],
     );
@@ -291,75 +291,6 @@ class DnsQueryFilterButton extends StatelessWidget {
       visible: visible,
       active: filter.isNotEmpty,
       onPressed: onPressed,
-    );
-  }
-}
-
-class _DnsQueryFilterSheet extends StatefulWidget {
-  final DnsQueryFilterType type;
-  final List<DnsQuery> dnsQueries;
-  final DnsQueryFilter filter;
-  final ValueChanged<DnsQueryFilter> onChanged;
-
-  const _DnsQueryFilterSheet({
-    required this.type,
-    required this.dnsQueries,
-    required this.filter,
-    required this.onChanged,
-  });
-
-  @override
-  State<_DnsQueryFilterSheet> createState() => _DnsQueryFilterSheetState();
-}
-
-class _DnsQueryFilterSheetState extends State<_DnsQueryFilterSheet> {
-  late DnsQueryFilter _filter;
-
-  @override
-  void initState() {
-    super.initState();
-    _filter = widget.filter;
-  }
-
-  void _setFilter(DnsQueryFilter filter) {
-    setState(() {
-      _filter = filter;
-    });
-    widget.onChanged(filter);
-  }
-
-  Set<String> _selectedValues(DnsQueryFilterType type) {
-    return switch (type) {
-      DnsQueryFilterType.type => _filter.types,
-      DnsQueryFilterType.initiator => _filter.initiators,
-      DnsQueryFilterType.upstream => _filter.upstreams,
-      DnsQueryFilterType.rcode => _filter.rcodes,
-      DnsQueryFilterType.cache => _filter.caches,
-    };
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final type = widget.type;
-    final dnsQueries = widget.dnsQueries;
-    return FilterValueSheet(
-      title: type.getLabel(context),
-      values: switch (type) {
-        DnsQueryFilterType.type => dnsQueries.map((item) => item.type),
-        DnsQueryFilterType.initiator => dnsQueries.map(
-          (item) => item.initiator?.name ?? '',
-        ),
-        DnsQueryFilterType.upstream => dnsQueries.map((item) => item.upstream),
-        DnsQueryFilterType.rcode => dnsQueries.map((item) => item.rcode),
-        DnsQueryFilterType.cache => dnsQueries.map(
-          (item) => dnsQueryCacheFilterValue(item.cached),
-        ),
-      },
-      selected: _selectedValues(type),
-      labelOf: (value) => dnsQueryFilterLabel(type, value),
-      onSelected: (value) {
-        _setFilter(_filter.add(type, value));
-      },
     );
   }
 }

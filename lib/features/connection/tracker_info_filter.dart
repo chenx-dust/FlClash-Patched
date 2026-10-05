@@ -1,7 +1,6 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/features/filter_bar.dart';
 import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -57,13 +56,17 @@ class TrackerInfoFilter {
 
   bool get isNotEmpty => !isEmpty;
 
-  bool contains(TrackerInfoFilterType type, String value) {
+  Set<String> valuesOf(TrackerInfoFilterType type) {
     return switch (type) {
-      TrackerInfoFilterType.process => processes.contains(value),
-      TrackerInfoFilterType.chain => chains.contains(value),
-      TrackerInfoFilterType.network => networks.contains(value),
-      TrackerInfoFilterType.rule => rules.contains(value),
+      TrackerInfoFilterType.process => processes,
+      TrackerInfoFilterType.chain => chains,
+      TrackerInfoFilterType.network => networks,
+      TrackerInfoFilterType.rule => rules,
     };
+  }
+
+  bool contains(TrackerInfoFilterType type, String value) {
+    return valuesOf(type).contains(value);
   }
 
   TrackerInfoFilter copyWith({
@@ -205,22 +208,17 @@ class TrackerInfoFilterBar extends StatelessWidget {
     required this.onChanged,
   });
 
-  Future<void> _showFilterSheet(
-    BuildContext context,
-    TrackerInfoFilterType type,
-  ) async {
-    await showSheet(
-      context: context,
-      props: const SheetProps(isScrollControlled: true),
-      builder: (_) {
-        return _TrackerInfoFilterSheet(
-          type: type,
-          trackerInfos: trackerInfos,
-          filter: filter,
-          onChanged: onChanged,
-        );
-      },
-    );
+  Iterable<String> _valuesOf(TrackerInfoFilterType type) {
+    return switch (type) {
+      TrackerInfoFilterType.process => trackerInfos.map(
+        (item) => item.metadata.process,
+      ),
+      TrackerInfoFilterType.chain => trackerInfos.expand((item) => item.chains),
+      TrackerInfoFilterType.network => trackerInfos.map(
+        (item) => item.metadata.network,
+      ),
+      TrackerInfoFilterType.rule => trackerInfos.map(getTrackerInfoRuleText),
+    };
   }
 
   @override
@@ -238,14 +236,15 @@ class TrackerInfoFilterBar extends StatelessWidget {
             },
           ),
       ],
-      actions: [
+      groups: [
         for (final type in TrackerInfoFilterType.values)
-          FilterMenuAction(
+          FilterMenuGroup(
             icon: type.icon,
             label: type.getLabel(context),
-            onPressed: () {
-              _showFilterSheet(context, type);
-            },
+            values: _valuesOf(type),
+            selected: filter.valuesOf(type),
+            labelOf: (value) => value,
+            onToggled: (value) => onChanged(filter.toggle(type, value)),
           ),
       ],
     );
@@ -270,76 +269,6 @@ class TrackerInfoFilterButton extends StatelessWidget {
       visible: visible,
       active: filter.isNotEmpty,
       onPressed: onPressed,
-    );
-  }
-}
-
-class _TrackerInfoFilterSheet extends StatefulWidget {
-  final TrackerInfoFilterType type;
-  final List<TrackerInfo> trackerInfos;
-  final TrackerInfoFilter filter;
-  final ValueChanged<TrackerInfoFilter> onChanged;
-
-  const _TrackerInfoFilterSheet({
-    required this.type,
-    required this.trackerInfos,
-    required this.filter,
-    required this.onChanged,
-  });
-
-  @override
-  State<_TrackerInfoFilterSheet> createState() =>
-      _TrackerInfoFilterSheetState();
-}
-
-class _TrackerInfoFilterSheetState extends State<_TrackerInfoFilterSheet> {
-  late TrackerInfoFilter _filter;
-
-  @override
-  void initState() {
-    super.initState();
-    _filter = widget.filter;
-  }
-
-  void _setFilter(TrackerInfoFilter filter) {
-    setState(() {
-      _filter = filter;
-    });
-    widget.onChanged(filter);
-  }
-
-  Set<String> _selectedValues(TrackerInfoFilterType type) {
-    return switch (type) {
-      TrackerInfoFilterType.process => _filter.processes,
-      TrackerInfoFilterType.chain => _filter.chains,
-      TrackerInfoFilterType.network => _filter.networks,
-      TrackerInfoFilterType.rule => _filter.rules,
-    };
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final type = widget.type;
-    final trackerInfos = widget.trackerInfos;
-    return FilterValueSheet(
-      title: type.getLabel(context),
-      values: switch (type) {
-        TrackerInfoFilterType.process => trackerInfos.map(
-          (item) => item.metadata.process,
-        ),
-        TrackerInfoFilterType.chain => trackerInfos.expand(
-          (item) => item.chains,
-        ),
-        TrackerInfoFilterType.network => trackerInfos.map(
-          (item) => item.metadata.network,
-        ),
-        TrackerInfoFilterType.rule => trackerInfos.map(getTrackerInfoRuleText),
-      },
-      selected: _selectedValues(type),
-      labelOf: (value) => value,
-      onSelected: (value) {
-        _setFilter(_filter.add(type, value));
-      },
     );
   }
 }

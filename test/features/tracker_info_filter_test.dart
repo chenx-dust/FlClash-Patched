@@ -234,7 +234,49 @@ void main() {
     expect(presses, 3);
   });
 
-  final sheetCases =
+  testWidgets('the menu closes when clearing the last value hides the bar', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1400, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    var filter = const TrackerInfoFilter(processes: {'curl'});
+
+    await tester.pumpWidget(
+      TestApp(
+        wrapInProviderScope: true,
+        child: StatefulBuilder(
+          builder: (context, setState) {
+            return TrackerInfoFilterBar(
+              visible: false,
+              trackerInfos: [_tracker(id: 'first')],
+              filter: filter,
+              onChanged: (value) => setState(() => filter = value),
+            );
+          },
+        ),
+      ),
+    );
+
+    await tester.tap(find.byIcon(Symbols.add));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Process'));
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.descendant(
+        of: find.byType(CommonPopupMenu),
+        matching: find.text('curl'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(filter.isEmpty, isTrue);
+    expect(find.byType(CommonPopupMenu), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  final menuCases =
       <({TrackerInfoFilterType type, String menuLabel, String option})>[
         (
           type: TrackerInfoFilterType.process,
@@ -258,8 +300,8 @@ void main() {
         ),
       ];
 
-  for (final sheetCase in sheetCases) {
-    testWidgets('adds a ${sheetCase.type.name} filter from the sheet', (
+  for (final menuCase in menuCases) {
+    testWidgets('toggles a ${menuCase.type.name} filter from the menu', (
       tester,
     ) async {
       tester.view.physicalSize = const Size(1400, 1000);
@@ -283,27 +325,51 @@ void main() {
       await tester.pumpWidget(
         TestApp(
           wrapInProviderScope: true,
-          child: TrackerInfoFilterBar(
-            visible: true,
-            trackerInfos: trackers,
-            filter: filter,
-            onChanged: (value) => filter = value,
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return TrackerInfoFilterBar(
+                visible: true,
+                trackerInfos: trackers,
+                filter: filter,
+                onChanged: (value) => setState(() => filter = value),
+              );
+            },
           ),
         ),
       );
 
+      final menu = find.byType(CommonPopupMenu);
+      final option = find.descendant(
+        of: menu,
+        matching: find.text(menuCase.option),
+      );
+      final check = find.descendant(
+        of: menu,
+        matching: find.byIcon(Symbols.check),
+      );
       await tester.tap(find.byIcon(Symbols.add));
       await tester.pumpAndSettle();
-      await tester.tap(find.text(sheetCase.menuLabel));
+      await tester.tap(find.text(menuCase.menuLabel));
       await tester.pumpAndSettle();
 
-      expect(find.text(sheetCase.option), findsOneWidget);
-      expect(find.text('2'), findsOneWidget);
-      await tester.tap(find.text(sheetCase.option));
+      expect(option, findsOneWidget);
+      expect(
+        find.descendant(of: menu, matching: find.text('2')),
+        findsOneWidget,
+      );
+      expect(check, findsNothing);
+      await tester.tap(option);
       await tester.pumpAndSettle();
 
-      expect(filter.contains(sheetCase.type, sheetCase.option), isTrue);
-      expect(find.text('No data'), findsOneWidget);
+      expect(filter.contains(menuCase.type, menuCase.option), isTrue);
+      expect(check, findsOneWidget);
+
+      await tester.tap(option);
+      await tester.pumpAndSettle();
+
+      expect(filter.isEmpty, isTrue);
+      expect(option, findsOneWidget);
+      expect(check, findsNothing);
     });
   }
 }

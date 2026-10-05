@@ -281,6 +281,46 @@ void main() {
     expect(find.text('parent'), findsOneWidget);
   });
 
+  testWidgets('a tap on a receding level folds back to it', (tester) async {
+    final open = await pumpMenu(tester, [
+      const CommonPopupMenuItem(label: 'root'),
+      const CommonPopupMenuItem(
+        label: 'parent',
+        subItems: [
+          CommonPopupMenuItem(label: 'middle'),
+          CommonPopupMenuItem(
+            label: 'nested',
+            subItems: [CommonPopupMenuItem(label: 'leaf')],
+          ),
+        ],
+      ),
+    ]);
+    open();
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('parent'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('root'), warnIfMissed: false);
+    await tester.pumpAndSettle();
+
+    expect(find.text('middle'), findsNothing);
+    expect(find.text('root'), findsOneWidget);
+    expect(find.text('parent'), findsOneWidget);
+
+    await tester.tap(find.text('parent'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('nested'));
+    await tester.pumpAndSettle();
+    expect(find.text('leaf'), findsOneWidget);
+
+    await tester.tap(find.text('root'), warnIfMissed: false);
+    await tester.pumpAndSettle();
+
+    expect(find.text('leaf'), findsNothing);
+    expect(find.text('middle'), findsNothing);
+    expect(find.text('root'), findsOneWidget);
+  });
+
   testWidgets('a tap outside closes every level at once', (tester) async {
     final open = await pumpMenu(tester, [
       const CommonPopupMenuItem(
@@ -318,6 +358,29 @@ void main() {
 
     expect(pressed, 1);
     expect(find.text('run'), findsNothing);
+  });
+
+  testWidgets('a keep-open item runs without closing the popup', (
+    tester,
+  ) async {
+    var pressed = 0;
+    final open = await pumpMenu(tester, [
+      CommonPopupMenuItem(
+        label: 'toggle',
+        keepOpen: true,
+        onPressed: () => pressed++,
+      ),
+    ]);
+    open();
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('toggle'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('toggle'));
+    await tester.pumpAndSettle();
+
+    expect(pressed, 2);
+    expect(find.text('toggle'), findsOneWidget);
   });
 
   testWidgets('a danger item keeps the error color off its background', (
@@ -529,9 +592,9 @@ void main() {
     var frames = 0;
     while (find.byType(Card).evaluate().length > 1) {
       lastSize = tester.getSize(find.byType(Card).last);
-      await tester.pump(const Duration(milliseconds: 16));
+      await tester.pump(const Duration(milliseconds: 4));
       frames++;
-      expect(frames, lessThan(60));
+      expect(frames, lessThan(120));
     }
 
     expect(lastSize!.width, closeTo(foldedSize.width, 1));
