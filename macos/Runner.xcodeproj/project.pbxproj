@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		448E1616162D4DE789808A95 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 9F33F407587A4FF3B06735C9 /* InfoPlist.xcstrings */; };
 		0573B36A3040349600768CF4 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 0573B3693040349600768CF4 /* AppIcon.icon */; };
 		331C80D8294CF71000263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C80D7294CF71000263BE5 /* RunnerTests.swift */; };
 		335BBD1B22A9A15E00E9071D /* GeneratedPluginRegistrant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335BBD1A22A9A15E00E9071D /* GeneratedPluginRegistrant.swift */; };
@@ -74,6 +75,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9F33F407587A4FF3B06735C9 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		0573B3693040349600768CF4 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		0590E3572FFA8D5D00321CD8 /* mul */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = mul; path = mul.lproj/MainMenu.xcstrings; sourceTree = "<group>"; };
 		331C80D5294CF71000263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -182,6 +184,7 @@
 		33FAB671232836740065AC1E /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				9F33F407587A4FF3B06735C9 /* InfoPlist.xcstrings */,
 				33CC10F02044A3C60003C045 /* AppDelegate.swift */,
 				33CC11122044BFA00003C045 /* MainFlutterWindow.swift */,
 				33E51913231747F40026EE4D /* DebugProfile.entitlements */,
@@ -277,6 +280,7 @@
 				en,
 				Base,
 				"zh-Hans",
+				"zh-Hant",
 				ja,
 				ru,
 			);
@@ -308,6 +312,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				448E1616162D4DE789808A95 /* InfoPlist.xcstrings in Resources */,
 				33CC10F62044A3C60003C045 /* MainMenu.xib in Resources */,
 				0573B36A3040349600768CF4 /* AppIcon.icon in Resources */,
 			);

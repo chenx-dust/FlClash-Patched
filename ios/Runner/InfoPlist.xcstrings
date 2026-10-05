@@ -27,6 +27,12 @@
             "state" : "translated",
             "value" : "FlClash"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FlClash"
+          }
         }
       }
     },
@@ -68,6 +74,12 @@
             "state" : "translated",
             "value" : "FlClash 需要此权限以扫描二维码。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FlClash 需要此權限以掃描 QR 碼。"
+          }
         }
       }
     },
@@ -96,6 +108,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "FlClash 需要此权限以连接本地网络中的服务器。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FlClash 需要此權限以連線至區域網路中的伺服器。"
           }
         }
       }
@@ -126,6 +144,12 @@
             "state" : "translated",
             "value" : "FlClash 需要此权限以获取 Wi-Fi SSID。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FlClash 需要此權限以取得 Wi-Fi SSID。"
+          }
         }
       }
     },
@@ -154,6 +178,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "切换"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切換"
           }
         }
       }

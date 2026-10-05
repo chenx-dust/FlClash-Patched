@@ -295,6 +295,16 @@ class AppLocalizations {
     return Intl.message('Simplified Chinese', name: 'zhCN', desc: '', args: []);
   }
 
+  /// `Traditional Chinese`
+  String get zhTW {
+    return Intl.message(
+      'Traditional Chinese',
+      name: 'zhTW',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Theme`
   String get theme {
     return Intl.message('Theme', name: 'theme', desc: '', args: []);
@@ -7220,6 +7230,7 @@ class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {
       Locale.fromSubtags(languageCode: 'ja'),
       Locale.fromSubtags(languageCode: 'ru'),
       Locale.fromSubtags(languageCode: 'zh', countryCode: 'CN'),
+      Locale.fromSubtags(languageCode: 'zh', countryCode: 'TW'),
     ];
   }
 

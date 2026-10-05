@@ -1,0 +1,41 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "NSLocationWhenInUseUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FlClash needs location access to detect WiFi network name for connectivity features."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FlClash 需要位置权限以获取 Wi-Fi 名称，用于网络连接功能。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FlClash 需要位置權限以取得 Wi-Fi 名稱，供網路連線功能使用。"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FlClash の接続機能で Wi-Fi 名を取得するには、位置情報へのアクセスが必要です。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FlClash требуется доступ к геопозиции для определения имени сети Wi-Fi и работы сетевых функций."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

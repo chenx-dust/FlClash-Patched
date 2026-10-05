@@ -1,4 +1,5 @@
 import 'package:fl_clash/l10n/l10n.dart';
+import 'package:fl_clash/common/l10n_labels.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -43,4 +44,21 @@ void main() {
       isFalse,
     );
   });
+
+  test(
+    'Traditional Chinese is selectable and resolves its own messages',
+    () async {
+      const locale = Locale('zh', 'TW');
+      expect(AppLocalizations.delegate.supportedLocales, contains(locale));
+
+      final translated = await AppLocalizations.load(locale);
+
+      expect(locale.label, '中文（繁體）');
+      expect(translated.dashboard, '儀表板');
+      expect(translated.profile, '設定檔');
+      expect(translated.port, '連接埠');
+      expect(translated.hoursCount(2), '2 小時');
+      expect(translated.geoUpdated('GeoIP'), 'GeoIP 已更新');
+    },
+  );
 }

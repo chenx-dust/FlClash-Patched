@@ -35,6 +35,7 @@
   "ja": "Japanese",
   "ru": "Russian",
   "zhCN": "Simplified Chinese",
+  "zhTW": "Traditional Chinese",
   "theme": "Theme",
   "themeDesc": "Set dark mode and adjust colors",
   "override": "Override",

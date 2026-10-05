@@ -27,6 +27,12 @@
             "state" : "translated",
             "value" : "设置 FlClash"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定 FlClash"
+          }
         }
       }
     },
@@ -55,6 +61,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "启动 FlClash 连接。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟動 FlClash 連線。"
           }
         }
       }
@@ -85,6 +97,12 @@
             "state" : "translated",
             "value" : "启动"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟動"
+          }
         }
       }
     },
@@ -113,6 +131,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "启动 FlClash"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟動 FlClash"
           }
         }
       }
@@ -143,6 +167,12 @@
             "state" : "translated",
             "value" : "停止 FlClash 连接。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止 FlClash 連線。"
+          }
         }
       }
     },
@@ -168,6 +198,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "停止"
@@ -201,6 +237,12 @@
             "state" : "translated",
             "value" : "停止 FlClash"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止 FlClash"
+          }
         }
       }
     },
@@ -229,6 +271,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "运行 VPN"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "執行 VPN"
           }
         }
       }
@@ -259,6 +307,12 @@
             "state" : "translated",
             "value" : "切换 FlClash 连接。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切換 FlClash 連線。"
+          }
         }
       }
     },
@@ -288,6 +342,12 @@
             "state" : "translated",
             "value" : "切换"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切換"
+          }
         }
       }
     },
@@ -316,6 +376,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "切换 FlClash"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切換 FlClash"
           }
         }
       }

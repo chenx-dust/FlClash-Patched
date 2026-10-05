@@ -1676,5 +1676,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "yearsAgo": m34,
     "yes": MessageLookupByLibrary.simpleMessage("Yes"),
     "zhCN": MessageLookupByLibrary.simpleMessage("Simplified Chinese"),
+    "zhTW": MessageLookupByLibrary.simpleMessage("Traditional Chinese"),
   };
 }

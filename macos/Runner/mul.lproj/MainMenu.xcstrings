@@ -28,6 +28,12 @@
             "state" : "translated",
             "value" : "APP_NAME"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "APP_NAME"
+          }
         }
       }
     },
@@ -57,6 +63,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "进入全屏幕"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "進入全螢幕"
           }
         }
       }
@@ -88,6 +100,12 @@
             "state" : "translated",
             "value" : "退出 APP_NAME"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "結束 APP_NAME"
+          }
         }
       }
     },
@@ -117,6 +135,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "关于 APP_NAME"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關於 APP_NAME"
           }
         }
       }
@@ -148,6 +172,12 @@
             "state" : "translated",
             "value" : "窗口"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "視窗"
+          }
         }
       }
     },
@@ -177,6 +207,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "主菜单"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主選單"
           }
         }
       }
@@ -208,6 +244,12 @@
             "state" : "translated",
             "value" : "显示"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示方式"
+          }
         }
       }
     },
@@ -237,6 +279,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "服务"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服務"
           }
         }
       }
@@ -268,6 +316,12 @@
             "state" : "translated",
             "value" : "全部显示"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示全部"
+          }
         }
       }
     },
@@ -297,6 +351,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "前置全部窗口"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將所有視窗移至最前方"
           }
         }
       }
@@ -328,6 +388,12 @@
             "state" : "translated",
             "value" : "服务"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服務"
+          }
         }
       }
     },
@@ -357,6 +423,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "隐藏 APP_NAME"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隱藏 APP_NAME"
           }
         }
       }
@@ -388,6 +460,12 @@
             "state" : "translated",
             "value" : "最小化"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "縮小"
+          }
         }
       }
     },
@@ -414,6 +492,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "APP_NAME"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "APP_NAME"
@@ -448,6 +532,12 @@
             "state" : "translated",
             "value" : "缩放"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "縮放"
+          }
         }
       }
     },
@@ -478,6 +568,12 @@
             "state" : "translated",
             "value" : "窗口"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "視窗"
+          }
         }
       }
     },
@@ -504,6 +600,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "APP_NAME"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "APP_NAME"
@@ -537,6 +639,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "隐藏其他"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隱藏其他"
           }
         }
       }

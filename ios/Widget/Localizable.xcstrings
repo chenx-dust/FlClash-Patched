@@ -27,6 +27,12 @@
             "state" : "translated",
             "value" : "已连接"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已連線"
+          }
         }
       }
     },
@@ -55,6 +61,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已断开"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已中斷"
           }
         }
       }
@@ -87,6 +99,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "切换 VPN 连接。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切換 VPN 連線。"
           }
         }
       }
