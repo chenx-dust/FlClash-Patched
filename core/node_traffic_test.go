@@ -165,3 +165,23 @@ func TestNodeTrafficReleasesRemovedNodes(t *testing.T) {
 		t.Fatal("removed node counter remains reachable after connection closes")
 	}
 }
+
+func TestNodeTrafficDirectCountsTCPAndUDPAndResets(t *testing.T) {
+	setupNodeTraffic(t)
+	node := adapter.NewProxy(outbound.NewBase(outbound.BaseOption{Name: "DIRECT", Type: C.Direct}))
+	tunnel.UpdateProxies(map[string]C.Proxy{"DIRECT": node}, nil)
+	tcp := trafficTCP(t, node, 12, 34)
+	udp := trafficUDP(node, 5, 6)
+	_, writers := tcp.UnwrapWriter()
+	writers[0](7)
+	tcp.Close()
+	udp.Close()
+	got := handleGetNodeTraffic()
+	if len(got) != 1 || got[0].Name != "DIRECT" || got[0].Up != 24 || got[0].Down != 40 {
+		t.Fatalf("direct traffic missing or incorrect: %+v", got)
+	}
+	handleResetTraffic()
+	if got := handleGetNodeTraffic(); len(got) != 0 {
+		t.Fatalf("direct traffic survived reset: %+v", got)
+	}
+}

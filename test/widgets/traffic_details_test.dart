@@ -68,6 +68,37 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
+  for (final proxyValue in [990, 0]) {
+    testWidgets('DIRECT can be hidden with proxy traffic $proxyValue', (
+      tester,
+    ) async {
+      final core = _Core();
+      when(() => core.getNodeTraffic()).thenAnswer(
+        (_) async => [
+          if (proxyValue > 0) NodeTraffic(name: 'Proxy', up: proxyValue),
+          const NodeTraffic(name: 'DIRECT', up: 10),
+        ],
+      );
+      await _pumpCard(tester, core);
+      await tester.tap(find.byIcon(Symbols.info));
+      await tester.pumpAndSettle();
+      expect(_values(tester), [if (proxyValue > 0) proxyValue, 10]);
+      expect(tester.widget<DonutChart>(_chart()).data.last.dashed, isTrue);
+      expect(find.text('Direct'), findsOneWidget);
+      expect(find.text('Other'), findsNothing);
+      await tester.tap(find.byIcon(Symbols.visibility));
+      await tester.pumpAndSettle();
+      expect(_values(tester), [if (proxyValue > 0) proxyValue, 0]);
+      expect(find.text('Direct'), findsOneWidget);
+      expect(find.textContaining('NaN'), findsNothing);
+      if (proxyValue > 0) expect(find.text('100.0%'), findsOneWidget);
+      await tester.tap(find.byIcon(Symbols.visibility_off));
+      await tester.pumpAndSettle();
+      expect(_values(tester), [if (proxyValue > 0) proxyValue, 10]);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  }
+
   testWidgets('polls while open and keeps the selected direction', (
     tester,
   ) async {

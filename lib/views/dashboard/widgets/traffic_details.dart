@@ -5,6 +5,7 @@ import 'package:fl_clash/providers/core.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 enum _TrafficDirection {
   both,
@@ -29,6 +30,7 @@ class TrafficDetails extends ConsumerStatefulWidget {
 
 class _TrafficDetailsState extends ConsumerState<TrafficDetails>
     with WidgetsBindingObserver, ActivePollingMixin<TrafficDetails> {
+  bool _showDirect = true;
   _TrafficDirection _direction = _TrafficDirection.both;
   AsyncSnapshot<List<NodeTraffic>> _snapshot = const AsyncSnapshot.waiting();
 
@@ -86,9 +88,21 @@ class _TrafficDetailsState extends ConsumerState<TrafficDetails>
               }
             },
             children: {
-              _TrafficDirection.both: Text(l10n.trafficBoth),
-              _TrafficDirection.upload: Text(l10n.upload),
-              _TrafficDirection.download: Text(l10n.download),
+              _TrafficDirection.both: _buildDirectionLabel(
+                context,
+                _TrafficDirection.both,
+                l10n.trafficBoth,
+              ),
+              _TrafficDirection.upload: _buildDirectionLabel(
+                context,
+                _TrafficDirection.upload,
+                l10n.upload,
+              ),
+              _TrafficDirection.download: _buildDirectionLabel(
+                context,
+                _TrafficDirection.download,
+                l10n.download,
+              ),
             },
           ),
           const SizedBox(height: 16),
@@ -109,9 +123,52 @@ class _TrafficDetailsState extends ConsumerState<TrafficDetails>
     );
   }
 
+  Widget _buildDirectionLabel(
+    BuildContext context,
+    _TrafficDirection direction,
+    String label,
+  ) {
+    final nodes = _snapshot.data;
+    final value = nodes
+        ?.where((node) => _showDirect || node.name != 'DIRECT')
+        .fold(0, (sum, node) => sum + direction.value(node));
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(label),
+          if (value != null && direction != _direction)
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(switch (direction) {
+                    _TrafficDirection.upload => Symbols.arrow_upward,
+                    _TrafficDirection.download => Symbols.arrow_downward,
+                    _TrafficDirection.both => Symbols.mobiledata_arrows,
+                  }, size: 12),
+                  const SizedBox(width: 2),
+                  Text(
+                    _formatTraffic(value),
+                    style: context.textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildBreakdown(BuildContext context, List<NodeTraffic> nodes) {
     final l10n = context.appLocalizations;
     final total = nodes.fold(0, (sum, node) => sum + _direction.value(node));
+    final direct = nodes.where((node) => node.name == 'DIRECT').firstOrNull;
+    final directValue = direct == null ? 0 : _direction.value(direct);
+    final proxyTotal = total - directValue;
+    final chartTotal = _showDirect ? total : proxyTotal;
     if (total == 0) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 32),
@@ -134,7 +191,7 @@ class _TrafficDetailsState extends ConsumerState<TrafficDetails>
       colors.secondaryContainer,
       colors.tertiaryContainer,
     ];
-    final ordered = [...nodes]
+    final ordered = nodes.where((node) => node.name != 'DIRECT').toList()
       ..sort((a, b) {
         final provider = a.provider.compareTo(b.provider);
         return provider != 0 ? provider : a.name.compareTo(b.name);
@@ -144,7 +201,7 @@ class _TrafficDetailsState extends ConsumerState<TrafficDetails>
     for (var index = 0; index < ordered.length; index++) {
       final node = ordered[index];
       final value = _direction.value(node);
-      if (value * 20 <= total) {
+      if (value * 20 <= chartTotal) {
         other += value;
         continue;
       }
@@ -165,6 +222,13 @@ class _TrafficDetailsState extends ConsumerState<TrafficDetails>
     if (other > 0) {
       slices.add((node: null, value: other, color: colors.outline));
     }
+    if (direct != null) {
+      slices.add((
+        node: direct,
+        value: directValue,
+        color: colors.onSurfaceVariant.opacity38,
+      ));
+    }
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -181,7 +245,10 @@ class _TrafficDetailsState extends ConsumerState<TrafficDetails>
                     data: [
                       for (final slice in slices)
                         DonutChartData.exact(
-                          value: slice.value.toDouble(),
+                          value: slice.node?.name == 'DIRECT' && !_showDirect
+                              ? 0
+                              : slice.value.toDouble(),
+                          dashed: slice.node?.name == 'DIRECT',
                           color: slice.color,
                         ),
                     ],
@@ -204,7 +271,7 @@ class _TrafficDetailsState extends ConsumerState<TrafficDetails>
                       FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Text(
-                          _formatTraffic(total),
+                          _formatTraffic(chartTotal),
                           style: context.textTheme.titleMedium,
                         ),
                       ),
@@ -221,26 +288,71 @@ class _TrafficDetailsState extends ConsumerState<TrafficDetails>
             padding: const EdgeInsets.symmetric(vertical: 6),
             child: Row(
               children: [
-                Container(
+                SizedBox(
                   width: 20,
-                  height: 8,
-                  decoration: ShapeDecoration(
-                    color: slice.color,
-                    shape: AppShape.full,
-                  ),
+                  child: slice.node?.name == 'DIRECT'
+                      ? Row(
+                          children: [
+                            for (var i = 0; i < 3; i++) ...[
+                              Container(
+                                width: 4,
+                                height: 4,
+                                decoration: ShapeDecoration(
+                                  color: slice.color,
+                                  shape: AppShape.circle,
+                                ),
+                              ),
+                              if (i < 2) const SizedBox(width: 3),
+                            ],
+                          ],
+                        )
+                      : Container(
+                          height: 8,
+                          decoration: ShapeDecoration(
+                            color: slice.color,
+                            shape: AppShape.full,
+                          ),
+                        ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TooltipText(
-                        text: Text(
-                          slice.node?.name ?? l10n.other,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: context.textTheme.bodyMedium,
-                        ),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: TooltipText(
+                              text: Text(
+                                slice.node?.name == 'DIRECT'
+                                    ? l10n.direct
+                                    : slice.node?.name ?? l10n.other,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: context.textTheme.bodyMedium,
+                              ),
+                            ),
+                          ),
+                          if (slice.node?.name == 'DIRECT') ...[
+                            const SizedBox(width: 4),
+                            SizedBox.square(
+                              dimension: 24.ap,
+                              child: IconButton(
+                                tooltip: _showDirect ? l10n.hide : l10n.show,
+                                padding: EdgeInsets.zero,
+                                onPressed: () =>
+                                    setState(() => _showDirect = !_showDirect),
+                                icon: Icon(
+                                  _showDirect
+                                      ? Symbols.visibility
+                                      : Symbols.visibility_off,
+                                  size: 16.ap,
+                                  color: colors.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                       if (slice.node?.provider.isNotEmpty ?? false)
                         Text(
@@ -259,13 +371,15 @@ class _TrafficDetailsState extends ConsumerState<TrafficDetails>
                   _formatTraffic(slice.value),
                   style: context.textTheme.bodySmall,
                 ),
-                const SizedBox(width: 6),
-                Text(
-                  '${(slice.value / total * 100).toStringAsFixed(1)}%',
-                  style: context.textTheme.bodySmall?.copyWith(
-                    color: colors.onSurfaceVariant,
+                if (slice.node?.name != 'DIRECT' || _showDirect) ...[
+                  const SizedBox(width: 6),
+                  Text(
+                    '${(chartTotal == 0 ? 0 : slice.value / chartTotal * 100).toStringAsFixed(1)}%',
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),
