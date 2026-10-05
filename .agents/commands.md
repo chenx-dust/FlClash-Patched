@@ -191,7 +191,7 @@ The changelog is derived from Conventional Commits by `tool/changelog.dart` and 
 `CHANGELOG.md` for readers and `changelog.json` for the renderers. See `.agents/rules.md` for the `Changelog:` trailers
 that decide the wording.
 
-The app ships no changelog of its own. `render release` appends the released version as JSON inside an HTML comment
+The app ships no changelog of its own. `render` appends the released version as JSON inside an HTML comment
 (`<!-- flclash:changelog:json … -->`), so the release body GitHub already returns to `checkForUpdate` carries the
 notes shown in the update dialog. `parseReleaseChangelog` reads that block and falls back to the English
 bullets when a release predates it.
@@ -200,8 +200,7 @@ bullets when a release predates it.
 dart run tool/changelog.dart verify                  # what CI checks
 dart run tool/changelog.dart release --version 0.8.96
 dart run tool/changelog.dart build --unreleased      # changelog.json only, includes untagged work
-dart run tool/changelog.dart render release --out release.md
-dart run tool/changelog.dart render telegram --out telegram.md
+dart run tool/changelog.dart render --out release.md
 ```
 
 Releasing a stable version, in order:
@@ -228,7 +227,7 @@ tool/release.sh stable --push     # changelog, chore(release) commit, tag, push
 ```
 
 The release commit comes before the tag on purpose: the generated wording is reviewable in the diff before it ships, and
-the tag is what `render release` reads. CI never writes back to the repository; it only runs `verify`. Wording in
+the tag is what `render` reads. CI never writes back to the repository; it only runs `verify`. Wording in
 `changelog.json` may be edited by hand as long as no derivable entry disappears and every entry still points at a commit
 inside that version's range.
 
@@ -240,8 +239,8 @@ in `CHANGELOG.md`, and are never regenerated.
 skipped and moves on instead of reporting drift that does not exist. Checking mere tag existence is what made every such
 branch fail on an unrelated release.
 
-Prerelease tags (`v0.8.96-pre.N`) skip the release commit, and CI renders their notes with `build --unreleased` for the
-Telegram post. They publish no GitHub release, so the update dialog never sees them. `build --unreleased` reads the
+Prerelease tags (`v0.8.96-pre.N`) skip the release commit, and CI publishes them as GitHub prereleases without
+changelog notes. `build --unreleased` reads the
 version from `pubspec.yaml` rather than the tag, so the patch has to be bumped before the first `-pre.N` of a cycle:
 while `v<pubspec version>` is still tagged it refuses to collect anything and the release job fails.
 

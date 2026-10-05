@@ -122,8 +122,8 @@ echo "branch    : $branch"
 echo "version   : $current -> $version$([[ $bumped == 1 ]] && echo ' (pubspec will be rewritten)')"
 echo "tag       : $tag"
 if [[ "$mode" == "pre" ]]; then
-  echo "changelog : rendered by CI from build --unreleased; nothing committed"
-  echo "publishes : build artifacts + Telegram only, no GitHub release"
+  echo "changelog : none; nothing committed"
+  echo "publishes : GitHub prerelease with build artifacts"
 else
   echo "changelog : CHANGELOG.md + changelog.json regenerated and committed"
   echo "publishes : GitHub release with artifacts, SHA256SUMS, Homebrew cask"
@@ -146,7 +146,7 @@ tool/bump_version.sh minor
 
 echo "--- release notes for $tag ---"
 if dart run tool/changelog.dart build --unreleased >/dev/null 2>&1; then
-  dart run tool/changelog.dart render release 2>/dev/null |
+  dart run tool/changelog.dart render 2>/dev/null |
     sed -n '/changelog:begin/,/changelog:end/p' | sed '1d;$d'
 else
   echo "(preview unavailable: 'build --unreleased' found nothing to collect)"

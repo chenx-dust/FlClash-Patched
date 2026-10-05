@@ -149,24 +149,6 @@ void main() {
       expect(body, contains('- **profiles** Scripts'));
     });
 
-    test('escapes the characters the caption parse mode would read', () {
-      final text = renderTelegram(
-        version(
-          groups: [
-            entryGroup(ChangelogType.fix, [
-              ('5d6e7f8', 'core', 'Reject <script> & "quoted" input'),
-            ]),
-          ],
-        ),
-        moreUrl: 'https://example.com',
-      );
-
-      expect(
-        text,
-        '<b>Bug Fixes</b>\n• Reject &lt;script&gt; &amp; "quoted" input',
-      );
-    });
-
     test('says so when a version has no user facing changes', () {
       expect(renderRelease(version()), contains(emptyVersionNote));
     });
@@ -212,45 +194,6 @@ void main() {
         ).versions.single.groups.single.entries.single.text,
         'Handle a --> sequence',
       );
-    });
-  });
-
-  group('renderTelegram', () {
-    test('renders bullets without markdown scopes', () {
-      final text = renderTelegram(
-        version(
-          groups: [
-            entryGroup(ChangelogType.fix, [('5d6e7f8', 'windows', 'Fix TUN')]),
-          ],
-        ),
-        moreUrl: 'https://example.com',
-      );
-
-      expect(text, '<b>Bug Fixes</b>\n• Fix TUN');
-    });
-
-    test('says so when a version has no user facing changes', () {
-      expect(
-        renderTelegram(version(), moreUrl: 'https://example.com'),
-        '• $emptyVersionNote',
-      );
-    });
-
-    test('truncates past the caption limit and links out', () {
-      final text = renderTelegram(
-        version(
-          groups: [
-            entryGroup(ChangelogType.feat, [
-              for (var index = 0; index < 200; index++)
-                ('hash$index', null, 'A reasonably long changelog entry'),
-            ]),
-          ],
-        ),
-        moreUrl: 'https://example.com',
-      );
-
-      expect(text.length, lessThan(telegramLimit + 40));
-      expect(text, endsWith('https://example.com'));
     });
   });
 
