@@ -1450,9 +1450,14 @@ class AppLocalizations {
     );
   }
 
-  /// `Requests`
+  /// `Recent requests`
   String get requests {
-    return Intl.message('Requests', name: 'requests', desc: '', args: []);
+    return Intl.message(
+      'Recent requests',
+      name: 'requests',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `View recent request records`

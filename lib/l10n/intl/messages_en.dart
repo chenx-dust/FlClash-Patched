@@ -1214,7 +1214,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "replace": MessageLookupByLibrary.simpleMessage("Replace"),
     "replaceAll": MessageLookupByLibrary.simpleMessage("Replace all"),
     "request": MessageLookupByLibrary.simpleMessage("Request"),
-    "requests": MessageLookupByLibrary.simpleMessage("Requests"),
+    "requests": MessageLookupByLibrary.simpleMessage("Recent requests"),
     "requestsDesc": MessageLookupByLibrary.simpleMessage(
       "View recent request records",
     ),

@@ -179,7 +179,7 @@
   "tcpConcurrentDesc": "TCP 並列処理を許可",
   "geodataLoader": "Geo 低メモリモード",
   "geodataLoaderDesc": "有効化すると Geo 低メモリローダーを使用",
-  "requests": "リクエスト",
+  "requests": "最近のリクエスト",
   "requestsDesc": "最近のリクエスト記録を表示します",
   "dnsQueries": "DNS クエリ",
   "dnsQueriesDesc": "コアの DNS 解決記録",

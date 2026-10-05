@@ -49,7 +49,7 @@ class Navigation implements NavigationPort {
         label: PageLabel.requests,
         builder: (_) =>
             const RequestsView(key: GlobalObjectKey(PageLabel.requests)),
-        modes: [NavigationItemMode.desktop, NavigationItemMode.more],
+        modes: [NavigationItemMode.more],
       ),
       NavigationItem(
         icon: const Icon(Symbols.ballot),

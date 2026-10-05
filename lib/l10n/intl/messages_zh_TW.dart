@@ -897,7 +897,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "replace": MessageLookupByLibrary.simpleMessage("替換"),
     "replaceAll": MessageLookupByLibrary.simpleMessage("全部替換"),
     "request": MessageLookupByLibrary.simpleMessage("請求"),
-    "requests": MessageLookupByLibrary.simpleMessage("請求"),
+    "requests": MessageLookupByLibrary.simpleMessage("最近請求"),
     "requestsDesc": MessageLookupByLibrary.simpleMessage("檢視最近的請求紀錄"),
     "reset": MessageLookupByLibrary.simpleMessage("重置"),
     "resetPageChangesTip": MessageLookupByLibrary.simpleMessage(

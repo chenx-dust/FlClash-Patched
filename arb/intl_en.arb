@@ -179,7 +179,7 @@
   "tcpConcurrentDesc": "Allow concurrent TCP connections",
   "geodataLoader": "Geo low-memory mode",
   "geodataLoaderDesc": "Use the low-memory Geo loader",
-  "requests": "Requests",
+  "requests": "Recent requests",
   "requestsDesc": "View recent request records",
   "dnsQueries": "DNS queries",
   "dnsQueriesDesc": "Core DNS resolution records",

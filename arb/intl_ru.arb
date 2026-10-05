@@ -179,7 +179,7 @@
   "tcpConcurrentDesc": "При включении разрешает параллельные TCP-подключения",
   "geodataLoader": "Geo: экономия памяти",
   "geodataLoaderDesc": "При включении используется Geo-загрузчик с низким потреблением памяти",
-  "requests": "Запросы",
+  "requests": "Последние запросы",
   "requestsDesc": "Просмотр последних запросов",
   "dnsQueries": "DNS-запросы",
   "dnsQueriesDesc": "Записи DNS-разрешения ядра",
