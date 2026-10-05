@@ -7,6 +7,7 @@ import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -202,6 +203,39 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(result, ['a', 'b']);
+  });
+
+  testWidgets('ListItem.open returns list edits from an open container', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+    Object? result;
+    await tester.pumpWidget(
+      ProviderScope(
+        child: TestApp(
+          overrides: [_viewSizeOverride],
+          child: Scaffold(
+            body: ListItem.open(
+              title: const Text('Bypass'),
+              widget: const ListInputPage(
+                title: 'Items',
+                items: ['a'],
+                titleBuilder: _textBuilder,
+              ),
+              onChanged: (value) => result = value,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Bypass'));
+    await tester.pumpAndSettle();
+    await Navigator.of(tester.element(find.byType(ListInputPage))).maybePop();
+    await tester.pumpAndSettle();
+
+    expect(result, ['a']);
+    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets('OptionsDialog returns the tapped option', (tester) async {

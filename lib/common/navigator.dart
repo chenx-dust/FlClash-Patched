@@ -68,10 +68,8 @@ class CommonDesktopFadePageTransitionsBuilder extends PageTransitionsBuilder {
   }
 }
 
-class CommonRoute<T> extends MaterialPageRoute<T> {
+mixin CurrentResultRoute<T> on Route<T> {
   T? _currentResult;
-
-  CommonRoute({required super.builder});
 
   void updateCurrentResult(Object? result) {
     _currentResult = result as T?;
@@ -79,6 +77,10 @@ class CommonRoute<T> extends MaterialPageRoute<T> {
 
   @override
   T? get currentResult => _currentResult ?? super.currentResult;
+}
+
+class CommonRoute<T> extends MaterialPageRoute<T> with CurrentResultRoute<T> {
+  CommonRoute({required super.builder});
 
   @override
   bool canTransitionFrom(TransitionRoute<dynamic> previousRoute) {

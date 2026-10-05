@@ -1,8 +1,7 @@
 part of 'input.dart';
 
 void _updateCurrentRouteResult(BuildContext context, Object result) {
-  final route = ModalRoute.of(context);
-  if (route is CommonRoute) {
+  if (ModalRoute.of(context) case final CurrentResultRoute route) {
     route.updateCurrentResult(result);
   }
 }

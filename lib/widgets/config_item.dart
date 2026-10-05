@@ -216,7 +216,10 @@ class ConfigListInputItem extends _ConfigItem<List<String>> {
         itemMaxLength: itemMaxLength,
         titleBuilder: (item) => Text(item),
       ),
-      onChanged: (items) => onChanged(ref, List<String>.from(items as List)),
+      onChanged: (items) {
+        if (items is! List) return;
+        onChanged(ref, List<String>.from(items));
+      },
     );
   }
 }

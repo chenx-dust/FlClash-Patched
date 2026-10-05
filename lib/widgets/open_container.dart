@@ -1,3 +1,4 @@
+import 'package:fl_clash/common/navigator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -146,7 +147,7 @@ class _HideableState extends State<_Hideable> {
   }
 }
 
-class _OpenContainerRoute<T> extends ModalRoute<T> {
+class _OpenContainerRoute<T> extends ModalRoute<T> with CurrentResultRoute<T> {
   _OpenContainerRoute({
     required this.middleColor,
     required this.closedBuilder,
