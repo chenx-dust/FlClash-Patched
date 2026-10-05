@@ -327,16 +327,16 @@ hooks:
       expect(crlf.replaceAll('\r\n', ''), isNot(contains('\n')));
     });
 
-    test('names amd64 microarchitecture packages without renaming v1', () {
-      expect(setup.parsePackageArchitecture('amd64').name, 'amd64');
-      expect(setup.parsePackageArchitecture('amd64').goamd64, isNull);
-      expect(setup.parsePackageArchitecture('amd64-v1').name, 'amd64');
-      expect(setup.parsePackageArchitecture('amd64-v1').goamd64, isNull);
-      expect(setup.parsePackageArchitecture('amd64-v3').name, 'amd64-v3');
-      expect(setup.parsePackageArchitecture('amd64-v3').goamd64, 'v3');
-      expect(setup.parsePackageArchitecture('amd64-v3').flutterArch, 'amd64');
+    test('names x64 microarchitecture packages without renaming v1', () {
+      expect(setup.parsePackageArchitecture('x64').name, 'x64');
+      expect(setup.parsePackageArchitecture('x64').goamd64, isNull);
+      expect(setup.parsePackageArchitecture('x64-v1').name, 'x64');
+      expect(setup.parsePackageArchitecture('x64-v1').goamd64, isNull);
+      expect(setup.parsePackageArchitecture('x64-v3').name, 'x64-v3');
+      expect(setup.parsePackageArchitecture('x64-v3').goamd64, 'v3');
+      expect(setup.parsePackageArchitecture('x64-v3').flutterArch, 'x64');
       expect(
-        () => setup.parsePackageArchitecture('amd64-v4'),
+        () => setup.parsePackageArchitecture('x64-v4'),
         throwsArgumentError,
       );
     });
@@ -344,24 +344,24 @@ hooks:
     test('accepts desktop microarchitecture builds on a matching host', () {
       final linux = setup.resolvePackageArchitecture(
         platform: 'linux',
-        requested: 'amd64-v2',
-        hostArch: 'amd64',
+        requested: 'x64-v2',
+        hostArch: 'x64',
       );
-      expect(linux.name, 'amd64-v2');
+      expect(linux.name, 'x64-v2');
       expect(linux.goamd64, 'v2');
 
       final macos = setup.resolvePackageArchitecture(
         platform: 'macos',
-        requested: 'amd64-v3',
+        requested: 'x64-v3',
         hostArch: 'arm64',
       );
-      expect(macos.flutterArch, 'amd64');
+      expect(macos.flutterArch, 'x64');
       expect(macos.goamd64, 'v3');
 
       expect(
         () => setup.resolvePackageArchitecture(
           platform: 'linux',
-          requested: 'amd64-v3',
+          requested: 'x64-v3',
           hostArch: 'arm64',
         ),
         throwsArgumentError,
@@ -369,8 +369,8 @@ hooks:
       expect(
         () => setup.resolvePackageArchitecture(
           platform: 'android',
-          requested: 'amd64-v3',
-          hostArch: 'amd64',
+          requested: 'x64-v3',
+          hostArch: 'x64',
         ),
         throwsArgumentError,
       );
@@ -380,16 +380,16 @@ hooks:
       final baseline = setup.resolvePackageArchitecture(
         platform: 'linux',
         requested: null,
-        hostArch: 'amd64',
+        hostArch: 'x64',
       );
 
-      expect(baseline.name, 'amd64');
+      expect(baseline.name, 'x64');
       expect(baseline.goamd64, isNull);
     });
 
     test('pins all macOS targets to the requested package architecture', () {
       expect(
-        setup.createMacosBuildConfig('amd64'),
+        setup.createMacosBuildConfig('x64'),
         'ARCHS = x86_64\nEXCLUDED_ARCHS = arm64\n',
       );
       expect(
@@ -410,7 +410,7 @@ hooks:
 
     test('downloads the appimagetool build matching the host', () {
       expect(setup.appImageToolArch('arm64'), 'aarch64');
-      expect(setup.appImageToolArch('amd64'), 'x86_64');
+      expect(setup.appImageToolArch('x64'), 'x86_64');
     });
 
     test('adds default iOS export method to flutter build args', () {

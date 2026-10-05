@@ -281,19 +281,19 @@ jobs:
             os: ubuntu-latest
           - platform: windows
             os: Windows-2022
-            arch: amd64
+            arch: x64
           - platform: windows
             os: Windows-2022
-            arch: amd64-v3
+            arch: x64-v3
           - platform: linux
             os: ubuntu-22.04
-            arch: amd64
+            arch: x64
           - platform: linux
             os: ubuntu-22.04
-            arch: amd64-v3
+            arch: x64-v3
           - platform: macos
             os: macos-26
-            arch: amd64-v3
+            arch: x64-v3
           - platform: macos
             os: macos-26
             arch: arm64

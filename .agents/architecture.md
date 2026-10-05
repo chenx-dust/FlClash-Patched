@@ -505,11 +505,11 @@ Platform projects copy the artifacts out of `libclash/`; application code must n
   too late to supply the extension's headers on a clean build. Both entry points share `buildPlatform` and its cache.
   Rust IPC and global hotkeys remain desktop-only.
 - macOS: a standalone `FlClashCore`. `Release.xcconfig` defaults release and profile `ARCHS` to the host because
-  every artifact ships one slice. `setup.dart macos --arch amd64|arm64` passes an architecture-specific
+  every artifact ships one slice. `setup.dart macos --arch x64|arm64` passes an architecture-specific
   `XCODE_XCCONFIG_FILE` to the packaging process, overriding `ARCHS` and `EXCLUDED_ARCHS` across all Xcode targets.
-  `amd64-v2` and `amd64-v3` keep that x86_64 slice and compile the Core with `GOAMD64`. `setup.dart` sets
+  `x64-v2` and `x64-v3` keep that x86_64 slice and compile the Core with `GOAMD64`. `setup.dart` sets
   `hooks.user_defines.setup.goamd64` for those builds and restores `pubspec.yaml` afterwards. A missing value stays
-  v1, which is what `amd64` and `amd64-v1` ship, so those builds do not rewrite the pubspec. `hooks_runner` strips
+  v1, which is what `x64` and `x64-v1` ship, so those builds do not rewrite the pubspec. `hooks_runner` strips
   other environment variables and already depends on the workspace pubspec.
   The hook builds the requested target even when it differs from the host. The `Stage Core` phase copies the Core
   after the hook may have rewritten it and fails when it is missing or lacks a slice for `ARCHS`, so a skipped hook
@@ -577,7 +577,7 @@ Windows helper integrity/version check:
 Build configuration defaults live in `plugins/setup/setup_hooks/lib/src/options.dart` and can be overridden via the root
 `build_config.yaml`.
 
-Architecture detection is automatic. The `--description` flag passed to `flutter_distributor` adds arch suffixes to artifact names, such as `FlClash-0.8.93-macos-arm64.dmg`. Desktop `amd64-v2` and `amd64-v3` packages use that suffix (`FlClash-0.8.93-linux-amd64-v3.deb`) while the Flutter shell stays baseline x86_64.
+Architecture detection is automatic. The `--description` flag passed to `flutter_distributor` adds arch suffixes to artifact names, such as `FlClash-0.8.93-macos-arm64.dmg`. Desktop `x64-v2` and `x64-v3` packages use that suffix (`FlClash-0.8.93-linux-x64-v3.deb`) while the Flutter shell stays baseline x86_64.
 
 #### Android Native Task Ordering
 

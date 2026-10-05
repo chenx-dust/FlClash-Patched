@@ -20,7 +20,7 @@ const _allTargets = <String, String>{
 const _androidFlutterTarget = {
   'arm': 'android-arm',
   'arm64': 'android-arm64',
-  'amd64': 'android-x64',
+  'x64': 'android-x64',
 };
 
 const _hostPlatform = {
@@ -141,11 +141,11 @@ ArgParser createSetupArgParser() {
     )
     ..addOption(
       'arch',
-      valueHelp: 'arm,arm64,amd64,amd64-v2,amd64-v3',
-      allowed: ['arm', 'arm64', 'amd64', 'amd64-v1', 'amd64-v2', 'amd64-v3'],
+      valueHelp: 'arm,arm64,x64,x64-v2,x64-v3',
+      allowed: ['arm', 'arm64', 'x64', 'x64-v1', 'x64-v2', 'x64-v3'],
       help:
-          'Target architecture. amd64-v1 is the baseline amd64 package; '
-          'amd64-v2 and amd64-v3 compile the Core with GOAMD64 on desktop',
+          'Target architecture. x64-v1 is the baseline x64 package; '
+          'x64-v2 and x64-v3 compile the Core with GOAMD64 on desktop',
     )
     ..addOption(
       'ipa-export-method',
@@ -216,7 +216,7 @@ Map<String, String> createBuildEnvironment(String env) {
 
 String createMacosBuildConfig(String arch) {
   final (target, excluded) = switch (arch) {
-    'amd64' => ('x86_64', 'arm64'),
+    'x64' => ('x86_64', 'arm64'),
     'arm64' => ('arm64', 'x86_64'),
     _ => throw ArgumentError.value(
       arch,
@@ -250,7 +250,7 @@ class PackageArchitecture {
     this.goamd64,
   });
 
-  /// Suffix passed to flutter_distributor. v1 keeps the historical `amd64` name.
+  /// Suffix passed to flutter_distributor. v1 uses the baseline `x64` name.
   final String name;
   final String flutterArch;
   final String? goamd64;
@@ -261,22 +261,22 @@ PackageArchitecture parsePackageArchitecture(String arch) {
     case 'arm':
     case 'arm64':
       return PackageArchitecture(name: arch, flutterArch: arch);
-    case 'amd64':
-    case 'amd64-v1':
-      return const PackageArchitecture(name: 'amd64', flutterArch: 'amd64');
-    case 'amd64-v2':
-    case 'amd64-v3':
-      final level = arch.substring('amd64-'.length);
+    case 'x64':
+    case 'x64-v1':
+      return const PackageArchitecture(name: 'x64', flutterArch: 'x64');
+    case 'x64-v2':
+    case 'x64-v3':
+      final level = arch.substring('x64-'.length);
       return PackageArchitecture(
         name: arch,
-        flutterArch: 'amd64',
+        flutterArch: 'x64',
         goamd64: level,
       );
     default:
       throw ArgumentError.value(
         arch,
         'arch',
-        'Expected arm, arm64, amd64, amd64-v1, amd64-v2, or amd64-v3',
+        'Expected arm, arm64, x64, x64-v1, x64-v2, or x64-v3',
       );
   }
 }
@@ -291,7 +291,7 @@ PackageArchitecture resolvePackageArchitecture({
   }
 
   final parsed = parsePackageArchitecture(requested ?? hostArch);
-  final explicitMicroarch = requested != null && requested.startsWith('amd64-');
+  final explicitMicroarch = requested != null && requested.startsWith('x64-');
   if (explicitMicroarch &&
       platform != 'linux' &&
       platform != 'windows' &&
@@ -301,7 +301,7 @@ PackageArchitecture resolvePackageArchitecture({
     );
   }
   if (platform == 'macos' && parsed.flutterArch == 'arm') {
-    throw ArgumentError('--arch supports arm64 and amd64 on macOS.');
+    throw ArgumentError('--arch supports arm64 and x64 on macOS.');
   }
   if ((platform == 'linux' || platform == 'windows') &&
       parsed.flutterArch != hostArch) {
@@ -750,12 +750,12 @@ Future<void> writeIOSGeneratedBundleConfig(
 String _detectArch() {
   if (Platform.isWindows) {
     final pa = Platform.environment['PROCESSOR_ARCHITECTURE'] ?? 'AMD64';
-    return pa.toUpperCase() == 'ARM64' ? 'arm64' : 'amd64';
+    return pa.toUpperCase() == 'ARM64' ? 'arm64' : 'x64';
   }
   final result = Process.runSync('uname', ['-m']);
   final machine = (result.stdout as String).trim();
   if (machine == 'aarch64') return 'arm64';
-  if (machine == 'x86_64') return 'amd64';
+  if (machine == 'x86_64') return 'x64';
   return machine;
 }
 
