@@ -207,6 +207,8 @@ void main() {
         );
         expect(find.text('Returned to OS'), findsOneWidget);
         expect(find.textContaining('50.0%'), findsOneWidget);
+        expect(find.text('0.0%'), findsNothing);
+        expect(find.text('25.0%'), findsNothing);
 
         current = sample.copyWith(sys: 5120, heapObjects: 2048);
         await tester.pump(const Duration(seconds: 2));
@@ -217,6 +219,8 @@ void main() {
           refreshed.data.fold<double>(0, (sum, item) => sum + item.value),
           current.total,
         );
+        expect(find.text('66.7%'), findsOneWidget);
+        expect(find.text('0.0%'), findsNothing);
 
         await tester.ensureVisible(find.byIcon(Symbols.visibility_off));
         await tester.tap(find.byIcon(Symbols.visibility_off));
@@ -241,6 +245,7 @@ void main() {
           current.sys,
         );
         expect(find.byTooltip('Hide'), findsOneWidget);
+        expect(find.text('40.0%'), findsNWidgets(2));
         expect(
           tester
               .widget<Align>(

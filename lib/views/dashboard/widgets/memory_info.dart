@@ -240,6 +240,7 @@ class _MemoryDetailsState extends State<_MemoryDetails> {
                   );
           }
           final colors = context.colorScheme;
+          final chartTotal = _showReleased ? data.sys : data.total;
           final items = <({String label, int value, Color color, bool dashed})>[
             (
               label: l10n.memoryHeapObjects,
@@ -444,13 +445,15 @@ class _MemoryDetailsState extends State<_MemoryDetails> {
                         _formatMemory(item.value),
                         style: context.textTheme.bodySmall,
                       ),
-                      const SizedBox(width: 6),
-                      Text(
-                        '${(data.sys == 0 ? 0 : item.value / data.sys * 100).toStringAsFixed(1)}%',
-                        style: context.textTheme.bodySmall?.copyWith(
-                          color: colors.onSurfaceVariant,
+                      if (!item.dashed || _showReleased) ...[
+                        const SizedBox(width: 6),
+                        Text(
+                          '${(chartTotal == 0 ? 0 : item.value / chartTotal * 100).toStringAsFixed(1)}%',
+                          style: context.textTheme.bodySmall?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
                         ),
-                      ),
+                      ],
                     ],
                   ),
                 ),
