@@ -21,11 +21,12 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
     logger.info("startTunnel begin")
     sharedStateStore.clearRunTime()
     reloadControlWidget()
-    guard let vpnOptions = sharedStateStore.loadVPNOptions() else {
+    guard let snapshot = sharedStateStore.loadVPNOptionsSnapshot() else {
       logger.error("startTunnel failed: missing vpn options")
       completionHandler(PacketTunnelProviderError.missingVPNOptions)
       return
     }
+    let vpnOptions = snapshot.options
     logger.info(
       "startTunnel options stack=\(vpnOptions.stack, privacy: .public) ipv6=\(vpnOptions.ipv6, privacy: .public) captureDns=\(vpnOptions.captureDns, privacy: .public) systemProxy=\(vpnOptions.systemProxy, privacy: .public)"
     )
@@ -101,7 +102,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
           "NECoreBridge.startTun result=\(started, privacy: .public)"
         )
         if started {
-          self.sharedStateStore.saveRunTime()
+          self.sharedStateStore.saveRunTime(vpnOptions: snapshot.data)
         }
         completionHandler(
           started ? nil : PacketTunnelProviderError.couldNotStartCoreTun

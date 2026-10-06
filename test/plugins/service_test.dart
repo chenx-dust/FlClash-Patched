@@ -86,6 +86,33 @@ void main() {
     expect(Service(), same(Service()));
   });
 
+  test(
+    'reads the native active VPN snapshot and preserves absent snapshots',
+    () async {
+      mockChannel((call) async => null);
+      expect(await Service().getActiveVpnOptions(), isNull);
+      mockChannel(
+        (call) async => json.encode({
+          'enable': true,
+          'port': 7890,
+          'ipv6': false,
+          'captureDns': true,
+          'accessControlProps': const AccessControlProps().toJson(),
+          'allowBypass': true,
+          'systemProxy': true,
+          'suspendSupport': true,
+          'bypassDomain': ['localhost'],
+          'stack': 'mixed',
+          'mtu': 1500,
+        }),
+      );
+      final options = await Service().getActiveVpnOptions();
+      expect(options?.mtu, 1500);
+      expect(options?.bypassDomain, ['localhost']);
+      expect(calls.last.method, 'getActiveVpnOptions');
+    },
+  );
+
   test('retains tunnel state snapshots independently of Core events', () async {
     final service = Service();
     for (final state in TunnelState.values) {

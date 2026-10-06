@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'common/common.dart';
 import 'enum/enum.dart';
-import 'models/models.dart';
 
 import 'package:fl_clash/common/theme.dart';
 import 'package:fl_clash/providers/app.dart';
@@ -32,7 +31,6 @@ class GlobalState {
   }
 
   String? lastConfigMd5;
-  VpnOptions? lastVpnOptions;
   bool isAttach = false;
 
   GlobalState._internal();

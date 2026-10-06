@@ -157,11 +157,11 @@ void main() {
     );
   });
 
-  test('iOS uses mobile managers without the Android VPN manager', () {
+  test('iOS includes VPN restart prompts', () {
     final ios = _chainFrom(_stack(isDesktop: false));
 
     expect(ios, containsAllInOrder([MobileManager, TileManager]));
-    expect(ios, isNot(contains(VpnManager)));
+    expect(ios, contains(VpnManager));
   });
 
   test('Core is mounted before the connectivity callback can fire', () {

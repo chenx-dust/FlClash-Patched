@@ -140,6 +140,11 @@ final class ServiceChannel {
       Task {
         result(await tunnelController.getRunTime())
       }
+    case "getActiveVpnOptions":
+      Task {
+        let running = await tunnelController.getRunTime() > 0
+        result(running ? sharedStateStore.activeVpnOptions() : nil)
+      }
     default:
       result(FlutterMethodNotImplemented)
     }

@@ -111,6 +111,16 @@ class Service {
     return DateTime.fromMillisecondsSinceEpoch(ms);
   }
 
+  Future<VpnOptions?> getActiveVpnOptions() async {
+    final data = await methodChannel.invokeMethod<String>(
+      'getActiveVpnOptions',
+    );
+    if (data == null) return null;
+    return VpnOptions.fromJson(
+      Map<String, Object?>.from(json.decode(data) as Map),
+    );
+  }
+
   bool get hasListeners {
     return _listeners.isNotEmpty;
   }

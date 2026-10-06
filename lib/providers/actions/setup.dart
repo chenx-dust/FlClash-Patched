@@ -496,7 +496,6 @@ class SetupAction extends _$SetupAction {
       return _SetupTaskResult.completed;
     }
     if (system.isAndroid) {
-      globalState.lastVpnOptions = ref.read(vpnOptionsProvider);
       final sharedState = ref.read(sharedStateProvider);
       await preferences.saveShareState(sharedState);
     }

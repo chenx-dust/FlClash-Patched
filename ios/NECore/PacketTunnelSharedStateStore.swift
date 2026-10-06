@@ -17,17 +17,18 @@ final class PacketTunnelSharedStateStore {
   private let sharedStateKey = "sharedState"
   private let setupParamsKey = "setupParams"
   private let runTimeKey = "runTime"
+  private let activeVpnOptionsKey = "activeVpnOptions"
 
-  func loadVPNOptions() -> PacketTunnelVPNOptions? {
-    guard let data = userDefaults?.data(forKey: sharedStateKey),
-      let sharedState = try? JSONDecoder().decode(
-        PacketTunnelSharedState.self,
-        from: data
-      )
+  func loadVPNOptionsSnapshot() -> (options: PacketTunnelVPNOptions, data: Data)? {
+    guard let sharedData = userDefaults?.data(forKey: sharedStateKey),
+      let shared = try? JSONSerialization.jsonObject(with: sharedData) as? [String: Any],
+      let rawOptions = shared["vpnOptions"] as? [String: Any],
+      let data = try? JSONSerialization.data(withJSONObject: rawOptions),
+      let options = try? JSONDecoder().decode(PacketTunnelVPNOptions.self, from: data)
     else {
       return nil
     }
-    return sharedState.vpnOptions
+    return (options, data)
   }
 
   func loadSetupParams() -> Data {
@@ -63,13 +64,15 @@ final class PacketTunnelSharedStateStore {
     )
   }
 
-  func saveRunTime() {
+  func saveRunTime(vpnOptions: Data) {
     let milliseconds = Int(Date().timeIntervalSince1970 * 1000)
+    userDefaults?.set(vpnOptions, forKey: activeVpnOptionsKey)
     userDefaults?.set(milliseconds, forKey: runTimeKey)
   }
 
   func clearRunTime() {
     userDefaults?.removeObject(forKey: runTimeKey)
+    userDefaults?.removeObject(forKey: activeVpnOptionsKey)
   }
 
   private var userDefaults: UserDefaults? {
@@ -77,10 +80,6 @@ final class PacketTunnelSharedStateStore {
       suiteName: PacketTunnelEnvironment.appGroupIdentifier
     )
   }
-}
-
-private struct PacketTunnelSharedState: Decodable {
-  let vpnOptions: PacketTunnelVPNOptions?
 }
 
 struct PacketTunnelVPNOptions: Decodable {

@@ -32,12 +32,14 @@ object ServiceController {
     private var binding: ManagedServiceBinding? = null
     @Volatile
     private var runTimeMillis = 0L
+    private var activeVpnOptions: VpnOptions? = null
 
     suspend fun unbind() = lock.withLock {
         clearBinding()
     }
 
     private fun clearBinding() {
+        activeVpnOptions = null
         binding?.unbind()
         binding = null
     }
@@ -104,6 +106,7 @@ object ServiceController {
         if (runTimeMillis == 0L) {
             runTimeMillis = System.currentTimeMillis()
         }
+        activeVpnOptions = options
         runTimeMillis
     }
 
@@ -138,6 +141,10 @@ object ServiceController {
     }
 
     fun getRunTimeMillis(): Long = runTimeMillis
+
+    suspend fun getActiveVpnOptions(): VpnOptions? = lock.withLock {
+        activeVpnOptions.takeIf { runTimeMillis != 0L }
+    }
 
     private fun handleServiceDisconnected(
         disconnectedBinding: ManagedServiceBinding,

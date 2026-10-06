@@ -2,6 +2,8 @@ package cc.chenx.flclash.plugins
 
 import cc.chenx.flclash.ServiceController
 import cc.chenx.flclash.ServiceState
+import cc.chenx.flclash.RunState
+import cc.chenx.flclash.invokeMethodOnMainThread
 import cc.chenx.flclash.common.Components
 import cc.chenx.flclash.models.SharedState
 import com.google.gson.Gson
@@ -23,6 +25,16 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
         scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
         channel = MethodChannel(binding.binaryMessenger, "${Components.PACKAGE_NAME}/service")
         channel.setMethodCallHandler(this)
+        scope.launch {
+            ServiceState.runState.collect { state ->
+                val tunnelState = when (state) {
+                    RunState.STARTED -> "connected"
+                    RunState.STOPPED -> "disconnected"
+                    RunState.STARTING, RunState.STOPPING -> "pending"
+                }
+                channel.invokeMethodOnMainThread("tunnelState", tunnelState)
+            }
+        }
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
@@ -41,6 +53,9 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
             "shutdown" -> shutdown(result)
             "invokeMethod" -> invokeMethod(call, result)
             "getRunTime" -> getRunTime(result)
+            "getActiveVpnOptions" -> scope.launch {
+                result.success(ServiceController.getActiveVpnOptions()?.let { gson.toJson(it) })
+            }
             "syncState" -> syncState(call, result)
             "start" -> start(call, result)
             "stop" -> stop(result)
