@@ -100,6 +100,8 @@ mixin CoreInterface {
 
   Future<DnsQuery> queryDns(String domain, String type);
 
+  Future<RuleQuery> queryRule(RuleQueryParams params);
+
   Future<bool> crash();
 
   FutureOr<List<TrackerInfo>> getConnections();
@@ -566,6 +568,21 @@ abstract class CoreHandlerInterface with CoreInterface {
       );
     }
     return DnsQuery.fromJson(data);
+  }
+
+  @override
+  Future<RuleQuery> queryRule(RuleQueryParams params) async {
+    final data = await _invokeMethod<Map<String, dynamic>>(
+      method: CoreMethod.queryRule,
+      arguments: params.toJson(),
+    );
+    if (data == null) {
+      throw const CoreMethodException(
+        code: 'invalid_response',
+        message: 'Missing rule query result',
+      );
+    }
+    return RuleQuery.fromJson(data);
   }
 
   @override

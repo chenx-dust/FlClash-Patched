@@ -6,7 +6,8 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
-import 'package:fl_clash/views/rules.dart';
+import 'package:fl_clash/views/rules/rules.dart';
+import 'package:fl_clash/views/rules/query.dart';
 import 'package:fl_clash/views/config/rules.dart';
 import 'package:fl_clash/views/profiles/overwrite/overwrite.dart';
 import 'package:fl_clash/widgets/widgets.dart';
@@ -102,6 +103,33 @@ void main() {
     await tester.pump();
   }
 
+  testWidgets('opens rule query through the scoped core', (tester) async {
+    const params = RuleQueryParams(target: 'example.com');
+    when(() => core.queryRule(params)).thenAnswer(
+      (_) async => const RuleQuery(
+        target: 'example.com',
+        port: 443,
+        network: Network.tcp,
+        mode: Mode.rule,
+        rule: 'DomainSuffix',
+        rulePayload: 'example.com',
+        proxy: 'DIRECT',
+        ip: '',
+        delay: 0,
+      ),
+    );
+    await pumpView(tester);
+    await tester.tap(find.byTooltip('Query rules'));
+    await tester.pumpAndSettle();
+    expect(find.byType(RuleQueryDialog), findsOneWidget);
+    await tester.enterText(find.byType(TextFormField).first, 'example.com');
+    await tester.tap(find.text('Query'));
+    await tester.pumpAndSettle();
+    verify(() => core.queryRule(params)).called(1);
+    expect(find.text('DomainSuffix(example.com)'), findsNWidgets(2));
+    await closeView(tester);
+  });
+
   testWidgets('tags added rules by original order even after searching', (
     tester,
   ) async {
@@ -122,14 +150,14 @@ void main() {
       ],
     );
     await pumpView(tester, width: 360);
-    expect(find.text('Added rules'), findsNWidgets(2));
+    expect(find.text('Added rules', findRichText: true), findsNWidgets(2));
     expect(tester.takeException(), isNull);
     tester
         .widget<CommonScaffold>(find.byType(CommonScaffold))
         .searchState!
         .onSearch('example.com');
     await tester.pumpAndSettle();
-    expect(find.text('Added rules'), findsOneWidget);
+    expect(find.text('Added rules', findRichText: true), findsOneWidget);
     expect(find.text('#2'), findsOneWidget);
     expect(find.text('#3'), findsOneWidget);
     await closeView(tester);
@@ -147,7 +175,7 @@ void main() {
         () => core.getRules(),
       ).thenAnswer((_) async => [rule.copyWith(index: 0)]);
       await pumpView(tester);
-      expect(find.text('Added rules'), findsNothing);
+      expect(find.text('Added rules', findRichText: true), findsNothing);
       await closeView(tester);
     });
   }
@@ -162,7 +190,7 @@ void main() {
     ).thenAnswer((_) async => [rule.copyWith(index: 0)]);
     await pumpView(tester);
     expect(find.text('example.com'), findsOneWidget);
-    expect(find.text('Added rules'), findsNothing);
+    expect(find.text('Added rules', findRichText: true), findsNothing);
     await closeView(tester);
   });
 
@@ -179,7 +207,7 @@ void main() {
           () => core.getRules(),
         ).thenAnswer((_) async => [rule.copyWith(index: 0)]);
         await pumpView(tester, width: 360);
-        await tester.tap(find.text('Added rules'));
+        await tester.tap(find.text('Added rules', findRichText: true));
         await tester.pumpAndSettle();
         if (isProfileRule) {
           expect(find.byType(OverwriteView), findsOneWidget);
@@ -195,7 +223,7 @@ void main() {
         globalState.navigatorKey.currentState!.pop();
         await tester.pumpAndSettle();
         expect(find.byType(RulesView), findsOneWidget);
-        expect(find.text('Added rules'), findsOneWidget);
+        expect(find.text('Added rules', findRichText: true), findsOneWidget);
         await closeView(tester);
       },
     );
@@ -254,7 +282,7 @@ void main() {
       verify(() => core.getRules()).called(2);
       expect(container.read(providersProvider).single.count, 25);
       expect(find.byType(CircularProgressIndicator), findsNothing);
-      await tester.tap(find.text('ads'));
+      await tester.tap(find.text('ads', findRichText: true));
       await tester.pumpAndSettle();
       expect(find.text('25 rules'), findsOneWidget);
       expect(tester.takeException(), isNull);
@@ -591,25 +619,25 @@ void main() {
       () => core.getRules(),
     ).thenAnswer((_) async => [rule.copyWith(proxy: 'route')]);
     await pumpView(tester, width: 360);
-    expect(find.text('route'), findsOneWidget);
-    expect(find.text('auto'), findsNothing);
-    expect(find.text('node-a'), findsOneWidget);
-    await tester.tap(find.text('...'));
+    expect(find.text('route', findRichText: true), findsOneWidget);
+    expect(find.text('auto', findRichText: true), findsNothing);
+    expect(find.text('node-a', findRichText: true), findsOneWidget);
+    await tester.tap(find.text('...', findRichText: true));
     await tester.pump();
-    expect(find.text('auto'), findsOneWidget);
+    expect(find.text('auto', findRichText: true), findsOneWidget);
     container.read(groupsProvider.notifier).value = [
       outer,
       inner.copyWith(now: 'node-b'),
     ];
     await tester.pump();
-    expect(find.text('node-a'), findsNothing);
-    expect(find.text('node-b'), findsOneWidget);
+    expect(find.text('node-a', findRichText: true), findsNothing);
+    expect(find.text('node-b', findRichText: true), findsOneWidget);
     container.read(groupsProvider.notifier).value = [
       outer,
       inner.copyWith(now: 'route'),
     ];
     await tester.pump();
-    expect(find.text('route'), findsOneWidget);
+    expect(find.text('route', findRichText: true), findsOneWidget);
     expect(tester.takeException(), isNull);
     await closeView(tester);
   });

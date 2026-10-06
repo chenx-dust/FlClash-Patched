@@ -55,6 +55,121 @@ class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
+  /// `Source port`
+  String get ruleQuerySourcePort {
+    return Intl.message(
+      'Source port',
+      name: 'ruleQuerySourcePort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Destination IP`
+  String get ruleQueryDestinationIP {
+    return Intl.message(
+      'Destination IP',
+      name: 'ruleQueryDestinationIP',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Process path`
+  String get ruleQueryProcessPath {
+    return Intl.message(
+      'Process path',
+      name: 'ruleQueryProcessPath',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Inbound name`
+  String get ruleQueryInboundName {
+    return Intl.message(
+      'Inbound name',
+      name: 'ruleQueryInboundName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Inbound user`
+  String get ruleQueryInboundUser {
+    return Intl.message(
+      'Inbound user',
+      name: 'ruleQueryInboundUser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sniffed domain`
+  String get ruleQuerySniffHost {
+    return Intl.message(
+      'Sniffed domain',
+      name: 'ruleQuerySniffHost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter a valid IP address.`
+  String get ruleQueryInvalidIP {
+    return Intl.message(
+      'Enter a valid IP address.',
+      name: 'ruleQueryInvalidIP',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter an integer between 0 and {maximum}.`
+  String ruleQueryNumberRange(Object maximum) {
+    return Intl.message(
+      'Enter an integer between 0 and $maximum.',
+      name: 'ruleQueryNumberRange',
+      desc: '',
+      args: [maximum],
+    );
+  }
+
+  /// `Query rules`
+  String get queryRule {
+    return Intl.message('Query rules', name: 'queryRule', desc: '', args: []);
+  }
+
+  /// `Domain or IP address`
+  String get ruleQueryTarget {
+    return Intl.message(
+      'Domain or IP address',
+      name: 'ruleQueryTarget',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter a port between 1 and 65535.`
+  String get ruleQueryPortInvalid {
+    return Intl.message(
+      'Enter a port between 1 and 65535.',
+      name: 'ruleQueryPortInvalid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No rule matched (mode policy or DIRECT fallback)`
+  String get ruleQueryNoMatch {
+    return Intl.message(
+      'No rule matched (mode policy or DIRECT fallback)',
+      name: 'ruleQueryNoMatch',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Rule`
   String get rule {
     return Intl.message('Rule', name: 'rule', desc: '', args: []);

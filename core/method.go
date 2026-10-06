@@ -314,6 +314,16 @@ var methodHandlers = map[CoreMethod]methodHandler{
 			response.success(query)
 		})
 	}),
+	queryRuleMethod: withArguments(func(params *RuleQueryParams, response MethodResponse) {
+		safeGo(response, func() {
+			query, err := handleQueryRule(params)
+			if err != nil {
+				response.failure("core_error", err.Error(), nil)
+				return
+			}
+			response.success(query)
+		})
+	}),
 	startListenerMethod: withoutArguments(func(response MethodResponse) {
 		response.success(handleStartListener())
 	}),

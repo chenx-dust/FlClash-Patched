@@ -9,6 +9,7 @@ class ProxyChain extends StatefulWidget {
   final Iterable<String> chain;
   final Widget? leading;
   final bool showLeadingArrow;
+  final bool hideTooMany;
   final ValueChanged<String>? onSelected;
   final bool Function(String)? canSelect;
 
@@ -17,6 +18,7 @@ class ProxyChain extends StatefulWidget {
     required this.chain,
     this.leading,
     this.showLeadingArrow = false,
+    this.hideTooMany = true,
     this.onSelected,
     this.canSelect,
   });
@@ -41,7 +43,7 @@ class _ProxyChainState extends State<ProxyChain> {
     final colorScheme = context.colorScheme;
     final onSelected = widget.onSelected;
     final chain = widget.chain.toList();
-    final visible = !_expanded && chain.length > 2
+    final visible = !_expanded && chain.length > 2 && widget.hideTooMany
         ? <String?>[chain.first, null, chain.last]
         : chain;
     return Wrap(

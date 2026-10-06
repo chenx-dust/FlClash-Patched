@@ -294,6 +294,10 @@ class CoreController {
     return _interface.queryDns(domain, type);
   }
 
+  Future<RuleQuery> queryRule(RuleQueryParams params) {
+    return _interface.queryRule(params);
+  }
+
   Future<void> requestGc() async {
     await _interface.forceGc();
   }

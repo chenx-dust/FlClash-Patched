@@ -6,6 +6,74 @@ part of '../core.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+_RuleQueryParams _$RuleQueryParamsFromJson(Map<String, dynamic> json) =>
+    _RuleQueryParams(
+      target: json['target'] as String,
+      port: (json['port'] as num?)?.toInt() ?? 443,
+      network:
+          $enumDecodeNullable(_$NetworkEnumMap, json['network']) ?? Network.tcp,
+      sourceIP: json['sourceIP'] as String?,
+      sourcePort: (json['sourcePort'] as num?)?.toInt(),
+      destinationIP: json['destinationIP'] as String?,
+      process: json['process'] as String?,
+      processPath: json['processPath'] as String?,
+      uid: (json['uid'] as num?)?.toInt(),
+      inboundName: json['inboundName'] as String?,
+      inboundUser: json['inboundUser'] as String?,
+      sniffHost: json['sniffHost'] as String?,
+      dscp: (json['dscp'] as num?)?.toInt(),
+    );
+
+Map<String, dynamic> _$RuleQueryParamsToJson(_RuleQueryParams instance) =>
+    <String, dynamic>{
+      'target': instance.target,
+      'port': instance.port,
+      'network': _$NetworkEnumMap[instance.network]!,
+      'sourceIP': ?instance.sourceIP,
+      'sourcePort': ?instance.sourcePort,
+      'destinationIP': ?instance.destinationIP,
+      'process': ?instance.process,
+      'processPath': ?instance.processPath,
+      'uid': ?instance.uid,
+      'inboundName': ?instance.inboundName,
+      'inboundUser': ?instance.inboundUser,
+      'sniffHost': ?instance.sniffHost,
+      'dscp': ?instance.dscp,
+    };
+
+const _$NetworkEnumMap = {Network.tcp: 'tcp', Network.udp: 'udp'};
+
+_RuleQuery _$RuleQueryFromJson(Map<String, dynamic> json) => _RuleQuery(
+  target: json['target'] as String,
+  port: (json['port'] as num).toInt(),
+  network: $enumDecode(_$NetworkEnumMap, json['network']),
+  mode: $enumDecode(_$ModeEnumMap, json['mode']),
+  rule: json['rule'] as String,
+  rulePayload: json['rulePayload'] as String,
+  proxy: json['proxy'] as String,
+  ip: json['ip'] as String,
+  delay: (json['delay'] as num).toInt(),
+);
+
+Map<String, dynamic> _$RuleQueryToJson(_RuleQuery instance) =>
+    <String, dynamic>{
+      'target': instance.target,
+      'port': instance.port,
+      'network': _$NetworkEnumMap[instance.network]!,
+      'mode': _$ModeEnumMap[instance.mode]!,
+      'rule': instance.rule,
+      'rulePayload': instance.rulePayload,
+      'proxy': instance.proxy,
+      'ip': instance.ip,
+      'delay': instance.delay,
+    };
+
+const _$ModeEnumMap = {
+  Mode.rule: 'rule',
+  Mode.global: 'global',
+  Mode.direct: 'direct',
+};
+
 _SetupParams _$SetupParamsFromJson(Map<String, dynamic> json) => _SetupParams(
   selectedMap: Map<String, String>.from(json['selected-map'] as Map),
   testUrl: json['test-url'] as String,
@@ -63,12 +131,6 @@ Map<String, dynamic> _$UpdateParamsToJson(_UpdateParams instance) =>
 const _$FindProcessModeEnumMap = {
   FindProcessMode.always: 'always',
   FindProcessMode.off: 'off',
-};
-
-const _$ModeEnumMap = {
-  Mode.rule: 'rule',
-  Mode.global: 'global',
-  Mode.direct: 'direct',
 };
 
 const _$LogLevelEnumMap = {
