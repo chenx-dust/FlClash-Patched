@@ -176,13 +176,13 @@ void main() {
     );
 
     expect(find.byType(CommonChip), findsOneWidget);
-    expect(find.text('curl'), findsOneWidget);
+    expect(find.text('curl', findRichText: true), findsOneWidget);
     expect(find.byIcon(Symbols.apps), findsOneWidget);
     expect(find.byIcon(Symbols.close), findsNothing);
-    await tester.tap(find.text('curl'));
+    await tester.tap(find.text('curl', findRichText: true));
     await tester.pumpAndSettle();
     expect(find.byIcon(Symbols.close), findsOneWidget);
-    await tester.tap(find.text('curl'));
+    await tester.tap(find.text('curl', findRichText: true));
     await tester.pumpAndSettle();
 
     expect(filter.isEmpty, isTrue);
@@ -266,7 +266,7 @@ void main() {
     await tester.tap(
       find.descendant(
         of: find.byType(CommonPopupMenu),
-        matching: find.text('curl'),
+        matching: find.text('curl', findRichText: true),
       ),
     );
     await tester.pumpAndSettle();

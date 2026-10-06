@@ -155,13 +155,13 @@ void main() {
     await pump(tester, container);
 
     final l10n = currentAppLocalizations;
-    expect(find.text(l10n.proxiesCount(7)), findsOneWidget);
-    expect(find.text(l10n.rulesCount(9)), findsOneWidget);
-    expect(find.text(l10n.proxiesCount(0)), findsNothing);
-    expect(find.text(l10n.entriesCount(7)), findsNothing);
+    expect(find.text(l10n.proxiesCount(7), findRichText: true), findsOneWidget);
+    expect(find.text(l10n.rulesCount(9), findRichText: true), findsOneWidget);
+    expect(find.text(l10n.proxiesCount(0), findRichText: true), findsNothing);
+    expect(find.text(l10n.entriesCount(7), findRichText: true), findsNothing);
     expect(find.textContaining(' · '), findsNothing);
     final countChip = find.ancestor(
-      of: find.text(l10n.proxiesCount(7)),
+      of: find.text(l10n.proxiesCount(7), findRichText: true),
       matching: find.byType(MetaChip),
     );
     expect(countChip, findsOneWidget);
@@ -203,7 +203,12 @@ void main() {
       const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
     );
     expect(
-      tester.widget<Text>(find.text(l10n.proxiesCount(7))).style?.color,
+      tester
+          .widget<EmojiText>(
+            find.descendant(of: countChip, matching: find.byType(EmojiText)),
+          )
+          .style
+          ?.color,
       colorScheme.onSurfaceVariant,
     );
     expect(find.byType(MetaChip), findsNWidgets(5));

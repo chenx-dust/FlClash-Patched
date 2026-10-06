@@ -5,6 +5,8 @@ import 'package:flutter/gestures.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
+import 'text.dart';
+
 class CommonChip extends StatelessWidget {
   final String label;
   final IconData? icon;
@@ -189,7 +191,7 @@ class _ChipSurface extends StatelessWidget {
               ],
               Flexible(
                 fit: FlexFit.loose,
-                child: Text(
+                child: EmojiText(
                   label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -277,7 +279,7 @@ class TonalChip extends StatelessWidget {
         children: [
           Flexible(
             fit: FlexFit.loose,
-            child: Text(
+            child: EmojiText(
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -322,7 +324,7 @@ class MetaChip extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-        child: Text(
+        child: EmojiText(
           label,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,

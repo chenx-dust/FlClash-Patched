@@ -154,7 +154,7 @@ void main() {
       groups.last.copyWith(hidden: false),
     ];
     await pumpViews(tester, ProxiesType.list);
-    await tester.tap(find.text('node-65'));
+    await tester.tap(find.text('node-65', findRichText: true));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     final target = find.byWidgetPredicate(
@@ -183,7 +183,7 @@ void main() {
           find
               .descendant(
                 of: find.byType(RulesView),
-                matching: find.text('node-65'),
+                matching: find.text('node-65', findRichText: true),
               )
               .first,
         );
@@ -242,7 +242,7 @@ void main() {
             await tester.tap(find.text('example.com'));
             await tester.pumpAndSettle();
           }
-          await tester.tap(find.text('node-65'));
+          await tester.tap(find.text('node-65', findRichText: true));
           await tester.pumpAndSettle();
           expect(container.read(currentPageLabelProvider), PageLabel.proxies);
           expect(container.read(currentProfileProvider)?.selectedMap, isEmpty);
@@ -282,9 +282,9 @@ void main() {
       tester,
     ) async {
       await pumpViews(tester, type);
-      await tester.tap(find.text('...'));
+      await tester.tap(find.text('...', findRichText: true));
       await tester.pump();
-      await tester.tap(find.text('destination'));
+      await tester.tap(find.text('destination', findRichText: true));
       await tester.pumpAndSettle();
       if (type == ProxiesType.tab) {
         expect(
@@ -305,7 +305,7 @@ void main() {
       container.read(currentPageLabelProvider.notifier).toPage(PageLabel.rules);
       await tester.pumpAndSettle();
       expect(container.read(proxyFocusProvider), isNull);
-      await tester.tap(find.text('node-65'));
+      await tester.tap(find.text('node-65', findRichText: true));
       await tester.pumpAndSettle();
       final target = find.byWidgetPredicate(
         (widget) =>
@@ -322,7 +322,10 @@ void main() {
   testWidgets('built-in targets are not clickable', (tester) async {
     await pumpViews(tester, ProxiesType.list);
     final direct = tester.widget<TonalChip>(
-      find.ancestor(of: find.text('DIRECT'), matching: find.byType(TonalChip)),
+      find.ancestor(
+        of: find.text('DIRECT', findRichText: true),
+        matching: find.byType(TonalChip),
+      ),
     );
     expect(direct.onPressed, isNull);
     await closeViews(tester);

@@ -20,16 +20,16 @@ void main() {
         ),
       ),
     );
-    expect(find.text('first'), findsOneWidget);
-    expect(find.text('last'), findsOneWidget);
-    expect(find.text('middle-a'), findsNothing);
-    await tester.tap(find.text('...'));
+    expect(find.text('first', findRichText: true), findsOneWidget);
+    expect(find.text('last', findRichText: true), findsOneWidget);
+    expect(find.text('middle-a', findRichText: true), findsNothing);
+    await tester.tap(find.text('...', findRichText: true));
     await tester.pumpAndSettle();
     expect(selected, isEmpty);
-    expect(find.text('...'), findsNothing);
-    expect(find.text('middle-a'), findsOneWidget);
-    expect(find.text('middle-b'), findsOneWidget);
-    await tester.tap(find.text('middle-a'));
+    expect(find.text('...', findRichText: true), findsNothing);
+    expect(find.text('middle-a', findRichText: true), findsOneWidget);
+    expect(find.text('middle-b', findRichText: true), findsOneWidget);
+    await tester.tap(find.text('middle-a', findRichText: true));
     expect(selected, ['middle-a']);
     expect(tester.takeException(), isNull);
   });
@@ -40,14 +40,14 @@ void main() {
     Future<void> show(List<String> chain) =>
         tester.pumpWidget(TestApp(child: ProxyChain(chain: chain)));
     await show(['first', 'last']);
-    expect(find.text('...'), findsNothing);
+    expect(find.text('...', findRichText: true), findsNothing);
     await show(['first', 'middle', 'last']);
-    await tester.tap(find.text('...'));
+    await tester.tap(find.text('...', findRichText: true));
     await tester.pump();
     await show(['first', 'middle', 'last']);
-    expect(find.text('middle'), findsOneWidget);
+    expect(find.text('middle', findRichText: true), findsOneWidget);
     await show(['first', 'new-middle', 'last']);
-    expect(find.text('new-middle'), findsNothing);
-    expect(find.text('...'), findsOneWidget);
+    expect(find.text('new-middle', findRichText: true), findsNothing);
+    expect(find.text('...', findRichText: true), findsOneWidget);
   });
 }
