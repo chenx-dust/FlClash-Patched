@@ -531,6 +531,12 @@ class GeneralView extends ConsumerWidget {
   List<Widget> _appItems() {
     return [
       _appSettingToggle(
+        title: (l) => l.collapseProxyChains,
+        subtitle: (l) => l.collapseProxyChainsDesc,
+        select: (state) => state.collapseProxyChains,
+        update: (state, value) => state.copyWith(collapseProxyChains: value),
+      ),
+      _appSettingToggle(
         title: (l) => l.backToDashboard,
         subtitle: (l) => l.backToDashboardDesc,
         select: (state) => state.backToDashboard,

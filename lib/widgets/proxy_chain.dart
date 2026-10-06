@@ -43,7 +43,7 @@ class _ProxyChainState extends State<ProxyChain> {
     final colorScheme = context.colorScheme;
     final onSelected = widget.onSelected;
     final chain = widget.chain.toList();
-    final visible = !_expanded && chain.length > 2 && widget.hideTooMany
+    final visible = !_expanded && chain.length > 3 && widget.hideTooMany
         ? <String?>[chain.first, null, chain.last]
         : chain;
     return Wrap(

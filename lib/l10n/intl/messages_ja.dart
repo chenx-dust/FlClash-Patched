@@ -287,6 +287,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "以前のプロキシを使用している接続を切断しますか？",
     ),
     "collapse": MessageLookupByLibrary.simpleMessage("折りたたむ"),
+    "collapseProxyChains": MessageLookupByLibrary.simpleMessage(
+      "プロキシチェーンを折りたたむ",
+    ),
+    "collapseProxyChainsDesc": MessageLookupByLibrary.simpleMessage(
+      "プロキシチェーンのノードが3つを超える場合、中間ノードを非表示にします",
+    ),
     "collapseQuickSettingsPanel": MessageLookupByLibrary.simpleMessage(
       "クイック設定パネルを閉じる",
     ),

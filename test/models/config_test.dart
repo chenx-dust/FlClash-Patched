@@ -131,6 +131,10 @@ void main() {
   });
 
   group('AppSettingProps JSON round-trip', () {
+    test('older settings default to collapsed proxy chains', () {
+      expect(AppSettingProps.fromJson({}).collapseProxyChains, true);
+    });
+
     test('default values survive round-trip', () {
       const props = AppSettingProps();
       final restored = roundTrip(
@@ -150,6 +154,7 @@ void main() {
       expect(restored.showLabel, false);
       expect(restored.minimizeOnExit, true);
       expect(restored.collapseQuickSettingsPanel, true);
+      expect(restored.collapseProxyChains, true);
       expect(restored.restoreStrategy, RestoreStrategy.compatible);
       expect(restored.customUserAgent, '');
       expect(restored.testUrl, defaultTestUrl);
@@ -172,6 +177,7 @@ void main() {
         testUrl: 'https://custom.test',
         customUserAgent: 'CustomUA/1.0',
         collapseQuickSettingsPanel: false,
+        collapseProxyChains: false,
         foregroundTickerInterval: 3,
         foregroundTickerIdleWhenUnfocused: false,
         foregroundTickerIdleInterval: 8,
@@ -192,6 +198,7 @@ void main() {
       expect(restored.testUrl, 'https://custom.test');
       expect(restored.customUserAgent, 'CustomUA/1.0');
       expect(restored.collapseQuickSettingsPanel, false);
+      expect(restored.collapseProxyChains, false);
       expect(restored.foregroundTickerInterval, 3);
       expect(restored.foregroundTickerIdleWhenUnfocused, false);
       expect(restored.foregroundTickerIdleInterval, 8);

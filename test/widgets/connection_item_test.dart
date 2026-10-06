@@ -1,6 +1,8 @@
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/features/features.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:fl_clash/providers/config.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -39,6 +41,42 @@ TrackerInfo _tracker({
 }
 
 void main() {
+  testWidgets('proxy chain collapse setting updates connection rows', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TestApp(
+        wrapInProviderScope: true,
+        homeBuilder: (child) => Scaffold(body: child),
+        child: TrackerInfoItem(
+          trackerInfo: _tracker(
+            chains: const ['last', 'middle-b', 'middle-a', 'first'],
+          ),
+          detailTitle: 'detail',
+        ),
+      ),
+    );
+    expect(find.text('...', findRichText: true), findsOneWidget);
+    expect(find.text('middle-a', findRichText: true), findsNothing);
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(TrackerInfoItem)),
+    );
+    container
+        .read(appSettingProvider.notifier)
+        .update((state) => state.copyWith(collapseProxyChains: false));
+    await tester.pump();
+    expect(find.text('...', findRichText: true), findsNothing);
+    expect(find.text('middle-a', findRichText: true), findsOneWidget);
+    expect(find.text('middle-b', findRichText: true), findsOneWidget);
+    container
+        .read(appSettingProvider.notifier)
+        .update((state) => state.copyWith(collapseProxyChains: true));
+    await tester.pump();
+    expect(find.text('...', findRichText: true), findsOneWidget);
+    expect(find.text('middle-a', findRichText: true), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('TrackerInfoDetailView renders formatted connection fields', (
     tester,
   ) async {

@@ -98,6 +98,7 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default(false) bool openLogs,
     @Default(false) bool closeConnections,
     @Default(true) bool promptCloseConnections,
+    @Default(true) bool collapseProxyChains,
     @Default(defaultTestUrl) String testUrl,
     @Default(true) bool isAnimateToPage,
     @Default(true) bool isSwipeToPage,

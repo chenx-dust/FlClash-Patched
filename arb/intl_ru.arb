@@ -478,6 +478,8 @@
   "remoteDestination": "Удалённое назначение",
   "networkType": "Тип сети",
   "proxyChains": "Цепочка прокси",
+  "collapseProxyChains": "Сворачивать цепочки прокси",
+  "collapseProxyChainsDesc": "Скрывать промежуточные узлы, если в цепочке прокси больше трёх узлов",
   "log": "Лог",
   "connection": "Соединение",
   "request": "Запрос",

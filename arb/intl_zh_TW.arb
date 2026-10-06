@@ -477,6 +477,8 @@
   "remoteDestination": "遠端目標",
   "networkType": "網路類型",
   "proxyChains": "代理鏈",
+  "collapseProxyChains": "摺疊代理鏈",
+  "collapseProxyChainsDesc": "代理鏈超過三個節點時隱藏中間節點",
   "log": "日誌",
   "connection": "連線",
   "request": "請求",

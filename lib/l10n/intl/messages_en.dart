@@ -357,6 +357,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Close connections using the previous proxy?",
     ),
     "collapse": MessageLookupByLibrary.simpleMessage("Collapse"),
+    "collapseProxyChains": MessageLookupByLibrary.simpleMessage(
+      "Collapse proxy chains",
+    ),
+    "collapseProxyChainsDesc": MessageLookupByLibrary.simpleMessage(
+      "Hide middle nodes when a proxy chain has more than three nodes",
+    ),
     "collapseQuickSettingsPanel": MessageLookupByLibrary.simpleMessage(
       "Collapse Quick Settings panel",
     ),

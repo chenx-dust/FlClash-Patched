@@ -3760,6 +3760,26 @@ class AppLocalizations {
     return Intl.message('Proxy chain', name: 'proxyChains', desc: '', args: []);
   }
 
+  /// `Collapse proxy chains`
+  String get collapseProxyChains {
+    return Intl.message(
+      'Collapse proxy chains',
+      name: 'collapseProxyChains',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hide middle nodes when a proxy chain has more than three nodes`
+  String get collapseProxyChainsDesc {
+    return Intl.message(
+      'Hide middle nodes when a proxy chain has more than three nodes',
+      name: 'collapseProxyChainsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Log`
   String get log {
     return Intl.message('Log', name: 'log', desc: '', args: []);

@@ -478,6 +478,8 @@
   "remoteDestination": "Remote destination",
   "networkType": "Network type",
   "proxyChains": "Proxy chain",
+  "collapseProxyChains": "Collapse proxy chains",
+  "collapseProxyChainsDesc": "Hide middle nodes when a proxy chain has more than three nodes",
   "log": "Log",
   "connection": "Connection",
   "request": "Request",

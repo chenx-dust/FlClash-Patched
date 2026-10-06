@@ -478,6 +478,8 @@
   "remoteDestination": "リモート宛先",
   "networkType": "ネットワーク種別",
   "proxyChains": "プロキシチェーン",
+  "collapseProxyChains": "プロキシチェーンを折りたたむ",
+  "collapseProxyChainsDesc": "プロキシチェーンのノードが3つを超える場合、中間ノードを非表示にします",
   "log": "ログ",
   "connection": "接続",
   "request": "リクエスト",

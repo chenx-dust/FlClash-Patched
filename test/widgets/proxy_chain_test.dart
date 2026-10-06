@@ -42,11 +42,14 @@ void main() {
     await show(['first', 'last']);
     expect(find.text('...', findRichText: true), findsNothing);
     await show(['first', 'middle', 'last']);
+    expect(find.text('middle', findRichText: true), findsOneWidget);
+    expect(find.text('...', findRichText: true), findsNothing);
+    await show(['first', 'middle', 'other-middle', 'last']);
     await tester.tap(find.text('...', findRichText: true));
     await tester.pump();
-    await show(['first', 'middle', 'last']);
+    await show(['first', 'middle', 'other-middle', 'last']);
     expect(find.text('middle', findRichText: true), findsOneWidget);
-    await show(['first', 'new-middle', 'last']);
+    await show(['first', 'new-middle', 'other-middle', 'last']);
     expect(find.text('new-middle', findRichText: true), findsNothing);
     expect(find.text('...', findRichText: true), findsOneWidget);
   });

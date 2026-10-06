@@ -259,6 +259,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "是否关闭使用原代理的连接？",
     ),
     "collapse": MessageLookupByLibrary.simpleMessage("折叠"),
+    "collapseProxyChains": MessageLookupByLibrary.simpleMessage("折叠代理链"),
+    "collapseProxyChainsDesc": MessageLookupByLibrary.simpleMessage(
+      "代理链超过三个节点时隐藏中间节点",
+    ),
     "collapseQuickSettingsPanel": MessageLookupByLibrary.simpleMessage(
       "收起快捷设置面板",
     ),

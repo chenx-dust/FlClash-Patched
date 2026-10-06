@@ -614,9 +614,10 @@ void main() {
     tester,
   ) async {
     container.listen(groupsProvider, (_, _) {});
-    const outer = Group(type: GroupType.Selector, name: 'route', now: 'auto');
+    const outer = Group(type: GroupType.Selector, name: 'route', now: 'bridge');
+    const bridge = Group(type: GroupType.Selector, name: 'bridge', now: 'auto');
     const inner = Group(type: GroupType.URLTest, name: 'auto', now: 'node-a');
-    container.read(groupsProvider.notifier).value = [outer, inner];
+    container.read(groupsProvider.notifier).value = [outer, bridge, inner];
     when(
       () => core.getRules(),
     ).thenAnswer((_) async => [rule.copyWith(proxy: 'route')]);
@@ -627,15 +628,28 @@ void main() {
     await tester.tap(find.text('...', findRichText: true));
     await tester.pump();
     expect(find.text('auto', findRichText: true), findsOneWidget);
+    container
+        .read(appSettingProvider.notifier)
+        .update((state) => state.copyWith(collapseProxyChains: false));
     container.read(groupsProvider.notifier).value = [
       outer,
+      bridge,
       inner.copyWith(now: 'node-b'),
     ];
     await tester.pump();
     expect(find.text('node-a', findRichText: true), findsNothing);
     expect(find.text('node-b', findRichText: true), findsOneWidget);
+    expect(find.text('auto', findRichText: true), findsOneWidget);
+    expect(find.text('...', findRichText: true), findsNothing);
+    container
+        .read(appSettingProvider.notifier)
+        .update((state) => state.copyWith(collapseProxyChains: true));
+    await tester.pump();
+    expect(find.text('auto', findRichText: true), findsNothing);
+    expect(find.text('...', findRichText: true), findsOneWidget);
     container.read(groupsProvider.notifier).value = [
       outer,
+      bridge,
       inner.copyWith(now: 'route'),
     ];
     await tester.pump();

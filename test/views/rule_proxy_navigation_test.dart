@@ -282,8 +282,7 @@ void main() {
       tester,
     ) async {
       await pumpViews(tester, type);
-      await tester.tap(find.text('...', findRichText: true));
-      await tester.pump();
+      expect(find.text('...', findRichText: true), findsNothing);
       await tester.tap(find.text('destination', findRichText: true));
       await tester.pumpAndSettle();
       if (type == ProxiesType.tab) {

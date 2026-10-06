@@ -69,7 +69,11 @@ class RuleProxyChain extends ConsumerWidget {
     }
 
     return ProxyChain(
-      hideTooMany: hideTooMany,
+      hideTooMany:
+          ref.watch(
+            appSettingProvider.select((state) => state.collapseProxyChains),
+          ) &&
+          hideTooMany,
       chain: chain,
       leading: leading,
       showLeadingArrow: leading == null,

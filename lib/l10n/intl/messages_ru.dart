@@ -375,6 +375,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Закрыть соединения, использующие предыдущий прокси?",
     ),
     "collapse": MessageLookupByLibrary.simpleMessage("Свернуть"),
+    "collapseProxyChains": MessageLookupByLibrary.simpleMessage(
+      "Сворачивать цепочки прокси",
+    ),
+    "collapseProxyChainsDesc": MessageLookupByLibrary.simpleMessage(
+      "Скрывать промежуточные узлы, если в цепочке прокси больше трёх узлов",
+    ),
     "collapseQuickSettingsPanel": MessageLookupByLibrary.simpleMessage(
       "Сворачивать панель быстрых настроек",
     ),

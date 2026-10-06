@@ -151,14 +151,14 @@ class TrackerInfoItem extends ConsumerWidget {
   }
 }
 
-class _TrackerInfoBody extends StatelessWidget {
+class _TrackerInfoBody extends ConsumerWidget {
   final TrackerInfo trackerInfo;
   final void Function(TrackerInfoFilterType type, String value) onSelect;
 
   const _TrackerInfoBody({required this.trackerInfo, required this.onSelect});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final styles = RecordTextStyles.of(context);
     final metadata = trackerInfo.metadata;
     final rule = _ruleText(trackerInfo);
@@ -190,6 +190,9 @@ class _TrackerInfoBody extends StatelessWidget {
         ),
         ProxyChain(
           chain: trackerInfo.chains.reversed,
+          hideTooMany: ref.watch(
+            appSettingProvider.select((state) => state.collapseProxyChains),
+          ),
           leading: rule.isNotEmpty ? Text(rule, style: styles.secondary) : null,
           onSelected: (chain) => onSelect(TrackerInfoFilterType.chain, chain),
         ),

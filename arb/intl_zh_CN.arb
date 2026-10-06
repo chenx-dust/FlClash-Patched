@@ -478,6 +478,8 @@
   "remoteDestination": "远程目标",
   "networkType": "网络类型",
   "proxyChains": "代理链",
+  "collapseProxyChains": "折叠代理链",
+  "collapseProxyChainsDesc": "代理链超过三个节点时隐藏中间节点",
   "log": "日志",
   "connection": "连接",
   "request": "请求",
