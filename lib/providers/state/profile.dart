@@ -38,6 +38,19 @@ Future<ClashConfig> clashConfig(Ref ref, int profileId) async {
 }
 
 @riverpod
+({int? profileId, AsyncValue<List<Rule>> rules}) activeAddedRules(Ref ref) {
+  final profileId = ref.watch(currentProfileIdProvider);
+  if (profileId == null ||
+      ref.watch(overwriteTypeProvider(profileId)) != OverwriteType.standard) {
+    return (profileId: null, rules: const AsyncData([]));
+  }
+  return (
+    profileId: profileId,
+    rules: ref.watch(addedRulesStreamProvider(profileId)),
+  );
+}
+
+@riverpod
 Future<SetupState> setupState(Ref ref, int? profileId) async {
   final profile = ref.watch(profileProvider(profileId));
   final scriptId = profile?.scriptId;
@@ -51,7 +64,7 @@ Future<SetupState> setupState(Ref ref, int? profileId) async {
   Script? script;
   if (profileId != null) {
     if (overwriteType == OverwriteType.standard) {
-      addedRules = await database.rulesDao.queryAddedRules(profileId).get();
+      addedRules = await ref.watch(addedRulesStreamProvider(profileId).future);
     } else if (overwriteType == OverwriteType.script) {
       script = scriptId == null
           ? null

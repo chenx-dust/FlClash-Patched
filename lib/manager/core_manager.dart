@@ -48,6 +48,29 @@ class _CoreContainerState extends ConsumerState<CoreManager>
         ref.read(setupActionProvider.notifier).updateConfigDebounce();
       }
     });
+    ref.listenManual(profileReloadStateProvider, (prev, next) {
+      if (prev != next) _reloadProfile();
+    });
+    ref.listenManual(activeAddedRulesProvider, (prev, next) {
+      if (next.profileId == null ||
+          prev?.profileId != next.profileId ||
+          prev?.rules.value == null ||
+          next.rules.isLoading ||
+          next.rules.hasError ||
+          ruleListEquality.equals(prev?.rules.value, next.rules.value)) {
+        return;
+      }
+      _reloadProfile();
+    });
+  }
+
+  void _reloadProfile() {
+    if (!ref.read(initProvider) ||
+        ref.read(coreStatusProvider) != CoreStatus.connected ||
+        ref.read(currentProfileIdProvider) == null) {
+      return;
+    }
+    ref.read(setupActionProvider.notifier).applyProfileDebounce(silence: true);
   }
 
   @override

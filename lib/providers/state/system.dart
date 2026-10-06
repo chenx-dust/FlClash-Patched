@@ -5,6 +5,40 @@ final vpnOptionsProvider = Provider<VpnOptions?>((ref) {
 });
 
 @riverpod
+({
+  PatchClashConfig config,
+  bool overrideDns,
+  bool overrideNtp,
+  bool appendSystemDns,
+})
+profileReloadState(Ref ref) {
+  final config = ref.watch(patchClashConfigProvider);
+  return (
+    // Fields supported by updateParams use the existing hot-update path.
+    config: config.copyWith(
+      tun: defaultClashConfig.tun,
+      allowLan: defaultClashConfig.allowLan,
+      findProcessMode: defaultClashConfig.findProcessMode,
+      mode: defaultClashConfig.mode,
+      logLevel: defaultClashConfig.logLevel,
+      ipv6: defaultClashConfig.ipv6,
+      tcpConcurrent: defaultClashConfig.tcpConcurrent,
+      externalController: defaultClashConfig.externalController,
+      secret: defaultClashConfig.secret,
+      unifiedDelay: defaultClashConfig.unifiedDelay,
+      mixedPort: defaultClashConfig.mixedPort,
+      geoAutoUpdate: defaultClashConfig.geoAutoUpdate,
+      geoUpdateInterval: defaultClashConfig.geoUpdateInterval,
+    ),
+    overrideDns: ref.watch(overrideDnsProvider),
+    overrideNtp: ref.watch(overrideNtpProvider),
+    appendSystemDns: ref.watch(
+      networkSettingProvider.select((state) => state.appendSystemDns),
+    ),
+  );
+}
+
+@riverpod
 UpdateParams updateParams(Ref ref) {
   final routeMode = ref.watch(
     networkSettingProvider.select((state) => state.routeMode),

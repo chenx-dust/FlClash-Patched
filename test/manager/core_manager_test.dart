@@ -85,6 +85,7 @@ Future<ProviderContainer> _pumpCoreManager(
       coreHandlerProvider.overrideWithValue(
         CoreController.scoped(coreInterface),
       ),
+      addedRulesStreamProvider.overrideWith((_, _) => Stream.value([])),
       ...overrides,
     ],
   );
@@ -116,6 +117,7 @@ Future<void> _waitForSetupToSettle(
   WidgetTester tester,
   bool Function() condition,
 ) async {
+  await tester.pump();
   await tester.runAsync(() async {
     final deadline = DateTime.now().add(const Duration(seconds: 10));
     while (!condition() && DateTime.now().isBefore(deadline)) {
@@ -130,6 +132,7 @@ Future<void> _waitForSetupToSettle(
       await Future<void>.delayed(const Duration(milliseconds: 20));
     }
   });
+  await tester.pump(const Duration(milliseconds: 1100));
 }
 
 void main() {
@@ -144,6 +147,7 @@ void main() {
     PathProviderPlatform.instance = _FakePathProvider(
       profileSwitchTempDir.path,
     );
+    await appPath.homeDirPath;
   });
 
   tearDownAll(() {
