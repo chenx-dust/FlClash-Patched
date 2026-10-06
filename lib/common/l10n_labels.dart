@@ -12,7 +12,7 @@ extension PageLabelL10n on PageLabel {
       PageLabel.profiles => appLocalizations.profiles,
       PageLabel.tools => appLocalizations.tools,
       PageLabel.logs => appLocalizations.logs,
-      PageLabel.requests => appLocalizations.requests,
+      PageLabel.requests => appLocalizations.recentRequests,
       PageLabel.resources => appLocalizations.resources,
       PageLabel.networking => appLocalizations.networking,
       PageLabel.connections => appLocalizations.connections,

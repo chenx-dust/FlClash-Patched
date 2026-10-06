@@ -110,7 +110,7 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     return CommonScaffold(
-      title: appLocalizations.requests,
+      title: appLocalizations.recentRequests,
       actions: [
         TrackerInfoFilterButton(
           visible: _showFilterBar,
@@ -157,7 +157,9 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
           final body = requests.isEmpty
               ? Expanded(
                   child: NullStatus(
-                    label: appLocalizations.nullTip(appLocalizations.requests),
+                    label: appLocalizations.nullTip(
+                      appLocalizations.recentRequests,
+                    ),
                   ),
                 )
               : Expanded(

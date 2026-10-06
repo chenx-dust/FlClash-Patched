@@ -1565,11 +1565,16 @@ class AppLocalizations {
     );
   }
 
-  /// `Recent requests`
+  /// `Requests`
   String get requests {
+    return Intl.message('Requests', name: 'requests', desc: '', args: []);
+  }
+
+  /// `Recent requests`
+  String get recentRequests {
     return Intl.message(
       'Recent requests',
-      name: 'requests',
+      name: 'recentRequests',
       desc: '',
       args: [],
     );

@@ -886,6 +886,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "quickFill": MessageLookupByLibrary.simpleMessage("一鍵填入"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("彩虹"),
     "random": MessageLookupByLibrary.simpleMessage("隨機"),
+    "recentRequests": MessageLookupByLibrary.simpleMessage("最近請求"),
     "recordType": MessageLookupByLibrary.simpleMessage("紀錄類型"),
     "recvMsgX": MessageLookupByLibrary.simpleMessage("啟用 RecvMsgX"),
     "recvMsgXDesc": MessageLookupByLibrary.simpleMessage("在 Darwin 上批次接收封包"),
@@ -900,7 +901,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "replace": MessageLookupByLibrary.simpleMessage("替換"),
     "replaceAll": MessageLookupByLibrary.simpleMessage("全部替換"),
     "request": MessageLookupByLibrary.simpleMessage("請求"),
-    "requests": MessageLookupByLibrary.simpleMessage("最近請求"),
+    "requests": MessageLookupByLibrary.simpleMessage("請求"),
     "requestsDesc": MessageLookupByLibrary.simpleMessage("檢視最近的請求紀錄"),
     "reset": MessageLookupByLibrary.simpleMessage("重置"),
     "resetPageChangesTip": MessageLookupByLibrary.simpleMessage(

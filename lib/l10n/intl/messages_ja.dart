@@ -998,6 +998,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "quickFill": MessageLookupByLibrary.simpleMessage("クイック入力"),
     "rainbowScheme": MessageLookupByLibrary.simpleMessage("レインボー"),
     "random": MessageLookupByLibrary.simpleMessage("ランダム"),
+    "recentRequests": MessageLookupByLibrary.simpleMessage("最近のリクエスト"),
     "recordType": MessageLookupByLibrary.simpleMessage("レコードタイプ"),
     "recvMsgX": MessageLookupByLibrary.simpleMessage("RecvMsgX を有効にする"),
     "recvMsgXDesc": MessageLookupByLibrary.simpleMessage("Darwin でパケットを一括受信"),
@@ -1014,7 +1015,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "replace": MessageLookupByLibrary.simpleMessage("置換"),
     "replaceAll": MessageLookupByLibrary.simpleMessage("すべて置換"),
     "request": MessageLookupByLibrary.simpleMessage("リクエスト"),
-    "requests": MessageLookupByLibrary.simpleMessage("最近のリクエスト"),
+    "requests": MessageLookupByLibrary.simpleMessage("リクエスト"),
     "requestsDesc": MessageLookupByLibrary.simpleMessage("最近のリクエスト記録を表示します"),
     "reset": MessageLookupByLibrary.simpleMessage("リセット"),
     "resetPageChangesTip": MessageLookupByLibrary.simpleMessage(
