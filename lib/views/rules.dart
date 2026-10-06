@@ -1,8 +1,11 @@
+import 'package:fl_clash/common/added_rule_match.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
+import 'package:fl_clash/views/config/rules.dart';
+import 'package:fl_clash/views/profiles/overwrite/overwrite.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -218,7 +221,25 @@ class _RulesViewState extends ConsumerState<RulesView>
   Widget build(BuildContext context) {
     final l10n = context.appLocalizations;
     final connected = ref.watch(coreStatusProvider) == CoreStatus.connected;
+    final profile = ref.watch(currentProfileProvider);
+    final addedRules = profile?.overwriteType == OverwriteType.standard
+        ? ref.watch(addedRulesStreamProvider(profile!.id)).value ??
+              const <Rule>[]
+        : const <Rule>[];
+    final profileRules = profile?.overwriteType == OverwriteType.standard
+        ? ref.watch(profileAddedRulesProvider(profile!.id)).value
+        : null;
     final matcher = SearchMatcher(_query.trim(), useRegex: _useRegex);
+    final configuredMatchTarget = profile?.matchTarget?.trim();
+    final matchTarget = configuredMatchTarget?.isNotEmpty == true
+        ? configuredMatchTarget
+        : _rules
+              ?.where(
+                (rule) =>
+                    rule.index >= addedRules.length && rule.type == 'Match',
+              )
+              .lastOrNull
+              ?.proxy;
     final rules = [
       for (final rule in _rules ?? const <CoreRule>[])
         if (matcher.hasAnyMatch(rule.searchFields)) rule,
@@ -255,6 +276,16 @@ class _RulesViewState extends ConsumerState<RulesView>
             child: _buildRulesContent(
               context,
               rules: rules,
+              addedRules: addedRules,
+              matchTarget: matchTarget,
+              onOpenAddedRule: profileRules == null || profile == null
+                  ? null
+                  : (rule) => BaseNavigator.push(
+                      context,
+                      profileRules.any((item) => item.id == rule.id)
+                          ? OverwriteView(profileId: profile.id)
+                          : const AddedRulesView(),
+                    ),
               connected: connected,
               busy: busy,
             ),
@@ -267,6 +298,9 @@ class _RulesViewState extends ConsumerState<RulesView>
   Widget _buildRulesContent(
     BuildContext context, {
     required List<CoreRule> rules,
+    required List<Rule> addedRules,
+    required String? matchTarget,
+    required ValueChanged<Rule>? onOpenAddedRule,
     required bool connected,
     required bool busy,
   }) {
@@ -307,9 +341,18 @@ class _RulesViewState extends ConsumerState<RulesView>
           separatorBuilder: (_, _) => const Divider(height: 0),
           itemBuilder: (_, index) {
             final rule = rules[index];
+            final isAdded = matchesAddedRule(
+              rule,
+              addedRules,
+              matchTarget: matchTarget,
+            );
 
             return _RuleItem(
               rule: _pendingRules[rule.index] ?? rule,
+              isAdded: isAdded,
+              onOpenAddedRule: !isAdded || onOpenAddedRule == null
+                  ? null
+                  : () => onOpenAddedRule(addedRules[rule.index]),
               onChanged: (value) => _scheduleEnabled(rule, value),
               onUpdate: _updateProvider,
             );
@@ -322,11 +365,15 @@ class _RulesViewState extends ConsumerState<RulesView>
 
 class _RuleItem extends ConsumerWidget {
   final CoreRule rule;
+  final bool isAdded;
+  final VoidCallback? onOpenAddedRule;
   final ValueChanged<bool>? onChanged;
   final ValueChanged<ExternalProvider> onUpdate;
 
   const _RuleItem({
     required this.rule,
+    required this.isAdded,
+    required this.onOpenAddedRule,
     required this.onChanged,
     required this.onUpdate,
   });
@@ -376,6 +423,10 @@ class _RuleItem extends ConsumerWidget {
         children: [
           Text('#${rule.index + 1}'),
           RecordLabel(label: rule.type),
+          if (isAdded)
+            RecordLabel(label: l10n.addedRules, onPressed: onOpenAddedRule,
+              tone: RecordTone.warning,
+            ),
           if (rule.disabled)
             RecordLabel(label: l10n.ruleDisabled, tone: RecordTone.muted),
         ],

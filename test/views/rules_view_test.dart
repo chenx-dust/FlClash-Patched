@@ -7,6 +7,8 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/rules.dart';
+import 'package:fl_clash/views/config/rules.dart';
+import 'package:fl_clash/views/profiles/overwrite/overwrite.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,12 +16,30 @@ import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../helpers/test_app.dart';
+import '../helpers/test_database_providers.dart';
 
 class _Core extends Mock implements CoreHandlerInterface {}
+
+class _ProfileRules extends ProfileAddedRules {
+  _ProfileRules(this.rules);
+
+  final List<Rule> rules;
+
+  @override
+  Stream<List<Rule>> build(int profileId) => Stream.value(rules);
+}
+
+class _Setup extends SetupAction {
+  @override
+  void autoApplyProfile() {}
+}
 
 void main() {
   late _Core core;
   late ProviderContainer container;
+  Profile? profile;
+  List<Rule> addedRules = [];
+  List<Rule> profileRules = [];
   const rule = CoreRule(
     index: 7,
     type: 'Domain',
@@ -36,6 +56,17 @@ void main() {
     container = ProviderContainer(
       overrides: [
         coreHandlerProvider.overrideWithValue(CoreController.scoped(core)),
+        currentProfileProvider.overrideWith((_) => profile),
+        profileAddedRulesProvider(
+          1,
+        ).overrideWith(() => _ProfileRules(profileRules)),
+        globalRulesProvider.overrideWith(() => TestGlobalRules(addedRules)),
+        profileProvider(1).overrideWith((_) => profile),
+        clashConfigProvider(1).overrideWith((_) async => const ClashConfig()),
+        setupActionProvider.overrideWith(_Setup.new),
+        addedRulesStreamProvider(
+          1,
+        ).overrideWith((_) => Stream.value(addedRules)),
       ],
     );
     globalState.container = container;
@@ -43,7 +74,12 @@ void main() {
     container.read(coreStatusProvider.notifier).value = CoreStatus.connected;
   });
 
-  tearDown(() => container.dispose());
+  tearDown(() {
+    container.dispose();
+    profile = null;
+    addedRules = [];
+    profileRules = [];
+  });
 
   Future<void> pumpView(WidgetTester tester, {double width = 800}) async {
     tester.view.physicalSize = Size(width, 800);
@@ -64,6 +100,105 @@ void main() {
   Future<void> closeView(WidgetTester tester) async {
     await tester.pumpWidget(const SizedBox());
     await tester.pump();
+  }
+
+  testWidgets('tags added rules by original order even after searching', (
+    tester,
+  ) async {
+    profile = const Profile(
+      id: 1,
+      autoUpdateDuration: Duration.zero,
+      matchTarget: 'DIRECT',
+    );
+    addedRules = [
+      const Rule(content: 'first.com', ruleTarget: 'DIRECT'),
+      const Rule(content: 'example.com', ruleTarget: 'MATCH'),
+    ];
+    when(() => core.getRules()).thenAnswer(
+      (_) async => [
+        rule.copyWith(index: 0, payload: 'first.com'),
+        rule.copyWith(index: 1, disabled: true),
+        rule.copyWith(index: 2),
+      ],
+    );
+    await pumpView(tester, width: 360);
+    expect(find.text('Added rules'), findsNWidgets(2));
+    expect(tester.takeException(), isNull);
+    tester
+        .widget<CommonScaffold>(find.byType(CommonScaffold))
+        .searchState!
+        .onSearch('example.com');
+    await tester.pumpAndSettle();
+    expect(find.text('Added rules'), findsOneWidget);
+    expect(find.text('#2'), findsOneWidget);
+    expect(find.text('#3'), findsOneWidget);
+    await closeView(tester);
+  });
+
+  for (final overwriteType in [OverwriteType.script, OverwriteType.custom]) {
+    testWidgets('does not tag rules in $overwriteType mode', (tester) async {
+      profile = Profile(
+        id: 1,
+        autoUpdateDuration: Duration.zero,
+        overwriteType: overwriteType,
+      );
+      addedRules = [const Rule(content: 'example.com', ruleTarget: 'DIRECT')];
+      when(
+        () => core.getRules(),
+      ).thenAnswer((_) async => [rule.copyWith(index: 0)]);
+      await pumpView(tester);
+      expect(find.text('Added rules'), findsNothing);
+      await closeView(tester);
+    });
+  }
+
+  testWidgets('does not tag stale rules at an added rule position', (
+    tester,
+  ) async {
+    profile = const Profile(id: 1, autoUpdateDuration: Duration.zero);
+    addedRules = [const Rule(content: 'changed.com', ruleTarget: 'DIRECT')];
+    when(
+      () => core.getRules(),
+    ).thenAnswer((_) async => [rule.copyWith(index: 0)]);
+    await pumpView(tester);
+    expect(find.text('example.com'), findsOneWidget);
+    expect(find.text('Added rules'), findsNothing);
+    await closeView(tester);
+  });
+
+  for (final isProfileRule in [true, false]) {
+    testWidgets(
+      'added tag opens ${isProfileRule ? 'profile' : 'global'} rules',
+      (tester) async {
+        profile = const Profile(id: 1, autoUpdateDuration: Duration.zero);
+        addedRules = [
+          const Rule(id: 42, content: 'example.com', ruleTarget: 'DIRECT'),
+        ];
+        profileRules = isProfileRule ? addedRules : [];
+        when(
+          () => core.getRules(),
+        ).thenAnswer((_) async => [rule.copyWith(index: 0)]);
+        await pumpView(tester, width: 360);
+        await tester.tap(find.text('Added rules'));
+        await tester.pumpAndSettle();
+        if (isProfileRule) {
+          expect(find.byType(OverwriteView), findsOneWidget);
+          expect(
+            tester.widget<OverwriteView>(find.byType(OverwriteView)).profileId,
+            1,
+          );
+        } else {
+          expect(find.byType(AddedRulesView), findsOneWidget);
+        }
+        expect(find.byType(AdaptiveSheetScaffold), findsNothing);
+        expect(tester.takeException(), isNull);
+        globalState.navigatorKey.currentState!.pop();
+        await tester.pumpAndSettle();
+        expect(find.byType(RulesView), findsOneWidget);
+        expect(find.text('Added rules'), findsOneWidget);
+        await closeView(tester);
+      },
+    );
   }
 
   ExternalProvider seedRuleProvider({
