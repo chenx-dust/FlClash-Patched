@@ -42,16 +42,13 @@ final class TunnelRequest {
   let generation: UInt64
   let target: TunnelTarget
   var preferenceRetryCount = 0
-  var notifyExternalOnCompletion: Bool
 
   init(
     generation: UInt64,
-    target: TunnelTarget,
-    notifyExternalOnCompletion: Bool
+    target: TunnelTarget
   ) {
     self.generation = generation
     self.target = target
-    self.notifyExternalOnCompletion = notifyExternalOnCompletion
   }
 }
 
@@ -74,7 +71,6 @@ enum TunnelWaitPurpose {
 
 enum TunnelWaitResult {
   case status(NEVPNStatus)
-  case timeout(NEVPNStatus)
   case superseded
 }
 
@@ -84,7 +80,6 @@ final class TunnelWait {
   let manager: NETunnelProviderManager
   let continuation: CheckedContinuation<TunnelWaitResult, Never>
   var hasObservedProgress = false
-  var timeoutWork: DispatchWorkItem?
 
   init(
     request: TunnelRequest,

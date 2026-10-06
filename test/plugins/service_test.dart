@@ -155,11 +155,11 @@ void main() {
       expect(sent['currentProfileName'], 'profile');
     });
 
-    test('an absent start or stop result is treated as failure', () async {
+    test('an absent start or stop result remains unknown', () async {
       mockChannel((_) async => null);
 
-      expect(await Service().start(sharedState), isFalse);
-      expect(await Service().stop(), isFalse);
+      expect(await Service().start(sharedState), isNull);
+      expect(await Service().stop(), isNull);
     });
 
     test('an absent shutdown result is treated as success', () async {
@@ -169,7 +169,7 @@ void main() {
         await Service().shutdown(),
         isTrue,
         reason:
-            'shutdown defaults the opposite way from start/stop: a service '
+            'shutdown remains successful when a service '
             'that cannot answer is already gone',
       );
     });

@@ -79,7 +79,7 @@ class Navigation implements NavigationPort {
         modes: hasNetworking ? [NavigationItemMode.more] : [],
       ),
       NavigationItem(
-        icon: const Icon(Symbols.adb),
+        icon: const Icon(Symbols.bug_report),
         label: PageLabel.logs,
         builder: (_) => const LogsView(key: GlobalObjectKey(PageLabel.logs)),
         modes: openLogs

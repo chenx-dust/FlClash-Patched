@@ -81,6 +81,8 @@ class TestSetupAction extends SetupAction {
   int applyProfileCalls = 0;
   bool blockCoreCalls = false;
   Error? coreRunningError;
+  bool? startAccepted = true;
+  bool? stopAccepted = true;
   int authorizeCalls = 0;
   AuthorizeCode authorizeResult = AuthorizeCode.none;
   bool restoreServiceRunTime = false;
@@ -103,7 +105,7 @@ class TestSetupAction extends SetupAction {
   }
 
   @override
-  Future<bool> setCoreRunning(bool running) async {
+  Future<bool?> setCoreRunning(bool running) async {
     coreRunningCalls.add(running);
     if (blockCoreCalls) {
       final gate = Completer<void>();
@@ -114,7 +116,7 @@ class TestSetupAction extends SetupAction {
     if (error != null) {
       throw error;
     }
-    return true;
+    return running ? startAccepted : stopAccepted;
   }
 
   @override
@@ -158,6 +160,8 @@ void main() {
   tearDown(() async {
     action.blockCoreCalls = false;
     action.coreRunningError = null;
+    action.startAccepted = true;
+    action.stopAccepted = true;
     for (final gate in action.pendingCoreCalls) {
       if (!gate.isCompleted) {
         gate.complete();
@@ -294,6 +298,113 @@ void main() {
       await container.read(setupActionProvider.notifier).setRunning(false);
 
       expect(action.coreRunningCalls, [false]);
+    });
+  });
+
+  group('native running state synchronization', () {
+    test(
+      'current native failure is applied even before acknowledgment',
+      () async {
+        markInitialized();
+        action.blockCoreCalls = true;
+        final notifier = container.read(setupActionProvider.notifier);
+        final starting = notifier.setRunning(true);
+        await Future<void>.delayed(Duration.zero);
+
+        notifier.syncRunningState(false);
+        action.blockCoreCalls = false;
+        action.pendingCoreCalls.single.complete();
+        await starting;
+
+        expect(container.read(isStartProvider), isFalse);
+        expect(action.coreRunningCalls, [true]);
+      },
+    );
+
+    test('external state restores the native start time', () {
+      final startTime = DateTime.now().subtract(const Duration(seconds: 30));
+      container
+          .read(setupActionProvider.notifier)
+          .syncRunningState(true, startTime: startTime);
+
+      expect(container.read(runTimeProvider), greaterThanOrEqualTo(30000));
+    });
+  });
+
+  group('native request rejection', () {
+    test(
+      'an uncertain initialization result does not request a stop',
+      () async {
+        action.startAccepted = null;
+
+        expect(await action.setRunning(true, initialize: true), isTrue);
+
+        expect(container.read(isStartProvider), isTrue);
+        expect(action.coreRunningCalls, [true]);
+      },
+    );
+
+    test(
+      'an uncertain start result keeps the requested running state',
+      () async {
+        markInitialized();
+        action.startAccepted = null;
+
+        expect(await action.setRunning(true), isTrue);
+
+        expect(container.read(isStartProvider), isTrue);
+        expect(action.coreRunningCalls, [true]);
+      },
+    );
+
+    test(
+      'an uncertain stop result keeps the requested stopped state',
+      () async {
+        markInitialized();
+        await action.setRunning(true);
+        action.stopAccepted = null;
+
+        expect(await action.setRunning(false), isTrue);
+
+        expect(container.read(isStartProvider), isFalse);
+        expect(action.trafficResets, 1);
+      },
+    );
+
+    test('rejected start rolls back the optimistic running state', () async {
+      markInitialized();
+      action.startAccepted = false;
+
+      await expectLater(
+        container.read(setupActionProvider.notifier).setRunning(true),
+        throwsStateError,
+      );
+
+      expect(container.read(isStartProvider), isFalse);
+      expect(action.coreRunningCalls, [true]);
+    });
+
+    test('rejected stop preserves the previously running state', () async {
+      markInitialized();
+      final notifier = container.read(setupActionProvider.notifier);
+      await notifier.setRunning(true);
+      action.stopAccepted = false;
+
+      await expectLater(notifier.setRunning(false), throwsStateError);
+
+      expect(container.read(isStartProvider), isTrue);
+      expect(action.trafficResets, 0);
+    });
+
+    test('rejected redundant start preserves the earlier run', () async {
+      markInitialized();
+      final notifier = container.read(setupActionProvider.notifier);
+      await notifier.setRunning(true);
+      action.startAccepted = false;
+
+      await expectLater(notifier.setRunning(true), throwsStateError);
+
+      expect(container.read(isStartProvider), isTrue);
     });
   });
 

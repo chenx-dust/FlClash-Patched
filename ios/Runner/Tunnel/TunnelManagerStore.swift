@@ -15,20 +15,16 @@ private enum ManagerCacheState {
     reloadCount: Int,
     requests: [ManagerLoadRequest]
   )
-  case timedOut(id: UInt64, generation: UInt64)
   case loaded(NETunnelProviderManager?)
 }
 
 private enum ManagerLoadError: LocalizedError {
   case invalidatedRepeatedly
-  case timedOut
 
   var errorDescription: String? {
     switch self {
     case .invalidatedRepeatedly:
       return "Network Extension manager changed repeatedly while loading"
-    case .timedOut:
-      return "Timed out while loading Network Extension preferences"
     }
   }
 }
@@ -42,13 +38,11 @@ final class TunnelManagerStore {
     subsystem: Bundle.main.bundleIdentifier ?? "cc.chenx.flclash",
     category: "TunnelManagerStore"
   )
-  private let loadTimeout: TimeInterval = 5
   private let maxInvalidationReloadCount = 1
 
   private var cacheGeneration: UInt64 = 0
   private var cacheState = ManagerCacheState.unloaded
   private var nextLoadID: UInt64 = 0
-  private var loadTimeoutWork: DispatchWorkItem?
 
   init(
     sharedStateStore: SharedStateStore,
@@ -84,10 +78,6 @@ final class TunnelManagerStore {
           reloadCount: reloadCount,
           requests: requests
         )
-      case .timedOut:
-        // The system load cannot be cancelled. Its late callback must retire
-        // before another load is allowed onto ne_session queue.
-        continuation.resume(throwing: ManagerLoadError.timedOut)
       case .loaded(let cachedManager):
         if let cachedManager {
           continuation.resume(returning: cachedManager)
@@ -218,15 +208,6 @@ final class TunnelManagerStore {
       requests: requests
     )
 
-    let timeoutWork = DispatchWorkItem { [weak self] in
-      self?.handleManagerLoadTimeout(loadID: loadID)
-    }
-    loadTimeoutWork?.cancel()
-    loadTimeoutWork = timeoutWork
-    DispatchQueue.main.asyncAfter(
-      deadline: .now() + loadTimeout,
-      execute: timeoutWork
-    )
     log(
       "loadManager begin id=\(loadID) generation=\(generation) reload=\(reloadCount) requests=\(requests.count)"
     )
@@ -247,20 +228,6 @@ final class TunnelManagerStore {
     managers: [NETunnelProviderManager]?,
     error: Error?
   ) {
-    if case .timedOut(
-      let activeLoadID,
-      let generation
-    ) = cacheState,
-      activeLoadID == loadID
-    {
-      finishTimedOutManagerLoad(
-        generation: generation,
-        managers: managers,
-        error: error
-      )
-      return
-    }
-
     guard case .loading(
       let activeLoadID,
       let generation,
@@ -271,8 +238,6 @@ final class TunnelManagerStore {
     else {
       return
     }
-    loadTimeoutWork?.cancel()
-    loadTimeoutWork = nil
 
     if let error {
       cacheState = .unloaded
@@ -316,44 +281,6 @@ final class TunnelManagerStore {
         (request.createIfNeeded ? createdManager : nil)
       request.continuation.resume(returning: requestManager)
     }
-  }
-
-  private func handleManagerLoadTimeout(loadID: UInt64) {
-    guard case .loading(
-      let activeLoadID,
-      let generation,
-      _,
-      let requests
-    ) = cacheState,
-      activeLoadID == loadID
-    else {
-      return
-    }
-    loadTimeoutWork = nil
-    cacheState = .timedOut(
-      id: loadID,
-      generation: generation
-    )
-    let error = ManagerLoadError.timedOut
-    log("loadManager timeout id=\(loadID) requests=\(requests.count)")
-    resume(requests, throwing: error)
-  }
-
-  private func finishTimedOutManagerLoad(
-    generation: UInt64,
-    managers: [NETunnelProviderManager]?,
-    error: Error?
-  ) {
-    guard error == nil,
-      generation == cacheGeneration
-    else {
-      cacheState = .unloaded
-      log("loadManager late result discarded")
-      return
-    }
-    let manager = managers?.first(where: isManagedManager)
-    cacheState = .loaded(manager)
-    log("loadManager late result adopted manager=\(manager != nil)")
   }
 
   private func resume(

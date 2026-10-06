@@ -221,11 +221,11 @@ class CoreController {
     return _interface.updateExternalProvider(providerName);
   }
 
-  Future<bool> startListener() async {
+  Future<bool?> startListener() async {
     return _interface.startListener();
   }
 
-  Future<bool> stopListener() async {
+  Future<bool?> stopListener() async {
     return _interface.stopListener();
   }
 

@@ -195,7 +195,12 @@ class SetupAction extends _$SetupAction {
       if (request.running && ref.read(suspendProvider)) {
         return;
       }
-      await setCoreRunning(request.running);
+      final accepted = await setCoreRunning(request.running);
+      if (accepted == false && _isCurrent(request)) {
+        throw StateError(
+          'Core rejected the ${request.running ? 'start' : 'stop'} request',
+        );
+      }
     });
   }
 
@@ -204,7 +209,7 @@ class SetupAction extends _$SetupAction {
       return;
     }
     _startTime = request.previousStartTime;
-    _setLocalRunning(!request.running);
+    _setLocalRunning(request.previousStartTime != null);
   }
 
   bool _isCurrent(_RunRequest request) => identical(_latestRunRequest, request);
@@ -214,7 +219,7 @@ class SetupAction extends _$SetupAction {
   }
 
   @protected
-  Future<bool> setCoreRunning(bool running) {
+  Future<bool?> setCoreRunning(bool running) {
     return running ? _core.startListener() : _core.stopListener();
   }
 

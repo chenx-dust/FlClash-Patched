@@ -5,6 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 class _RecordingListener with TileListener {
   final calls = <String>[];
+  (bool, DateTime?)? runningState;
+
+  @override
+  void onRunningState(bool running, DateTime? startTime) {
+    runningState = (running, startTime);
+  }
 
   @override
   void onStart() => calls.add('start');
@@ -51,6 +57,28 @@ void main() {
           null,
         );
   }
+
+  test('running state forwards the native start time', () async {
+    final listener = _RecordingListener();
+    Tile.instance.addListener(listener);
+    addTearDown(() => Tile.instance.removeListener(listener));
+    await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .handlePlatformMessage(
+          channelName,
+          codec.encodeMethodCall(
+            const MethodCall('syncRunningState', {
+              'running': true,
+              'startTime': 1000,
+            }),
+          ),
+          null,
+        );
+
+    expect(listener.runningState, (
+      true,
+      DateTime.fromMillisecondsSinceEpoch(1000),
+    ));
+  });
 
   test('routes every quick settings action to its listener callback', () async {
     final listener = _RecordingListener();

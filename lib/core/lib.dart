@@ -115,25 +115,28 @@ class CoreLib extends CoreHandlerInterface {
   }
 
   @override
-  Future<bool> startListener() async {
-    final listenerStarted =
-        _listenerManagedByService || await super.startListener();
-    final serviceStarted =
-        await _service?.start(
-          globalState.container.read(sharedStateProvider),
-        ) ??
-        false;
-    return listenerStarted && serviceStarted;
+  Future<bool?> startListener() async {
+    if (_listenerManagedByService) {
+      return _service?.start(globalState.container.read(sharedStateProvider));
+    }
+    final listenerStarted = await super.startListener();
+    if (listenerStarted != true) {
+      return listenerStarted;
+    }
+    final serviceStarted = await _service?.start(
+      globalState.container.read(sharedStateProvider),
+    );
+    return serviceStarted == true ? true : null;
   }
 
   @override
-  Future<bool> stopListener() async {
-    final serviceStopped = await _service?.stop() ?? false;
-    if (_listenerManagedByService) {
+  Future<bool?> stopListener() async {
+    final serviceStopped = await _service?.stop();
+    if (_listenerManagedByService || serviceStopped != true) {
       return serviceStopped;
     }
     final listenerStopped = await super.stopListener();
-    return serviceStopped && listenerStopped;
+    return listenerStopped == true ? true : null;
   }
 
   @override

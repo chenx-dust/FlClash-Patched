@@ -31,7 +31,7 @@ final class ServiceChannel {
       return
     }
     pendingShortcutToggle = false
-    serviceChannel.tunnelController.toggle(notifyExternal: true)
+    serviceChannel.tunnelController.toggle()
   }
 
   static func requestTunnelToggle() {
@@ -39,7 +39,7 @@ final class ServiceChannel {
       pendingShortcutToggle.toggle()
       return
     }
-    instance.tunnelController.toggle(notifyExternal: true)
+    instance.tunnelController.toggle()
   }
 
   private init(messenger: FlutterBinaryMessenger) {

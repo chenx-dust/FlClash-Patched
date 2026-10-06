@@ -218,6 +218,43 @@ void main() {
   });
 
   group('listeners', () {
+    test('a missing start response does not submit native start', () async {
+      await lib.start();
+      service.calls.clear();
+
+      expect(await lib.startListener(), isNull);
+      expect(service.calls, ['invokeMethod:startListener']);
+    });
+
+    test('a rejected listener start does not submit native start', () async {
+      await lib.start();
+      service.onInvokeMethod = (call) =>
+          CoreMethodResponse(id: call.id, result: false);
+      service.calls.clear();
+
+      expect(await lib.startListener(), isFalse);
+      expect(service.calls, ['invokeMethod:startListener']);
+    });
+
+    test('a partial stop reports an unknown result', () async {
+      await lib.start();
+      service.onInvokeMethod = (call) =>
+          CoreMethodResponse(id: call.id, result: false);
+      service.calls.clear();
+
+      expect(await lib.stopListener(), isNull);
+      expect(service.calls, ['stop', 'invokeMethod:stopListener']);
+    });
+
+    test('a rejected service stop does not stop the core listener', () async {
+      await lib.start();
+      service.stopResult = false;
+      service.calls.clear();
+
+      expect(await lib.stopListener(), isFalse);
+      expect(service.calls, ['stop']);
+    });
+
     test('a listener is started only when both sides agree', () async {
       await lib.start();
       service.onInvokeMethod = (_) =>
@@ -226,7 +263,7 @@ void main() {
       expect(await lib.startListener(), isTrue);
 
       service.startResult = false;
-      expect(await lib.startListener(), isFalse);
+      expect(await lib.startListener(), isNull);
     });
 
     test('stopListener stops the service before the core listener', () async {

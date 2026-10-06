@@ -75,16 +75,12 @@ class Service {
     return CoreMethodResponse.fromJson(dataJson);
   }
 
-  Future<bool> start(SharedState state) async {
-    return await methodChannel.invokeMethod<bool>(
-          'start',
-          json.encode(state),
-        ) ??
-        false;
+  Future<bool?> start(SharedState state) async {
+    return methodChannel.invokeMethod<bool>('start', json.encode(state));
   }
 
-  Future<bool> stop() async {
-    return await methodChannel.invokeMethod<bool>('stop') ?? false;
+  Future<bool?> stop() async {
+    return methodChannel.invokeMethod<bool>('stop');
   }
 
   Future<String> init() async {

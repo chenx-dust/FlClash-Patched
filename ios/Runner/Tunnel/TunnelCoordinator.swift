@@ -9,7 +9,6 @@ final class TunnelCoordinator {
   private let onConnectionStateChanged: (String) -> Void
   private let onExternalStart: () -> Void
   private let onExternalStop: () -> Void
-  private let connectTimeout: TimeInterval = 5
   private let logger = Logger(
     subsystem: Bundle.main.bundleIdentifier ?? "cc.chenx.flclash",
     category: "TunnelCoordinator"
@@ -42,19 +41,12 @@ final class TunnelCoordinator {
     self.onExternalStop = onExternalStop
   }
 
-  deinit {
-    tunnelWait?.timeoutWork?.cancel()
-  }
-
   func submitTunnelRequest(
-    target: TunnelTarget,
-    notifyExternalOnCompletion: Bool = false
+    target: TunnelTarget
   ) {
     if let request = tunnelRequest,
       request.target == target
     {
-      request.notifyExternalOnCompletion =
-        request.notifyExternalOnCompletion || notifyExternalOnCompletion
       log("merge \(target.description) request")
       return
     }
@@ -62,8 +54,7 @@ final class TunnelCoordinator {
     requestGeneration &+= 1
     let request = TunnelRequest(
       generation: requestGeneration,
-      target: target,
-      notifyExternalOnCompletion: notifyExternalOnCompletion
+      target: target
     )
     tunnelRequest = request
     publishConnectionState()
@@ -76,14 +67,13 @@ final class TunnelCoordinator {
     driveCoordinator()
   }
 
-  func toggleTunnelRequest(notifyExternalOnCompletion: Bool) {
+  func toggleTunnelRequest() {
     let currentTarget = tunnelRequest?.target ??
       observedTunnelStatus?.tunnelState ??
       publishedTunnelState ??
       .stopped
     submitTunnelRequest(
-      target: currentTarget == .running ? .stopped : .running,
-      notifyExternalOnCompletion: notifyExternalOnCompletion
+      target: currentTarget == .running ? .stopped : .running
     )
   }
 
@@ -328,9 +318,6 @@ final class TunnelCoordinator {
           request,
           actualState: status.tunnelState
         )
-      case .timeout(let status):
-        cleanUpFailedStart(manager: manager, status: status)
-        finishTunnelRequest(request, actualState: .stopped)
       case .superseded:
         return
       }
@@ -357,10 +344,6 @@ final class TunnelCoordinator {
         return false
       }
       return true
-    case .timeout(let status):
-      cleanUpFailedStart(manager: manager, status: status)
-      finishTunnelRequest(request, actualState: .stopped)
-      return false
     case .superseded:
       return false
     }
@@ -407,11 +390,6 @@ final class TunnelCoordinator {
         request,
         actualState: status.tunnelState
       )
-    case .timeout(let status):
-      finishTunnelRequest(
-        request,
-        actualState: stableFailureState(status)
-      )
     case .superseded:
       return
     }
@@ -429,29 +407,7 @@ final class TunnelCoordinator {
         manager: manager,
         continuation: continuation
       )
-      let timeoutWork = DispatchWorkItem { [weak self, weak wait] in
-        guard let self,
-          let wait,
-          self.tunnelWait === wait
-        else {
-          return
-        }
-        let status = wait.manager.connection.status
-        self.recordObservedTunnelStatus(status, notifyExternal: false)
-        guard self.tunnelWait === wait else {
-          return
-        }
-        self.log(
-          "wait timeout purpose=\(wait.purpose.description) status=\(self.statusDescription(status))"
-        )
-        self.resolveTunnelWait(wait, result: .timeout(status))
-      }
-      wait.timeoutWork = timeoutWork
       tunnelWait = wait
-      DispatchQueue.main.asyncAfter(
-        deadline: .now() + connectTimeout,
-        execute: timeoutWork
-      )
       consumeWaitStatus(manager.connection.status)
     }
   }
@@ -493,7 +449,6 @@ final class TunnelCoordinator {
       return
     }
     tunnelWait = nil
-    wait.timeoutWork?.cancel()
     wait.continuation.resume(returning: result)
   }
 
@@ -502,16 +457,6 @@ final class TunnelCoordinator {
       return
     }
     resolveTunnelWait(wait, result: .superseded)
-  }
-
-  private func cleanUpFailedStart(
-    manager: NETunnelProviderManager,
-    status: NEVPNStatus
-  ) {
-    if status.isLifecycleActive && status != .disconnecting {
-      manager.connection.stopVPNTunnel()
-      log("failed start requested cleanup stop")
-    }
   }
 
   private func finishRunningRequestIfSatisfied(
@@ -548,11 +493,6 @@ final class TunnelCoordinator {
       "\(request.target.description) completed actual=\(actualState.description) generation=\(request.generation)"
     )
 
-    guard request.notifyExternalOnCompletion ||
-      actualState != request.target
-    else {
-      return
-    }
     Task { @MainActor [weak self] in
       guard let self,
         self.requestGeneration == request.generation,
@@ -675,10 +615,10 @@ final class TunnelCoordinator {
   private func notifyExternalState(_ state: TunnelTarget) {
     switch state {
     case .running:
-      log("tunnel started externally")
+      log("sync running tunnel state")
       onExternalStart()
     case .stopped:
-      log("tunnel stopped externally")
+      log("sync stopped tunnel state")
       onExternalStop()
     }
   }
