@@ -51,6 +51,68 @@ void main() {
   });
 
   group('route configuration', () {
+    for (final startMobile in [false, true]) {
+      testWidgets(
+        'keeps existing transitions when mobile changes from $startMobile',
+        (tester) async {
+          final firstBuilder = startMobile
+              ? commonSharedXPageTransitions
+              : commonDesktopFadePageTransitions;
+          final nextBuilder = startMobile
+              ? commonDesktopFadePageTransitions
+              : commonSharedXPageTransitions;
+          final builder = ValueNotifier<PageTransitionsBuilder>(firstBuilder);
+          addTearDown(builder.dispose);
+          final navigatorKey = GlobalKey<NavigatorState>();
+          await tester.pumpWidget(
+            ValueListenableBuilder<PageTransitionsBuilder>(
+              valueListenable: builder,
+              builder: (_, transition, _) => MaterialApp(
+                navigatorKey: navigatorKey,
+                theme: ThemeData(
+                  pageTransitionsTheme: PageTransitionsTheme(
+                    builders: {TargetPlatform.windows: transition},
+                  ),
+                ),
+                home: const Scaffold(body: Text('origin')),
+              ),
+            ),
+          );
+          final first = CommonRoute<void>(
+            builder: (_) => const Scaffold(body: Text('first')),
+          );
+          navigatorKey.currentState!.push(first);
+          await tester.pumpAndSettle();
+          builder.value = nextBuilder;
+          await tester.pumpAndSettle();
+          expect(first.transitionDuration, firstBuilder.transitionDuration);
+          expect(
+            first.reverseTransitionDuration,
+            firstBuilder.reverseTransitionDuration,
+          );
+          expect(find.text('first'), findsOneWidget);
+          final second = CommonRoute<void>(
+            builder: (_) => const Scaffold(body: Text('second')),
+          );
+          navigatorKey.currentState!.push(second);
+          await tester.pumpAndSettle();
+          expect(second.transitionDuration, nextBuilder.transitionDuration);
+          expect(
+            second.reverseTransitionDuration,
+            nextBuilder.reverseTransitionDuration,
+          );
+          navigatorKey.currentState!.pop();
+          await tester.pumpAndSettle();
+          expect(find.text('first'), findsOneWidget);
+          navigatorKey.currentState!.pop();
+          await tester.pumpAndSettle();
+          expect(find.text('origin'), findsOneWidget);
+          expect(tester.takeException(), isNull);
+        },
+        variant: TargetPlatformVariant.only(TargetPlatform.windows),
+      );
+    }
+
     test('CommonRoute can update the predictive-back pop result', () {
       final route = CommonRoute<int>(builder: (_) => const SizedBox());
 

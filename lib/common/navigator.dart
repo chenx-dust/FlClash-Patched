@@ -80,13 +80,38 @@ mixin CurrentResultRoute<T> on Route<T> {
 }
 
 class CommonRoute<T> extends MaterialPageRoute<T> with CurrentResultRoute<T> {
-  CommonRoute({required super.builder});
+  CommonRoute({required super.builder, super.settings});
+
+  late final PageTransitionsBuilder? _appTransition = _resolveAppTransition();
+
+  PageTransitionsBuilder? _resolveAppTransition() {
+    final theme = Theme.of(navigator!.context);
+    final builder = theme.pageTransitionsTheme.builders[theme.platform];
+    return identical(builder, commonSharedXPageTransitions) ||
+            identical(builder, commonDesktopFadePageTransitions)
+        ? builder
+        : null;
+  }
+
+  @override
+  Duration get transitionDuration =>
+      _appTransition?.transitionDuration ?? super.transitionDuration;
+
+  @override
+  Duration get reverseTransitionDuration =>
+      _appTransition?.reverseTransitionDuration ??
+      super.reverseTransitionDuration;
+
+  @override
+  DelegatedTransitionBuilder? get delegatedTransition => _appTransition != null
+      ? _appTransition.delegatedTransition
+      : super.delegatedTransition;
 
   @override
   bool canTransitionFrom(TransitionRoute<dynamic> previousRoute) {
     // A Material route would also run this transparent exit on the page below.
-    final context = navigator?.context;
-    if (context != null && _usesTransparentSharedAxis(context)) {
+    if (navigator != null &&
+        identical(_appTransition, commonSharedXPageTransitions)) {
       return false;
     }
     return super.canTransitionFrom(previousRoute);
@@ -99,7 +124,7 @@ class CommonRoute<T> extends MaterialPageRoute<T> with CurrentResultRoute<T> {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    if (_usesTransparentSharedAxis(context)) {
+    if (identical(_appTransition, commonSharedXPageTransitions)) {
       return SharedAxisTransition(
         animation: animation,
         secondaryAnimation: secondaryAnimation,
@@ -108,19 +133,20 @@ class CommonRoute<T> extends MaterialPageRoute<T> with CurrentResultRoute<T> {
         child: child,
       );
     }
+    if (_appTransition case final transition?) {
+      return transition.buildTransitions(
+        this,
+        context,
+        animation,
+        secondaryAnimation,
+        child,
+      );
+    }
     return super.buildTransitions(
       context,
       animation,
       secondaryAnimation,
       child,
-    );
-  }
-
-  bool _usesTransparentSharedAxis(BuildContext context) {
-    final theme = Theme.of(context);
-    return identical(
-      theme.pageTransitionsTheme.builders[theme.platform],
-      commonSharedXPageTransitions,
     );
   }
 }

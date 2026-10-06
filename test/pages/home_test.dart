@@ -54,6 +54,7 @@ void main() {
           container: container,
           child: MaterialApp(
             home: HomeBackScopeContainer(
+              onMaybePop: () => nestedKey.currentState!.maybePop(),
               child: Navigator(
                 key: nestedKey,
                 onGenerateRoute: (_) => MaterialPageRoute<void>(
@@ -106,6 +107,98 @@ void main() {
     navigationPort = navigation;
     addTearDown(() => navigationPort = null);
   });
+
+  for (final initialWidth in [400.0, 1200.0]) {
+    testWidgets(
+      'real General route adapts navigation from width $initialWidth',
+      (tester) async {
+        tester.view.physicalSize = Size(initialWidth, 1000);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+        globalState.container = container;
+        container.read(viewSizeProvider.notifier).value = Size(
+          initialWidth,
+          1000,
+        );
+        container
+            .read(currentPageLabelProvider.notifier)
+            .toPage(PageLabel.tools);
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: const TestApp(includeNavigatorKey: false, child: HomePage()),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.scrollUntilVisible(
+          find.text('General'),
+          300,
+          scrollable: find.byType(Scrollable).last,
+        );
+        final bottomBar = initialWidth == 400
+            ? tester.element(find.byType(NavigationBar))
+            : null;
+        final bottomBarRect = bottomBar == null
+            ? null
+            : tester.getRect(
+                find.byElementPredicate((element) => element == bottomBar),
+              );
+        await tester.tap(find.text('General'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 100));
+        if (bottomBar != null) {
+          expect(bottomBar.mounted, isTrue);
+          expect(
+            tester.getRect(
+              find.byElementPredicate(
+                (element) => element == bottomBar,
+                skipOffstage: false,
+              ),
+            ),
+            bottomBarRect,
+          );
+        }
+        await tester.pumpAndSettle();
+        final generalElement = tester.element(find.byType(GeneralView));
+        final navigator = Navigator.of(generalElement);
+
+        for (final width in [initialWidth, 400.0, 1200.0, 400.0]) {
+          tester.view.physicalSize = Size(width, 1000);
+          container.read(viewSizeProvider.notifier).value = Size(width, 1000);
+          await tester.pumpAndSettle();
+          expect(
+            tester.element(find.byType(GeneralView)),
+            same(generalElement),
+          );
+          if (width == 400) {
+            expect(find.byType(NavigationBar), findsNothing);
+            expect(tester.getRect(find.byType(GeneralView)).bottom, 1000);
+          } else {
+            expect(find.byType(NavigationRail).hitTestable(), findsOneWidget);
+            expect(
+              tester.getRect(find.byType(GeneralView)).left,
+              greaterThan(0),
+            );
+          }
+          expect(tester.takeException(), isNull);
+        }
+        await navigator.maybePop();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 100));
+        final returningBar = find.byType(NavigationBar, skipOffstage: false);
+        expect(returningBar, findsOneWidget);
+        expect(tester.getRect(returningBar).bottom, 1000);
+        expect(tester.getSize(returningBar).height, 80);
+        await tester.pumpAndSettle();
+        expect(find.byType(GeneralView), findsNothing);
+        expect(find.byType(NavigationBar), findsOneWidget);
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.windows),
+    );
+  }
 
   testWidgets('initial desktop layout does not animate mobile navigation out', (
     tester,

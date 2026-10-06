@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:fl_clash/application.dart';
+import 'package:fl_clash/common/navigator.dart';
+
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/models/models.dart';
@@ -12,6 +15,153 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final initialWidth in [1000.0, 400.0]) {
+    testWidgets('routes survive resizing from width $initialWidth', (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      try {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = Size(initialWidth, 800);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        addTearDown(tester.view.resetPhysicalSize);
+        await tester.pumpWidget(_buildHome(Size(initialWidth, 800)));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byIcon(Symbols.construction));
+        await tester.pumpAndSettle();
+
+        final context = tester.element(find.text('page-tools'));
+        final container = ProviderScope.containerOf(context);
+        final navigator = Navigator.of(context);
+        var completed = false;
+        unawaited(
+          navigator
+              .push<void>(
+                CommonRoute(builder: (_) => const Scaffold(body: TextField())),
+              )
+              .then((_) => completed = true),
+        );
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(TextField), 'unsaved draft');
+        FocusManager.instance.primaryFocus?.unfocus();
+        await tester.pumpAndSettle();
+        final fieldState = tester.state(find.byType(TextField));
+        unawaited(
+          navigator.push<void>(
+            CommonRoute(
+              builder: (_) => const Scaffold(body: Text('second route')),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        for (final width in [
+          initialWidth == 1000 ? 400.0 : 1000.0,
+          initialWidth,
+          400.0,
+        ]) {
+          tester.view.physicalSize = Size(width, 800);
+          container.read(viewSizeProvider.notifier).value = Size(width, 800);
+          await tester.pumpAndSettle();
+          expect(find.text('second route'), findsOneWidget);
+          expect(
+            Navigator.of(tester.element(find.text('second route'))),
+            same(navigator),
+          );
+          expect(completed, isFalse);
+          if (width == 400) {
+            expect(find.byType(NavigationBar).hitTestable(), findsNothing);
+            expect(tester.getBottomRight(find.byType(Scaffold)).dy, 800);
+          } else {
+            expect(find.byType(NavigationRail).hitTestable(), findsOneWidget);
+            expect(tester.getTopLeft(find.byType(Scaffold)).dx, greaterThan(0));
+          }
+          expect(tester.takeException(), isNull);
+        }
+
+        await navigator.maybePop();
+        await tester.pumpAndSettle();
+        expect(find.text('unsaved draft'), findsOneWidget);
+        expect(tester.state(find.byType(TextField)), same(fieldState));
+        expect(find.byType(NavigationBar).hitTestable(), findsNothing);
+        final transitions = find.ancestor(
+          of: find.byType(TextField),
+          matching: find.byType(FadeTransition),
+        );
+        final transitionElements = transitions.evaluate().toList();
+        for (final width in [1000.0, 400.0]) {
+          tester.view.physicalSize = Size(width, 800);
+          container.read(viewSizeProvider.notifier).value = Size(width, 800);
+          await tester.pumpAndSettle();
+          expect(find.text('unsaved draft'), findsOneWidget);
+          expect(tester.state(find.byType(TextField)), same(fieldState));
+          expect(transitions.evaluate(), orderedEquals(transitionElements));
+          expect(tester.takeException(), isNull);
+        }
+        await navigator.maybePop();
+        await tester.pumpAndSettle();
+        expect(find.text('page-tools'), findsOneWidget);
+        expect(completed, isTrue);
+        expect(find.byType(NavigationBar).hitTestable(), findsOneWidget);
+
+        unawaited(
+          navigator.push<void>(
+            CommonRoute(
+              builder: (_) => const Scaffold(body: Text('new mobile route')),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.byType(NavigationBar).hitTestable(), findsNothing);
+        expect(tester.getBottomRight(find.byType(Scaffold)).dy, 800);
+        await navigator.maybePop();
+        await tester.pumpAndSettle();
+        expect(find.byType(NavigationBar).hitTestable(), findsOneWidget);
+      } finally {
+        semantics.dispose();
+      }
+    });
+  }
+
+  testWidgets('back after shrinking respects the nested route pop guard', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_buildHome(const Size(1000, 800)));
+    await tester.pumpAndSettle();
+    final context = tester.element(find.text('page-dashboard'));
+    final container = ProviderScope.containerOf(context);
+    final navigator = Navigator.of(context);
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
+    final decision = Completer<bool>();
+    var popRequested = false;
+    unawaited(
+      navigator.push<void>(
+        MaterialPageRoute(
+          builder: (_) => CommonPopScope(
+            onPop: (_) {
+              popRequested = true;
+              return decision.future;
+            },
+            child: const Scaffold(body: Text('unsaved route')),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    container.read(viewSizeProvider.notifier).value = const Size(400, 800);
+    await tester.pumpAndSettle();
+
+    await rootNavigator.maybePop();
+    await tester.pumpAndSettle();
+    expect(popRequested, isTrue);
+    expect(find.text('unsaved route'), findsOneWidget);
+    decision.complete(false);
+    await tester.pumpAndSettle();
+    expect(find.text('unsaved route'), findsOneWidget);
+    expect(navigator.canPop(), isTrue);
+    expect(container.read(currentPageLabelProvider), PageLabel.dashboard);
+  });
+
   testWidgets('HomeNavigatorObserver pops immediate routes to root', (
     tester,
   ) async {
@@ -117,8 +267,18 @@ void main() {
 
     final pageView = find.byType(PageView);
     expect(tester.widget<PageView>(pageView).scrollDirection, Axis.horizontal);
+    final bar = find.byType(NavigationBar);
+    final barElement = tester.element(bar);
+    final barRect = tester.getRect(bar);
     final pageWidth = tester.getSize(pageView).width;
-    await tester.drag(pageView, Offset(-pageWidth * 0.8, 0));
+    final gesture = await tester.startGesture(tester.getCenter(pageView));
+    await gesture.moveBy(Offset(-pageWidth * 0.4, 0));
+    await tester.pump(const Duration(milliseconds: 50));
+    expect(bar, findsOneWidget);
+    expect(tester.element(bar), same(barElement));
+    expect(tester.getRect(bar), barRect);
+    await gesture.moveBy(Offset(-pageWidth * 0.4, 0));
+    await gesture.up();
     await tester.pumpAndSettle();
 
     final context = tester.element(find.byType(HomePage));
@@ -137,7 +297,15 @@ void main() {
   ) async {
     await tester.pumpWidget(_buildMobileHome());
 
+    final bar = find.byType(NavigationBar);
+    final barElement = tester.element(bar);
+    final barRect = tester.getRect(bar);
     await tester.tap(find.byIcon(Symbols.construction));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(bar, findsOneWidget);
+    expect(tester.element(bar), same(barElement));
+    expect(tester.getRect(bar), barRect);
     await tester.pumpAndSettle();
 
     final context = tester.element(find.byType(HomePage));
@@ -194,22 +362,39 @@ Widget _buildHome(Size viewSize) {
   final navigationItems = [
     _navigationItem(PageLabel.dashboard),
     _navigationItem(PageLabel.profiles),
+    NavigationItem(
+      icon: const Icon(Symbols.ballot),
+      label: PageLabel.connections,
+      modes: const [NavigationItemMode.desktop],
+      builder: (_) => const Text('page-connections'),
+    ),
     _navigationItem(PageLabel.tools),
   ];
   return ProviderScope(
     overrides: [
       viewSizeProvider.overrideWithBuild((_, _) => viewSize),
-      currentNavigationItemsStateProvider.overrideWith(
+      navigationItemsStateProvider.overrideWith(
         (_) => NavigationItemsState(value: navigationItems),
       ),
     ],
-    child: MaterialApp(
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        ...GlobalMaterialLocalizations.delegates,
-      ],
-      supportedLocales: AppLocalizations.delegate.supportedLocales,
-      home: const HomePage(),
+    child: Consumer(
+      builder: (_, ref, _) => MaterialApp(
+        theme: ThemeData(
+          pageTransitionsTheme: buildPageTransitionsTheme(
+            predictiveBack: false,
+            isMobile: ref.watch(isMobileViewProvider),
+          ),
+        ),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        supportedLocales: AppLocalizations.delegate.supportedLocales,
+        onGenerateRoute: (settings) => CommonRoute<void>(
+          settings: settings,
+          builder: (_) => const HomePage(),
+        ),
+      ),
     ),
   );
 }

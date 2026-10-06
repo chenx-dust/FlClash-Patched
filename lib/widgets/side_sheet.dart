@@ -582,7 +582,7 @@ Future<T?> showModalSideSheet<T>({
   bool isScrollControlled = false,
   double scrollControlDisabledMaxHeightRatio =
       _defaultScrollControlDisabledMaxHeightRatio,
-  bool useRootNavigator = true,
+  bool useRootNavigator = false,
   bool isDismissible = true,
   bool useSafeArea = false,
   RouteSettings? routeSettings,

@@ -227,7 +227,10 @@ class ApplicationState extends ConsumerState<Application> {
                   ).toPureBlack(themeProps.pureBlack),
                   tooltipTheme: _tooltipTheme,
                 ).withAppShapes,
-                home: child!,
+                onGenerateRoute: (settings) => CommonRoute<void>(
+                  settings: settings,
+                  builder: (_) => child!,
+                ),
               ),
             );
           },
