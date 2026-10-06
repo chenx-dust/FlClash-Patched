@@ -171,6 +171,9 @@ void main() {
       ) {
         result.add((call.positionalArguments[4] as Paint).strokeWidth);
       });
+      when(() => canvas.drawCircle(any(), any(), any())).thenAnswer(
+        (call) => result.add((call.positionalArguments[1] as double) * 2),
+      );
       DonutChartPainter(
         before,
         after,
@@ -189,6 +192,142 @@ void main() {
     expect(late.last, initial.last);
     expect(later.last, initial.last);
     expect(widths(1), [initial.last]);
+  });
+
+  testWidgets('visibility transitions scale a dot before extending the arc', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const TestApp(child: SizedBox()));
+    const visible = [
+      DonutChartData.exact(value: 2048, color: Colors.blue),
+      DonutChartData.exact(value: 2048, color: Colors.grey),
+    ];
+    const hidden = [
+      DonutChartData.exact(value: 0, color: Colors.blue),
+      DonutChartData.exact(value: 2048, color: Colors.grey),
+    ];
+    for (final appearing in [false, true]) {
+      for (final progress in [0.2, 0.8]) {
+        final canvas = _Canvas();
+        final widths = <double>[];
+        final dots = <double>[];
+        when(
+          () => canvas.drawArc(any(), any(), any(), any(), any()),
+        ).thenAnswer(
+          (call) =>
+              widths.add((call.positionalArguments[4] as Paint).strokeWidth),
+        );
+        when(
+          () => canvas.drawCircle(any(), any(), any()),
+        ).thenAnswer((call) => dots.add(call.positionalArguments[1] as double));
+        DonutChartPainter(
+          appearing ? hidden : visible,
+          appearing ? visible : hidden,
+          progress,
+        ).paint(canvas, const Size.square(180));
+        final dotPhase = appearing ? progress < 0.5 : progress > 0.5;
+        if (dotPhase) {
+          expect(widths, hasLength(1));
+          expect(dots, hasLength(1));
+          expect(dots.single, greaterThan(0));
+          expect(dots.single * 2, lessThan(widths.single));
+        } else {
+          expect(dots, isEmpty);
+          expect(widths, hasLength(2));
+          expect(widths.first, widths.last);
+        }
+      }
+    }
+  });
+
+  testWidgets('small slices keep their size while their share changes', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const TestApp(child: SizedBox()));
+    for (final dashed in [false, true]) {
+      final before = [
+        DonutChartData.exact(value: 1, color: Colors.blue, dashed: dashed),
+        const DonutChartData.exact(value: 1000000, color: Colors.grey),
+      ];
+      final after = [
+        DonutChartData.exact(value: 2, color: Colors.blue, dashed: dashed),
+        const DonutChartData.exact(value: 1000000, color: Colors.grey),
+      ];
+      for (final progress in [0.0, 0.5, 0.99, 1.0]) {
+        final canvas = _Canvas();
+        final widths = <double>[];
+        final radii = <double>[];
+        when(
+          () => canvas.drawArc(any(), any(), any(), any(), any()),
+        ).thenAnswer(
+          (call) =>
+              widths.add((call.positionalArguments[4] as Paint).strokeWidth),
+        );
+        when(() => canvas.drawCircle(any(), any(), any())).thenAnswer(
+          (call) => radii.add(call.positionalArguments[1] as double),
+        );
+        DonutChartPainter(
+          before,
+          after,
+          progress,
+        ).paint(canvas, const Size.square(180));
+        if (dashed) {
+          expect(radii, [widths.single * 0.4]);
+        } else {
+          expect(widths, hasLength(2));
+          expect(widths.first, widths.last);
+        }
+      }
+    }
+  });
+
+  testWidgets('small slices scale only when appearing or disappearing', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const TestApp(child: SizedBox()));
+    for (final dashed in [false, true]) {
+      final visible = [
+        DonutChartData.exact(value: 1, color: Colors.blue, dashed: dashed),
+        const DonutChartData.exact(value: 1000000, color: Colors.grey),
+      ];
+      final hidden = [
+        DonutChartData.exact(value: 0, color: Colors.blue, dashed: dashed),
+        const DonutChartData.exact(value: 1000000, color: Colors.grey),
+      ];
+      for (final appearing in [false, true]) {
+        final canvas = _Canvas();
+        double? sliceSize;
+        double? ringWidth;
+        when(
+          () => canvas.drawArc(any(), any(), any(), any(), any()),
+        ).thenAnswer((call) {
+          final paint = call.positionalArguments[4] as Paint;
+          if (paint.color.toARGB32() == Colors.blue.toARGB32()) {
+            sliceSize = paint.strokeWidth;
+          } else {
+            ringWidth = paint.strokeWidth;
+          }
+        });
+        when(() => canvas.drawCircle(any(), any(), any())).thenAnswer(
+          (call) => sliceSize =
+              (call.positionalArguments[1] as double) * (dashed ? 1 : 2),
+        );
+        DonutChartPainter(
+          appearing ? hidden : visible,
+          appearing ? visible : hidden,
+          0.5,
+        ).paint(canvas, const Size.square(180));
+        final t = Curves.easeInOutCubic.transform(0.5);
+        final visibility = appearing ? t : 1 - t;
+        expect(
+          sliceSize,
+          closeTo(
+            ringWidth! * (dashed ? 0.4 : 1) * min(1.0, visibility * 2),
+            0.000001,
+          ),
+        );
+      }
+    }
   });
 
   testWidgets('memory geometry closes continuously regardless of byte units', (

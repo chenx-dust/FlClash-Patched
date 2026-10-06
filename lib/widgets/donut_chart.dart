@@ -127,12 +127,14 @@ class _DonutArc {
     this.sweepTurns,
     this.startGaps,
     this.sweepGaps,
+    this.visibility,
   );
 
   final double startTurns;
   final double sweepTurns;
   final double startGaps;
   final double sweepGaps;
+  final double visibility;
 
   _DonutArc lerp(_DonutArc target, double progress) {
     return _DonutArc(
@@ -140,6 +142,7 @@ class _DonutArc {
       sweepTurns + (target.sweepTurns - sweepTurns) * progress,
       startGaps + (target.startGaps - startGaps) * progress,
       sweepGaps + (target.sweepGaps - sweepGaps) * progress,
+      visibility + (target.visibility - visibility) * progress,
     );
   }
 
@@ -157,6 +160,7 @@ class _DonutArc {
           share,
           count > 1 ? 0.5 + preceding - count * prefix : 0,
           count > 1 ? -count * share : 0,
+          item.value > 0 ? 1 : 0,
         ),
       );
       prefix += share;
@@ -288,12 +292,28 @@ class DonutChartPainter extends CustomPainter {
     for (var index = 0; index < data.length; index++) {
       final item = data[index];
       final arc = arcs[index];
-      final startAngle =
+      final allocatedStart =
           -pi / 2 + arc.startTurns * 2 * pi + arc.startGaps * gapAngle;
-      final sweepAngle = arc.sweepTurns * 2 * pi + arc.sweepGaps * gapAngle;
-      if (sweepAngle <= 0) continue;
+      final allocatedSweep = arc.sweepTurns * 2 * pi + arc.sweepGaps * gapAngle;
+      if (allocatedSweep <= 0 || arc.visibility <= 0) continue;
+
+      final sizeScale = min(1.0, arc.visibility * 2);
+      final sweepScale = max(0.0, arc.visibility * 2 - 1) / arc.visibility;
+      final sweepAngle = allocatedSweep * sweepScale;
+      final startAngle = allocatedStart + (allocatedSweep - sweepAngle) / 2;
 
       _arcPaint.color = item.color;
+
+      if (sweepAngle == 0) {
+        final angle = allocatedStart + allocatedSweep / 2;
+        _arcPaint.style = PaintingStyle.fill;
+        canvas.drawCircle(
+          center + Offset(cos(angle), sin(angle)) * radius,
+          strokeWidth * (item.dashed ? 0.4 : 0.5) * sizeScale,
+          _arcPaint,
+        );
+        continue;
+      }
 
       final rect = Rect.fromCircle(center: center, radius: radius);
       if (item.dashed) {
@@ -307,14 +327,14 @@ class DonutChartPainter extends CustomPainter {
           final angle = startAngle + (dot + 0.5) * step;
           canvas.drawCircle(
             center + Offset(cos(angle), sin(angle)) * radius,
-            min(strokeWidth * 0.4, sweepAngle * radius / 1.5),
+            strokeWidth * 0.4,
             _arcPaint,
           );
         }
       } else {
         _arcPaint.style = PaintingStyle.stroke;
         _arcPaint.strokeCap = StrokeCap.round;
-        _arcPaint.strokeWidth = min(strokeWidth, sweepAngle * radius / 1.5 * 2);
+        _arcPaint.strokeWidth = strokeWidth;
         canvas.drawArc(rect, startAngle, sweepAngle, false, _arcPaint);
       }
     }
