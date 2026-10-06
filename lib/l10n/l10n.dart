@@ -1805,6 +1805,26 @@ class AppLocalizations {
     );
   }
 
+  /// `Show current profile name`
+  String get showQuickSettingsProfileName {
+    return Intl.message(
+      'Show current profile name',
+      name: 'showQuickSettingsProfileName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Show profile name on the quick toggle when connected`
+  String get showQuickSettingsProfileNameDesc {
+    return Intl.message(
+      'Show profile name on the quick toggle when connected',
+      name: 'showQuickSettingsProfileNameDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Expand`
   String get expand {
     return Intl.message('Expand', name: 'expand', desc: '', args: []);

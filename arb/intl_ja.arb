@@ -228,6 +228,8 @@
   "excludeDesc": "バックグラウンド時に、最近のタスクからアプリを隠します",
   "collapseQuickSettingsPanel": "クイック設定パネルを閉じる",
   "collapseQuickSettingsPanelDesc": "タイルをタップした後にクイック設定パネルを閉じます",
+  "showQuickSettingsProfileName": "現在のプロファイル名を表示",
+  "showQuickSettingsProfileNameDesc": "接続時にクイックスイッチにプロファイル名を表示します",
   "expand": "展開",
   "shrink": "コンパクト",
   "min": "最小",

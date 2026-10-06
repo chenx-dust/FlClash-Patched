@@ -228,6 +228,8 @@
   "excludeDesc": "Hide the app from recent tasks while it is in the background",
   "collapseQuickSettingsPanel": "Collapse Quick Settings panel",
   "collapseQuickSettingsPanelDesc": "Collapse after tapping the tile",
+  "showQuickSettingsProfileName": "Show current profile name",
+  "showQuickSettingsProfileNameDesc": "Show profile name on the quick toggle when connected",
   "expand": "Expand",
   "shrink": "Compact",
   "min": "Minimal",

@@ -110,6 +110,7 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default(false) bool tvMode,
     @Default(false) bool hidden,
     @Default(true) bool collapseQuickSettingsPanel,
+    @Default(true) bool showQuickSettingsProfileName,
     @Default(false) bool developerMode,
     @Default(RestoreStrategy.compatible)
     @JsonKey(unknownEnumValue: RestoreStrategy.compatible)

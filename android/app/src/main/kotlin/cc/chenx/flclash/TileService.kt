@@ -1,6 +1,7 @@
 package cc.chenx.flclash
 
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import android.os.Build
 import android.service.quicksettings.Tile
 import cc.chenx.flclash.common.GlobalState
@@ -15,10 +16,19 @@ import kotlinx.coroutines.launch
 
 class TileService : android.service.quicksettings.TileService() {
     private var scope: CoroutineScope? = null
+    private val preferences by lazy {
+        getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE)
+    }
+    private val preferenceListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        if (key == "flutter.sharedState") {
+            updateTile(ServiceState.runState.value)
+        }
+    }
 
     override fun onStartListening() {
         super.onStartListening()
         scope?.cancel()
+        preferences.registerOnSharedPreferenceChangeListener(preferenceListener)
         scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate).also { scope ->
             scope.launch {
                 ServiceState.refresh()
@@ -39,6 +49,7 @@ class TileService : android.service.quicksettings.TileService() {
     override fun onStopListening() {
         scope?.cancel()
         scope = null
+        preferences.unregisterOnSharedPreferenceChangeListener(preferenceListener)
         super.onStopListening()
     }
 
@@ -50,8 +61,16 @@ class TileService : android.service.quicksettings.TileService() {
                 RunState.STOPPED -> Tile.STATE_INACTIVE
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                subtitle = application.sharedState.currentProfileName.takeIf {
-                    runState == RunState.STARTED && it.isNotBlank()
+                val sharedState = application.sharedState
+                subtitle = if (sharedState.showQuickSettingsProfileName) {
+                    sharedState.currentProfileName.takeIf {
+                        runState == RunState.STARTED && it.isNotBlank()
+                    }
+                } else {
+                    getString(
+                        if (runState == RunState.STARTED) R.string.connected
+                        else R.string.disconnected
+                    )
                 }
             }
             updateTile()

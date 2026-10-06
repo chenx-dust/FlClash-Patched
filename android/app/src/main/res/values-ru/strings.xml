@@ -3,4 +3,6 @@
     <string name="start_vpn">Запуск VPN...</string>
     <string name="stop_vpn">Остановка VPN...</string>
     <string name="local_network_fallback">Нет разрешения на локальную сеть: используется стек mips, LAN недоступна.</string>
+    <string name="connected">Подключено</string>
+    <string name="disconnected">Отключено</string>
 </resources>

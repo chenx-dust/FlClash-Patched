@@ -131,6 +131,18 @@ void main() {
   });
 
   group('AppSettingProps JSON round-trip', () {
+    test('quick settings profile visibility defaults on and persists', () {
+      expect(AppSettingProps.fromJson({}).showQuickSettingsProfileName, isTrue);
+      const props = AppSettingProps(showQuickSettingsProfileName: false);
+      expect(
+        roundTrip(
+          props.toJson,
+          AppSettingProps.fromJson,
+        ).showQuickSettingsProfileName,
+        isFalse,
+      );
+    });
+
     test('older settings default to collapsed proxy chains', () {
       expect(AppSettingProps.fromJson({}).collapseProxyChains, true);
     });

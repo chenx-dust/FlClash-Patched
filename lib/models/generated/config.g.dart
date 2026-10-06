@@ -36,6 +36,8 @@ _AppSettingProps _$AppSettingPropsFromJson(Map<String, dynamic> json) =>
       hidden: json['hidden'] as bool? ?? false,
       collapseQuickSettingsPanel:
           json['collapseQuickSettingsPanel'] as bool? ?? true,
+      showQuickSettingsProfileName:
+          json['showQuickSettingsProfileName'] as bool? ?? true,
       developerMode: json['developerMode'] as bool? ?? false,
       restoreStrategy:
           $enumDecodeNullable(
@@ -99,6 +101,7 @@ Map<String, dynamic> _$AppSettingPropsToJson(_AppSettingProps instance) =>
       'tvMode': instance.tvMode,
       'hidden': instance.hidden,
       'collapseQuickSettingsPanel': instance.collapseQuickSettingsPanel,
+      'showQuickSettingsProfileName': instance.showQuickSettingsProfileName,
       'developerMode': instance.developerMode,
       'restoreStrategy': _$RestoreStrategyEnumMap[instance.restoreStrategy]!,
       'checkCertificate': instance.checkCertificate,

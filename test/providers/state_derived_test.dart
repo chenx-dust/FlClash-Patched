@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:fl_clash/common/app_ports.dart';
 import 'package:fl_clash/common/constant.dart';
 import 'package:fl_clash/enum/enum.dart';
@@ -608,6 +610,26 @@ void main() {
         );
     expect(container.read(sharedStateProvider).vpnOptions?.systemProxy, true);
     expect(container.read(updateParamsProvider).authentication, isEmpty);
+  });
+
+  test('shared state carries the quick settings profile visibility', () async {
+    await AppLocalizations.load(const Locale('en'));
+    container.listen(sharedStateProvider, (_, _) {});
+    expect(
+      container.read(sharedStateProvider).showQuickSettingsProfileName,
+      true,
+    );
+
+    container
+        .read(appSettingProvider.notifier)
+        .update((state) => state.copyWith(showQuickSettingsProfileName: false));
+    final state = container.read(sharedStateProvider).needSyncSharedState;
+    expect(state.showQuickSettingsProfileName, false);
+    final json = jsonDecode(jsonEncode(state)) as Map<String, Object?>;
+    expect(json['showQuickSettingsProfileName'], false);
+    expect(SharedState.fromJson(json).showQuickSettingsProfileName, false);
+    final legacyJson = json..remove('showQuickSettingsProfileName');
+    expect(SharedState.fromJson(legacyJson).showQuickSettingsProfileName, true);
   });
 
   test('shared state carries the notification stop action switch', () async {

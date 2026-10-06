@@ -3,4 +3,6 @@
     <string name="start_vpn">VPN を開始中...</string>
     <string name="stop_vpn">VPN を停止中...</string>
     <string name="local_network_fallback">ローカルネットワーク権限がないため mips スタックに切り替えました。LAN には到達できません。</string>
+    <string name="connected">接続済み</string>
+    <string name="disconnected">切断済み</string>
 </resources>

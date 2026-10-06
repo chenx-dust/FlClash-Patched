@@ -1,4 +1,5 @@
 import Foundation
+import WidgetKit
 
 final class SharedStateStore {
   private let sharedStateKey = "sharedState"
@@ -23,6 +24,9 @@ final class SharedStateStore {
     guard let userDefaults = UserDefaults(suiteName: appGroupIdentifier) else {
       return false
     }
+    let previousControlDisplayState = controlDisplayState(
+      from: userDefaults.data(forKey: sharedStateKey)
+    )
     if let json = try? JSONSerialization.jsonObject(with: data)
       as? [String: Any],
       let setupParams = json[setupParamsKey],
@@ -34,7 +38,29 @@ final class SharedStateStore {
     }
     userDefaults.set(data, forKey: sharedStateKey)
     userDefaults.synchronize()
+    if previousControlDisplayState != controlDisplayState(from: data),
+      #available(iOS 18.0, *)
+    {
+      ControlCenter.shared.reloadControls(
+        ofKind: "\(Bundle.main.bundleIdentifier!).Widget"
+      )
+    }
     return true
+  }
+
+  private func controlDisplayState(
+    from data: Data?
+  ) -> (showProfileName: Bool, profileName: String?) {
+    guard let data,
+      let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+    else {
+      return (true, nil)
+    }
+    let showProfileName = json["showQuickSettingsProfileName"] as? Bool ?? true
+    return (
+      showProfileName,
+      showProfileName ? json["currentProfileName"] as? String : nil
+    )
   }
 
   func loadTunnelConfiguration() -> TunnelConfiguration {

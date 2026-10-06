@@ -1499,6 +1499,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Show a stop button on the persistent notification. Turn it off if your system keeps the notification expanded because of it",
     ),
     "showPassword": MessageLookupByLibrary.simpleMessage("Show password"),
+    "showQuickSettingsProfileName": MessageLookupByLibrary.simpleMessage(
+      "Show current profile name",
+    ),
+    "showQuickSettingsProfileNameDesc": MessageLookupByLibrary.simpleMessage(
+      "Show profile name on the quick toggle when connected",
+    ),
     "showTrayProxySelection": MessageLookupByLibrary.simpleMessage(
       "Show proxy selection in tray",
     ),

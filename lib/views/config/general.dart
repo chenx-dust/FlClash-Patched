@@ -368,6 +368,14 @@ class GeneralView extends ConsumerWidget {
         select: (state) => state.minimizeOnExit,
         update: (state, value) => state.copyWith(minimizeOnExit: value),
       ),
+      if (system.isAndroid || system.isIOS)
+        _appSettingToggle(
+          title: (l) => l.showQuickSettingsProfileName,
+          subtitle: (l) => l.showQuickSettingsProfileNameDesc,
+          select: (state) => state.showQuickSettingsProfileName,
+          update: (state, value) =>
+              state.copyWith(showQuickSettingsProfileName: value),
+        ),
       if (system.isAndroid) ...[
         _appSettingToggle(
           title: (l) => l.exclude,

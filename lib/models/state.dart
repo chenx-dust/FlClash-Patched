@@ -318,6 +318,7 @@ abstract class SharedState with _$SharedState {
     @Default(true) bool showStopAction,
     @Default(false) bool networkSpeedNotification,
     @Default(true) bool collapseQuickSettingsPanel,
+    @Default(true) bool showQuickSettingsProfileName,
     @Default(false) bool alwaysOn,
     @Default([]) List<String> excludeSSIDs,
   }) = _SharedState;

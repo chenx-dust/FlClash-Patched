@@ -1246,6 +1246,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "常駐通知に停止ボタンを表示します。これが原因で通知が常に展開される場合はオフにしてください",
     ),
     "showPassword": MessageLookupByLibrary.simpleMessage("パスワードを表示"),
+    "showQuickSettingsProfileName": MessageLookupByLibrary.simpleMessage(
+      "現在のプロファイル名を表示",
+    ),
+    "showQuickSettingsProfileNameDesc": MessageLookupByLibrary.simpleMessage(
+      "接続時にクイックスイッチにプロファイル名を表示します",
+    ),
     "showTrayProxySelection": MessageLookupByLibrary.simpleMessage(
       "トレイにプロキシ選択を表示",
     ),

@@ -22,6 +22,8 @@ _SharedState _$SharedStateFromJson(Map<String, dynamic> json) => _SharedState(
   networkSpeedNotification: json['networkSpeedNotification'] as bool? ?? false,
   collapseQuickSettingsPanel:
       json['collapseQuickSettingsPanel'] as bool? ?? true,
+  showQuickSettingsProfileName:
+      json['showQuickSettingsProfileName'] as bool? ?? true,
   alwaysOn: json['alwaysOn'] as bool? ?? false,
   excludeSSIDs:
       (json['excludeSSIDs'] as List<dynamic>?)
@@ -42,6 +44,7 @@ Map<String, dynamic> _$SharedStateToJson(_SharedState instance) =>
       'showStopAction': instance.showStopAction,
       'networkSpeedNotification': instance.networkSpeedNotification,
       'collapseQuickSettingsPanel': instance.collapseQuickSettingsPanel,
+      'showQuickSettingsProfileName': instance.showQuickSettingsProfileName,
       'alwaysOn': instance.alwaysOn,
       'excludeSSIDs': instance.excludeSSIDs,
     };

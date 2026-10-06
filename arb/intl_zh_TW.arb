@@ -228,6 +228,8 @@
   "excludeDesc": "應用程式在背景執行時，從最近使用的應用程式中隱藏",
   "collapseQuickSettingsPanel": "收合快速設定面板",
   "collapseQuickSettingsPanelDesc": "點選快速設定開關後收合面板",
+  "showQuickSettingsProfileName": "顯示目前設定檔名稱",
+  "showQuickSettingsProfileNameDesc": "連線時在快捷開關上顯示設定檔名稱",
   "expand": "展開",
   "shrink": "緊密",
   "min": "最小",

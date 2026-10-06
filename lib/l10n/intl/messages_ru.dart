@@ -1581,6 +1581,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Показывать кнопку остановки в постоянном уведомлении. Отключите, если из-за неё система всегда разворачивает уведомление",
     ),
     "showPassword": MessageLookupByLibrary.simpleMessage("Показать пароль"),
+    "showQuickSettingsProfileName": MessageLookupByLibrary.simpleMessage(
+      "Показывать имя текущего профиля",
+    ),
+    "showQuickSettingsProfileNameDesc": MessageLookupByLibrary.simpleMessage(
+      "Показывать имя профиля на быстром переключателе при подключении",
+    ),
     "showTrayProxySelection": MessageLookupByLibrary.simpleMessage(
       "Показывать выбор прокси в трее",
     ),

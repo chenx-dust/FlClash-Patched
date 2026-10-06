@@ -228,6 +228,8 @@
   "excludeDesc": "应用在后台时,从最近任务中隐藏应用",
   "collapseQuickSettingsPanel": "收起快捷设置面板",
   "collapseQuickSettingsPanelDesc": "点击快捷设置开关后收起面板",
+  "showQuickSettingsProfileName": "显示当前配置名称",
+  "showQuickSettingsProfileNameDesc": "连接时在快捷开关上显示配置名称",
   "expand": "展开",
   "shrink": "紧凑",
   "min": "最小",

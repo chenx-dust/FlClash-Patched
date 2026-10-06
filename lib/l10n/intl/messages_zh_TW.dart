@@ -1104,6 +1104,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "在常駐通知中顯示停止按鈕。若系統因此總是展開通知，可關閉此選項",
     ),
     "showPassword": MessageLookupByLibrary.simpleMessage("顯示密碼"),
+    "showQuickSettingsProfileName": MessageLookupByLibrary.simpleMessage(
+      "顯示目前設定檔名稱",
+    ),
+    "showQuickSettingsProfileNameDesc": MessageLookupByLibrary.simpleMessage(
+      "連線時在快捷開關上顯示設定檔名稱",
+    ),
     "showTrayProxySelection": MessageLookupByLibrary.simpleMessage("在系統匣中選擇代理"),
     "showTrayProxySelectionDesc": MessageLookupByLibrary.simpleMessage(
       "在系統匣選單中顯示代理群組與節點，方便快速切換",

@@ -228,6 +228,8 @@
   "excludeDesc": "Скрывать приложение из недавних задач, когда оно в фоне",
   "collapseQuickSettingsPanel": "Сворачивать панель быстрых настроек",
   "collapseQuickSettingsPanelDesc": "Сворачивать панель быстрых настроек после нажатия плитки",
+  "showQuickSettingsProfileName": "Показывать имя текущего профиля",
+  "showQuickSettingsProfileNameDesc": "Показывать имя профиля на быстром переключателе при подключении",
   "expand": "Развернуть",
   "shrink": "Компактный",
   "min": "Минимальный",
