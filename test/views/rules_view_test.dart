@@ -277,7 +277,8 @@ void main() {
         (_) async => [rule.copyWith(type: 'RuleSet', payload: 'ads', size: 25)],
       );
       response.complete('');
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
       verify(() => core.updateExternalProvider('ads')).called(1);
       verify(() => core.getRules()).called(2);
       expect(container.read(providersProvider).single.count, 25);
@@ -299,7 +300,8 @@ void main() {
     ).thenThrow(Exception('download failed'));
     await pumpView(tester);
     await tester.tap(find.byTooltip('Sync: ads').first);
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
     expect(find.textContaining('download failed'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(

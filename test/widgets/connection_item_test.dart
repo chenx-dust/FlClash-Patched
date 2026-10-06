@@ -72,11 +72,11 @@ void main() {
     expect(find.text('5.6.7.8:443'), findsOneWidget);
     expect(find.text('example.com'), findsOneWidget);
     await tester.scrollUntilVisible(
-      find.text('DIRECT'),
+      find.text('DIRECT', findRichText: true),
       100,
       scrollable: find.byType(Scrollable),
     );
-    expect(find.text('DIRECT'), findsOneWidget);
+    expect(find.text('DIRECT', findRichText: true), findsOneWidget);
     expect(tester.takeException(), isNull);
 
     await tester.pumpWidget(const SizedBox.shrink());
@@ -120,21 +120,21 @@ void main() {
 
     expect(find.text('TCP'), findsOneWidget);
     expect(find.text('DOMAIN-SUFFIX'), findsOneWidget);
-    expect(find.text('Proxy A'), findsOneWidget);
-    expect(find.text('Proxy B'), findsOneWidget);
+    expect(find.text('Proxy A', findRichText: true), findsOneWidget);
+    expect(find.text('Proxy B', findRichText: true), findsOneWidget);
     expect(find.text('→'), findsNWidgets(2));
     expect(
       tester.getTopLeft(find.text('DOMAIN-SUFFIX')).dx,
-      lessThan(tester.getTopLeft(find.text('Proxy B')).dx),
+      lessThan(tester.getTopLeft(find.text('Proxy B', findRichText: true)).dx),
     );
     expect(
-      tester.getTopLeft(find.text('Proxy B')).dx,
-      lessThan(tester.getTopLeft(find.text('Proxy A')).dx),
+      tester.getTopLeft(find.text('Proxy B', findRichText: true)).dx,
+      lessThan(tester.getTopLeft(find.text('Proxy A', findRichText: true)).dx),
     );
 
-    await tester.tap(find.text('Proxy A'));
+    await tester.tap(find.text('Proxy A', findRichText: true));
     await tester.pump();
-    await tester.tap(find.text('Proxy B'));
+    await tester.tap(find.text('Proxy B', findRichText: true));
     await tester.pump();
 
     expect(clicked, ['Proxy A', 'Proxy B']);

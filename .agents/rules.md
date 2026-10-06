@@ -466,7 +466,9 @@ l10n paths for that reason. It is harmless because the file only needs `Locale`,
 human writes takes Material from `material_ui`; `cupertino_ui` is banned outright and
 survives only as a transitive dependency of `material_ui`.
 
-Strings live in `arb/intl_{en,zh_CN,ja,ru}.arb` — flat JSON, no `@` metadata. Add a key to all four, then regenerate with
+Strings live in `arb/intl_*.arb` — currently `en`, `zh_CN`, `zh_TW`, `ja`, and `ru`; flat JSON, no `@` metadata.
+Enumerate the ARB files when changing UI text so newly added locales are included. Add keys to every locale and review
+existing translations when their meaning changes, including Traditional Chinese (`zh_TW`). Regenerate with
 `dart run intl_utils:generate`, which rewrites `lib/l10n/`. A key present in only some locales silently falls back to
 English at runtime, so add the translation rather than leaving it out.
 

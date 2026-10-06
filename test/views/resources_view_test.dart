@@ -126,7 +126,7 @@ void main() {
         child: const TestApp(child: ResourcesView()),
       ),
     );
-    await pumpUntilFound(tester, find.text(1.traffic.show));
+    await pumpUntilFound(tester, find.text(1.traffic.show, findRichText: true));
 
     final updatingKeys = container.read(updatingKeysProvider.notifier);
     final key = GeoResource.MMDB.updatingKey;
@@ -134,12 +134,15 @@ void main() {
     await settle(tester);
     file.writeAsBytesSync(List.filled(2048, 0));
     await settle(tester, rounds: 5);
-    expect(find.text(1.traffic.show), findsOneWidget);
+    expect(find.text(1.traffic.show, findRichText: true), findsOneWidget);
 
     updatingKeys.stop(key, operation);
-    await pumpUntilFound(tester, find.text(2048.traffic.show));
+    await pumpUntilFound(
+      tester,
+      find.text(2048.traffic.show, findRichText: true),
+    );
 
-    expect(find.text(1.traffic.show), findsNothing);
+    expect(find.text(1.traffic.show, findRichText: true), findsNothing);
     expect(tester.takeException(), null);
 
     await tester.pumpWidget(const SizedBox.shrink());

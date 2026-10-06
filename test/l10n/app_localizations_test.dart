@@ -53,7 +53,7 @@ void main() {
 
       final translated = await AppLocalizations.load(locale);
 
-      expect(locale.label, '中文（繁體）');
+      expect(locale.label, '正體中文');
       expect(translated.dashboard, '儀表板');
       expect(translated.profile, '設定檔');
       expect(translated.port, '連接埠');

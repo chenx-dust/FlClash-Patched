@@ -32,15 +32,15 @@ void main() {
     await tester.pump();
 
     expect(find.textContaining('20:00:00'), findsOneWidget);
-    expect(find.text('CORE'), findsOneWidget);
-    expect(find.text('ERROR'), findsOneWidget);
+    expect(find.text('CORE', findRichText: true), findsOneWidget);
+    expect(find.text('ERROR', findRichText: true), findsOneWidget);
     expect(
       tester.widget<SelectableText>(find.byType(SelectableText)).data,
       payload,
     );
     final header = tester.getRect(find.byType(RecordHeader));
     expect(
-      tester.getTopLeft(find.text('ERROR')).dy,
+      tester.getTopLeft(find.text('ERROR', findRichText: true)).dy,
       lessThan(header.bottom + 1),
     );
     final decorated = tester.widget<DecoratedBox>(
@@ -53,7 +53,7 @@ void main() {
     final border = (decorated.decoration as BoxDecoration).border! as Border;
     expect(border.left.width, 3);
 
-    await tester.tap(find.text('ERROR'));
+    await tester.tap(find.text('ERROR', findRichText: true));
     await tester.pump();
     expect(levels, [LogLevel.error]);
 

@@ -116,7 +116,10 @@ void main() {
           )
           .first;
       expect(
-        find.descendant(of: dateRow, matching: find.text('{date}')),
+        find.descendant(
+          of: dateRow,
+          matching: find.text('{date}', findRichText: true),
+        ),
         findsOneWidget,
       );
       final controller = tester
@@ -126,7 +129,7 @@ void main() {
         baseOffset: 0,
         extentOffset: 6,
       );
-      await tester.tap(find.text('{date}'));
+      await tester.tap(find.text('{date}', findRichText: true));
       await tester.pump();
       expect(controller.text, '{date}.zip');
       expect(controller.selection.baseOffset, 6);

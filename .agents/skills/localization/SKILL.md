@@ -21,11 +21,15 @@ Do not use this for README translation sync or manual edits to generated localiz
    ```
 
 3. Inspect the smallest relevant call sites and nearby ARB keys.
-4. Add or update every source ARB:
+4. Enumerate `arb/intl_*.arb` and add or update translations in every source ARB. The current locales are:
    - `arb/intl_en.arb`
    - `arb/intl_zh_CN.arb`
+   - `arb/intl_zh_TW.arb`
    - `arb/intl_ja.arb`
    - `arb/intl_ru.arb`
+
+   Review existing translations when a label's meaning changes; matching keys alone cannot detect stale translations.
+   Keep Traditional Chinese (`zh_TW`) wording and terminology distinct from Simplified Chinese (`zh_CN`).
 5. Replace inline strings with existing project accessors:
    - Widgets with `BuildContext`: `context.appLocalizations.key` from `common.dart`.
    - Controllers/providers/non-widget code: `currentAppLocalizations.key` from `app_localizations.dart`.
@@ -35,11 +39,12 @@ Do not use this for README translation sync or manual edits to generated localiz
    dart run intl_utils:generate
    ```
 
-7. Verify changed Dart files with `flutter analyze` when practical.
+7. Run `flutter test test/l10n/ test/lint/dynamic_message_key_test.dart` to check locale keys and generated messages.
+   Verify changed Dart files with `flutter analyze` when practical.
 8. Re-run the Han-text scan for targeted strings.
 
 ## Pitfalls
 
-- If ja/ru still show English, fix ja/ru source ARB values and regenerate. Do not edit generated Dart.
+- If a locale still shows English or stale wording, fix its source ARB values and regenerate. Do not edit generated Dart.
 - Ignore `lib/l10n/intl/**` and `lib/**/generated/**` during text scans.
 - If generator or analyzer hits local cache permission friction, rerun serially before treating it as a code issue.
