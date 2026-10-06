@@ -229,6 +229,12 @@ var methodHandlers = map[CoreMethod]methodHandler{
 	closeConnectionMethod: withArguments(func(id *string, response MethodResponse) {
 		response.success(handleCloseConnection(*id))
 	}),
+	getRulesMethod: withoutArguments(func(response MethodResponse) {
+		response.success(handleGetRules())
+	}),
+	setRuleDisabledMethod: withArguments(func(params *SetRuleDisabledParams, response MethodResponse) {
+		response.success(handleSetRuleDisabled(params))
+	}),
 	getExternalProvidersMethod: withoutArguments(func(response MethodResponse) {
 		response.success(handleGetExternalProviders())
 	}),

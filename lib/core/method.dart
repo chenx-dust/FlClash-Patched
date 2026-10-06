@@ -22,6 +22,8 @@ enum CoreMethod {
   closeConnections,
   resetConnections,
   closeConnection,
+  getRules,
+  setRuleDisabled,
   getExternalProviders,
   getExternalProvider,
   getOverlayNetworkStatus,

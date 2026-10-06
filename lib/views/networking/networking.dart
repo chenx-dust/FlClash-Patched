@@ -46,9 +46,6 @@ class _NetworkingViewState extends ConsumerState<NetworkingView>
   @override
   bool get canPoll => super.canPoll && _expanded.isNotEmpty;
 
-  bool get _isLoading =>
-      _summaryLoad != null || _loading.isNotEmpty || _activating.isNotEmpty;
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -633,17 +630,6 @@ class _NetworkingViewState extends ConsumerState<NetworkingView>
               allCollapsed ? Symbols.unfold_more : Symbols.unfold_less,
             ),
           ),
-        IconButton(
-          tooltip: appLocalizations.sync,
-          onPressed: proxies.isEmpty || _isLoading ? null : _refreshStatuses,
-          icon: _isLoading
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CommonCircleLoading(),
-                )
-              : const Icon(Symbols.sync),
-        ),
       ],
       body: _buildBody(context, proxies),
     );

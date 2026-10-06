@@ -1027,12 +1027,23 @@ class MessageLookup extends MessageLookupByLibrary {
     "ruleActionUidDesc": MessageLookupByLibrary.simpleMessage(
       "比對 Linux USER ID",
     ),
+    "ruleDisabled": MessageLookupByLibrary.simpleMessage("已停用"),
     "ruleEmpty": MessageLookupByLibrary.simpleMessage("規則為空"),
+    "ruleEnabled": MessageLookupByLibrary.simpleMessage("已啟用"),
+    "ruleHits": MessageLookupByLibrary.simpleMessage("命中"),
+    "ruleLastHit": MessageLookupByLibrary.simpleMessage("最後命中"),
+    "ruleLastMiss": MessageLookupByLibrary.simpleMessage("最後未命中"),
+    "ruleMisses": MessageLookupByLibrary.simpleMessage("未命中"),
     "ruleName": MessageLookupByLibrary.simpleMessage("規則名稱"),
     "ruleSet": MessageLookupByLibrary.simpleMessage("規則集"),
     "ruleTarget": MessageLookupByLibrary.simpleMessage("規則目標"),
+    "ruleType": MessageLookupByLibrary.simpleMessage("規則類型"),
+    "ruleUpdateFailed": MessageLookupByLibrary.simpleMessage(
+      "無法變更規則，設定可能已變更，請重新整理後再試。",
+    ),
     "rules": MessageLookupByLibrary.simpleMessage("規則"),
     "rulesCount": m28,
+    "rulesDesc": MessageLookupByLibrary.simpleMessage("檢視規則及匹配統計"),
     "save": MessageLookupByLibrary.simpleMessage("儲存"),
     "saveChanges": MessageLookupByLibrary.simpleMessage("是否儲存變更？"),
     "script": MessageLookupByLibrary.simpleMessage("指令碼"),
@@ -1237,7 +1248,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "writeToSystemDesc": MessageLookupByLibrary.simpleMessage("同時設定系統時鐘"),
     "yearsAgo": m34,
     "yes": MessageLookupByLibrary.simpleMessage("是"),
-    "zhCN": MessageLookupByLibrary.simpleMessage("中文（簡體）"),
-    "zhTW": MessageLookupByLibrary.simpleMessage("中文（繁體）"),
+    "zhCN": MessageLookupByLibrary.simpleMessage("簡體中文"),
+    "zhTW": MessageLookupByLibrary.simpleMessage("正體中文"),
   };
 }

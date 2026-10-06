@@ -21,6 +21,7 @@ class ProxiesView extends ConsumerStatefulWidget {
 }
 
 class _ProxiesViewState extends ConsumerState<ProxiesView> {
+  final GlobalKey<CommonScaffoldState> _scaffoldKey = GlobalKey();
   final GlobalKey<ProxiesTabViewState> _proxiesTabKey = GlobalKey();
   final GlobalKey<ProxiesListViewState> _proxiesListKey = GlobalKey();
   bool _hasProviders = false;
@@ -186,6 +187,9 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
   @override
   void initState() {
     super.initState();
+    ref.listenManual(proxyFocusProvider, (_, next) {
+      if (next != null) _scaffoldKey.currentState?.handleExitSearching();
+    });
     ref.listenManual(providersProvider.select((state) => state.isNotEmpty), (
       prev,
       next,
@@ -219,6 +223,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
     final isLoading = ref.watch(loadingProvider(LoadingTag.proxies));
     final useRegex = ref.watch(searchUseRegexProvider(QueryTag.proxies));
     return CommonScaffold(
+      key: _scaffoldKey,
       isLoading: isLoading,
       resizeToAvoidBottomInset: false,
       floatingActionButton: _canDelayTest(proxiesType) ? _buildFAB() : null,

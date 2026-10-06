@@ -1466,12 +1466,27 @@ class MessageLookup extends MessageLookupByLibrary {
     "ruleActionUidDesc": MessageLookupByLibrary.simpleMessage(
       "Сопоставить Linux USER ID",
     ),
+    "ruleDisabled": MessageLookupByLibrary.simpleMessage("Отключено"),
     "ruleEmpty": MessageLookupByLibrary.simpleMessage("Правило пусто"),
+    "ruleEnabled": MessageLookupByLibrary.simpleMessage("Включено"),
+    "ruleHits": MessageLookupByLibrary.simpleMessage("Совпадения"),
+    "ruleLastHit": MessageLookupByLibrary.simpleMessage("Последнее совпадение"),
+    "ruleLastMiss": MessageLookupByLibrary.simpleMessage(
+      "Последнее несовпадение",
+    ),
+    "ruleMisses": MessageLookupByLibrary.simpleMessage("Несовпадения"),
     "ruleName": MessageLookupByLibrary.simpleMessage("Название правила"),
     "ruleSet": MessageLookupByLibrary.simpleMessage("Набор правил"),
     "ruleTarget": MessageLookupByLibrary.simpleMessage("Цель правила"),
+    "ruleType": MessageLookupByLibrary.simpleMessage("Тип правила"),
+    "ruleUpdateFailed": MessageLookupByLibrary.simpleMessage(
+      "Не удалось изменить правило. Возможно, конфигурация изменилась. Обновите список и повторите попытку.",
+    ),
     "rules": MessageLookupByLibrary.simpleMessage("Правила"),
     "rulesCount": m28,
+    "rulesDesc": MessageLookupByLibrary.simpleMessage(
+      "Просмотр правил и статистики совпадений",
+    ),
     "save": MessageLookupByLibrary.simpleMessage("Сохранить"),
     "saveChanges": MessageLookupByLibrary.simpleMessage("Сохранить изменения?"),
     "script": MessageLookupByLibrary.simpleMessage("Скрипт"),

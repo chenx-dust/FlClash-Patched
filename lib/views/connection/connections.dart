@@ -335,6 +335,7 @@ class _ConnectionSortView extends StatelessWidget {
             title: Text(_label(context, type)),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
+              spacing: 4,
               children: [
                 for (final ascending in [true, false])
                   IconButton.filledTonal(

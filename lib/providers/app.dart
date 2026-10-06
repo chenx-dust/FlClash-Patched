@@ -266,6 +266,18 @@ class CurrentPageLabel extends _$CurrentPageLabel
 }
 
 @Riverpod(keepAlive: true)
+class ProxyFocus extends _$ProxyFocus with AutoDisposeNotifierMixin {
+  @override
+  ({String groupName, String? proxyName})? build() {
+    ref.listen(currentPageLabelProvider, (_, next) {
+      if (next != PageLabel.proxies) state = null;
+    });
+    ref.listen(currentProfileIdProvider, (_, _) => state = null);
+    return null;
+  }
+}
+
+@Riverpod(keepAlive: true)
 class SortNum extends _$SortNum with AutoDisposeNotifierMixin {
   @override
   int build() {

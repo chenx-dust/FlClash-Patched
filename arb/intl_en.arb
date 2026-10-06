@@ -864,5 +864,14 @@
   "memoryOther": "Other runtime memory",
   "memoryTotal": "Go memory usage",
   "memoryCleanup": "Clean up",
-  "memoryReadFailed": "Unable to read memory. Retrying…"
+  "memoryReadFailed": "Unable to read memory. Retrying…",
+  "rulesDesc": "View rules and matching statistics",
+  "ruleEnabled": "Enabled",
+  "ruleDisabled": "Disabled",
+  "ruleHits": "Hits",
+  "ruleMisses": "Misses",
+  "ruleLastHit": "Last hit",
+  "ruleLastMiss": "Last miss",
+  "ruleType": "Rule type",
+  "ruleUpdateFailed": "Could not change the rule. The configuration may have changed; refresh and try again."
 }

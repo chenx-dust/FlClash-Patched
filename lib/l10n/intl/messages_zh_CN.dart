@@ -1005,12 +1005,23 @@ class MessageLookup extends MessageLookupByLibrary {
     "ruleActionUidDesc": MessageLookupByLibrary.simpleMessage(
       "匹配 Linux USER ID",
     ),
+    "ruleDisabled": MessageLookupByLibrary.simpleMessage("已禁用"),
     "ruleEmpty": MessageLookupByLibrary.simpleMessage("规则为空"),
+    "ruleEnabled": MessageLookupByLibrary.simpleMessage("已启用"),
+    "ruleHits": MessageLookupByLibrary.simpleMessage("命中"),
+    "ruleLastHit": MessageLookupByLibrary.simpleMessage("最后命中"),
+    "ruleLastMiss": MessageLookupByLibrary.simpleMessage("最后未命中"),
+    "ruleMisses": MessageLookupByLibrary.simpleMessage("未命中"),
     "ruleName": MessageLookupByLibrary.simpleMessage("规则名称"),
     "ruleSet": MessageLookupByLibrary.simpleMessage("规则集"),
     "ruleTarget": MessageLookupByLibrary.simpleMessage("规则目标"),
+    "ruleType": MessageLookupByLibrary.simpleMessage("规则类型"),
+    "ruleUpdateFailed": MessageLookupByLibrary.simpleMessage(
+      "无法更改规则，配置可能已变化，请刷新后重试。",
+    ),
     "rules": MessageLookupByLibrary.simpleMessage("规则"),
     "rulesCount": m28,
+    "rulesDesc": MessageLookupByLibrary.simpleMessage("查看规则及匹配统计"),
     "save": MessageLookupByLibrary.simpleMessage("保存"),
     "saveChanges": MessageLookupByLibrary.simpleMessage("是否保存更改？"),
     "script": MessageLookupByLibrary.simpleMessage("脚本"),
@@ -1213,7 +1224,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "writeToSystemDesc": MessageLookupByLibrary.simpleMessage("同时设置系统时钟"),
     "yearsAgo": m34,
     "yes": MessageLookupByLibrary.simpleMessage("是"),
-    "zhCN": MessageLookupByLibrary.simpleMessage("中文简体"),
-    "zhTW": MessageLookupByLibrary.simpleMessage("中文繁体"),
+    "zhCN": MessageLookupByLibrary.simpleMessage("简体中文"),
+    "zhTW": MessageLookupByLibrary.simpleMessage("繁体中文"),
   };
 }

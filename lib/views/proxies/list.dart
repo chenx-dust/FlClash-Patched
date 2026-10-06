@@ -37,6 +37,7 @@ class ProxiesListViewState extends ConsumerState<ProxiesListView> {
   double containerHeight = 0;
   String? _enterGroupName;
   Timer? _enterTimer;
+  Object? _lastFocus;
 
   @override
   void dispose() {
@@ -146,6 +147,7 @@ class ProxiesListViewState extends ConsumerState<ProxiesListView> {
     required int columns,
     required ProxyCardType cardType,
     required ProxiesListHeaderStyle listHeaderStyle,
+    required bool animate,
   }) {
     final groupName = group.name;
     final isExpand = currentUnfoldSet.contains(groupName);
@@ -162,6 +164,19 @@ class ProxiesListViewState extends ConsumerState<ProxiesListView> {
     final rows = isExpand
         ? group.all.chunks(columns).toList()
         : const <List<Proxy>>[];
+    final proxyList = SliverFixedExtentList(
+      itemExtent: getItemHeight(cardType) + 8,
+      delegate: SliverChildBuilderDelegate(
+        (_, index) => _buildProxyRow(
+          group: group,
+          proxies: rows[index],
+          rowIndex: index,
+          columns: columns,
+          cardType: cardType,
+        ),
+        childCount: rows.length,
+      ),
+    );
     return SliverMainAxisGroup(
       slivers: [
         PinnedHeaderSliver(
@@ -197,23 +212,14 @@ class ProxiesListViewState extends ConsumerState<ProxiesListView> {
             ),
           ),
         ),
-        SliverAnimatedPaintExtent(
-          duration: animationDuration,
-          curve: Curves.easeInOutCubic,
-          child: SliverFixedExtentList(
-            itemExtent: getItemHeight(cardType) + 8,
-            delegate: SliverChildBuilderDelegate(
-              (_, index) => _buildProxyRow(
-                group: group,
-                proxies: rows[index],
-                rowIndex: index,
-                columns: columns,
-                cardType: cardType,
-              ),
-              childCount: rows.length,
-            ),
-          ),
-        ),
+        if (animate)
+          SliverAnimatedPaintExtent(
+            duration: animationDuration,
+            curve: Curves.easeInOutCubic,
+            child: proxyList,
+          )
+        else
+          proxyList,
       ],
     );
   }
@@ -329,6 +335,8 @@ class ProxiesListViewState extends ConsumerState<ProxiesListView> {
     return Consumer(
       builder: (_, ref, _) {
         final state = ref.watch(proxiesListStateProvider);
+        final focus = ref.watch(proxyFocusProvider);
+        final focusChanged = focus != _lastFocus;
         ref.watch(themeSettingProvider.select((state) => state.textScale));
         final proxiesLayout = ref.watch(
           proxiesStyleSettingProvider.select((state) => state.layout),
@@ -356,6 +364,26 @@ class ProxiesListViewState extends ConsumerState<ProxiesListView> {
                 listHeaderStyle: listHeaderStyle,
               );
               containerHeight = max(constraints.maxHeight - 16, 0);
+              if (focusChanged) {
+                _lastFocus = focus;
+                if (focus != null) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (!mounted || ref.read(proxyFocusProvider) != focus) {
+                      return;
+                    }
+                    final group = _groupOffsets.groupOf(focus.groupName);
+                    if (group == null) return;
+                    final index = group.all.indexWhere(
+                      (proxy) => proxy.name == focus.proxyName,
+                    );
+                    final row = max(index, 0) ~/ columns;
+                    _jumpTo(
+                      _groupOffsets.offsetOf(group.name) +
+                          row * (getItemHeight(state.proxyCardType) + 8),
+                    );
+                  });
+                }
+              }
               return CommonScrollBar(
                 controller: _controller,
                 thumbVisibility: true,
@@ -374,6 +402,7 @@ class ProxiesListViewState extends ConsumerState<ProxiesListView> {
                           columns: columns,
                           cardType: state.proxyCardType,
                           listHeaderStyle: listHeaderStyle,
+                          animate: !focusChanged,
                         ),
                       SliverToBoxAdapter(
                         child: SizedBox(

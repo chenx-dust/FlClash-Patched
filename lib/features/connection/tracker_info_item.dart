@@ -159,7 +159,6 @@ class _TrackerInfoBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
     final styles = RecordTextStyles.of(context);
     final metadata = trackerInfo.metadata;
     final rule = _ruleText(trackerInfo);
@@ -189,30 +188,10 @@ class _TrackerInfoBody extends StatelessWidget {
             ],
           ),
         ),
-        Wrap(
-          spacing: 6,
-          runSpacing: 4,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            if (rule.isNotEmpty) Text(rule, style: styles.secondary),
-            for (final (index, chain) in trackerInfo.chains.reversed.indexed)
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                spacing: 6,
-                children: [
-                  if (index > 0 || rule.isNotEmpty) const RecordArrow(),
-                  Flexible(
-                    child: TonalChip(
-                      label: chain,
-                      color: colorScheme.secondaryContainer,
-                      foregroundColor: colorScheme.onSecondaryContainer,
-                      onPressed: () =>
-                          onSelect(TrackerInfoFilterType.chain, chain),
-                    ),
-                  ),
-                ],
-              ),
-          ],
+        ProxyChain(
+          chain: trackerInfo.chains.reversed,
+          leading: rule.isNotEmpty ? Text(rule, style: styles.secondary) : null,
+          onSelected: (chain) => onSelect(TrackerInfoFilterType.chain, chain),
         ),
         if (source.isNotEmpty) Text(source, style: styles.muted),
       ],

@@ -17,6 +17,7 @@ extension PageLabelL10n on PageLabel {
       PageLabel.networking => appLocalizations.networking,
       PageLabel.connections => appLocalizations.connections,
       PageLabel.dnsQueries => appLocalizations.dnsQueries,
+      PageLabel.rules => appLocalizations.rules,
     };
   }
 
@@ -29,6 +30,7 @@ extension PageLabelL10n on PageLabel {
       PageLabel.networking => appLocalizations.networkingDesc,
       PageLabel.connections => appLocalizations.connectionsDesc,
       PageLabel.dnsQueries => appLocalizations.dnsQueriesDesc,
+      PageLabel.rules => appLocalizations.rulesDesc,
       PageLabel.dashboard ||
       PageLabel.proxies ||
       PageLabel.profiles ||

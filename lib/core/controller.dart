@@ -160,6 +160,14 @@ class CoreController {
     await _interface.closeConnections();
   }
 
+  Future<List<CoreRule>> getRules() {
+    return _interface.getRules();
+  }
+
+  Future<bool> setRuleDisabled(SetRuleDisabledParams params) {
+    return _interface.setRuleDisabled(params);
+  }
+
   Future<void> resetConnections() async {
     await _interface.resetConnections();
   }

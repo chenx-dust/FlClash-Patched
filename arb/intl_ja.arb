@@ -864,5 +864,14 @@
   "memoryOther": "その他のランタイムメモリ",
   "memoryTotal": "Go メモリ使用量",
   "memoryCleanup": "クリーンアップ",
-  "memoryReadFailed": "メモリを読み取れません。再試行中…"
+  "memoryReadFailed": "メモリを読み取れません。再試行中…",
+  "rulesDesc": "ルールとマッチ統計を表示",
+  "ruleEnabled": "有効",
+  "ruleDisabled": "無効",
+  "ruleHits": "一致",
+  "ruleMisses": "不一致",
+  "ruleLastHit": "最終一致",
+  "ruleLastMiss": "最終不一致",
+  "ruleType": "ルールの種類",
+  "ruleUpdateFailed": "ルールを変更できませんでした。設定が変更された可能性があります。更新して再試行してください。"
 }

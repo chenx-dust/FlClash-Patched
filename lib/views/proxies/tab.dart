@@ -30,6 +30,7 @@ class ProxiesTabViewState extends ConsumerState<ProxiesTabView>
   TabController? _tabController;
   final _hasMoreButtonNotifier = ValueNotifier<bool>(false);
   ProxyGroupViewKeyMap _keyMap = {};
+  Object? _lastFocus;
 
   @override
   void initState() {
@@ -195,6 +196,19 @@ class ProxiesTabViewState extends ConsumerState<ProxiesTabView>
       proxiesStyleSettingProvider.select((state) => state.layout),
     );
     final groups = state.groups;
+    final focus = ref.watch(proxyFocusProvider);
+    if (focus != _lastFocus) {
+      _lastFocus = focus;
+      if (focus != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted || ref.read(proxyFocusProvider) != focus) return;
+          final index = groups.indexWhere(
+            (group) => group.name == focus.groupName,
+          );
+          if (index >= 0) _tabController?.index = index;
+        });
+      }
+    }
     _keyMap = {};
     return NullStatusSwitcher(
       isEmpty: groups.isEmpty || _tabController == null,
@@ -320,6 +334,7 @@ class ProxyGroupView extends ConsumerStatefulWidget {
 
 class _ProxyGroupViewState extends ConsumerState<ProxyGroupView> {
   late final ScrollController _controller;
+  Object? _lastFocus;
 
   @override
   void initState() {
@@ -367,6 +382,29 @@ class _ProxyGroupViewState extends ConsumerState<ProxyGroupView> {
   Widget build(BuildContext context) {
     final group = widget.group;
     final proxies = group.all;
+    final focus = ref.watch(proxyFocusProvider);
+    if (focus != _lastFocus) {
+      _lastFocus = focus;
+      if (focus?.groupName == group.name) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted ||
+              !_controller.hasClients ||
+              ref.read(proxyFocusProvider) != focus) {
+            return;
+          }
+          final index = proxies.indexWhere(
+            (proxy) => proxy.name == focus?.proxyName,
+          );
+          final row = max(index, 0) ~/ widget.columns;
+          _controller.jumpTo(
+            (row * (getItemHeight(widget.cardType) + 8)).clamp(
+              0.0,
+              _controller.position.maxScrollExtent,
+            ),
+          );
+        });
+      }
+    }
     return CommonScrollBar(
       controller: _controller,
       child: GridView.builder(

@@ -106,6 +106,10 @@ mixin CoreInterface {
 
   FutureOr<bool> closeConnection(String id);
 
+  Future<List<CoreRule>> getRules();
+
+  Future<bool> setRuleDisabled(SetRuleDisabledParams params);
+
   FutureOr<String> clearEffect(int profileId);
 
   FutureOr<String> deleteManagedPath(DeleteManagedPathParams params);
@@ -418,6 +422,26 @@ abstract class CoreHandlerInterface with CoreInterface {
     return await _invokeMethod<bool>(
           method: CoreMethod.closeConnection,
           arguments: id,
+        ) ??
+        false;
+  }
+
+  @override
+  Future<List<CoreRule>> getRules() async {
+    final data = await _invokeMethod<List<dynamic>>(
+      method: CoreMethod.getRules,
+    );
+    return (data ?? const [])
+        .whereType<Map>()
+        .map((item) => CoreRule.fromJson(Map<String, Object?>.from(item)))
+        .toList();
+  }
+
+  @override
+  Future<bool> setRuleDisabled(SetRuleDisabledParams params) async {
+    return await _invokeMethod<bool>(
+          method: CoreMethod.setRuleDisabled,
+          arguments: params.toJson(),
         ) ??
         false;
   }

@@ -20,7 +20,7 @@ class Dialogs {
     bool filter = true,
   }) async {
     return showModal<T>(
-      useRootNavigator: false,
+      useRootNavigator: true,
       context: context ?? _context,
       configuration: FadeScaleTransitionConfiguration(
         barrierColor: Colors.black38,

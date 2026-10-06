@@ -199,6 +199,51 @@ extension ExternalProviderExt on ExternalProvider {
       type != 'Rule' || format == 'YamlRule' || format == 'TextRule';
 }
 
+@freezed
+abstract class CoreRule with _$CoreRule {
+  const factory CoreRule({
+    required int index,
+    required String type,
+    @Default('') String payload,
+    @Default('') String proxy,
+    @Default(-1) int size,
+    @Default(false) bool disabled,
+    @Default(0) int hitCount,
+    DateTime? hitAt,
+    @Default(0) int missCount,
+    DateTime? missAt,
+  }) = _CoreRule;
+
+  factory CoreRule.fromJson(Map<String, Object?> json) =>
+      _$CoreRuleFromJson(json);
+}
+
+extension CoreRuleExt on CoreRule {
+  List<String> get searchFields => [type, payload, proxy];
+
+  SetRuleDisabledParams toDisabledParams(bool disabled) {
+    return SetRuleDisabledParams(
+      index: index,
+      type: type,
+      payload: payload,
+      disabled: disabled,
+    );
+  }
+}
+
+@freezed
+abstract class SetRuleDisabledParams with _$SetRuleDisabledParams {
+  const factory SetRuleDisabledParams({
+    required int index,
+    required String type,
+    required String payload,
+    required bool disabled,
+  }) = _SetRuleDisabledParams;
+
+  factory SetRuleDisabledParams.fromJson(Map<String, Object?> json) =>
+      _$SetRuleDisabledParamsFromJson(json);
+}
+
 class TailscaleNode {
   final String id;
   final String publicKey;

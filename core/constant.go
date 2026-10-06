@@ -219,6 +219,8 @@ const (
 	closeConnectionsMethod               CoreMethod = "closeConnections"
 	resetConnectionsMethod               CoreMethod = "resetConnections"
 	closeConnectionMethod                CoreMethod = "closeConnection"
+	getRulesMethod                       CoreMethod = "getRules"
+	setRuleDisabledMethod                CoreMethod = "setRuleDisabled"
 	getExternalProvidersMethod           CoreMethod = "getExternalProviders"
 	getExternalProviderMethod            CoreMethod = "getExternalProvider"
 	getOverlayNetworkStatusMethod        CoreMethod = "getOverlayNetworkStatus"

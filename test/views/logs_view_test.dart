@@ -65,6 +65,51 @@ void main() {
 
   Finder hintFinder() => find.byKey(hintKey);
 
+  for (final group in ['Source', 'Level']) {
+    testWidgets('$group filters support live multi-selection and deselection', (
+      tester,
+    ) async {
+      await pumpLogsView(tester, seedBeforeMount: true);
+      final options = group == 'Source' ? ['APP', 'CORE'] : ['INFO', 'ERROR'];
+      final menu = find.byType(CommonPopupMenu);
+      Finder option(String label) =>
+          find.descendant(of: menu, matching: find.text(label));
+      final checks = find.descendant(
+        of: menu,
+        matching: find.byIcon(Symbols.check),
+      );
+
+      await tester.tap(find.byIcon(Symbols.filter_alt));
+      await tester.pumpAndSettle();
+      await tester.tap(option(group));
+      await tester.pumpAndSettle();
+      expect(checks, findsNothing);
+
+      for (var i = 0; i < options.length; i++) {
+        await tester.tap(option(options[i]));
+        await tester.pumpAndSettle();
+        expect(menu, findsOneWidget);
+        expect(option(options[i]), findsOneWidget);
+        expect(checks, findsNWidgets(i + 1));
+      }
+
+      await tester.tap(option(options.first));
+      await tester.pumpAndSettle();
+      expect(checks, findsOneWidget);
+      expect(find.text('log 199'), findsNothing);
+
+      await tester.tap(option(options.last));
+      await tester.pumpAndSettle();
+      expect(menu, findsOneWidget);
+      expect(checks, findsNothing);
+      expect(find.text('log 199'), findsOneWidget);
+
+      await tester.tapAt(const Offset(10, 900));
+      await tester.pumpAndSettle();
+      expect(menu, findsNothing);
+    });
+  }
+
   testWidgets('opens stored logs at the newest entry', (tester) async {
     await pumpLogsView(tester, seedBeforeMount: true);
 

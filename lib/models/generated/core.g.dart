@@ -313,6 +313,52 @@ Map<String, dynamic> _$ExternalProviderToJson(_ExternalProvider instance) =>
       'update-at': instance.updateAt.toIso8601String(),
     };
 
+_CoreRule _$CoreRuleFromJson(Map<String, dynamic> json) => _CoreRule(
+  index: (json['index'] as num).toInt(),
+  type: json['type'] as String,
+  payload: json['payload'] as String? ?? '',
+  proxy: json['proxy'] as String? ?? '',
+  size: (json['size'] as num?)?.toInt() ?? -1,
+  disabled: json['disabled'] as bool? ?? false,
+  hitCount: (json['hitCount'] as num?)?.toInt() ?? 0,
+  hitAt: json['hitAt'] == null ? null : DateTime.parse(json['hitAt'] as String),
+  missCount: (json['missCount'] as num?)?.toInt() ?? 0,
+  missAt: json['missAt'] == null
+      ? null
+      : DateTime.parse(json['missAt'] as String),
+);
+
+Map<String, dynamic> _$CoreRuleToJson(_CoreRule instance) => <String, dynamic>{
+  'index': instance.index,
+  'type': instance.type,
+  'payload': instance.payload,
+  'proxy': instance.proxy,
+  'size': instance.size,
+  'disabled': instance.disabled,
+  'hitCount': instance.hitCount,
+  'hitAt': instance.hitAt?.toIso8601String(),
+  'missCount': instance.missCount,
+  'missAt': instance.missAt?.toIso8601String(),
+};
+
+_SetRuleDisabledParams _$SetRuleDisabledParamsFromJson(
+  Map<String, dynamic> json,
+) => _SetRuleDisabledParams(
+  index: (json['index'] as num).toInt(),
+  type: json['type'] as String,
+  payload: json['payload'] as String,
+  disabled: json['disabled'] as bool,
+);
+
+Map<String, dynamic> _$SetRuleDisabledParamsToJson(
+  _SetRuleDisabledParams instance,
+) => <String, dynamic>{
+  'index': instance.index,
+  'type': instance.type,
+  'payload': instance.payload,
+  'disabled': instance.disabled,
+};
+
 _ProxiesData _$ProxiesDataFromJson(Map<String, dynamic> json) => _ProxiesData(
   proxies: json['proxies'] as Map<String, dynamic>,
   all: (json['all'] as List<dynamic>).map((e) => e as String).toList(),

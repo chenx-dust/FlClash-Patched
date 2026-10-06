@@ -34,8 +34,8 @@
   "en": "英語",
   "ja": "日語",
   "ru": "俄語",
-  "zhCN": "中文（簡體）",
-  "zhTW": "中文（繁體）",
+  "zhCN": "簡體中文",
+  "zhTW": "正體中文",
   "theme": "主題",
   "themeDesc": "設定深色模式與色彩",
   "override": "覆寫",
@@ -863,5 +863,14 @@
   "memoryOther": "其他執行階段記憶體",
   "memoryTotal": "Go 記憶體用量",
   "memoryCleanup": "清理",
-  "memoryReadFailed": "無法讀取記憶體，正在重試…"
+  "memoryReadFailed": "無法讀取記憶體，正在重試…",
+  "rulesDesc": "檢視規則及匹配統計",
+  "ruleEnabled": "已啟用",
+  "ruleDisabled": "已停用",
+  "ruleHits": "命中",
+  "ruleMisses": "未命中",
+  "ruleLastHit": "最後命中",
+  "ruleLastMiss": "最後未命中",
+  "ruleType": "規則類型",
+  "ruleUpdateFailed": "無法變更規則，設定可能已變更，請重新整理後再試。"
 }

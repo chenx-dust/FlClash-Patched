@@ -88,6 +88,7 @@ class _LogsViewState extends ConsumerState<LogsView> {
         valueListenable: _listController,
         builder: (_, state, _) => _LogFilterButton(
           logsState: state,
+          controller: _listController,
           onToggleSource: _listController.toggleSource,
           onToggleLevel: _listController.toggleLevel,
           onClear: _listController.clearFilters,
@@ -258,22 +259,20 @@ class _LogsViewState extends ConsumerState<LogsView> {
 
 class _LogFilterButton extends StatelessWidget {
   final LogsState logsState;
+  final LogListController controller;
   final ValueChanged<LogSource> onToggleSource;
   final ValueChanged<LogLevel> onToggleLevel;
   final VoidCallback onClear;
 
   const _LogFilterButton({
     required this.logsState,
+    required this.controller,
     required this.onToggleSource,
     required this.onToggleLevel,
     required this.onClear,
   });
 
-  String _label(Enum value, bool selected) {
-    return '${selected ? '✓ ' : ''}${value.name.toUpperCase()}';
-  }
-
-  List<CommonPopupMenuItem> _buildItems(BuildContext context) {
+  List<CommonPopupMenuItem> _buildItems(BuildContext context, LogsState state) {
     final l10n = context.appLocalizations;
     return [
       CommonPopupMenuItem(
@@ -282,7 +281,9 @@ class _LogFilterButton extends StatelessWidget {
         subItems: [
           for (final source in LogSource.values)
             CommonPopupMenuItem(
-              label: _label(source, logsState.sources.contains(source)),
+              label: source.name.toUpperCase(),
+              checked: state.sources.contains(source),
+              keepOpen: true,
               onPressed: () => onToggleSource(source),
             ),
         ],
@@ -294,7 +295,9 @@ class _LogFilterButton extends StatelessWidget {
           for (final level in LogLevel.values)
             if (level != LogLevel.silent)
               CommonPopupMenuItem(
-                label: _label(level, logsState.levels.contains(level)),
+                label: level.name.toUpperCase(),
+                checked: state.levels.contains(level),
+                keepOpen: true,
                 onPressed: () => onToggleLevel(level),
               ),
         ],
@@ -310,7 +313,11 @@ class _LogFilterButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CommonPopupBox(
-      popupBuilder: (_) => CommonPopupMenu(items: _buildItems(context)),
+      popupBuilder: (_) => ValueListenableBuilder<LogsState>(
+        valueListenable: controller,
+        builder: (_, state, _) =>
+            CommonPopupMenu(items: _buildItems(context, state)),
+      ),
       targetBuilder: (open) {
         const icon = Icon(Symbols.filter_alt);
         void onPressed() => open(targetContext: context);
