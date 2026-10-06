@@ -125,7 +125,7 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
-  testWidgets('DnsLookupDialog queries the selected type and returns it', (
+  testWidgets('DnsLookupDialog selects a type and displays its result inline', (
     tester,
   ) async {
     final requests = <(String, String)>[];
@@ -159,7 +159,11 @@ void main() {
     expect(requests, isEmpty);
 
     await tester.enterText(find.byType(TextFormField), ' example.com ');
-    await tester.tap(find.text('AAAA'));
+    await tester.tap(find.byKey(const ValueKey('dns-query-type')));
+    await tester.pumpAndSettle();
+    expect(find.byType(OptionsDialog<String>), findsOneWidget);
+    await tester.tap(find.text('AAAA').last);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Query'));
     await tester.pump();
 
@@ -174,12 +178,19 @@ void main() {
     expect(tester.widget<TextButton>(queryButton).onPressed, isNull);
     expect(find.byType(LinearProgressIndicator), findsNothing);
 
-    result.complete(_query());
+    result.complete(_query().copyWith(type: 'AAAA', answers: ['2001:db8::1']));
     await tester.pumpAndSettle();
 
     expect(requests, [('example.com', 'AAAA')]);
-    expect(popped?.domain, 'example.com');
-    expect(find.byType(DnsLookupDialog), findsNothing);
+    expect(popped, isNull);
+    expect(find.byType(DnsLookupDialog), findsOneWidget);
+    expect(find.text('2001:db8::1'), findsOneWidget);
+    expect(
+      tester
+          .widget<FilledButton>(find.byKey(const ValueKey('dns-query-type')))
+          .onPressed,
+      isNotNull,
+    );
 
     await tester.pumpWidget(const SizedBox.shrink());
   });
@@ -230,7 +241,7 @@ void main() {
     await tester.pump();
 
     expect(find.text('timeout'), findsOneWidget);
-    expect(find.text('SERVFAIL'), findsOneWidget);
+    expect(find.text('SERVFAIL', findRichText: true), findsOneWidget);
     final decorated = tester.widget<DecoratedBox>(
       find.byWidgetPredicate((widget) {
         if (widget is! DecoratedBox) return false;

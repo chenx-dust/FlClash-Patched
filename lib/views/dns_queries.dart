@@ -134,19 +134,8 @@ class _DnsQueriesViewState extends ConsumerState<DnsQueriesView> {
   }
 
   Future<void> _showLookupDialog() async {
-    final dnsQuery = await dialogs.showCommonDialog<DnsQuery>(
+    await dialogs.showCommonDialog<void>(
       child: DnsLookupDialog(onQuery: _core.queryDns),
-    );
-    if (dnsQuery == null || !mounted) {
-      return;
-    }
-    showDnsQueryDetail(
-      context,
-      dnsQuery: dnsQuery,
-      filter: _filter,
-      onClickFilter: (type, value) {
-        _setFilter(_filter.toggle(type, value));
-      },
     );
   }
 
@@ -327,6 +316,7 @@ class _DnsLookupDialogState extends State<DnsLookupDialog> {
   String _type = dnsLookupTypes.first;
   bool _querying = false;
   String? _error;
+  DnsQuery? _result;
 
   @override
   void dispose() {
@@ -341,6 +331,7 @@ class _DnsLookupDialogState extends State<DnsLookupDialog> {
     setState(() {
       _querying = true;
       _error = null;
+      _result = null;
     });
     try {
       final dnsQuery = await widget.onQuery(
@@ -348,7 +339,7 @@ class _DnsLookupDialogState extends State<DnsLookupDialog> {
         _type,
       );
       if (mounted) {
-        Navigator.of(context).pop(dnsQuery);
+        _result = dnsQuery;
       }
     } catch (error) {
       if (mounted) {
@@ -367,12 +358,13 @@ class _DnsLookupDialogState extends State<DnsLookupDialog> {
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     final error = _error;
+    final result = _result;
     return CommonDialog(
       title: appLocalizations.queryDns,
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text(appLocalizations.cancel),
+          child: Text(appLocalizations.close),
         ),
         _querying
             ? TextButton.icon(
@@ -412,27 +404,25 @@ class _DnsLookupDialogState extends State<DnsLookupDialog> {
                   return null;
                 },
               ),
-              Text(
-                appLocalizations.recordType,
-                style: context.textTheme.labelLarge,
-              ),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final type in dnsLookupTypes)
-                    ChoiceChip(
-                      label: Text(type),
-                      selected: type == _type,
-                      onSelected: _querying
-                          ? null
-                          : (_) {
-                              setState(() {
-                                _type = type;
-                              });
-                            },
-                    ),
-                ],
+              FilledButton.tonal(
+                key: const ValueKey('dns-query-type'),
+                onPressed: _querying
+                    ? null
+                    : () async {
+                        final type = await dialogs.showCommonDialog<String>(
+                          filter: false,
+                          child: OptionsDialog<String>(
+                            title: appLocalizations.recordType,
+                            options: dnsLookupTypes,
+                            textBuilder: (item) => item,
+                            value: _type,
+                          ),
+                        );
+                        if (mounted && type != null) {
+                          setState(() => _type = type);
+                        }
+                      },
+                child: Text(_type),
               ),
               if (error != null)
                 Text(
@@ -441,6 +431,35 @@ class _DnsLookupDialogState extends State<DnsLookupDialog> {
                     color: context.colorScheme.error,
                   ),
                 ),
+              if (result != null) ...[
+                const Divider(),
+                for (final (label, value) in [
+                  (appLocalizations.domain, result.domain),
+                  (appLocalizations.recordType, result.type),
+                  (appLocalizations.answers, result.answers.join('\n')),
+                  (appLocalizations.responseCode, result.rcode),
+                  (appLocalizations.source, result.upstream),
+                  (
+                    appLocalizations.cache,
+                    result.cached ? appLocalizations.yes : appLocalizations.no,
+                  ),
+                  (appLocalizations.delay, '${result.delay} ms'),
+                  (appLocalizations.error, result.error),
+                ])
+                  if (value.isNotEmpty)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(label, style: context.textTheme.labelMedium),
+                        SelectableText(
+                          value,
+                          style: label == appLocalizations.error
+                              ? TextStyle(color: context.colorScheme.error)
+                              : null,
+                        ),
+                      ],
+                    ),
+              ],
             ],
           ),
         ),
