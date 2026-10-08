@@ -145,6 +145,13 @@ class CommonAction extends _$CommonAction {
       final res = await dialogs.showMessage(
         title: currentAppLocalizations.discoverNewVersion,
         message: message,
+        leadingAction: TextButton(
+          onPressed: () => launchUrl(
+            Uri.https('github.com', '/$repository/releases/tag/${data.tag}'),
+            mode: LaunchMode.externalApplication,
+          ),
+          child: Text(currentAppLocalizations.openInGitHub),
+        ),
         confirmText: updatesInApp
             ? currentAppLocalizations.updateNow
             : currentAppLocalizations.goDownload,

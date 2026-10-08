@@ -172,6 +172,7 @@
   "checkUpdateError": "すでに最新バージョンです",
   "updateNow": "今すぐ更新",
   "updateDownloading": "更新をダウンロード中",
+  "openInGitHub": "GitHub で開く",
   "updateChecksumMismatch": "ダウンロードしたファイルが公開されたチェックサムと一致しないため、破棄しました。",
   "updateNotWritable": "FlClash はインストール先のフォルダに書き込めません。更新を手動でダウンロードしてください。",
   "updateInstallPermission": "FlClash にアプリのインストールが許可されなかったため、更新をインストールしませんでした。",

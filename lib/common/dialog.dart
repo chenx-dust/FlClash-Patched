@@ -37,6 +37,7 @@ class Dialogs {
     String? title,
     String? confirmText,
     String? cancelText,
+    Widget? leadingAction,
     bool cancelable = true,
     bool? dismissible,
   }) async {
@@ -46,25 +47,30 @@ class Dialogs {
       child: Builder(
         builder: (context) {
           final appLocalizations = context.appLocalizations;
+          final actions = <Widget>[
+            ?leadingAction,
+            if (cancelable)
+              TextButton(
+                autofocus: true,
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+                child: Text(cancelText ?? appLocalizations.cancel),
+              ),
+            TextButton(
+              autofocus: !cancelable,
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: Text(confirmText ?? appLocalizations.confirm),
+            ),
+          ];
           return CommonDialog(
             title: title ?? appLocalizations.tip,
-            actions: [
-              if (cancelable)
-                TextButton(
-                  autofocus: true,
-                  onPressed: () {
-                    Navigator.of(context).pop(false);
-                  },
-                  child: Text(cancelText ?? appLocalizations.cancel),
-                ),
-              TextButton(
-                autofocus: !cancelable,
-                onPressed: () {
-                  Navigator.of(context).pop(true);
-                },
-                child: Text(confirmText ?? appLocalizations.confirm),
-              ),
-            ],
+            actions: actions,
+            actionsAlignment: leadingAction == null
+                ? null
+                : MainAxisAlignment.spaceBetween,
             child: Container(
               width: 300,
               constraints: const BoxConstraints(maxHeight: 200),

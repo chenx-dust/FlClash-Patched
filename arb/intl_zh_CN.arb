@@ -172,6 +172,7 @@
   "checkUpdateError": "当前应用已经是最新版了",
   "updateNow": "立即更新",
   "updateDownloading": "正在下载更新",
+  "openInGitHub": "在 GitHub 打开",
   "updateChecksumMismatch": "下载的文件与发布的校验值不符，已丢弃。",
   "updateNotWritable": "FlClash 无法写入其安装目录，请手动下载更新。",
   "updateInstallPermission": "FlClash 未获得安装应用的权限，因此未安装更新。",

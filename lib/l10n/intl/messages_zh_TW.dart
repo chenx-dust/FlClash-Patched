@@ -784,6 +784,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "onlyStatisticsProxyDesc": MessageLookupByLibrary.simpleMessage(
       "開啟後，將只統計代理流量",
     ),
+    "openInGitHub": MessageLookupByLibrary.simpleMessage("在 GitHub 開啟"),
     "optional": MessageLookupByLibrary.simpleMessage("可選"),
     "options": MessageLookupByLibrary.simpleMessage("選項"),
     "other": MessageLookupByLibrary.simpleMessage("其他"),

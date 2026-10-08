@@ -172,6 +172,7 @@
   "checkUpdateError": "The app is already up to date",
   "updateNow": "Update now",
   "updateDownloading": "Downloading update",
+  "openInGitHub": "Open in GitHub",
   "updateChecksumMismatch": "The downloaded file does not match the published checksum and was discarded.",
   "updateNotWritable": "FlClash cannot write to the folder it is installed in. Download the update manually.",
   "updateInstallPermission": "FlClash was not allowed to install apps, so the update was not installed.",

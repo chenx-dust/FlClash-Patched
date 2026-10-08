@@ -11,6 +11,7 @@ import 'package:fl_clash/widgets/update_progress.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../helpers/test_app.dart';
@@ -71,7 +72,8 @@ Future<ProviderContainer> pumpApp(
 /// The dialog blocks until the user answers, so tests must close it before
 /// awaiting the call that opened it.
 Future<void> tapCancel(WidgetTester tester) async {
-  await tester.tap(find.byType(TextButton).first);
+  final buttons = find.byType(TextButton);
+  await tester.tap(buttons.at(buttons.evaluate().length - 2));
   await tester.pumpAndSettle();
 }
 
@@ -255,6 +257,80 @@ void main() {
   });
 
   group('UpdateProgressDialog', () {
+    testWidgets('update actions fit a narrow window with large text', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(320, 900));
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(() async {
+        tester.platformDispatcher.clearTextScaleFactorTestValue();
+        await tester.binding.setSurfaceSize(null);
+      });
+      final container = await pumpApp(tester);
+      final shown = container
+          .read(commonActionProvider.notifier)
+          .checkUpdateResultHandle(data: release(_bulletsOnly));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('Open in GitHub'), findsOneWidget);
+      expect(find.text('Download'), findsOneWidget);
+      expect(
+        tester.getCenter(find.text('Open in GitHub')).dy,
+        isNot(tester.getCenter(find.text('Download')).dy),
+      );
+      await tapCancel(tester);
+      await shown;
+    });
+
+    testWidgets('opens the release page from the update prompt', (
+      tester,
+    ) async {
+      final container = await pumpApp(tester);
+      const channel = MethodChannel('plugins.flutter.io/url_launcher');
+      final calls = <MethodCall>[];
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(channel, (
+        call,
+      ) async {
+        calls.add(call);
+        return true;
+      });
+      addTearDown(() {
+        tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          channel,
+          null,
+        );
+      });
+      final shown = container
+          .read(commonActionProvider.notifier)
+          .checkUpdateResultHandle(data: release(_bulletsOnly), isUser: true);
+      await tester.pumpAndSettle();
+
+      final open = find.text('Open in GitHub');
+      final cancel = find.text('Cancel');
+      final confirm = find.text('Download');
+      expect(tester.getCenter(open).dx, lessThan(tester.getCenter(cancel).dx));
+      expect(tester.getCenter(open).dy, tester.getCenter(cancel).dy);
+      expect(
+        tester.getCenter(cancel).dx,
+        lessThan(tester.getCenter(confirm).dx),
+      );
+      expect(tester.getCenter(open).dy, tester.getCenter(confirm).dy);
+      await tester.tap(open);
+      await tester.pumpAndSettle();
+
+      expect(calls, hasLength(1));
+      expect(
+        (calls.single.arguments as Map)['url'],
+        'https://github.com/chenx-dust/FlClash-Patched/releases/tag/v0.8.96',
+      );
+      expect(find.text('New version found'), findsOneWidget);
+
+      await tester.tap(cancel);
+      await tester.pumpAndSettle();
+      await shown;
+    });
+
     Future<ProgressOutcome<int>?> runTask(
       WidgetTester tester,
       ProgressTask<int> task,

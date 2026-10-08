@@ -1405,6 +1405,16 @@ class AppLocalizations {
     );
   }
 
+  /// `Open in GitHub`
+  String get openInGitHub {
+    return Intl.message(
+      'Open in GitHub',
+      name: 'openInGitHub',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `The downloaded file does not match the published checksum and was discarded.`
   String get updateChecksumMismatch {
     return Intl.message(

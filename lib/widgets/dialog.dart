@@ -12,6 +12,7 @@ class CommonDialog extends ConsumerWidget {
   final String title;
   final Widget? child;
   final List<Widget>? actions;
+  final MainAxisAlignment? actionsAlignment;
   final EdgeInsets? padding;
   final bool overrideScroll;
   final Color? backgroundColor;
@@ -22,6 +23,7 @@ class CommonDialog extends ConsumerWidget {
     super.key,
     required this.title,
     this.actions,
+    this.actionsAlignment,
     this.child,
     this.padding,
     this.overrideScroll = false,
@@ -37,6 +39,7 @@ class CommonDialog extends ConsumerWidget {
     final dialog = AlertDialog(
       title: Text(title),
       actions: actions,
+      actionsAlignment: actionsAlignment,
       contentPadding: padding,
       backgroundColor: backgroundColor,
       content: ListTileTheme(
