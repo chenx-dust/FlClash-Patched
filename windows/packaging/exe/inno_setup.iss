@@ -46,8 +46,51 @@ begin
   end;
 end;
 
+function IsAppUpdate: Boolean;
+begin
+  Result := ExpandConstant('{param:UPDATE|0}') = '1';
+end;
+
+procedure SignalUpdateReady;
+var
+  ReadyFile: String;
+begin
+  ReadyFile := ExpandConstant('{param:UPDATEREADY|}');
+  if ReadyFile <> '' then
+  begin
+    SaveStringToFile(ReadyFile, '', False);
+  end;
+end;
+
+function IsAppRunning: Boolean;
+var
+  ResultCode: Integer;
+begin
+  Exec(ExpandConstant('{cmd}'), '/C tasklist /FI "IMAGENAME eq FlClash.exe" /NH | find /I "FlClash.exe"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Result := ResultCode = 0;
+end;
+
+procedure WaitForAppExit;
+var
+  i: Integer;
+begin
+  for i := 1 to 50 do
+  begin
+    if not IsAppRunning then
+    begin
+      Exit;
+    end;
+    Sleep(200);
+  end;
+end;
+
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 begin
+  if IsAppUpdate then
+  begin
+    SignalUpdateReady;
+    WaitForAppExit;
+  end;
   UnregisterHelperService;
   KillProcesses;
   Result := '';
@@ -80,3 +123,4 @@ Name: "{autoprograms}\\{{DISPLAY_NAME}}"; Filename: "{app}\\{{EXECUTABLE_NAME}}"
 Name: "{autodesktop}\\{{DISPLAY_NAME}}"; Filename: "{app}\\{{EXECUTABLE_NAME}}"; Tasks: desktopicon
 [Run]
 Filename: "{app}\\{{EXECUTABLE_NAME}}"; Description: "{cm:LaunchProgram,{{DISPLAY_NAME}}}"; Flags: {% if PRIVILEGES_REQUIRED == 'admin' %}runascurrentuser{% endif %} nowait postinstall skipifsilent
+Filename: "{app}\\{{EXECUTABLE_NAME}}"; Flags: runasoriginaluser nowait; Check: IsAppUpdate

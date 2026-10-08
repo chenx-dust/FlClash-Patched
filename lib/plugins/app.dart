@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
@@ -71,6 +72,22 @@ class App {
 
   Future<bool?> requestNotificationsPermission() async {
     return methodChannel.invokeMethod<bool>('requestNotificationsPermission');
+  }
+
+  Future<ApkInstallStatus> installApk(String path) async {
+    try {
+      final status = await methodChannel.invokeMethod<String>('installApk', {
+        'path': path,
+      });
+      return ApkInstallStatus.values.asNameMap()[status] ??
+          ApkInstallStatus.failed;
+    } on PlatformException catch (error) {
+      commonPrint.log(
+        'installApk failed: ${error.message}',
+        logLevel: LogLevel.warning,
+      );
+      return ApkInstallStatus.failed;
+    }
   }
 
   Future<bool> openFile(String path) async {

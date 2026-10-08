@@ -1,5 +1,7 @@
+export 'app_installer.dart';
 export 'app_localizations.dart';
 export 'app_ports.dart';
+export 'app_update.dart';
 export 'changelog.dart';
 export 'clipboard.dart';
 export 'color.dart';

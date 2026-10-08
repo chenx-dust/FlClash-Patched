@@ -661,3 +661,5 @@ enum ItemPosition {
     return ItemPosition.get(visualIndex, visualLength);
   }
 }
+
+enum ApkInstallStatus { started, permissionDenied, failed }

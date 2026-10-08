@@ -46,4 +46,5 @@ export 'text.dart';
 export 'text_loupe.dart';
 export 'theme.dart';
 export 'tv_layout.dart';
+export 'update_progress.dart';
 export 'wave.dart';

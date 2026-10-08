@@ -1390,6 +1390,61 @@ class AppLocalizations {
     );
   }
 
+  /// `Update now`
+  String get updateNow {
+    return Intl.message('Update now', name: 'updateNow', desc: '', args: []);
+  }
+
+  /// `Downloading update`
+  String get updateDownloading {
+    return Intl.message(
+      'Downloading update',
+      name: 'updateDownloading',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The downloaded file does not match the published checksum and was discarded.`
+  String get updateChecksumMismatch {
+    return Intl.message(
+      'The downloaded file does not match the published checksum and was discarded.',
+      name: 'updateChecksumMismatch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `FlClash cannot write to the folder it is installed in. Download the update manually.`
+  String get updateNotWritable {
+    return Intl.message(
+      'FlClash cannot write to the folder it is installed in. Download the update manually.',
+      name: 'updateNotWritable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `FlClash was not allowed to install apps, so the update was not installed.`
+  String get updateInstallPermission {
+    return Intl.message(
+      'FlClash was not allowed to install apps, so the update was not installed.',
+      name: 'updateInstallPermission',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The installer could not be started.`
+  String get updateInstallFailed {
+    return Intl.message(
+      'The installer could not be started.',
+      name: 'updateInstallFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Download`
   String get goDownload {
     return Intl.message('Download', name: 'goDownload', desc: '', args: []);

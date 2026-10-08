@@ -12,31 +12,64 @@ extension PackageInfoExtension on PackageInfo {
   ].join(' ');
 }
 
+/// SemVer order for `[v]major.minor.patch[-pre][+build]`, except a numeric
+/// build number breaks ties: every build of one version shares its name.
 int compareVersions(String version1, String version2) {
-  final List<String> v1 = version1.split('+')[0].split('.');
-  final List<String> v2 = version2.split('+')[0].split('.');
-  final int major1 = int.parse(v1[0]);
-  final int major2 = int.parse(v2[0]);
-  if (major1 != major2) {
-    return major1.compareTo(major2);
+  final a = _ParsedVersion.parse(version1);
+  final b = _ParsedVersion.parse(version2);
+  for (var i = 0; i < 3; i++) {
+    final result = a.core[i].compareTo(b.core[i]);
+    if (result != 0) return result;
   }
-  final int minor1 = v1.length > 1 ? int.parse(v1[1]) : 0;
-  final int minor2 = v2.length > 1 ? int.parse(v2[1]) : 0;
-  if (minor1 != minor2) {
-    return minor1.compareTo(minor2);
+  final prerelease = _comparePrerelease(a.prerelease, b.prerelease);
+  if (prerelease != 0) return prerelease;
+  return a.build.compareTo(b.build);
+}
+
+class _ParsedVersion {
+  final List<int> core;
+  final List<String> prerelease;
+  final int build;
+
+  const _ParsedVersion(this.core, this.prerelease, this.build);
+
+  static final _pattern = RegExp(
+    r'^[vV]?(\d+(?:\.\d+){0,2})(?:-([0-9A-Za-z.-]+))?(?:\+([0-9A-Za-z.-]+))?$',
+  );
+
+  factory _ParsedVersion.parse(String version) {
+    final match = _pattern.firstMatch(version.trim());
+    if (match == null) {
+      throw FormatException('Invalid version', version);
+    }
+    final core = match[1]!.split('.').map(int.parse).toList();
+    while (core.length < 3) {
+      core.add(0);
+    }
+    return _ParsedVersion(
+      core,
+      match[2]?.split('.') ?? const [],
+      int.tryParse(match[3] ?? '') ?? 0,
+    );
   }
-  final int patch1 = v1.length > 2 ? int.parse(v1[2]) : 0;
-  final int patch2 = v2.length > 2 ? int.parse(v2[2]) : 0;
-  if (patch1 != patch2) {
-    return patch1.compareTo(patch2);
+}
+
+int _comparePrerelease(List<String> a, List<String> b) {
+  if (a.isEmpty || b.isEmpty) {
+    return b.length.sign - a.length.sign;
   }
-  final int build1 = version1.contains('+')
-      ? int.parse(version1.split('+')[1])
-      : 0;
-  final int build2 = version2.contains('+')
-      ? int.parse(version2.split('+')[1])
-      : 0;
-  return build1.compareTo(build2);
+  for (var i = 0; i < a.length && i < b.length; i++) {
+    final numA = int.tryParse(a[i]);
+    final numB = int.tryParse(b[i]);
+    final result = switch ((numA, numB)) {
+      (final int x, final int y) => x.compareTo(y),
+      (int(), null) => -1,
+      (null, int()) => 1,
+      _ => a[i].compareTo(b[i]),
+    };
+    if (result != 0) return result;
+  }
+  return a.length.compareTo(b.length);
 }
 
 const releaseNotesBeginMarker = '<!-- flclash:changelog:begin -->';

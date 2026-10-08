@@ -126,7 +126,7 @@ if [[ "$mode" == "pre" ]]; then
   echo "publishes : GitHub prerelease with build artifacts"
 else
   echo "changelog : CHANGELOG.md + changelog.json regenerated and committed"
-  echo "publishes : GitHub release with artifacts, SHA256SUMS, Homebrew cask"
+  echo "publishes : GitHub release with artifacts, version.json, Homebrew cask"
 fi
 echo "push      : $([[ $do_push == 1 ]] && echo yes || echo 'no (printed at the end)')"
 echo

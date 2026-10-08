@@ -1793,6 +1793,22 @@ class MessageLookup extends MessageLookupByLibrary {
     "unnamed": MessageLookupByLibrary.simpleMessage("Без названия"),
     "unpinWindow": MessageLookupByLibrary.simpleMessage("Открепить окно"),
     "update": MessageLookupByLibrary.simpleMessage("Обновить"),
+    "updateChecksumMismatch": MessageLookupByLibrary.simpleMessage(
+      "Загруженный файл не совпадает с опубликованной контрольной суммой и был удалён.",
+    ),
+    "updateDownloading": MessageLookupByLibrary.simpleMessage(
+      "Загрузка обновления",
+    ),
+    "updateInstallFailed": MessageLookupByLibrary.simpleMessage(
+      "Не удалось запустить установщик.",
+    ),
+    "updateInstallPermission": MessageLookupByLibrary.simpleMessage(
+      "FlClash не получил разрешение на установку приложений, поэтому обновление не установлено.",
+    ),
+    "updateNotWritable": MessageLookupByLibrary.simpleMessage(
+      "FlClash не может записывать в папку установки. Загрузите обновление вручную.",
+    ),
+    "updateNow": MessageLookupByLibrary.simpleMessage("Обновить сейчас"),
     "upload": MessageLookupByLibrary.simpleMessage("Отдача"),
     "uploadSpeed": MessageLookupByLibrary.simpleMessage("Скорость загрузки"),
     "uploadTraffic": MessageLookupByLibrary.simpleMessage("Исходящий трафик"),

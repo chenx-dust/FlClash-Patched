@@ -444,6 +444,9 @@ jobs:
           version=$(echo "${{ github.ref_name }}" | sed 's/^v//')
           sed "s|VERSION|$version|g" ./.github/release_template.md >> release.md
 
+      - name: Generate update manifest
+        run: bash tool/release_manifest.sh dist "$GITHUB_REF_NAME" "$GITHUB_REPOSITORY" release.md
+
       - name: Release
         uses: softprops/action-gh-release@v3
         with:

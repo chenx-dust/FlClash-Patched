@@ -22,6 +22,7 @@ import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.net.toUri
+import cc.chenx.flclash.ApkInstaller
 import cc.chenx.flclash.LOCAL_NETWORK_PERMISSION
 import cc.chenx.flclash.LOCAL_NETWORK_SDK
 import cc.chenx.flclash.R
@@ -47,6 +48,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import java.io.File
 
 class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware {
 
@@ -71,6 +73,8 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
     private val requestInstalledAppsCallback = PendingCallback<Boolean>()
 
     private val requestLocalNetworkCallback = PendingCallback<Boolean>()
+
+    private val installPermissionCallback = PendingCallback<Boolean>()
 
     private var isRequestingNotificationPermission = false
 
@@ -187,10 +191,61 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
             "openAppSettings" -> {
                 result.success(openAppSettings())
             }
+
+            "installApk" -> handleInstallApk(call, result)
             else -> {
                 result.notImplemented()
             }
         }
+    }
+
+    private fun handleInstallApk(call: MethodCall, result: Result) {
+        val path = call.argument<String>("path")
+        if (path == null) {
+            result.error("INVALID_ARGUMENT", "APK path must be a string", null)
+            return
+        }
+        requestInstallPermission { granted ->
+            if (!granted) {
+                result.success("permissionDenied")
+                return@requestInstallPermission
+            }
+            reply(result) {
+                ApkInstaller.install(GlobalState.application, File(path))
+                "started"
+            }
+        }
+    }
+
+    private fun requestInstallPermission(callback: (Boolean) -> Unit) = onMainThread {
+        installPermissionCallback.replace(callback, supersededValue = false)
+        val context = GlobalState.application
+        if (ApkInstaller.canRequestInstalls(context)) {
+            invokeInstallPermissionCallback()
+            return@onMainThread
+        }
+        val activity = activity
+        if (activity == null) {
+            invokeInstallPermissionCallback()
+            return@onMainThread
+        }
+        try {
+            @Suppress("DEPRECATION")
+            activity.startActivityForResult(
+                ApkInstaller.unknownSourcesSettings(context),
+                INSTALL_PERMISSION_REQUEST_CODE,
+            )
+        } catch (_: Exception) {
+            invokeInstallPermissionCallback()
+        }
+    }
+
+    // The settings screen reports RESULT_CANCELED on back navigation whether or
+    // not the toggle was flipped, so the answer is read from the package manager.
+    private fun invokeInstallPermissionCallback() {
+        installPermissionCallback.resolve(
+            ApkInstaller.canRequestInstalls(GlobalState.application),
+        )
     }
 
     private fun handleGetPackageIcon(call: MethodCall, result: Result) = reply(result) {
@@ -429,6 +484,7 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
         invokeRequestNotificationCallback(false)
         invokeRequestLocalNetworkCallback(false)
         invokeRequestInstalledAppsCallback(false)
+        installPermissionCallback.resolve(false)
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
@@ -466,15 +522,23 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
         invokeRequestNotificationCallback(false)
         invokeRequestLocalNetworkCallback(false)
         invokeRequestInstalledAppsCallback(false)
+        invokeInstallPermissionCallback()
     }
 
-    private fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-        if (requestCode != VPN_PERMISSION_REQUEST_CODE) {
-            return false
+    private fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean =
+        when (requestCode) {
+            VPN_PERMISSION_REQUEST_CODE -> {
+                invokeVpnPrepareCallback(resultCode == Activity.RESULT_OK)
+                true
+            }
+
+            INSTALL_PERMISSION_REQUEST_CODE -> {
+                invokeInstallPermissionCallback()
+                true
+            }
+
+            else -> false
         }
-        invokeVpnPrepareCallback(resultCode == Activity.RESULT_OK)
-        return true
-    }
 
     private fun onRequestPermissionsResultListener(
         requestCode: Int,
@@ -512,5 +576,6 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
         const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1002
         const val INSTALLED_APPS_PERMISSION_REQUEST_CODE = 1003
         const val LOCAL_NETWORK_PERMISSION_REQUEST_CODE = 1004
+        const val INSTALL_PERMISSION_REQUEST_CODE = 1005
     }
 }

@@ -1220,6 +1220,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "unnamed": MessageLookupByLibrary.simpleMessage("未命名"),
     "unpinWindow": MessageLookupByLibrary.simpleMessage("取消置顶"),
     "update": MessageLookupByLibrary.simpleMessage("更新"),
+    "updateChecksumMismatch": MessageLookupByLibrary.simpleMessage(
+      "下载的文件与发布的校验值不符，已丢弃。",
+    ),
+    "updateDownloading": MessageLookupByLibrary.simpleMessage("正在下载更新"),
+    "updateInstallFailed": MessageLookupByLibrary.simpleMessage("无法启动安装程序。"),
+    "updateInstallPermission": MessageLookupByLibrary.simpleMessage(
+      "FlClash 未获得安装应用的权限，因此未安装更新。",
+    ),
+    "updateNotWritable": MessageLookupByLibrary.simpleMessage(
+      "FlClash 无法写入其安装目录，请手动下载更新。",
+    ),
+    "updateNow": MessageLookupByLibrary.simpleMessage("立即更新"),
     "upload": MessageLookupByLibrary.simpleMessage("上传"),
     "uploadSpeed": MessageLookupByLibrary.simpleMessage("上传速度"),
     "uploadTraffic": MessageLookupByLibrary.simpleMessage("上传流量"),

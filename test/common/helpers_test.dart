@@ -122,6 +122,28 @@ void main() {
     test('handles missing minor/patch', () {
       expect(compareVersions('1', '1.0.0'), 0);
     });
+
+    test('ignores a leading v', () {
+      expect(compareVersions('v0.9.4', '0.9.3'), greaterThan(0));
+      expect(compareVersions('v0.9.0', '0.9.0'), 0);
+    });
+
+    test('orders prereleases before their release', () {
+      expect(compareVersions('0.9.0-pre.2', '0.9.0'), lessThan(0));
+      expect(compareVersions('0.9.0', '0.9.0-pre.2+5'), greaterThan(0));
+      expect(compareVersions('0.9.0-pre.10', '0.9.0-pre.2'), greaterThan(0));
+      expect(compareVersions('0.9.0-pre', '0.9.0-pre.1'), lessThan(0));
+      expect(compareVersions('0.9.0-alpha.1', '0.9.0-beta'), lessThan(0));
+      expect(compareVersions('0.9.1-pre.1', '0.9.0'), greaterThan(0));
+    });
+
+    test('prefers the release over a newer build of the prerelease', () {
+      expect(compareVersions('0.9.0+1', '0.9.0-pre.2+99'), greaterThan(0));
+    });
+
+    test('rejects malformed versions', () {
+      expect(() => compareVersions('latest', '1.0.0'), throwsFormatException);
+    });
   });
 
   group('getViewMode', () {

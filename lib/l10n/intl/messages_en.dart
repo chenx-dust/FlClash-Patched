@@ -1689,6 +1689,22 @@ class MessageLookup extends MessageLookupByLibrary {
     "unnamed": MessageLookupByLibrary.simpleMessage("Unnamed"),
     "unpinWindow": MessageLookupByLibrary.simpleMessage("Unpin window"),
     "update": MessageLookupByLibrary.simpleMessage("Update"),
+    "updateChecksumMismatch": MessageLookupByLibrary.simpleMessage(
+      "The downloaded file does not match the published checksum and was discarded.",
+    ),
+    "updateDownloading": MessageLookupByLibrary.simpleMessage(
+      "Downloading update",
+    ),
+    "updateInstallFailed": MessageLookupByLibrary.simpleMessage(
+      "The installer could not be started.",
+    ),
+    "updateInstallPermission": MessageLookupByLibrary.simpleMessage(
+      "FlClash was not allowed to install apps, so the update was not installed.",
+    ),
+    "updateNotWritable": MessageLookupByLibrary.simpleMessage(
+      "FlClash cannot write to the folder it is installed in. Download the update manually.",
+    ),
+    "updateNow": MessageLookupByLibrary.simpleMessage("Update now"),
     "upload": MessageLookupByLibrary.simpleMessage("Upload"),
     "uploadSpeed": MessageLookupByLibrary.simpleMessage("Upload speed"),
     "uploadTraffic": MessageLookupByLibrary.simpleMessage("Upload traffic"),

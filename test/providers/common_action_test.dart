@@ -194,8 +194,8 @@ void main() {
           );
         },
       );
-      request.dio.interceptors.add(interceptor);
-      addTearDown(() => request.dio.interceptors.remove(interceptor));
+      request.clashDio.interceptors.add(interceptor);
+      addTearDown(() => request.clashDio.interceptors.remove(interceptor));
 
       await expectLater(
         container.read(commonActionProvider.notifier).autoCheckUpdate(),

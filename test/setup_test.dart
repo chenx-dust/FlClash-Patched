@@ -52,6 +52,13 @@ void main() {
       expect(setup.createBuildEnvironment('dev'), {'APP_ENV': 'dev'});
     });
 
+    test('Flutter build environment names the package architecture', () {
+      expect(setup.createBuildEnvironment('stable', arch: 'x64-v3'), {
+        'APP_ENV': 'stable',
+        'APP_ARCH': 'x64-v3',
+      });
+    });
+
     test('parses iOS bundle identifier override', () {
       final results = setup.createSetupArgParser().parse([
         'ios',

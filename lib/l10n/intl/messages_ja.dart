@@ -1402,6 +1402,20 @@ class MessageLookup extends MessageLookupByLibrary {
     "unnamed": MessageLookupByLibrary.simpleMessage("名称未設定"),
     "unpinWindow": MessageLookupByLibrary.simpleMessage("固定を解除"),
     "update": MessageLookupByLibrary.simpleMessage("更新"),
+    "updateChecksumMismatch": MessageLookupByLibrary.simpleMessage(
+      "ダウンロードしたファイルが公開されたチェックサムと一致しないため、破棄しました。",
+    ),
+    "updateDownloading": MessageLookupByLibrary.simpleMessage("更新をダウンロード中"),
+    "updateInstallFailed": MessageLookupByLibrary.simpleMessage(
+      "インストーラーを起動できませんでした。",
+    ),
+    "updateInstallPermission": MessageLookupByLibrary.simpleMessage(
+      "FlClash にアプリのインストールが許可されなかったため、更新をインストールしませんでした。",
+    ),
+    "updateNotWritable": MessageLookupByLibrary.simpleMessage(
+      "FlClash はインストール先のフォルダに書き込めません。更新を手動でダウンロードしてください。",
+    ),
+    "updateNow": MessageLookupByLibrary.simpleMessage("今すぐ更新"),
     "upload": MessageLookupByLibrary.simpleMessage("アップロード"),
     "uploadSpeed": MessageLookupByLibrary.simpleMessage("アップロード速度"),
     "uploadTraffic": MessageLookupByLibrary.simpleMessage("アップロード通信量"),

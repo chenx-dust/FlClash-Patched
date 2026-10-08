@@ -75,6 +75,7 @@ flutter test
 ```
 
 Use `flutter test`, not `dart test`, because models pull in Flutter types.
+On Windows, run `dart` and `flutter` outside the agent sandbox; the SDK environment is restricted inside it.
 
 ## Code Generation
 
@@ -96,6 +97,14 @@ Generated output paths, configured in `build.yaml`:
 - `lib/models/generated/*.g.dart`, `*.freezed.dart`.
 - `lib/providers/generated/*.g.dart`.
 - `lib/database/generated/*.g.dart`.
+
+After changing `arb/intl_*.arb`, regenerate localization and format the output:
+
+```bash
+dart run intl_utils:generate
+dart format lib/l10n
+flutter test test/l10n/ test/lint/dynamic_message_key_test.dart
+```
 
 Tray and Windows app icons are generated, not hand-edited. `assets_source/images/icon/*.svg` is
 the source of truth; the script needs `rsvg-convert` (librsvg) on `PATH`:
@@ -154,6 +163,16 @@ What those suites own:
 - `test/widgets/core_status_button_test.dart`: 600-millisecond connecting presentation hold, immediate failure display,
   long-running connecting state, and disconnected restart.
 
+For the in-app updater:
+
+```bash
+flutter test test/common/app_update_test.dart test/common/request_download_test.dart test/common/request_test.dart test/widgets/update_dialog_test.dart
+```
+
+These cover target and asset selection, manifest parsing, package-manager invocation, download resumption and
+cancellation, and update dialogs. The package-install shell tests skip Windows; actual installation, permission
+prompts, and relaunch still need verification on each target platform.
+
 ## Native Component Verification
 
 The CI Go-wrapper checks can be reproduced without CGO:
@@ -192,12 +211,31 @@ The changelog is derived from Conventional Commits by `tool/changelog.dart` and 
 that decide the wording.
 
 The app ships no changelog of its own. `render` appends the released version as JSON inside an HTML comment
-(`<!-- flclash:changelog:json … -->`), so the release body GitHub already returns to `checkForUpdate` carries the
-notes shown in the update dialog. `parseReleaseChangelog` reads that block and falls back to the English
+(`<!-- flclash:changelog:json … -->`), so the release body, which `tool/release_manifest.sh` copies into the
+`notes` of `version.json`, carries the notes shown in the update dialog. `parseReleaseChangelog` reads that block and falls back to the English
 bullets when a release predates it.
 
+The in-app updater (`lib/common/app_update.dart`, `app_installer.dart`) prefers a release asset over the GitHub API.
+`checkForUpdate` downloads `releases/latest/download/version.json`, the manifest
+the `upload` job writes with `tool/release_manifest.sh`: the tag, version, release notes, and every asset's name, URL, size
+and SHA-256. It has no schema version, so a change to it must stay readable by older builds: add fields, never rename
+or retype `tag`, `notes` or an asset's fields. Only when the manifest is missing or unreadable does it fall back to the
+API's `releases/latest`, whose assets carry `sha256:` digests. The check and the download share the client that routes
+through the Core while it runs. The updater finds its asset by the `FlClash-<version>-<platform>-<arch>…` names in `.github/release_template.md`, so
+renaming an asset breaks updates for that package, and it installs only a file matching the manifest's hash; an asset
+without one falls back to the release page. The arch suffix comes from the `APP_ARCH` dart-define that
+`setup.dart` writes into `env.json`, because x64 and x64-v3 share one Flutter binary. The package format is detected
+at runtime: Inno's `unins000.exe` or a portable `config/` on Windows, `$APPIMAGE` or the owning package manager on
+Linux. A deb/rpm/pacman install updates through its package manager under one `pkexec` prompt, the polkit path TUN
+uses: `packageInstallScript` in `app_installer.dart` re-verifies a root-owned copy of the package, installs it, and
+attempts to restart `flclash-helper.service`, whose old process would reject the new Core's hash. Package-manager
+updates download into the app's temporary directory. Without `pkexec` or a known package manager, or when installation
+fails or authorization is refused, the app stays running and retains the package without a manual-install dialog.
+AppImage downloads are staged beside the running image so replacement can use a rename. Interrupted downloads retain
+their `.part` files for resumption; completed downloads must pass SHA-256 verification before installation.
+
 ```bash
-dart run tool/changelog.dart verify                  # what CI checks
+dart run tool/changelog.dart verify                  # local changelog consistency check
 dart run tool/changelog.dart release --version 0.8.96
 dart run tool/changelog.dart build --unreleased      # changelog.json only, includes untagged work
 dart run tool/changelog.dart render --out release.md
@@ -227,7 +265,8 @@ tool/release.sh stable --push     # changelog, chore(release) commit, tag, push
 ```
 
 The release commit comes before the tag on purpose: the generated wording is reviewable in the diff before it ships, and
-the tag is what `render` reads. CI never writes back to the repository; it only runs `verify`. Wording in
+the tag is what `render` reads. For stable tags, CI runs `build` and `render --tag` to prepare release notes without
+writing back to the repository; it does not run `verify`. Wording in
 `changelog.json` may be edited by hand as long as no derivable entry disappears and every entry still points at a commit
 inside that version's range.
 
@@ -246,10 +285,9 @@ while `v<pubspec version>` is still tagged it refuses to collect anything and th
 
 ## Verify
 
-Every branch push runs `dart-checks` alongside eight `dart-tests` shards.
-After formatting and analysis, `dart-checks` runs the full test suite with
-coverage enabled and checks the total and per-group floors. The equivalent
-local root-package checks are:
+Every branch push runs `dart-checks` and eight `dart-tests` shards. `dart-checks` validates the commit-message and
+comment-density hook tests, formatting, and analysis. The test shards wait for the Rust library build.
+The equivalent local root-package checks are:
 
 ```bash
 bash tool/check_commit_msg_test.sh
@@ -257,15 +295,12 @@ bash tool/check_comment_density_test.sh
 flutter pub get
 dart format --output=none --set-exit-if-changed lib test tool plugins setup.dart
 flutter analyze --no-fatal-infos
-flutter test --reporter expanded --coverage
-dart run tool/check_coverage.dart coverage/lcov.info 75
+flutter test --reporter expanded
 ```
 
 Each CI test shard uses `--total-shards=8 --shard-index=0` (indices 0–7), with
-fail-fast enabled for the test matrix and no coverage collection. Coverage is
-collected only by `dart-checks`, without artifact transfers or report merging.
-Release builds depend directly on `dart-checks` (including its coverage gate)
-and all test shards.
+fail-fast enabled for the test matrix. CI currently collects no coverage and enforces no coverage floor.
+Release builds depend directly on `dart-checks` and all test shards.
 
 Run `flutter analyze` locally before committing when practical.
 

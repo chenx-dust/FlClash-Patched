@@ -210,8 +210,8 @@ List<String> createFlutterBuildArgs({
   return flutterBuildArgs;
 }
 
-Map<String, String> createBuildEnvironment(String env) {
-  return {'APP_ENV': env};
+Map<String, String> createBuildEnvironment(String env, {String? arch}) {
+  return {'APP_ENV': env, 'APP_ARCH': ?arch};
 }
 
 String createMacosBuildConfig(String arch) {
@@ -387,7 +387,16 @@ Future<int> _package(
   await ensureGeoData(rootDir: rootDir);
 
   final file = File(p.join(rootDir, 'env.json'));
-  await file.writeAsString(jsonEncode(createBuildEnvironment(env)));
+  await file.writeAsString(
+    jsonEncode(
+      createBuildEnvironment(
+        env,
+        arch: platform == 'android' || platform == 'ios'
+            ? null
+            : packageArch.name,
+      ),
+    ),
+  );
   if (platform == 'ios') {
     await writeIOSGeneratedBundleConfig(
       rootDir,
@@ -486,10 +495,19 @@ Future<int> _package(
 }
 
 Future<void> _injectPortableConfigDir(String rootDir) async {
+  final pubspec = File(p.join(rootDir, 'pubspec.yaml')).readAsStringSync();
+  final version =
+      RegExp(
+        r'^version:\s*([^\s+]+)',
+        multiLine: true,
+      ).firstMatch(pubspec)?.group(1) ??
+      'unknown';
   final distDir = Directory(p.join(rootDir, 'dist'));
   if (!await distDir.exists()) return;
   await for (final entity in distDir.list(recursive: true)) {
-    if (entity is! File || !entity.path.toLowerCase().endsWith('.zip')) {
+    if (entity is! File ||
+        !entity.path.toLowerCase().endsWith('.zip') ||
+        !p.basename(entity.path).contains(version)) {
       continue;
     }
     try {
