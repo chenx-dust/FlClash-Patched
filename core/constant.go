@@ -65,6 +65,7 @@ type tunSchema struct {
 	Enable                 bool               `yaml:"enable" json:"enable"`
 	Device                 *string            `yaml:"device" json:"device"`
 	Stack                  *constant.TUNStack `yaml:"stack" json:"stack"`
+	DNSMode                *string            `yaml:"dns-mode" json:"dns-mode"`
 	DNSHijack              *[]string          `yaml:"dns-hijack" json:"dns-hijack"`
 	AutoRoute              *bool              `yaml:"auto-route" json:"auto-route"`
 	RouteAddress           *[]netip.Prefix    `yaml:"route-address" json:"route-address,omitempty"`

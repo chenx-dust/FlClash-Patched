@@ -6130,6 +6130,36 @@ class AppLocalizations {
     );
   }
 
+  /// `System DNS mode`
+  String get tunDnsMode {
+    return Intl.message(
+      'System DNS mode',
+      name: 'tunDnsMode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Disabled`
+  String get tunDnsModeDisabled {
+    return Intl.message(
+      'Disabled',
+      name: 'tunDnsModeDisabled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Native`
+  String get tunDnsModeNative {
+    return Intl.message('Native', name: 'tunDnsModeNative', desc: '', args: []);
+  }
+
+  /// `Hijack`
+  String get tunDnsModeHijack {
+    return Intl.message('Hijack', name: 'tunDnsModeHijack', desc: '', args: []);
+  }
+
   /// `NAT enhancement`
   String get endpointIndependentNat {
     return Intl.message(

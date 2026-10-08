@@ -178,6 +178,13 @@ _Tun _$TunFromJson(Map<String, dynamic> json) => _Tun(
       TunStack.mips,
   recvMsgX: json['recvmsgx'] as bool? ?? true,
   sendMsgX: json['sendmsgx'] as bool? ?? true,
+  dnsMode:
+      $enumDecodeNullable(
+        _$TunDnsModeEnumMap,
+        json['dns-mode'],
+        unknownValue: TunDnsMode.hijack,
+      ) ??
+      TunDnsMode.hijack,
   dnsHijack:
       (json['dns-hijack'] as List<dynamic>?)
           ?.map((e) => e as String)
@@ -208,6 +215,7 @@ Map<String, dynamic> _$TunToJson(_Tun instance) => <String, dynamic>{
   'stack': _$TunStackEnumMap[instance.stack]!,
   'recvmsgx': instance.recvMsgX,
   'sendmsgx': instance.sendMsgX,
+  'dns-mode': _$TunDnsModeEnumMap[instance.dnsMode]!,
   'dns-hijack': instance.dnsHijack,
   'route-address': instance.routeAddress,
   'strict-route': instance.strictRoute,
@@ -222,6 +230,12 @@ const _$TunStackEnumMap = {
   TunStack.gvisor: 'gvisor',
   TunStack.system: 'system',
   TunStack.mixed: 'mixed',
+};
+
+const _$TunDnsModeEnumMap = {
+  TunDnsMode.disabled: 'disabled',
+  TunDnsMode.native: 'native',
+  TunDnsMode.hijack: 'hijack',
 };
 
 const _$TunCongestionControllerEnumMap = {

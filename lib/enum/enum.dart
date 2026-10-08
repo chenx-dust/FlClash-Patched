@@ -238,6 +238,8 @@ enum TunStack { mips, gvisor, system, mixed }
 
 enum TunCongestionController { cubic, reno, bbr, bbr3 }
 
+enum TunDnsMode { disabled, native, hijack }
+
 enum AccessControlMode { acceptSelected, rejectSelected }
 
 enum AccessSortType { none, name, time }

@@ -275,6 +275,9 @@ func patchTun(target *LC.Tun, params *tunSchema) {
 	if params.RouteAddress != nil {
 		target.RouteAddress = *params.RouteAddress
 	}
+	if params.DNSMode != nil {
+		target.DNSMode = *params.DNSMode
+	}
 	if params.DNSHijack != nil {
 		target.DNSHijack = *params.DNSHijack
 	}

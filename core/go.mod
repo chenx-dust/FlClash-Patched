@@ -4,8 +4,6 @@ go 1.26.0
 
 replace github.com/metacubex/mihomo => ./mihomo
 
-replace github.com/metacubex/sing-tun => github.com/chenx-dust/sing-tun v0.4.27-0.20261005145226-26cefe1bf6d6
-
 require (
 	github.com/Microsoft/go-winio v0.6.2
 	github.com/metacubex/mihomo v0.0.0-00010101000000-000000000000
@@ -27,7 +25,6 @@ require (
 	github.com/dlclark/regexp2 v1.12.0 // indirect
 	github.com/dunglas/httpsfv v1.0.2 // indirect
 	github.com/easytier/easytier/easytier-go v0.0.0-20260910071355-3d0c9c3ca5e2 // indirect
-	github.com/ebitengine/purego v0.10.2 // indirect
 	github.com/enfein/mieru/v3 v3.38.0 // indirect
 	github.com/ericlagergren/aegis v0.0.0-20250325060835-cd0defd64358 // indirect
 	github.com/ericlagergren/polyval v0.0.0-20220411101811-e25bc10ba391 // indirect
@@ -90,9 +87,9 @@ require (
 	github.com/metacubex/sing-quic v0.0.0-20260904234848-1c242664697a // indirect
 	github.com/metacubex/sing-shadowsocks v0.2.13 // indirect
 	github.com/metacubex/sing-shadowsocks2 v0.2.8 // indirect
-	github.com/metacubex/sing-tun v0.4.27 // indirect
+	github.com/metacubex/sing-tun v0.4.28-0.20261008092224-bfc905547122 // indirect
 	github.com/metacubex/sing-vmess v0.2.5 // indirect
-	github.com/metacubex/sing-wireguard v0.0.0-20260826105301-c3ae17d19f9e // indirect
+	github.com/metacubex/sing-wireguard v0.0.0-20261002050126-e5fa1a607406 // indirect
 	github.com/metacubex/smux v0.0.0-20260105030934-d0c8756d3141 // indirect
 	github.com/metacubex/ssh v0.1.0 // indirect
 	github.com/metacubex/tailscale-wireguard-go v0.0.0-20260725073821-e61ab99cede2 // indirect

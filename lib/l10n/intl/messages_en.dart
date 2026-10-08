@@ -1652,6 +1652,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "tunDesc": MessageLookupByLibrary.simpleMessage(
       "Only effective in administrator mode",
     ),
+    "tunDnsMode": MessageLookupByLibrary.simpleMessage("System DNS mode"),
+    "tunDnsModeDisabled": MessageLookupByLibrary.simpleMessage("Disabled"),
+    "tunDnsModeHijack": MessageLookupByLibrary.simpleMessage("Hijack"),
+    "tunDnsModeNative": MessageLookupByLibrary.simpleMessage("Native"),
     "turnOff": MessageLookupByLibrary.simpleMessage("Turn off"),
     "turnOn": MessageLookupByLibrary.simpleMessage("Turn on"),
     "tvMode": MessageLookupByLibrary.simpleMessage("TV mode"),

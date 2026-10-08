@@ -252,6 +252,28 @@ class TunDnsHijackItem extends ConsumerWidget {
   );
 }
 
+class TunDnsModeItem extends ConsumerWidget {
+  const TunDnsModeItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
+    return ConfigOptionsItem<TunDnsMode>(
+      title: (l) => l.tunDnsMode,
+      options: TunDnsMode.values,
+      textBuilder: (mode) => switch (mode) {
+        TunDnsMode.disabled => appLocalizations.tunDnsModeDisabled,
+        TunDnsMode.native => appLocalizations.tunDnsModeNative,
+        TunDnsMode.hijack => appLocalizations.tunDnsModeHijack,
+      },
+      selector: patchClashConfigProvider.select((state) => state.tun.dnsMode),
+      onChanged: _tunWriter(
+        (state, value) => state.copyWith.tun(dnsMode: value),
+      ),
+    );
+  }
+}
+
 class EndpointIndependentNatItem extends ConsumerWidget {
   const EndpointIndependentNatItem({super.key});
 
@@ -574,7 +596,7 @@ List<Widget> networkOptionsItems({
     if (isDesktop) const TUNItem(),
     if (isDesktop) const StrictRouteItem(),
     const IcmpForwardingItem(),
-    if (isDesktop) const TunDnsHijackItem(),
+    if (isDesktop) ...[const TunDnsModeItem(), const TunDnsHijackItem()],
     const EndpointIndependentNatItem(),
     const TunStackItem(),
     const TunCongestionControllerItem(),
