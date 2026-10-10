@@ -3,10 +3,10 @@ import NetworkExtension
 import os
 
 final class PacketTunnelNetworkConfiguration {
-  private let ipv4Address = "172.19.0.1"
-  private let ipv4AddressPrefix = "172.19.0.1/30"
+  private let ipv4Address = "198.18.0.1"
+  private let ipv4AddressPrefix = "198.18.0.1/30"
   private let ipv4SubnetMask = "255.255.255.252"
-  private let ipv4DNS = "172.19.0.2"
+  private let ipv4DNS = "198.18.0.2"
   private let ipv6Address = "fdfe:dcba:9876::1"
   private let ipv6AddressPrefix = "fdfe:dcba:9876::1/126"
   private let ipv6DNS = "fdfe:dcba:9876::2"

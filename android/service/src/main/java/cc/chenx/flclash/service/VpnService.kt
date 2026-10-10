@@ -292,9 +292,11 @@ class VpnService : SystemVpnService(), ManagedService {
     }
 
     companion object {
-        private const val IPV4_ADDRESS = "172.19.0.1/30"
+        // mihomo's own TUN default: 198.18.0.0/15 is benchmarking space no LAN
+        // uses, and its fake-ip pool starts at .4, past this /30.
+        private const val IPV4_ADDRESS = "198.18.0.1/30"
         private const val IPV6_ADDRESS = "fdfe:dcba:9876::1/126"
-        private const val DNS = "172.19.0.2"
+        private const val DNS = "198.18.0.2"
         private const val DNS6 = "fdfe:dcba:9876::2"
         private const val NET_ANY = "0.0.0.0"
         private const val NET_ANY6 = "::"
