@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
@@ -8,6 +9,9 @@ import 'package:fl_clash/state.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:window_manager/window_manager.dart';
+
+const _titleBarHeight = 32.0;
+const _minTitleBarGrabWidth = 120.0;
 
 class Window implements WindowPort {
   static Window? _instance;
@@ -65,37 +69,22 @@ class Window implements WindowPort {
   }
 
   Future<void> _windowPosition(WindowProps props) async {
-    if (_supportsPosition) {
-      final left = props.left;
-      final top = props.top;
-      if (left == null || top == null) {
-        await windowManager.setAlignment(Alignment.center);
-      } else {
-        final displays = await screenRetriever.getAllDisplays();
-        final isPositionValid = displays.any((display) {
-          final visiblePosition = display.visiblePosition;
-          if (visiblePosition == null) {
-            return false;
-          }
-          final scaleFactor = display.scaleFactor ?? 1.0;
-          final logicalWidth =
-              display.visibleSize?.width ?? display.size.width / scaleFactor;
-          final logicalHeight =
-              display.visibleSize?.height ?? display.size.height / scaleFactor;
-          final displayBounds = Rect.fromLTWH(
-            visiblePosition.dx,
-            visiblePosition.dy,
-            logicalWidth,
-            logicalHeight,
+    if (!_supportsPosition) {
+      return;
+    }
+    final position = props.left == null || props.top == null
+        ? null
+        : restoredWindowPosition(
+            props,
+            displays: await screenRetriever.getAllDisplays(),
+            currentScale: system.isWindows
+                ? windowManager.getDevicePixelRatio()
+                : null,
           );
-          return displayBounds.contains(Offset(left, top));
-        });
-        if (isPositionValid) {
-          await windowManager.setPosition(Offset(left, top));
-        } else {
-          await windowManager.setAlignment(Alignment.center);
-        }
-      }
+    if (position == null) {
+      await windowManager.setAlignment(Alignment.center);
+    } else {
+      await windowManager.setPosition(position);
     }
   }
 
@@ -124,6 +113,9 @@ class Window implements WindowPort {
       height: bounds.height,
       left: hasValidPosition ? bounds.left : current.left,
       top: hasValidPosition ? bounds.top : current.top,
+      scale: hasValidPosition && system.isWindows
+          ? windowManager.getDevicePixelRatio()
+          : current.scale,
     );
   }
 
@@ -193,6 +185,46 @@ class Window implements WindowPort {
   void forceExit() {
     exit(0);
   }
+}
+
+/// On Windows window_manager scales by the window's monitor and
+/// screen_retriever by each display's own, so only physical pixels compare
+/// across mixed scales. A null [currentScale] treats every value as physical.
+///
+/// A position is kept only while the title bar can still be grabbed: its full
+/// height and a draggable stretch of its width lie on one display.
+@visibleForTesting
+Offset? restoredWindowPosition(
+  WindowProps props, {
+  required List<Display> displays,
+  double? currentScale,
+}) {
+  final savedScale = currentScale == null ? 1.0 : props.scale ?? currentScale;
+  final topLeft = Offset(props.left!, props.top!) * savedScale;
+  final titleBar =
+      topLeft & Size(props.size.width, _titleBarHeight) * savedScale;
+  final minGrabWidth = min(titleBar.width, _minTitleBarGrabWidth * savedScale);
+  final isVisible = displays.any((display) {
+    final position = display.visiblePosition;
+    if (position == null) {
+      return false;
+    }
+    final scale = currentScale == null
+        ? 1.0
+        : display.scaleFactor?.toDouble() ?? 1.0;
+    final bounds = position & (display.visibleSize ?? display.size);
+    final physical = Rect.fromLTRB(
+      bounds.left * scale,
+      bounds.top * scale,
+      bounds.right * scale,
+      bounds.bottom * scale,
+    );
+    final visible = physical.intersect(titleBar);
+    return titleBar.top >= physical.top &&
+        titleBar.bottom <= physical.bottom &&
+        visible.width >= minGrabWidth;
+  });
+  return isVisible ? topLeft / (currentScale ?? 1.0) : null;
 }
 
 /// Serializes visibility requests so a burst of hotkey toggles lands in

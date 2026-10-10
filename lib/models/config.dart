@@ -184,6 +184,7 @@ abstract class WindowProps with _$WindowProps {
     @Default(0) double height,
     double? top,
     double? left,
+    double? scale,
   }) = _WindowProps;
 
   factory WindowProps.fromJson(Map<String, Object?>? json) =>

@@ -5,6 +5,7 @@ import 'package:fl_clash/models/config.dart';
 import 'package:fl_clash/state.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:screen_retriever/screen_retriever.dart';
 
 const _windowChannel = MethodChannel('window_manager');
 
@@ -136,5 +137,113 @@ void main() {
     isFullScreen = false;
     isMinimized = true;
     expect(await Window().captureNormalGeometry(const WindowProps()), isNull);
+  });
+
+  group('restoredWindowPosition', () {
+    // A 100% primary at physical 0..1920 and a 150% secondary to its right at
+    // physical 1920..5760, as screen_retriever reports them on Windows.
+    const displays = [
+      Display(
+        id: 'primary',
+        size: Size(1920, 1080),
+        visiblePosition: Offset.zero,
+        visibleSize: Size(1920, 1040),
+        scaleFactor: 1,
+      ),
+      Display(
+        id: 'secondary',
+        size: Size(2560, 1440),
+        visiblePosition: Offset(1280, 0),
+        visibleSize: Size(2560, 1400),
+        scaleFactor: 1.5,
+      ),
+    ];
+
+    test('puts a window saved on the 150% display back there from the '
+        '100% one', () {
+      const props = WindowProps(
+        width: 680,
+        height: 580,
+        left: 1666,
+        top: 100,
+        scale: 1.5,
+      );
+
+      expect(
+        restoredWindowPosition(props, displays: displays, currentScale: 1),
+        const Offset(2499, 150),
+      );
+    });
+
+    test('puts a window saved on the 100% display back there from the '
+        '150% one', () {
+      const props = WindowProps(
+        width: 680,
+        height: 580,
+        left: 300,
+        top: 200,
+        scale: 1,
+      );
+
+      expect(
+        restoredWindowPosition(props, displays: displays, currentScale: 1.5),
+        const Offset(200, 200 / 1.5),
+      );
+    });
+
+    test('reads a position saved without a scale in the current one', () {
+      const props = WindowProps(width: 680, height: 580, left: 300, top: 200);
+
+      expect(
+        restoredWindowPosition(props, displays: displays, currentScale: 1),
+        const Offset(300, 200),
+      );
+    });
+
+    test('keeps a window hanging off the left edge while its title bar can '
+        'still be dragged', () {
+      const props = WindowProps(width: 680, height: 580, left: -200, top: 100);
+
+      expect(
+        restoredWindowPosition(props, displays: displays, currentScale: 1),
+        const Offset(-200, 100),
+      );
+    });
+
+    test('rejects a window whose title bar sits above every display', () {
+      const props = WindowProps(width: 680, height: 580, left: 100, top: -500);
+
+      expect(
+        restoredWindowPosition(props, displays: displays, currentScale: 1),
+        isNull,
+      );
+    });
+
+    test('rejects a window with only a sliver of title bar left on screen', () {
+      const props = WindowProps(width: 680, height: 580, left: -620, top: 100);
+
+      expect(
+        restoredWindowPosition(props, displays: displays, currentScale: 1),
+        isNull,
+      );
+    });
+
+    test('rejects a position off every display', () {
+      const props = WindowProps(width: 680, height: 580, left: 9000, top: 100);
+
+      expect(
+        restoredWindowPosition(props, displays: displays, currentScale: 1),
+        isNull,
+      );
+    });
+
+    test('compares logical values directly when no scale applies', () {
+      const props = WindowProps(width: 680, height: 580, left: 2000, top: 100);
+
+      expect(
+        restoredWindowPosition(props, displays: displays),
+        const Offset(2000, 100),
+      );
+    });
   });
 }

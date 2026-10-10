@@ -694,7 +694,7 @@ as bool,
 /// @nodoc
 mixin _$WindowProps {
 
- double get width; double get height; double? get top; double? get left;
+ double get width; double get height; double? get top; double? get left; double? get scale;
 /// Create a copy of WindowProps
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -708,20 +708,20 @@ $WindowPropsCopyWith<WindowProps> get copyWith => _$WindowPropsCopyWithImpl<Wind
 @override
 bool operator ==(Object other) {
   final _this = this as WindowProps;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WindowProps&&(identical(other.width, _this.width) || other.width == _this.width)&&(identical(other.height, _this.height) || other.height == _this.height)&&(identical(other.top, _this.top) || other.top == _this.top)&&(identical(other.left, _this.left) || other.left == _this.left));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WindowProps&&(identical(other.width, _this.width) || other.width == _this.width)&&(identical(other.height, _this.height) || other.height == _this.height)&&(identical(other.top, _this.top) || other.top == _this.top)&&(identical(other.left, _this.left) || other.left == _this.left)&&(identical(other.scale, _this.scale) || other.scale == _this.scale));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as WindowProps;
-  return Object.hash(runtimeType,_this.width,_this.height,_this.top,_this.left);
+  return Object.hash(runtimeType,_this.width,_this.height,_this.top,_this.left,_this.scale);
 }
 
 @override
 String toString() {
   final _this = this as WindowProps;
-  return 'WindowProps(width: ${_this.width}, height: ${_this.height}, top: ${_this.top}, left: ${_this.left})';
+  return 'WindowProps(width: ${_this.width}, height: ${_this.height}, top: ${_this.top}, left: ${_this.left}, scale: ${_this.scale})';
 }
 
 
@@ -732,7 +732,7 @@ abstract mixin class $WindowPropsCopyWith<$Res>  {
   factory $WindowPropsCopyWith(WindowProps value, $Res Function(WindowProps) _then) = _$WindowPropsCopyWithImpl;
 @useResult
 $Res call({
- double width, double height, double? top, double? left
+ double width, double height, double? top, double? left, double? scale
 });
 
 
@@ -749,12 +749,13 @@ class _$WindowPropsCopyWithImpl<$Res>
 
 /// Create a copy of WindowProps
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? width = null,Object? height = null,Object? top = freezed,Object? left = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? width = null,Object? height = null,Object? top = freezed,Object? left = freezed,Object? scale = freezed,}) {
   return _then(WindowProps(
 width: null == width ? _self.width : width // ignore: cast_nullable_to_non_nullable
 as double,height: null == height ? _self.height : height // ignore: cast_nullable_to_non_nullable
 as double,top: freezed == top ? _self.top : top // ignore: cast_nullable_to_non_nullable
 as double?,left: freezed == left ? _self.left : left // ignore: cast_nullable_to_non_nullable
+as double?,scale: freezed == scale ? _self.scale : scale // ignore: cast_nullable_to_non_nullable
 as double?,
   ));
 }
@@ -840,10 +841,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double width,  double height,  double? top,  double? left)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double width,  double height,  double? top,  double? left,  double? scale)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WindowProps() when $default != null:
-return $default(_that.width,_that.height,_that.top,_that.left);case _:
+return $default(_that.width,_that.height,_that.top,_that.left,_that.scale);case _:
   return orElse();
 
 }
@@ -861,10 +862,10 @@ return $default(_that.width,_that.height,_that.top,_that.left);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double width,  double height,  double? top,  double? left)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double width,  double height,  double? top,  double? left,  double? scale)  $default,) {final _that = this;
 switch (_that) {
 case _WindowProps():
-return $default(_that.width,_that.height,_that.top,_that.left);case _:
+return $default(_that.width,_that.height,_that.top,_that.left,_that.scale);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -881,10 +882,10 @@ return $default(_that.width,_that.height,_that.top,_that.left);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double width,  double height,  double? top,  double? left)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double width,  double height,  double? top,  double? left,  double? scale)?  $default,) {final _that = this;
 switch (_that) {
 case _WindowProps() when $default != null:
-return $default(_that.width,_that.height,_that.top,_that.left);case _:
+return $default(_that.width,_that.height,_that.top,_that.left,_that.scale);case _:
   return null;
 
 }
@@ -896,13 +897,14 @@ return $default(_that.width,_that.height,_that.top,_that.left);case _:
 @JsonSerializable()
 
 class _WindowProps implements WindowProps {
-  const _WindowProps({this.width = 0, this.height = 0, this.top, this.left});
+  const _WindowProps({this.width = 0, this.height = 0, this.top, this.left, this.scale});
   factory _WindowProps.fromJson(Map<String, dynamic> json) => _$WindowPropsFromJson(json);
 
 @override@JsonKey() final  double width;
 @override@JsonKey() final  double height;
 @override final  double? top;
 @override final  double? left;
+@override final  double? scale;
 
 /// Create a copy of WindowProps
 /// with the given fields replaced by the non-null parameter values.
@@ -917,18 +919,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _WindowProps&&(identical(other.width, width) || other.width == width)&&(identical(other.height, height) || other.height == height)&&(identical(other.top, top) || other.top == top)&&(identical(other.left, left) || other.left == left));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _WindowProps&&(identical(other.width, width) || other.width == width)&&(identical(other.height, height) || other.height == height)&&(identical(other.top, top) || other.top == top)&&(identical(other.left, left) || other.left == left)&&(identical(other.scale, scale) || other.scale == scale));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,width,height,top,left);
+    return Object.hash(runtimeType,width,height,top,left,scale);
 }
 
 @override
 String toString() {
-    return 'WindowProps(width: $width, height: $height, top: $top, left: $left)';
+    return 'WindowProps(width: $width, height: $height, top: $top, left: $left, scale: $scale)';
 }
 
 
@@ -939,7 +941,7 @@ abstract mixin class _$WindowPropsCopyWith<$Res> implements $WindowPropsCopyWith
   factory _$WindowPropsCopyWith(_WindowProps value, $Res Function(_WindowProps) _then) = __$WindowPropsCopyWithImpl;
 @override @useResult
 $Res call({
- double width, double height, double? top, double? left
+ double width, double height, double? top, double? left, double? scale
 });
 
 
@@ -956,12 +958,13 @@ class __$WindowPropsCopyWithImpl<$Res>
 
 /// Create a copy of WindowProps
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? width = null,Object? height = null,Object? top = freezed,Object? left = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? width = null,Object? height = null,Object? top = freezed,Object? left = freezed,Object? scale = freezed,}) {
   return _then(_WindowProps(
 width: null == width ? _self.width : width // ignore: cast_nullable_to_non_nullable
 as double,height: null == height ? _self.height : height // ignore: cast_nullable_to_non_nullable
 as double,top: freezed == top ? _self.top : top // ignore: cast_nullable_to_non_nullable
 as double?,left: freezed == left ? _self.left : left // ignore: cast_nullable_to_non_nullable
+as double?,scale: freezed == scale ? _self.scale : scale // ignore: cast_nullable_to_non_nullable
 as double?,
   ));
 }
