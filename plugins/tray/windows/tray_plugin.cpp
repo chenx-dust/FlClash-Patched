@@ -12,6 +12,9 @@ namespace {
 
 constexpr UINT kTrayCallbackMessage = WM_USER + 1;
 constexpr UINT kTrayIconId = 1;
+constexpr UINT_PTR kRestoreTimerId = 0x54524159;  // "TRAY"
+constexpr UINT kRestoreIntervalMilliseconds = 2000;
+constexpr int kMaxRestoreAttempts = 30;
 
 using SetPreferredAppModeFunc = int(WINAPI*)(int mode);
 using AllowDarkModeForWindowFunc = BOOL(WINAPI*)(HWND hwnd, BOOL allow);
@@ -328,21 +331,31 @@ bool TrayPlugin::Show(const flutter::EncodableMap& arguments) {
   const std::string* brightness = StringAt(arguments, "brightness");
   menu_is_dark_ = brightness != nullptr && *brightness == "dark";
 
+  icon_requested_ = true;
   bool applied = ApplyIcon(!visible_);
   if (!applied && visible_) {
     applied = ApplyIcon(true);
   }
-  if (!applied) {
+  // The shell refuses the first add while it is still starting at sign-in.
+  const bool can_retry = !visible_ && tray_window_ != nullptr &&
+                         tray_window_->hwnd() != nullptr;
+  if (!applied && !can_retry) {
     icon_data_.hIcon = previous_icon;
     tool_tip_ = previous_tool_tip;
     menu_is_dark_ = previous_menu_is_dark;
+    icon_requested_ = visible_;
     ::DestroyIcon(loaded);
     return false;
   }
   if (previous_icon != nullptr) {
     ::DestroyIcon(previous_icon);
   }
-  visible_ = true;
+  if (applied) {
+    visible_ = true;
+  } else {
+    restore_attempts_ = 0;
+    ScheduleRestore();
+  }
 
   const flutter::EncodableList* items = ListAt(arguments, "menu");
   if (items != nullptr) {
@@ -367,10 +380,39 @@ void TrayPlugin::SetMenu(const flutter::EncodableList& items) {
   RebuildMenu(menu_, menu_model_);
 }
 
+void TrayPlugin::ScheduleRestore() {
+  if (tray_window_ != nullptr && tray_window_->hwnd() != nullptr) {
+    ::SetTimer(tray_window_->hwnd(), kRestoreTimerId,
+               kRestoreIntervalMilliseconds, nullptr);
+  }
+}
+
+void TrayPlugin::CancelRestore() {
+  if (tray_window_ != nullptr && tray_window_->hwnd() != nullptr) {
+    ::KillTimer(tray_window_->hwnd(), kRestoreTimerId);
+  }
+  restore_attempts_ = 0;
+}
+
+// An add that timed out may still have landed, so modify goes first. A shell
+// that keeps refusing gets another round only when it announces a restart.
+void TrayPlugin::RestoreIcon() {
+  if (ApplyIcon(false) || ApplyIcon(true)) {
+    visible_ = true;
+    CancelRestore();
+  } else if (++restore_attempts_ < kMaxRestoreAttempts) {
+    ScheduleRestore();
+  } else {
+    CancelRestore();
+  }
+}
+
 void TrayPlugin::Hide() {
-  if (visible_) {
+  CancelRestore();
+  if (icon_requested_) {
     ::Shell_NotifyIconW(NIM_DELETE, &icon_data_);
   }
+  icon_requested_ = false;
   if (icon_data_.hIcon != nullptr) {
     ::DestroyIcon(icon_data_.hIcon);
   }
@@ -606,12 +648,18 @@ std::optional<LRESULT> TrayPlugin::HandleWindowProc(HWND window,
     return std::nullopt;
   }
 
+  if (message == WM_TIMER && wparam == kRestoreTimerId) {
+    RestoreIcon();
+    return 0;
+  }
+
   const bool should_restore =
       (taskbar_created_message_ != 0 && message == taskbar_created_message_) ||
       (message == WM_POWERBROADCAST && (wparam == PBT_APMRESUMEAUTOMATIC ||
                                         wparam == PBT_APMRESUMESUSPEND));
-  if (should_restore && visible_) {
-    ApplyIcon(true);
+  if (should_restore && icon_requested_) {
+    CancelRestore();
+    RestoreIcon();
   }
 
   return std::nullopt;

@@ -14,6 +14,13 @@ File _resolveSource(String relativePath) {
   return direct;
 }
 
+String _body(String source, String signature) {
+  final start = source.indexOf(signature);
+  expect(start, isNonNegative, reason: signature);
+  final end = source.indexOf('\n}\n', start);
+  return source.substring(start, end);
+}
+
 void main() {
   late String pluginSource;
 
@@ -43,7 +50,7 @@ void main() {
     expect(
       pluginSource,
       contains('''
-  if (!applied) {
+  if (!applied && !can_retry) {
     icon_data_.hIcon = previous_icon;'''),
     );
     expect(
@@ -95,8 +102,41 @@ void main() {
     icon_data_.hIcon = previous_icon;
     tool_tip_ = previous_tool_tip;
     menu_is_dark_ = previous_menu_is_dark;
+    icon_requested_ = visible_;
     ::DestroyIcon(loaded);
     return false;'''),
+    );
+  });
+  test('windows retries an icon the shell refused at sign-in', () {
+    final show = _body(pluginSource, 'bool TrayPlugin::Show(');
+
+    expect(show, contains('ScheduleRestore();'));
+    expect(show.trimRight(), endsWith('return true;'));
+    expect(
+      show,
+      contains('!visible_ && tray_window_ != nullptr'),
+      reason: 'a show with no tray window to retry from must report failure',
+    );
+    final restore = _body(pluginSource, 'void TrayPlugin::RestoreIcon(');
+    expect(restore, contains('ApplyIcon(false) || ApplyIcon(true)'));
+    expect(restore, contains('++restore_attempts_ < kMaxRestoreAttempts'));
+    expect(pluginSource, contains('message == WM_TIMER'));
+    expect(pluginSource, contains('should_restore && icon_requested_'));
+  });
+
+  test('windows hide deletes an icon whose add may have landed', () {
+    final hide = _body(pluginSource, 'void TrayPlugin::Hide(');
+
+    expect(
+      hide,
+      contains('''
+  if (icon_requested_) {
+    ::Shell_NotifyIconW(NIM_DELETE, &icon_data_);
+  }'''),
+    );
+    expect(
+      hide.indexOf('icon_requested_ = false;'),
+      greaterThan(hide.indexOf('NIM_DELETE')),
     );
   });
 }

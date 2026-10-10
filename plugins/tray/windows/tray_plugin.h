@@ -54,6 +54,9 @@ class TrayPlugin : public flutter::Plugin {
   bool UpdateMenuItems(const flutter::EncodableList& updates);
   bool ApplyMenuItemUpdate(const flutter::EncodableMap& arguments);
   bool ApplyIcon(bool add);
+  void RestoreIcon();
+  void ScheduleRestore();
+  void CancelRestore();
   void RebuildMenu(HMENU menu, const flutter::EncodableList& items);
   void SetMenu(const flutter::EncodableList& items);
   void MaterializeMenu(HMENU menu);
@@ -81,6 +84,8 @@ class TrayPlugin : public flutter::Plugin {
   TrayMenuIcons menu_icons_;
   std::wstring tool_tip_;
   bool visible_ = false;
+  bool icon_requested_ = false;
+  int restore_attempts_ = 0;
   bool menu_is_dark_ = false;
   UINT menu_dpi_ = 96;
 
