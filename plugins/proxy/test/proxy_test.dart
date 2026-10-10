@@ -7,6 +7,7 @@ import 'package:proxy/proxy_method_channel.dart';
 import 'package:proxy/src/linux_proxy.dart';
 import 'package:proxy/src/macos_proxy.dart';
 import 'package:proxy/src/proxy_command.dart';
+import 'package:proxy/src/windows_proxy.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -378,6 +379,36 @@ USB 10/100/1000 LAN
 
       expect(await proxy.start(7890, const []), isFalse);
       expect(callCount, 1);
+    });
+  });
+
+  group('windowsBypassList', () {
+    test('passes the intranet token through only when listed', () {
+      expect(windowsBypassList(['localhost', '127.*', '<local>']), [
+        'localhost',
+        '127.*',
+        '<local>',
+      ]);
+      expect(windowsBypassList(['localhost']), ['localhost']);
+    });
+
+    test('brackets bare IPv6 literals and drops blank entries', () {
+      expect(
+        windowsBypassList([' ::1 ', 'fe80::1', '', '[fd00::1]', '*.lan']),
+        ['[::1]', '[fe80::1]', '[fd00::1]', '*.lan'],
+      );
+    });
+
+    test('brackets IPv6 CIDR blocks and drops zone IDs', () {
+      expect(
+        windowsBypassList([
+          'fc00::/7',
+          'fe80::1%1',
+          'fe80::%eth0/10',
+          '10.0.0.0/8',
+        ]),
+        ['[fc00::]/7', '[fe80::1]', '[fe80::]/10', '10.0.0.0/8'],
+      );
     });
   });
 
