@@ -1,12 +1,11 @@
 import 'dart:async';
 
 import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/common/permission.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/plugins/app.dart';
 import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/views/profiles/overwrite/custom/widgets.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,19 +56,23 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
       _handlePermanentlyDeniedLocationPermission();
       return;
     }
-    final permissionsNotifier = ref.read(locationPermissionsProvider.notifier);
-    final res = await wifiSsidManager.requestPermission();
-    permissionsNotifier.value = res;
-    if (!mounted) {
+    final WifiSsidPermission? res;
+    try {
+      res = await ref.read(locationPermissionsProvider.notifier).request();
+    } on PlatformException catch (e) {
+      commonPrint.log('requestPermission error $e', logLevel: LogLevel.warning);
       return;
     }
-    switch (getLocationPermissionFollowUp(res)) {
-      case LocationPermissionFollowUp.none:
+    if (res == null || !mounted) {
+      return;
+    }
+    switch (res) {
+      case WifiSsidPermission.granted:
         return;
-      case LocationPermissionFollowUp.openSettings:
+      case WifiSsidPermission.permanentlyDenied:
         _handlePermanentlyDeniedLocationPermission();
         return;
-      case LocationPermissionFollowUp.showDeniedMessage:
+      case WifiSsidPermission.denied:
         break;
     }
     final needGo = await dialogs.showMessage(
@@ -83,13 +86,11 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
     unawaited(app?.openAppSettings());
   }
 
-  void _handleOpenBatteryOptimizationSettings() {
-    final isDisabled = ref.read(batteryOptimizationDisableProvider);
-    if (isDisabled) {
+  void _handleRequestIgnoreBatteryOptimization() {
+    if (ref.read(batteryOptimizationIgnoredProvider).value == true) {
       return;
     }
-    permissions.needWaitingBatteryOptimizationSettings = true;
-    app?.openBatteryOptimizationSettings();
+    unawaited(ref.read(batteryOptimizationIgnoredProvider.notifier).request());
   }
 
   Future<void> _handleAddOrUpdate([String? ssid]) async {
@@ -252,11 +253,8 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
 
   Widget _buildBatteryOptimizationItem() {
     final appLocalizations = context.appLocalizations;
-    final isStart = ref.watch(isStartProvider);
-    final isLoading = ref.watch(
-      loadingProvider(LoadingTag.batteryOptimization),
-    );
-    final disabled = ref.watch(batteryOptimizationDisableProvider);
+    final ignored = ref.watch(batteryOptimizationIgnoredProvider);
+    final isLoading = ignored.isLoading;
     return _buildPrerequisiteItem(
       title: appLocalizations.ignoreBatteryOptimization,
       desc: appLocalizations.batteryOptimizationDesc,
@@ -264,20 +262,16 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
         alignment: Alignment.centerRight,
         children: [
           Visibility(
-            visible: !isLoading && !isStart,
+            visible: !isLoading,
             maintainSize: true,
             maintainAnimation: true,
             maintainState: true,
             child: _buildAuthorizeButton(
-              authorized: disabled,
-              onPressed: _handleOpenBatteryOptimizationSettings,
+              authorized: ignored.value ?? false,
+              onPressed: _handleRequestIgnoreBatteryOptimization,
             ),
           ),
-          if (isStart)
-            InfoMessageButton(
-              message: appLocalizations.batteryOptimizationStatusTip,
-            ),
-          if (!isStart && isLoading)
+          if (isLoading)
             const SizedBox.square(dimension: 32, child: CommonCircleLoading()),
         ],
       ),

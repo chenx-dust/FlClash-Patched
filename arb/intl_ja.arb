@@ -654,7 +654,6 @@
   "prerequisites": "前提条件",
   "ignoreBatteryOptimization": "バッテリー最適化を無視",
   "batteryOptimizationDesc": "バックグラウンド動作を確保するため、このアプリのバッテリー最適化を無効にしてください。タップして設定へ移動します。",
-  "batteryOptimizationStatusTip": "システムの制限により、実行中は電池の最適化の状態を正しく取得できません",
   "locationPermission": "位置情報の権限",
   "locationPermissionDesc": "システムの要件により、Wi-Fi 名の取得には位置情報の権限が必要です。Android では「常に許可」を選択してください。そうしないと、アプリがバックグラウンドにあるときに Wi-Fi 名を取得できません。",
   "excludeSsids": "除外 SSID",

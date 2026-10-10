@@ -1,9 +1,15 @@
+import 'dart:async';
+
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
+import 'package:fl_clash/providers/on_demand.dart';
+import 'package:fl_clash/providers/state.dart';
 import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/config/on_demand.dart';
+import 'package:fl_clash/views/profiles/overwrite/custom/widgets.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,6 +36,22 @@ class _TestLocationPermissions extends LocationPermissions {
   WifiSsidPermission build() => _initial;
 }
 
+class _TestBatteryOptimizationIgnored extends BatteryOptimizationIgnored {
+  _TestBatteryOptimizationIgnored(this._initial);
+
+  final bool _initial;
+  int requests = 0;
+
+  @override
+  Stream<bool> build() => Stream.value(_initial);
+
+  @override
+  Future<void> request() async {
+    requests++;
+    state = const AsyncData(true);
+  }
+}
+
 void main() {
   late ProviderContainer container;
 
@@ -37,8 +59,10 @@ void main() {
     WidgetTester tester, {
     List<String> ssids = const [],
     WifiSsidPermission permission = WifiSsidPermission.denied,
+    bool batteryIgnored = false,
     bool isAndroid = false,
     bool isMacOS = false,
+    bool isStart = false,
     Locale? locale,
     Size size = const Size(1400, 1000),
   }) async {
@@ -53,6 +77,10 @@ void main() {
         locationPermissionsProvider.overrideWith(
           () => _TestLocationPermissions(permission),
         ),
+        batteryOptimizationIgnoredProvider.overrideWith(
+          () => _TestBatteryOptimizationIgnored(batteryIgnored),
+        ),
+        isStartProvider.overrideWithValue(isStart),
       ],
     );
     addTearDown(container.dispose);
@@ -160,6 +188,54 @@ void main() {
     expect(find.bySemanticsLabel('Tap to authorize'), findsNothing);
   });
 
+  testWidgets('a refused location request leaves the permission as it was', (
+    tester,
+  ) async {
+    const channel = MethodChannel('wifi_ssid');
+    final messenger = tester.binding.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(
+      channel,
+      (_) async => throw PlatformException(code: 'IN_PROGRESS'),
+    );
+    addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
+    await pumpView(tester, isMacOS: true);
+
+    await tester.tap(find.text('Tap to authorize'));
+    await tester.pumpAndSettle();
+
+    expect(
+      container.read(locationPermissionsProvider),
+      WifiSsidPermission.denied,
+    );
+    expect(find.bySemanticsLabel('Tap to authorize'), findsOneWidget);
+  });
+
+  testWidgets('a second tap while the location request waits asks only once', (
+    tester,
+  ) async {
+    const channel = MethodChannel('wifi_ssid');
+    final messenger = tester.binding.defaultBinaryMessenger;
+    final answer = Completer<Object?>();
+    var requests = 0;
+    messenger.setMockMethodCallHandler(channel, (_) {
+      requests++;
+      return answer.future;
+    });
+    addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
+    await pumpView(tester, isMacOS: true);
+    container.read(viewSizeProvider.notifier).value = const Size(1400, 1000);
+
+    await tester.tap(find.text('Tap to authorize'));
+    await tester.pump();
+    await tester.tap(find.text('Tap to authorize'));
+    await tester.pump();
+    answer.complete(WifiSsidPermission.permanentlyDenied.index);
+    await tester.pumpAndSettle();
+
+    expect(requests, 1);
+    expect(find.text('Location permission required'), findsOneWidget);
+  });
+
   testWidgets('Android also asks to be left out of battery optimization', (
     tester,
   ) async {
@@ -167,6 +243,66 @@ void main() {
 
     expect(find.text('Ignore battery optimization'), findsOneWidget);
     expect(find.text('Location permission'), findsOneWidget);
+  });
+
+  testWidgets('authorizing the battery item asks and shows the answer', (
+    tester,
+  ) async {
+    await pumpView(tester, isAndroid: true);
+    final batteryItem = find.ancestor(
+      of: find.text('Ignore battery optimization'),
+      matching: find.byType(DecorationListItem),
+    );
+
+    await tester.tap(
+      find.descendant(of: batteryItem, matching: find.text('Tap to authorize')),
+    );
+    await tester.pumpAndSettle();
+
+    final notifier =
+        container.read(batteryOptimizationIgnoredProvider.notifier)
+            as _TestBatteryOptimizationIgnored;
+    expect(notifier.requests, 1);
+    expect(
+      find.descendant(
+        of: batteryItem,
+        matching: find.bySemanticsLabel('Authorized'),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('an exempt app does not ask again', (tester) async {
+    await pumpView(tester, isAndroid: true, batteryIgnored: true);
+    final batteryItem = find.ancestor(
+      of: find.text('Ignore battery optimization'),
+      matching: find.byType(DecorationListItem),
+    );
+
+    await tester.tap(
+      find.descendant(of: batteryItem, matching: find.text('Authorized')),
+    );
+    await tester.pumpAndSettle();
+
+    final notifier =
+        container.read(batteryOptimizationIgnoredProvider.notifier)
+            as _TestBatteryOptimizationIgnored;
+    expect(notifier.requests, 0);
+  });
+
+  testWidgets('while running the battery item still shows and asks', (
+    tester,
+  ) async {
+    await pumpView(tester, isAndroid: true, isStart: true);
+
+    await tester.tap(find.text('Tap to authorize').first);
+    await tester.pumpAndSettle();
+
+    final notifier =
+        container.read(batteryOptimizationIgnoredProvider.notifier)
+            as _TestBatteryOptimizationIgnored;
+    expect(notifier.requests, 1);
+    expect(find.byType(InfoMessageButton), findsNothing);
   });
 
   testWidgets('the authorize action sits on its own line under the text', (

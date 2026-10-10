@@ -5375,16 +5375,6 @@ class AppLocalizations {
     );
   }
 
-  /// `Due to system limitations, the battery optimization status cannot be read correctly while running`
-  String get batteryOptimizationStatusTip {
-    return Intl.message(
-      'Due to system limitations, the battery optimization status cannot be read correctly while running',
-      name: 'batteryOptimizationStatusTip',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Location permission`
   String get locationPermission {
     return Intl.message(

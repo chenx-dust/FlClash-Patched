@@ -1,7 +1,6 @@
 package cc.chenx.flclash.plugins
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.BroadcastReceiver
@@ -13,7 +12,6 @@ import android.net.VpnService
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.os.PowerManager
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -185,14 +183,6 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
                 result.success(true)
             }
 
-            "isBatteryOptimizationDisabled" -> {
-                result.success(isBatteryOptimizationDisabled())
-            }
-
-            "openBatteryOptimizationSettings" -> {
-                result.success(openBatteryOptimizationSettings())
-            }
-
             "openAppSettings" -> {
                 result.success(openAppSettings())
             }
@@ -298,27 +288,6 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
             QuickAction.STOP -> R.drawable.ic_shortcut_stop
             QuickAction.TOGGLE -> R.drawable.ic_shortcut_toggle
         }
-
-    private fun isBatteryOptimizationDisabled(): Boolean {
-        val powerManager = getSystemService(GlobalState.application, PowerManager::class.java)
-        return powerManager?.isIgnoringBatteryOptimizations(GlobalState.application.packageName)
-            ?: false
-    }
-
-    @SuppressLint("BatteryLife")
-    private fun openBatteryOptimizationSettings(): Boolean {
-        // VPN continuity is the user-requested core function, so the direct exemption is intentional.
-        val activity = activity ?: return false
-        return try {
-            val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
-                data = "package:${GlobalState.application.packageName}".toUri()
-            }
-            activity.startActivity(intent)
-            true
-        } catch (_: Exception) {
-            false
-        }
-    }
 
     private fun openAppSettings(): Boolean {
         val activity = activity ?: return false

@@ -606,14 +606,7 @@ enum ScrollPositionCacheKey { tools, profiles, proxiesList, proxiesTabList }
 
 enum QueryTag { proxies, access }
 
-enum LoadingTag {
-  profiles,
-  backup_restore,
-  access,
-  proxies,
-  scripts,
-  batteryOptimization,
-}
+enum LoadingTag { profiles, backup_restore, access, proxies, scripts }
 
 enum CoreStatus { connecting, connected, disconnected }
 

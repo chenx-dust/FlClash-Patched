@@ -5,7 +5,6 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/common/launch.dart';
 import 'package:fl_clash/common/migration.dart';
-import 'package:fl_clash/common/permission.dart';
 import 'package:fl_clash/common/tray.dart';
 import 'package:fl_clash/common/window.dart';
 import 'package:fl_clash/database/database.dart';
@@ -162,7 +161,7 @@ class Bootstrap {
     await _container.read(coreActionProvider.notifier).startCore();
     await _container.read(setupActionProvider.notifier).initStatus();
     _container.read(initProvider.notifier).value = true;
-    permissions.check(_container.read);
+    unawaited(_container.read(locationPermissionsProvider.notifier).refresh());
   }
 
   Future<void> _handleFailedPreference() async {

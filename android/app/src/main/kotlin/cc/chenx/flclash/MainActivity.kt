@@ -1,6 +1,7 @@
 package cc.chenx.flclash
 
 import cc.chenx.flclash.plugins.AppPlugin
+import cc.chenx.flclash.plugins.BatteryPlugin
 import cc.chenx.flclash.plugins.ServicePlugin
 import cc.chenx.flclash.plugins.TilePlugin
 import io.flutter.embedding.android.FlutterActivity
@@ -10,6 +11,7 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         flutterEngine.plugins.add(AppPlugin())
+        flutterEngine.plugins.add(BatteryPlugin())
         flutterEngine.plugins.add(ServicePlugin())
         flutterEngine.plugins.add(TilePlugin())
         ServiceState.attachFlutterEngine(flutterEngine)

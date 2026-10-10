@@ -223,9 +223,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "batteryOptimizationDesc": MessageLookupByLibrary.simpleMessage(
       "為確保背景執行，請關閉本應用程式的電池最佳化。點選以開啟設定。",
     ),
-    "batteryOptimizationStatusTip": MessageLookupByLibrary.simpleMessage(
-      "受系統限制，執行時無法正確取得電池最佳化狀態",
-    ),
     "bind": MessageLookupByLibrary.simpleMessage("綁定"),
     "blacklistMode": MessageLookupByLibrary.simpleMessage("黑名單模式"),
     "blockConnection": MessageLookupByLibrary.simpleMessage("阻止連線"),
