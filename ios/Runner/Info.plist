@@ -98,11 +98,27 @@
 	<array>
 		<dict>
 			<key>UIApplicationShortcutItemType</key>
+			<string>start</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Start</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>play.fill</string>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>stop</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Stop</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>stop.fill</string>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
 			<string>toggle</string>
 			<key>UIApplicationShortcutItemTitle</key>
 			<string>Toggle</string>
-			<key>UIApplicationShortcutItemIconType</key>
-			<string>UIApplicationShortcutIconTypeShuffle</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>arrow.triangle.2.circlepath</string>
 		</dict>
 	</array>
 </dict>

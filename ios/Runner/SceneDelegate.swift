@@ -30,11 +30,9 @@ class SceneDelegate: FlutterSceneDelegate {
   }
 
   private func handleShortcutItem(_ shortcutItem: UIApplicationShortcutItem) {
-    switch shortcutItem.type {
-    case "toggle":
-      ServiceChannel.requestTunnelToggle()
-    default:
-      break
+    guard let action = QuickAction(rawValue: shortcutItem.type) else {
+      return
     }
+    ServiceChannel.request(action)
   }
 }

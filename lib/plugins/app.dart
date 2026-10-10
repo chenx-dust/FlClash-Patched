@@ -149,10 +149,11 @@ class App {
   }
 
   Future<bool?> initShortcuts() async {
-    return methodChannel.invokeMethod<bool>(
-      'initShortcuts',
-      currentAppLocalizations.toggle,
-    );
+    return methodChannel.invokeMethod<bool>('initShortcuts', {
+      'start': currentAppLocalizations.start,
+      'stop': currentAppLocalizations.stop,
+      'toggle': currentAppLocalizations.toggle,
+    });
   }
 
   Future<bool?> updateExcludeFromRecents(bool value) async {

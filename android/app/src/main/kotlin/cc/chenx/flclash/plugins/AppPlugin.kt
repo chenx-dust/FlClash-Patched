@@ -32,6 +32,7 @@ import cc.chenx.flclash.common.PendingCallback
 import cc.chenx.flclash.common.QuickAction
 import cc.chenx.flclash.common.quickIntent
 import cc.chenx.flclash.common.registerReceiverCompat
+import cc.chenx.flclash.common.shortcutId
 import cc.chenx.flclash.getPackageIconPath
 import cc.chenx.flclash.packages.PackageResolver
 import cc.chenx.flclash.showToast
@@ -145,11 +146,15 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
             }
 
             "initShortcuts" -> {
-                val label = call.arguments as? String
-                if (label == null) {
-                    result.error("INVALID_ARGUMENT", "Shortcut label must be a string", null)
+                val labels = shortcutLabels(call.arguments)
+                if (labels == null) {
+                    result.error(
+                        "INVALID_ARGUMENT",
+                        "Shortcut labels must map every quick action to a string",
+                        null,
+                    )
                 } else {
-                    initShortcuts(label)
+                    initShortcuts(labels)
                     result.success(true)
                 }
             }
@@ -266,23 +271,33 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
         }
     }
 
-    private fun initShortcuts(label: String) {
-        val shortcut = with(ShortcutInfoCompat.Builder(GlobalState.application, "toggle")) {
-            setShortLabel(label)
-            setIcon(
-                IconCompat.createWithResource(
-                    GlobalState.application,
-                    R.mipmap.ic_launcher_round,
-                ),
-            )
-            setIntent(QuickAction.TOGGLE.quickIntent)
-            build()
+    private fun shortcutLabels(arguments: Any?): Map<QuickAction, String>? {
+        val map = arguments as? Map<*, *> ?: return null
+        return QuickAction.entries.associateWith { action ->
+            map[action.shortcutId] as? String ?: return null
         }
-        ShortcutManagerCompat.setDynamicShortcuts(
-            GlobalState.application,
-            listOf(shortcut),
-        )
     }
+
+    private fun initShortcuts(labels: Map<QuickAction, String>) {
+        val shortcuts = SHORTCUT_ORDER.mapIndexed { rank, action ->
+            with(ShortcutInfoCompat.Builder(GlobalState.application, action.shortcutId)) {
+                setShortLabel(labels.getValue(action))
+                setIcon(IconCompat.createWithResource(GlobalState.application, action.shortcutIcon))
+                setIntent(action.quickIntent)
+                setRank(rank)
+                build()
+            }
+        }
+        ShortcutManagerCompat.setDynamicShortcuts(GlobalState.application, shortcuts)
+    }
+
+    // Plain circles: an adaptive icon takes the launcher's mask, a square on many devices.
+    private val QuickAction.shortcutIcon: Int
+        get() = when (this) {
+            QuickAction.START -> R.drawable.ic_shortcut_start
+            QuickAction.STOP -> R.drawable.ic_shortcut_stop
+            QuickAction.TOGGLE -> R.drawable.ic_shortcut_toggle
+        }
 
     private fun isBatteryOptimizationDisabled(): Boolean {
         val powerManager = getSystemService(GlobalState.application, PowerManager::class.java)
@@ -572,6 +587,7 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
     }
 
     private companion object {
+        val SHORTCUT_ORDER = listOf(QuickAction.START, QuickAction.STOP, QuickAction.TOGGLE)
         const val VPN_PERMISSION_REQUEST_CODE = 1001
         const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1002
         const val INSTALLED_APPS_PERMISSION_REQUEST_CODE = 1003

@@ -7,10 +7,32 @@ private final class CoreMessageRouterReference {
   weak var value: CoreMessageRouter?
 }
 
+enum QuickAction: String {
+  case start
+  case stop
+  case toggle
+
+  // Before the engine is up only the latest intent survives: a toggle flips a pending start or
+  // stop, and two toggles cancel out.
+  func folded(onto pending: QuickAction?) -> QuickAction? {
+    guard self == .toggle, let pending else {
+      return self
+    }
+    switch pending {
+    case .start:
+      return .stop
+    case .stop:
+      return .start
+    case .toggle:
+      return nil
+    }
+  }
+}
+
 @MainActor
 final class ServiceChannel {
   private static var instance: ServiceChannel?
-  private static var pendingShortcutToggle = false
+  private static var pendingQuickAction: QuickAction?
 
   private static let packageName = "cc.chenx.flclash"
   private let channel: FlutterMethodChannel
@@ -27,19 +49,30 @@ final class ServiceChannel {
   static func register(with messenger: FlutterBinaryMessenger) {
     let serviceChannel = ServiceChannel(messenger: messenger)
     instance = serviceChannel
-    guard pendingShortcutToggle else {
+    guard let action = pendingQuickAction else {
       return
     }
-    pendingShortcutToggle = false
-    serviceChannel.tunnelController.toggle()
+    pendingQuickAction = nil
+    serviceChannel.perform(action)
   }
 
-  static func requestTunnelToggle() {
+  static func request(_ action: QuickAction) {
     guard let instance else {
-      pendingShortcutToggle.toggle()
+      pendingQuickAction = action.folded(onto: pendingQuickAction)
       return
     }
-    instance.tunnelController.toggle()
+    instance.perform(action)
+  }
+
+  private func perform(_ action: QuickAction) {
+    switch action {
+    case .start:
+      tunnelController.start()
+    case .stop:
+      tunnelController.stop()
+    case .toggle:
+      tunnelController.toggle()
+    }
   }
 
   private init(messenger: FlutterBinaryMessenger) {
