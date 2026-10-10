@@ -9,4 +9,9 @@ class FlClashApplication : Application() {
         super.attachBaseContext(base)
         GlobalState.init(this)
     }
+
+    override fun onCreate() {
+        super.onCreate()
+        StatusWidgetProvider.observe(this)
+    }
 }

@@ -5,5 +5,6 @@ import WidgetKit
 struct FlClashWidgetBundle: WidgetBundle {
   var body: some Widget {
     WidgetControl()
+    WidgetStatus()
   }
 }

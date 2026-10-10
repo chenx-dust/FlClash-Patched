@@ -12,8 +12,9 @@ final class SharedStateStore {
   let eventNotificationName = "\(Bundle.main.bundleIdentifier!).NECore.event"
 
   func activeVpnOptions() -> String? {
-    guard let data = UserDefaults(suiteName: appGroupIdentifier)?
-      .data(forKey: "activeVpnOptions")
+    guard
+      let data = UserDefaults(suiteName: appGroupIdentifier)?
+        .data(forKey: "activeVpnOptions")
     else {
       return nil
     }
@@ -24,9 +25,9 @@ final class SharedStateStore {
     guard let userDefaults = UserDefaults(suiteName: appGroupIdentifier) else {
       return false
     }
-    let previousControlDisplayState = controlDisplayState(
-      from: userDefaults.data(forKey: sharedStateKey)
-    )
+    let previousData = userDefaults.data(forKey: sharedStateKey)
+    let previousControlDisplayState = controlDisplayState(from: previousData)
+    let previousStatusDisplayState = statusDisplayState(from: previousData)
     if let json = try? JSONSerialization.jsonObject(with: data)
       as? [String: Any],
       let setupParams = json[setupParamsKey],
@@ -45,15 +46,33 @@ final class SharedStateStore {
         ofKind: "\(Bundle.main.bundleIdentifier!).Widget"
       )
     }
+    if previousStatusDisplayState != statusDisplayState(from: data) {
+      WidgetCenter.shared.reloadTimelines(
+        ofKind: "\(Bundle.main.bundleIdentifier!).Widget.Status"
+      )
+    }
     return true
+  }
+
+  private func sharedStateJSON(from data: Data?) -> [String: Any]? {
+    guard let data else {
+      return nil
+    }
+    return try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+  }
+
+  private func statusDisplayState(from data: Data?) -> NSDictionary {
+    let json = sharedStateJSON(from: data)
+    return [
+      "currentProfileName": json?["currentProfileName"] ?? NSNull(),
+      "widgetTheme": json?["widgetTheme"] ?? NSNull(),
+    ]
   }
 
   private func controlDisplayState(
     from data: Data?
   ) -> (showProfileName: Bool, profileName: String?) {
-    guard let data,
-      let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
-    else {
+    guard let json = sharedStateJSON(from: data) else {
       return (true, nil)
     }
     let showProfileName = json["showQuickSettingsProfileName"] as? Bool ?? true
@@ -74,8 +93,7 @@ final class SharedStateStore {
       return TunnelConfiguration()
     }
     return TunnelConfiguration(
-      options: sharedState.vpnOptions?.networkExtensionOptions ??
-        NetworkExtensionOptions(),
+      options: sharedState.vpnOptions?.networkExtensionOptions ?? NetworkExtensionOptions(),
       excludeSSIDs: sharedState.excludeSSIDs ?? [],
       alwaysOn: sharedState.alwaysOn ?? false
     )

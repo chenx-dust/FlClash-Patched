@@ -46,6 +46,10 @@ public struct SetVPNIntent: SetValueIntent {
 
   public init() {}
 
+  public init(value: Bool) {
+    self.value = value
+  }
+
   public func perform() async throws -> some IntentResult {
     try await NEHelper.setRunning(value)
     return .result()

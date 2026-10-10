@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:fl_clash/common/app_ports.dart';
+import 'package:fl_clash/common/color.dart';
 import 'package:fl_clash/common/constant.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/l10n/l10n.dart';
@@ -578,6 +579,41 @@ void main() {
     expect(
       container.read(sharedStateProvider).vpnOptions?.routeAddress,
       defaultBypassPrivateRouteAddress,
+    );
+  });
+
+  test('shared state hands the home widgets the app color scheme', () async {
+    await AppLocalizations.load(const Locale('en'));
+    container.listen(sharedStateProvider, (_, _) {});
+    container
+        .read(themeSettingProvider.notifier)
+        .update(
+          (state) => state.copyWith(
+            primaryColor: 0xFF123456,
+            themeMode: ThemeMode.dark,
+            pureBlack: true,
+          ),
+        );
+
+    final widgetTheme = container.read(sharedStateProvider).widgetTheme!;
+    final light = container.read(genColorSchemeProvider(Brightness.light));
+    expect(widgetTheme.themeMode, ThemeMode.dark);
+    expect(widgetTheme.light, WidgetColors.fromScheme(light));
+    expect(widgetTheme.light.primary, light.primary.toARGB32());
+    expect(
+      widgetTheme.dark.background,
+      container
+          .read(genColorSchemeProvider(Brightness.dark))
+          .toPureBlack(true)
+          .surfaceContainer
+          .toARGB32(),
+    );
+    expect(
+      json.decode(json.encode(widgetTheme))['dark']['primary'],
+      container
+          .read(genColorSchemeProvider(Brightness.dark))
+          .primary
+          .toARGB32(),
     );
   });
 

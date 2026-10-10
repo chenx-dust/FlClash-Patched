@@ -8372,9 +8372,609 @@ $VpnPropsCopyWith<$Res> get vpnProps {
 
 
 /// @nodoc
+mixin _$WidgetColors {
+
+ int get background; int get onBackground; int get onBackgroundVariant; int get primary; int get onPrimary; int get trackOff; int get thumbOff;
+/// Create a copy of WidgetColors
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$WidgetColorsCopyWith<WidgetColors> get copyWith => _$WidgetColorsCopyWithImpl<WidgetColors>(this as WidgetColors, _$identity);
+
+  /// Serializes this WidgetColors to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as WidgetColors;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WidgetColors&&(identical(other.background, _this.background) || other.background == _this.background)&&(identical(other.onBackground, _this.onBackground) || other.onBackground == _this.onBackground)&&(identical(other.onBackgroundVariant, _this.onBackgroundVariant) || other.onBackgroundVariant == _this.onBackgroundVariant)&&(identical(other.primary, _this.primary) || other.primary == _this.primary)&&(identical(other.onPrimary, _this.onPrimary) || other.onPrimary == _this.onPrimary)&&(identical(other.trackOff, _this.trackOff) || other.trackOff == _this.trackOff)&&(identical(other.thumbOff, _this.thumbOff) || other.thumbOff == _this.thumbOff));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as WidgetColors;
+  return Object.hash(runtimeType,_this.background,_this.onBackground,_this.onBackgroundVariant,_this.primary,_this.onPrimary,_this.trackOff,_this.thumbOff);
+}
+
+@override
+String toString() {
+  final _this = this as WidgetColors;
+  return 'WidgetColors(background: ${_this.background}, onBackground: ${_this.onBackground}, onBackgroundVariant: ${_this.onBackgroundVariant}, primary: ${_this.primary}, onPrimary: ${_this.onPrimary}, trackOff: ${_this.trackOff}, thumbOff: ${_this.thumbOff})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $WidgetColorsCopyWith<$Res>  {
+  factory $WidgetColorsCopyWith(WidgetColors value, $Res Function(WidgetColors) _then) = _$WidgetColorsCopyWithImpl;
+@useResult
+$Res call({
+ int background, int onBackground, int onBackgroundVariant, int primary, int onPrimary, int trackOff, int thumbOff
+});
+
+
+
+
+}
+/// @nodoc
+class _$WidgetColorsCopyWithImpl<$Res>
+    implements $WidgetColorsCopyWith<$Res> {
+  _$WidgetColorsCopyWithImpl(this._self, this._then);
+
+  final WidgetColors _self;
+  final $Res Function(WidgetColors) _then;
+
+/// Create a copy of WidgetColors
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? background = null,Object? onBackground = null,Object? onBackgroundVariant = null,Object? primary = null,Object? onPrimary = null,Object? trackOff = null,Object? thumbOff = null,}) {
+  return _then(WidgetColors(
+background: null == background ? _self.background : background // ignore: cast_nullable_to_non_nullable
+as int,onBackground: null == onBackground ? _self.onBackground : onBackground // ignore: cast_nullable_to_non_nullable
+as int,onBackgroundVariant: null == onBackgroundVariant ? _self.onBackgroundVariant : onBackgroundVariant // ignore: cast_nullable_to_non_nullable
+as int,primary: null == primary ? _self.primary : primary // ignore: cast_nullable_to_non_nullable
+as int,onPrimary: null == onPrimary ? _self.onPrimary : onPrimary // ignore: cast_nullable_to_non_nullable
+as int,trackOff: null == trackOff ? _self.trackOff : trackOff // ignore: cast_nullable_to_non_nullable
+as int,thumbOff: null == thumbOff ? _self.thumbOff : thumbOff // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [WidgetColors].
+extension WidgetColorsPatterns on WidgetColors {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _WidgetColors value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _WidgetColors() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _WidgetColors value)  $default,){
+final _that = this;
+switch (_that) {
+case _WidgetColors():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _WidgetColors value)?  $default,){
+final _that = this;
+switch (_that) {
+case _WidgetColors() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int background,  int onBackground,  int onBackgroundVariant,  int primary,  int onPrimary,  int trackOff,  int thumbOff)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _WidgetColors() when $default != null:
+return $default(_that.background,_that.onBackground,_that.onBackgroundVariant,_that.primary,_that.onPrimary,_that.trackOff,_that.thumbOff);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int background,  int onBackground,  int onBackgroundVariant,  int primary,  int onPrimary,  int trackOff,  int thumbOff)  $default,) {final _that = this;
+switch (_that) {
+case _WidgetColors():
+return $default(_that.background,_that.onBackground,_that.onBackgroundVariant,_that.primary,_that.onPrimary,_that.trackOff,_that.thumbOff);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int background,  int onBackground,  int onBackgroundVariant,  int primary,  int onPrimary,  int trackOff,  int thumbOff)?  $default,) {final _that = this;
+switch (_that) {
+case _WidgetColors() when $default != null:
+return $default(_that.background,_that.onBackground,_that.onBackgroundVariant,_that.primary,_that.onPrimary,_that.trackOff,_that.thumbOff);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _WidgetColors implements WidgetColors {
+  const _WidgetColors({required this.background, required this.onBackground, required this.onBackgroundVariant, required this.primary, required this.onPrimary, required this.trackOff, required this.thumbOff});
+  factory _WidgetColors.fromJson(Map<String, dynamic> json) => _$WidgetColorsFromJson(json);
+
+@override final  int background;
+@override final  int onBackground;
+@override final  int onBackgroundVariant;
+@override final  int primary;
+@override final  int onPrimary;
+@override final  int trackOff;
+@override final  int thumbOff;
+
+/// Create a copy of WidgetColors
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$WidgetColorsCopyWith<_WidgetColors> get copyWith => __$WidgetColorsCopyWithImpl<_WidgetColors>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$WidgetColorsToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _WidgetColors&&(identical(other.background, background) || other.background == background)&&(identical(other.onBackground, onBackground) || other.onBackground == onBackground)&&(identical(other.onBackgroundVariant, onBackgroundVariant) || other.onBackgroundVariant == onBackgroundVariant)&&(identical(other.primary, primary) || other.primary == primary)&&(identical(other.onPrimary, onPrimary) || other.onPrimary == onPrimary)&&(identical(other.trackOff, trackOff) || other.trackOff == trackOff)&&(identical(other.thumbOff, thumbOff) || other.thumbOff == thumbOff));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,background,onBackground,onBackgroundVariant,primary,onPrimary,trackOff,thumbOff);
+}
+
+@override
+String toString() {
+    return 'WidgetColors(background: $background, onBackground: $onBackground, onBackgroundVariant: $onBackgroundVariant, primary: $primary, onPrimary: $onPrimary, trackOff: $trackOff, thumbOff: $thumbOff)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$WidgetColorsCopyWith<$Res> implements $WidgetColorsCopyWith<$Res> {
+  factory _$WidgetColorsCopyWith(_WidgetColors value, $Res Function(_WidgetColors) _then) = __$WidgetColorsCopyWithImpl;
+@override @useResult
+$Res call({
+ int background, int onBackground, int onBackgroundVariant, int primary, int onPrimary, int trackOff, int thumbOff
+});
+
+
+
+
+}
+/// @nodoc
+class __$WidgetColorsCopyWithImpl<$Res>
+    implements _$WidgetColorsCopyWith<$Res> {
+  __$WidgetColorsCopyWithImpl(this._self, this._then);
+
+  final _WidgetColors _self;
+  final $Res Function(_WidgetColors) _then;
+
+/// Create a copy of WidgetColors
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? background = null,Object? onBackground = null,Object? onBackgroundVariant = null,Object? primary = null,Object? onPrimary = null,Object? trackOff = null,Object? thumbOff = null,}) {
+  return _then(_WidgetColors(
+background: null == background ? _self.background : background // ignore: cast_nullable_to_non_nullable
+as int,onBackground: null == onBackground ? _self.onBackground : onBackground // ignore: cast_nullable_to_non_nullable
+as int,onBackgroundVariant: null == onBackgroundVariant ? _self.onBackgroundVariant : onBackgroundVariant // ignore: cast_nullable_to_non_nullable
+as int,primary: null == primary ? _self.primary : primary // ignore: cast_nullable_to_non_nullable
+as int,onPrimary: null == onPrimary ? _self.onPrimary : onPrimary // ignore: cast_nullable_to_non_nullable
+as int,trackOff: null == trackOff ? _self.trackOff : trackOff // ignore: cast_nullable_to_non_nullable
+as int,thumbOff: null == thumbOff ? _self.thumbOff : thumbOff // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$WidgetTheme {
+
+ ThemeMode get themeMode; WidgetColors get light; WidgetColors get dark;
+/// Create a copy of WidgetTheme
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$WidgetThemeCopyWith<WidgetTheme> get copyWith => _$WidgetThemeCopyWithImpl<WidgetTheme>(this as WidgetTheme, _$identity);
+
+  /// Serializes this WidgetTheme to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as WidgetTheme;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WidgetTheme&&(identical(other.themeMode, _this.themeMode) || other.themeMode == _this.themeMode)&&(identical(other.light, _this.light) || other.light == _this.light)&&(identical(other.dark, _this.dark) || other.dark == _this.dark));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as WidgetTheme;
+  return Object.hash(runtimeType,_this.themeMode,_this.light,_this.dark);
+}
+
+@override
+String toString() {
+  final _this = this as WidgetTheme;
+  return 'WidgetTheme(themeMode: ${_this.themeMode}, light: ${_this.light}, dark: ${_this.dark})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $WidgetThemeCopyWith<$Res>  {
+  factory $WidgetThemeCopyWith(WidgetTheme value, $Res Function(WidgetTheme) _then) = _$WidgetThemeCopyWithImpl;
+@useResult
+$Res call({
+ ThemeMode themeMode, WidgetColors light, WidgetColors dark
+});
+
+
+$WidgetColorsCopyWith<$Res> get light;$WidgetColorsCopyWith<$Res> get dark;
+
+}
+/// @nodoc
+class _$WidgetThemeCopyWithImpl<$Res>
+    implements $WidgetThemeCopyWith<$Res> {
+  _$WidgetThemeCopyWithImpl(this._self, this._then);
+
+  final WidgetTheme _self;
+  final $Res Function(WidgetTheme) _then;
+
+/// Create a copy of WidgetTheme
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? themeMode = null,Object? light = null,Object? dark = null,}) {
+  return _then(WidgetTheme(
+themeMode: null == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
+as ThemeMode,light: null == light ? _self.light : light // ignore: cast_nullable_to_non_nullable
+as WidgetColors,dark: null == dark ? _self.dark : dark // ignore: cast_nullable_to_non_nullable
+as WidgetColors,
+  ));
+}
+/// Create a copy of WidgetTheme
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$WidgetColorsCopyWith<$Res> get light {
+  
+  return $WidgetColorsCopyWith<$Res>(_self.light, (value) {
+    return _then(_self.copyWith(light: value));
+  });
+}/// Create a copy of WidgetTheme
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$WidgetColorsCopyWith<$Res> get dark {
+  
+  return $WidgetColorsCopyWith<$Res>(_self.dark, (value) {
+    return _then(_self.copyWith(dark: value));
+  });
+}
+}
+
+
+/// Adds pattern-matching-related methods to [WidgetTheme].
+extension WidgetThemePatterns on WidgetTheme {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _WidgetTheme value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _WidgetTheme() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _WidgetTheme value)  $default,){
+final _that = this;
+switch (_that) {
+case _WidgetTheme():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _WidgetTheme value)?  $default,){
+final _that = this;
+switch (_that) {
+case _WidgetTheme() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ThemeMode themeMode,  WidgetColors light,  WidgetColors dark)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _WidgetTheme() when $default != null:
+return $default(_that.themeMode,_that.light,_that.dark);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ThemeMode themeMode,  WidgetColors light,  WidgetColors dark)  $default,) {final _that = this;
+switch (_that) {
+case _WidgetTheme():
+return $default(_that.themeMode,_that.light,_that.dark);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ThemeMode themeMode,  WidgetColors light,  WidgetColors dark)?  $default,) {final _that = this;
+switch (_that) {
+case _WidgetTheme() when $default != null:
+return $default(_that.themeMode,_that.light,_that.dark);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _WidgetTheme implements WidgetTheme {
+  const _WidgetTheme({required this.themeMode, required this.light, required this.dark});
+  factory _WidgetTheme.fromJson(Map<String, dynamic> json) => _$WidgetThemeFromJson(json);
+
+@override final  ThemeMode themeMode;
+@override final  WidgetColors light;
+@override final  WidgetColors dark;
+
+/// Create a copy of WidgetTheme
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$WidgetThemeCopyWith<_WidgetTheme> get copyWith => __$WidgetThemeCopyWithImpl<_WidgetTheme>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$WidgetThemeToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _WidgetTheme&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.light, light) || other.light == light)&&(identical(other.dark, dark) || other.dark == dark));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,themeMode,light,dark);
+}
+
+@override
+String toString() {
+    return 'WidgetTheme(themeMode: $themeMode, light: $light, dark: $dark)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$WidgetThemeCopyWith<$Res> implements $WidgetThemeCopyWith<$Res> {
+  factory _$WidgetThemeCopyWith(_WidgetTheme value, $Res Function(_WidgetTheme) _then) = __$WidgetThemeCopyWithImpl;
+@override @useResult
+$Res call({
+ ThemeMode themeMode, WidgetColors light, WidgetColors dark
+});
+
+
+@override $WidgetColorsCopyWith<$Res> get light;@override $WidgetColorsCopyWith<$Res> get dark;
+
+}
+/// @nodoc
+class __$WidgetThemeCopyWithImpl<$Res>
+    implements _$WidgetThemeCopyWith<$Res> {
+  __$WidgetThemeCopyWithImpl(this._self, this._then);
+
+  final _WidgetTheme _self;
+  final $Res Function(_WidgetTheme) _then;
+
+/// Create a copy of WidgetTheme
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? themeMode = null,Object? light = null,Object? dark = null,}) {
+  return _then(_WidgetTheme(
+themeMode: null == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
+as ThemeMode,light: null == light ? _self.light : light // ignore: cast_nullable_to_non_nullable
+as WidgetColors,dark: null == dark ? _self.dark : dark // ignore: cast_nullable_to_non_nullable
+as WidgetColors,
+  ));
+}
+
+/// Create a copy of WidgetTheme
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$WidgetColorsCopyWith<$Res> get light {
+  
+  return $WidgetColorsCopyWith<$Res>(_self.light, (value) {
+    return _then(_self.copyWith(light: value));
+  });
+}/// Create a copy of WidgetTheme
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$WidgetColorsCopyWith<$Res> get dark {
+  
+  return $WidgetColorsCopyWith<$Res>(_self.dark, (value) {
+    return _then(_self.copyWith(dark: value));
+  });
+}
+}
+
+
+/// @nodoc
 mixin _$SharedState {
 
- SetupParams? get setupParams; VpnOptions? get vpnOptions; String get stopTip; String get startTip; String get currentProfileName; String get stopText; bool get onlyStatisticsProxy; bool get showStopAction; bool get networkSpeedNotification; bool get collapseQuickSettingsPanel; bool get showQuickSettingsProfileName; bool get alwaysOn; List<String> get excludeSSIDs;
+ SetupParams? get setupParams; VpnOptions? get vpnOptions; WidgetTheme? get widgetTheme; String get stopTip; String get startTip; String get currentProfileName; String get stopText; bool get onlyStatisticsProxy; bool get showStopAction; bool get networkSpeedNotification; bool get collapseQuickSettingsPanel; bool get showQuickSettingsProfileName; bool get alwaysOn; List<String> get excludeSSIDs;
 /// Create a copy of SharedState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -8388,20 +8988,20 @@ $SharedStateCopyWith<SharedState> get copyWith => _$SharedStateCopyWithImpl<Shar
 @override
 bool operator ==(Object other) {
   final _this = this as SharedState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SharedState&&(identical(other.setupParams, _this.setupParams) || other.setupParams == _this.setupParams)&&(identical(other.vpnOptions, _this.vpnOptions) || other.vpnOptions == _this.vpnOptions)&&(identical(other.stopTip, _this.stopTip) || other.stopTip == _this.stopTip)&&(identical(other.startTip, _this.startTip) || other.startTip == _this.startTip)&&(identical(other.currentProfileName, _this.currentProfileName) || other.currentProfileName == _this.currentProfileName)&&(identical(other.stopText, _this.stopText) || other.stopText == _this.stopText)&&(identical(other.onlyStatisticsProxy, _this.onlyStatisticsProxy) || other.onlyStatisticsProxy == _this.onlyStatisticsProxy)&&(identical(other.showStopAction, _this.showStopAction) || other.showStopAction == _this.showStopAction)&&(identical(other.networkSpeedNotification, _this.networkSpeedNotification) || other.networkSpeedNotification == _this.networkSpeedNotification)&&(identical(other.collapseQuickSettingsPanel, _this.collapseQuickSettingsPanel) || other.collapseQuickSettingsPanel == _this.collapseQuickSettingsPanel)&&(identical(other.showQuickSettingsProfileName, _this.showQuickSettingsProfileName) || other.showQuickSettingsProfileName == _this.showQuickSettingsProfileName)&&(identical(other.alwaysOn, _this.alwaysOn) || other.alwaysOn == _this.alwaysOn)&&const DeepCollectionEquality().equals(other.excludeSSIDs, _this.excludeSSIDs));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SharedState&&(identical(other.setupParams, _this.setupParams) || other.setupParams == _this.setupParams)&&(identical(other.vpnOptions, _this.vpnOptions) || other.vpnOptions == _this.vpnOptions)&&(identical(other.widgetTheme, _this.widgetTheme) || other.widgetTheme == _this.widgetTheme)&&(identical(other.stopTip, _this.stopTip) || other.stopTip == _this.stopTip)&&(identical(other.startTip, _this.startTip) || other.startTip == _this.startTip)&&(identical(other.currentProfileName, _this.currentProfileName) || other.currentProfileName == _this.currentProfileName)&&(identical(other.stopText, _this.stopText) || other.stopText == _this.stopText)&&(identical(other.onlyStatisticsProxy, _this.onlyStatisticsProxy) || other.onlyStatisticsProxy == _this.onlyStatisticsProxy)&&(identical(other.showStopAction, _this.showStopAction) || other.showStopAction == _this.showStopAction)&&(identical(other.networkSpeedNotification, _this.networkSpeedNotification) || other.networkSpeedNotification == _this.networkSpeedNotification)&&(identical(other.collapseQuickSettingsPanel, _this.collapseQuickSettingsPanel) || other.collapseQuickSettingsPanel == _this.collapseQuickSettingsPanel)&&(identical(other.showQuickSettingsProfileName, _this.showQuickSettingsProfileName) || other.showQuickSettingsProfileName == _this.showQuickSettingsProfileName)&&(identical(other.alwaysOn, _this.alwaysOn) || other.alwaysOn == _this.alwaysOn)&&const DeepCollectionEquality().equals(other.excludeSSIDs, _this.excludeSSIDs));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as SharedState;
-  return Object.hash(runtimeType,_this.setupParams,_this.vpnOptions,_this.stopTip,_this.startTip,_this.currentProfileName,_this.stopText,_this.onlyStatisticsProxy,_this.showStopAction,_this.networkSpeedNotification,_this.collapseQuickSettingsPanel,_this.showQuickSettingsProfileName,_this.alwaysOn,const DeepCollectionEquality().hash(_this.excludeSSIDs));
+  return Object.hash(runtimeType,_this.setupParams,_this.vpnOptions,_this.widgetTheme,_this.stopTip,_this.startTip,_this.currentProfileName,_this.stopText,_this.onlyStatisticsProxy,_this.showStopAction,_this.networkSpeedNotification,_this.collapseQuickSettingsPanel,_this.showQuickSettingsProfileName,_this.alwaysOn,const DeepCollectionEquality().hash(_this.excludeSSIDs));
 }
 
 @override
 String toString() {
   final _this = this as SharedState;
-  return 'SharedState(setupParams: ${_this.setupParams}, vpnOptions: ${_this.vpnOptions}, stopTip: ${_this.stopTip}, startTip: ${_this.startTip}, currentProfileName: ${_this.currentProfileName}, stopText: ${_this.stopText}, onlyStatisticsProxy: ${_this.onlyStatisticsProxy}, showStopAction: ${_this.showStopAction}, networkSpeedNotification: ${_this.networkSpeedNotification}, collapseQuickSettingsPanel: ${_this.collapseQuickSettingsPanel}, showQuickSettingsProfileName: ${_this.showQuickSettingsProfileName}, alwaysOn: ${_this.alwaysOn}, excludeSSIDs: ${_this.excludeSSIDs})';
+  return 'SharedState(setupParams: ${_this.setupParams}, vpnOptions: ${_this.vpnOptions}, widgetTheme: ${_this.widgetTheme}, stopTip: ${_this.stopTip}, startTip: ${_this.startTip}, currentProfileName: ${_this.currentProfileName}, stopText: ${_this.stopText}, onlyStatisticsProxy: ${_this.onlyStatisticsProxy}, showStopAction: ${_this.showStopAction}, networkSpeedNotification: ${_this.networkSpeedNotification}, collapseQuickSettingsPanel: ${_this.collapseQuickSettingsPanel}, showQuickSettingsProfileName: ${_this.showQuickSettingsProfileName}, alwaysOn: ${_this.alwaysOn}, excludeSSIDs: ${_this.excludeSSIDs})';
 }
 
 
@@ -8412,11 +9012,11 @@ abstract mixin class $SharedStateCopyWith<$Res>  {
   factory $SharedStateCopyWith(SharedState value, $Res Function(SharedState) _then) = _$SharedStateCopyWithImpl;
 @useResult
 $Res call({
- SetupParams? setupParams, VpnOptions? vpnOptions, String stopTip, String startTip, String currentProfileName, String stopText, bool onlyStatisticsProxy, bool showStopAction, bool networkSpeedNotification, bool collapseQuickSettingsPanel, bool showQuickSettingsProfileName, bool alwaysOn, List<String> excludeSSIDs
+ SetupParams? setupParams, VpnOptions? vpnOptions, WidgetTheme? widgetTheme, String stopTip, String startTip, String currentProfileName, String stopText, bool onlyStatisticsProxy, bool showStopAction, bool networkSpeedNotification, bool collapseQuickSettingsPanel, bool showQuickSettingsProfileName, bool alwaysOn, List<String> excludeSSIDs
 });
 
 
-$SetupParamsCopyWith<$Res>? get setupParams;$VpnOptionsCopyWith<$Res>? get vpnOptions;
+$SetupParamsCopyWith<$Res>? get setupParams;$VpnOptionsCopyWith<$Res>? get vpnOptions;$WidgetThemeCopyWith<$Res>? get widgetTheme;
 
 }
 /// @nodoc
@@ -8429,11 +9029,12 @@ class _$SharedStateCopyWithImpl<$Res>
 
 /// Create a copy of SharedState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? setupParams = freezed,Object? vpnOptions = freezed,Object? stopTip = null,Object? startTip = null,Object? currentProfileName = null,Object? stopText = null,Object? onlyStatisticsProxy = null,Object? showStopAction = null,Object? networkSpeedNotification = null,Object? collapseQuickSettingsPanel = null,Object? showQuickSettingsProfileName = null,Object? alwaysOn = null,Object? excludeSSIDs = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? setupParams = freezed,Object? vpnOptions = freezed,Object? widgetTheme = freezed,Object? stopTip = null,Object? startTip = null,Object? currentProfileName = null,Object? stopText = null,Object? onlyStatisticsProxy = null,Object? showStopAction = null,Object? networkSpeedNotification = null,Object? collapseQuickSettingsPanel = null,Object? showQuickSettingsProfileName = null,Object? alwaysOn = null,Object? excludeSSIDs = null,}) {
   return _then(SharedState(
 setupParams: freezed == setupParams ? _self.setupParams : setupParams // ignore: cast_nullable_to_non_nullable
 as SetupParams?,vpnOptions: freezed == vpnOptions ? _self.vpnOptions : vpnOptions // ignore: cast_nullable_to_non_nullable
-as VpnOptions?,stopTip: null == stopTip ? _self.stopTip : stopTip // ignore: cast_nullable_to_non_nullable
+as VpnOptions?,widgetTheme: freezed == widgetTheme ? _self.widgetTheme : widgetTheme // ignore: cast_nullable_to_non_nullable
+as WidgetTheme?,stopTip: null == stopTip ? _self.stopTip : stopTip // ignore: cast_nullable_to_non_nullable
 as String,startTip: null == startTip ? _self.startTip : startTip // ignore: cast_nullable_to_non_nullable
 as String,currentProfileName: null == currentProfileName ? _self.currentProfileName : currentProfileName // ignore: cast_nullable_to_non_nullable
 as String,stopText: null == stopText ? _self.stopText : stopText // ignore: cast_nullable_to_non_nullable
@@ -8470,6 +9071,18 @@ $VpnOptionsCopyWith<$Res>? get vpnOptions {
 
   return $VpnOptionsCopyWith<$Res>(_self.vpnOptions!, (value) {
     return _then(_self.copyWith(vpnOptions: value));
+  });
+}/// Create a copy of SharedState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$WidgetThemeCopyWith<$Res>? get widgetTheme {
+    if (_self.widgetTheme == null) {
+    return null;
+  }
+
+  return $WidgetThemeCopyWith<$Res>(_self.widgetTheme!, (value) {
+    return _then(_self.copyWith(widgetTheme: value));
   });
 }
 }
@@ -8553,10 +9166,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( SetupParams? setupParams,  VpnOptions? vpnOptions,  String stopTip,  String startTip,  String currentProfileName,  String stopText,  bool onlyStatisticsProxy,  bool showStopAction,  bool networkSpeedNotification,  bool collapseQuickSettingsPanel,  bool showQuickSettingsProfileName,  bool alwaysOn,  List<String> excludeSSIDs)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( SetupParams? setupParams,  VpnOptions? vpnOptions,  WidgetTheme? widgetTheme,  String stopTip,  String startTip,  String currentProfileName,  String stopText,  bool onlyStatisticsProxy,  bool showStopAction,  bool networkSpeedNotification,  bool collapseQuickSettingsPanel,  bool showQuickSettingsProfileName,  bool alwaysOn,  List<String> excludeSSIDs)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SharedState() when $default != null:
-return $default(_that.setupParams,_that.vpnOptions,_that.stopTip,_that.startTip,_that.currentProfileName,_that.stopText,_that.onlyStatisticsProxy,_that.showStopAction,_that.networkSpeedNotification,_that.collapseQuickSettingsPanel,_that.showQuickSettingsProfileName,_that.alwaysOn,_that.excludeSSIDs);case _:
+return $default(_that.setupParams,_that.vpnOptions,_that.widgetTheme,_that.stopTip,_that.startTip,_that.currentProfileName,_that.stopText,_that.onlyStatisticsProxy,_that.showStopAction,_that.networkSpeedNotification,_that.collapseQuickSettingsPanel,_that.showQuickSettingsProfileName,_that.alwaysOn,_that.excludeSSIDs);case _:
   return orElse();
 
 }
@@ -8574,10 +9187,10 @@ return $default(_that.setupParams,_that.vpnOptions,_that.stopTip,_that.startTip,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( SetupParams? setupParams,  VpnOptions? vpnOptions,  String stopTip,  String startTip,  String currentProfileName,  String stopText,  bool onlyStatisticsProxy,  bool showStopAction,  bool networkSpeedNotification,  bool collapseQuickSettingsPanel,  bool showQuickSettingsProfileName,  bool alwaysOn,  List<String> excludeSSIDs)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( SetupParams? setupParams,  VpnOptions? vpnOptions,  WidgetTheme? widgetTheme,  String stopTip,  String startTip,  String currentProfileName,  String stopText,  bool onlyStatisticsProxy,  bool showStopAction,  bool networkSpeedNotification,  bool collapseQuickSettingsPanel,  bool showQuickSettingsProfileName,  bool alwaysOn,  List<String> excludeSSIDs)  $default,) {final _that = this;
 switch (_that) {
 case _SharedState():
-return $default(_that.setupParams,_that.vpnOptions,_that.stopTip,_that.startTip,_that.currentProfileName,_that.stopText,_that.onlyStatisticsProxy,_that.showStopAction,_that.networkSpeedNotification,_that.collapseQuickSettingsPanel,_that.showQuickSettingsProfileName,_that.alwaysOn,_that.excludeSSIDs);case _:
+return $default(_that.setupParams,_that.vpnOptions,_that.widgetTheme,_that.stopTip,_that.startTip,_that.currentProfileName,_that.stopText,_that.onlyStatisticsProxy,_that.showStopAction,_that.networkSpeedNotification,_that.collapseQuickSettingsPanel,_that.showQuickSettingsProfileName,_that.alwaysOn,_that.excludeSSIDs);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -8594,10 +9207,10 @@ return $default(_that.setupParams,_that.vpnOptions,_that.stopTip,_that.startTip,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( SetupParams? setupParams,  VpnOptions? vpnOptions,  String stopTip,  String startTip,  String currentProfileName,  String stopText,  bool onlyStatisticsProxy,  bool showStopAction,  bool networkSpeedNotification,  bool collapseQuickSettingsPanel,  bool showQuickSettingsProfileName,  bool alwaysOn,  List<String> excludeSSIDs)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( SetupParams? setupParams,  VpnOptions? vpnOptions,  WidgetTheme? widgetTheme,  String stopTip,  String startTip,  String currentProfileName,  String stopText,  bool onlyStatisticsProxy,  bool showStopAction,  bool networkSpeedNotification,  bool collapseQuickSettingsPanel,  bool showQuickSettingsProfileName,  bool alwaysOn,  List<String> excludeSSIDs)?  $default,) {final _that = this;
 switch (_that) {
 case _SharedState() when $default != null:
-return $default(_that.setupParams,_that.vpnOptions,_that.stopTip,_that.startTip,_that.currentProfileName,_that.stopText,_that.onlyStatisticsProxy,_that.showStopAction,_that.networkSpeedNotification,_that.collapseQuickSettingsPanel,_that.showQuickSettingsProfileName,_that.alwaysOn,_that.excludeSSIDs);case _:
+return $default(_that.setupParams,_that.vpnOptions,_that.widgetTheme,_that.stopTip,_that.startTip,_that.currentProfileName,_that.stopText,_that.onlyStatisticsProxy,_that.showStopAction,_that.networkSpeedNotification,_that.collapseQuickSettingsPanel,_that.showQuickSettingsProfileName,_that.alwaysOn,_that.excludeSSIDs);case _:
   return null;
 
 }
@@ -8609,11 +9222,12 @@ return $default(_that.setupParams,_that.vpnOptions,_that.stopTip,_that.startTip,
 @JsonSerializable()
 
 class _SharedState implements SharedState {
-  const _SharedState({this.setupParams, this.vpnOptions, required this.stopTip, required this.startTip, required this.currentProfileName, required this.stopText, required this.onlyStatisticsProxy, this.showStopAction = true, this.networkSpeedNotification = false, this.collapseQuickSettingsPanel = true, this.showQuickSettingsProfileName = true, this.alwaysOn = false,  List<String> excludeSSIDs = const []}): _excludeSSIDs = excludeSSIDs;
+  const _SharedState({this.setupParams, this.vpnOptions, this.widgetTheme, required this.stopTip, required this.startTip, required this.currentProfileName, required this.stopText, required this.onlyStatisticsProxy, this.showStopAction = true, this.networkSpeedNotification = false, this.collapseQuickSettingsPanel = true, this.showQuickSettingsProfileName = true, this.alwaysOn = false,  List<String> excludeSSIDs = const []}): _excludeSSIDs = excludeSSIDs;
   factory _SharedState.fromJson(Map<String, dynamic> json) => _$SharedStateFromJson(json);
 
 @override final  SetupParams? setupParams;
 @override final  VpnOptions? vpnOptions;
+@override final  WidgetTheme? widgetTheme;
 @override final  String stopTip;
 @override final  String startTip;
 @override final  String currentProfileName;
@@ -8645,18 +9259,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SharedState&&(identical(other.setupParams, setupParams) || other.setupParams == setupParams)&&(identical(other.vpnOptions, vpnOptions) || other.vpnOptions == vpnOptions)&&(identical(other.stopTip, stopTip) || other.stopTip == stopTip)&&(identical(other.startTip, startTip) || other.startTip == startTip)&&(identical(other.currentProfileName, currentProfileName) || other.currentProfileName == currentProfileName)&&(identical(other.stopText, stopText) || other.stopText == stopText)&&(identical(other.onlyStatisticsProxy, onlyStatisticsProxy) || other.onlyStatisticsProxy == onlyStatisticsProxy)&&(identical(other.showStopAction, showStopAction) || other.showStopAction == showStopAction)&&(identical(other.networkSpeedNotification, networkSpeedNotification) || other.networkSpeedNotification == networkSpeedNotification)&&(identical(other.collapseQuickSettingsPanel, collapseQuickSettingsPanel) || other.collapseQuickSettingsPanel == collapseQuickSettingsPanel)&&(identical(other.showQuickSettingsProfileName, showQuickSettingsProfileName) || other.showQuickSettingsProfileName == showQuickSettingsProfileName)&&(identical(other.alwaysOn, alwaysOn) || other.alwaysOn == alwaysOn)&&const DeepCollectionEquality().equals(other.excludeSSIDs, _excludeSSIDs));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SharedState&&(identical(other.setupParams, setupParams) || other.setupParams == setupParams)&&(identical(other.vpnOptions, vpnOptions) || other.vpnOptions == vpnOptions)&&(identical(other.widgetTheme, widgetTheme) || other.widgetTheme == widgetTheme)&&(identical(other.stopTip, stopTip) || other.stopTip == stopTip)&&(identical(other.startTip, startTip) || other.startTip == startTip)&&(identical(other.currentProfileName, currentProfileName) || other.currentProfileName == currentProfileName)&&(identical(other.stopText, stopText) || other.stopText == stopText)&&(identical(other.onlyStatisticsProxy, onlyStatisticsProxy) || other.onlyStatisticsProxy == onlyStatisticsProxy)&&(identical(other.showStopAction, showStopAction) || other.showStopAction == showStopAction)&&(identical(other.networkSpeedNotification, networkSpeedNotification) || other.networkSpeedNotification == networkSpeedNotification)&&(identical(other.collapseQuickSettingsPanel, collapseQuickSettingsPanel) || other.collapseQuickSettingsPanel == collapseQuickSettingsPanel)&&(identical(other.showQuickSettingsProfileName, showQuickSettingsProfileName) || other.showQuickSettingsProfileName == showQuickSettingsProfileName)&&(identical(other.alwaysOn, alwaysOn) || other.alwaysOn == alwaysOn)&&const DeepCollectionEquality().equals(other.excludeSSIDs, _excludeSSIDs));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,setupParams,vpnOptions,stopTip,startTip,currentProfileName,stopText,onlyStatisticsProxy,showStopAction,networkSpeedNotification,collapseQuickSettingsPanel,showQuickSettingsProfileName,alwaysOn,const DeepCollectionEquality().hash(_excludeSSIDs));
+    return Object.hash(runtimeType,setupParams,vpnOptions,widgetTheme,stopTip,startTip,currentProfileName,stopText,onlyStatisticsProxy,showStopAction,networkSpeedNotification,collapseQuickSettingsPanel,showQuickSettingsProfileName,alwaysOn,const DeepCollectionEquality().hash(_excludeSSIDs));
 }
 
 @override
 String toString() {
-    return 'SharedState(setupParams: $setupParams, vpnOptions: $vpnOptions, stopTip: $stopTip, startTip: $startTip, currentProfileName: $currentProfileName, stopText: $stopText, onlyStatisticsProxy: $onlyStatisticsProxy, showStopAction: $showStopAction, networkSpeedNotification: $networkSpeedNotification, collapseQuickSettingsPanel: $collapseQuickSettingsPanel, showQuickSettingsProfileName: $showQuickSettingsProfileName, alwaysOn: $alwaysOn, excludeSSIDs: $excludeSSIDs)';
+    return 'SharedState(setupParams: $setupParams, vpnOptions: $vpnOptions, widgetTheme: $widgetTheme, stopTip: $stopTip, startTip: $startTip, currentProfileName: $currentProfileName, stopText: $stopText, onlyStatisticsProxy: $onlyStatisticsProxy, showStopAction: $showStopAction, networkSpeedNotification: $networkSpeedNotification, collapseQuickSettingsPanel: $collapseQuickSettingsPanel, showQuickSettingsProfileName: $showQuickSettingsProfileName, alwaysOn: $alwaysOn, excludeSSIDs: $excludeSSIDs)';
 }
 
 
@@ -8667,11 +9281,11 @@ abstract mixin class _$SharedStateCopyWith<$Res> implements $SharedStateCopyWith
   factory _$SharedStateCopyWith(_SharedState value, $Res Function(_SharedState) _then) = __$SharedStateCopyWithImpl;
 @override @useResult
 $Res call({
- SetupParams? setupParams, VpnOptions? vpnOptions, String stopTip, String startTip, String currentProfileName, String stopText, bool onlyStatisticsProxy, bool showStopAction, bool networkSpeedNotification, bool collapseQuickSettingsPanel, bool showQuickSettingsProfileName, bool alwaysOn, List<String> excludeSSIDs
+ SetupParams? setupParams, VpnOptions? vpnOptions, WidgetTheme? widgetTheme, String stopTip, String startTip, String currentProfileName, String stopText, bool onlyStatisticsProxy, bool showStopAction, bool networkSpeedNotification, bool collapseQuickSettingsPanel, bool showQuickSettingsProfileName, bool alwaysOn, List<String> excludeSSIDs
 });
 
 
-@override $SetupParamsCopyWith<$Res>? get setupParams;@override $VpnOptionsCopyWith<$Res>? get vpnOptions;
+@override $SetupParamsCopyWith<$Res>? get setupParams;@override $VpnOptionsCopyWith<$Res>? get vpnOptions;@override $WidgetThemeCopyWith<$Res>? get widgetTheme;
 
 }
 /// @nodoc
@@ -8684,11 +9298,12 @@ class __$SharedStateCopyWithImpl<$Res>
 
 /// Create a copy of SharedState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? setupParams = freezed,Object? vpnOptions = freezed,Object? stopTip = null,Object? startTip = null,Object? currentProfileName = null,Object? stopText = null,Object? onlyStatisticsProxy = null,Object? showStopAction = null,Object? networkSpeedNotification = null,Object? collapseQuickSettingsPanel = null,Object? showQuickSettingsProfileName = null,Object? alwaysOn = null,Object? excludeSSIDs = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? setupParams = freezed,Object? vpnOptions = freezed,Object? widgetTheme = freezed,Object? stopTip = null,Object? startTip = null,Object? currentProfileName = null,Object? stopText = null,Object? onlyStatisticsProxy = null,Object? showStopAction = null,Object? networkSpeedNotification = null,Object? collapseQuickSettingsPanel = null,Object? showQuickSettingsProfileName = null,Object? alwaysOn = null,Object? excludeSSIDs = null,}) {
   return _then(_SharedState(
 setupParams: freezed == setupParams ? _self.setupParams : setupParams // ignore: cast_nullable_to_non_nullable
 as SetupParams?,vpnOptions: freezed == vpnOptions ? _self.vpnOptions : vpnOptions // ignore: cast_nullable_to_non_nullable
-as VpnOptions?,stopTip: null == stopTip ? _self.stopTip : stopTip // ignore: cast_nullable_to_non_nullable
+as VpnOptions?,widgetTheme: freezed == widgetTheme ? _self.widgetTheme : widgetTheme // ignore: cast_nullable_to_non_nullable
+as WidgetTheme?,stopTip: null == stopTip ? _self.stopTip : stopTip // ignore: cast_nullable_to_non_nullable
 as String,startTip: null == startTip ? _self.startTip : startTip // ignore: cast_nullable_to_non_nullable
 as String,currentProfileName: null == currentProfileName ? _self.currentProfileName : currentProfileName // ignore: cast_nullable_to_non_nullable
 as String,stopText: null == stopText ? _self.stopText : stopText // ignore: cast_nullable_to_non_nullable
@@ -8726,6 +9341,18 @@ $VpnOptionsCopyWith<$Res>? get vpnOptions {
 
   return $VpnOptionsCopyWith<$Res>(_self.vpnOptions!, (value) {
     return _then(_self.copyWith(vpnOptions: value));
+  });
+}/// Create a copy of SharedState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$WidgetThemeCopyWith<$Res>? get widgetTheme {
+    if (_self.widgetTheme == null) {
+    return null;
+  }
+
+  return $WidgetThemeCopyWith<$Res>(_self.widgetTheme!, (value) {
+    return _then(_self.copyWith(widgetTheme: value));
   });
 }
 }

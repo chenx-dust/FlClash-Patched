@@ -108,6 +108,41 @@
           }
         }
       }
+    },
+    "widgetDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show the current profile and toggle the VPN"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在のプロファイルを表示し、VPN を切り替えます"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показывает текущий профиль и переключает VPN"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示当前配置并切换 VPN"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示目前設定檔並切換 VPN"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

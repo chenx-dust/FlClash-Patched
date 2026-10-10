@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/toggle"
+    android:layout_width="68dp"
+    android:layout_height="52dp"
+    android:background="?android:attr/selectableItemBackgroundBorderless"
+    android:contentDescription="@string/widget_toggle">
+
+    <!-- Material 3 switch metrics scaled by 1.25, kept in step with the iOS WidgetSwitchStyle. -->
+    <FrameLayout
+        android:layout_width="65dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:id="@+id/toggle_border"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:importantForAccessibility="no"
+            android:scaleType="fitXY"
+            android:src="@drawable/widget_track_border" />
+
+        <ImageView
+            android:id="@+id/toggle_track"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="2.5dp"
+            android:importantForAccessibility="no"
+            android:scaleType="fitXY"
+            android:src="@drawable/widget_track" />
+
+        <ImageView
+            android:id="@+id/toggle_thumb_off"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginStart="10dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/widget_thumb" />
+
+        <ImageView
+            android:id="@+id/toggle_thumb_on"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="5dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/widget_thumb"
+            android:visibility="gone" />
+    </FrameLayout>
+</FrameLayout>

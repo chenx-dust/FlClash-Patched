@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="shortcut_background">#6666FB</color>
+    <color name="widget_background">#F4F3FA</color>
+    <color name="widget_text_primary">#1B1B21</color>
+    <color name="widget_text_secondary">#46464F</color>
+    <color name="widget_toggle_track_off">#E3E1EC</color>
+    <color name="widget_toggle_thumb_off">#777680</color>
 </resources>

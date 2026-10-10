@@ -5,4 +5,6 @@
     <string name="local_network_fallback">Local network permission denied: using the mips stack, LAN is unreachable.</string>
     <string name="connected">Connected</string>
     <string name="disconnected">Disconnected</string>
+    <string name="widget_description">Show the current profile and toggle the VPN</string>
+    <string name="widget_toggle">Toggle VPN</string>
 </resources>

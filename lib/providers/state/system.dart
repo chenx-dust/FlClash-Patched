@@ -210,6 +210,11 @@ SharedState sharedState(Ref ref) {
     ),
   );
   final vpnSetting = ref.watch(vpnSettingProvider);
+  final themeSetting = ref.watch(
+    themeSettingProvider.select(
+      (state) => (themeMode: state.themeMode, pureBlack: state.pureBlack),
+    ),
+  );
   final currentProfileName = currentProfile.label;
   final selectedMap = currentProfile.selectedMap;
   final onlyStatisticsProxy = appSetting.onlyStatisticsProxy;
@@ -229,6 +234,17 @@ SharedState sharedState(Ref ref) {
     stopTip: currentAppLocalizations.stopVpn,
     startTip: currentAppLocalizations.startVpn,
     setupParams: SetupParams(selectedMap: selectedMap, testUrl: testUrl),
+    widgetTheme: WidgetTheme(
+      themeMode: themeSetting.themeMode,
+      light: WidgetColors.fromScheme(
+        ref.watch(genColorSchemeProvider(Brightness.light)),
+      ),
+      dark: WidgetColors.fromScheme(
+        ref
+            .watch(genColorSchemeProvider(Brightness.dark))
+            .toPureBlack(themeSetting.pureBlack),
+      ),
+    ),
     vpnOptions: VpnOptions(
       enable: vpnSetting.enable,
       stack: stack,

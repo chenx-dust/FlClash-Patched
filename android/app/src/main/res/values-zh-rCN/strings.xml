@@ -5,4 +5,6 @@
     <string name="local_network_fallback">未授予本地网络权限，已改用 mips 栈，局域网不可达。</string>
     <string name="connected">已连接</string>
     <string name="disconnected">已断开</string>
+    <string name="widget_description">显示当前配置并切换 VPN</string>
+    <string name="widget_toggle">切换 VPN</string>
 </resources>

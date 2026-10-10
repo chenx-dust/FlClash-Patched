@@ -5,4 +5,6 @@
     <string name="local_network_fallback">未授予本機網路權限，已改用 mips 堆疊，無法連線至區域網路。</string>
     <string name="connected">已連線</string>
     <string name="disconnected">已中斷</string>
+    <string name="widget_description">顯示目前設定檔並切換 VPN</string>
+    <string name="widget_toggle">切換 VPN</string>
 </resources>

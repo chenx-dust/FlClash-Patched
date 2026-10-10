@@ -20,8 +20,8 @@ struct WidgetControl: ControlWidget {
           status.showProfileName
             ? (isRunning ? status.profileName : "")
             : (isRunning
-                ? String(localized: "connected")
-                : String(localized: "disconnected")),
+              ? String(localized: "connected")
+              : String(localized: "disconnected")),
           image: "FlClash"
         )
       }
@@ -45,31 +45,16 @@ extension WidgetControl {
 
     func currentValue() async throws -> VPNStatus {
       let manager = try await NEHelper.loadManager()
-      let isOn = manager.map {
-        NEHelper.isRunning($0.connection.status)
-      } ?? false
-      let defaults = UserDefaults(suiteName: NEHelper.appGroupIdentifier)
-      let profileName: String
-      let showProfileName: Bool
-      if let data = defaults?.data(forKey: "sharedState"),
-        let state = try? JSONDecoder().decode(ProfileState.self, from: data)
-      {
-        profileName = state.currentProfileName ?? ""
-        showProfileName = state.showQuickSettingsProfileName ?? true
-      } else {
-        profileName = ""
-        showProfileName = true
-      }
+      let isOn =
+        manager.map {
+          NEHelper.isRunning($0.connection.status)
+        } ?? false
+      let state = WidgetSharedState.load()
       return VPNStatus(
         isOn: isOn,
-        profileName: profileName,
-        showProfileName: showProfileName
+        profileName: state?.currentProfileName ?? "",
+        showProfileName: state?.showQuickSettingsProfileName ?? true
       )
     }
-  }
-
-  private struct ProfileState: Decodable {
-    let currentProfileName: String?
-    let showQuickSettingsProfileName: Bool?
   }
 }

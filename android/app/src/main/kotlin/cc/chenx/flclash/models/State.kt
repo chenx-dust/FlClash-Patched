@@ -12,6 +12,24 @@ data class SharedState(
     val showQuickSettingsProfileName: Boolean = true,
     val vpnOptions: VpnOptions? = null,
     val setupParams: SetupParams? = null,
+    val widgetTheme: WidgetTheme? = null,
+)
+
+data class WidgetTheme(
+    val themeMode: String = "system",
+    val light: WidgetColors,
+    val dark: WidgetColors,
+)
+
+// ARGB values arrive unsigned, beyond the range of Int.
+data class WidgetColors(
+    val background: Long,
+    val onBackground: Long,
+    val onBackgroundVariant: Long,
+    val primary: Long,
+    val onPrimary: Long,
+    val trackOff: Long,
+    val thumbOff: Long,
 )
 
 data class SetupParams(

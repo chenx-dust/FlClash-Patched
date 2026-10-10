@@ -5,4 +5,6 @@
     <string name="local_network_fallback">Нет разрешения на локальную сеть: используется стек mips, LAN недоступна.</string>
     <string name="connected">Подключено</string>
     <string name="disconnected">Отключено</string>
+    <string name="widget_description">Показывает текущий профиль и переключает VPN</string>
+    <string name="widget_toggle">Переключить VPN</string>
 </resources>

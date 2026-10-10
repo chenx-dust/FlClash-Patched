@@ -5,4 +5,6 @@
     <string name="local_network_fallback">ローカルネットワーク権限がないため mips スタックに切り替えました。LAN には到達できません。</string>
     <string name="connected">接続済み</string>
     <string name="disconnected">切断済み</string>
+    <string name="widget_description">現在のプロファイルを表示し、VPN を切り替えます</string>
+    <string name="widget_toggle">VPN を切り替え</string>
 </resources>

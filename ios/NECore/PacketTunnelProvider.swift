@@ -20,7 +20,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
   ) {
     logger.info("startTunnel begin")
     sharedStateStore.clearRunTime()
-    reloadControlWidget()
+    reloadWidgets()
     guard let snapshot = sharedStateStore.loadVPNOptionsSnapshot() else {
       logger.error("startTunnel failed: missing vpn options")
       completionHandler(PacketTunnelProviderError.missingVPNOptions)
@@ -42,8 +42,9 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
         return
       }
       self.logger.info("setTunnelNetworkSettings completed")
-      guard let tunnelFileDescriptor =
-        self.networkConfiguration.tunnelFileDescriptor()
+      guard
+        let tunnelFileDescriptor =
+          self.networkConfiguration.tunnelFileDescriptor()
       else {
         self.logger.error(
           "startTunnel failed: tunnel file descriptor missing"
@@ -69,8 +70,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
         if let result,
           !result.isEmpty
         {
-          let message = String(data: result, encoding: .utf8) ??
-            "unknown core error"
+          let message = String(data: result, encoding: .utf8) ?? "unknown core error"
           self.logger.error(
             "quickSetup failed: \(message, privacy: .public)"
           )
@@ -117,7 +117,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
   ) {
     logger.info("stopTunnel reason=\(reason.rawValue, privacy: .public)")
     sharedStateStore.clearRunTime()
-    reloadControlWidget()
+    reloadWidgets()
     eventQueue.stop()
     NECoreBridge.stopTun()
     guard reason == .userInitiated else {
@@ -132,15 +132,17 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
         completionHandler()
         return
       }
-      guard let manager = managers?.first(where: { manager in
-        guard let proto = manager.protocolConfiguration
-          as? NETunnelProviderProtocol
-        else {
-          return false
-        }
-        return proto.providerBundleIdentifier ==
-          PacketTunnelEnvironment.extensionBundleIdentifier
-      }) else {
+      guard
+        let manager = managers?.first(where: { manager in
+          guard
+            let proto = manager.protocolConfiguration
+              as? NETunnelProviderProtocol
+          else {
+            return false
+          }
+          return proto.providerBundleIdentifier == PacketTunnelEnvironment.extensionBundleIdentifier
+        })
+      else {
         completionHandler()
         return
       }
@@ -208,15 +210,17 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
   }
 
   private func methodCallID(_ messageData: Data) -> String? {
-    guard let object = try? JSONSerialization.jsonObject(with: messageData)
-      as? [String: Any]
+    guard
+      let object = try? JSONSerialization.jsonObject(with: messageData)
+        as? [String: Any]
     else {
       return nil
     }
     return object["id"] as? String
   }
 
-  private func reloadControlWidget() {
+  private func reloadWidgets() {
+    WidgetCenter.shared.reloadAllTimelines()
     if #available(iOS 18.0, *) {
       ControlCenter.shared.reloadControls(
         ofKind: PacketTunnelEnvironment.widgetIdentifier
