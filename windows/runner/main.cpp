@@ -3,13 +3,40 @@
 #include <windows.h>
 
 #include <app_links/app_links_plugin_c_api.h>
+#include <proxy/proxy_plugin_c_api.h>
 #include <window_manager/window_manager_plugin.h>
+
+#include <algorithm>
 
 #include "flutter_window.h"
 #include "utils.h"
 
+// The installer and the uninstaller run this before killing the app, which
+// skips the exit path that normally turns the system proxy off.
+constexpr char kClearStaleProxyArgument[] = "--clear-stale-proxy";
+constexpr UINT kReleaseProxyTimeoutMilliseconds = 3000;
+
 int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
                       _In_ wchar_t *command_line, _In_ int show_command) {
+  std::vector<std::string> command_line_arguments =
+      GetCommandLineArguments();
+  if (std::find(command_line_arguments.begin(), command_line_arguments.end(),
+                kClearStaleProxyArgument) != command_line_arguments.end()) {
+    // The uninstaller cannot run as the user who started it, so the running
+    // app, which can, turns its proxy off. Its Core still holds the port, so
+    // the stale check is left to the run after the kill.
+    if (HWND running = WindowManagerFindRunningWindow()) {
+      const UINT release_proxy =
+          ::RegisterWindowMessageW(PROXY_PLUGIN_RELEASE_PROXY_MESSAGE);
+      if (release_proxy != 0) {
+        ::SendMessageTimeoutW(running, release_proxy, 0, 0, SMTO_ABORTIFHUNG,
+                              kReleaseProxyTimeoutMilliseconds, nullptr);
+      }
+      return EXIT_SUCCESS;
+    }
+    return ProxyPluginClearStaleProxy() ? EXIT_SUCCESS : EXIT_FAILURE;
+  }
+
   if (HWND running = WindowManagerFindRunningWindow()) {
     SendAppLink(running);
     WindowManagerActivateWindow(running);
@@ -27,9 +54,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   ::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 
   flutter::DartProject project(L"data");
-
-  std::vector<std::string> command_line_arguments =
-      GetCommandLineArguments();
 
   project.set_dart_entrypoint_arguments(std::move(command_line_arguments));
 

@@ -46,6 +46,29 @@ begin
   end;
 end;
 
+// The app's exit path is what normally turns the system proxy off, and
+// KillProcesses skips it. Only the uninstaller's copy is known to accept the
+// flag before installation; an older one would start the app instead.
+procedure ClearStaleProxy(AsOriginalUser: Boolean);
+var
+  AppPath: String;
+  ResultCode: Integer;
+begin
+  AppPath := ExpandConstant('{app}\\{{EXECUTABLE_NAME}}');
+  if not FileExists(AppPath) then
+  begin
+    Exit;
+  end;
+  if AsOriginalUser then
+  begin
+    ExecAsOriginalUser(AppPath, '--clear-stale-proxy', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  end
+  else
+  begin
+    Exec(AppPath, '--clear-stale-proxy', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  end;
+end;
+
 function IsAppUpdate: Boolean;
 begin
   Result := ExpandConstant('{param:UPDATE|0}') = '1';
@@ -96,10 +119,22 @@ begin
   Result := '';
 end;
 
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssPostInstall then
+  begin
+    ClearStaleProxy(True);
+  end;
+end;
+
+// The uninstaller may run as another administrator, whose proxy settings are
+// not the user's; the run before the kill reaches the user's running app.
 function InitializeUninstall(): Boolean;
 begin
   UnregisterHelperService;
+  ClearStaleProxy(False);
   KillProcesses;
+  ClearStaleProxy(False);
   Result := True;
 end;
 

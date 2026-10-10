@@ -1,4 +1,10 @@
+// The IPv6 listener table needs winsock2.h, which has to come before the
+// windows.h that proxy_plugin.h pulls in.
+#include <winsock2.h>
+#include <ws2ipdef.h>
+
 #include "proxy_plugin.h"
+#include "include/proxy/proxy_plugin_c_api.h"
 
 // This must be included before many other Windows headers.
 #include <windows.h>
@@ -6,12 +12,17 @@
 #include <WinInet.h>
 #include <Ras.h>
 #include <RasError.h>
+#include <iphlpapi.h>
+#include <stdlib.h>
 #include <algorithm>
+#include <functional>
+#include <optional>
 #include <string>
 #include <vector>
 
 #pragma comment(lib, "wininet")
 #pragma comment(lib, "Rasapi32")
+#pragma comment(lib, "iphlpapi")
 
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
@@ -24,6 +35,44 @@ namespace
 
 constexpr int kMinProxyPort = 1;
 constexpr int kMaxProxyPort = 65535;
+constexpr wchar_t kProxyServerPrefix[] = L"127.0.0.1:";
+constexpr wchar_t kOwnershipKey[] = L"Software\\FlClash";
+constexpr wchar_t kOwnedProxyServerValue[] = L"SystemProxyServer";
+
+// Another local proxy can sit on the same address, so stale cleanup only
+// touches the server FlClash itself applied. The record outlives a crash.
+void RecordOwnedProxyServer(const std::wstring& server)
+{
+  RegSetKeyValueW(
+      HKEY_CURRENT_USER, kOwnershipKey, kOwnedProxyServerValue, REG_SZ,
+      server.c_str(),
+      static_cast<DWORD>((server.size() + 1) * sizeof(wchar_t)));
+}
+
+std::optional<std::wstring> OwnedProxyServer()
+{
+  DWORD size = 0;
+  if (RegGetValueW(
+          HKEY_CURRENT_USER, kOwnershipKey, kOwnedProxyServerValue,
+          RRF_RT_REG_SZ, nullptr, nullptr, &size) != ERROR_SUCCESS)
+  {
+    return std::nullopt;
+  }
+  std::wstring server(size / sizeof(wchar_t), L'\0');
+  if (RegGetValueW(
+          HKEY_CURRENT_USER, kOwnershipKey, kOwnedProxyServerValue,
+          RRF_RT_REG_SZ, nullptr, server.data(), &size) != ERROR_SUCCESS)
+  {
+    return std::nullopt;
+  }
+  server.resize(wcsnlen(server.c_str(), server.size()));
+  return server;
+}
+
+void ForgetOwnedProxyServer()
+{
+  RegDeleteKeyValueW(HKEY_CURRENT_USER, kOwnershipKey, kOwnedProxyServerValue);
+}
 
 std::wstring Utf8ToWide(const std::string& value)
 {
@@ -80,9 +129,9 @@ bool SetOptionsForConnection(
       sizeof(list)) != FALSE;
 }
 
-bool ApplyOptionsToConnections(INTERNET_PER_CONN_OPTION_LIST& list)
+bool ForEachConnection(const std::function<bool(LPTSTR)>& visit)
 {
-  bool success = SetOptionsForConnection(list, nullptr);
+  bool success = visit(nullptr);
 
   DWORD size = 0;
   DWORD count = 0;
@@ -99,7 +148,7 @@ bool ApplyOptionsToConnections(INTERNET_PER_CONN_OPTION_LIST& list)
     {
       for (DWORD i = 0; i < count; i++)
       {
-        success = SetOptionsForConnection(list, entries[i].szEntryName) && success;
+        success = visit(entries[i].szEntryName) && success;
       }
     }
     else
@@ -115,6 +164,14 @@ bool ApplyOptionsToConnections(INTERNET_PER_CONN_OPTION_LIST& list)
   return success;
 }
 
+bool ApplyOptionsToConnections(INTERNET_PER_CONN_OPTION_LIST& list)
+{
+  return ForEachConnection([&list](LPTSTR connection)
+  {
+    return SetOptionsForConnection(list, connection);
+  });
+}
+
 bool NotifySettingsChanged()
 {
   const bool changed = InternetSetOption(
@@ -126,7 +183,7 @@ bool NotifySettingsChanged()
 
 bool startProxy(const int port, const flutter::EncodableList& bypassDomain)
 {
-  auto url = Utf8ToWide("127.0.0.1:" + std::to_string(port));
+  auto url = kProxyServerPrefix + std::to_wstring(port);
   auto bypassList = BuildBypassList(bypassDomain);
   std::vector<INTERNET_PER_CONN_OPTION> options(3);
 
@@ -144,6 +201,7 @@ bool startProxy(const int port, const flutter::EncodableList& bypassDomain)
   options[2].dwOption = INTERNET_PER_CONN_PROXY_BYPASS;
   options[2].Value.pszValue = bypassList.data();
 
+  RecordOwnedProxyServer(url);
   const bool optionsApplied = ApplyOptionsToConnections(list);
   const bool settingsNotified = NotifySettingsChanged();
   return optionsApplied && settingsNotified;
@@ -163,13 +221,179 @@ bool stopProxy()
 
   const bool optionsApplied = ApplyOptionsToConnections(list);
   const bool settingsNotified = NotifySettingsChanged();
+  if (optionsApplied)
+  {
+    ForgetOwnedProxyServer();
+  }
   return optionsApplied && settingsNotified;
+}
+
+std::optional<int> ProxyPort(const std::wstring& server)
+{
+  const std::wstring prefix = kProxyServerPrefix;
+  if (server.size() <= prefix.size() || server.size() > prefix.size() + 5 ||
+      server.compare(0, prefix.size(), prefix) != 0)
+  {
+    return std::nullopt;
+  }
+  int port = 0;
+  for (size_t i = prefix.size(); i < server.size(); i++)
+  {
+    if (server[i] < L'0' || server[i] > L'9')
+    {
+      return std::nullopt;
+    }
+    port = port * 10 + (server[i] - L'0');
+  }
+  if (port < kMinProxyPort || port > kMaxProxyPort)
+  {
+    return std::nullopt;
+  }
+  return port;
+}
+
+template <typename Table>
+bool TableHasPort(const std::vector<BYTE>& buffer, int port)
+{
+  const auto* table = reinterpret_cast<const Table*>(buffer.data());
+  for (DWORD i = 0; i < table->dwNumEntries; i++)
+  {
+    const auto localPort =
+        _byteswap_ushort(static_cast<USHORT>(table->table[i].dwLocalPort));
+    if (localPort == port)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+std::optional<bool> HasTcpListener(ULONG family, int port)
+{
+  std::vector<BYTE> buffer;
+  DWORD size = 0;
+  DWORD result = ERROR_INSUFFICIENT_BUFFER;
+  for (int attempt = 0; attempt < 3 && result == ERROR_INSUFFICIENT_BUFFER;
+       attempt++)
+  {
+    buffer.resize(size);
+    result = GetExtendedTcpTable(
+        buffer.empty() ? nullptr : buffer.data(), &size, FALSE, family,
+        TCP_TABLE_OWNER_PID_LISTENER, 0);
+  }
+  if (result != NO_ERROR)
+  {
+    return std::nullopt;
+  }
+  return family == AF_INET
+             ? TableHasPort<MIB_TCPTABLE_OWNER_PID>(buffer, port)
+             : TableHasPort<MIB_TCP6TABLE_OWNER_PID>(buffer, port);
+}
+
+// A lookup that fails counts as listening, so a live proxy is never cleared.
+bool IsPortListening(int port)
+{
+  for (const ULONG family : {static_cast<ULONG>(AF_INET),
+                             static_cast<ULONG>(AF_INET6)})
+  {
+    if (HasTcpListener(family, port).value_or(true))
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+// taskkill /f returns once TerminateProcess has been issued, which is before
+// the killed Core has released its listening socket.
+bool IsPortReleased(int port)
+{
+  for (int attempt = 0; attempt < 20; attempt++)
+  {
+    if (!IsPortListening(port))
+    {
+      return true;
+    }
+    Sleep(100);
+  }
+  return false;
+}
+
+bool ClearStaleProxyForConnection(
+    LPTSTR connection,
+    const std::wstring& ownedServer)
+{
+  std::vector<INTERNET_PER_CONN_OPTION> options(2);
+  options[0].dwOption = INTERNET_PER_CONN_FLAGS;
+  options[1].dwOption = INTERNET_PER_CONN_PROXY_SERVER;
+
+  INTERNET_PER_CONN_OPTION_LIST list = {};
+  list.dwSize = sizeof(list);
+  list.pszConnection = connection;
+  list.dwOptionCount = static_cast<DWORD>(options.size());
+  list.pOptions = options.data();
+
+  DWORD size = sizeof(list);
+  if (InternetQueryOption(
+          nullptr, INTERNET_OPTION_PER_CONNECTION_OPTION, &list, &size) ==
+      FALSE)
+  {
+    return false;
+  }
+  const DWORD flags = options[0].Value.dwValue;
+  std::wstring server;
+  if (options[1].Value.pszValue != nullptr)
+  {
+    server = options[1].Value.pszValue;
+    GlobalFree(options[1].Value.pszValue);
+  }
+
+  if ((flags & PROXY_TYPE_PROXY) == 0 || server != ownedServer)
+  {
+    return true;
+  }
+  INTERNET_PER_CONN_OPTION option = {};
+  option.dwOption = INTERNET_PER_CONN_FLAGS;
+  option.Value.dwValue = (flags & ~PROXY_TYPE_PROXY) | PROXY_TYPE_DIRECT;
+  list.dwOptionCount = 1;
+  list.pOptions = &option;
+  return SetOptionsForConnection(list, connection);
 }
 
 }  // namespace
 
 namespace proxy
 {
+
+  bool ClearStaleProxy()
+  {
+    const auto owned = OwnedProxyServer();
+    if (!owned)
+    {
+      return true;
+    }
+    const auto port = ProxyPort(*owned);
+    if (!port)
+    {
+      ForgetOwnedProxyServer();
+      return true;
+    }
+    if (!IsPortReleased(*port))
+    {
+      return true;
+    }
+    const bool cleared = ForEachConnection(
+        [&owned](LPTSTR connection)
+        {
+          return ClearStaleProxyForConnection(connection, *owned);
+        });
+    const bool settingsNotified = NotifySettingsChanged();
+    if (cleared)
+    {
+      ForgetOwnedProxyServer();
+    }
+    return cleared && settingsNotified;
+  }
 
   // static
   void ProxyPlugin::RegisterWithRegistrar(
@@ -192,7 +416,9 @@ namespace proxy
   }
 
   ProxyPlugin::ProxyPlugin(flutter::PluginRegistrarWindows* registrar)
-      : registrar_(registrar)
+      : registrar_(registrar),
+        release_proxy_message_(
+            RegisterWindowMessageW(PROXY_PLUGIN_RELEASE_PROXY_MESSAGE))
   {
     window_proc_id_ = registrar_->RegisterTopLevelWindowProcDelegate(
         [this](HWND window, UINT message, WPARAM wparam, LPARAM lparam)
@@ -219,9 +445,15 @@ namespace proxy
   std::optional<LRESULT> ProxyPlugin::HandleWindowProc(
       HWND window, UINT message, WPARAM wparam, LPARAM lparam)
   {
-    if (proxy_applied_ && IsSessionEnding(message, wparam))
+    const bool releasing =
+        release_proxy_message_ != 0 && message == release_proxy_message_;
+    if (proxy_applied_ && (releasing || IsSessionEnding(message, wparam)))
     {
       proxy_applied_ = !stopProxy();
+    }
+    if (releasing)
+    {
+      return 0;
     }
     return std::nullopt;
   }
