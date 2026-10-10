@@ -26,6 +26,7 @@ export 'keyboard.dart';
 export 'l10n_labels.dart';
 export 'layout.dart';
 export 'link.dart';
+export 'linux_elevation.dart';
 export 'measure.dart';
 export 'mixin.dart';
 export 'navigator.dart';

@@ -141,6 +141,19 @@ class Dialogs {
     );
   }
 
+  Future<String?> showPasswordInput({required String title}) {
+    return showCommonDialog<String>(
+      child: InputDialog(
+        title: title,
+        value: '',
+        labelText: currentAppLocalizations.password,
+        obscureText: true,
+        keyboardType: TextInputType.visiblePassword,
+        autofocus: true,
+      ),
+    );
+  }
+
   Future<bool> showDisclaimer() async {
     return await showCommonDialog<bool>(
           dismissible: false,

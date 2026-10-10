@@ -7519,6 +7519,16 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `Enter your password for sudo`
+  String get sudoPasswordTitle {
+    return Intl.message(
+      'Enter your password for sudo',
+      name: 'sudoPasswordTitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

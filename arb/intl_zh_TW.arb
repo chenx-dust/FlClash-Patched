@@ -899,5 +899,6 @@
   "ruleLastHit": "最後命中",
   "ruleLastMiss": "最後未命中",
   "ruleType": "規則類型",
-  "ruleUpdateFailed": "無法變更規則，設定可能已變更，請重新整理後再試。"
+  "ruleUpdateFailed": "無法變更規則，設定可能已變更，請重新整理後再試。",
+  "sudoPasswordTitle": "輸入 sudo 密碼"
 }

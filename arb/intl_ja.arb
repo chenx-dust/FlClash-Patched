@@ -900,5 +900,6 @@
   "ruleLastHit": "最終一致",
   "ruleLastMiss": "最終不一致",
   "ruleType": "ルールの種類",
-  "ruleUpdateFailed": "ルールを変更できませんでした。設定が変更された可能性があります。更新して再試行してください。"
+  "ruleUpdateFailed": "ルールを変更できませんでした。設定が変更された可能性があります。更新して再試行してください。",
+  "sudoPasswordTitle": "sudo のパスワードを入力"
 }

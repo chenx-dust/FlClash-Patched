@@ -1653,6 +1653,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionInfo": MessageLookupByLibrary.simpleMessage(
       "Информация о подписке",
     ),
+    "sudoPasswordTitle": MessageLookupByLibrary.simpleMessage(
+      "Введите пароль для sudo",
+    ),
     "suspendSupport": MessageLookupByLibrary.simpleMessage(
       "Поддержка приостановки",
     ),

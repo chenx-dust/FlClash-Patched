@@ -1302,6 +1302,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subRuleNotEmpty": MessageLookupByLibrary.simpleMessage("サブルールは空にできません"),
     "submit": MessageLookupByLibrary.simpleMessage("送信"),
     "subscriptionInfo": MessageLookupByLibrary.simpleMessage("サブスクリプション情報"),
+    "sudoPasswordTitle": MessageLookupByLibrary.simpleMessage("sudo のパスワードを入力"),
     "suspendSupport": MessageLookupByLibrary.simpleMessage("サスペンド対応"),
     "suspendSupportDesc": MessageLookupByLibrary.simpleMessage(
       "デバイスがアイドル状態の間、バッテリー消費を抑えるためコアを一時停止します",

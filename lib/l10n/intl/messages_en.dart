@@ -1567,6 +1567,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionInfo": MessageLookupByLibrary.simpleMessage(
       "Subscription info",
     ),
+    "sudoPasswordTitle": MessageLookupByLibrary.simpleMessage(
+      "Enter your password for sudo",
+    ),
     "suspendSupport": MessageLookupByLibrary.simpleMessage("Suspend support"),
     "suspendSupportDesc": MessageLookupByLibrary.simpleMessage(
       "Suspend the core while the device is idle to reduce battery usage",

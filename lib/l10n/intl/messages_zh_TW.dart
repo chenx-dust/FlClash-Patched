@@ -1154,6 +1154,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subRuleNotEmpty": MessageLookupByLibrary.simpleMessage("子規則不能為空"),
     "submit": MessageLookupByLibrary.simpleMessage("提交"),
     "subscriptionInfo": MessageLookupByLibrary.simpleMessage("訂閱資訊"),
+    "sudoPasswordTitle": MessageLookupByLibrary.simpleMessage("輸入 sudo 密碼"),
     "suspendSupport": MessageLookupByLibrary.simpleMessage("休眠支援"),
     "suspendSupportDesc": MessageLookupByLibrary.simpleMessage(
       "裝置閒置時暫停核心，以降低耗電量",

@@ -224,28 +224,12 @@ class System {
       return AuthorizeCode.success;
     } else if (system.isLinux) {
       final escapedCorePath = _shellEscape(appPath.corePath);
-      final ProcessResult result;
-      try {
-        result = await runProcess('pkexec', [
-          '/bin/sh',
-          '-c',
-          'chown root:root $escapedCorePath && chmod +sx $escapedCorePath',
-        ]);
-      } on ProcessException catch (error) {
-        commonPrint.log(
-          'pkexec is unavailable: ${compactError(error)}',
-          logLevel: LogLevel.error,
-        );
-        return AuthorizeCode.error;
-      }
-      if (result.exitCode != 0) {
-        commonPrint.log(
-          'pkexec refused to elevate the Core: ${result.exitCode}',
-          logLevel: LogLevel.error,
-        );
-        return AuthorizeCode.error;
-      }
-      return AuthorizeCode.success;
+      final elevated = await linuxElevation.elevate([
+        '/bin/sh',
+        '-c',
+        'chown root:root $escapedCorePath && chmod +sx $escapedCorePath',
+      ]);
+      return elevated ? AuthorizeCode.success : AuthorizeCode.error;
     }
     return AuthorizeCode.error;
   }
@@ -458,9 +442,6 @@ final windows = system.isWindows ? Windows() : null;
 class Linux {
   static Linux? _instance;
 
-  @visibleForTesting
-  ProcessRunner runProcess = Process.run;
-
   Linux._internal();
 
   factory Linux() {
@@ -472,31 +453,11 @@ class Linux {
     return registerHelperService(installService);
   }
 
-  /// pkexec raises the system polkit prompt and names the requesting user to
-  /// the installer, which is where the unit takes the account it grants the
-  /// Helper socket to.
+  /// pkexec and sudo both name the requesting user to the installer, which is
+  /// where the unit takes the account it grants the Helper socket to.
   @visibleForTesting
-  Future<bool> installService() async {
-    try {
-      final result = await runProcess('pkexec', [
-        appPath.helperPath,
-        'install',
-      ]);
-      if (result.exitCode == 0) {
-        return true;
-      }
-      commonPrint.log(
-        'pkexec helper install exited with ${result.exitCode}: '
-        '${result.stderr.toString().trim()}',
-        logLevel: LogLevel.error,
-      );
-    } catch (error) {
-      commonPrint.log(
-        'pkexec is unavailable: ${compactError(error)}',
-        logLevel: LogLevel.error,
-      );
-    }
-    return false;
+  Future<bool> installService() {
+    return linuxElevation.elevate([appPath.helperPath, 'install']);
   }
 }
 

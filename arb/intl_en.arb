@@ -900,5 +900,6 @@
   "ruleLastHit": "Last hit",
   "ruleLastMiss": "Last miss",
   "ruleType": "Rule type",
-  "ruleUpdateFailed": "Could not change the rule. The configuration may have changed; refresh and try again."
+  "ruleUpdateFailed": "Could not change the rule. The configuration may have changed; refresh and try again.",
+  "sudoPasswordTitle": "Enter your password for sudo"
 }

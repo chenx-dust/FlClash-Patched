@@ -900,5 +900,6 @@
   "ruleLastHit": "最后命中",
   "ruleLastMiss": "最后未命中",
   "ruleType": "规则类型",
-  "ruleUpdateFailed": "无法更改规则，配置可能已变化，请刷新后重试。"
+  "ruleUpdateFailed": "无法更改规则，配置可能已变化，请刷新后重试。",
+  "sudoPasswordTitle": "输入 sudo 密码"
 }

@@ -32,6 +32,8 @@ class _RecordedRun {
 
   String get key =>
       arguments.isEmpty ? executable : '$executable ${arguments.first}';
+
+  String get commandLine => [executable, ...arguments].join(' ');
 }
 
 /// Stands in for `Process.run`, keyed by executable plus its first argument so
@@ -40,15 +42,28 @@ class _FakeProcesses {
   final List<_RecordedRun> runs = [];
   final Map<String, String> _stdout = {};
   final Map<String, int> _exitCodes = {};
+  final Map<String, String> _stderr = {};
   final Set<String> _failures = {};
 
-  void stub(String key, String stdout, {int exitCode = 0}) {
+  void stub(String key, String stdout, {int exitCode = 0, String stderr = ''}) {
     _stdout[key] = stdout;
     _exitCodes[key] = exitCode;
+    _stderr[key] = stderr;
   }
 
   void stubThrow(String key) {
     _failures.add(key);
+  }
+
+  final List<String> inputs = [];
+
+  Future<ProcessResult> runWithInput(
+    String executable,
+    List<String> arguments,
+    String input,
+  ) {
+    inputs.add(input);
+    return run(executable, arguments);
   }
 
   Future<ProcessResult> run(String executable, List<String> arguments) async {
@@ -59,9 +74,18 @@ class _FakeProcesses {
     }
     return ProcessResult(
       0,
-      _exitCodes[recorded.key] ?? _exitCodes[executable] ?? 0,
-      _stdout[recorded.key] ?? _stdout[executable] ?? '',
-      '',
+      _exitCodes[recorded.commandLine] ??
+          _exitCodes[recorded.key] ??
+          _exitCodes[executable] ??
+          0,
+      _stdout[recorded.commandLine] ??
+          _stdout[recorded.key] ??
+          _stdout[executable] ??
+          '',
+      _stderr[recorded.commandLine] ??
+          _stderr[recorded.key] ??
+          _stderr[executable] ??
+          '',
     );
   }
 
@@ -78,7 +102,11 @@ void main() {
 
   late Directory root;
   late _FakeProcesses processes;
+  String? password;
   final readEffectiveUid = system.readEffectiveUid;
+  final elevationRun = linuxElevation.run;
+  final elevationRunWithInput = linuxElevation.runWithInput;
+  final elevationAskPassword = linuxElevation.askPassword;
 
   setUpAll(() {
     root = Directory.systemTemp.createTempSync('system_test');
@@ -97,13 +125,18 @@ void main() {
     processes = _FakeProcesses();
     system.runProcess = processes.run;
     system.readEffectiveUid = () => 1000;
-    Linux().runProcess = processes.run;
+    linuxElevation.run = processes.run;
+    linuxElevation.runWithInput = processes.runWithInput;
+    linuxElevation.askPassword = () async => password;
+    password = null;
   });
 
   tearDown(() {
     system.runProcess = Process.run;
     system.readEffectiveUid = readEffectiveUid;
-    Linux().runProcess = Process.run;
+    linuxElevation.run = elevationRun;
+    linuxElevation.runWithInput = elevationRunWithInput;
+    linuxElevation.askPassword = elevationAskPassword;
   });
 
   group('root process', () {
@@ -328,12 +361,76 @@ void main() {
       processes.stub('pkexec', '', exitCode: 126);
 
       expect(await Linux().installService(), isFalse);
+      expect(processes.ran('sudo'), isFalse);
     });
 
-    test('reports a host with no pkexec at all', () async {
-      processes.stubThrow('pkexec');
+    test('keeps a polkit denial final instead of asking sudo', () async {
+      processes.stub(
+        'pkexec',
+        '',
+        exitCode: 127,
+        stderr: 'Error executing command as another user: Not authorized',
+      );
+      password = 'secret';
 
       expect(await Linux().installService(), isFalse);
+      expect(processes.ran('sudo'), isFalse);
+    });
+
+    test('installs through cached sudo credentials without pkexec', () async {
+      processes.stubThrow('pkexec');
+
+      expect(await Linux().installService(), isTrue);
+      expect(processes.argumentsFor('sudo'), [
+        '-n',
+        '--',
+        appPath.helperPath,
+        'install',
+      ]);
+      expect(processes.inputs, isEmpty);
+    });
+
+    test('asks for the sudo password when no polkit agent answers', () async {
+      processes.stub(
+        'pkexec',
+        '',
+        exitCode: 127,
+        stderr:
+            'Error executing command as another user: '
+            'No authentication agent found.',
+      );
+      processes.stub('sudo -n', '', exitCode: 1);
+      password = 'secret';
+
+      expect(await Linux().installService(), isTrue);
+      expect(processes.runs.last.arguments, [
+        '-S',
+        '-p',
+        '',
+        '--',
+        appPath.helperPath,
+        'install',
+      ]);
+      expect(processes.inputs, ['secret\n']);
+    });
+
+    test('reports a command that failed under cached sudo', () async {
+      processes.stubThrow('pkexec');
+      processes.stub('sudo -n', '', exitCode: 1);
+      processes.stub('sudo -n true', '');
+      password = 'secret';
+
+      expect(await Linux().installService(), isFalse);
+      expect(processes.ran('sudo -S'), isFalse);
+      expect(processes.inputs, isEmpty);
+    });
+
+    test('gives up when the sudo prompt is cancelled', () async {
+      processes.stubThrow('pkexec');
+      processes.stub('sudo -n', '', exitCode: 1);
+
+      expect(await Linux().installService(), isFalse);
+      expect(processes.ran('sudo -S'), isFalse);
     });
   }, skip: Platform.isWindows);
 }
