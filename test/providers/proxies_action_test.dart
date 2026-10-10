@@ -267,30 +267,6 @@ void main() {
       verifyNever(core.closeConnections);
     });
 
-    test(
-      'does not close connections when selecting the current proxy',
-      () async {
-        final container = buildContainer();
-        container.read(appSettingProvider.notifier).value =
-            const AppSettingProps(closeConnections: true);
-        container.read(groupsProvider.notifier).value = [
-          const Group(type: GroupType.Selector, name: 'Proxy', now: 'HK-01'),
-        ];
-
-        await actionOf(
-          container,
-        ).changeProxy(groupName: 'Proxy', proxyName: 'HK-01');
-
-        verify(
-          () => core.changeProxy(
-            const ChangeProxyParams(groupName: 'Proxy', proxyName: 'HK-01'),
-            closeConnections: false,
-          ),
-        ).called(1);
-        verifyNever(core.closeConnections);
-      },
-    );
-
     test('skips the connection reset when the switch itself fails', () async {
       when(
         () => core.changeProxy(
