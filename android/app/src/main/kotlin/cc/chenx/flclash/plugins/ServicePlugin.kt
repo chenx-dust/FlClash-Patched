@@ -20,6 +20,7 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     private lateinit var channel: MethodChannel
     private lateinit var scope: CoroutineScope
     private val gson = Gson()
+    private var commandCount = 0
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -54,7 +55,7 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
             "invokeMethod" -> invokeMethod(call, result)
             "getRunTime" -> getRunTime(result)
             "getActiveVpnOptions" -> scope.launch {
-                result.success(ServiceController.getActiveVpnOptions()?.let { gson.toJson(it) })
+                result.success(ServiceController.runtime?.options?.let { gson.toJson(it) })
             }
             "syncState" -> syncState(call, result)
             "start" -> start(call, result)
@@ -70,10 +71,8 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     }
 
     private fun shutdown(result: MethodChannel.Result) {
-        scope.launch {
-            ServiceController.unbind()
-            result.success(true)
-        }
+        ServiceController.setEventListener(null)
+        result.success(true)
     }
 
     private fun invokeMethod(call: MethodCall, result: MethodChannel.Result) {
@@ -93,7 +92,7 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
 
     private fun getRunTime(result: MethodChannel.Result) {
         scope.launch {
-            result.success(ServiceState.refresh())
+            result.success(ServiceState.awaitRunTime())
         }
     }
 
@@ -108,6 +107,7 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     }
 
     private fun start(call: MethodCall, result: MethodChannel.Result) {
+        commandCount++
         val state = sharedState(call)
         if (state == null) {
             result.success(false)
@@ -126,8 +126,19 @@ class ServicePlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     }
 
     private fun stop(result: MethodChannel.Result) {
+        commandCount++
         ServiceState.requestStop()
         result.success(true)
+    }
+
+    // Read on the platform thread, where start and stop arrive: the count and the intent are one
+    // instant, and Dart drops the report unless the count matches the commands it has sent.
+    fun notifyStopped() {
+        scope.launch(Dispatchers.Main) {
+            if (!ServiceState.isRunRequested) {
+                channel.invokeMethod("stopped", commandCount)
+            }
+        }
     }
 
     private fun sendEvent(value: String?) {

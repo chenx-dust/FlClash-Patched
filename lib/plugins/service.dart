@@ -11,6 +11,8 @@ import 'package:flutter/services.dart';
 
 abstract mixin class ServiceListener {
   void onServiceEvent(CoreEvent event) {}
+
+  void onServiceStopped() {}
 }
 
 enum TunnelState { pending, connected, disconnected }
@@ -24,6 +26,9 @@ class Service {
 
   final ObserverList<ServiceListener> _listeners =
       ObserverList<ServiceListener>();
+
+  int _commandRevision = 0;
+  bool _startRequested = false;
 
   factory Service() {
     _instance ??= Service._internal();
@@ -45,17 +50,19 @@ class Service {
             Map<String, Object?>.from(json.decode(data) as Map),
           );
           for (final event in coreEventsFromData(methodCall.arguments)) {
-            for (final listener in List.of(_listeners)) {
-              try {
-                listener.onServiceEvent(event);
-              } catch (error) {
-                commonPrint.log(
-                  'Unable to dispatch Core event ${event.type.name}: $error',
-                  logLevel: LogLevel.error,
-                );
-              }
-            }
+            _dispatch(
+              'Core event ${event.type.name}',
+              (listener) => listener.onServiceEvent(event),
+            );
           }
+          break;
+        case 'stopped':
+          // Native's received-command count; an older report is stale.
+          if (call.arguments != _commandRevision || !_startRequested) {
+            break;
+          }
+          _startRequested = false;
+          _dispatch('stop report', (listener) => listener.onServiceStopped());
           break;
         default:
           throw MissingPluginException();
@@ -75,11 +82,28 @@ class Service {
     return CoreMethodResponse.fromJson(dataJson);
   }
 
+  void _dispatch(String label, void Function(ServiceListener) deliver) {
+    for (final listener in List.of(_listeners)) {
+      try {
+        deliver(listener);
+      } catch (error) {
+        commonPrint.log(
+          'Unable to dispatch $label: $error',
+          logLevel: LogLevel.error,
+        );
+      }
+    }
+  }
+
   Future<bool?> start(SharedState state) async {
+    _startRequested = true;
+    _commandRevision++;
     return methodChannel.invokeMethod<bool>('start', json.encode(state));
   }
 
   Future<bool?> stop() async {
+    _startRequested = false;
+    _commandRevision++;
     return methodChannel.invokeMethod<bool>('stop');
   }
 

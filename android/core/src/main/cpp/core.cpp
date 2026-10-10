@@ -24,6 +24,18 @@ Java_cc_chenx_flclash_core_Core_stopTun(JNIEnv *env, jobject thiz) {
 
 extern "C"
 JNIEXPORT void JNICALL
+Java_cc_chenx_flclash_core_Core_startListener(JNIEnv *env, jobject thiz) {
+    startListener();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_cc_chenx_flclash_core_Core_stopListener(JNIEnv *env, jobject thiz) {
+    stopListener();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
 Java_cc_chenx_flclash_core_Core_forceGC(JNIEnv *env, jobject thiz) {
     forceGC();
 }

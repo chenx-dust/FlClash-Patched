@@ -381,6 +381,16 @@ func stopTun() {
 	}
 }
 
+//export startListener
+func startListener() {
+	handleStartListener()
+}
+
+//export stopListener
+func stopListener() {
+	handleStopListener()
+}
+
 //export forceGC
 func forceGC() {
 	handleForceGC()

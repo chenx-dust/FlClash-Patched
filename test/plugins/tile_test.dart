@@ -16,9 +16,6 @@ class _RecordingListener with TileListener {
   void onStart() => calls.add('start');
 
   @override
-  void onStop() => calls.add('stop');
-
-  @override
   void onDetached() => calls.add('detached');
 }
 
@@ -86,10 +83,9 @@ void main() {
     addTearDown(() => Tile.instance.removeListener(listener));
 
     await emitFromPlatform('start');
-    await emitFromPlatform('stop');
     await emitFromPlatform('detached');
 
-    expect(listener.calls, ['start', 'stop', 'detached']);
+    expect(listener.calls, ['start', 'detached']);
   });
 
   test('delivers one action to every registered listener', () async {

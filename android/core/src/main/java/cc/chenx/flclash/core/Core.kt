@@ -136,6 +136,10 @@ object Core {
 
     external fun stopTun()
 
+    external fun startListener()
+
+    external fun stopListener()
+
     external fun getTraffic(onlyStatisticsProxy: Boolean): String
 
     external fun getTotalTraffic(onlyStatisticsProxy: Boolean): String

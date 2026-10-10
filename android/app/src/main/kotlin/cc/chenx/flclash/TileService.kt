@@ -31,7 +31,6 @@ class TileService : android.service.quicksettings.TileService() {
         preferences.registerOnSharedPreferenceChangeListener(preferenceListener)
         scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate).also { scope ->
             scope.launch {
-                ServiceState.refresh()
                 ServiceState.runState.collect(::updateTile)
             }
         }

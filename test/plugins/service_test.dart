@@ -15,12 +15,24 @@ class _RecordingListener with ServiceListener {
   void onServiceEvent(CoreEvent event) => events.add(event);
 }
 
+class _RecordingStopListener with ServiceListener {
+  var stops = 0;
+
+  @override
+  void onServiceStopped() => stops++;
+}
+
 class _ThrowingListener with ServiceListener {
   var called = false;
 
   @override
   void onServiceEvent(CoreEvent event) {
     called = true;
+    throw StateError('listener boom');
+  }
+
+  @override
+  void onServiceStopped() {
     throw StateError('listener boom');
   }
 }
@@ -44,6 +56,9 @@ void main() {
   const codec = StandardMethodCodec();
 
   late List<MethodCall> calls;
+  // Native counts every start and stop it receives for the life of the
+  // process, just as the Service singleton outlives each test.
+  var receivedCommands = 0;
 
   const sharedState = SharedState(
     stopTip: 'stopTip',
@@ -57,6 +72,9 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
           calls.add(call);
+          if (call.method == 'start' || call.method == 'stop') {
+            receivedCommands++;
+          }
           return handler(call);
         });
   }
@@ -207,6 +225,75 @@ void main() {
       final sent = json.decode(calls.single.arguments as String);
       expect(sent['currentProfileName'], 'profile');
       expect(sent['onlyStatisticsProxy'], isTrue);
+    });
+  });
+
+  group('stop reports', () {
+    late _RecordingStopListener listener;
+
+    Future<void> reportStopped(Object? count) async {
+      await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .handlePlatformMessage(
+            channelName,
+            codec.encodeMethodCall(MethodCall('stopped', count)),
+            null,
+          );
+    }
+
+    setUp(() {
+      mockChannel((_) async => true);
+      listener = _RecordingStopListener();
+      Service().addListener(listener);
+    });
+
+    tearDown(() => Service().removeListener(listener));
+
+    test(
+      'a report for the start in force reaches the listeners once',
+      () async {
+        await Service().start(sharedState);
+
+        await reportStopped(receivedCommands);
+        await reportStopped(receivedCommands);
+
+        expect(listener.stops, 1);
+      },
+    );
+
+    test('a report older than the newest command is dropped', () async {
+      await Service().start(sharedState);
+      final stale = receivedCommands;
+      await Service().stop();
+      await Service().start(sharedState);
+
+      await reportStopped(stale);
+
+      expect(listener.stops, 0);
+    });
+
+    test(
+      'a report is dropped while Flutter itself asked for the stop',
+      () async {
+        await Service().start(sharedState);
+        await Service().stop();
+
+        await reportStopped(receivedCommands);
+
+        expect(listener.stops, 0);
+      },
+    );
+
+    test('a throwing listener does not starve the next one', () async {
+      final throwing = _ThrowingListener();
+      Service().removeListener(listener);
+      Service().addListener(throwing);
+      Service().addListener(listener);
+      addTearDown(() => Service().removeListener(throwing));
+      await Service().start(sharedState);
+
+      await reportStopped(receivedCommands);
+
+      expect(listener.stops, 1);
     });
   });
 

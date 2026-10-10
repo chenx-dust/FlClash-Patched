@@ -74,6 +74,12 @@ class _MobileManagerState extends ConsumerState<MobileManager>
   }
 
   @override
+  void onServiceStopped() {
+    unawaited(ref.read(setupActionProvider.notifier).setRunning(false));
+    super.onServiceStopped();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return widget.child;
   }
