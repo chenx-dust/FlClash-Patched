@@ -32,7 +32,10 @@ use windows_sys::Win32::System::JobObjects::{
     JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE,
 };
 
-#[cfg(not(target_os = "linux"))]
+#[cfg(not(any(
+    all(feature = "windows-service", target_os = "windows"),
+    target_os = "linux"
+)))]
 const LISTEN_PORT: u16 = 47890;
 #[cfg(not(target_os = "linux"))]
 const CORE_PIPE_PREFIX: &str = r"\\.\pipe\FlClashCore_";
@@ -727,12 +730,27 @@ where
 {
     ensure_core_sha256_configured()?;
 
-    let listener = tokio::net::TcpListener::bind((std::net::Ipv4Addr::LOCALHOST, LISTEN_PORT))
+    #[cfg(all(feature = "windows-service", target_os = "windows"))]
+    let listen_port = 0;
+    #[cfg(not(all(feature = "windows-service", target_os = "windows")))]
+    let listen_port = LISTEN_PORT;
+    let listener = tokio::net::TcpListener::bind((std::net::Ipv4Addr::LOCALHOST, listen_port))
         .await
         .map_err(|error| anyhow::anyhow!("bind helper server: {error}"))?;
+    #[cfg(all(feature = "windows-service", target_os = "windows"))]
+    let published = {
+        let port = listener
+            .local_addr()
+            .map_err(|error| anyhow::anyhow!("read helper server port: {error}"))?
+            .port();
+        super::windows::PublishedPort::publish(port)
+            .map_err(|error| anyhow::anyhow!("publish helper server port: {error}"))?
+    };
     let server = warp::serve(routes()).incoming(listener).graceful(shutdown);
     on_started()?;
     server.run().await;
+    #[cfg(all(feature = "windows-service", target_os = "windows"))]
+    drop(published);
     release_managed_core_on_shutdown();
 
     Ok(())

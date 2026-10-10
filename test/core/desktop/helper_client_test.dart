@@ -713,6 +713,7 @@ HelperClient _client(
   final dio = Dio()..httpClientAdapter = adapter;
   return HelperClient(
     dio: dio,
+    baseUrl: 'http://$localhost:$helperPort',
     expectedHelperPath: expectedHelperPath ?? () => r'C:\Helper.exe',
     readCoreSha256: readCoreSha256 ?? () async => _coreSha256,
   );

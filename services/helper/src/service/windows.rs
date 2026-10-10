@@ -2,6 +2,8 @@ use crate::service::hub::run_service_until;
 
 use anyhow::{bail, Context, Result};
 use std::ffi::{OsStr, OsString};
+use std::io;
+use std::ptr::{null, null_mut};
 use std::thread::sleep;
 use std::time::{Duration, Instant};
 
@@ -20,8 +22,15 @@ use windows_service::{
     service_dispatcher,
     service_manager::{ServiceManager, ServiceManagerAccess},
 };
+use windows_sys::Win32::Foundation::ERROR_SUCCESS;
+use windows_sys::Win32::System::Registry::{
+    RegCloseKey, RegCreateKeyExW, RegDeleteKeyW, RegSetValueExW, HKEY, HKEY_LOCAL_MACHINE,
+    KEY_SET_VALUE, REG_DWORD, REG_OPTION_VOLATILE,
+};
 
 const SERVICE_NAME: &str = "FlClashHelperService";
+const PORT_KEY: &str = r"SYSTEM\CurrentControlSet\Services\FlClashHelperService\Runtime";
+const PORT_VALUE: &str = "Port";
 const SERVICE_TYPE: ServiceType = ServiceType::OWN_PROCESS;
 const SERVICE_OPERATION_TIMEOUT: Duration = Duration::from_secs(10);
 const SERVICE_POLL_INTERVAL: Duration = Duration::from_millis(100);
@@ -319,6 +328,63 @@ fn service_status(
         checkpoint,
         wait_hint,
         process_id: None,
+    }
+}
+
+fn wide(value: &str) -> Vec<u16> {
+    value.encode_utf16().chain(std::iter::once(0)).collect()
+}
+
+/// Hyper-V and WinNAT can reserve any fixed port; this key is admin-only and volatile.
+pub(super) struct PublishedPort;
+
+impl PublishedPort {
+    pub(super) fn publish(port: u16) -> io::Result<Self> {
+        let key_path = wide(PORT_KEY);
+        let value_name = wide(PORT_VALUE);
+        let data = u32::from(port).to_le_bytes();
+        // SAFETY: the buffers outlive the calls, and the opened key is closed.
+        let status = unsafe {
+            let mut key: HKEY = null_mut();
+            let status = RegCreateKeyExW(
+                HKEY_LOCAL_MACHINE,
+                key_path.as_ptr(),
+                0,
+                null(),
+                REG_OPTION_VOLATILE,
+                KEY_SET_VALUE,
+                null(),
+                &mut key,
+                null_mut(),
+            );
+            if status != ERROR_SUCCESS {
+                return Err(io::Error::from_raw_os_error(status as i32));
+            }
+            let status = RegSetValueExW(
+                key,
+                value_name.as_ptr(),
+                0,
+                REG_DWORD,
+                data.as_ptr(),
+                data.len() as u32,
+            );
+            RegCloseKey(key);
+            status
+        };
+        if status != ERROR_SUCCESS {
+            return Err(io::Error::from_raw_os_error(status as i32));
+        }
+        Ok(Self)
+    }
+}
+
+impl Drop for PublishedPort {
+    fn drop(&mut self) {
+        let key_path = wide(PORT_KEY);
+        // SAFETY: the path buffer outlives the call.
+        unsafe {
+            RegDeleteKeyW(HKEY_LOCAL_MACHINE, key_path.as_ptr());
+        }
     }
 }
 

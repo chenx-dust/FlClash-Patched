@@ -19,6 +19,10 @@ const packageName = 'cc.chenx.flclash';
 final unixSocketPath = '/tmp/FlClashSocket_${Random().nextInt(10000)}.sock';
 final windowsPipeName = '\\\\.\\pipe\\FlClashCore_${_randomPipeId()}';
 const helperPort = 47890;
+// Published by PublishedPort in services/helper/src/service/windows.rs.
+const helperPortKey =
+    r'SYSTEM\CurrentControlSet\Services\FlClashHelperService\Runtime';
+const helperPortValue = 'Port';
 const helperSocketPath = '/run/flclash/helper.sock';
 const helperProtocolVersionHeader = 'x-flclash-helper-protocol';
 const helperProtocolVersion = '6';

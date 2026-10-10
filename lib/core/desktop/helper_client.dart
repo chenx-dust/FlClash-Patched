@@ -8,6 +8,7 @@ import 'package:fl_clash/common/constant.dart';
 import 'package:fl_clash/common/print.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:path/path.dart' as p;
+import 'package:win32_registry/win32_registry.dart';
 
 import 'core_manifest.dart';
 import 'launcher.dart';
@@ -54,7 +55,7 @@ final class HelperClient {
   final Dio _dio;
   final String Function() _expectedHelperPath;
   final Future<String> Function() _readCoreSha256;
-  final String baseUrl;
+  final String Function() _baseUrl;
   String? _coreSha256Cache;
 
   HelperClient({
@@ -63,7 +64,7 @@ final class HelperClient {
     Future<String> Function()? readCoreSha256,
     String? baseUrl,
   }) : _dio = dio ?? _createDio(),
-       baseUrl = baseUrl ?? _defaultBaseUrl(),
+       _baseUrl = baseUrl == null ? _defaultBaseUrl : (() => baseUrl),
        _expectedHelperPath = expectedHelperPath ?? _defaultHelperPath,
        _readCoreSha256 = readCoreSha256 ?? _readBundledCoreSha256;
 
@@ -111,10 +112,41 @@ final class HelperClient {
       );
   }
 
+  String get baseUrl => _baseUrl();
+
   static String _defaultBaseUrl() {
     return Platform.isLinux
         ? 'http://$appHelperService'
-        : 'http://$localhost:$helperPort';
+        : 'http://$localhost:${_readHelperPort()}';
+  }
+
+  /// The Windows Helper publishes its port only while it runs; without it the
+  /// fixed [helperPort] may belong to any local process, so nothing is sent.
+  static int _readHelperPort() {
+    if (!Platform.isWindows) {
+      return helperPort;
+    }
+    final port = _readPublishedPort();
+    if (port == null || port <= 0) {
+      throw const HelperException(
+        code: 'transportError',
+        message: 'Helper has not published its port',
+      );
+    }
+    return port;
+  }
+
+  static int? _readPublishedPort() {
+    try {
+      final key = LOCAL_MACHINE.open(helperPortKey);
+      try {
+        return key.getInt(helperPortValue);
+      } finally {
+        key.close();
+      }
+    } catch (_) {
+      return null;
+    }
   }
 
   static Future<String> _readBundledCoreSha256() async {
