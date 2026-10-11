@@ -54,8 +54,8 @@ class ProxyCard extends ConsumerWidget {
                         : IconButton(
                             tooltip: context.appLocalizations.delayTest,
                             icon: const Icon(Symbols.bolt, fill: 1),
-                            iconSize: globalState.measure.labelSmallHeight,
-                            padding: EdgeInsets.zero,
+                            iconSize: globalState.measure.labelSmallHeight - 2,
+                            padding: const EdgeInsets.all(1),
                             onPressed: () => _handleTestCurrentDelay(ref),
                           ),
                   )
