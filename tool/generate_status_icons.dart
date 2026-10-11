@@ -4,11 +4,8 @@ import 'dart:typed_data';
 import 'src/icons/ico.dart';
 
 const sourceDir = 'assets_source/images/icon';
-const pngOutputDir = 'assets/images/tray/unix';
 const icoOutputDir = 'assets/images/tray/windows';
 const statusIconNames = ['status_1', 'status_2', 'status_3'];
-const trayBaseSize = 18;
-const trayScales = [1, 2, 3, 4];
 const appIconSource = 'assets/images/icon.svg';
 const appIconOutput = 'windows/runner/resources/app_icon.ico';
 
@@ -33,7 +30,6 @@ Future<void> main() async {
         exitCode = 1;
         return;
       }
-      await _writeTrayVariants(renderer, source, name);
       await _writeIco(
         renderer,
         source,
@@ -47,22 +43,6 @@ Future<void> main() async {
     if (tempDir.existsSync()) {
       await tempDir.delete(recursive: true);
     }
-  }
-}
-
-Future<void> _writeTrayVariants(
-  _Renderer renderer,
-  File source,
-  String name,
-) async {
-  for (final scale in trayScales) {
-    final directory = scale == 1 ? pngOutputDir : '$pngOutputDir/$scale.0x';
-    await Directory(directory).create(recursive: true);
-    final output = File('$directory/$name.png');
-    await output.writeAsBytes(
-      await renderer.render(source, trayBaseSize * scale),
-    );
-    stdout.writeln('Generated ${output.path}');
   }
 }
 

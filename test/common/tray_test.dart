@@ -49,18 +49,18 @@ void main() {
       );
     });
 
-    test('linux loads png files from the unix directory', () {
+    test('linux loads svg files from the linux directory', () {
       expect(
         linux.getTrayIcon(isStart: false, tunEnable: false),
-        'assets/images/tray/unix/status_1.png',
+        'assets/images/tray/linux/status_1.svg',
       );
       expect(
         linux.getTrayIcon(isStart: true, tunEnable: false),
-        'assets/images/tray/unix/status_2.png',
+        'assets/images/tray/linux/status_2.svg',
       );
       expect(
         linux.getTrayIcon(isStart: true, tunEnable: true),
-        'assets/images/tray/unix/status_3.png',
+        'assets/images/tray/linux/status_3.svg',
       );
     });
 

@@ -194,8 +194,14 @@ class AppTray implements TrayPort {
     return AppTray._internal(isMacOS: isMacOS, isWindows: isWindows);
   }
 
+  String get _trayIconDirectory {
+    return isWindows
+        ? 'assets/images/tray/windows'
+        : 'assets/images/tray/linux';
+  }
+
   String get _trayIconSuffix {
-    return isWindows ? 'ico' : 'png';
+    return isWindows ? 'ico' : 'svg';
   }
 
   String getTrayIcon({
@@ -209,13 +215,8 @@ class AppTray implements TrayPort {
           ? 'assets/images/icon/flclash-symbolic.svg'
           : 'assets/images/icon/flclash-disabled-symbolic.svg';
     }
-    if (!isStart) {
-      return '${isWindows ? 'assets/images/tray/windows' : 'assets/images/tray/unix'}/status_1.$_trayIconSuffix';
-    }
-    if (!tunEnable) {
-      return '${isWindows ? 'assets/images/tray/windows' : 'assets/images/tray/unix'}/status_2.$_trayIconSuffix';
-    }
-    return '${isWindows ? 'assets/images/tray/windows' : 'assets/images/tray/unix'}/status_3.$_trayIconSuffix';
+    final status = !isStart ? 1 : (tunEnable ? 3 : 2);
+    return '$_trayIconDirectory/status_$status.$_trayIconSuffix';
   }
 
   @override

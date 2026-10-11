@@ -106,18 +106,18 @@ dart format lib/l10n
 flutter test test/l10n/ test/lint/dynamic_message_key_test.dart
 ```
 
-Tray and Windows app icons are generated, not hand-edited. `assets_source/images/icon/*.svg` is
-the source of truth; the script needs `rsvg-convert` (librsvg) on `PATH`:
+Windows tray and app icons are generated, not hand-edited. `assets_source/images/icon/status_*.svg` is
+the source of truth for the Windows tray; the script needs `rsvg-convert` (librsvg) on `PATH`:
 
 ```bash
 dart run tool/generate_status_icons.dart
 ```
 
-It writes the tray PNGs with Flutter `2.0x/`–`4.0x/` resolution variants to `assets/images/tray/unix/`,
-multi-size tray `.ico` files to `assets/images/tray/windows/`, and `windows/runner/resources/app_icon.ico`
-from `assets/images/icon.svg`. `pubspec.yaml` declares the two tray directories with `platforms:` so each
-build only bundles the format its tray loads; a new status icon needs a source SVG and an entry in the
-script's `statusIconNames`, nothing in `pubspec.yaml`.
+It writes multi-size tray `.ico` files to `assets/images/tray/windows/` and `windows/runner/resources/app_icon.ico`
+from `assets/images/icon.svg`. The Linux tray loads the hand-maintained SVGs in `assets/images/tray/linux/` directly
+(a smaller glyph and badge than the Windows set, drawn without masks because Qt SVG hosts ignore them). `pubspec.yaml`
+declares the two tray directories with `platforms:` so each build only bundles the format its tray loads; macOS always
+uses the symbolic template icon.
 
 ## Testing
 
