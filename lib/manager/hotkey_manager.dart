@@ -6,8 +6,6 @@ import 'package:fl_clash/models/common.dart';
 import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
-import 'package:fl_clash/providers/state.dart';
-import 'package:fl_clash/state.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -121,18 +119,6 @@ class _HotKeyManagerState extends ConsumerState<HotKeyManager> {
         setupAction.changeMode(Mode.global);
       case HotAction.directMode:
         setupAction.changeMode(Mode.direct);
-      case HotAction.delayTest:
-        unawaited(
-          ref
-              .read(proxiesActionProvider.notifier)
-              .delayTestGroups(ref.read(currentGroupsStateProvider).value),
-        );
-      case HotAction.updateProfiles:
-        unawaited(
-          globalState.safeRun(
-            ref.read(profilesActionProvider.notifier).updateProfiles,
-          ),
-        );
       case HotAction.copyEnv:
         unawaited(systemAction.copyProxyEnv());
       case HotAction.exit:

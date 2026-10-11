@@ -334,8 +334,6 @@
   "actionRuleMode": "規則模式",
   "actionGlobalMode": "全域模式",
   "actionDirectMode": "直連模式",
-  "actionDelayTest": "測試全部延遲",
-  "actionUpdateProfiles": "更新全部設定檔",
   "copyEnvVar": "複製環境變數",
   "disclaimer": "免責聲明",
   "disclaimerDesc": "本軟體僅供學習交流、科學研究等非商業用途，嚴禁用於商業目的。任何商業行為均與本軟體無關。",

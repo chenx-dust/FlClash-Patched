@@ -131,7 +131,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "accessDenied": MessageLookupByLibrary.simpleMessage("Access denied"),
     "account": MessageLookupByLibrary.simpleMessage("Account"),
     "action": MessageLookupByLibrary.simpleMessage("Action"),
-    "actionDelayTest": MessageLookupByLibrary.simpleMessage("Test all delays"),
     "actionDirectMode": MessageLookupByLibrary.simpleMessage("Direct mode"),
     "actionGlobalMode": MessageLookupByLibrary.simpleMessage("Global mode"),
     "actionMode": MessageLookupByLibrary.simpleMessage("Switch mode"),
@@ -139,9 +138,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "actionRuleMode": MessageLookupByLibrary.simpleMessage("Rule mode"),
     "actionStart": MessageLookupByLibrary.simpleMessage("Start/Stop"),
     "actionTun": MessageLookupByLibrary.simpleMessage("TUN"),
-    "actionUpdateProfiles": MessageLookupByLibrary.simpleMessage(
-      "Update profiles",
-    ),
     "actionView": MessageLookupByLibrary.simpleMessage("Show/Hide"),
     "add": MessageLookupByLibrary.simpleMessage("Add"),
     "addProfile": MessageLookupByLibrary.simpleMessage("Add profile"),

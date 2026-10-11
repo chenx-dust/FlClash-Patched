@@ -312,8 +312,6 @@ enum HotAction {
   ruleMode,
   globalMode,
   directMode,
-  delayTest,
-  updateProfiles,
   copyEnv,
   exit,
 }

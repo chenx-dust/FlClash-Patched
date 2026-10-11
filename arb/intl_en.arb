@@ -334,8 +334,6 @@
   "actionRuleMode": "Rule mode",
   "actionGlobalMode": "Global mode",
   "actionDirectMode": "Direct mode",
-  "actionDelayTest": "Test all delays",
-  "actionUpdateProfiles": "Update profiles",
   "copyEnvVar": "Copy environment variables",
   "disclaimer": "Disclaimer",
   "disclaimerDesc": "This software is intended only for non-commercial uses such as learning and research. Using it for any commercial purpose is strictly prohibited; any commercial activity is unrelated to this software.",

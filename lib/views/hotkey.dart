@@ -21,8 +21,6 @@ IconData _iconOf(HotAction action) {
     HotAction.proxy => Symbols.shuffle,
     HotAction.tun => Symbols.vpn_lock,
     HotAction.copyEnv => Symbols.code,
-    HotAction.delayTest => Symbols.bolt,
-    HotAction.updateProfiles => Symbols.sync,
   };
 }
 
@@ -44,10 +42,6 @@ List<(String, List<HotAction>)> _sections(AppLocalizations appLocalizations) {
     (
       appLocalizations.network,
       const [HotAction.proxy, HotAction.tun, HotAction.copyEnv],
-    ),
-    (
-      appLocalizations.proxies,
-      const [HotAction.delayTest, HotAction.updateProfiles],
     ),
   ];
 }

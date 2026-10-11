@@ -287,8 +287,6 @@ class AppTray implements TrayPort {
     final startShortcut = shortcutFor(HotAction.start);
     final exitShortcut = shortcutFor(HotAction.exit);
     final copyEnvShortcut = shortcutFor(HotAction.copyEnv);
-    final delayShortcut = shortcutFor(HotAction.delayTest);
-    final updateShortcut = shortcutFor(HotAction.updateProfiles);
 
     return [
       TrayMenuAction(
@@ -329,38 +327,6 @@ class AppTray implements TrayPort {
       _buildProfileMenu(read),
       const TrayMenuSeparator(),
       ..._buildGroupMenu(trayState: trayState, read: read),
-      TrayMenuAction(
-        label: _menuLabel(
-          appLocalizations.actionDelayTest,
-          HotAction.delayTest,
-          read,
-        ),
-        keyEquivalent: delayShortcut?.keyEquivalent,
-        keyEquivalentModifiers: delayShortcut?.modifiers ?? const {},
-        onSelected: () {
-          unawaited(
-            read(
-              proxiesActionProvider.notifier,
-            ).delayTestGroups(trayState.groups),
-          );
-        },
-      ),
-      TrayMenuAction(
-        label: _menuLabel(
-          appLocalizations.actionUpdateProfiles,
-          HotAction.updateProfiles,
-          read,
-        ),
-        keyEquivalent: updateShortcut?.keyEquivalent,
-        keyEquivalentModifiers: updateShortcut?.modifiers ?? const {},
-        onSelected: () {
-          unawaited(
-            globalState.safeRun(
-              read(profilesActionProvider.notifier).updateProfiles,
-            ),
-          );
-        },
-      ),
       const TrayMenuSeparator(),
       TrayMenuCheckbox(
         label: _menuLabel(appLocalizations.tun, HotAction.tun, read),

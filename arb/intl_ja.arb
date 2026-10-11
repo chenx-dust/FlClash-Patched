@@ -334,8 +334,6 @@
   "actionRuleMode": "ルールモード",
   "actionGlobalMode": "グローバルモード",
   "actionDirectMode": "ダイレクトモード",
-  "actionDelayTest": "すべての遅延をテスト",
-  "actionUpdateProfiles": "プロファイルを更新",
   "copyEnvVar": "環境変数をコピー",
   "disclaimer": "免責事項",
   "disclaimerDesc": "本ソフトウェアは、学習・交流や研究などの非商用目的でのみ使用できます。商用目的での使用は固く禁じられています。いかなる商業行為も本ソフトウェアとは一切関係ありません。",

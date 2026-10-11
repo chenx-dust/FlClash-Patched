@@ -2645,26 +2645,6 @@ class AppLocalizations {
     );
   }
 
-  /// `Test all delays`
-  String get actionDelayTest {
-    return Intl.message(
-      'Test all delays',
-      name: 'actionDelayTest',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Update profiles`
-  String get actionUpdateProfiles {
-    return Intl.message(
-      'Update profiles',
-      name: 'actionUpdateProfiles',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Copy environment variables`
   String get copyEnvVar {
     return Intl.message(

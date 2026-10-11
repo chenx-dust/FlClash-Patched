@@ -353,10 +353,6 @@ void main() {
     final copy = items.singleWhere((item) => item['label'] == l10n.copyEnvVar);
     expect(copy['keyEquivalent'], 'c');
     expect(copy['keyEquivalentModifiers'], containsAll(['control', 'shift']));
-    expect(
-      items.map((item) => item['label']),
-      containsAll([l10n.actionDelayTest, l10n.actionUpdateProfiles]),
-    );
 
     debugDefaultTargetPlatformOverride = TargetPlatform.windows;
     tray = AppTray.forPlatform(isMacOS: false, isWindows: true);
