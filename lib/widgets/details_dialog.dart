@@ -1,0 +1,127 @@
+import 'dart:math';
+
+import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/state.dart';
+import 'package:fl_clash/widgets/widgets.dart';
+import 'package:material_symbols_icons/symbols.dart';
+import 'package:material_ui/material_ui.dart';
+
+typedef DetailItem = ({String name, String value, bool copyable});
+
+class DetailsDialog extends StatelessWidget {
+  final String title;
+  final List<DetailItem> items;
+
+  const DetailsDialog({super.key, required this.title, required this.items});
+
+  Widget _buildItem(
+    BuildContext context,
+    DetailItem item,
+    double nameWidth,
+    TextStyle? nameStyle,
+  ) {
+    return ListTile(
+      dense: true,
+      contentPadding: EdgeInsets.zero,
+      title: Row(
+        children: [
+          SizedBox(
+            width: nameWidth,
+            child: TooltipText(
+              text: Text(
+                item.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: nameStyle,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Flexible(
+            child: TooltipText(
+              text: Text(
+                item.value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
+                style: context.textTheme.bodyMedium?.toLight,
+              ),
+            ),
+          ),
+        ],
+      ),
+      trailing: item.copyable
+          ? IconButton(
+              tooltip: context.appLocalizations.copy,
+              icon: const Icon(Symbols.content_copy, size: 14),
+              onPressed: () => copyText(context, item.value),
+            )
+          : null,
+    );
+  }
+
+  double _getMaxNameWidth(TextStyle? nameStyle) {
+    double maxWidth = 0;
+    for (final item in items) {
+      final width = globalState.measure
+          .computeTextSize(Text(item.name, style: nameStyle))
+          .width;
+      if (width > maxWidth) {
+        maxWidth = width;
+      }
+    }
+    return maxWidth + 18;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final nameStyle = context.textTheme.bodyMedium;
+    final preferredNameWidth = _getMaxNameWidth(nameStyle);
+    var contentWidth = max(300.0, preferredNameWidth / 0.4);
+    for (final item in items) {
+      final valueWidth = globalState.measure
+          .computeTextSize(
+            Text(item.value, style: context.textTheme.bodyMedium?.toLight),
+          )
+          .width;
+      final trailingWidth = item.copyable ? 64.0 : 0.0;
+      contentWidth = max(
+        contentWidth,
+        preferredNameWidth + 8 + valueWidth + trailingWidth,
+      );
+    }
+    return CommonDialog(
+      title: title,
+      maxWidth: contentWidth,
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text(context.appLocalizations.confirm),
+        ),
+      ],
+      child: Material(
+        type: MaterialType.transparency,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final nameWidth = min(
+              preferredNameWidth,
+              constraints.maxWidth * 0.4,
+            );
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (var index = 0; index < items.length; index++) ...[
+                  if (index > 0) const Divider(height: 0),
+                  _buildItem(context, items[index], nameWidth, nameStyle),
+                ],
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}

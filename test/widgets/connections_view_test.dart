@@ -44,6 +44,7 @@ void main() {
     WidgetTester tester, {
     required Future<List<TrackerInfo>> Function() connectionsReader,
     bool isPageActive = true,
+    TrackerInfoFilter initialFilter = const TrackerInfoFilter(),
   }) async {
     tester.view.physicalSize = const Size(600, 800);
     tester.view.devicePixelRatio = 1;
@@ -58,13 +59,55 @@ void main() {
         child: _TestApp(
           child: PageActivityScope(
             isActive: isPageActive,
-            child: ConnectionsView(connectionsReader: connectionsReader),
+            child: ConnectionsView(
+              connectionsReader: connectionsReader,
+              initialFilter: initialFilter,
+            ),
           ),
         ),
       ),
     );
     await tester.pump();
   }
+
+  testWidgets('ConnectionsView applies the initial chain filter', (
+    tester,
+  ) async {
+    final connections = [
+      ...buildConnections(1),
+      TrackerInfo(
+        id: 'other',
+        start: DateTime(2024),
+        metadata: const Metadata(
+          network: 'tcp',
+          host: 'other.com',
+          destinationPort: '443',
+        ),
+        chains: const ['proxy-b'],
+        rule: 'MATCH',
+        rulePayload: '',
+      ),
+    ];
+
+    await pumpConnections(
+      tester,
+      connectionsReader: () async => connections,
+      initialFilter: const TrackerInfoFilter(chains: {'proxy-b'}),
+    );
+    await tester.pump();
+
+    expect(find.textContaining('other.com'), findsOneWidget);
+    expect(find.textContaining('host-0.com'), findsNothing);
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is CommonChip && widget.label == 'proxy-b',
+      ),
+      findsOneWidget,
+    );
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
 
   testWidgets('ConnectionsView lazily builds every connection', (tester) async {
     final connections = buildConnections(100);

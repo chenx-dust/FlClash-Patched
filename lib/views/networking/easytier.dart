@@ -1,6 +1,5 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/views/networking/common.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
@@ -19,7 +18,7 @@ List<Widget> buildEasyTierChildren({
   final instanceId = details.instanceId.isNotEmpty
       ? details.instanceId
       : details.local.instanceId;
-  final networkItems = <OverlayNetworkDetailItem>[
+  final networkItems = <DetailItem>[
     if (instanceId.isNotEmpty)
       (name: l10n.easyTierInstanceId, value: instanceId, copyable: true),
     if (details.local.version.isNotEmpty)
@@ -57,7 +56,7 @@ List<Widget> buildEasyTierChildren({
               ? null
               : () {
                   dialogs.showCommonDialog(
-                    child: OverlayNetworkDetailsDialog(
+                    child: DetailsDialog(
                       title: l10n.details(networkTitle),
                       items: networkItems,
                     ),
@@ -104,7 +103,7 @@ class _EasyTierNodeItem extends StatelessWidget {
             .map((entry) => entry.key)
             .toList()
           ..sort();
-    final items = <OverlayNetworkDetailItem>[
+    final items = <DetailItem>[
       if (node.peerId != 0)
         (
           name: l10n.easyTierPeerId,
@@ -267,10 +266,7 @@ class _EasyTierNodeItem extends StatelessWidget {
           ? null
           : () {
               dialogs.showCommonDialog(
-                child: OverlayNetworkDetailsDialog(
-                  title: l10n.details(title),
-                  items: items,
-                ),
+                child: DetailsDialog(title: l10n.details(title), items: items),
               );
             },
     );

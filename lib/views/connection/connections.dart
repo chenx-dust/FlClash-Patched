@@ -12,8 +12,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ConnectionsView extends ConsumerStatefulWidget {
   final Future<List<TrackerInfo>> Function()? connectionsReader;
+  final TrackerInfoFilter initialFilter;
 
-  const ConnectionsView({super.key, @visibleForTesting this.connectionsReader});
+  const ConnectionsView({
+    super.key,
+    @visibleForTesting this.connectionsReader,
+    this.initialFilter = const TrackerInfoFilter(),
+  });
 
   @override
   ConsumerState<ConnectionsView> createState() => _ConnectionsViewState();
@@ -25,8 +30,8 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView>
 
   final _listController = TrackerInfoListController();
   final ScrollController _scrollController = ScrollController();
-  TrackerInfoFilter _trackerFilter = const TrackerInfoFilter();
-  bool _showFilterBar = false;
+  late TrackerInfoFilter _trackerFilter = widget.initialFilter;
+  late bool _showFilterBar = widget.initialFilter.isNotEmpty;
   TrackerInfoSortType? _sortType;
   bool _sortAscending = false;
   DateTime? _lastUpdatedAt;

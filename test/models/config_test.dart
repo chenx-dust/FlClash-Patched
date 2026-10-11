@@ -68,6 +68,43 @@ void main() {
     }
   });
 
+  group('Proxy JSON', () {
+    test('reads core proxy info fields', () {
+      final proxy = Proxy.fromJson({
+        'name': 'node',
+        'type': 'Vmess',
+        'udp': true,
+        'smux': true,
+        'routing-mark': 255,
+        'provider-name': 'sub',
+        'dialer-proxy': 'relay',
+      });
+
+      expect(proxy.udp, isTrue);
+      expect(proxy.smux, isTrue);
+      expect(proxy.tfo, isFalse);
+      expect(proxy.routingMark, 255);
+      expect(proxy.providerName, 'sub');
+      expect(proxy.dialerProxy, 'relay');
+    });
+
+    test('accepts the profile smux options map', () {
+      final enabled = Proxy.fromJson({
+        'name': 'node',
+        'type': 'vmess',
+        'smux': {'enabled': true, 'protocol': 'h2mux'},
+      });
+      final disabled = Proxy.fromJson({
+        'name': 'node',
+        'type': 'vmess',
+        'smux': {'protocol': 'h2mux'},
+      });
+
+      expect(enabled.smux, isTrue);
+      expect(disabled.smux, isFalse);
+    });
+  });
+
   group('GeoResource JSON', () {
     test('exposes mihomo raw config keys', () {
       expect(GeoResource.MMDB.configKey, 'mmdb');

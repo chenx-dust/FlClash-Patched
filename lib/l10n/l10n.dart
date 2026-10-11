@@ -7529,6 +7529,31 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `Proxy provider`
+  String get proxyProvider {
+    return Intl.message(
+      'Proxy provider',
+      name: 'proxyProvider',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Routing mark`
+  String get routingMark {
+    return Intl.message(
+      'Routing mark',
+      name: 'routingMark',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Features`
+  String get features {
+    return Intl.message('Features', name: 'features', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -148,9 +148,26 @@ abstract class Proxy with _$Proxy {
     required String name,
     required String type,
     String? now,
+    @Default(false) bool udp,
+    @Default(false) bool uot,
+    @Default(false) bool xudp,
+    @Default(false) bool tfo,
+    @Default(false) bool mptcp,
+    @JsonKey(fromJson: _parseSmux) @Default(false) bool smux,
+    @Default('') String interface,
+    @JsonKey(name: 'routing-mark') @Default(0) int routingMark,
+    @JsonKey(name: 'provider-name') @Default('') String providerName,
+    @JsonKey(name: 'dialer-proxy') @Default('') String dialerProxy,
   }) = _Proxy;
 
   factory Proxy.fromJson(Map<String, Object?> json) => _$ProxyFromJson(json);
+}
+
+// The core reports smux as a bool, while profile YAML parsed into the same
+// model carries it as an options map.
+bool _parseSmux(Object? value) {
+  if (value is Map) return value['enabled'] == true;
+  return value == true;
 }
 
 @freezed

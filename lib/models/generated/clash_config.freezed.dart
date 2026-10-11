@@ -365,7 +365,7 @@ as String?,
 /// @nodoc
 mixin _$Proxy {
 
- String get name; String get type; String? get now;
+ String get name; String get type; String? get now; bool get udp; bool get uot; bool get xudp; bool get tfo; bool get mptcp;@JsonKey(fromJson: _parseSmux) bool get smux; String get interface;@JsonKey(name: 'routing-mark') int get routingMark;@JsonKey(name: 'provider-name') String get providerName;@JsonKey(name: 'dialer-proxy') String get dialerProxy;
 /// Create a copy of Proxy
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -379,20 +379,20 @@ $ProxyCopyWith<Proxy> get copyWith => _$ProxyCopyWithImpl<Proxy>(this as Proxy, 
 @override
 bool operator ==(Object other) {
   final _this = this as Proxy;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Proxy&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.now, _this.now) || other.now == _this.now));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Proxy&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.now, _this.now) || other.now == _this.now)&&(identical(other.udp, _this.udp) || other.udp == _this.udp)&&(identical(other.uot, _this.uot) || other.uot == _this.uot)&&(identical(other.xudp, _this.xudp) || other.xudp == _this.xudp)&&(identical(other.tfo, _this.tfo) || other.tfo == _this.tfo)&&(identical(other.mptcp, _this.mptcp) || other.mptcp == _this.mptcp)&&(identical(other.smux, _this.smux) || other.smux == _this.smux)&&(identical(other.interface, _this.interface) || other.interface == _this.interface)&&(identical(other.routingMark, _this.routingMark) || other.routingMark == _this.routingMark)&&(identical(other.providerName, _this.providerName) || other.providerName == _this.providerName)&&(identical(other.dialerProxy, _this.dialerProxy) || other.dialerProxy == _this.dialerProxy));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as Proxy;
-  return Object.hash(runtimeType,_this.name,_this.type,_this.now);
+  return Object.hash(runtimeType,_this.name,_this.type,_this.now,_this.udp,_this.uot,_this.xudp,_this.tfo,_this.mptcp,_this.smux,_this.interface,_this.routingMark,_this.providerName,_this.dialerProxy);
 }
 
 @override
 String toString() {
   final _this = this as Proxy;
-  return 'Proxy(name: ${_this.name}, type: ${_this.type}, now: ${_this.now})';
+  return 'Proxy(name: ${_this.name}, type: ${_this.type}, now: ${_this.now}, udp: ${_this.udp}, uot: ${_this.uot}, xudp: ${_this.xudp}, tfo: ${_this.tfo}, mptcp: ${_this.mptcp}, smux: ${_this.smux}, interface: ${_this.interface}, routingMark: ${_this.routingMark}, providerName: ${_this.providerName}, dialerProxy: ${_this.dialerProxy})';
 }
 
 
@@ -403,7 +403,7 @@ abstract mixin class $ProxyCopyWith<$Res>  {
   factory $ProxyCopyWith(Proxy value, $Res Function(Proxy) _then) = _$ProxyCopyWithImpl;
 @useResult
 $Res call({
- String name, String type, String? now
+ String name, String type, String? now, bool udp, bool uot, bool xudp, bool tfo, bool mptcp,@JsonKey(fromJson: _parseSmux) bool smux, String interface,@JsonKey(name: 'routing-mark') int routingMark,@JsonKey(name: 'provider-name') String providerName,@JsonKey(name: 'dialer-proxy') String dialerProxy
 });
 
 
@@ -420,12 +420,22 @@ class _$ProxyCopyWithImpl<$Res>
 
 /// Create a copy of Proxy
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? type = null,Object? now = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? type = null,Object? now = freezed,Object? udp = null,Object? uot = null,Object? xudp = null,Object? tfo = null,Object? mptcp = null,Object? smux = null,Object? interface = null,Object? routingMark = null,Object? providerName = null,Object? dialerProxy = null,}) {
   return _then(Proxy(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String,now: freezed == now ? _self.now : now // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,udp: null == udp ? _self.udp : udp // ignore: cast_nullable_to_non_nullable
+as bool,uot: null == uot ? _self.uot : uot // ignore: cast_nullable_to_non_nullable
+as bool,xudp: null == xudp ? _self.xudp : xudp // ignore: cast_nullable_to_non_nullable
+as bool,tfo: null == tfo ? _self.tfo : tfo // ignore: cast_nullable_to_non_nullable
+as bool,mptcp: null == mptcp ? _self.mptcp : mptcp // ignore: cast_nullable_to_non_nullable
+as bool,smux: null == smux ? _self.smux : smux // ignore: cast_nullable_to_non_nullable
+as bool,interface: null == interface ? _self.interface : interface // ignore: cast_nullable_to_non_nullable
+as String,routingMark: null == routingMark ? _self.routingMark : routingMark // ignore: cast_nullable_to_non_nullable
+as int,providerName: null == providerName ? _self.providerName : providerName // ignore: cast_nullable_to_non_nullable
+as String,dialerProxy: null == dialerProxy ? _self.dialerProxy : dialerProxy // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -510,10 +520,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  String type,  String? now)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  String type,  String? now,  bool udp,  bool uot,  bool xudp,  bool tfo,  bool mptcp, @JsonKey(fromJson: _parseSmux)  bool smux,  String interface, @JsonKey(name: 'routing-mark')  int routingMark, @JsonKey(name: 'provider-name')  String providerName, @JsonKey(name: 'dialer-proxy')  String dialerProxy)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Proxy() when $default != null:
-return $default(_that.name,_that.type,_that.now);case _:
+return $default(_that.name,_that.type,_that.now,_that.udp,_that.uot,_that.xudp,_that.tfo,_that.mptcp,_that.smux,_that.interface,_that.routingMark,_that.providerName,_that.dialerProxy);case _:
   return orElse();
 
 }
@@ -531,10 +541,10 @@ return $default(_that.name,_that.type,_that.now);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  String type,  String? now)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  String type,  String? now,  bool udp,  bool uot,  bool xudp,  bool tfo,  bool mptcp, @JsonKey(fromJson: _parseSmux)  bool smux,  String interface, @JsonKey(name: 'routing-mark')  int routingMark, @JsonKey(name: 'provider-name')  String providerName, @JsonKey(name: 'dialer-proxy')  String dialerProxy)  $default,) {final _that = this;
 switch (_that) {
 case _Proxy():
-return $default(_that.name,_that.type,_that.now);case _:
+return $default(_that.name,_that.type,_that.now,_that.udp,_that.uot,_that.xudp,_that.tfo,_that.mptcp,_that.smux,_that.interface,_that.routingMark,_that.providerName,_that.dialerProxy);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -551,10 +561,10 @@ return $default(_that.name,_that.type,_that.now);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  String type,  String? now)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  String type,  String? now,  bool udp,  bool uot,  bool xudp,  bool tfo,  bool mptcp, @JsonKey(fromJson: _parseSmux)  bool smux,  String interface, @JsonKey(name: 'routing-mark')  int routingMark, @JsonKey(name: 'provider-name')  String providerName, @JsonKey(name: 'dialer-proxy')  String dialerProxy)?  $default,) {final _that = this;
 switch (_that) {
 case _Proxy() when $default != null:
-return $default(_that.name,_that.type,_that.now);case _:
+return $default(_that.name,_that.type,_that.now,_that.udp,_that.uot,_that.xudp,_that.tfo,_that.mptcp,_that.smux,_that.interface,_that.routingMark,_that.providerName,_that.dialerProxy);case _:
   return null;
 
 }
@@ -566,12 +576,22 @@ return $default(_that.name,_that.type,_that.now);case _:
 @JsonSerializable()
 
 class _Proxy implements Proxy {
-  const _Proxy({required this.name, required this.type, this.now});
+  const _Proxy({required this.name, required this.type, this.now, this.udp = false, this.uot = false, this.xudp = false, this.tfo = false, this.mptcp = false, @JsonKey(fromJson: _parseSmux) this.smux = false, this.interface = '', @JsonKey(name: 'routing-mark') this.routingMark = 0, @JsonKey(name: 'provider-name') this.providerName = '', @JsonKey(name: 'dialer-proxy') this.dialerProxy = ''});
   factory _Proxy.fromJson(Map<String, dynamic> json) => _$ProxyFromJson(json);
 
 @override final  String name;
 @override final  String type;
 @override final  String? now;
+@override@JsonKey() final  bool udp;
+@override@JsonKey() final  bool uot;
+@override@JsonKey() final  bool xudp;
+@override@JsonKey() final  bool tfo;
+@override@JsonKey() final  bool mptcp;
+@override@JsonKey(fromJson: _parseSmux) final  bool smux;
+@override@JsonKey() final  String interface;
+@override@JsonKey(name: 'routing-mark') final  int routingMark;
+@override@JsonKey(name: 'provider-name') final  String providerName;
+@override@JsonKey(name: 'dialer-proxy') final  String dialerProxy;
 
 /// Create a copy of Proxy
 /// with the given fields replaced by the non-null parameter values.
@@ -586,18 +606,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Proxy&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.now, now) || other.now == now));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Proxy&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.now, now) || other.now == now)&&(identical(other.udp, udp) || other.udp == udp)&&(identical(other.uot, uot) || other.uot == uot)&&(identical(other.xudp, xudp) || other.xudp == xudp)&&(identical(other.tfo, tfo) || other.tfo == tfo)&&(identical(other.mptcp, mptcp) || other.mptcp == mptcp)&&(identical(other.smux, smux) || other.smux == smux)&&(identical(other.interface, interface) || other.interface == interface)&&(identical(other.routingMark, routingMark) || other.routingMark == routingMark)&&(identical(other.providerName, providerName) || other.providerName == providerName)&&(identical(other.dialerProxy, dialerProxy) || other.dialerProxy == dialerProxy));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,name,type,now);
+    return Object.hash(runtimeType,name,type,now,udp,uot,xudp,tfo,mptcp,smux,interface,routingMark,providerName,dialerProxy);
 }
 
 @override
 String toString() {
-    return 'Proxy(name: $name, type: $type, now: $now)';
+    return 'Proxy(name: $name, type: $type, now: $now, udp: $udp, uot: $uot, xudp: $xudp, tfo: $tfo, mptcp: $mptcp, smux: $smux, interface: $interface, routingMark: $routingMark, providerName: $providerName, dialerProxy: $dialerProxy)';
 }
 
 
@@ -608,7 +628,7 @@ abstract mixin class _$ProxyCopyWith<$Res> implements $ProxyCopyWith<$Res> {
   factory _$ProxyCopyWith(_Proxy value, $Res Function(_Proxy) _then) = __$ProxyCopyWithImpl;
 @override @useResult
 $Res call({
- String name, String type, String? now
+ String name, String type, String? now, bool udp, bool uot, bool xudp, bool tfo, bool mptcp,@JsonKey(fromJson: _parseSmux) bool smux, String interface,@JsonKey(name: 'routing-mark') int routingMark,@JsonKey(name: 'provider-name') String providerName,@JsonKey(name: 'dialer-proxy') String dialerProxy
 });
 
 
@@ -625,12 +645,22 @@ class __$ProxyCopyWithImpl<$Res>
 
 /// Create a copy of Proxy
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? type = null,Object? now = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? type = null,Object? now = freezed,Object? udp = null,Object? uot = null,Object? xudp = null,Object? tfo = null,Object? mptcp = null,Object? smux = null,Object? interface = null,Object? routingMark = null,Object? providerName = null,Object? dialerProxy = null,}) {
   return _then(_Proxy(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String,now: freezed == now ? _self.now : now // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,udp: null == udp ? _self.udp : udp // ignore: cast_nullable_to_non_nullable
+as bool,uot: null == uot ? _self.uot : uot // ignore: cast_nullable_to_non_nullable
+as bool,xudp: null == xudp ? _self.xudp : xudp // ignore: cast_nullable_to_non_nullable
+as bool,tfo: null == tfo ? _self.tfo : tfo // ignore: cast_nullable_to_non_nullable
+as bool,mptcp: null == mptcp ? _self.mptcp : mptcp // ignore: cast_nullable_to_non_nullable
+as bool,smux: null == smux ? _self.smux : smux // ignore: cast_nullable_to_non_nullable
+as bool,interface: null == interface ? _self.interface : interface // ignore: cast_nullable_to_non_nullable
+as String,routingMark: null == routingMark ? _self.routingMark : routingMark // ignore: cast_nullable_to_non_nullable
+as int,providerName: null == providerName ? _self.providerName : providerName // ignore: cast_nullable_to_non_nullable
+as String,dialerProxy: null == dialerProxy ? _self.dialerProxy : dialerProxy // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

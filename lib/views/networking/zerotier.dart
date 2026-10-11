@@ -18,7 +18,7 @@ List<Widget> buildZeroTierChildren({
       : details.networkId.isNotEmpty
       ? details.networkId
       : appLocalizations.network;
-  final networkItems = <OverlayNetworkDetailItem>[
+  final networkItems = <DetailItem>[
     if (details.networkId.isNotEmpty)
       (
         name: appLocalizations.networkId,
@@ -58,7 +58,7 @@ List<Widget> buildZeroTierChildren({
               ? null
               : () {
                   dialogs.showCommonDialog(
-                    child: OverlayNetworkDetailsDialog(
+                    child: DetailsDialog(
                       title: appLocalizations.details(networkTitle),
                       items: networkItems,
                     ),
@@ -92,7 +92,7 @@ class _ZeroTierLocalNodeItem extends StatelessWidget {
     final status = details.online
         ? appLocalizations.online
         : appLocalizations.offline;
-    final items = <OverlayNetworkDetailItem>[
+    final items = <DetailItem>[
       if (details.node.isNotEmpty)
         (name: 'ID', value: details.node, copyable: true),
       (name: appLocalizations.status, value: status, copyable: false),
@@ -121,7 +121,7 @@ class _ZeroTierLocalNodeItem extends StatelessWidget {
           ? null
           : () {
               dialogs.showCommonDialog(
-                child: OverlayNetworkDetailsDialog(
+                child: DetailsDialog(
                   title: appLocalizations.details(appLocalizations.local),
                   items: items,
                 ),
@@ -155,7 +155,7 @@ class _ZeroTierPeerItem extends StatelessWidget {
     final color = peer.direct
         ? context.colorScheme.primary
         : context.colorScheme.outline;
-    final items = <OverlayNetworkDetailItem>[
+    final items = <DetailItem>[
       if (peer.address.isNotEmpty)
         (name: 'ID', value: peer.address, copyable: true),
       if (peer.direct)
@@ -195,7 +195,7 @@ class _ZeroTierPeerItem extends StatelessWidget {
           : null,
       onPressed: () {
         dialogs.showCommonDialog(
-          child: OverlayNetworkDetailsDialog(
+          child: DetailsDialog(
             title: appLocalizations.details(peer.address),
             items: items,
           ),

@@ -650,6 +650,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "fallbackIpcidrDesc": MessageLookupByLibrary.simpleMessage(
       "Nameserver results matching these CIDR prefixes are replaced with fallback results",
     ),
+    "features": MessageLookupByLibrary.simpleMessage("Features"),
     "fidelityScheme": MessageLookupByLibrary.simpleMessage("Fidelity"),
     "file": MessageLookupByLibrary.simpleMessage("File"),
     "fileDesc": MessageLookupByLibrary.simpleMessage(
@@ -1178,6 +1179,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxyNameserverPolicyDesc": MessageLookupByLibrary.simpleMessage(
       "Specify the nameserver policy for proxy nodes",
     ),
+    "proxyProvider": MessageLookupByLibrary.simpleMessage("Proxy provider"),
     "proxyProviderDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
       "The selected proxy providers are abnormal",
     ),
@@ -1287,6 +1289,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "routeModeConfig": MessageLookupByLibrary.simpleMessage("Use config"),
     "routes": MessageLookupByLibrary.simpleMessage("Routes"),
+    "routingMark": MessageLookupByLibrary.simpleMessage("Routing mark"),
     "ru": MessageLookupByLibrary.simpleMessage("Russian"),
     "rule": MessageLookupByLibrary.simpleMessage("Rule"),
     "ruleActionAndDesc": MessageLookupByLibrary.simpleMessage(

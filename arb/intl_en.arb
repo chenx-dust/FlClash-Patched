@@ -901,5 +901,8 @@
   "ruleLastMiss": "Last miss",
   "ruleType": "Rule type",
   "ruleUpdateFailed": "Could not change the rule. The configuration may have changed; refresh and try again.",
-  "sudoPasswordTitle": "Enter your password for sudo"
+  "sudoPasswordTitle": "Enter your password for sudo",
+  "proxyProvider": "Proxy provider",
+  "routingMark": "Routing mark",
+  "features": "Features"
 }

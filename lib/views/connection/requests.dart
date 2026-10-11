@@ -13,7 +13,12 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RequestsView extends ConsumerStatefulWidget {
-  const RequestsView({super.key});
+  final TrackerInfoFilter initialFilter;
+
+  const RequestsView({
+    super.key,
+    this.initialFilter = const TrackerInfoFilter(),
+  });
 
   @override
   ConsumerState<RequestsView> createState() => _RequestsViewState();
@@ -23,8 +28,8 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
   final _listController = TrackerInfoListController();
   late final ScrollController _scrollController;
   late final CoreController _core;
-  TrackerInfoFilter _trackerFilter = const TrackerInfoFilter();
-  bool _showFilterBar = false;
+  late TrackerInfoFilter _trackerFilter = widget.initialFilter;
+  late bool _showFilterBar = widget.initialFilter.isNotEmpty;
   bool _requestListening = false;
 
   void _setTrackerFilter(TrackerInfoFilter filter) {

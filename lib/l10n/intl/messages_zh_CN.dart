@@ -27,17 +27,17 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m2(count) => "${count} 天前";
 
-  static String m3(label) => "确定删除选中的 ${label} 吗？";
+  static String m3(label) => "确定删除选中的${label}吗？";
 
-  static String m4(label) => "确定删除当前 ${label} 吗？";
+  static String m4(label) => "确定删除当前${label}吗？";
 
-  static String m5(label) => "${label} 详情";
+  static String m5(label) => "${label}详情";
 
-  static String m6(label) => "${label} 不能为空";
+  static String m6(label) => "${label}不能为空";
 
   static String m7(count) => "${count} 个条目";
 
-  static String m8(label) => "${label} 当前已存在";
+  static String m8(label) => "${label}当前已存在";
 
   static String m9(name) => "${name} 已是最新版本";
 
@@ -70,11 +70,11 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m23(count) => "${count} 个月前";
 
-  static String m24(label) => "暂无 ${label}";
+  static String m24(label) => "暂无${label}";
 
-  static String m25(label) => "${label} 必须为数字";
+  static String m25(label) => "${label}必须为数字";
 
-  static String m26(label) => "${label} 必须在 1024 到 49151 之间，0 为禁用";
+  static String m26(label) => "${label}必须在 1024 到 49151 之间，0 为禁用";
 
   static String m27(count) => "${count} 个代理";
 
@@ -91,7 +91,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m33(interval) => "${interval} · 怠速已禁用";
 
-  static String m34(label) => "${label} 必须为 URL";
+  static String m34(label) => "${label}必须为 URL";
 
   static String m35(count) => "${count} 年前";
 
@@ -470,6 +470,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "fallbackIpcidrDesc": MessageLookupByLibrary.simpleMessage(
       "nameserver 结果命中这些 CIDR 前缀时改用 fallback 结果",
     ),
+    "features": MessageLookupByLibrary.simpleMessage("特性"),
     "fidelityScheme": MessageLookupByLibrary.simpleMessage("高保真"),
     "file": MessageLookupByLibrary.simpleMessage("文件"),
     "fileDesc": MessageLookupByLibrary.simpleMessage("直接上传配置文件"),
@@ -853,6 +854,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxyNameserverPolicyDesc": MessageLookupByLibrary.simpleMessage(
       "指定代理节点的域名服务器策略",
     ),
+    "proxyProvider": MessageLookupByLibrary.simpleMessage("代理集"),
     "proxyProviderDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
       "检测到选中的代理集存在异常",
     ),
@@ -924,6 +926,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "routeModeBypassPrivate": MessageLookupByLibrary.simpleMessage("绕过私有路由地址"),
     "routeModeConfig": MessageLookupByLibrary.simpleMessage("使用配置"),
     "routes": MessageLookupByLibrary.simpleMessage("路由"),
+    "routingMark": MessageLookupByLibrary.simpleMessage("路由标记"),
     "ru": MessageLookupByLibrary.simpleMessage("俄语"),
     "rule": MessageLookupByLibrary.simpleMessage("规则"),
     "ruleActionAndDesc": MessageLookupByLibrary.simpleMessage("逻辑规则 AND"),

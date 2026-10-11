@@ -27,17 +27,17 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m2(count) => "${count} 天前";
 
-  static String m3(label) => "確定刪除選取的 ${label} 嗎？";
+  static String m3(label) => "確定刪除選取的${label}嗎？";
 
-  static String m4(label) => "確定刪除目前 ${label} 嗎？";
+  static String m4(label) => "確定刪除目前${label}嗎？";
 
-  static String m5(label) => "${label} 詳情";
+  static String m5(label) => "${label}詳情";
 
-  static String m6(label) => "${label} 不能為空";
+  static String m6(label) => "${label}不能為空";
 
   static String m7(count) => "${count} 筆項目";
 
-  static String m8(label) => "${label} 目前已存在";
+  static String m8(label) => "${label}目前已存在";
 
   static String m9(name) => "${name} 已是最新版本";
 
@@ -64,17 +64,17 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m20(appName) =>
       "1. 開啟「系統設定」>「隱私權與安全性」\n2. 選擇「定位服務」\n3. 在右側清單中找到並勾選 ${appName}\n\n完成設定後，返回應用程式即可使用。感謝您的配合。";
 
-  static String m21(label, max) => "${label} 最多可輸入 ${max} 個字元";
+  static String m21(label, max) => "${label}最多可輸入 ${max} 個字元";
 
   static String m22(count) => "${count} 分鐘前";
 
   static String m23(count) => "${count} 個月前";
 
-  static String m24(label) => "目前沒有 ${label}";
+  static String m24(label) => "目前沒有${label}";
 
-  static String m25(label) => "${label} 必須為數字";
+  static String m25(label) => "${label}必須為數字";
 
-  static String m26(label) => "${label} 必須介於 1024 到 49151 之間，設為 0 可停用";
+  static String m26(label) => "${label}必須介於 1024 到 49151 之間，設為 0 可停用";
 
   static String m27(count) => "${count} 個代理";
 
@@ -91,7 +91,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m33(interval) => "${interval} · 已停用閒置更新";
 
-  static String m34(label) => "${label} 必須為 URL";
+  static String m34(label) => "${label}必須為 URL";
 
   static String m35(count) => "${count} 年前";
 
@@ -484,6 +484,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "fallbackIpcidrDesc": MessageLookupByLibrary.simpleMessage(
       "nameserver 的結果符合這些 CIDR 前綴時，改用 fallback 的結果",
     ),
+    "features": MessageLookupByLibrary.simpleMessage("特性"),
     "fidelityScheme": MessageLookupByLibrary.simpleMessage("高擬真"),
     "file": MessageLookupByLibrary.simpleMessage("檔案"),
     "fileDesc": MessageLookupByLibrary.simpleMessage("直接上傳設定檔"),
@@ -871,6 +872,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxyNameserverPolicyDesc": MessageLookupByLibrary.simpleMessage(
       "指定代理節點的 DNS 伺服器策略",
     ),
+    "proxyProvider": MessageLookupByLibrary.simpleMessage("代理集"),
     "proxyProviderDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
       "偵測到選取的代理集異常",
     ),
@@ -942,6 +944,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "routeModeBypassPrivate": MessageLookupByLibrary.simpleMessage("略過私有路由位址"),
     "routeModeConfig": MessageLookupByLibrary.simpleMessage("使用設定檔"),
     "routes": MessageLookupByLibrary.simpleMessage("路由"),
+    "routingMark": MessageLookupByLibrary.simpleMessage("路由標記"),
     "ru": MessageLookupByLibrary.simpleMessage("俄語"),
     "rule": MessageLookupByLibrary.simpleMessage("規則"),
     "ruleActionAndDesc": MessageLookupByLibrary.simpleMessage("邏輯規則 AND"),

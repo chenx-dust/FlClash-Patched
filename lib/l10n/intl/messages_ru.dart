@@ -690,6 +690,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "fallbackIpcidrDesc": MessageLookupByLibrary.simpleMessage(
       "Результаты nameserver из этих префиксов CIDR заменяются результатами fallback",
     ),
+    "features": MessageLookupByLibrary.simpleMessage("Возможности"),
     "fidelityScheme": MessageLookupByLibrary.simpleMessage("Точная передача"),
     "file": MessageLookupByLibrary.simpleMessage("Файл"),
     "fileDesc": MessageLookupByLibrary.simpleMessage(
@@ -1242,6 +1243,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxyNameserverPolicyDesc": MessageLookupByLibrary.simpleMessage(
       "Указать политику сервера имен для прокси-узлов",
     ),
+    "proxyProvider": MessageLookupByLibrary.simpleMessage("Провайдер прокси"),
     "proxyProviderDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
       "Обнаружены отклонения в выбранных провайдерах прокси",
     ),
@@ -1361,6 +1363,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Использовать конфигурацию",
     ),
     "routes": MessageLookupByLibrary.simpleMessage("Маршруты"),
+    "routingMark": MessageLookupByLibrary.simpleMessage("Метка маршрутизации"),
     "ru": MessageLookupByLibrary.simpleMessage("Русский"),
     "rule": MessageLookupByLibrary.simpleMessage("Правило"),
     "ruleActionAndDesc": MessageLookupByLibrary.simpleMessage(

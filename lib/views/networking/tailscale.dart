@@ -292,7 +292,7 @@ class _TailscaleNodeDetailsDialog extends StatelessWidget {
         appLocalizations.tailscaleExitNodeAvailable,
       if (node.expired) appLocalizations.tailscaleKeyExpired,
     ];
-    final items = <OverlayNetworkDetailItem>[
+    final items = <DetailItem>[
       if (node.hostName.isNotEmpty)
         (name: appLocalizations.host, value: node.hostName, copyable: true),
       if (node.id.isNotEmpty) (name: 'ID', value: node.id, copyable: true),
@@ -376,7 +376,7 @@ class _TailscaleNodeDetailsDialog extends StatelessWidget {
           copyable: true,
         ),
     ];
-    return OverlayNetworkDetailsDialog(
+    return DetailsDialog(
       title: appLocalizations.details(displayName),
       items: items,
     );
