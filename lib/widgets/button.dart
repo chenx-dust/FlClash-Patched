@@ -26,13 +26,26 @@ class _FabFocusOutlineState extends State<FabFocusOutline> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Focus(
       canRequestFocus: false,
       skipTraversal: true,
       onFocusChange: _handleFocusChange,
       child: Stack(
         children: [
-          widget.child,
+          Theme(
+            data: theme.copyWith(
+              floatingActionButtonTheme: theme.floatingActionButtonTheme
+                  .copyWith(
+                    elevation: 0,
+                    focusElevation: 0,
+                    hoverElevation: 0,
+                    highlightElevation: 0,
+                    disabledElevation: 0,
+                  ),
+            ),
+            child: widget.child,
+          ),
           if (_focused)
             const Positioned.fill(child: IgnorePointer(child: _FabFocusRing())),
         ],

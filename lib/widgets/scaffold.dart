@@ -323,7 +323,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
       ]);
     }
     return genActions([
-      if (isTV && widget.floatingActionButton != null)
+      if (isTV && widget.floatingActionButton != null) ...[
         FocusTraversalOrder(
           order: const PrimaryFocusOrder(),
           child: SizedBox(
@@ -334,6 +334,8 @@ class CommonScaffoldState extends State<CommonScaffold> {
             ),
           ),
         ),
+        const SizedBox(width: 4),
+      ],
       if (searchState != null && widget.searchState?.autoAddSearch == true)
         IconButton(
           tooltip: context.appLocalizations.search,
