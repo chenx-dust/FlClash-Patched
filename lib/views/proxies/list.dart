@@ -157,6 +157,7 @@ class ProxiesListViewState extends ConsumerState<ProxiesListView> {
     final surface = context.colorScheme.surface;
     final rowCount = (group.all.length + columns - 1) ~/ columns;
     final contentExtent = rowCount * (getItemHeight(cardType) + 8);
+    final groupStart = _groupOffsets.offsetOf(groupName);
     final animationMilliseconds = 100 + contentExtent * 0.25;
     final animationDuration = Duration(
       milliseconds: min(animationMilliseconds, isExpand ? 120 : 250).round(),
@@ -195,18 +196,24 @@ class ProxiesListViewState extends ConsumerState<ProxiesListView> {
               padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
               child: SizedBox(
                 height: headerHeight,
-                child: ListHeader(
-                  enterAnimated: false,
-                  onScrollToSelected: (groupName) {
-                    _scrollToGroupSelected(groupName, columns);
-                  },
-                  key: ValueKey(groupName),
-                  listHeaderStyle: listHeaderStyle,
-                  isExpand: isExpand,
-                  group: group,
-                  onChange: (groupName) {
-                    _handleChange(currentUnfoldSet, groupName);
-                  },
+                child: _ScrollRangeBuilder(
+                  controller: _controller,
+                  start: groupStart,
+                  end: isExpand ? groupStart + contentExtent : groupStart,
+                  builder: (floating) => ListHeader(
+                    enterAnimated: false,
+                    floating: floating,
+                    onScrollToSelected: (groupName) {
+                      _scrollToGroupSelected(groupName, columns);
+                    },
+                    key: ValueKey(groupName),
+                    listHeaderStyle: listHeaderStyle,
+                    isExpand: isExpand,
+                    group: group,
+                    onChange: (groupName) {
+                      _handleChange(currentUnfoldSet, groupName);
+                    },
+                  ),
                 ),
               ),
             ),
@@ -421,6 +428,65 @@ class ProxiesListViewState extends ConsumerState<ProxiesListView> {
   }
 }
 
+class _ScrollRangeBuilder extends StatefulWidget {
+  const _ScrollRangeBuilder({
+    required this.controller,
+    required this.start,
+    required this.end,
+    required this.builder,
+  });
+
+  final ScrollController controller;
+  final double start;
+  final double end;
+  final Widget Function(bool inRange) builder;
+
+  @override
+  State<_ScrollRangeBuilder> createState() => _ScrollRangeBuilderState();
+}
+
+class _ScrollRangeBuilderState extends State<_ScrollRangeBuilder> {
+  late bool _inRange = _computeInRange();
+
+  bool _computeInRange() {
+    if (!widget.controller.hasClients) return false;
+    final pixels = widget.controller.offset;
+    return pixels > widget.start && pixels <= widget.end;
+  }
+
+  void _handleScroll() {
+    final inRange = _computeInRange();
+    if (inRange != _inRange) {
+      setState(() => _inRange = inRange);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_handleScroll);
+  }
+
+  @override
+  void didUpdateWidget(_ScrollRangeBuilder oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller.removeListener(_handleScroll);
+      widget.controller.addListener(_handleScroll);
+    }
+    _inRange = _computeInRange();
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_handleScroll);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(_inRange);
+}
+
 class ListHeader extends ConsumerStatefulWidget {
   final Group group;
 
@@ -429,11 +495,13 @@ class ListHeader extends ConsumerStatefulWidget {
   final bool isExpand;
 
   final bool enterAnimated;
+  final bool floating;
   final ProxiesListHeaderStyle listHeaderStyle;
 
   const ListHeader({
     super.key,
     this.enterAnimated = true,
+    this.floating = false,
     this.listHeaderStyle = ProxiesListHeaderStyle.loose,
     required this.group,
     required this.onChange,
@@ -489,16 +557,39 @@ class _ListHeaderState extends ConsumerState<ListHeader> {
     widget.onChange(groupName);
   }
 
+  OutlinedBorder get _shape =>
+      widget.listHeaderStyle == ProxiesListHeaderStyle.tight
+      ? RoundedRectangleBorder(borderRadius: AppRadius.all(AppCorner.xl.ap))
+      : AppShape.all(AppCorner.xl.ap);
+
   @override
   Widget build(BuildContext context) {
+    final shadowColor = context.colorScheme.shadow;
+    return AnimatedContainer(
+      duration: commonDuration,
+      curve: Curves.easeOutCubic,
+      decoration: ShapeDecoration(
+        shape: _shape,
+        shadows: [
+          BoxShadow(
+            color: widget.floating
+                ? shadowColor.opacity15
+                : shadowColor.opacity0,
+            blurRadius: 2,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: _buildCard(),
+    );
+  }
+
+  Widget _buildCard() {
     return CommonCard(
       enterActionsOnRight: true,
       enterAnimated: widget.enterAnimated,
       key: widget.key,
-      radius: AppCorner.xl.ap,
-      shape: widget.listHeaderStyle == ProxiesListHeaderStyle.tight
-          ? RoundedRectangleBorder(borderRadius: AppRadius.all(AppCorner.xl.ap))
-          : null,
+      shape: _shape,
       type: CommonCardType.filled,
       child: Padding(
         padding: _contentPadding,
