@@ -189,7 +189,10 @@ void main() {
       () => core.getRules(),
     ).thenAnswer((_) async => [rule.copyWith(index: 0)]);
     await pumpView(tester);
-    expect(find.text('example.com'), findsOneWidget);
+    expect(
+      find.text('Domain(example.com)', findRichText: true),
+      findsOneWidget,
+    );
     expect(find.text('Added rules', findRichText: true), findsNothing);
     await closeView(tester);
   });
@@ -283,7 +286,7 @@ void main() {
       verify(() => core.getRules()).called(2);
       expect(container.read(providersProvider).single.count, 25);
       expect(find.byType(CircularProgressIndicator), findsNothing);
-      await tester.tap(find.text('ads', findRichText: true));
+      await tester.tap(find.text('RuleSet(ads)', findRichText: true));
       await tester.pumpAndSettle();
       expect(find.text('25 rules'), findsOneWidget);
       expect(tester.takeException(), isNull);
@@ -362,11 +365,18 @@ void main() {
   ) async {
     await pumpView(tester, width: 360);
     expect(find.text('#8'), findsOneWidget);
-    expect(find.text('example.com'), findsOneWidget);
+    expect(
+      find.text('Domain(example.com)', findRichText: true),
+      findsOneWidget,
+    );
     expect(find.text('Hits 12 · Misses 0'), findsOneWidget);
     expect(
       tester.getTopLeft(find.text('Hits 12 · Misses 0')).dy,
-      lessThan(tester.getTopLeft(find.text('example.com')).dy),
+      lessThan(
+        tester
+            .getTopLeft(find.text('Domain(example.com)', findRichText: true))
+            .dy,
+      ),
     );
     final statistics = tester.getRect(find.text('Hits 12 · Misses 0'));
     final toggle = tester.getRect(find.byType(Switch));
@@ -378,7 +388,10 @@ void main() {
           .searchState!
           .onSearch(query);
       await tester.pump(const Duration(milliseconds: 400));
-      expect(find.text('example.com'), findsOneWidget);
+      expect(
+        find.text('Domain(example.com)', findRichText: true),
+        findsOneWidget,
+      );
     }
     final search = tester
         .widget<CommonScaffold>(find.byType(CommonScaffold))
@@ -386,7 +399,7 @@ void main() {
     search.onRegexChange!(true);
     search.onSearch('[');
     await tester.pumpAndSettle();
-    expect(find.text('example.com'), findsNothing);
+    expect(find.text('Domain(example.com)', findRichText: true), findsNothing);
     expect(tester.takeException(), isNull);
     await closeView(tester);
   });
@@ -491,7 +504,7 @@ void main() {
     response.complete([rule]);
     await tester.pumpAndSettle();
     expect(find.text('Disconnected'), findsOneWidget);
-    expect(find.text('example.com'), findsNothing);
+    expect(find.text('Domain(example.com)', findRichText: true), findsNothing);
     await tester.pump(const Duration(seconds: 6));
     verify(() => core.getRules()).called(1);
     await closeView(tester);
@@ -520,19 +533,27 @@ void main() {
     tester,
   ) async {
     await pumpView(tester);
-    final position = tester.getTopLeft(find.text('example.com'));
+    final position = tester.getTopLeft(
+      find.text('Domain(example.com)', findRichText: true),
+    );
     final response = Completer<List<CoreRule>>();
     when(() => core.getRules()).thenAnswer((_) => response.future);
     await tester.pump(const Duration(seconds: 5));
     await tester.pump();
     expect(find.byType(LinearProgressIndicator), findsNothing);
-    expect(tester.getTopLeft(find.text('example.com')), position);
+    expect(
+      tester.getTopLeft(find.text('Domain(example.com)', findRichText: true)),
+      position,
+    );
     expect(tester.widget<Switch>(find.byType(Switch)).onChanged, isNotNull);
     response.complete([rule.copyWith(hitCount: 25)]);
     await tester.pump();
     await tester.pump();
     expect(find.text('Hits 25 · Misses 0'), findsOneWidget);
-    expect(tester.getTopLeft(find.text('example.com')), position);
+    expect(
+      tester.getTopLeft(find.text('Domain(example.com)', findRichText: true)),
+      position,
+    );
     await closeView(tester);
   });
 
@@ -586,8 +607,14 @@ void main() {
     await pumpView(tester);
     expect(find.byTooltip('Filter'), findsNothing);
     expect(find.text('2 rules'), findsNothing);
-    expect(find.text('example.com'), findsOneWidget);
-    expect(find.text('disabled.example'), findsOneWidget);
+    expect(
+      find.text('Domain(example.com)', findRichText: true),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Domain(disabled.example)', findRichText: true),
+      findsOneWidget,
+    );
     expect(find.text('#16'), findsOneWidget);
     await closeView(tester);
   });
@@ -599,7 +626,7 @@ void main() {
       (_) async => [rule.copyWith(size: 123, hitAt: DateTime(2026, 10, 6, 12))],
     );
     await pumpView(tester, width: 360);
-    await tester.tap(find.text('example.com'));
+    await tester.tap(find.text('Domain(example.com)', findRichText: true));
     await tester.pumpAndSettle();
     expect(find.text('123 rules'), findsOneWidget);
     await tester.ensureVisible(find.text('Last hit'));

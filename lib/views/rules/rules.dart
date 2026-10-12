@@ -436,7 +436,6 @@ class _RuleItem extends ConsumerWidget {
         ),
         children: [
           Text('#${rule.index + 1}'),
-          RecordLabel(label: rule.type),
           if (isAdded)
             RecordLabel(
               label: l10n.addedRules,
@@ -470,13 +469,24 @@ class _RuleItem extends ConsumerWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            payload,
-            style: styles.primary?.copyWith(fontWeight: FontWeight.w500),
+          Text.rich(
+            rule.payload.isEmpty
+                ? TextSpan(text: rule.type)
+                : TextSpan(
+                    children: [
+                      TextSpan(text: '${rule.type}('),
+                      TextSpan(
+                        text: rule.payload,
+                        style: const TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                      const TextSpan(text: ')'),
+                    ],
+                  ),
+            style: styles.primary,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           RuleProxyChain(target: rule.proxy, onNavigate: closeRules),
         ],
       ),
