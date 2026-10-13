@@ -328,7 +328,6 @@ class AppTray implements TrayPort {
       _buildProfileMenu(read),
       const TrayMenuSeparator(),
       ..._buildGroupMenu(trayState: trayState, read: read),
-      const TrayMenuSeparator(),
       TrayMenuCheckbox(
         label: _menuLabel(appLocalizations.tun, HotAction.tun, read),
         checked: trayState.tunEnable,
