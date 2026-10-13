@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
@@ -457,9 +459,40 @@ class _MemoryDetailsState extends State<_MemoryDetails> {
                     ],
                   ),
                 ),
+              const Divider(height: 24),
+              if (data.footprint > 0)
+                _MemoryStatRow(
+                  label: l10n.memoryFootprint,
+                  value: data.footprint,
+                ),
+              _MemoryStatRow(
+                label: l10n.memoryApp,
+                value: ProcessInfo.currentRss,
+              ),
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+class _MemoryStatRow extends StatelessWidget {
+  const _MemoryStatRow({required this.label, required this.value});
+
+  final String label;
+  final int value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Expanded(child: Text(label, style: context.textTheme.bodyMedium)),
+          const SizedBox(width: 8),
+          Text(_formatMemory(value), style: context.textTheme.bodySmall),
+        ],
       ),
     );
   }

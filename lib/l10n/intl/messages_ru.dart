@@ -949,7 +949,11 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "maxLengthTip": m21,
     "maximize": MessageLookupByLibrary.simpleMessage("Развернуть"),
+    "memoryApp": MessageLookupByLibrary.simpleMessage("Память приложения"),
     "memoryCleanup": MessageLookupByLibrary.simpleMessage("Очистить"),
+    "memoryFootprint": MessageLookupByLibrary.simpleMessage(
+      "Объём занимаемой памяти",
+    ),
     "memoryGC": MessageLookupByLibrary.simpleMessage("Метаданные GC"),
     "memoryHeapIdle": MessageLookupByLibrary.simpleMessage(
       "Удерживаемая свободная куча",

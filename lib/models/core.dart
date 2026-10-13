@@ -790,6 +790,7 @@ abstract class CoreMemoryInfo with _$CoreMemoryInfo {
     @Default(0) int metadata,
     @Default(0) int gc,
     @Default(0) int other,
+    @Default(0) int footprint,
   }) = _CoreMemoryInfo;
 
   int get total => sys - heapReleased;

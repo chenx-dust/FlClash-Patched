@@ -890,6 +890,8 @@
   "memoryTotal": "Go メモリ使用量",
   "memoryCleanup": "クリーンアップ",
   "memoryReadFailed": "メモリを読み取れません。再試行中…",
+  "memoryFootprint": "メモリフットプリント",
+  "memoryApp": "アプリのメモリ",
   "rulesDesc": "ルールとマッチ統計を表示",
   "ruleEnabled": "有効",
   "ruleDisabled": "無効",

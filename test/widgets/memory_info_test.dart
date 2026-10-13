@@ -318,6 +318,14 @@ void main() {
     );
     expect(find.textContaining('50.0%'), findsOneWidget);
     expect(find.textContaining('25.0%'), findsOneWidget);
+    expect(find.text('Memory footprint'), findsNothing);
+    expect(find.text('App memory'), findsOneWidget);
+
+    current = sample.copyWith(footprint: 8192);
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+    expect(find.text('Memory footprint'), findsOneWidget);
+    expect(find.text('8 KB'), findsOneWidget);
 
     current = const CoreMemoryInfo();
     await tester.pump(const Duration(seconds: 2));

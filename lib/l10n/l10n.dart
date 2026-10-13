@@ -7445,6 +7445,21 @@ class AppLocalizations {
     );
   }
 
+  /// `Memory footprint`
+  String get memoryFootprint {
+    return Intl.message(
+      'Memory footprint',
+      name: 'memoryFootprint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `App memory`
+  String get memoryApp {
+    return Intl.message('App memory', name: 'memoryApp', desc: '', args: []);
+  }
+
   /// `View rules and matching statistics`
   String get rulesDesc {
     return Intl.message(

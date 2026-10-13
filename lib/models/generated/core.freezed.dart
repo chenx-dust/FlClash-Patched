@@ -5236,7 +5236,7 @@ as List<String>,
 /// @nodoc
 mixin _$CoreMemoryInfo {
 
- int get sys; int get heapObjects; int get heapUnused; int get heapIdle; int get heapReleased; int get stacks; int get metadata; int get gc; int get other;
+ int get sys; int get heapObjects; int get heapUnused; int get heapIdle; int get heapReleased; int get stacks; int get metadata; int get gc; int get other; int get footprint;
 /// Create a copy of CoreMemoryInfo
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -5250,20 +5250,20 @@ $CoreMemoryInfoCopyWith<CoreMemoryInfo> get copyWith => _$CoreMemoryInfoCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as CoreMemoryInfo;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CoreMemoryInfo&&(identical(other.sys, _this.sys) || other.sys == _this.sys)&&(identical(other.heapObjects, _this.heapObjects) || other.heapObjects == _this.heapObjects)&&(identical(other.heapUnused, _this.heapUnused) || other.heapUnused == _this.heapUnused)&&(identical(other.heapIdle, _this.heapIdle) || other.heapIdle == _this.heapIdle)&&(identical(other.heapReleased, _this.heapReleased) || other.heapReleased == _this.heapReleased)&&(identical(other.stacks, _this.stacks) || other.stacks == _this.stacks)&&(identical(other.metadata, _this.metadata) || other.metadata == _this.metadata)&&(identical(other.gc, _this.gc) || other.gc == _this.gc)&&(identical(other.other, _this.other) || other.other == _this.other));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CoreMemoryInfo&&(identical(other.sys, _this.sys) || other.sys == _this.sys)&&(identical(other.heapObjects, _this.heapObjects) || other.heapObjects == _this.heapObjects)&&(identical(other.heapUnused, _this.heapUnused) || other.heapUnused == _this.heapUnused)&&(identical(other.heapIdle, _this.heapIdle) || other.heapIdle == _this.heapIdle)&&(identical(other.heapReleased, _this.heapReleased) || other.heapReleased == _this.heapReleased)&&(identical(other.stacks, _this.stacks) || other.stacks == _this.stacks)&&(identical(other.metadata, _this.metadata) || other.metadata == _this.metadata)&&(identical(other.gc, _this.gc) || other.gc == _this.gc)&&(identical(other.other, _this.other) || other.other == _this.other)&&(identical(other.footprint, _this.footprint) || other.footprint == _this.footprint));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as CoreMemoryInfo;
-  return Object.hash(runtimeType,_this.sys,_this.heapObjects,_this.heapUnused,_this.heapIdle,_this.heapReleased,_this.stacks,_this.metadata,_this.gc,_this.other);
+  return Object.hash(runtimeType,_this.sys,_this.heapObjects,_this.heapUnused,_this.heapIdle,_this.heapReleased,_this.stacks,_this.metadata,_this.gc,_this.other,_this.footprint);
 }
 
 @override
 String toString() {
   final _this = this as CoreMemoryInfo;
-  return 'CoreMemoryInfo(sys: ${_this.sys}, heapObjects: ${_this.heapObjects}, heapUnused: ${_this.heapUnused}, heapIdle: ${_this.heapIdle}, heapReleased: ${_this.heapReleased}, stacks: ${_this.stacks}, metadata: ${_this.metadata}, gc: ${_this.gc}, other: ${_this.other})';
+  return 'CoreMemoryInfo(sys: ${_this.sys}, heapObjects: ${_this.heapObjects}, heapUnused: ${_this.heapUnused}, heapIdle: ${_this.heapIdle}, heapReleased: ${_this.heapReleased}, stacks: ${_this.stacks}, metadata: ${_this.metadata}, gc: ${_this.gc}, other: ${_this.other}, footprint: ${_this.footprint})';
 }
 
 
@@ -5274,7 +5274,7 @@ abstract mixin class $CoreMemoryInfoCopyWith<$Res>  {
   factory $CoreMemoryInfoCopyWith(CoreMemoryInfo value, $Res Function(CoreMemoryInfo) _then) = _$CoreMemoryInfoCopyWithImpl;
 @useResult
 $Res call({
- int sys, int heapObjects, int heapUnused, int heapIdle, int heapReleased, int stacks, int metadata, int gc, int other
+ int sys, int heapObjects, int heapUnused, int heapIdle, int heapReleased, int stacks, int metadata, int gc, int other, int footprint
 });
 
 
@@ -5291,7 +5291,7 @@ class _$CoreMemoryInfoCopyWithImpl<$Res>
 
 /// Create a copy of CoreMemoryInfo
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? sys = null,Object? heapObjects = null,Object? heapUnused = null,Object? heapIdle = null,Object? heapReleased = null,Object? stacks = null,Object? metadata = null,Object? gc = null,Object? other = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? sys = null,Object? heapObjects = null,Object? heapUnused = null,Object? heapIdle = null,Object? heapReleased = null,Object? stacks = null,Object? metadata = null,Object? gc = null,Object? other = null,Object? footprint = null,}) {
   return _then(CoreMemoryInfo(
 sys: null == sys ? _self.sys : sys // ignore: cast_nullable_to_non_nullable
 as int,heapObjects: null == heapObjects ? _self.heapObjects : heapObjects // ignore: cast_nullable_to_non_nullable
@@ -5302,6 +5302,7 @@ as int,stacks: null == stacks ? _self.stacks : stacks // ignore: cast_nullable_t
 as int,metadata: null == metadata ? _self.metadata : metadata // ignore: cast_nullable_to_non_nullable
 as int,gc: null == gc ? _self.gc : gc // ignore: cast_nullable_to_non_nullable
 as int,other: null == other ? _self.other : other // ignore: cast_nullable_to_non_nullable
+as int,footprint: null == footprint ? _self.footprint : footprint // ignore: cast_nullable_to_non_nullable
 as int,
   ));
 }
@@ -5387,10 +5388,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int sys,  int heapObjects,  int heapUnused,  int heapIdle,  int heapReleased,  int stacks,  int metadata,  int gc,  int other)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int sys,  int heapObjects,  int heapUnused,  int heapIdle,  int heapReleased,  int stacks,  int metadata,  int gc,  int other,  int footprint)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CoreMemoryInfo() when $default != null:
-return $default(_that.sys,_that.heapObjects,_that.heapUnused,_that.heapIdle,_that.heapReleased,_that.stacks,_that.metadata,_that.gc,_that.other);case _:
+return $default(_that.sys,_that.heapObjects,_that.heapUnused,_that.heapIdle,_that.heapReleased,_that.stacks,_that.metadata,_that.gc,_that.other,_that.footprint);case _:
   return orElse();
 
 }
@@ -5408,10 +5409,10 @@ return $default(_that.sys,_that.heapObjects,_that.heapUnused,_that.heapIdle,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int sys,  int heapObjects,  int heapUnused,  int heapIdle,  int heapReleased,  int stacks,  int metadata,  int gc,  int other)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int sys,  int heapObjects,  int heapUnused,  int heapIdle,  int heapReleased,  int stacks,  int metadata,  int gc,  int other,  int footprint)  $default,) {final _that = this;
 switch (_that) {
 case _CoreMemoryInfo():
-return $default(_that.sys,_that.heapObjects,_that.heapUnused,_that.heapIdle,_that.heapReleased,_that.stacks,_that.metadata,_that.gc,_that.other);case _:
+return $default(_that.sys,_that.heapObjects,_that.heapUnused,_that.heapIdle,_that.heapReleased,_that.stacks,_that.metadata,_that.gc,_that.other,_that.footprint);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -5428,10 +5429,10 @@ return $default(_that.sys,_that.heapObjects,_that.heapUnused,_that.heapIdle,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int sys,  int heapObjects,  int heapUnused,  int heapIdle,  int heapReleased,  int stacks,  int metadata,  int gc,  int other)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int sys,  int heapObjects,  int heapUnused,  int heapIdle,  int heapReleased,  int stacks,  int metadata,  int gc,  int other,  int footprint)?  $default,) {final _that = this;
 switch (_that) {
 case _CoreMemoryInfo() when $default != null:
-return $default(_that.sys,_that.heapObjects,_that.heapUnused,_that.heapIdle,_that.heapReleased,_that.stacks,_that.metadata,_that.gc,_that.other);case _:
+return $default(_that.sys,_that.heapObjects,_that.heapUnused,_that.heapIdle,_that.heapReleased,_that.stacks,_that.metadata,_that.gc,_that.other,_that.footprint);case _:
   return null;
 
 }
@@ -5443,7 +5444,7 @@ return $default(_that.sys,_that.heapObjects,_that.heapUnused,_that.heapIdle,_tha
 @JsonSerializable()
 
 class _CoreMemoryInfo extends CoreMemoryInfo {
-  const _CoreMemoryInfo({this.sys = 0, this.heapObjects = 0, this.heapUnused = 0, this.heapIdle = 0, this.heapReleased = 0, this.stacks = 0, this.metadata = 0, this.gc = 0, this.other = 0}): super._();
+  const _CoreMemoryInfo({this.sys = 0, this.heapObjects = 0, this.heapUnused = 0, this.heapIdle = 0, this.heapReleased = 0, this.stacks = 0, this.metadata = 0, this.gc = 0, this.other = 0, this.footprint = 0}): super._();
   factory _CoreMemoryInfo.fromJson(Map<String, dynamic> json) => _$CoreMemoryInfoFromJson(json);
 
 @override@JsonKey() final  int sys;
@@ -5455,6 +5456,7 @@ class _CoreMemoryInfo extends CoreMemoryInfo {
 @override@JsonKey() final  int metadata;
 @override@JsonKey() final  int gc;
 @override@JsonKey() final  int other;
+@override@JsonKey() final  int footprint;
 
 /// Create a copy of CoreMemoryInfo
 /// with the given fields replaced by the non-null parameter values.
@@ -5469,18 +5471,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CoreMemoryInfo&&(identical(other.sys, sys) || other.sys == sys)&&(identical(other.heapObjects, heapObjects) || other.heapObjects == heapObjects)&&(identical(other.heapUnused, heapUnused) || other.heapUnused == heapUnused)&&(identical(other.heapIdle, heapIdle) || other.heapIdle == heapIdle)&&(identical(other.heapReleased, heapReleased) || other.heapReleased == heapReleased)&&(identical(other.stacks, stacks) || other.stacks == stacks)&&(identical(other.metadata, metadata) || other.metadata == metadata)&&(identical(other.gc, gc) || other.gc == gc)&&(identical(other.other, this.other) || other.other == this.other));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CoreMemoryInfo&&(identical(other.sys, sys) || other.sys == sys)&&(identical(other.heapObjects, heapObjects) || other.heapObjects == heapObjects)&&(identical(other.heapUnused, heapUnused) || other.heapUnused == heapUnused)&&(identical(other.heapIdle, heapIdle) || other.heapIdle == heapIdle)&&(identical(other.heapReleased, heapReleased) || other.heapReleased == heapReleased)&&(identical(other.stacks, stacks) || other.stacks == stacks)&&(identical(other.metadata, metadata) || other.metadata == metadata)&&(identical(other.gc, gc) || other.gc == gc)&&(identical(other.other, this.other) || other.other == this.other)&&(identical(other.footprint, footprint) || other.footprint == footprint));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,sys,heapObjects,heapUnused,heapIdle,heapReleased,stacks,metadata,gc,other);
+    return Object.hash(runtimeType,sys,heapObjects,heapUnused,heapIdle,heapReleased,stacks,metadata,gc,other,footprint);
 }
 
 @override
 String toString() {
-    return 'CoreMemoryInfo(sys: $sys, heapObjects: $heapObjects, heapUnused: $heapUnused, heapIdle: $heapIdle, heapReleased: $heapReleased, stacks: $stacks, metadata: $metadata, gc: $gc, other: $other)';
+    return 'CoreMemoryInfo(sys: $sys, heapObjects: $heapObjects, heapUnused: $heapUnused, heapIdle: $heapIdle, heapReleased: $heapReleased, stacks: $stacks, metadata: $metadata, gc: $gc, other: $other, footprint: $footprint)';
 }
 
 
@@ -5491,7 +5493,7 @@ abstract mixin class _$CoreMemoryInfoCopyWith<$Res> implements $CoreMemoryInfoCo
   factory _$CoreMemoryInfoCopyWith(_CoreMemoryInfo value, $Res Function(_CoreMemoryInfo) _then) = __$CoreMemoryInfoCopyWithImpl;
 @override @useResult
 $Res call({
- int sys, int heapObjects, int heapUnused, int heapIdle, int heapReleased, int stacks, int metadata, int gc, int other
+ int sys, int heapObjects, int heapUnused, int heapIdle, int heapReleased, int stacks, int metadata, int gc, int other, int footprint
 });
 
 
@@ -5508,7 +5510,7 @@ class __$CoreMemoryInfoCopyWithImpl<$Res>
 
 /// Create a copy of CoreMemoryInfo
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? sys = null,Object? heapObjects = null,Object? heapUnused = null,Object? heapIdle = null,Object? heapReleased = null,Object? stacks = null,Object? metadata = null,Object? gc = null,Object? other = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? sys = null,Object? heapObjects = null,Object? heapUnused = null,Object? heapIdle = null,Object? heapReleased = null,Object? stacks = null,Object? metadata = null,Object? gc = null,Object? other = null,Object? footprint = null,}) {
   return _then(_CoreMemoryInfo(
 sys: null == sys ? _self.sys : sys // ignore: cast_nullable_to_non_nullable
 as int,heapObjects: null == heapObjects ? _self.heapObjects : heapObjects // ignore: cast_nullable_to_non_nullable
@@ -5519,6 +5521,7 @@ as int,stacks: null == stacks ? _self.stacks : stacks // ignore: cast_nullable_t
 as int,metadata: null == metadata ? _self.metadata : metadata // ignore: cast_nullable_to_non_nullable
 as int,gc: null == gc ? _self.gc : gc // ignore: cast_nullable_to_non_nullable
 as int,other: null == other ? _self.other : other // ignore: cast_nullable_to_non_nullable
+as int,footprint: null == footprint ? _self.footprint : footprint // ignore: cast_nullable_to_non_nullable
 as int,
   ));
 }

@@ -12,6 +12,7 @@ type MemoryInfo struct {
 	Metadata     uint64 `json:"metadata"`
 	GC           uint64 `json:"gc"`
 	Other        uint64 `json:"other"`
+	Footprint    uint64 `json:"footprint,omitempty"`
 }
 
 func memoryInfoFromStats(stats runtime.MemStats) MemoryInfo {

@@ -890,6 +890,8 @@
   "memoryTotal": "Go 内存占用",
   "memoryCleanup": "清理",
   "memoryReadFailed": "无法读取内存，正在重试…",
+  "memoryFootprint": "进程物理内存占用",
+  "memoryApp": "应用内存",
   "rulesDesc": "查看规则及匹配统计",
   "ruleEnabled": "已启用",
   "ruleDisabled": "已禁用",

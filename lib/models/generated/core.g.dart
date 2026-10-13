@@ -440,6 +440,7 @@ _CoreMemoryInfo _$CoreMemoryInfoFromJson(Map<String, dynamic> json) =>
       metadata: (json['metadata'] as num?)?.toInt() ?? 0,
       gc: (json['gc'] as num?)?.toInt() ?? 0,
       other: (json['other'] as num?)?.toInt() ?? 0,
+      footprint: (json['footprint'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$CoreMemoryInfoToJson(_CoreMemoryInfo instance) =>
@@ -453,4 +454,5 @@ Map<String, dynamic> _$CoreMemoryInfoToJson(_CoreMemoryInfo instance) =>
       'metadata': instance.metadata,
       'gc': instance.gc,
       'other': instance.other,
+      'footprint': instance.footprint,
     };

@@ -905,7 +905,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "maxFailedTimes": MessageLookupByLibrary.simpleMessage("Max failures"),
     "maxLengthTip": m21,
     "maximize": MessageLookupByLibrary.simpleMessage("Maximize"),
+    "memoryApp": MessageLookupByLibrary.simpleMessage("App memory"),
     "memoryCleanup": MessageLookupByLibrary.simpleMessage("Clean up"),
+    "memoryFootprint": MessageLookupByLibrary.simpleMessage("Memory footprint"),
     "memoryGC": MessageLookupByLibrary.simpleMessage("GC metadata"),
     "memoryHeapIdle": MessageLookupByLibrary.simpleMessage(
       "Retained idle heap",

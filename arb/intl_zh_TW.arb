@@ -889,6 +889,8 @@
   "memoryTotal": "Go 記憶體用量",
   "memoryCleanup": "清理",
   "memoryReadFailed": "無法讀取記憶體，正在重試…",
+  "memoryFootprint": "處理程序實體記憶體用量",
+  "memoryApp": "應用程式記憶體",
   "rulesDesc": "檢視規則及匹配統計",
   "ruleEnabled": "已啟用",
   "ruleDisabled": "已停用",

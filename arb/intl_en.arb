@@ -890,6 +890,8 @@
   "memoryTotal": "Go memory usage",
   "memoryCleanup": "Clean up",
   "memoryReadFailed": "Unable to read memory. Retrying…",
+  "memoryFootprint": "Memory footprint",
+  "memoryApp": "App memory",
   "rulesDesc": "View rules and matching statistics",
   "ruleEnabled": "Enabled",
   "ruleDisabled": "Disabled",
