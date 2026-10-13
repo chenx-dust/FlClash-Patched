@@ -14,11 +14,43 @@ import 'util.dart';
 
 final _log = Logger('go_builder');
 
-String _resolveGoLdflags(Target target, BuildConfig config) {
-  if (target.goos != 'android' || !target.isLib) {
-    return config.goLdflags;
+const _mihomoVersionSymbol = 'github.com/metacubex/mihomo/constant.Version';
+
+String _resolveGoLdflags(
+  Target target,
+  BuildConfig config, {
+  String? mihomoVersion,
+}) {
+  final flags = [
+    config.goLdflags,
+    if (mihomoVersion != null) '-X $_mihomoVersionSymbol=$mihomoVersion',
+    if (target.goos == 'android' && target.isLib)
+      '-extldflags -Wl,-z,max-page-size=16384',
+  ];
+  return flags.join(' ');
+}
+
+/// Upstream tags only: the fork's own `flclash/*` and `Prerelease-*` tags
+/// would otherwise win and hide which upstream release the core is based on.
+String? _resolveMihomoVersion(String mihomoPath) {
+  try {
+    final result = Process.runSync('git', [
+      'describe',
+      '--tags',
+      '--abbrev=0',
+      '--match',
+      'v[0-9]*',
+    ], workingDirectory: mihomoPath);
+    final version = (result.stdout as String).trim();
+    if (result.exitCode != 0 || version.isEmpty) {
+      _log.warning('Cannot describe mihomo version: ${result.stderr}');
+      return null;
+    }
+    return version;
+  } on ProcessException catch (error) {
+    _log.warning('Cannot describe mihomo version: $error');
+    return null;
   }
-  return '${config.goLdflags} -extldflags -Wl,-z,max-page-size=16384';
 }
 
 String _resolveIosSdkPath() {
@@ -65,6 +97,9 @@ class GoBuilder {
 
   String get _corePath => p.join(rootDir, config.coreDir);
   String get _outputPath => p.join(rootDir, config.outputDir);
+  late final String? _mihomoVersion = _resolveMihomoVersion(
+    p.join(_corePath, 'mihomo'),
+  );
 
   String _resolveCc(Target target) {
     if (target.goos == 'ios') {
@@ -197,7 +232,7 @@ class GoBuilder {
     final buildMode = _buildMode(target);
     return [
       'build',
-      '-ldflags=${_resolveGoLdflags(target, config)}',
+      '-ldflags=${_resolveGoLdflags(target, config, mihomoVersion: _mihomoVersion)}',
       '-tags=${_buildTags(target)}',
       if (buildMode != null) '-buildmode=$buildMode',
       if (outFile != null) ...['-o', outFile],

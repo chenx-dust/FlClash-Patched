@@ -165,6 +165,7 @@ class _RecordingCoreHandler extends CoreHandlerInterface {
         'heapReleased': 2048,
       },
       CoreMethod.getGoroutineCount => 42,
+      CoreMethod.getCoreVersion => 'v1.19.31',
       CoreMethod.queryRule => {
         'target': 'example.com',
         'port': 443,
@@ -449,6 +450,7 @@ void main() {
     expect(memory.other, 128);
     expect(memory.heapReleased, 2048);
     expect(await handler.getGoroutineCount(), 42);
+    expect(await handler.getCoreVersion(), 'v1.19.31');
     final dnsQuery = await handler.queryDns('example.com', 'AAAA');
     expect(handler.calls[CoreMethod.queryDns], {
       'domain': 'example.com',

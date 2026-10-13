@@ -8,6 +8,7 @@ import (
 	"unsafe"
 
 	"github.com/metacubex/mihomo/component/age"
+	"github.com/metacubex/mihomo/constant"
 )
 
 type MethodCall struct {
@@ -337,6 +338,9 @@ var methodHandlers = map[CoreMethod]methodHandler{
 	}),
 	getGoroutineCountMethod: withoutArguments(func(response MethodResponse) {
 		response.success(handleGetGoroutineCount())
+	}),
+	getCoreVersionMethod: withoutArguments(func(response MethodResponse) {
+		response.success(constant.Version)
 	}),
 	clearEffectMethod: withArguments(func(profileId *int64, response MethodResponse) {
 		safeGo(response, func() {

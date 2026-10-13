@@ -230,6 +230,7 @@ const (
 	logoutTailscaleMethod                CoreMethod = "logoutTailscale"
 	getMemoryMethod                      CoreMethod = "getMemory"
 	getGoroutineCountMethod              CoreMethod = "getGoroutineCount"
+	getCoreVersionMethod                 CoreMethod = "getCoreVersion"
 	updateGeoDataMethod                  CoreMethod = "updateGeoData"
 	updateExternalProviderMethod         CoreMethod = "updateExternalProvider"
 	sideLoadExternalProviderMethod       CoreMethod = "sideLoadExternalProvider"

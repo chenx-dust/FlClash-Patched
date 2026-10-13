@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/core/method.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
@@ -109,13 +110,47 @@ class AboutView extends ConsumerWidget {
   }
 }
 
-class _AboutHero extends StatelessWidget {
+class _AboutHero extends ConsumerStatefulWidget {
   final VoidCallback onEnterDeveloperMode;
 
   const _AboutHero({required this.onEnterDeveloperMode});
 
+  @override
+  ConsumerState<_AboutHero> createState() => _AboutHeroState();
+}
+
+class _AboutHeroState extends ConsumerState<_AboutHero> {
   static const _logoSize = 96.0;
   static const _logoInset = 14.0;
+
+  String? _coreVersion;
+
+  @override
+  void initState() {
+    super.initState();
+    ref.listenManual(coreStatusProvider, (_, status) {
+      if (status == CoreStatus.connected) {
+        _loadCoreVersion();
+      }
+    }, fireImmediately: true);
+  }
+
+  Future<void> _loadCoreVersion() async {
+    if (_coreVersion != null) {
+      return;
+    }
+    try {
+      final version = await ref.read(coreHandlerProvider).getCoreVersion();
+      if (mounted && version.isNotEmpty) {
+        setState(() => _coreVersion = version);
+      }
+    } catch (error) {
+      commonPrint.log(
+        'getCoreVersion error: $error',
+        logLevel: coreFailureLogLevel(error),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +163,7 @@ class _AboutHero extends StatelessWidget {
       child: Column(
         children: [
           _DeveloperModeDetector(
-            onEnterDeveloperMode: onEnterDeveloperMode,
+            onEnterDeveloperMode: widget.onEnterDeveloperMode,
             child: DecoratedBox(
               decoration: ShapeDecoration(
                 color: colorScheme.surfaceContainerHigh,
@@ -172,6 +207,12 @@ class _AboutHero extends StatelessWidget {
                 color: colorScheme.primary,
                 foregroundColor: colorScheme.onPrimary,
               ),
+              if (_coreVersion case final coreVersion?)
+                _Pill(
+                  label: 'mihomo $coreVersion',
+                  color: colorScheme.secondaryContainer,
+                  foregroundColor: colorScheme.onSecondaryContainer,
+                ),
               _Pill(
                 label: 'GPL-3.0',
                 color: colorScheme.surfaceContainerHighest,

@@ -262,6 +262,10 @@ class CoreController {
     return _interface.getGoroutineCount();
   }
 
+  Future<String> getCoreVersion() async {
+    return _interface.getCoreVersion();
+  }
+
   void resetTraffic() {
     _interface.resetTraffic();
   }
