@@ -31,7 +31,7 @@ void main() {
     globalState.container = container;
     activeOptions = container.read(vpnOptionsProvider);
     readOptions = null;
-    tunnelState = ValueNotifier(TunnelState.pending);
+    tunnelState = ValueNotifier(TunnelState.connected);
   });
 
   tearDown(() {
@@ -259,6 +259,7 @@ void main() {
     (tester) async {
       final startupOptions = activeOptions;
       activeOptions = null;
+      tunnelState.value = TunnelState.pending;
       await pumpVpnManager(tester);
       container.read(runTimeProvider.notifier).value = 1;
       container
@@ -279,6 +280,40 @@ void main() {
       await drainTimers(tester);
     },
   );
+
+  testWidgets('ignores the outgoing run while a restart is in flight', (
+    tester,
+  ) async {
+    await pumpVpnManager(tester);
+    container.read(runTimeProvider.notifier).value = 1;
+    container
+        .read(vpnSettingProvider.notifier)
+        .update((state) => state.copyWith(ipv6: true));
+    await tester.pump(const Duration(milliseconds: 601));
+    expect(
+      find.text(currentAppLocalizations.vpnConfigChangeDetected),
+      findsOneWidget,
+    );
+    await tester.pump(const Duration(seconds: 7, milliseconds: 500));
+
+    container.read(runTimeProvider.notifier).value = null;
+    tunnelState.value = TunnelState.pending;
+    container.read(runTimeProvider.notifier).value = 2;
+    await tester.pump(const Duration(milliseconds: 601));
+    expect(
+      find.text(currentAppLocalizations.vpnConfigChangeDetected),
+      findsNothing,
+    );
+
+    activeOptions = container.read(vpnOptionsProvider);
+    tunnelState.value = TunnelState.connected;
+    await tester.pump(const Duration(milliseconds: 601));
+    expect(
+      find.text(currentAppLocalizations.vpnConfigChangeDetected),
+      findsNothing,
+    );
+    await drainTimers(tester);
+  });
 
   testWidgets('recovers from failed reads when the app resumes', (
     tester,

@@ -60,6 +60,11 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
     @Volatile
     private var transition: RunState? = null
 
+    // Set by every stop request: a start that overtakes the stop before it ran must still cycle the
+    // service, or a restart meant to apply new options leaves the old run in place.
+    @Volatile
+    private var restartOwed = false
+
     val runState = mutableRunState.asStateFlow()
 
     val isRunRequested: Boolean
@@ -134,6 +139,7 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
     }
 
     fun requestStop(): Deferred<Boolean> {
+        restartOwed = true
         val request = createRequest(running = false)
         return host.scope.async { stop(request) }
     }
@@ -145,7 +151,7 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
 
     // No new request for a settled run: one refused at a prompt would take the service down.
     private fun isStartedAs(options: VpnOptions?): Boolean =
-        runState.value == RunState.STARTED && host.runtime?.vpn == options?.enable
+        runState.value == RunState.STARTED && !restartOwed && host.runtime?.vpn == options?.enable
 
     // Claimed before setup so an action landing meanwhile cancels this start rather than racing it.
     private suspend fun startFromPreferences() {
@@ -255,9 +261,16 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
         return transitionLock.withLock {
             when {
                 !isCurrent(request) -> false
-                host.runtime?.vpn == options.enable -> true
-                else -> transitioning(RunState.STARTING) {
-                    host.startService(withLocalNetworkFallback(options)) && isCurrent(request)
+                !restartOwed && host.runtime?.vpn == options.enable -> true
+                else -> {
+                    if (restartOwed && host.runtime != null) {
+                        stopLocked()
+                    }
+                    restartOwed = false
+                    transitioning(RunState.STARTING) {
+                        host.startService(withLocalNetworkFallback(options), options) &&
+                            isCurrent(request)
+                    }
                 }
             }
         }
@@ -292,6 +305,7 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
             return@withLock false
         }
         abandonVpnPreparation()
+        restartOwed = false
         if (host.runtime != null) {
             stopLocked()
         }

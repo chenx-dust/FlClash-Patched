@@ -53,8 +53,14 @@ class _VpnContainerState extends ConsumerState<VpnManager>
     debouncer.call(this, _checkOptions);
   }
 
+  // Mid-restart, native still reports the run being torn down.
+  bool get _canCheck =>
+      mounted &&
+      ref.read(isStartProvider) &&
+      (_tunnelState == null || _tunnelState.value == TunnelState.connected);
+
   Future<void> _checkOptions() async {
-    if (!mounted || !ref.read(isStartProvider)) return;
+    if (!_canCheck) return;
     final check = Object();
     _check = check;
     try {
@@ -62,7 +68,7 @@ class _VpnContainerState extends ConsumerState<VpnManager>
           await (widget.readActiveOptions?.call() ??
               service?.getActiveVpnOptions() ??
               Future<VpnOptions?>.value());
-      if (!mounted || !identical(_check, check) || !ref.read(isStartProvider)) {
+      if (!identical(_check, check) || !_canCheck) {
         return;
       }
       final options = ref.read(vpnOptionsProvider);

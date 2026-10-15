@@ -157,7 +157,7 @@ private class FakeHost(override val scope: CoroutineScope) : ServiceStateHost {
         return setupResult
     }
 
-    override suspend fun startService(options: VpnOptions): Boolean {
+    override suspend fun startService(options: VpnOptions, requested: VpnOptions): Boolean {
         startCalls++
         lastStartOptions = options
         beforeStartService?.invoke()
@@ -166,6 +166,7 @@ private class FakeHost(override val scope: CoroutineScope) : ServiceStateHost {
         }
         runtime = ServiceRuntime(
             options = options.copy(enable = runsAsVpn ?: options.enable),
+            requested = requested,
             startedAtMillis = STARTED_AT,
         )
         return true
@@ -396,6 +397,7 @@ class ServiceStateMachineTest {
 
         assertTrue(machine.requestStart().await())
         assertEquals("mips", host.lastStartOptions?.stack)
+        assertEquals("system", host.runtime?.requested?.stack)
         assertTrue(host.toasts.contains(host.localNetworkMessage))
     }
 
@@ -448,6 +450,39 @@ class ServiceStateMachineTest {
         assertEquals(RunState.STOPPED, machine.runState.value)
         assertEquals(1, host.stopCalls)
         assertEquals(0, host.stoppedNotifications)
+    }
+
+    @Test
+    fun `a start that overtakes a pending stop restarts with the new options`() = runTest {
+        val host = FakeHost(backgroundScope)
+        val machine = ServiceStateMachine(host)
+        machine.syncSharedState(configuredState())
+        machine.requestStart().await()
+        machine.syncSharedState(configuredState(stack = "mixed"))
+
+        val stop = machine.requestStop()
+        val start = machine.requestStart()
+
+        assertFalse(stop.await())
+        assertTrue(start.await())
+        assertEquals(1, host.stopCalls)
+        assertEquals(2, host.startCalls)
+        assertEquals("mixed", host.runtime?.options?.stack)
+        assertEquals(RunState.STARTED, machine.runState.value)
+    }
+
+    @Test
+    fun `a start after a completed stop owes no second restart`() = runTest {
+        val host = FakeHost(backgroundScope)
+        val machine = ServiceStateMachine(host)
+        machine.syncSharedState(configuredState())
+        machine.requestStart().await()
+        machine.requestStop().await()
+        machine.requestStart().await()
+
+        assertTrue(machine.requestStart().await())
+        assertEquals(1, host.stopCalls)
+        assertEquals(2, host.startCalls)
     }
 
     @Test

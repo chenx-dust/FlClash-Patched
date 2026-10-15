@@ -14,8 +14,10 @@ import cc.chenx.flclash.service.models.VpnOptions
 import io.flutter.embedding.engine.FlutterEngine
 import kotlinx.coroutines.CoroutineScope
 
+/** [requested] is what Flutter asked for; [options] may carry a fallback the device forced. */
 internal data class ServiceRuntime(
     val options: VpnOptions,
+    val requested: VpnOptions,
     val startedAtMillis: Long,
 ) {
     val vpn: Boolean
@@ -55,7 +57,7 @@ internal interface ServiceStateHost {
 
     suspend fun quickSetup(initParams: String, setupParams: String): Result<String>
 
-    suspend fun startService(options: VpnOptions): Boolean
+    suspend fun startService(options: VpnOptions, requested: VpnOptions): Boolean
 
     suspend fun stopService()
 }
@@ -155,8 +157,8 @@ internal object AndroidServiceStateHost : ServiceStateHost {
     override suspend fun quickSetup(initParams: String, setupParams: String): Result<String> =
         ServiceController.quickSetup(initParams, setupParams)
 
-    override suspend fun startService(options: VpnOptions): Boolean =
-        ServiceController.start(options)
+    override suspend fun startService(options: VpnOptions, requested: VpnOptions): Boolean =
+        ServiceController.start(options, requested)
 
     override suspend fun stopService() = ServiceController.stop()
 }

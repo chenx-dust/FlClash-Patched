@@ -22,6 +22,9 @@ final class TunnelCoordinator {
   private var tunnelRequest: TunnelRequest?
   private var tunnelWait: TunnelWait?
   private var isCoordinatorRunning = false
+  // A start that supersedes a stop before it stopped anything must still
+  // cycle the tunnel, or a restart meant to apply new options is lost.
+  private var restartOwed = false
 
   private var configurationContinuations: [CheckedContinuation<Void, Error>] = []
   private var needsStatusRefresh = false
@@ -51,6 +54,9 @@ final class TunnelCoordinator {
       return
     }
 
+    if target == .stopped {
+      restartOwed = true
+    }
     requestGeneration &+= 1
     let request = TunnelRequest(
       generation: requestGeneration,
@@ -233,6 +239,13 @@ final class TunnelCoordinator {
       let status = manager.connection.status
       recordObservedTunnelStatus(status, notifyExternal: false)
       if status.tunnelState == .running {
+        if restartOwed {
+          guard await stopBeforeRestart(manager: manager, request: request)
+          else {
+            return
+          }
+          continue
+        }
         finishTunnelRequest(request, actualState: .running)
         return
       }
@@ -339,7 +352,7 @@ final class TunnelCoordinator {
     }
     switch result {
     case .status(let status):
-      if status.tunnelState == .running {
+      if status.tunnelState == .running && !restartOwed {
         finishTunnelRequest(request, actualState: .running)
         return false
       }
@@ -347,6 +360,24 @@ final class TunnelCoordinator {
     case .superseded:
       return false
     }
+  }
+
+  private func stopBeforeRestart(
+    manager: NETunnelProviderManager,
+    request: TunnelRequest
+  ) async -> Bool {
+    restartOwed = false
+    manager.connection.stopVPNTunnel()
+    log("restart stop requested")
+    let result = await waitForTunnelStatus(
+      manager: manager,
+      request: request,
+      purpose: .stopping
+    )
+    guard isCurrent(request), case .status = result else {
+      return false
+    }
+    return true
   }
 
   private func reconcileStoppedTunnel(
@@ -480,6 +511,7 @@ final class TunnelCoordinator {
       return
     }
     tunnelRequest = nil
+    restartOwed = false
     defer { publishConnectionState() }
     guard let actualState else {
       log(
