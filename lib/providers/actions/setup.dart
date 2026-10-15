@@ -24,6 +24,7 @@ class SetupAction extends _$SetupAction {
   final _listenerScheduler = SerialTaskScheduler();
   _RunRequest? _latestRunRequest;
   DateTime? _startTime;
+  var _pendingForceApply = false;
 
   bool get _isRunning => _startTime != null && _startTime!.isBeforeNow;
 
@@ -74,6 +75,7 @@ class SetupAction extends _$SetupAction {
     if (!running) {
       _startTime = null;
       debouncer.cancel(FunctionTag.applyProfile);
+      _pendingForceApply = false;
       _updateRunTime();
       return;
     }
@@ -258,9 +260,12 @@ class SetupAction extends _$SetupAction {
   }
 
   void applyProfileDebounce({bool silence = false, bool force = false}) {
-    debouncer.call(FunctionTag.applyProfile, (silence, force) {
+    _pendingForceApply |= force;
+    debouncer.call(FunctionTag.applyProfile, (silence) {
+      final force = _pendingForceApply;
+      _pendingForceApply = false;
       applyProfile(silence: silence, force: force);
-    }, args: [silence, force]);
+    }, args: [silence]);
   }
 
   void changeMode(Mode mode) {

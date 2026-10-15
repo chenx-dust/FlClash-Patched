@@ -122,6 +122,8 @@ class TestSetupAction extends SetupAction {
   @override
   void resetCoreTraffic() => trafficResets++;
 
+  final applyProfileForces = <bool>[];
+
   @override
   Future<bool> applyProfile({
     bool silence = false,
@@ -129,6 +131,7 @@ class TestSetupAction extends SetupAction {
     Future<void> Function()? preloadInvoke,
   }) async {
     applyProfileCalls++;
+    applyProfileForces.add(force);
     await preloadInvoke?.call();
     return true;
   }
@@ -665,6 +668,32 @@ void main() {
 
       await Future<void>.delayed(const Duration(milliseconds: 800));
       expect(action.applyProfileCalls, 0);
+    });
+
+    test('a later unforced call keeps a pending force', () async {
+      final notifier = container.read(setupActionProvider.notifier);
+
+      notifier.applyProfileDebounce(force: true, silence: true);
+      notifier.applyProfileDebounce(silence: true);
+
+      await Future<void>.delayed(const Duration(milliseconds: 800));
+      expect(action.applyProfileForces, [true]);
+
+      notifier.applyProfileDebounce(silence: true);
+      await Future<void>.delayed(const Duration(milliseconds: 800));
+      expect(action.applyProfileForces, [true, false]);
+    });
+
+    test('a stop drops a pending force', () async {
+      markInitialized();
+      final notifier = container.read(setupActionProvider.notifier);
+
+      notifier.applyProfileDebounce(force: true);
+      await notifier.setRunning(false);
+      notifier.applyProfileDebounce();
+
+      await Future<void>.delayed(const Duration(milliseconds: 800));
+      expect(action.applyProfileForces, [false]);
     });
   });
 
