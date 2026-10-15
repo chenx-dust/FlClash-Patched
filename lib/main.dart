@@ -47,6 +47,7 @@ void main(List<String> args) {
             });
           }
         }
+        await FlClashHttpOverrides.trustCoreRoots();
         HttpOverrides.global = FlClashHttpOverrides(container);
         request.attach(container.read);
         PaintingBinding.instance.imageCache.maximumSizeBytes = 64 * 1024 * 1024;
