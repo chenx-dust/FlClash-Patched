@@ -407,6 +407,58 @@ void main() {
 
       expect(identical(container.read(delayDataSourceProvider), state), isTrue);
     });
+
+    test('publishes a batch of delays once', () {
+      var notifications = 0;
+      container.listen(delayDataSourceProvider, (_, _) => notifications++);
+
+      container.read(delayDataSourceProvider.notifier).setDelays([
+        for (var i = 0; i < 100; i++)
+          Delay(name: 'P$i', url: 'https://test.example', value: i),
+      ]);
+
+      expect(notifications, 1);
+      expect(container.read(delayDataSourceProvider)['https://test.example'], {
+        for (var i = 0; i < 100; i++) 'P$i': i,
+      });
+    });
+
+    test('keeps writing after the state is replaced from outside', () {
+      final notifier = container.read(delayDataSourceProvider.notifier);
+      notifier.setDelay(
+        const Delay(name: 'Old', url: 'https://test.example', value: 1),
+      );
+      notifier.value = {};
+
+      notifier.setDelay(
+        const Delay(name: 'New', url: 'https://test.example', value: 2),
+      );
+
+      expect(container.read(delayDataSourceProvider), {
+        'https://test.example': {'New': 2},
+      });
+    });
+  });
+
+  group('PendingDelayTests provider', () {
+    test('acquires a batch with one notification and counts holders', () {
+      final notifier = container.read(pendingDelayTestsProvider.notifier);
+      var notifications = 0;
+      container.listen(pendingDelayTestsProvider, (_, _) => notifications++);
+
+      notifier.acquire([for (var i = 0; i < 100; i++) 'k$i']);
+      notifier.acquire(['k0']);
+      notifier.release(['k0']);
+
+      expect(notifications, 1);
+      expect(container.read(pendingDelayTestsProvider), hasLength(100));
+      expect(container.read(pendingDelayTestsProvider), contains('k0'));
+
+      notifier.release([for (var i = 0; i < 100; i++) 'k$i']);
+
+      expect(notifications, 2);
+      expect(container.read(pendingDelayTestsProvider), isEmpty);
+    });
   });
 
   group('Loading provider', () {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
 import 'dart:ui' show Locale;
 
@@ -314,20 +315,42 @@ class Groups extends _$Groups with AutoDisposeNotifierMixin {
 
 @Riverpod(keepAlive: true)
 class DelayDataSource extends _$DelayDataSource with AutoDisposeNotifierMixin {
+  DelayMap? _owned;
+  DelayMap? _published;
+
   @override
   DelayMap build() {
     return {};
   }
 
   void setDelay(Delay delay) {
-    if (state[delay.url]?[delay.name] != delay.value) {
-      final DelayMap newDelayMap = Map.from(state);
-      if (newDelayMap[delay.url] == null) {
-        newDelayMap[delay.url] = {};
+    setDelays([delay]);
+  }
+
+  /// Publishes a live view, so a dependent that keeps the map must copy it.
+  void setDelays(Iterable<Delay> delays) {
+    final delayMap = _ownedDelayMap();
+    var changed = false;
+    for (final delay in delays) {
+      if (delayMap[delay.url]?[delay.name] == delay.value) {
+        continue;
       }
-      newDelayMap[delay.url]![delay.name] = delay.value;
-      value = newDelayMap;
+      (delayMap[delay.url] ??= {})[delay.name] = delay.value;
+      changed = true;
     }
+    if (changed) {
+      value = _published = UnmodifiableMapView(delayMap);
+    }
+  }
+
+  DelayMap _ownedDelayMap() {
+    final owned = _owned;
+    if (owned != null && identical(state, _published)) {
+      return owned;
+    }
+    return _owned = {
+      for (final entry in state.entries) entry.key: {...entry.value},
+    };
   }
 }
 
@@ -335,6 +358,7 @@ class DelayDataSource extends _$DelayDataSource with AutoDisposeNotifierMixin {
 class PendingDelayTests extends _$PendingDelayTests
     with AutoDisposeNotifierMixin {
   final Map<String, int> _counts = {};
+  final Set<String> _keys = {};
 
   @override
   Set<String> build() {
@@ -346,7 +370,7 @@ class PendingDelayTests extends _$PendingDelayTests
     for (final key in keys) {
       final count = _counts[key] ?? 0;
       _counts[key] = count + 1;
-      added |= count == 0;
+      added |= _keys.add(key);
     }
     if (added) {
       _publish();
@@ -365,6 +389,7 @@ class PendingDelayTests extends _$PendingDelayTests
         continue;
       }
       _counts.remove(key);
+      _keys.remove(key);
       removed = true;
     }
     if (removed) {
@@ -377,11 +402,12 @@ class PendingDelayTests extends _$PendingDelayTests
       return;
     }
     _counts.clear();
+    _keys.clear();
     _publish();
   }
 
   void _publish() {
-    value = Set.unmodifiable(_counts.keys);
+    value = UnmodifiableSetView(_keys);
   }
 }
 

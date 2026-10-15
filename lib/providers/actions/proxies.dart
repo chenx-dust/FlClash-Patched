@@ -40,12 +40,14 @@ class ProxiesAction extends _$ProxiesAction {
     _pendingDelayTests.clear();
     _pendingDelayTargets.clear();
     ref.read(pendingDelayTestsProvider.notifier).clear();
-    final delays = ref.read(delayDataSourceProvider.notifier);
-    for (final target in cancelledTargets) {
-      delays.setDelay(
-        Delay(url: target.testUrl, name: target.proxyName, value: -1),
-      );
-    }
+    ref
+        .read(delayDataSourceProvider.notifier)
+        .setDelays(
+          cancelledTargets.map(
+            (target) =>
+                Delay(url: target.testUrl, name: target.proxyName, value: -1),
+          ),
+        );
   }
 
   void updateGroupsDebounce([Duration? duration]) {
@@ -356,9 +358,10 @@ class ProxiesAction extends _$ProxiesAction {
     if (targets.isEmpty) {
       return;
     }
+    final scheduled = _scheduleDelayTests(targets);
     final operations = targets.map((target) async {
       try {
-        await _scheduleDelayTest(target);
+        await scheduled[target.key];
       } catch (error) {
         commonPrint.log(
           'Delay test failed for ${target.proxyName}: $error',
@@ -377,40 +380,65 @@ class ProxiesAction extends _$ProxiesAction {
     }
   }
 
-  Future<Delay?> _scheduleDelayTest(_DelayTestTarget target) {
-    final pending = _pendingDelayTests[target.key];
-    if (pending != null) {
-      return pending;
-    }
-    final generation = _delayTestGeneration;
-    final completer = Completer<Delay?>();
-    final operation = completer.future;
-    _pendingDelayTests[target.key] = operation;
-    _pendingDelayTargets[target.key] = target;
-    ref.read(pendingDelayTestsProvider.notifier).acquire([target.key]);
-    ref
-        .read(delayDataSourceProvider.notifier)
-        .setDelay(Delay(url: target.testUrl, name: target.proxyName, value: 0));
-    void release() {
-      if (identical(_pendingDelayTests[target.key], operation)) {
-        _pendingDelayTests.remove(target.key);
-        _pendingDelayTargets.remove(target.key);
-        ref.read(pendingDelayTestsProvider.notifier).release([target.key]);
+  Map<String, Future<Delay?>> _scheduleDelayTests(
+    List<_DelayTestTarget> targets,
+  ) {
+    final scheduled = <String, Future<Delay?>>{};
+    final fresh = <_DelayTestTarget>[];
+    for (final target in targets) {
+      final pending = _pendingDelayTests[target.key];
+      if (pending != null) {
+        scheduled[target.key] = pending;
+      } else {
+        fresh.add(target);
       }
     }
+    if (fresh.isEmpty) {
+      return scheduled;
+    }
+    final generation = _delayTestGeneration;
+    final completers = <_DelayTestTarget, Completer<Delay?>>{};
+    for (final target in fresh) {
+      final completer = Completer<Delay?>();
+      completers[target] = completer;
+      scheduled[target.key] = completer.future;
+      _pendingDelayTests[target.key] = completer.future;
+      _pendingDelayTargets[target.key] = target;
+    }
+    ref
+        .read(pendingDelayTestsProvider.notifier)
+        .acquire(fresh.map((target) => target.key));
+    ref
+        .read(delayDataSourceProvider.notifier)
+        .setDelays(
+          fresh.map(
+            (target) =>
+                Delay(url: target.testUrl, name: target.proxyName, value: 0),
+          ),
+        );
+    for (final MapEntry(key: target, value: completer) in completers.entries) {
+      final operation = completer.future;
+      void release() {
+        if (identical(_pendingDelayTests[target.key], operation)) {
+          _pendingDelayTests.remove(target.key);
+          _pendingDelayTargets.remove(target.key);
+          ref.read(pendingDelayTestsProvider.notifier).release([target.key]);
+        }
+      }
 
-    unawaited(
-      operation.then<void>(
-        (_) => release(),
-        onError: (Object _, StackTrace _) => release(),
-      ),
-    );
-    unawaited(
-      _delayTestPool
-          .run(() => _runDelayTest(target, generation))
-          .then<void>(completer.complete, onError: completer.completeError),
-    );
-    return operation;
+      unawaited(
+        operation.then<void>(
+          (_) => release(),
+          onError: (Object _, StackTrace _) => release(),
+        ),
+      );
+      unawaited(
+        _delayTestPool
+            .run(() => _runDelayTest(target, generation))
+            .then<void>(completer.complete, onError: completer.completeError),
+      );
+    }
+    return scheduled;
   }
 
   Future<Delay?> _runDelayTest(_DelayTestTarget target, int generation) async {

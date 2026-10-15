@@ -516,6 +516,48 @@ void main() {
       expect(container.read(pendingDelayTestsProvider), isEmpty);
     });
 
+    test('marks a whole run pending in one publish', () async {
+      final release = Completer<void>();
+      when(() => core.asyncTestDelay(_testUrl, any())).thenAnswer((
+        invocation,
+      ) async {
+        await release.future;
+        return Delay(
+          name: invocation.positionalArguments[1] as String,
+          url: _testUrl,
+          value: 10,
+        );
+      });
+      final container = _delayContainer(buildContainer);
+      var pendingNotifications = 0;
+      var delayNotifications = 0;
+      container.listen(
+        pendingDelayTestsProvider,
+        (_, _) => pendingNotifications++,
+      );
+      container.listen(delayDataSourceProvider, (_, _) => delayNotifications++);
+      final proxies = [
+        for (var i = 0; i < 100; i++) Proxy(name: 'N$i', type: 'ss'),
+      ];
+
+      final run = actionOf(
+        container,
+      ).delayTest(proxies, null, const Duration(seconds: 5));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(pendingNotifications, 1);
+      expect(delayNotifications, 1);
+      expect(container.read(pendingDelayTestsProvider), hasLength(100));
+
+      release.complete();
+      await run;
+
+      expect(container.read(pendingDelayTestsProvider), isEmpty);
+      expect(container.read(delayDataSourceProvider)[_testUrl], {
+        for (final proxy in proxies) proxy.name: 10,
+      });
+    });
+
     test('probes a node that appears twice only once', () async {
       when(() => core.asyncTestDelay(_testUrl, 'HK-01')).thenAnswer(
         (_) async => const Delay(name: 'HK-01', url: _testUrl, value: 10),
