@@ -233,12 +233,24 @@ class ProviderItem extends ConsumerWidget {
         MetaChip(label: provider.updateAt.getLastUpdateTimeDesc(context)),
       if (provider.count > 0 && countLabel != null) MetaChip(label: countLabel),
     ];
-    return chips.isEmpty
-        ? null
-        : Padding(
-            padding: const EdgeInsets.only(top: 4, bottom: 2),
-            child: Row(spacing: 4, children: chips),
-          );
+    final subscriptionInfo = provider.subscriptionInfo;
+    final hasSubscriptionInfo =
+        subscriptionInfo != null && subscriptionInfo.total > 0;
+    if (chips.isEmpty && !hasSubscriptionInfo) {
+      return null;
+    }
+    return Padding(
+      padding: const EdgeInsets.only(top: 4, bottom: 2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 8,
+        children: [
+          if (hasSubscriptionInfo)
+            SubscriptionInfoView(subscriptionInfo: subscriptionInfo),
+          if (chips.isNotEmpty) Row(spacing: 4, children: chips),
+        ],
+      ),
+    );
   }
 
   List<CommonPopupMenuItem> _menuItems(BuildContext context, WidgetRef ref) {

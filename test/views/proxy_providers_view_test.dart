@@ -279,7 +279,18 @@ void main() {
     await pump(tester, container);
 
     final l10n = currentAppLocalizations;
-    expect(find.byType(SubscriptionInfoView), findsNothing);
+    expect(
+      find.descendant(
+        of: find.ancestor(
+          of: find.text('with-subscription'),
+          matching: find.byType(DecorationListItem),
+        ),
+        matching: find.byType(SubscriptionInfoView),
+      ),
+      findsOne,
+    );
+    expect(find.byType(SubscriptionInfoView), findsOne);
+    expect(find.text('${3.traffic.show} / ${100.traffic.show}'), findsOne);
 
     await openMenu(tester, 'with-subscription');
     expect(find.text(l10n.subscriptionInfo), findsOne);
