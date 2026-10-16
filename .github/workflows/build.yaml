@@ -341,11 +341,11 @@ jobs:
         with:
           submodules: recursive
 
-      # The core's reported version comes from `git describe` in the submodule,
-      # which needs the upstream tags and the history leading to them.
       - name: Fetch mihomo tags
         shell: bash
-        run: git -C core/mihomo fetch --unshallow --tags origin
+        run: |
+          git -C core/mihomo fetch --unshallow --no-tags origin
+          git -C core/mihomo fetch --no-tags https://github.com/MetaCubeX/mihomo.git '+refs/tags/v*:refs/tags/v*'
 
       - name: Setup Android Signing
         if: startsWith(matrix.platform,'android')
