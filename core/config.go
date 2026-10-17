@@ -113,8 +113,9 @@ func handleDecryptConfig(params DecryptConfigParams) (string, error) {
 }
 
 // mihomo writes the NTP time with settimeofday, which Android's app seccomp
-// policy answers by killing the process rather than with EPERM.
-var systemTimeWritable = runtime.GOOS != "android"
+// policy answers by killing the process rather than with EPERM, and which the
+// iOS sandbox never grants.
+var systemTimeWritable = runtime.GOOS != "android" && runtime.GOOS != "ios"
 
 func loadConfig(path string) (*config.Config, error) {
 	buf, err := os.ReadFile(path)
@@ -130,7 +131,7 @@ func loadConfig(path string) (*config.Config, error) {
 
 func withPlatformLimits(cfg *config.Config) *config.Config {
 	if cfg.NTP.WriteToSystem && !systemTimeWritable {
-		log.Warnln("ntp write-to-system ignored: Android does not let apps set the system time")
+		log.Warnln("ntp write-to-system ignored: this platform does not let apps set the system time")
 		cfg.NTP.WriteToSystem = false
 	}
 	return cfg
