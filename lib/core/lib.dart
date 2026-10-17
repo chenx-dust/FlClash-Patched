@@ -113,17 +113,23 @@ class CoreLib extends CoreHandlerInterface {
   }
 
   // The service opens and closes the Core's listeners itself and reports a run
-  // that ends, so once it takes the command the Core's own answer is moot.
+  // that ends, so once it takes the command the Core's own answer is moot. On
+  // iOS the listeners belong to the Network Extension's Core, and the app's
+  // would take the same ports from it.
   @override
   Future<bool> startListener() async {
-    await super.startListener();
+    if (!system.isIOS) {
+      await super.startListener();
+    }
     return await _service?.start() ?? false;
   }
 
   @override
   Future<bool> stopListener() async {
     final serviceStopped = await _service?.stop() ?? false;
-    await super.stopListener();
+    if (!system.isIOS) {
+      await super.stopListener();
+    }
     return serviceStopped;
   }
 
@@ -167,4 +173,4 @@ class CoreLib extends CoreHandlerInterface {
   }
 }
 
-CoreLib? get coreLib => system.isAndroid ? CoreLib() : null;
+CoreLib? get coreLib => system.isMobile ? CoreLib() : null;

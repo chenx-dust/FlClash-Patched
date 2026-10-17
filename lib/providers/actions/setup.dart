@@ -148,7 +148,7 @@ class SetupAction extends _$SetupAction {
     if (!globalState.needInitStatus) {
       return;
     }
-    if (system.isAndroid) {
+    if (system.isMobile) {
       await _updateStartTime();
     }
     final shouldRun = _isRunning || ref.read(appSettingProvider).autoRun;
@@ -722,6 +722,10 @@ class SetupAction extends _$SetupAction {
     if (system.isAndroid) {
       await ref.read(vpnOptionsProvider.future);
       await preferences.saveShareState(ref.read(sharedStateProvider));
+    } else if (system.isIOS) {
+      // The Network Extension sets its own Core up from this state.
+      await ref.read(vpnOptionsProvider.future);
+      await service?.syncState(ref.read(sharedStateProvider));
     }
     // Recaptured so _start's catch can roll back after safeRun swallows it.
     (Object, StackTrace)? handoffFailure;

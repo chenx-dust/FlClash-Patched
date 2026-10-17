@@ -244,7 +244,9 @@ Future<VpnOptions> vpnOptions(Ref ref) async {
   final routeAddress = ref.watch(vpnRouteAddressProvider.future);
   final tun = clashConfig.tun;
   return VpnOptions(
-    enable: vpnSetting.enable && !safeMode,
+    // iOS keeps no Core running without the tunnel: a suspended app would take
+    // a proxy-only listener down with it.
+    enable: (vpnSetting.enable || system.isIOS) && !safeMode,
     stack: tun.stack.name,
     // VpnService.setHttpProxy cannot carry credentials, so an authenticated
     // mixed port is left to TUN instead of declared as the system proxy.

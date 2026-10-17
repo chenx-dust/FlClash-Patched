@@ -274,10 +274,13 @@ class GeneralView extends ConsumerWidget {
         select: (state) => state.autoRun,
         update: (state, value) => state.copyWith(autoRun: value),
       ),
-      ListItem.open(
-        title: Text(appLocalizations.onDemand),
-        widget: const OnDemandView(),
-      ),
+      // No iOS reader of the Wi-Fi SSID exists, and a suspended app could not
+      // act on one.
+      if (!system.isIOS)
+        ListItem.open(
+          title: Text(appLocalizations.onDemand),
+          widget: const OnDemandView(),
+        ),
       _appSettingToggle(
         title: (l) => l.minimizeOnExit,
         select: (state) => state.minimizeOnExit,
