@@ -68,6 +68,8 @@ docs/
 /services/helper/target
 /macos/**/Package.resolved
 /macos/build/
+/ios/**/Package.resolved
+/ios/Flutter/GeneratedBundleConfig.xcconfig
 /env.json
 /core_sha256.json
 /plugins/rust_api/.claude/
