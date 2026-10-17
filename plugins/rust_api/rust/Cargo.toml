@@ -13,19 +13,23 @@ rquickjs = { version = "0.12", default-features = false }
 ropey = { version = "1.6.1", default-features = false, features = ["simd"] }
 
 # The IPC server exists so a desktop Core process can talk to the app. Android
-# loads the Core in-process, so nothing below is built into the Android library.
-[target.'cfg(not(target_os = "android"))'.dependencies]
+# and iOS load the Core in-process, so nothing below is built into their library.
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 interprocess = { version = "2", features = ["tokio"] }
 tokio = { version = "1.36", features = ["io-util", "macros", "rt", "sync"] }
 global-hotkey = "0.8"
 
-[target.'cfg(all(unix, not(target_os = "android")))'.dependencies]
+[target.'cfg(all(unix, not(any(target_os = "android", target_os = "ios"))))'.dependencies]
 libc = "0.2"
 
 # rquickjs ships pre-generated bindings for every target this project builds
-# except the Android ones, which have to be generated during the build.
-[target.'cfg(target_os = "android")'.dependencies]
+# except the Android and iOS ones, which have to be generated during the build.
+[target.'cfg(any(target_os = "android", target_os = "ios"))'.dependencies]
 rquickjs = { version = "0.12", default-features = false, features = ["bindgen"] }
+
+[target.'cfg(target_os = "ios")'.dependencies]
+# libc 0.2.190 hides dyld APIs that backtrace 0.3.76 still uses on iOS.
+libc = "=0.2.189"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 dispatch2 = "0.3"
