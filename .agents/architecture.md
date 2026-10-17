@@ -23,6 +23,27 @@ Android lib mode:
   initializes and synchronizes Android shared state, and closes the native service path exactly once.
 - Because Core is in the application process on Android, application RSS already includes Core memory.
 
+iOS lib mode reuses the binding with two Cores:
+
+- `ios/scripts/bind_core.sh`, run by a `Bind Core` phase of each target, binds `core/mobile` into
+  `ClashCore.framework` under `build/ios/core/`: the app links the plain build, the `NECore` packet tunnel extension
+  the `with_low_memory` one, since jetsam ends the extension at its memory limit without a warning. iOS builds for
+  arm64 devices only.
+- `ServicePlugin.swift` serves the Android channel contract unchanged, plus `${packageName}/tile`. Only the extension
+  can hold the TUN, so `CoreMessageRouter` sends runtime calls to its Core through `sendProviderMessage` while the
+  tunnel runs and to the app's own Core otherwise. Methods that only read files always stay in the app, and
+  `setupConfig`/`updateConfig` go to both, app first, so the app's Core holds the profile when the tunnel stops. A
+  call the extension cannot answer, because the tunnel is going down, is answered by the app's Core. The route moves
+  on every connect and disconnect the system reports, a restart included, and the router replays `startLog` and
+  `watchRoute` to the new Core and hands Flutter the latter's answer as `routeChanged`: each Core counts its route
+  epoch from its own start, and the tracker would otherwise judge the new Core's answers by the old Core's counters.
+- The extension sets its Core up with `quickSetup` from the `SharedState` Flutter syncs into the app group, which on
+  iOS includes `setupParams`. It is a file in the container, as is the run time the extension records, rather than
+  group `UserDefaults`, which did not reach the extension. The app group container is also the home directory, the only one both processes can
+  read. The extension's events reach Flutter as files in the app group plus a Darwin notification.
+- The app's Core never opens listeners: `CoreLib` skips `startListener`/`stopListener` on iOS, because the extension's
+  Core already holds those ports. iOS has no proxy-only mode; `VpnOptions.enable` is always set there.
+
 Desktop core mode:
 
 - Go core runs as a separate process with `CGO_ENABLED=0`.
@@ -335,6 +356,17 @@ Quick Settings, notification, revoke, and Always-on VPN paths converge on the sa
 - `ServiceBroadcastReceiver` uses `goAsync()` and an atomic one-shot completion. Normal completion or a nine-second
   watchdog calls `PendingResult.finish()` exactly once; the watchdog releases Android's broadcast lease and does not
   cancel or redefine the underlying lifecycle intent.
+
+### iOS Tunnel Lifecycle
+
+`TunnelCoordinator` is the iOS counterpart of `ServiceState`: it holds the latest intent, reconciles the
+`NETunnelProviderManager` towards it, and drops superseded work by generation. A start that supersedes a pending stop
+still cycles the tunnel, so a restart meant to apply new options is not lost. `ServicePlugin` acknowledges `start` and
+`stop` at once and sends `stopped` with the last command revision whenever the tunnel settles stopped without a run
+being requested. Whenever the tunnel settles running, `tile` `start` reaches `TileManager`, which ignores it for a
+run it already owns and otherwise applies the profile, as for Android's Quick Settings start. App Shortcuts and home screen quick actions
+reach the same owner through `NEHelper.actionHandler`; the Control Center control runs in its widget extension, outside
+the app, and drives the manager directly, so the extension then sets up its Core alone.
 
 ## Core Protocol And Event Delivery
 
@@ -1492,6 +1524,8 @@ Platform projects copy the artifacts out of `libclash/`; application code must n
 
 - Android: nothing. The hook returns without building, because it runs once per architecture while gomobile packs
   every ABI and one set of Java classes into a single AAR.
+- iOS: nothing either; the Xcode `Bind Core` phases build the gomobile frameworks, skipping the bind while no Go
+  source, module file or `build_config.yaml` is newer than its stamp.
 - macOS: a standalone `FlClashCore`. `Release.xcconfig` pins release and profile `ARCHS` to the host because
   flutter_tools otherwise builds a universal binary and every artifact ships one slice; the hook skips a non-host slice
   for the same reason. The `Stage Core` phase copies the Core after the hook may have rewritten it and fails when it is
