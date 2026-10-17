@@ -1,4 +1,4 @@
-//go:build android
+//go:build android || ios
 
 package tun
 
@@ -94,6 +94,7 @@ func Start(fd int, stack, address, dns, rawOptions string) *sing_tun.Listener {
 		MTU:                  settings.MTU,
 		CongestionController: settings.CongestionController,
 		FileDescriptor:       dupFd,
+		LoopbackAddress:      loopbackAddress,
 	}
 
 	listener, err := sing_tun.New(options, tunnel.Tunnel)

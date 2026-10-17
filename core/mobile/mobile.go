@@ -1,4 +1,4 @@
-//go:build android
+//go:build android || ios
 
 // Every callback returns an error so that gobind clears a Java exception and
 // hands it over as that error; a method without one leaves the exception
@@ -89,10 +89,6 @@ func ForceGC() {
 
 func SetMitmPressure(level int32) {
 	core.SetMitmPressure(level)
-}
-
-func UpdateDns(value string) {
-	core.UpdateDns(value)
 }
 
 func ResetNetwork() {
