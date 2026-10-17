@@ -15,6 +15,7 @@ dart setup.dart macos
 dart setup.dart linux
 dart setup.dart windows
 dart setup.dart android
+dart setup.dart ios      # macOS only: an unsigned IPA in dist/ for the installer to sign
 ```
 
 The desktop Go core and the Rust helper build automatically: Flutter runs
@@ -23,7 +24,8 @@ and the hook drives `CoreBuilder` from the `setup_hooks` package in
 `plugins/setup/setup_hooks/`. Artifacts land in `libclash/`. Android's Core is
 the AAR the `:core` Gradle module builds with `gomobile bind` before anything
 compiles against it; that needs `go` on `PATH` and nothing else, since the
-gomobile tools come from `core/go.mod` and the NDK from AGP. The hook reruns only when Go, Rust, or
+gomobile tools come from `core/go.mod` and the NDK from AGP. iOS binds the same package from the Xcode `Bind Core`
+phases into `build/ios/core/`, for arm64 devices only, with Go and Xcode as its only requirements. The hook reruns only when Go, Rust, or
 `setup_hooks` inputs change; the fingerprint cache lives in
 `.dart_tool/setup_build_cache/`. To force a rebuild, delete that directory:
 
