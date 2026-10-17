@@ -7,6 +7,7 @@ import 'package:yaml/yaml.dart';
 
 const _allTargets = <String, String>{
   'android': 'apk',
+  'ios': 'ipa',
   'linux': 'deb,appimage,rpm',
   'macos': 'dmg',
   'windows': 'exe,zip',
@@ -43,10 +44,11 @@ Future<void> main(List<String> args) async {
   }
 
   final platform = rest.isNotEmpty ? rest.first : host;
+  final allowed = [host, 'android', if (host == 'macos') 'ios'];
 
-  if (platform != host && platform != 'android') {
+  if (!allowed.contains(platform)) {
     stderr.writeln(
-      'Cannot build "$platform" on $hostOs. Allowed: $host, android',
+      'Cannot build "$platform" on $hostOs. Allowed: ${allowed.join(', ')}',
     );
     _showHelp(parser);
     exit(1);
@@ -146,7 +148,9 @@ String createPackageTargets(String platform, String? customTargets) {
 
 void _showHelp(ArgParser parser) {
   stderr.writeln('Usage: dart setup.dart [platform] [options]');
-  stderr.writeln('Platform: current host platform (default) or android');
+  stderr.writeln(
+    'Platform: current host platform (default), android, or ios (on macOS)',
+  );
   stderr.writeln();
   stderr.writeln('Default package targets:');
   _allTargets.forEach((p, t) => stderr.writeln('  $p: $t'));
@@ -165,6 +169,10 @@ Future<int> _package(
 }) async {
   final file = File(p.join(rootDir, 'env.json'));
   await file.writeAsString(jsonEncode(createBuildEnvironment(env)));
+
+  if (platform == 'ios') {
+    return _packageIOS(rootDir, verbose: verbose);
+  }
 
   final flutterBuildArgs = createFlutterBuildArgs(
     platform: platform,
@@ -222,6 +230,160 @@ Future<int> _package(
   });
   final exitCode = await process.exitCode;
   return exitCode;
+}
+
+const _iosAppBundleId = 'com.follow.clash';
+
+/// The IPA ships unsigned for whoever installs it to sign; each bundle still
+/// carries its own entitlements, since a re-signer copies them from the bundle.
+Future<int> _packageIOS(String rootDir, {required bool verbose}) async {
+  final build = await Process.start('flutter', [
+    if (verbose) '--verbose',
+    'build',
+    'ios',
+    '--release',
+    '--no-codesign',
+    '--dart-define-from-file=env.json',
+  ], workingDirectory: rootDir);
+  build.stdout.listen(stdout.add);
+  build.stderr.listen(stderr.add);
+  final buildExit = await build.exitCode;
+  if (buildExit != 0) return buildExit;
+
+  final appPath = p.join(rootDir, 'build', 'ios', 'iphoneos', 'Runner.app');
+  if (!Directory(appPath).existsSync()) {
+    stderr.writeln('iOS app bundle not found: $appPath');
+    return 1;
+  }
+  final frameworks = Directory(p.join(appPath, 'Frameworks'));
+  for (final framework in frameworks.listSync()) {
+    final exitCode = await _adHocSign(framework.path);
+    if (exitCode != 0) return exitCode;
+  }
+  final tempDir = await Directory.systemTemp.createTemp('flclash_ipa_');
+  try {
+    // Inner bundles first: signing the app seals the extensions it embeds.
+    for (final target in createIOSSigningTargets(
+      rootDir: rootDir,
+      appPath: appPath,
+      appBundleId: _iosAppBundleId,
+    )) {
+      final entitlements = File(
+        p.join(tempDir.path, '${p.basename(target.bundle)}.entitlements'),
+      );
+      await entitlements.writeAsString(
+        createIOSEntitlements(
+          source: File(target.entitlements).readAsStringSync(),
+          appBundleId: _iosAppBundleId,
+          bundleIdentifier: target.bundleIdentifier,
+        ),
+      );
+      final exitCode = await _adHocSign(
+        target.bundle,
+        entitlements: entitlements.path,
+      );
+      if (exitCode != 0) return exitCode;
+    }
+
+    final payload = p.join(tempDir.path, 'Payload');
+    final copy = await Process.run('ditto', [
+      appPath,
+      p.join(payload, 'Runner.app'),
+    ]);
+    if (copy.exitCode != 0) {
+      stderr.write(copy.stderr);
+      return copy.exitCode;
+    }
+    final pubspec =
+        loadYaml(File(p.join(rootDir, 'pubspec.yaml')).readAsStringSync())
+            as Map;
+    final version = (pubspec['version'] as String).split('+').first;
+    final distDir = Directory(p.join(rootDir, 'dist'))
+      ..createSync(recursive: true);
+    final ipa = p.join(distDir.path, 'FlClash-$version-ios-arm64-unsigned.ipa');
+    final archive = await Process.run('ditto', [
+      '-c',
+      '-k',
+      '--sequesterRsrc',
+      '--keepParent',
+      payload,
+      ipa,
+    ]);
+    if (archive.exitCode != 0) {
+      stderr.write(archive.stderr);
+      return archive.exitCode;
+    }
+    stdout.writeln('Unsigned IPA: $ipa');
+    return 0;
+  } finally {
+    await tempDir.delete(recursive: true);
+  }
+}
+
+Future<int> _adHocSign(String path, {String? entitlements}) async {
+  final result = await Process.run('codesign', [
+    '--force',
+    '--sign',
+    '-',
+    '--timestamp=none',
+    if (entitlements != null) ...[
+      '--generate-entitlement-der',
+      '--entitlements',
+      entitlements,
+    ],
+    path,
+  ]);
+  if (result.exitCode != 0) {
+    stderr
+      ..write(result.stdout)
+      ..write(result.stderr);
+  }
+  return result.exitCode;
+}
+
+typedef IOSSigningTarget = ({
+  String bundle,
+  String bundleIdentifier,
+  String entitlements,
+});
+
+List<IOSSigningTarget> createIOSSigningTargets({
+  required String rootDir,
+  required String appPath,
+  required String appBundleId,
+}) {
+  return [
+    for (final name in const ['NECore', 'Widget', 'Runner'])
+      (
+        bundle: name == 'Runner'
+            ? appPath
+            : p.join(appPath, 'PlugIns', '$name.appex'),
+        bundleIdentifier: name == 'Runner' ? appBundleId : '$appBundleId.$name',
+        entitlements: p.join(rootDir, 'ios', name, '$name.entitlements'),
+      ),
+  ];
+}
+
+/// Resolves the build settings Xcode would expand. iOS refuses a Network
+/// Extension whose signature names no application identifier, so a placeholder
+/// team stands in until the bundle is signed for real.
+String createIOSEntitlements({
+  required String source,
+  required String appBundleId,
+  required String bundleIdentifier,
+}) {
+  const team = 'UNKNOWN000';
+  final resolved = source.replaceAll(r'$(APP_BUNDLE_ID)', appBundleId);
+  final end = resolved.lastIndexOf('</dict>');
+  if (end < 0) {
+    throw const FormatException('Entitlements plist is missing its dictionary');
+  }
+  return '${resolved.substring(0, end)}'
+      '\t<key>application-identifier</key>\n'
+      '\t<string>$team.$bundleIdentifier</string>\n'
+      '\t<key>com.apple.developer.team-identifier</key>\n'
+      '\t<string>$team</string>\n'
+      '${resolved.substring(end)}';
 }
 
 String _detectArch() {
