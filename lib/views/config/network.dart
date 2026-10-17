@@ -498,7 +498,10 @@ List<Widget> networkOptionsItems({
 }
 
 class VpnSections extends ConsumerWidget {
-  const VpnSections({super.key});
+  /// iOS always runs the tunnel, and its routes leave no app a way around it.
+  final bool isIOS;
+
+  const VpnSections({super.key, this.isIOS = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -508,18 +511,19 @@ class VpnSections extends ConsumerWidget {
     );
     return Column(
       children: [
-        generateSection(
-          items: const [VPNItem()],
-          footer: appLocalizations.vpnEnableDesc,
-        ),
+        if (!isIOS)
+          generateSection(
+            items: const [VPNItem()],
+            footer: appLocalizations.vpnEnableDesc,
+          ),
         generateSection(
           title: 'VPN',
-          items: const [
-            VpnSystemProxyItem(),
-            BypassDomainItem(),
-            AllowBypassItem(),
-            Ipv6Item(),
-            DNSHijackingItem(),
+          items: [
+            const VpnSystemProxyItem(),
+            const BypassDomainItem(),
+            if (!isIOS) const AllowBypassItem(),
+            const Ipv6Item(),
+            const DNSHijackingItem(),
           ],
           footer: [
             if (authenticationEnable)
@@ -591,7 +595,7 @@ class NetworkListView extends StatelessWidget {
         bottom: 16 + context.bottomInset,
       ),
       children: [
-        if (system.isAndroid) const VpnSections(),
+        if (system.isMobile) VpnSections(isIOS: system.isIOS),
         if (system.isDesktop) const SystemProxySection(),
         const NetworkOptionsSection(),
         TunSection(

@@ -736,6 +736,10 @@ class SetupAction extends _$SetupAction {
       await ref.read(vpnOptionsProvider.future);
       await preferences.saveShareState(ref.read(sharedStateProvider));
       await preferences.saveAppliedConfigMd5(null);
+    } else if (system.isIOS) {
+      // The Network Extension sets its own Core up from this state.
+      await ref.read(vpnOptionsProvider.future);
+      await service?.syncState(ref.read(sharedStateProvider));
     }
     // Recaptured so _start's catch can roll back after safeRun swallows it.
     (Object, StackTrace)? handoffFailure;
