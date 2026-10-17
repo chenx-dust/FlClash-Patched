@@ -8,6 +8,7 @@ import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/core.dart';
+import 'package:fl_clash/providers/state.dart';
 import 'package:fl_clash/ui/icons/icons.dart';
 import 'package:fl_clash/views/dashboard/layout.dart';
 import 'package:fl_clash/views/dashboard/style.dart';
@@ -81,7 +82,9 @@ Future<MemorySnapshot> _readSnapshot(WidgetRef ref) async {
   return MemorySnapshot.resolve(
     rss: rss,
     core: core,
-    coreInProcess: system.isAndroid,
+    // A running iOS tunnel answers from the Network Extension's own process.
+    coreInProcess:
+        system.isAndroid || (system.isIOS && !ref.read(isStartProvider)),
   );
 }
 
