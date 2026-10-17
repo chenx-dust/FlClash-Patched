@@ -1,6 +1,6 @@
 #[cfg(target_os = "linux")]
 mod linux;
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "macos", target_os = "ios"))]
 mod macos;
 #[cfg(any(target_os = "linux", test))]
 #[cfg_attr(not(target_os = "linux"), allow(dead_code))]
@@ -46,7 +46,7 @@ pub fn listen(sink: StreamSink<NetworkState, SseCodec>) {
 }
 
 #[cfg_attr(
-    not(any(target_os = "linux", target_os = "macos", windows)),
+    not(any(target_os = "linux", target_os = "macos", target_os = "ios", windows)),
     allow(dead_code)
 )]
 #[derive(Clone)]
@@ -60,7 +60,7 @@ impl Notifier {
 
 fn start() -> Option<Sender<Signal>> {
     let (sender, receiver) = mpsc::channel();
-    #[cfg(any(target_os = "linux", target_os = "macos", windows))]
+    #[cfg(any(target_os = "linux", target_os = "macos", target_os = "ios", windows))]
     platform::watch(Notifier(sender.clone()));
     std::thread::Builder::new()
         .name("network-watch".to_owned())
@@ -102,17 +102,17 @@ fn settle(receiver: &Receiver<Signal>, quiet: Duration, max: Duration) -> bool {
     }
 }
 
-#[cfg(any(target_os = "linux", target_os = "macos", windows))]
+#[cfg(any(target_os = "linux", target_os = "macos", target_os = "ios", windows))]
 mod platform {
     #[cfg(target_os = "linux")]
     pub use super::linux::{state, watch};
-    #[cfg(target_os = "macos")]
+    #[cfg(any(target_os = "macos", target_os = "ios"))]
     pub use super::macos::{state, watch};
     #[cfg(windows)]
     pub use super::windows::{state, watch};
 }
 
-#[cfg(not(any(target_os = "linux", target_os = "macos", windows)))]
+#[cfg(not(any(target_os = "linux", target_os = "macos", target_os = "ios", windows)))]
 mod platform {
     pub fn state() -> Option<super::NetworkState> {
         None

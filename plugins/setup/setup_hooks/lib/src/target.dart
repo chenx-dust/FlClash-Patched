@@ -69,6 +69,10 @@ String rustTargetTriple(CodeConfig code) {
   return switch (code.targetOS) {
     OS.android when arch == 'armv7' => 'armv7-linux-androideabi',
     OS.android => '$arch-linux-android',
+    OS.iOS => switch (code.iOS.targetSdk) {
+      IOSSdk.iPhoneSimulator when arch == 'aarch64' => 'aarch64-apple-ios-sim',
+      _ => '$arch-apple-ios',
+    },
     OS.macOS => '$arch-apple-darwin',
     OS.linux => '$arch-unknown-linux-gnu',
     OS.windows => '$arch-pc-windows-msvc',

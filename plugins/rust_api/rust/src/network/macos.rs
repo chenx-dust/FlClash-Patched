@@ -1,8 +1,11 @@
 use std::ffi::{c_char, c_int, c_void};
-use std::ptr::{null, null_mut};
+#[cfg(target_os = "macos")]
+use std::ptr::null;
+use std::ptr::null_mut;
 use std::sync::Mutex;
 
 use block2::RcBlock;
+#[cfg(target_os = "macos")]
 use objc2_core_foundation::{CFArray, CFRetained, CFString};
 
 use super::Notifier;
@@ -11,6 +14,7 @@ use crate::api::network::NetworkState;
 const NW_PATH_STATUS_SATISFIED: c_int = 1;
 const NW_INTERFACE_TYPE_WIFI: c_int = 1;
 
+#[cfg(target_os = "macos")]
 #[repr(C)]
 struct SCDynamicStoreContext {
     version: isize,
@@ -20,6 +24,7 @@ struct SCDynamicStoreContext {
     copy_description: *const c_void,
 }
 
+#[cfg(target_os = "macos")]
 type StoreCallout = extern "C" fn(*mut c_void, *const CFArray, *mut c_void);
 
 #[link(name = "Network", kind = "framework")]
@@ -35,6 +40,7 @@ unsafe extern "C" {
     fn nw_path_uses_interface_type(path: *mut c_void, kind: c_int) -> bool;
 }
 
+#[cfg(target_os = "macos")]
 #[link(name = "SystemConfiguration", kind = "framework")]
 unsafe extern "C" {
     fn SCDynamicStoreCreate(
@@ -63,15 +69,18 @@ pub fn state() -> Option<NetworkState> {
 }
 
 /// The path monitor answers whether the default path runs over Wi-Fi, as
-/// connectivity_plus read it; the dynamic store adds the address and primary
-/// service changes a path update does not carry. Both live for the process.
+/// connectivity_plus read it; on macOS the dynamic store adds the address and
+/// primary service changes a path update does not carry. Both live for the process.
 pub fn watch(notifier: Notifier) {
     // SAFETY: the queue, monitor, handler and store are never released, so
     // every callback finds them alive.
     unsafe {
         let queue = dispatch_queue_create(c"network-watch".as_ptr(), null_mut());
         let monitor = nw_path_monitor_create();
+        #[cfg(target_os = "macos")]
         let paths = notifier.clone();
+        #[cfg(not(target_os = "macos"))]
+        let paths = notifier;
         let handler = RcBlock::new(move |path: *mut c_void| {
             let wifi = nw_path_get_status(path) == NW_PATH_STATUS_SATISFIED
                 && nw_path_uses_interface_type(path, NW_INTERFACE_TYPE_WIFI);
@@ -84,15 +93,18 @@ pub fn watch(notifier: Notifier) {
         nw_path_monitor_set_update_handler(monitor, &handler);
         nw_path_monitor_start(monitor);
         std::mem::forget(handler);
+        #[cfg(target_os = "macos")]
         watch_store(queue, notifier);
     }
 }
 
+#[cfg(target_os = "macos")]
 extern "C" fn store_changed(_store: *mut c_void, _keys: *const CFArray, info: *mut c_void) {
     // SAFETY: `info` is the leaked notifier `watch_store` registered.
     unsafe { &*info.cast::<Notifier>() }.changed();
 }
 
+#[cfg(target_os = "macos")]
 unsafe fn watch_store(queue: *mut c_void, notifier: Notifier) {
     let mut context = SCDynamicStoreContext {
         version: 0,
@@ -117,6 +129,7 @@ unsafe fn watch_store(queue: *mut c_void, notifier: Notifier) {
     }
 }
 
+#[cfg(target_os = "macos")]
 fn strings(values: &[&str]) -> CFRetained<CFArray> {
     let strings: Vec<CFRetained<CFString>> = values
         .iter()

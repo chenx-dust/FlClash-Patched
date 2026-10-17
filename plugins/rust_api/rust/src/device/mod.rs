@@ -1,5 +1,5 @@
 pub fn os_major_version() -> u32 {
-    #[cfg(target_os = "macos")]
+    #[cfg(any(target_os = "macos", target_os = "ios"))]
     {
         let version = objc2_foundation::NSProcessInfo::processInfo().operatingSystemVersion();
         u32::try_from(version.majorVersion).unwrap_or(0)
@@ -8,7 +8,7 @@ pub fn os_major_version() -> u32 {
     {
         windows_version().map_or(0, |info| info.dwMajorVersion)
     }
-    #[cfg(not(any(target_os = "macos", windows)))]
+    #[cfg(not(any(target_os = "macos", target_os = "ios", windows)))]
     0
 }
 

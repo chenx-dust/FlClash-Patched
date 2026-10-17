@@ -3,7 +3,7 @@
 mod android;
 #[cfg(target_os = "linux")]
 mod linux;
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "macos", target_os = "ios"))]
 mod macos;
 #[cfg(windows)]
 mod windows;
@@ -17,7 +17,7 @@ pub fn system_families() -> Result<Vec<String>, String> {
     let families = android::families()?;
     #[cfg(target_os = "linux")]
     let families = linux::families()?;
-    #[cfg(target_os = "macos")]
+    #[cfg(any(target_os = "macos", target_os = "ios"))]
     let families = macos::families();
     #[cfg(windows)]
     let families = windows::families()?;
@@ -25,6 +25,7 @@ pub fn system_families() -> Result<Vec<String>, String> {
         target_os = "android",
         target_os = "linux",
         target_os = "macos",
+        target_os = "ios",
         windows
     )))]
     let families = Vec::<String>::new();
