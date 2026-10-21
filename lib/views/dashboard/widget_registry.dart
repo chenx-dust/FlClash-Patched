@@ -36,6 +36,10 @@ extension DashboardWidgetView on DashboardWidget {
       crossAxisCellCount: 4,
       child: SystemProxyButton(),
     ),
+    DashboardWidget.allowLanButton => const GridItem(
+      crossAxisCellCount: 4,
+      child: AllowLanButton(),
+    ),
     DashboardWidget.intranetIp => const GridItem(
       crossAxisCellCount: 4,
       child: IntranetIP(),

@@ -142,6 +142,7 @@ const _$DashboardWidgetEnumMap = {
   DashboardWidget.tunButton: 'tunButton',
   DashboardWidget.vpnButton: 'vpnButton',
   DashboardWidget.systemProxyButton: 'systemProxyButton',
+  DashboardWidget.allowLanButton: 'allowLanButton',
   DashboardWidget.intranetIp: 'intranetIp',
   DashboardWidget.memoryInfo: 'memoryInfo',
   DashboardWidget.goroutineInfo: 'goroutineInfo',

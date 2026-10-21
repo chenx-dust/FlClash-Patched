@@ -217,6 +217,20 @@ class HostsItem extends ConsumerWidget {
   }
 }
 
+class AllowLanItem extends ConsumerWidget {
+  const AllowLanItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    return _clashToggle(
+      title: (l) => l.allowLan,
+      subtitle: (l) => l.allowLanDesc,
+      select: (state) => state.allowLan,
+      update: (state, value) => state.copyWith(allowLan: value),
+    );
+  }
+}
+
 class AuthenticationItem extends ConsumerWidget {
   const AuthenticationItem({super.key});
 
@@ -429,12 +443,7 @@ class GeneralView extends ConsumerWidget {
   List<Widget> _inboundItems(bool authentication) {
     return [
       const PortItem(),
-      _clashToggle(
-        title: (l) => l.allowLan,
-        subtitle: (l) => l.allowLanDesc,
-        select: (state) => state.allowLan,
-        update: (state, value) => state.copyWith(allowLan: value),
-      ),
+      const AllowLanItem(),
       const AuthenticationItem(),
       if (authentication) ...const [
         AuthenticationAccountItem(),

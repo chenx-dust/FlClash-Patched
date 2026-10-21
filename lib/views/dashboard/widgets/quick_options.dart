@@ -1,5 +1,6 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/providers/config.dart';
+import 'package:fl_clash/views/config/general.dart';
 import 'package:fl_clash/views/config/network.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -10,14 +11,14 @@ class _QuickSwitchCard extends StatelessWidget {
   const _QuickSwitchCard({
     required this.label,
     required this.iconData,
-    required this.items,
+    required this.itemsBuilder,
     required this.selector,
     required this.onChanged,
   });
 
   final String label;
   final IconData iconData;
-  final List<Widget> items;
+  final List<Widget> Function(WidgetRef ref) itemsBuilder;
   final ProviderListenable<bool> selector;
   final void Function(WidgetRef ref, bool value) onChanged;
 
@@ -32,9 +33,16 @@ class _QuickSwitchCard extends StatelessWidget {
             context: context,
             builder: (_) {
               return AdaptiveSheetScaffold(
-                body: ListView(
-                  padding: sectionPagePadding,
-                  children: [generateSectionV3(isFirst: true, items: items)],
+                body: Consumer(
+                  builder: (_, ref, _) => ListView(
+                    padding: sectionPagePadding,
+                    children: [
+                      generateSectionV3(
+                        isFirst: true,
+                        items: itemsBuilder(ref),
+                      ),
+                    ],
+                  ),
                 ),
                 title: label,
               );
@@ -86,7 +94,7 @@ class TUNButton extends StatelessWidget {
     return _QuickSwitchCard(
       label: context.appLocalizations.tun,
       iconData: Symbols.stacked_line_chart,
-      items: [
+      itemsBuilder: (_) => [
         if (system.isDesktop) const TUNItem(),
         const TunStackItem(),
         const TunMtuItem(),
@@ -109,7 +117,7 @@ class SystemProxyButton extends StatelessWidget {
     return _QuickSwitchCard(
       label: context.appLocalizations.systemProxy,
       iconData: Symbols.shuffle,
-      items: const [SystemProxyItem(), BypassDomainItem()],
+      itemsBuilder: (_) => const [SystemProxyItem(), BypassDomainItem()],
       selector: networkSettingProvider.select((state) => state.systemProxy),
       onChanged: (ref, value) {
         ref
@@ -128,7 +136,7 @@ class VpnButton extends StatelessWidget {
     return _QuickSwitchCard(
       label: 'VPN',
       iconData: Symbols.stacked_line_chart,
-      items: const [
+      itemsBuilder: (_) => const [
         VPNItem(),
         VpnSystemProxyItem(),
         TunStackItem(),
@@ -139,6 +147,32 @@ class VpnButton extends StatelessWidget {
         ref
             .read(vpnSettingProvider.notifier)
             .update((state) => state.copyWith(enable: value));
+      },
+    );
+  }
+}
+
+class AllowLanButton extends StatelessWidget {
+  const AllowLanButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return _QuickSwitchCard(
+      label: context.appLocalizations.allowLan,
+      iconData: Symbols.lan,
+      itemsBuilder: (ref) => [
+        const AllowLanItem(),
+        const PortItem(),
+        const AuthenticationItem(),
+        if (ref.watch(
+          networkSettingProvider.select((state) => state.authentication.enable),
+        )) ...const [AuthenticationAccountItem(), AuthenticationPasswordItem()],
+      ],
+      selector: patchClashConfigProvider.select((state) => state.allowLan),
+      onChanged: (ref, value) {
+        ref
+            .read(patchClashConfigProvider.notifier)
+            .update((state) => state.copyWith(allowLan: value));
       },
     );
   }
