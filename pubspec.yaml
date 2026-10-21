@@ -1,7 +1,7 @@
 name: fl_clash
 description: A multi-platform proxy client based on mihomo, simple and easy to use, open-source and ad-free.
 publish_to: 'none'
-version: 0.9.6+2026101518
+version: 0.9.7+2026102201
 environment:
   sdk: '>=3.10.0 <4.0.0'
 
