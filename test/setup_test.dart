@@ -129,6 +129,81 @@ hooks:
       },
     );
 
+    test('names the given team in entitlements', () {
+      final content = setup.createIOSEntitlements(
+        source: '<plist version="1.0">\n<dict>\n</dict>\n</plist>\n',
+        appBundleId: 'com.example.app',
+        bundleIdentifier: 'com.example.app.NECore',
+        teamIdentifier: 'ABCDE12345',
+      );
+
+      expect(
+        content,
+        contains('<string>ABCDE12345.com.example.app.NECore</string>'),
+      );
+      expect(
+        content,
+        contains(
+          '<key>com.apple.developer.team-identifier</key>\n'
+          '\t<string>ABCDE12345</string>',
+        ),
+      );
+    });
+
+    test('parses iOS bundle overrides', () {
+      final results = setup.createSetupArgParser().parse([
+        'ios',
+        '--ios-bundle-id',
+        'com.example.app',
+        '--ios-development-team',
+        'ABCDE12345',
+      ]);
+
+      expect(results['ios-bundle-id'], 'com.example.app');
+      expect(results['ios-development-team'], 'ABCDE12345');
+    });
+
+    test('builds a signed IPA for the export method', () {
+      expect(
+        setup.createIOSIpaBuildArgs(exportMethod: 'ad-hoc', verbose: false),
+        [
+          'build',
+          'ipa',
+          '--release',
+          '--dart-define-from-file=env.json',
+          '--export-method=ad-hoc',
+        ],
+      );
+      expect(
+        setup.createIOSIpaBuildArgs(
+          exportOptionsPlist: 'ios/ExportOptions.plist',
+          verbose: true,
+        ),
+        [
+          '--verbose',
+          'build',
+          'ipa',
+          '--release',
+          '--dart-define-from-file=env.json',
+          '--export-options-plist=ios/ExportOptions.plist',
+        ],
+      );
+    });
+
+    test('round-trips the bundle settings in an xcconfig', () {
+      final settings = setup.parseXcconfig(
+        '// comment\n'
+        'APP_BUNDLE_ID = com.example.app\n'
+        '  DEVELOPMENT_TEAM=ABCDE12345  \n',
+      );
+
+      expect(settings, {
+        'APP_BUNDLE_ID': 'com.example.app',
+        'DEVELOPMENT_TEAM': 'ABCDE12345',
+      });
+      expect(setup.parseXcconfig(setup.createXcconfig(settings)), settings);
+    });
+
     test('downloads the appimagetool build matching the host', () {
       expect(setup.appImageToolArch('arm64'), 'aarch64');
       expect(setup.appImageToolArch('amd64'), 'x86_64');

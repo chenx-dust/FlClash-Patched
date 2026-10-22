@@ -18,6 +18,12 @@ dart setup.dart android
 dart setup.dart ios      # macOS only: an unsigned IPA in dist/ for the installer to sign
 ```
 
+iOS builds use `com.follow.clash` unless the gitignored `ios/Flutter/GeneratedBundleConfig.xcconfig` sets
+`APP_BUNDLE_ID` or `DEVELOPMENT_TEAM`. `--ios-bundle-id` and `--ios-development-team` write those values into that
+file, and the IPA's entitlements use whatever the file ends up with. `--ipa-export-method` or
+`--ipa-export-options-plist` builds a signed IPA with `flutter build ipa` instead, which needs the team's signing
+identities on the host.
+
 The desktop Go core and the Rust helper build automatically: Flutter runs
 `plugins/setup/hook/build.dart` on every `flutter build` and `flutter test`,
 and the hook drives `CoreBuilder` from the `setup_hooks` package in

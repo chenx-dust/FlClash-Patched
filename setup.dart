@@ -35,6 +35,13 @@ Future<void> main(List<String> args) async {
 
   final results = parser.parse(args);
   final rest = results.rest;
+  if (results['ipa-export-method'] != null &&
+      results['ipa-export-options-plist'] != null) {
+    stderr.writeln(
+      '--ipa-export-method and --ipa-export-options-plist cannot be combined',
+    );
+    exit(64);
+  }
 
   final hostOs = Platform.operatingSystem;
   final host = _hostPlatform[hostOs];
@@ -80,6 +87,10 @@ Future<void> main(List<String> args) async {
     rootDir,
     arch,
     androidArch: androidArch,
+    iosBundleId: results['ios-bundle-id'] as String?,
+    iosDevelopmentTeam: results['ios-development-team'] as String?,
+    ipaExportMethod: results['ipa-export-method'] as String?,
+    ipaExportOptionsPlist: results['ipa-export-options-plist'] as String?,
     verbose: verbose,
   );
   exit(exitCode);
@@ -103,6 +114,26 @@ ArgParser createSetupArgParser() {
       valueHelp: 'arm,arm64,amd64',
       allowed: ['arm', 'arm64', 'amd64'],
       help: 'Target architecture (Android only)',
+    )
+    ..addOption(
+      'ios-bundle-id',
+      valueHelp: 'com.example.app',
+      help: 'iOS app bundle identifier, kept in GeneratedBundleConfig.xcconfig',
+    )
+    ..addOption(
+      'ios-development-team',
+      valueHelp: 'XXXXXXXXXX',
+      help: 'iOS development team, kept in GeneratedBundleConfig.xcconfig',
+    )
+    ..addOption(
+      'ipa-export-method',
+      allowed: ['app-store', 'ad-hoc', 'development', 'enterprise'],
+      help: 'Sign the IPA for this distribution (default: unsigned)',
+    )
+    ..addOption(
+      'ipa-export-options-plist',
+      valueHelp: 'ios/ExportOptions.plist',
+      help: 'Sign the IPA with these export options (default: unsigned)',
     )
     ..addFlag(
       'verbose',
@@ -165,13 +196,24 @@ Future<int> _package(
   String rootDir,
   String arch, {
   String? androidArch,
+  String? iosBundleId,
+  String? iosDevelopmentTeam,
+  String? ipaExportMethod,
+  String? ipaExportOptionsPlist,
   required bool verbose,
 }) async {
   final file = File(p.join(rootDir, 'env.json'));
   await file.writeAsString(jsonEncode(createBuildEnvironment(env)));
 
   if (platform == 'ios') {
-    return _packageIOS(rootDir, verbose: verbose);
+    return _packageIOS(
+      rootDir,
+      bundleId: iosBundleId,
+      developmentTeam: iosDevelopmentTeam,
+      exportMethod: ipaExportMethod,
+      exportOptionsPlist: ipaExportOptionsPlist,
+      verbose: verbose,
+    );
   }
 
   final flutterBuildArgs = createFlutterBuildArgs(
@@ -234,9 +276,111 @@ Future<int> _package(
 
 const _iosAppBundleId = 'com.follow.clash';
 
+Future<int> _packageIOS(
+  String rootDir, {
+  String? bundleId,
+  String? developmentTeam,
+  String? exportMethod,
+  String? exportOptionsPlist,
+  required bool verbose,
+}) async {
+  final configFile = File(
+    p.join(rootDir, 'ios', 'Flutter', 'GeneratedBundleConfig.xcconfig'),
+  );
+  var config = configFile.existsSync()
+      ? parseXcconfig(configFile.readAsStringSync())
+      : <String, String>{};
+  if (bundleId != null || developmentTeam != null) {
+    config = {
+      ...config,
+      'APP_BUNDLE_ID': ?bundleId,
+      'DEVELOPMENT_TEAM': ?developmentTeam,
+    };
+    await configFile.writeAsString(createXcconfig(config));
+  }
+  if (exportMethod != null || exportOptionsPlist != null) {
+    return _packageSignedIOS(
+      rootDir,
+      buildArgs: createIOSIpaBuildArgs(
+        exportMethod: exportMethod,
+        exportOptionsPlist: exportOptionsPlist,
+        verbose: verbose,
+      ),
+    );
+  }
+  return _packageUnsignedIOS(
+    rootDir,
+    appBundleId: config['APP_BUNDLE_ID'] ?? _iosAppBundleId,
+    teamIdentifier: config['DEVELOPMENT_TEAM'],
+    verbose: verbose,
+  );
+}
+
+List<String> createIOSIpaBuildArgs({
+  String? exportMethod,
+  String? exportOptionsPlist,
+  required bool verbose,
+}) {
+  return [
+    if (verbose) '--verbose',
+    'build',
+    'ipa',
+    '--release',
+    '--dart-define-from-file=env.json',
+    if (exportOptionsPlist != null)
+      '--export-options-plist=$exportOptionsPlist'
+    else
+      '--export-method=${exportMethod ?? 'app-store'}',
+  ];
+}
+
+Future<int> _packageSignedIOS(
+  String rootDir, {
+  required List<String> buildArgs,
+}) async {
+  final build = await Process.start(
+    'flutter',
+    buildArgs,
+    workingDirectory: rootDir,
+  );
+  build.stdout.listen(stdout.add);
+  build.stderr.listen(stderr.add);
+  final buildExit = await build.exitCode;
+  if (buildExit != 0) return buildExit;
+
+  final outputDir = Directory(p.join(rootDir, 'build', 'ios', 'ipa'));
+  final built = outputDir.existsSync()
+      ? outputDir.listSync().whereType<File>().where(
+          (file) => file.path.endsWith('.ipa'),
+        )
+      : const <File>[];
+  if (built.isEmpty) {
+    stderr.writeln('No IPA found in ${outputDir.path}');
+    return 1;
+  }
+  final ipa = _iosIpaPath(rootDir, 'ios-arm64');
+  built.first.copySync(ipa);
+  stdout.writeln('IPA: $ipa');
+  return 0;
+}
+
+String _iosIpaPath(String rootDir, String suffix) {
+  final pubspec =
+      loadYaml(File(p.join(rootDir, 'pubspec.yaml')).readAsStringSync()) as Map;
+  final version = (pubspec['version'] as String).split('+').first;
+  final distDir = Directory(p.join(rootDir, 'dist'))
+    ..createSync(recursive: true);
+  return p.join(distDir.path, 'FlClash-$version-$suffix.ipa');
+}
+
 /// The IPA ships unsigned for whoever installs it to sign; each bundle still
 /// carries its own entitlements, since a re-signer copies them from the bundle.
-Future<int> _packageIOS(String rootDir, {required bool verbose}) async {
+Future<int> _packageUnsignedIOS(
+  String rootDir, {
+  required String appBundleId,
+  String? teamIdentifier,
+  required bool verbose,
+}) async {
   final build = await Process.start('flutter', [
     if (verbose) '--verbose',
     'build',
@@ -266,7 +410,7 @@ Future<int> _packageIOS(String rootDir, {required bool verbose}) async {
     for (final target in createIOSSigningTargets(
       rootDir: rootDir,
       appPath: appPath,
-      appBundleId: _iosAppBundleId,
+      appBundleId: appBundleId,
     )) {
       final entitlements = File(
         p.join(tempDir.path, '${p.basename(target.bundle)}.entitlements'),
@@ -274,8 +418,9 @@ Future<int> _packageIOS(String rootDir, {required bool verbose}) async {
       await entitlements.writeAsString(
         createIOSEntitlements(
           source: File(target.entitlements).readAsStringSync(),
-          appBundleId: _iosAppBundleId,
+          appBundleId: appBundleId,
           bundleIdentifier: target.bundleIdentifier,
+          teamIdentifier: teamIdentifier,
         ),
       );
       final exitCode = await _adHocSign(
@@ -294,13 +439,7 @@ Future<int> _packageIOS(String rootDir, {required bool verbose}) async {
       stderr.write(copy.stderr);
       return copy.exitCode;
     }
-    final pubspec =
-        loadYaml(File(p.join(rootDir, 'pubspec.yaml')).readAsStringSync())
-            as Map;
-    final version = (pubspec['version'] as String).split('+').first;
-    final distDir = Directory(p.join(rootDir, 'dist'))
-      ..createSync(recursive: true);
-    final ipa = p.join(distDir.path, 'FlClash-$version-ios-arm64-unsigned.ipa');
+    final ipa = _iosIpaPath(rootDir, 'ios-arm64-unsigned');
     final archive = await Process.run('ditto', [
       '-c',
       '-k',
@@ -365,14 +504,15 @@ List<IOSSigningTarget> createIOSSigningTargets({
 }
 
 /// Resolves the build settings Xcode would expand. iOS refuses a Network
-/// Extension whose signature names no application identifier, so a placeholder
-/// team stands in until the bundle is signed for real.
+/// Extension whose signature names no application identifier, so without a
+/// team a placeholder stands in until the bundle is signed for real.
 String createIOSEntitlements({
   required String source,
   required String appBundleId,
   required String bundleIdentifier,
+  String? teamIdentifier,
 }) {
-  const team = 'UNKNOWN000';
+  final team = teamIdentifier ?? 'UNKNOWN000';
   final resolved = source.replaceAll(r'$(APP_BUNDLE_ID)', appBundleId);
   final end = resolved.lastIndexOf('</dict>');
   if (end < 0) {
@@ -384,6 +524,24 @@ String createIOSEntitlements({
       '\t<key>com.apple.developer.team-identifier</key>\n'
       '\t<string>$team</string>\n'
       '${resolved.substring(end)}';
+}
+
+Map<String, String> parseXcconfig(String source) {
+  return {
+    for (final line in LineSplitter.split(source))
+      if (RegExp(
+            r'^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$',
+          ).firstMatch(line)
+          case final match?)
+        match[1]!: match[2]!,
+  };
+}
+
+String createXcconfig(Map<String, String> settings) {
+  return [
+    for (final MapEntry(:key, :value) in settings.entries) '$key = $value',
+    '',
+  ].join('\n');
 }
 
 String _detectArch() {
