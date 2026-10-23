@@ -177,6 +177,7 @@ class _RecordingCoreHandler extends CoreHandlerInterface {
         'ip': '',
         'delay': 0,
       },
+      CoreMethod.clearDnsCache => true,
       CoreMethod.queryDns => {
         'domain': 'example.com',
         'type': 'AAAA',
@@ -458,6 +459,8 @@ void main() {
     });
     expect(dnsQuery.initiator, DnsQueryInitiator.manual);
     expect(dnsQuery.answers, ['2606:2800:220:1::248']);
+    expect(await handler.clearDnsCache(), isTrue);
+    expect(handler.calls, contains(CoreMethod.clearDnsCache));
     final ruleQuery = await handler.queryRule(
       const RuleQueryParams(target: 'example.com'),
     );

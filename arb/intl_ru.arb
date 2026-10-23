@@ -204,6 +204,8 @@
   "dnsQueries": "DNS-запросы",
   "dnsQueriesDesc": "Записи DNS-разрешения ядра",
   "queryDns": "DNS-запрос",
+  "clearDnsCache": "Очистить кэш DNS",
+  "dnsCacheCleared": "Кэш DNS очищен",
   "query": "Запросить",
   "manual": "Вручную",
   "initiator": "Источник",

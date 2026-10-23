@@ -106,6 +106,10 @@ func handleQueryDns(params *DnsQueryParams) (DnsQuery, error) {
 	}), nil
 }
 
+func handleClearDnsCache() {
+	resolver.ClearCache()
+}
+
 func watchManualDnsQuery(question D.Question) chan DnsQuery {
 	observed := make(chan DnsQuery, 1)
 	manualDnsMu.Lock()

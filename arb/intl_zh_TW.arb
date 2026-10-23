@@ -204,6 +204,8 @@
   "dnsQueries": "DNS 查詢",
   "dnsQueriesDesc": "核心 DNS 解析紀錄",
   "queryDns": "查詢 DNS",
+  "clearDnsCache": "清除 DNS 快取",
+  "dnsCacheCleared": "DNS 快取已清除",
   "query": "查詢",
   "manual": "手動",
   "initiator": "發起端",

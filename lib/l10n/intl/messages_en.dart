@@ -331,6 +331,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "clear": MessageLookupByLibrary.simpleMessage("Clear"),
     "clearData": MessageLookupByLibrary.simpleMessage("Clear data"),
+    "clearDnsCache": MessageLookupByLibrary.simpleMessage("Clear DNS cache"),
     "clearSearch": MessageLookupByLibrary.simpleMessage("Clear search"),
     "clipboardExport": MessageLookupByLibrary.simpleMessage(
       "Export to clipboard",
@@ -482,6 +483,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "disconnected": MessageLookupByLibrary.simpleMessage("Disconnected"),
     "discoverNewVersion": MessageLookupByLibrary.simpleMessage(
       "New version found",
+    ),
+    "dnsCacheCleared": MessageLookupByLibrary.simpleMessage(
+      "DNS cache cleared",
     ),
     "dnsDesc": MessageLookupByLibrary.simpleMessage(
       "Update DNS-related settings",

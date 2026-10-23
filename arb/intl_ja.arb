@@ -204,6 +204,8 @@
   "dnsQueries": "DNS クエリ",
   "dnsQueriesDesc": "コアの DNS 解決記録",
   "queryDns": "DNS を照会",
+  "clearDnsCache": "DNS キャッシュをクリア",
+  "dnsCacheCleared": "DNS キャッシュをクリアしました",
   "query": "照会",
   "manual": "手動",
   "initiator": "発信元",

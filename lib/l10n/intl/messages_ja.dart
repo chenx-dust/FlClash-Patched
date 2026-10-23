@@ -269,6 +269,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "checkUpdateError": MessageLookupByLibrary.simpleMessage("すでに最新バージョンです"),
     "clear": MessageLookupByLibrary.simpleMessage("クリア"),
     "clearData": MessageLookupByLibrary.simpleMessage("データを消去"),
+    "clearDnsCache": MessageLookupByLibrary.simpleMessage("DNS キャッシュをクリア"),
     "clearSearch": MessageLookupByLibrary.simpleMessage("検索をクリア"),
     "clipboardExport": MessageLookupByLibrary.simpleMessage("クリップボードへエクスポート"),
     "clipboardImport": MessageLookupByLibrary.simpleMessage("クリップボードからインポート"),
@@ -400,6 +401,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "disconnected": MessageLookupByLibrary.simpleMessage("切断済み"),
     "discoverNewVersion": MessageLookupByLibrary.simpleMessage(
       "新しいバージョンが見つかりました",
+    ),
+    "dnsCacheCleared": MessageLookupByLibrary.simpleMessage(
+      "DNS キャッシュをクリアしました",
     ),
     "dnsDesc": MessageLookupByLibrary.simpleMessage("DNS 関連設定の更新"),
     "dnsHijack": MessageLookupByLibrary.simpleMessage("DNS ハイジャック"),

@@ -251,6 +251,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "checkUpdateError": MessageLookupByLibrary.simpleMessage("目前已是最新版本"),
     "clear": MessageLookupByLibrary.simpleMessage("清除"),
     "clearData": MessageLookupByLibrary.simpleMessage("清除資料"),
+    "clearDnsCache": MessageLookupByLibrary.simpleMessage("清除 DNS 快取"),
     "clearSearch": MessageLookupByLibrary.simpleMessage("清除搜尋"),
     "clipboardExport": MessageLookupByLibrary.simpleMessage("匯出至剪貼簿"),
     "clipboardImport": MessageLookupByLibrary.simpleMessage("剪貼簿匯入"),
@@ -361,6 +362,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "disconnected": MessageLookupByLibrary.simpleMessage("已中斷"),
     "discoverNewVersion": MessageLookupByLibrary.simpleMessage("發現新版本"),
+    "dnsCacheCleared": MessageLookupByLibrary.simpleMessage("DNS 快取已清除"),
     "dnsDesc": MessageLookupByLibrary.simpleMessage("更新 DNS 相關設定"),
     "dnsHijack": MessageLookupByLibrary.simpleMessage("DNS 劫持"),
     "dnsHijackDesc": MessageLookupByLibrary.simpleMessage(

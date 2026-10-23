@@ -204,6 +204,8 @@
   "dnsQueries": "DNS queries",
   "dnsQueriesDesc": "Core DNS resolution records",
   "queryDns": "Query DNS",
+  "clearDnsCache": "Clear DNS cache",
+  "dnsCacheCleared": "DNS cache cleared",
   "query": "Query",
   "manual": "Manual",
   "initiator": "Initiator",

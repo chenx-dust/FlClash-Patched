@@ -1675,6 +1675,26 @@ class AppLocalizations {
     return Intl.message('Query DNS', name: 'queryDns', desc: '', args: []);
   }
 
+  /// `Clear DNS cache`
+  String get clearDnsCache {
+    return Intl.message(
+      'Clear DNS cache',
+      name: 'clearDnsCache',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `DNS cache cleared`
+  String get dnsCacheCleared {
+    return Intl.message(
+      'DNS cache cleared',
+      name: 'dnsCacheCleared',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Query`
   String get query {
     return Intl.message('Query', name: 'query', desc: '', args: []);

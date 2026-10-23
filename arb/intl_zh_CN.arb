@@ -204,6 +204,8 @@
   "dnsQueries": "DNS 查询",
   "dnsQueriesDesc": "核心 DNS 解析记录",
   "queryDns": "查询 DNS",
+  "clearDnsCache": "清除 DNS 缓存",
+  "dnsCacheCleared": "DNS 缓存已清除",
   "query": "查询",
   "manual": "手动",
   "initiator": "发起方",

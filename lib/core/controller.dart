@@ -298,6 +298,10 @@ class CoreController {
     return _interface.queryDns(domain, type);
   }
 
+  Future<bool> clearDnsCache() {
+    return _interface.clearDnsCache();
+  }
+
   Future<RuleQuery> queryRule(RuleQueryParams params) {
     return _interface.queryRule(params);
   }

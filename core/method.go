@@ -315,6 +315,10 @@ var methodHandlers = map[CoreMethod]methodHandler{
 			response.success(query)
 		})
 	}),
+	clearDnsCacheMethod: withoutArguments(func(response MethodResponse) {
+		handleClearDnsCache()
+		response.success(true)
+	}),
 	queryRuleMethod: withArguments(func(params *RuleQueryParams, response MethodResponse) {
 		safeGo(response, func() {
 			query, err := handleQueryRule(params)

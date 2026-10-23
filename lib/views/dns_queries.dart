@@ -139,6 +139,12 @@ class _DnsQueriesViewState extends ConsumerState<DnsQueriesView> {
     );
   }
 
+  Future<void> _clearDnsCache() async {
+    final cleared = await _core.clearDnsCache();
+    if (!cleared || !mounted) return;
+    context.showNotifier(context.appLocalizations.dnsCacheCleared);
+  }
+
   void _updateDnsQueriesThrottler() {
     throttler.call(FunctionTag.dnsQueries, () {
       if (!mounted) {
@@ -162,10 +168,31 @@ class _DnsQueriesViewState extends ConsumerState<DnsQueriesView> {
           builder: (_, ref, _) {
             final isConnected =
                 ref.watch(coreStatusProvider) == CoreStatus.connected;
-            return IconButton(
-              tooltip: appLocalizations.queryDns,
-              onPressed: isConnected ? _showLookupDialog : null,
-              icon: const Icon(Symbols.send),
+            return CommonPopupBox(
+              targetBuilder: (open) {
+                return IconButton(
+                  tooltip: appLocalizations.more,
+                  onPressed: () {
+                    final isMobile = ref.read(isMobileViewProvider);
+                    open(offset: Offset(0, isMobile ? 0 : 20));
+                  },
+                  icon: const Icon(Symbols.more_vert),
+                );
+              },
+              popupBuilder: (_) => CommonPopupMenu(
+                items: [
+                  CommonPopupMenuItem(
+                    icon: Symbols.send,
+                    label: appLocalizations.queryDns,
+                    onPressed: isConnected ? _showLookupDialog : null,
+                  ),
+                  CommonPopupMenuItem(
+                    icon: Symbols.mop,
+                    label: appLocalizations.clearDnsCache,
+                    onPressed: isConnected ? _clearDnsCache : null,
+                  ),
+                ],
+              ),
             );
           },
         ),

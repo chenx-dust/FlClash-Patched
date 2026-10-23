@@ -347,6 +347,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "clear": MessageLookupByLibrary.simpleMessage("Очистить"),
     "clearData": MessageLookupByLibrary.simpleMessage("Очистить данные"),
+    "clearDnsCache": MessageLookupByLibrary.simpleMessage("Очистить кэш DNS"),
     "clearSearch": MessageLookupByLibrary.simpleMessage("Очистить поиск"),
     "clipboardExport": MessageLookupByLibrary.simpleMessage(
       "Экспорт в буфер обмена",
@@ -505,6 +506,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "discoverNewVersion": MessageLookupByLibrary.simpleMessage(
       "Доступна новая версия",
     ),
+    "dnsCacheCleared": MessageLookupByLibrary.simpleMessage("Кэш DNS очищен"),
     "dnsDesc": MessageLookupByLibrary.simpleMessage(
       "Настройки, связанные с DNS",
     ),

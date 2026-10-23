@@ -40,6 +40,7 @@ enum CoreMethod {
   startDnsNotify,
   stopDnsNotify,
   queryDns,
+  clearDnsCache,
   queryRule,
   startListener,
   stopListener,

@@ -102,6 +102,8 @@ mixin CoreInterface {
 
   Future<DnsQuery> queryDns(String domain, String type);
 
+  Future<bool> clearDnsCache();
+
   Future<RuleQuery> queryRule(RuleQueryParams params);
 
   Future<bool> crash();
@@ -570,6 +572,11 @@ abstract class CoreHandlerInterface with CoreInterface {
       );
     }
     return DnsQuery.fromJson(data);
+  }
+
+  @override
+  Future<bool> clearDnsCache() async {
+    return await _invokeMethod<bool>(method: CoreMethod.clearDnsCache) ?? false;
   }
 
   @override
