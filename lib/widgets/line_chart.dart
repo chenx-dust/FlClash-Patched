@@ -67,7 +67,7 @@ class _LineChartState extends State<LineChart>
     double maxX = points[0].x;
     double minX = points[0].x;
     double maxY = points[0].y;
-    double minY = points[0].y;
+    double minY = 0;
 
     for (final point in points) {
       if (point.x > maxX) maxX = point.x;

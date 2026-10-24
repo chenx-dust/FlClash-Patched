@@ -14,19 +14,15 @@ class NetworkSpeed extends StatefulWidget {
 }
 
 class _NetworkSpeedState extends State<NetworkSpeed> {
-  List<Point> initPoints = const [Point(0, 0), Point(1, 0)];
-
   List<Point> _getPoints(List<Traffic> traffics) {
     const maxLength = 30;
     final paddingCount = maxLength - traffics.length;
-    final List<Point> trafficPoints = List.generate(maxLength, (index) {
+    return List.generate(maxLength, (index) {
       final speed = index < paddingCount
           ? 0.0
           : traffics[index - paddingCount].speed.toDouble();
-      return Point((index + initPoints.length).toDouble(), speed);
+      return Point(index.toDouble(), speed);
     });
-
-    return [...initPoints, ...trafficPoints];
   }
 
   Traffic _getLastTraffic(List<Traffic> traffics) {
