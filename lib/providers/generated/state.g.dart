@@ -2088,7 +2088,7 @@ final class SelectedMapProvider
   }
 }
 
-String _$selectedMapHash() => r'd4438d8d87d0c7ec7d9c5d02f577cdba6ba2a785';
+String _$selectedMapHash() => r'236924f3f14415f11e135e0038daab4b93b97d34';
 
 @ProviderFor(unfoldSet)
 final unfoldSetProvider = UnfoldSetProvider._();

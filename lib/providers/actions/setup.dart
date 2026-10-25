@@ -34,7 +34,7 @@ class SetupAction extends _$SetupAction {
   }
 
   SetupParams get _setupParams {
-    final selectedMap = ref.read(selectedMapProvider);
+    final selectedMap = ref.read(currentProfileProvider)?.selectedMap ?? {};
     final testUrl = ref.read(
       appSettingProvider.select((state) => state.testUrl),
     );
@@ -536,6 +536,7 @@ class SetupAction extends _$SetupAction {
           rethrow;
         }
         globalState.lastConfigMd5 = yamlMd5;
+        ref.read(proxiesActionProvider.notifier).coreProfileId = profile?.id;
         ref.read(checkIpNumProvider.notifier).add();
         await onUpdated?.call();
       },

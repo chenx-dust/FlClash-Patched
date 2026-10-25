@@ -313,6 +313,16 @@ class Groups extends _$Groups with AutoDisposeNotifierMixin {
   }
 }
 
+// Groups lag a profile switch until the Core reloads, so selections must be
+// read from the profile the groups came from, not the current one.
+@Riverpod(keepAlive: true)
+class GroupsProfileId extends _$GroupsProfileId with AutoDisposeNotifierMixin {
+  @override
+  int? build() {
+    return null;
+  }
+}
+
 @Riverpod(keepAlive: true)
 class DelayDataSource extends _$DelayDataSource with AutoDisposeNotifierMixin {
   DelayMap? _owned;

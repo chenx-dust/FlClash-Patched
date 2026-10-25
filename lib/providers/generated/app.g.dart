@@ -1271,6 +1271,58 @@ abstract class _$Groups extends $Notifier<List<Group>> {
   }
 }
 
+@ProviderFor(GroupsProfileId)
+final groupsProfileIdProvider = GroupsProfileIdProvider._();
+
+final class GroupsProfileIdProvider
+    extends $NotifierProvider<GroupsProfileId, int?> {
+  GroupsProfileIdProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'groupsProfileIdProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$groupsProfileIdHash();
+
+  @$internal
+  @override
+  GroupsProfileId create() => GroupsProfileId();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int?>(value),
+    );
+  }
+}
+
+String _$groupsProfileIdHash() => r'3e03c344d01dc5078be6a79778179cdc3efca7eb';
+
+abstract class _$GroupsProfileId extends $Notifier<int?> {
+  int? build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<int?, int?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<int?, int?>,
+              int?,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(DelayDataSource)
 final delayDataSourceProvider = DelayDataSourceProvider._();
 
@@ -1303,7 +1355,7 @@ final class DelayDataSourceProvider
   }
 }
 
-String _$delayDataSourceHash() => r'9737cf2d943cb9b5504a5ec8ace20b0a9380b197';
+String _$delayDataSourceHash() => r'0d0fb2faccb3ce4539ce683b1a2bc4dcb8c8f3c0';
 
 abstract class _$DelayDataSource extends $Notifier<DelayMap> {
   DelayMap build();
@@ -1355,7 +1407,7 @@ final class PendingDelayTestsProvider
   }
 }
 
-String _$pendingDelayTestsHash() => r'ceaac9e42e13d87a1885d2f227971e34665b18ca';
+String _$pendingDelayTestsHash() => r'9f4e6eb253f7f2882e954c798ed4030b67f157f7';
 
 abstract class _$PendingDelayTests extends $Notifier<Set<String>> {
   Set<String> build();

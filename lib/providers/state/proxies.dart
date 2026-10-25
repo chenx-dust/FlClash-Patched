@@ -239,10 +239,11 @@ bool delayTestPending(Ref ref, {required String proxyName, String? testUrl}) {
 
 @riverpod
 Map<String, String> selectedMap(Ref ref) {
-  final selectedMap = ref.watch(
-    currentProfileProvider.select((state) => state?.selectedMap ?? {}),
+  final profileId =
+      ref.watch(groupsProfileIdProvider) ?? ref.watch(currentProfileIdProvider);
+  return ref.watch(
+    profileProvider(profileId).select((state) => state?.selectedMap ?? {}),
   );
-  return selectedMap;
 }
 
 @riverpod

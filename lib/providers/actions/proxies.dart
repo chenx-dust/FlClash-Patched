@@ -25,6 +25,10 @@ class ProxiesAction extends _$ProxiesAction {
 
   final Map<String, String> _pendingSelectedRollback = {};
 
+  int? _coreProfileId;
+
+  set coreProfileId(int? profileId) => _coreProfileId = profileId;
+
   @override
   void build() {
     ref.listen(coreStatusProvider, (_, next) {
@@ -86,7 +90,7 @@ class ProxiesAction extends _$ProxiesAction {
   Future<void> updateGroups() async {
     try {
       commonPrint.log('updateGroups');
-      final profileId = ref.read(currentProfileProvider)?.id;
+      final profileId = _coreProfileId ?? ref.read(currentProfileIdProvider);
       final groups = await retry<List<Group>>(
         task: () async {
           final sortType = ref.read(
@@ -96,9 +100,8 @@ class ProxiesAction extends _$ProxiesAction {
           final testUrl = ref.read(
             appSettingProvider.select((state) => state.testUrl),
           );
-          final selectedMap = ref.read(
-            currentProfileProvider.select((state) => state?.selectedMap ?? {}),
-          );
+          final selectedMap =
+              ref.read(profileProvider(profileId))?.selectedMap ?? {};
           try {
             return await _core.getProxiesGroups(
               selectedMap: selectedMap,
@@ -116,6 +119,7 @@ class ProxiesAction extends _$ProxiesAction {
         },
         retryIf: (res) => res.isEmpty,
       );
+      ref.read(groupsProfileIdProvider.notifier).value = profileId;
       ref.read(groupsProvider.notifier).value = groups;
       if (groups.isNotEmpty) {
         _removeUnavailableSelections(profileId: profileId, groups: groups);

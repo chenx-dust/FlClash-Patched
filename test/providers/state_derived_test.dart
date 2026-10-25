@@ -438,6 +438,23 @@ void main() {
     );
   });
 
+  test('selection follows the groups profile until groups reload', () {
+    final loaded = Profile.normal().copyWith(selectedMap: {'Selector': 'A'});
+    final next = Profile.normal().copyWith(
+      id: loaded.id + 1,
+      selectedMap: {'Selector': 'B'},
+    );
+    _profiles(container).replace([loaded, next]);
+    container.read(currentProfileIdProvider.notifier).update((_) => loaded.id);
+    container.read(groupsProfileIdProvider.notifier).update((_) => loaded.id);
+
+    container.read(currentProfileIdProvider.notifier).update((_) => next.id);
+    expect(container.read(selectedMapProvider), {'Selector': 'A'});
+
+    container.read(groupsProfileIdProvider.notifier).update((_) => next.id);
+    expect(container.read(selectedMapProvider), {'Selector': 'B'});
+  });
+
   test('theme and simple derived providers cover fallback branches', () {
     expect(container.read(currentBrightnessProvider), Brightness.dark);
     container
