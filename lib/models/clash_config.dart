@@ -11,6 +11,12 @@ const defaultClashConfig = PatchClashConfig();
 const defaultTun = Tun();
 const defaultDns = Dns();
 const defaultNtp = Ntp();
+const defaultSnifferSniff = {
+  'HTTP': SnifferConfig(ports: ['80', '8080-8880'], overrideDest: true),
+  'TLS': SnifferConfig(ports: ['443', '8443']),
+  'QUIC': SnifferConfig(ports: ['443', '8443']),
+};
+const defaultSniffer = Sniffer();
 const defaultGeoXUrl = {
   GeoResource.MMDB:
       'https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.metadb',
@@ -238,14 +244,24 @@ abstract class Sniffer with _$Sniffer {
     @Default([]) @JsonKey(name: 'skip-src-address') List<String> skipSrcAddress,
     @Default([]) @JsonKey(name: 'skip-dst-address') List<String> skipDstAddress,
     @Default([]) @JsonKey(name: 'skip-domain') List<String> skipDomain,
-    @Default([]) @JsonKey(name: 'port-whitelist') List<String> port,
+    @Default([])
+    @JsonKey(name: 'port-whitelist', fromJson: _formJsonPorts)
+    List<String> port,
     @Default(true) @JsonKey(name: 'force-dns-mapping') bool forceDnsMapping,
     @Default(true) @JsonKey(name: 'parse-pure-ip') bool parsePureIp,
-    @Default({}) Map<String, SnifferConfig> sniff,
+    @Default(defaultSnifferSniff) Map<String, SnifferConfig> sniff,
   }) = _Sniffer;
 
   factory Sniffer.fromJson(Map<String, Object?> json) =>
       _$SnifferFromJson(json);
+
+  factory Sniffer.safeSnifferFromJson(Map<String, Object?> json) {
+    return decodeOrRestoreDefault(
+      'sniffer config',
+      () => Sniffer.fromJson(json),
+      () => defaultSniffer,
+    );
+  }
 }
 
 List<String> _formJsonPorts(List? ports) {
@@ -618,6 +634,9 @@ abstract class PatchClashConfig with _$PatchClashConfig {
     @Default(defaultTun) @JsonKey(fromJson: Tun.safeFormJson) Tun tun,
     @Default(defaultDns) @JsonKey(fromJson: Dns.safeDnsFromJson) Dns dns,
     @Default(defaultNtp) @JsonKey(fromJson: Ntp.safeNtpFromJson) Ntp ntp,
+    @Default(defaultSniffer)
+    @JsonKey(fromJson: Sniffer.safeSnifferFromJson)
+    Sniffer sniffer,
     @Default(defaultGeoXUrl)
     @JsonKey(
       name: 'geox-url',

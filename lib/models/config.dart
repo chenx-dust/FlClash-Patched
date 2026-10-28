@@ -337,6 +337,7 @@ abstract class Config with _$Config {
     int? currentProfileId,
     @Default(false) bool overrideDns,
     @Default(false) bool overrideNtp,
+    @Default(false) bool overrideSniffer,
     @Default([]) List<HotKeyAction> hotKeyActions,
     @JsonKey(fromJson: AppSettingProps.safeFromJson)
     @Default(defaultAppSettingProps)

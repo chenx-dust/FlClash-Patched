@@ -153,6 +153,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "ageSecretKeyOptional": MessageLookupByLibrary.simpleMessage("Age 秘密鍵（任意）"),
     "agree": MessageLookupByLibrary.simpleMessage("同意する"),
     "allData": MessageLookupByLibrary.simpleMessage("すべてのデータ"),
+    "allPorts": MessageLookupByLibrary.simpleMessage("すべてのポート"),
     "allowBypass": MessageLookupByLibrary.simpleMessage(
       "アプリが VPN をバイパスすることを許可",
     ),
@@ -394,6 +395,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "direct": MessageLookupByLibrary.simpleMessage("ダイレクト"),
     "disableUDP": MessageLookupByLibrary.simpleMessage("UDP を無効化"),
+    "disabledText": MessageLookupByLibrary.simpleMessage("無効"),
     "disclaimer": MessageLookupByLibrary.simpleMessage("免責事項"),
     "disclaimerDesc": MessageLookupByLibrary.simpleMessage(
       "本ソフトウェアは、学習・交流や研究などの非商用目的でのみ使用できます。商用目的での使用は固く禁じられています。いかなる商業行為も本ソフトウェアとは一切関係ありません。",
@@ -459,6 +461,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "enableExternalController": MessageLookupByLibrary.simpleMessage(
       "外部コントローラーを有効にする",
     ),
+    "enabledText": MessageLookupByLibrary.simpleMessage("有効"),
     "endpointIndependentNat": MessageLookupByLibrary.simpleMessage("NAT 強化"),
     "endpointIndependentNatDesc": MessageLookupByLibrary.simpleMessage(
       "UDP および P2P アプリの接続を最適化",
@@ -553,9 +556,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "findProcessModeDesc": MessageLookupByLibrary.simpleMessage(
       "有効にすると、パフォーマンスが多少低下します",
     ),
+    "followGlobal": MessageLookupByLibrary.simpleMessage("グローバルに従う"),
     "followProfile": MessageLookupByLibrary.simpleMessage("プロファイルに従う"),
     "fontFamily": MessageLookupByLibrary.simpleMessage("フォント"),
     "fontSize": MessageLookupByLibrary.simpleMessage("サイズ"),
+    "forceDnsMapping": MessageLookupByLibrary.simpleMessage("DNS マッピングを強制"),
+    "forceDnsMappingDesc": MessageLookupByLibrary.simpleMessage(
+      "DNS マッピングでドメインが判明した接続もスニッフィングします",
+    ),
+    "forceDomain": MessageLookupByLibrary.simpleMessage("強制スニッフィングするドメイン"),
+    "forceDomainDesc": MessageLookupByLibrary.simpleMessage(
+      "これらのドメインを常にスニッフィングします",
+    ),
     "forceRestartCoreTip": MessageLookupByLibrary.simpleMessage(
       "コアを強制再起動してもよろしいですか？",
     ),
@@ -886,6 +898,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "other": MessageLookupByLibrary.simpleMessage("その他"),
     "outboundMode": MessageLookupByLibrary.simpleMessage("アウトバウンドモード"),
     "override": MessageLookupByLibrary.simpleMessage("上書き"),
+    "overrideDestination": MessageLookupByLibrary.simpleMessage("宛先を上書き"),
+    "overrideDestinationDesc": MessageLookupByLibrary.simpleMessage(
+      "元のアドレスではなく、スニッフィングしたドメインに接続します",
+    ),
     "overrideDns": MessageLookupByLibrary.simpleMessage("DNS 上書き"),
     "overrideDnsDesc": MessageLookupByLibrary.simpleMessage(
       "有効化するとプロファイルの DNS 設定を上書き",
@@ -896,12 +912,20 @@ class MessageLookup extends MessageLookupByLibrary {
       "有効化するとプロファイルの NTP 設定を上書き",
     ),
     "overrideScript": MessageLookupByLibrary.simpleMessage("上書きスクリプト"),
+    "overrideSniffer": MessageLookupByLibrary.simpleMessage("スニファー上書き"),
+    "overrideSnifferDesc": MessageLookupByLibrary.simpleMessage(
+      "有効化するとプロファイルのスニファー設定を上書き",
+    ),
     "overwriteTypeCustom": MessageLookupByLibrary.simpleMessage("カスタム"),
     "overwriteTypeCustomDesc": MessageLookupByLibrary.simpleMessage(
       "カスタムモード：プロキシグループとルールを完全にカスタマイズできます",
     ),
     "palette": MessageLookupByLibrary.simpleMessage("パレット"),
     "parentDirectory": MessageLookupByLibrary.simpleMessage("親ディレクトリ"),
+    "parsePureIp": MessageLookupByLibrary.simpleMessage("純粋な IP を解析"),
+    "parsePureIpDesc": MessageLookupByLibrary.simpleMessage(
+      "IP アドレスへ直接向かう接続をスニッフィングします",
+    ),
     "password": MessageLookupByLibrary.simpleMessage("パスワード"),
     "paste": MessageLookupByLibrary.simpleMessage("貼り付け"),
     "pickFromAlbum": MessageLookupByLibrary.simpleMessage("アルバムから選択"),
@@ -1271,7 +1295,30 @@ class MessageLookup extends MessageLookupByLibrary {
     "silentLaunch": MessageLookupByLibrary.simpleMessage("サイレント起動"),
     "silentLaunchDesc": MessageLookupByLibrary.simpleMessage("バックグラウンドで起動します"),
     "size": MessageLookupByLibrary.simpleMessage("サイズ"),
+    "skipDomain": MessageLookupByLibrary.simpleMessage("スキップするドメイン"),
+    "skipDomainDesc": MessageLookupByLibrary.simpleMessage(
+      "これらのドメインはスニッフィングしません",
+    ),
+    "skipDstAddress": MessageLookupByLibrary.simpleMessage("スキップする宛先アドレス"),
+    "skipDstAddressDesc": MessageLookupByLibrary.simpleMessage(
+      "これらの IP 範囲への接続はスニッフィングしません",
+    ),
+    "skipSrcAddress": MessageLookupByLibrary.simpleMessage("スキップする送信元アドレス"),
+    "skipSrcAddressDesc": MessageLookupByLibrary.simpleMessage(
+      "これらの IP 範囲からの接続はスニッフィングしません",
+    ),
     "small": MessageLookupByLibrary.simpleMessage("小"),
+    "sniffExceptions": MessageLookupByLibrary.simpleMessage("例外"),
+    "sniffPorts": MessageLookupByLibrary.simpleMessage("ポート"),
+    "sniffPortsDesc": MessageLookupByLibrary.simpleMessage(
+      "ポートまたは 8080-8880 のような範囲。空欄ですべてのポートを対象にします",
+    ),
+    "sniffProtocols": MessageLookupByLibrary.simpleMessage("プロトコル"),
+    "sniffer": MessageLookupByLibrary.simpleMessage("スニファー"),
+    "snifferDesc": MessageLookupByLibrary.simpleMessage("ドメインスニッフィング設定の更新"),
+    "snifferStatusDesc": MessageLookupByLibrary.simpleMessage(
+      "HTTP、TLS、QUIC 通信からドメインを読み取ります",
+    ),
     "socksPort": MessageLookupByLibrary.simpleMessage("Socks ポート"),
     "sort": MessageLookupByLibrary.simpleMessage("並べ替え"),
     "source": MessageLookupByLibrary.simpleMessage("ソース"),

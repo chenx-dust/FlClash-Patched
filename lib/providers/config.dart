@@ -78,6 +78,14 @@ class OverrideNtp extends _$OverrideNtp with AutoDisposeNotifierMixin {
 }
 
 @riverpod
+class OverrideSniffer extends _$OverrideSniffer with AutoDisposeNotifierMixin {
+  @override
+  bool build() {
+    return false;
+  }
+}
+
+@riverpod
 class HotKeyActions extends _$HotKeyActions with AutoDisposeNotifierMixin {
   @override
   List<HotKeyAction> build() {
@@ -128,6 +136,7 @@ Config _config(Ref ref) {
   final davProps = ref.watch(davSettingProvider);
   final overrideDns = ref.watch(overrideDnsProvider);
   final overrideNtp = ref.watch(overrideNtpProvider);
+  final overrideSniffer = ref.watch(overrideSnifferProvider);
   final hotKeyActions = ref.watch(hotKeyActionsProvider);
   final proxiesStyleProps = ref.watch(proxiesStyleSettingProvider);
   final patchClashConfig = ref.watch(patchClashConfigProvider);
@@ -143,6 +152,7 @@ Config _config(Ref ref) {
     davProps: davProps,
     overrideDns: overrideDns,
     overrideNtp: overrideNtp,
+    overrideSniffer: overrideSniffer,
     hotKeyActions: hotKeyActions,
     proxiesStyleProps: proxiesStyleProps,
     patchClashConfig: patchClashConfig,
@@ -164,6 +174,7 @@ List<Override> buildConfigOverrides(Config config) {
     davSettingProvider.overrideWithBuild((_, _) => config.davProps),
     overrideDnsProvider.overrideWithBuild((_, _) => config.overrideDns),
     overrideNtpProvider.overrideWithBuild((_, _) => config.overrideNtp),
+    overrideSnifferProvider.overrideWithBuild((_, _) => config.overrideSniffer),
     hotKeyActionsProvider.overrideWithBuild((_, _) => config.hotKeyActions),
     proxiesStyleSettingProvider.overrideWithBuild(
       (_, _) => config.proxiesStyleProps,

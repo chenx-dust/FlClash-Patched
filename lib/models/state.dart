@@ -390,6 +390,7 @@ abstract class MakeRealProfileState with _$MakeRealProfileState {
     required PatchClashConfig realPatchConfig,
     required bool overrideDns,
     @Default(false) bool overrideNtp,
+    @Default(false) bool overrideSniffer,
     required bool appendSystemDns,
     required List<ProxyGroup> proxyGroups,
     required List<Rule> rules,

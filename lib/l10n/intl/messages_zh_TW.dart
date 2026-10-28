@@ -151,6 +151,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "ageSecretKeyOptional": MessageLookupByLibrary.simpleMessage("Age 私鑰（選填）"),
     "agree": MessageLookupByLibrary.simpleMessage("同意"),
     "allData": MessageLookupByLibrary.simpleMessage("全部資料"),
+    "allPorts": MessageLookupByLibrary.simpleMessage("所有連接埠"),
     "allowBypass": MessageLookupByLibrary.simpleMessage("允許應用程式略過 VPN"),
     "allowBypassDesc": MessageLookupByLibrary.simpleMessage(
       "開啟後，部分應用程式可略過 VPN",
@@ -356,6 +357,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "direct": MessageLookupByLibrary.simpleMessage("直連"),
     "disableUDP": MessageLookupByLibrary.simpleMessage("停用 UDP"),
+    "disabledText": MessageLookupByLibrary.simpleMessage("關閉"),
     "disclaimer": MessageLookupByLibrary.simpleMessage("免責聲明"),
     "disclaimerDesc": MessageLookupByLibrary.simpleMessage(
       "本軟體僅供學習交流、科學研究等非商業用途，嚴禁用於商業目的。任何商業行為均與本軟體無關。",
@@ -407,6 +409,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "emptyTip": m6,
     "en": MessageLookupByLibrary.simpleMessage("英語"),
     "enableExternalController": MessageLookupByLibrary.simpleMessage("啟用外部控制器"),
+    "enabledText": MessageLookupByLibrary.simpleMessage("開啟"),
     "endpointIndependentNat": MessageLookupByLibrary.simpleMessage("NAT 增強"),
     "endpointIndependentNatDesc": MessageLookupByLibrary.simpleMessage(
       "改善 UDP 與 P2P 應用程式的連線體驗",
@@ -493,9 +496,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "filter": MessageLookupByLibrary.simpleMessage("篩選"),
     "findProcessMode": MessageLookupByLibrary.simpleMessage("尋找處理程序"),
     "findProcessModeDesc": MessageLookupByLibrary.simpleMessage("開啟後會增加部分效能負擔"),
+    "followGlobal": MessageLookupByLibrary.simpleMessage("跟隨全域"),
     "followProfile": MessageLookupByLibrary.simpleMessage("依照設定檔"),
     "fontFamily": MessageLookupByLibrary.simpleMessage("字型"),
     "fontSize": MessageLookupByLibrary.simpleMessage("大小"),
+    "forceDnsMapping": MessageLookupByLibrary.simpleMessage("強制 DNS 映射"),
+    "forceDnsMappingDesc": MessageLookupByLibrary.simpleMessage(
+      "同時嗅探網域來自 DNS 映射的連線",
+    ),
+    "forceDomain": MessageLookupByLibrary.simpleMessage("強制嗅探網域"),
+    "forceDomainDesc": MessageLookupByLibrary.simpleMessage("一律嗅探這些網域"),
     "forceRestartCoreTip": MessageLookupByLibrary.simpleMessage(
       "確定要強制重新啟動核心嗎？",
     ),
@@ -790,6 +800,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "other": MessageLookupByLibrary.simpleMessage("其他"),
     "outboundMode": MessageLookupByLibrary.simpleMessage("出站模式"),
     "override": MessageLookupByLibrary.simpleMessage("覆寫"),
+    "overrideDestination": MessageLookupByLibrary.simpleMessage("覆寫目標位址"),
+    "overrideDestinationDesc": MessageLookupByLibrary.simpleMessage(
+      "使用嗅探到的網域連線，而非原始位址",
+    ),
     "overrideDns": MessageLookupByLibrary.simpleMessage("覆寫 DNS"),
     "overrideDnsDesc": MessageLookupByLibrary.simpleMessage(
       "開啟後將覆蓋設定檔中的 DNS 選項",
@@ -800,12 +814,18 @@ class MessageLookup extends MessageLookupByLibrary {
       "開啟後將覆蓋設定檔中的 NTP 選項",
     ),
     "overrideScript": MessageLookupByLibrary.simpleMessage("覆寫指令碼"),
+    "overrideSniffer": MessageLookupByLibrary.simpleMessage("覆寫嗅探"),
+    "overrideSnifferDesc": MessageLookupByLibrary.simpleMessage(
+      "開啟後將覆蓋設定檔中的嗅探選項",
+    ),
     "overwriteTypeCustom": MessageLookupByLibrary.simpleMessage("自訂"),
     "overwriteTypeCustomDesc": MessageLookupByLibrary.simpleMessage(
       "自訂模式，可完整自訂代理群組與規則",
     ),
     "palette": MessageLookupByLibrary.simpleMessage("調色盤"),
     "parentDirectory": MessageLookupByLibrary.simpleMessage("上一層目錄"),
+    "parsePureIp": MessageLookupByLibrary.simpleMessage("解析純 IP"),
+    "parsePureIpDesc": MessageLookupByLibrary.simpleMessage("嗅探直接連線 IP 位址的連線"),
     "password": MessageLookupByLibrary.simpleMessage("密碼"),
     "paste": MessageLookupByLibrary.simpleMessage("貼上"),
     "pickFromAlbum": MessageLookupByLibrary.simpleMessage("從相簿選擇"),
@@ -1125,7 +1145,28 @@ class MessageLookup extends MessageLookupByLibrary {
     "silentLaunch": MessageLookupByLibrary.simpleMessage("靜默啟動"),
     "silentLaunchDesc": MessageLookupByLibrary.simpleMessage("在背景啟動"),
     "size": MessageLookupByLibrary.simpleMessage("尺寸"),
+    "skipDomain": MessageLookupByLibrary.simpleMessage("略過網域"),
+    "skipDomainDesc": MessageLookupByLibrary.simpleMessage("不嗅探這些網域"),
+    "skipDstAddress": MessageLookupByLibrary.simpleMessage("略過目標位址"),
+    "skipDstAddressDesc": MessageLookupByLibrary.simpleMessage(
+      "不嗅探連往這些 IP 範圍的連線",
+    ),
+    "skipSrcAddress": MessageLookupByLibrary.simpleMessage("略過來源位址"),
+    "skipSrcAddressDesc": MessageLookupByLibrary.simpleMessage(
+      "不嗅探來自這些 IP 範圍的連線",
+    ),
     "small": MessageLookupByLibrary.simpleMessage("小"),
+    "sniffExceptions": MessageLookupByLibrary.simpleMessage("例外"),
+    "sniffPorts": MessageLookupByLibrary.simpleMessage("連接埠"),
+    "sniffPortsDesc": MessageLookupByLibrary.simpleMessage(
+      "連接埠或範圍，如 8080-8880；留空則嗅探所有連接埠",
+    ),
+    "sniffProtocols": MessageLookupByLibrary.simpleMessage("協定"),
+    "sniffer": MessageLookupByLibrary.simpleMessage("嗅探"),
+    "snifferDesc": MessageLookupByLibrary.simpleMessage("更新網域嗅探相關設定"),
+    "snifferStatusDesc": MessageLookupByLibrary.simpleMessage(
+      "從 HTTP、TLS 和 QUIC 流量中讀取網域",
+    ),
     "socksPort": MessageLookupByLibrary.simpleMessage("Socks 連接埠"),
     "sort": MessageLookupByLibrary.simpleMessage("排序"),
     "source": MessageLookupByLibrary.simpleMessage("來源"),

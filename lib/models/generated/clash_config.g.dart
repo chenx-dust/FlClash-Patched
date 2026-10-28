@@ -141,11 +141,9 @@ _Sniffer _$SnifferFromJson(Map<String, dynamic> json) => _Sniffer(
           ?.map((e) => e as String)
           .toList() ??
       const [],
-  port:
-      (json['port-whitelist'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ??
-      const [],
+  port: json['port-whitelist'] == null
+      ? const []
+      : _formJsonPorts(json['port-whitelist'] as List?),
   forceDnsMapping: json['force-dns-mapping'] as bool? ?? true,
   parsePureIp: json['parse-pure-ip'] as bool? ?? true,
   sniff:
@@ -153,7 +151,7 @@ _Sniffer _$SnifferFromJson(Map<String, dynamic> json) => _Sniffer(
         (k, e) =>
             MapEntry(k, SnifferConfig.fromJson(e as Map<String, dynamic>)),
       ) ??
-      const {},
+      defaultSnifferSniff,
 );
 
 Map<String, dynamic> _$SnifferToJson(_Sniffer instance) => <String, dynamic>{
@@ -552,6 +550,11 @@ _PatchClashConfig _$PatchClashConfigFromJson(Map<String, dynamic> json) =>
       ntp: json['ntp'] == null
           ? defaultNtp
           : Ntp.safeNtpFromJson(json['ntp'] as Map<String, Object?>),
+      sniffer: json['sniffer'] == null
+          ? defaultSniffer
+          : Sniffer.safeSnifferFromJson(
+              json['sniffer'] as Map<String, Object?>,
+            ),
       geoXUrl: json['geox-url'] == null
           ? defaultGeoXUrl
           : _geoXUrlFromJson(json['geox-url'] as Map<String, Object?>?),
@@ -602,6 +605,7 @@ Map<String, dynamic> _$PatchClashConfigToJson(_PatchClashConfig instance) =>
       'tun': instance.tun,
       'dns': instance.dns,
       'ntp': instance.ntp,
+      'sniffer': instance.sniffer,
       'geox-url': _geoXUrlToJson(instance.geoXUrl),
       'geodata-loader': _$GeodataLoaderEnumMap[instance.geodataLoader]!,
       'geosite-matcher': _$GeositeMatcherEnumMap[instance.geositeMatcher]!,

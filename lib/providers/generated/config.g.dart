@@ -474,6 +474,58 @@ abstract class _$OverrideNtp extends $Notifier<bool> {
   }
 }
 
+@ProviderFor(OverrideSniffer)
+final overrideSnifferProvider = OverrideSnifferProvider._();
+
+final class OverrideSnifferProvider
+    extends $NotifierProvider<OverrideSniffer, bool> {
+  OverrideSnifferProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'overrideSnifferProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$overrideSnifferHash();
+
+  @$internal
+  @override
+  OverrideSniffer create() => OverrideSniffer();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$overrideSnifferHash() => r'7884c9ce43ca61a180be1bad0429a05749390ed4';
+
+abstract class _$OverrideSniffer extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(HotKeyActions)
 final hotKeyActionsProvider = HotKeyActionsProvider._();
 
@@ -772,4 +824,4 @@ final class _ConfigProvider extends $FunctionalProvider<Config, Config, Config>
   }
 }
 
-String _$_configHash() => r'2c113c4493261b1cb8fcd7f0af668a90ce208332';
+String _$_configHash() => r'f456cc80849e29d216a2301cff5f0c6f9847aea6';

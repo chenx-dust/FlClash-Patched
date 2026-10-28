@@ -191,6 +191,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "agree": MessageLookupByLibrary.simpleMessage("Согласен"),
     "allData": MessageLookupByLibrary.simpleMessage("Все данные"),
+    "allPorts": MessageLookupByLibrary.simpleMessage("Все порты"),
     "allowBypass": MessageLookupByLibrary.simpleMessage(
       "Разрешить приложениям обходить VPN",
     ),
@@ -496,6 +497,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "direct": MessageLookupByLibrary.simpleMessage("Прямой"),
     "disableUDP": MessageLookupByLibrary.simpleMessage("Отключить UDP"),
+    "disabledText": MessageLookupByLibrary.simpleMessage("Выключено"),
     "disclaimer": MessageLookupByLibrary.simpleMessage(
       "Отказ от ответственности",
     ),
@@ -593,6 +595,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "enableExternalController": MessageLookupByLibrary.simpleMessage(
       "Включить внешний контроллер",
     ),
+    "enabledText": MessageLookupByLibrary.simpleMessage("Включено"),
     "endpointIndependentNat": MessageLookupByLibrary.simpleMessage(
       "Улучшенный NAT",
     ),
@@ -701,9 +704,24 @@ class MessageLookup extends MessageLookupByLibrary {
     "findProcessModeDesc": MessageLookupByLibrary.simpleMessage(
       "При включении возможна небольшая потеря производительности",
     ),
+    "followGlobal": MessageLookupByLibrary.simpleMessage(
+      "Как в общих настройках",
+    ),
     "followProfile": MessageLookupByLibrary.simpleMessage("Как в профиле"),
     "fontFamily": MessageLookupByLibrary.simpleMessage("Шрифт"),
     "fontSize": MessageLookupByLibrary.simpleMessage("Размер"),
+    "forceDnsMapping": MessageLookupByLibrary.simpleMessage(
+      "Принудительное DNS-сопоставление",
+    ),
+    "forceDnsMappingDesc": MessageLookupByLibrary.simpleMessage(
+      "Также анализировать соединения, домен которых получен из DNS-сопоставления",
+    ),
+    "forceDomain": MessageLookupByLibrary.simpleMessage(
+      "Принудительно анализировать домены",
+    ),
+    "forceDomainDesc": MessageLookupByLibrary.simpleMessage(
+      "Всегда анализировать эти домены",
+    ),
     "forceRestartCoreTip": MessageLookupByLibrary.simpleMessage(
       "Вы уверены, что хотите принудительно перезапустить ядро?",
     ),
@@ -1119,6 +1137,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Режим исходящего трафика",
     ),
     "override": MessageLookupByLibrary.simpleMessage("Переопределение"),
+    "overrideDestination": MessageLookupByLibrary.simpleMessage(
+      "Переопределять адрес назначения",
+    ),
+    "overrideDestinationDesc": MessageLookupByLibrary.simpleMessage(
+      "Подключаться к найденному домену вместо исходного адреса",
+    ),
     "overrideDns": MessageLookupByLibrary.simpleMessage("Переопределить DNS"),
     "overrideDnsDesc": MessageLookupByLibrary.simpleMessage(
       "При включении настройки DNS профиля переопределяются",
@@ -1133,6 +1157,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "overrideScript": MessageLookupByLibrary.simpleMessage(
       "Скрипт переопределения",
     ),
+    "overrideSniffer": MessageLookupByLibrary.simpleMessage(
+      "Переопределить сниффер",
+    ),
+    "overrideSnifferDesc": MessageLookupByLibrary.simpleMessage(
+      "При включении настройки сниффера профиля переопределяются",
+    ),
     "overwriteTypeCustom": MessageLookupByLibrary.simpleMessage(
       "Пользовательский",
     ),
@@ -1142,6 +1172,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "palette": MessageLookupByLibrary.simpleMessage("Палитра"),
     "parentDirectory": MessageLookupByLibrary.simpleMessage(
       "Родительский каталог",
+    ),
+    "parsePureIp": MessageLookupByLibrary.simpleMessage("Разбирать чистый IP"),
+    "parsePureIpDesc": MessageLookupByLibrary.simpleMessage(
+      "Анализировать соединения к IP-адресу без домена",
     ),
     "password": MessageLookupByLibrary.simpleMessage("Пароль"),
     "paste": MessageLookupByLibrary.simpleMessage("Вставить"),
@@ -1604,7 +1638,36 @@ class MessageLookup extends MessageLookupByLibrary {
       "Запускаться в фоновом режиме",
     ),
     "size": MessageLookupByLibrary.simpleMessage("Размер"),
+    "skipDomain": MessageLookupByLibrary.simpleMessage("Пропускать домены"),
+    "skipDomainDesc": MessageLookupByLibrary.simpleMessage(
+      "Никогда не анализировать эти домены",
+    ),
+    "skipDstAddress": MessageLookupByLibrary.simpleMessage(
+      "Пропускать адреса назначения",
+    ),
+    "skipDstAddressDesc": MessageLookupByLibrary.simpleMessage(
+      "Не анализировать соединения к этим диапазонам IP",
+    ),
+    "skipSrcAddress": MessageLookupByLibrary.simpleMessage(
+      "Пропускать адреса источника",
+    ),
+    "skipSrcAddressDesc": MessageLookupByLibrary.simpleMessage(
+      "Не анализировать соединения из этих диапазонов IP",
+    ),
     "small": MessageLookupByLibrary.simpleMessage("Мелкий"),
+    "sniffExceptions": MessageLookupByLibrary.simpleMessage("Исключения"),
+    "sniffPorts": MessageLookupByLibrary.simpleMessage("Порты"),
+    "sniffPortsDesc": MessageLookupByLibrary.simpleMessage(
+      "Порты или диапазоны, например 8080-8880; пусто — все порты",
+    ),
+    "sniffProtocols": MessageLookupByLibrary.simpleMessage("Протоколы"),
+    "sniffer": MessageLookupByLibrary.simpleMessage("Сниффер"),
+    "snifferDesc": MessageLookupByLibrary.simpleMessage(
+      "Настройки определения доменов",
+    ),
+    "snifferStatusDesc": MessageLookupByLibrary.simpleMessage(
+      "Определять домен по трафику HTTP, TLS и QUIC",
+    ),
     "socksPort": MessageLookupByLibrary.simpleMessage("Порт SOCKS"),
     "sort": MessageLookupByLibrary.simpleMessage("Сортировка"),
     "source": MessageLookupByLibrary.simpleMessage("Источник"),

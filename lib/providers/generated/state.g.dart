@@ -20,18 +20,21 @@ final class ProfileReloadStateProvider
             PatchClashConfig config,
             bool overrideDns,
             bool overrideNtp,
+            bool overrideSniffer,
           }),
           ({
             bool appendSystemDns,
             PatchClashConfig config,
             bool overrideDns,
             bool overrideNtp,
+            bool overrideSniffer,
           }),
           ({
             bool appendSystemDns,
             PatchClashConfig config,
             bool overrideDns,
             bool overrideNtp,
+            bool overrideSniffer,
           })
         >
     with
@@ -41,6 +44,7 @@ final class ProfileReloadStateProvider
             PatchClashConfig config,
             bool overrideDns,
             bool overrideNtp,
+            bool overrideSniffer,
           })
         > {
   ProfileReloadStateProvider._()
@@ -65,6 +69,7 @@ final class ProfileReloadStateProvider
       PatchClashConfig config,
       bool overrideDns,
       bool overrideNtp,
+      bool overrideSniffer,
     })
   >
   $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
@@ -75,6 +80,7 @@ final class ProfileReloadStateProvider
     PatchClashConfig config,
     bool overrideDns,
     bool overrideNtp,
+    bool overrideSniffer,
   })
   create(Ref ref) {
     return profileReloadState(ref);
@@ -87,6 +93,7 @@ final class ProfileReloadStateProvider
       PatchClashConfig config,
       bool overrideDns,
       bool overrideNtp,
+      bool overrideSniffer,
     })
     value,
   ) {
@@ -99,6 +106,7 @@ final class ProfileReloadStateProvider
               PatchClashConfig config,
               bool overrideDns,
               bool overrideNtp,
+              bool overrideSniffer,
             })
           >(value),
     );
@@ -106,7 +114,7 @@ final class ProfileReloadStateProvider
 }
 
 String _$profileReloadStateHash() =>
-    r'a377e23a71619e9361aedacff6cbf7eb31925c01';
+    r'4d3f565a6137ded04d98dc5e8a4830d6bdafe69b';
 
 @ProviderFor(updateParams)
 final updateParamsProvider = UpdateParamsProvider._();

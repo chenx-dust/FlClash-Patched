@@ -187,6 +187,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "agree": MessageLookupByLibrary.simpleMessage("Agree"),
     "allData": MessageLookupByLibrary.simpleMessage("All data"),
+    "allPorts": MessageLookupByLibrary.simpleMessage("All ports"),
     "allowBypass": MessageLookupByLibrary.simpleMessage(
       "Allow apps to bypass VPN",
     ),
@@ -476,6 +477,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "direct": MessageLookupByLibrary.simpleMessage("Direct"),
     "disableUDP": MessageLookupByLibrary.simpleMessage("Disable UDP"),
+    "disabledText": MessageLookupByLibrary.simpleMessage("Disabled"),
     "disclaimer": MessageLookupByLibrary.simpleMessage("Disclaimer"),
     "disclaimerDesc": MessageLookupByLibrary.simpleMessage(
       "This software is intended only for non-commercial uses such as learning and research. Using it for any commercial purpose is strictly prohibited; any commercial activity is unrelated to this software.",
@@ -561,6 +563,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "enableExternalController": MessageLookupByLibrary.simpleMessage(
       "Enable external controller",
     ),
+    "enabledText": MessageLookupByLibrary.simpleMessage("Enabled"),
     "endpointIndependentNat": MessageLookupByLibrary.simpleMessage(
       "NAT enhancement",
     ),
@@ -665,9 +668,20 @@ class MessageLookup extends MessageLookupByLibrary {
     "findProcessModeDesc": MessageLookupByLibrary.simpleMessage(
       "Enabling causes some performance loss",
     ),
+    "followGlobal": MessageLookupByLibrary.simpleMessage("Follow global"),
     "followProfile": MessageLookupByLibrary.simpleMessage("Follow profile"),
     "fontFamily": MessageLookupByLibrary.simpleMessage("Font family"),
     "fontSize": MessageLookupByLibrary.simpleMessage("Size"),
+    "forceDnsMapping": MessageLookupByLibrary.simpleMessage(
+      "Force DNS mapping",
+    ),
+    "forceDnsMappingDesc": MessageLookupByLibrary.simpleMessage(
+      "Also sniff connections whose domain came from DNS mapping",
+    ),
+    "forceDomain": MessageLookupByLibrary.simpleMessage("Force sniff domains"),
+    "forceDomainDesc": MessageLookupByLibrary.simpleMessage(
+      "Always sniff these domains",
+    ),
     "forceRestartCoreTip": MessageLookupByLibrary.simpleMessage(
       "Are you sure you want to force restart the core?",
     ),
@@ -1073,6 +1087,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "other": MessageLookupByLibrary.simpleMessage("Other"),
     "outboundMode": MessageLookupByLibrary.simpleMessage("Outbound mode"),
     "override": MessageLookupByLibrary.simpleMessage("Override"),
+    "overrideDestination": MessageLookupByLibrary.simpleMessage(
+      "Override destination",
+    ),
+    "overrideDestinationDesc": MessageLookupByLibrary.simpleMessage(
+      "Connect to the sniffed domain instead of the original address",
+    ),
     "overrideDns": MessageLookupByLibrary.simpleMessage("Override DNS"),
     "overrideDnsDesc": MessageLookupByLibrary.simpleMessage(
       "When enabled, the DNS options in the profile are overridden",
@@ -1083,12 +1103,20 @@ class MessageLookup extends MessageLookupByLibrary {
       "When enabled, the NTP options in the profile are overridden",
     ),
     "overrideScript": MessageLookupByLibrary.simpleMessage("Override script"),
+    "overrideSniffer": MessageLookupByLibrary.simpleMessage("Override sniffer"),
+    "overrideSnifferDesc": MessageLookupByLibrary.simpleMessage(
+      "When enabled, the sniffer options in the profile are overridden",
+    ),
     "overwriteTypeCustom": MessageLookupByLibrary.simpleMessage("Custom"),
     "overwriteTypeCustomDesc": MessageLookupByLibrary.simpleMessage(
       "Custom mode: fully customize proxy groups and rules",
     ),
     "palette": MessageLookupByLibrary.simpleMessage("Palette"),
     "parentDirectory": MessageLookupByLibrary.simpleMessage("Parent directory"),
+    "parsePureIp": MessageLookupByLibrary.simpleMessage("Parse pure IP"),
+    "parsePureIpDesc": MessageLookupByLibrary.simpleMessage(
+      "Sniff connections made to a bare IP address",
+    ),
     "password": MessageLookupByLibrary.simpleMessage("Password"),
     "paste": MessageLookupByLibrary.simpleMessage("Paste"),
     "pickFromAlbum": MessageLookupByLibrary.simpleMessage("Choose from album"),
@@ -1524,7 +1552,36 @@ class MessageLookup extends MessageLookupByLibrary {
       "Start in the background",
     ),
     "size": MessageLookupByLibrary.simpleMessage("Size"),
+    "skipDomain": MessageLookupByLibrary.simpleMessage("Skip domains"),
+    "skipDomainDesc": MessageLookupByLibrary.simpleMessage(
+      "Never sniff these domains",
+    ),
+    "skipDstAddress": MessageLookupByLibrary.simpleMessage(
+      "Skip destination addresses",
+    ),
+    "skipDstAddressDesc": MessageLookupByLibrary.simpleMessage(
+      "Do not sniff connections to these IP ranges",
+    ),
+    "skipSrcAddress": MessageLookupByLibrary.simpleMessage(
+      "Skip source addresses",
+    ),
+    "skipSrcAddressDesc": MessageLookupByLibrary.simpleMessage(
+      "Do not sniff connections from these IP ranges",
+    ),
     "small": MessageLookupByLibrary.simpleMessage("Small"),
+    "sniffExceptions": MessageLookupByLibrary.simpleMessage("Exceptions"),
+    "sniffPorts": MessageLookupByLibrary.simpleMessage("Ports"),
+    "sniffPortsDesc": MessageLookupByLibrary.simpleMessage(
+      "Ports or ranges such as 8080-8880; empty sniffs every port",
+    ),
+    "sniffProtocols": MessageLookupByLibrary.simpleMessage("Protocols"),
+    "sniffer": MessageLookupByLibrary.simpleMessage("Sniffer"),
+    "snifferDesc": MessageLookupByLibrary.simpleMessage(
+      "Update domain sniffing settings",
+    ),
+    "snifferStatusDesc": MessageLookupByLibrary.simpleMessage(
+      "Read the domain from HTTP, TLS and QUIC traffic",
+    ),
     "socksPort": MessageLookupByLibrary.simpleMessage("SOCKS port"),
     "sort": MessageLookupByLibrary.simpleMessage("Sort"),
     "source": MessageLookupByLibrary.simpleMessage("Source"),

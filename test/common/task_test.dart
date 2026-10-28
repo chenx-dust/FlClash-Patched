@@ -503,6 +503,81 @@ void main() {
     },
   );
 
+  test(
+    'makeRealProfileTask overrides the sniffer and keeps keys it cannot edit',
+    () async {
+      final rawConfig = await decodeJSONTask<Map<String, dynamic>>(
+        await encodeJSONTask({
+          'sniffer': {
+            'enable': false,
+            'sniffing': ['tls'],
+            'sniff': {
+              'HTTP': {
+                'ports': [80],
+              },
+            },
+            'extra': 'keep',
+          },
+        }),
+      );
+      final untouched = await makeRealProfileTask(
+        MakeRealProfileState(
+          profilesPath: '/profiles',
+          profileId: 15,
+          rawConfig: rawConfig,
+          realPatchConfig: const PatchClashConfig(),
+          overrideDns: false,
+          appendSystemDns: false,
+          proxyGroups: const [],
+          rules: const [],
+          addedRules: const [],
+          defaultUA: 'FlClash-Test',
+        ),
+      );
+      final untouchedConfig = loadYaml(untouched.yaml) as YamlMap;
+      expect(untouchedConfig['sniffer']['enable'], false);
+      expect(untouchedConfig['sniffer']['sniff'].keys, ['HTTP']);
+
+      final result = await makeRealProfileTask(
+        MakeRealProfileState(
+          profilesPath: '/profiles',
+          profileId: 15,
+          rawConfig: rawConfig,
+          realPatchConfig: const PatchClashConfig(
+            sniffer: Sniffer(
+              enable: true,
+              skipDomain: ['example.com'],
+              sniff: {
+                'TLS': SnifferConfig(ports: ['443']),
+                'QUIC': SnifferConfig(overrideDest: false),
+              },
+            ),
+          ),
+          overrideDns: false,
+          overrideSniffer: true,
+          appendSystemDns: false,
+          proxyGroups: const [],
+          rules: const [],
+          addedRules: const [],
+          defaultUA: 'FlClash-Test',
+        ),
+      );
+      final sniffer = (loadYaml(result.yaml) as YamlMap)['sniffer'] as YamlMap;
+      expect(sniffer['enable'], true);
+      expect(sniffer['sniffing'], isEmpty);
+      expect(sniffer['skip-domain'], ['example.com']);
+      expect(sniffer['extra'], 'keep');
+      expect(sniffer['sniff'].keys, unorderedEquals(['TLS', 'QUIC']));
+      expect(sniffer['sniff']['TLS']['ports'], ['443']);
+      expect(
+        sniffer['sniff']['TLS'].containsKey('override-destination'),
+        false,
+      );
+      expect(sniffer['sniff']['QUIC']['ports'], isEmpty);
+      expect(sniffer['sniff']['QUIC']['override-destination'], false);
+    },
+  );
+
   test('makeRealProfileTask keeps the DNS keys it cannot edit', () async {
     final rawConfig = await decodeJSONTask<Map<String, dynamic>>(
       await encodeJSONTask({

@@ -5,6 +5,7 @@ import 'package:fl_clash/views/config/dns.dart';
 import 'package:fl_clash/views/config/network.dart';
 import 'package:fl_clash/views/config/ntp.dart';
 import 'package:fl_clash/views/config/scripts.dart';
+import 'package:fl_clash/views/config/sniffer.dart';
 import 'package:fl_clash/widgets/list.dart';
 import 'package:fl_clash/widgets/scaffold.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -92,6 +93,40 @@ class AdvancedConfigView extends StatelessWidget {
             ),
           ],
           body: const NtpListView(),
+        ),
+        blur: false,
+      ),
+      ListItem.open(
+        title: Text(appLocalizations.sniffer),
+        subtitle: Text(appLocalizations.snifferDesc),
+        leading: const Icon(Symbols.radar),
+        widget: BaseScaffold(
+          title: appLocalizations.sniffer,
+          actions: [
+            Consumer(
+              builder: (_, ref, _) {
+                return IconButton(
+                  onPressed: () async {
+                    final res = await dialogs.showMessage(
+                      title: appLocalizations.reset,
+                      message: TextSpan(text: appLocalizations.resetTip),
+                    );
+                    if (res != true) {
+                      return;
+                    }
+                    ref
+                        .read(patchClashConfigProvider.notifier)
+                        .update(
+                          (state) => state.copyWith(sniffer: defaultSniffer),
+                        );
+                  },
+                  tooltip: appLocalizations.reset,
+                  icon: const Icon(Symbols.replay),
+                );
+              },
+            ),
+          ],
+          body: const SnifferListView(),
         ),
         blur: false,
       ),

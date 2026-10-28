@@ -123,6 +123,7 @@ Future<({String yaml, String md5})> _makeRealProfileTask(
   final profileId = data.profileId;
   final overrideDns = data.overrideDns;
   final overrideNtp = data.overrideNtp;
+  final overrideSniffer = data.overrideSniffer;
   final addedRules = data.addedRules;
   final appendSystemDns = data.appendSystemDns;
   final defaultUA = data.defaultUA;
@@ -260,6 +261,23 @@ Future<({String yaml, String md5})> _makeRealProfileTask(
         : <String, dynamic>{};
     // Merged, not assigned: keys this model does not edit stay in the profile.
     rawConfig['ntp'] = {...rawNtp, ...realPatchConfig.ntp.toJson()};
+  }
+  if (overrideSniffer) {
+    final rawSniffer = rawConfig['sniffer'] is Map
+        ? Map<String, dynamic>.from(rawConfig['sniffer'] as Map)
+        : <String, dynamic>{};
+    final sniffer = realPatchConfig.sniffer;
+    rawConfig['sniffer'] = {
+      ...rawSniffer,
+      ...sniffer.toJson(),
+      'sniff': {
+        for (final entry in sniffer.sniff.entries)
+          entry.key: {
+            'ports': entry.value.ports,
+            'override-destination': ?entry.value.overrideDest,
+          },
+      },
+    };
   }
   if (appendSystemDns) {
     final List<String> nameserver = List<String>.from(

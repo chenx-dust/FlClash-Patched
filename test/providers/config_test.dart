@@ -221,6 +221,7 @@ void main() {
       expect(config.currentProfileId, null);
       expect(config.overrideDns, false);
       expect(config.overrideNtp, false);
+      expect(config.overrideSniffer, false);
       expect(config.hotKeyActions, isEmpty);
       expect(config.patchClashConfig, const PatchClashConfig());
       expect(config.excludeSSIDs, isEmpty);
@@ -255,7 +256,7 @@ void main() {
         overrideDns: true,
       );
       final overrides = buildConfigOverrides(config);
-      expect(overrides.length, 14);
+      expect(overrides.length, 15);
 
       final overrideContainer = ProviderContainer(overrides: overrides);
       addTearDown(overrideContainer.dispose);
@@ -263,6 +264,7 @@ void main() {
       expect(overrideContainer.read(currentProfileIdProvider), 7);
       expect(overrideContainer.read(overrideDnsProvider), true);
       expect(overrideContainer.read(overrideNtpProvider), false);
+      expect(overrideContainer.read(overrideSnifferProvider), false);
       expect(
         overrideContainer.read(patchClashConfigProvider),
         config.patchClashConfig,

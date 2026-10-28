@@ -2400,6 +2400,246 @@ class AppLocalizations {
     );
   }
 
+  /// `Sniffer`
+  String get sniffer {
+    return Intl.message('Sniffer', name: 'sniffer', desc: '', args: []);
+  }
+
+  /// `Override sniffer`
+  String get overrideSniffer {
+    return Intl.message(
+      'Override sniffer',
+      name: 'overrideSniffer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `When enabled, the sniffer options in the profile are overridden`
+  String get overrideSnifferDesc {
+    return Intl.message(
+      'When enabled, the sniffer options in the profile are overridden',
+      name: 'overrideSnifferDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update domain sniffing settings`
+  String get snifferDesc {
+    return Intl.message(
+      'Update domain sniffing settings',
+      name: 'snifferDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Read the domain from HTTP, TLS and QUIC traffic`
+  String get snifferStatusDesc {
+    return Intl.message(
+      'Read the domain from HTTP, TLS and QUIC traffic',
+      name: 'snifferStatusDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Override destination`
+  String get overrideDestination {
+    return Intl.message(
+      'Override destination',
+      name: 'overrideDestination',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connect to the sniffed domain instead of the original address`
+  String get overrideDestinationDesc {
+    return Intl.message(
+      'Connect to the sniffed domain instead of the original address',
+      name: 'overrideDestinationDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Force DNS mapping`
+  String get forceDnsMapping {
+    return Intl.message(
+      'Force DNS mapping',
+      name: 'forceDnsMapping',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Also sniff connections whose domain came from DNS mapping`
+  String get forceDnsMappingDesc {
+    return Intl.message(
+      'Also sniff connections whose domain came from DNS mapping',
+      name: 'forceDnsMappingDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Parse pure IP`
+  String get parsePureIp {
+    return Intl.message(
+      'Parse pure IP',
+      name: 'parsePureIp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sniff connections made to a bare IP address`
+  String get parsePureIpDesc {
+    return Intl.message(
+      'Sniff connections made to a bare IP address',
+      name: 'parsePureIpDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Protocols`
+  String get sniffProtocols {
+    return Intl.message(
+      'Protocols',
+      name: 'sniffProtocols',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ports`
+  String get sniffPorts {
+    return Intl.message('Ports', name: 'sniffPorts', desc: '', args: []);
+  }
+
+  /// `Ports or ranges such as 8080-8880; empty sniffs every port`
+  String get sniffPortsDesc {
+    return Intl.message(
+      'Ports or ranges such as 8080-8880; empty sniffs every port',
+      name: 'sniffPortsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All ports`
+  String get allPorts {
+    return Intl.message('All ports', name: 'allPorts', desc: '', args: []);
+  }
+
+  /// `Follow global`
+  String get followGlobal {
+    return Intl.message(
+      'Follow global',
+      name: 'followGlobal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enabled`
+  String get enabledText {
+    return Intl.message('Enabled', name: 'enabledText', desc: '', args: []);
+  }
+
+  /// `Disabled`
+  String get disabledText {
+    return Intl.message('Disabled', name: 'disabledText', desc: '', args: []);
+  }
+
+  /// `Exceptions`
+  String get sniffExceptions {
+    return Intl.message(
+      'Exceptions',
+      name: 'sniffExceptions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Force sniff domains`
+  String get forceDomain {
+    return Intl.message(
+      'Force sniff domains',
+      name: 'forceDomain',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Always sniff these domains`
+  String get forceDomainDesc {
+    return Intl.message(
+      'Always sniff these domains',
+      name: 'forceDomainDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Skip domains`
+  String get skipDomain {
+    return Intl.message('Skip domains', name: 'skipDomain', desc: '', args: []);
+  }
+
+  /// `Never sniff these domains`
+  String get skipDomainDesc {
+    return Intl.message(
+      'Never sniff these domains',
+      name: 'skipDomainDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Skip source addresses`
+  String get skipSrcAddress {
+    return Intl.message(
+      'Skip source addresses',
+      name: 'skipSrcAddress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Do not sniff connections from these IP ranges`
+  String get skipSrcAddressDesc {
+    return Intl.message(
+      'Do not sniff connections from these IP ranges',
+      name: 'skipSrcAddressDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Skip destination addresses`
+  String get skipDstAddress {
+    return Intl.message(
+      'Skip destination addresses',
+      name: 'skipDstAddress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Do not sniff connections to these IP ranges`
+  String get skipDstAddressDesc {
+    return Intl.message(
+      'Do not sniff connections to these IP ranges',
+      name: 'skipDstAddressDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Status`
   String get status {
     return Intl.message('Status', name: 'status', desc: '', args: []);

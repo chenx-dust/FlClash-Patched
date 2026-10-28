@@ -89,6 +89,7 @@ void main() {
     await mount(tester);
     container.read(overrideDnsProvider.notifier).value = true;
     container.read(overrideNtpProvider.notifier).value = true;
+    container.read(overrideSnifferProvider.notifier).value = true;
     container
         .read(networkSettingProvider.notifier)
         .update((state) => state.copyWith(appendSystemDns: true));

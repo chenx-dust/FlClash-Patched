@@ -9,6 +9,7 @@ final vpnOptionsProvider = Provider<VpnOptions?>((ref) {
   PatchClashConfig config,
   bool overrideDns,
   bool overrideNtp,
+  bool overrideSniffer,
   bool appendSystemDns,
 })
 profileReloadState(Ref ref) {
@@ -32,6 +33,7 @@ profileReloadState(Ref ref) {
     ),
     overrideDns: ref.watch(overrideDnsProvider),
     overrideNtp: ref.watch(overrideNtpProvider),
+    overrideSniffer: ref.watch(overrideSnifferProvider),
     appendSystemDns: ref.watch(
       networkSettingProvider.select((state) => state.appendSystemDns),
     ),

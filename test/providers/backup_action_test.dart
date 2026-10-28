@@ -202,6 +202,7 @@ void main() {
           .update((state) => state.copyWith(mixedPort: 7899));
       source.read(overrideDnsProvider.notifier).value = true;
       source.read(overrideNtpProvider.notifier).value = true;
+      source.read(overrideSnifferProvider.notifier).value = true;
       final configMap = configMapOf(source);
 
       final target = buildContainer();
@@ -214,6 +215,7 @@ void main() {
       expect(target.read(patchClashConfigProvider).mixedPort, 7899);
       expect(target.read(overrideDnsProvider), isTrue);
       expect(target.read(overrideNtpProvider), isTrue);
+      expect(target.read(overrideSnifferProvider), isTrue);
     });
 
     test('leaves the settings untouched for an onlyProfiles restore', () async {
