@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/common.dart';
@@ -185,8 +184,6 @@ class ProviderItem extends ConsumerWidget {
       final uri = await picker.saveFile(
         provider.name,
         await File(path).readAsBytes(),
-        type: FileType.custom,
-        allowedExtensions: const ['yaml', 'yml'],
       );
       return uri != null;
     }, title: context.appLocalizations.tip);
