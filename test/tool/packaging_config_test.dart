@@ -30,6 +30,23 @@ void main() {
     }
   });
 
+  test('Windows installer restores a Helper it removed for the upgrade', () {
+    final script = File(
+      'windows/packaging/exe/inno_setup.iss',
+    ).readAsStringSync();
+
+    final registrationCheck = script.indexOf('RegKeyExists(');
+    final uninstall = script.indexOf("'uninstall'");
+    expect(registrationCheck, isNonNegative);
+    expect(registrationCheck, lessThan(uninstall));
+    expect(script, contains("'install'"));
+
+    final postInstall = script.substring(
+      script.indexOf('CurStep = ssPostInstall'),
+    );
+    expect(postInstall, contains('RestoreHelperService;'));
+  });
+
   test('rpm keeps the Core bytes the Helper was built against', () {
     final config =
         loadYaml(

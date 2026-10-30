@@ -20,6 +20,9 @@ ArchitecturesAllowed={{ARCH}}
 ArchitecturesInstallIn64BitMode={{ARCH}}
 
 [Code]
+var
+  HelperWasRegistered: Boolean;
+
 procedure KillProcesses;
 var
   Processes: TArrayOfString;
@@ -42,7 +45,23 @@ begin
   HelperPath := ExpandConstant('{app}\\FlClashHelperService.exe');
   if FileExists(HelperPath) then
   begin
+    if RegKeyExists(HKEY_LOCAL_MACHINE, 'SYSTEM\CurrentControlSet\Services\FlClashHelperService') then
+    begin
+      HelperWasRegistered := True;
+    end;
     Exec(HelperPath, 'uninstall', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  end;
+end;
+
+// The app relaunches unelevated and cannot reinstall the service without a UAC
+// prompt, which a silent update's unattended relaunch may leave unanswered.
+procedure RestoreHelperService;
+var
+  ResultCode: Integer;
+begin
+  if HelperWasRegistered then
+  begin
+    Exec(ExpandConstant('{app}\\FlClashHelperService.exe'), 'install', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   end;
 end;
 
@@ -123,6 +142,7 @@ procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if CurStep = ssPostInstall then
   begin
+    RestoreHelperService;
     ClearStaleProxy(True);
   end;
 end;
