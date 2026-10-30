@@ -540,13 +540,17 @@ void main() {
       );
     });
 
-    test('a failed authorization continues but stays unauthorized', () async {
+    test('a failed authorization continues and turns the toggle off', () async {
+      container
+          .read(patchClashConfigProvider.notifier)
+          .update((state) => state.copyWith.tun(enable: true));
       action.authorizeResult = AuthorizeCode.error;
 
       expect(await action.requestAdmin(true), isTrue);
+      expect(container.read(patchClashConfigProvider).tun.enable, isFalse);
       expect(
         container.read(authorizedTunEnableProvider),
-        TunAuthorizationState.unauthorized,
+        TunAuthorizationState.none,
       );
     });
   });

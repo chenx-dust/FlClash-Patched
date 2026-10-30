@@ -738,7 +738,25 @@ void main() {
       );
     });
 
-    test('requests admin authorization once per app lifecycle', () async {
+    test('a granted authorization is not requested again', () async {
+      late _AuthorizationSetupAction setupAction;
+      final container = ProviderContainer(
+        overrides: [
+          setupActionProvider.overrideWith(() {
+            setupAction = _AuthorizationSetupAction([AuthorizeCode.success]);
+            return setupAction;
+          }),
+        ],
+      );
+      addTearDown(container.dispose);
+      container.read(setupActionProvider);
+
+      expect(await setupAction.requestAdmin(true), isFalse);
+      expect(await setupAction.requestAdmin(true), isTrue);
+      expect(setupAction.authorizationRequestCount, 1);
+    });
+
+    test('turning tun on after a failure asks again', () async {
       late _AuthorizationSetupAction setupAction;
       final container = ProviderContainer(
         overrides: [
@@ -752,23 +770,23 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
+      container
+          .read(patchClashConfigProvider.notifier)
+          .update((state) => state.copyWith.tun(enable: true));
       container.read(setupActionProvider);
 
       expect(await setupAction.requestAdmin(true), isTrue);
-      expect(
-        container.read(authorizedTunEnableProvider),
-        TunAuthorizationState.unauthorized,
-      );
+      expect(container.read(patchClashConfigProvider).tun.enable, isFalse);
 
-      expect(await setupAction.requestAdmin(true), isTrue);
-      expect(setupAction.authorizationRequestCount, 1);
+      expect(await setupAction.requestAdmin(true), isFalse);
+      expect(setupAction.authorizationRequestCount, 2);
       expect(
         container.read(authorizedTunEnableProvider),
-        TunAuthorizationState.unauthorized,
+        TunAuthorizationState.authorized,
       );
     });
 
-    test('keeps tun disabled while authorization stays unauthorized', () async {
+    test('keeps tun disabled after a failed authorization', () async {
       late _AuthorizationSetupAction setupAction;
       final container = ProviderContainer(
         overrides: [
