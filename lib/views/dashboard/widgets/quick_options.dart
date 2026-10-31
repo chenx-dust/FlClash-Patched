@@ -7,48 +7,53 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class _QuickSwitchCard extends StatelessWidget {
+class _QuickSwitchCard extends ConsumerWidget {
   const _QuickSwitchCard({
     required this.label,
     required this.iconData,
-    required this.itemsBuilder,
+    this.itemsBuilder,
     required this.selector,
     required this.onChanged,
   });
 
   final String label;
   final IconData iconData;
-  final List<Widget> Function(WidgetRef ref) itemsBuilder;
+  final List<Widget> Function(WidgetRef ref)? itemsBuilder;
   final ProviderListenable<bool> selector;
   final void Function(WidgetRef ref, bool value) onChanged;
 
+  void _showOptions(
+    BuildContext context,
+    List<Widget> Function(WidgetRef ref) itemsBuilder,
+  ) {
+    showSheet(
+      context: context,
+      builder: (_) {
+        return AdaptiveSheetScaffold(
+          body: Consumer(
+            builder: (_, ref, _) => ListView(
+              padding: sectionPagePadding,
+              children: [
+                generateSectionV3(isFirst: true, items: itemsBuilder(ref)),
+              ],
+            ),
+          ),
+          title: label,
+        );
+      },
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final itemsBuilder = this.itemsBuilder;
     return SizedBox(
       height: getWidgetHeight(1),
       child: CommonCard(
         radius: AppCorner.lg,
-        onPressed: () {
-          showSheet(
-            context: context,
-            builder: (_) {
-              return AdaptiveSheetScaffold(
-                body: Consumer(
-                  builder: (_, ref, _) => ListView(
-                    padding: sectionPagePadding,
-                    children: [
-                      generateSectionV3(
-                        isFirst: true,
-                        items: itemsBuilder(ref),
-                      ),
-                    ],
-                  ),
-                ),
-                title: label,
-              );
-            },
-          );
-        },
+        onPressed: itemsBuilder == null
+            ? () => onChanged(ref, !ref.read(selector))
+            : () => _showOptions(context, itemsBuilder),
         info: Info(label: label, iconData: iconData),
         child: Container(
           padding: baseInfoEdgeInsets.copyWith(top: 4, bottom: 8, right: 8),
@@ -60,7 +65,9 @@ class _QuickSwitchCard extends StatelessWidget {
                 flex: 1,
                 child: TooltipText(
                   text: Text(
-                    context.appLocalizations.options,
+                    itemsBuilder == null
+                        ? context.appLocalizations.toggle
+                        : context.appLocalizations.options,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(
@@ -173,6 +180,51 @@ class AllowLanButton extends StatelessWidget {
         ref
             .read(patchClashConfigProvider.notifier)
             .update((state) => state.copyWith(allowLan: value));
+      },
+    );
+  }
+}
+
+class Ipv6Button extends StatelessWidget {
+  const Ipv6Button({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return _QuickSwitchCard(
+      label: 'IPv6',
+      iconData: Symbols.language,
+      selector: patchClashConfigProvider.select((state) => state.ipv6),
+      onChanged: (ref, value) {
+        ref
+            .read(patchClashConfigProvider.notifier)
+            .update((state) => state.copyWith(ipv6: value));
+      },
+    );
+  }
+}
+
+class ExternalControllerButton extends StatelessWidget {
+  const ExternalControllerButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return _QuickSwitchCard(
+      label: context.appLocalizations.externalController,
+      iconData: Symbols.api,
+      itemsBuilder: (_) => const [ExternalControllerItem()],
+      selector: patchClashConfigProvider.select(
+        (state) => state.externalController.isNotEmpty,
+      ),
+      onChanged: (ref, value) {
+        ref
+            .read(patchClashConfigProvider.notifier)
+            .update(
+              (state) => state.copyWith(
+                externalController: value
+                    ? '$localhost:$defaultExternalControllerPort'
+                    : '',
+              ),
+            );
       },
     );
   }

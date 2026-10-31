@@ -40,6 +40,14 @@ extension DashboardWidgetView on DashboardWidget {
       crossAxisCellCount: 4,
       child: AllowLanButton(),
     ),
+    DashboardWidget.ipv6Button => const GridItem(
+      crossAxisCellCount: 4,
+      child: Ipv6Button(),
+    ),
+    DashboardWidget.externalControllerButton => const GridItem(
+      crossAxisCellCount: 4,
+      child: ExternalControllerButton(),
+    ),
     DashboardWidget.intranetIp => const GridItem(
       crossAxisCellCount: 4,
       child: IntranetIP(),
