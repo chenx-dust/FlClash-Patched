@@ -142,3 +142,6 @@ require (
 	golang.org/x/time v0.16.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 )
+
+// TEMPORARY workaround: remove once MetaCubeX/tailscale#2 is merged and mihomo pins a version carrying it.
+replace github.com/metacubex/tailscale => github.com/YuliZheng/tailscale v0.0.0-20261031162711-834a9a759830

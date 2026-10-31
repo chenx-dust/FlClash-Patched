@@ -261,11 +261,11 @@ leaving a repo-wide policy as a comment reaches only the reader of that one file
   authorization, because CoreWLAN reaches `wifid` over XPC and a wedged daemon would freeze the window. Windows is the
   outstanding exception: `WlanQueryInterface` still runs inline, since replying off-thread there needs a window-message
   hop that the plugin API does not provide.
-- The delayed DNS re-check `NetworkObserveModule.onLosing` posts is deliberately left un-deduplicated. The runnable
-  re-reads `networkInfos` and does nothing when `onLost` already dropped the network, `updateDns` returns early when the
-  resolved list is unchanged, and `stop()` clears the handler queue, so a network that reports `onLosing` repeatedly
-  costs one comparison per event. Holding the pending `Runnable` to `removeCallbacks` it changes no behaviour and adds
-  state that has to stay in sync with the map.
+- The delayed re-check `NetworkObserveModule.onLosing` posts is deliberately left un-deduplicated. The runnable
+  re-reads `networkInfos` and does nothing when `onLost` already dropped the network, `updateNetwork` passes nothing on
+  when the resolved DNS list and default route are unchanged, and `stop()` clears the handler queue, so a network that
+  reports `onLosing` repeatedly costs a few comparisons per event. Holding the pending `Runnable` to `removeCallbacks` it
+  changes no behaviour and adds state that has to stay in sync with the map.
 
 ## Testing Rules
 

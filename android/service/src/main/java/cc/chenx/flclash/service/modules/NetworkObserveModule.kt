@@ -21,6 +21,8 @@ import java.util.concurrent.ConcurrentHashMap
 private data class NetworkInfo(
     @Volatile var losingUntilMillis: Long = 0,
     @Volatile var dnsList: List<InetAddress> = emptyList(),
+    @Volatile var interfaceName: String = "",
+    @Volatile var gateway: String = "",
 ) {
     val priorityPenalty: Int
         get() = if (losingUntilMillis > System.currentTimeMillis()) 10 else 0
@@ -34,6 +36,8 @@ internal class NetworkObserveModule(private val service: Service) : ServiceModul
     }
     private val mainHandler = Handler(Looper.getMainLooper())
     private var currentDnsList = listOf<String>()
+    private var currentInterfaceName = ""
+    private var currentGateway = ""
 
     private val request = NetworkRequest.Builder().apply {
         addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN)
@@ -47,17 +51,17 @@ internal class NetworkObserveModule(private val service: Service) : ServiceModul
     private val callback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
             networkInfos[network] = NetworkInfo()
-            updateDns()
+            updateNetwork()
         }
 
         override fun onLosing(network: Network, maxMsToLive: Int) {
             val info = networkInfos[network] ?: return
             info.losingUntilMillis = System.currentTimeMillis() + maxMsToLive
-            updateDns()
+            updateNetwork()
             if (maxMsToLive > 0) {
                 mainHandler.postDelayed({
                     if (networkInfos.containsKey(network)) {
-                        updateDns()
+                        updateNetwork()
                     }
                 }, maxMsToLive.toLong() + 50)
             }
@@ -65,17 +69,21 @@ internal class NetworkObserveModule(private val service: Service) : ServiceModul
 
         override fun onLost(network: Network) {
             networkInfos.remove(network)
-            updateDns()
+            updateNetwork()
         }
 
         override fun onLinkPropertiesChanged(network: Network, linkProperties: LinkProperties) {
-            networkInfos[network]?.dnsList = linkProperties.dnsServers
-            updateDns()
+            networkInfos[network]?.apply {
+                dnsList = linkProperties.dnsServers
+                interfaceName = linkProperties.interfaceName.orEmpty()
+                gateway = linkProperties.defaultIpv4Gateway()
+            }
+            updateNetwork()
         }
     }
 
     override fun start() {
-        updateDns()
+        updateNetwork()
         connectivity?.registerNetworkCallback(request, callback)
     }
 
@@ -99,12 +107,16 @@ internal class NetworkObserveModule(private val service: Service) : ServiceModul
     }
 
     @Synchronized
-    private fun updateDns() {
-        val dnsList = networkInfos.asSequence()
+    private fun updateNetwork() {
+        val preferred = networkInfos.asSequence()
             .minByOrNull(::networkPriority)
             ?.value
-            ?.dnsList
-            .orEmpty()
+        updateDns(preferred?.dnsList.orEmpty())
+        updateDefaultRoute(preferred?.interfaceName.orEmpty(), preferred?.gateway.orEmpty())
+    }
+
+    private fun updateDns(servers: List<InetAddress>) {
+        val dnsList = servers
             .map { address -> address.asSocketAddressText(DNS_PORT) }
             .distinct()
         if (dnsList == currentDnsList) {
@@ -114,18 +126,37 @@ internal class NetworkObserveModule(private val service: Service) : ServiceModul
         Core.updateDNS(dnsList.joinToString(","))
     }
 
+    private fun updateDefaultRoute(interfaceName: String, gateway: String) {
+        if (interfaceName == currentInterfaceName && gateway == currentGateway) {
+            return
+        }
+        currentInterfaceName = interfaceName
+        currentGateway = gateway
+        Core.updateNetwork(interfaceName, gateway)
+    }
+
     override fun stop() {
         mainHandler.removeCallbacksAndMessages(null)
         try {
             connectivity?.unregisterNetworkCallback(callback)
         } finally {
             networkInfos.clear()
-            updateDns()
+            updateNetwork()
         }
     }
 }
 
 private const val DNS_PORT = 53
+
+// netmon takes any gateway that parses as the home router, and an empty one falls back to
+// /proc/net/route. On-link routes report `0.0.0.0` or `::`, and IPv6 next hops are link-local.
+private fun LinkProperties.defaultIpv4Gateway(): String = routes
+    .asSequence()
+    .filter { route -> route.isDefaultRoute }
+    .mapNotNull { route -> route.gateway as? Inet4Address }
+    .firstOrNull { gateway -> !gateway.isAnyLocalAddress }
+    ?.hostAddress
+    .orEmpty()
 
 private fun InetAddress.asSocketAddressText(port: Int): String = when (this) {
     is Inet6Address -> "[$hostAddress]:$port"

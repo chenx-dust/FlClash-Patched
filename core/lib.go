@@ -400,3 +400,8 @@ func forceGC() {
 func updateDns(s *C.char) {
 	handleUpdateDns(takeCString(s))
 }
+
+//export updateNetwork
+func updateNetwork(interfaceName *C.char, gateway *C.char) {
+	handleUpdateNetwork(takeCString(interfaceName), takeCString(gateway))
+}

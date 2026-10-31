@@ -48,6 +48,13 @@ Java_cc_chenx_flclash_core_Core_updateDNS(JNIEnv *env, jobject thiz, jstring dns
 
 extern "C"
 JNIEXPORT void JNICALL
+Java_cc_chenx_flclash_core_Core_updateNetwork(JNIEnv *env, jobject thiz, jstring interface_name,
+                                              jstring gateway) {
+    updateNetwork(get_string(interface_name), get_string(gateway));
+}
+
+extern "C"
+JNIEXPORT void JNICALL
 Java_cc_chenx_flclash_core_Core_invokeMethod(JNIEnv *env, jobject thiz, jstring data, jobject cb) {
     const auto interface = new_global(cb);
     invokeMethod(interface, get_string(data));

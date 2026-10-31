@@ -38,6 +38,11 @@ object Core {
         dns: String,
     )
 
+    external fun updateNetwork(
+        interfaceName: String,
+        gateway: String,
+    )
+
     private fun parseInetSocketAddress(address: String): InetSocketAddress {
         val uri = URI("tcp://$address")
         val host = requireNotNull(uri.host) { "Missing host in address: $address" }

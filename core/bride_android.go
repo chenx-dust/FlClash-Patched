@@ -12,6 +12,7 @@ import (
 
 	"github.com/metacubex/mihomo/dns"
 	"github.com/metacubex/mihomo/log"
+	"github.com/metacubex/tailscale/net/netmon"
 )
 
 var (
@@ -70,6 +71,17 @@ func handleUpdateDns(value string) {
 		dns.UpdateSystemDNS(addr)
 		dns.FlushCacheWithDefaultResolver()
 	})
+}
+
+// handleUpdateNetwork stays on the caller's thread: the host serializes these
+// calls, and a goroutine could let an older network overwrite a newer one.
+func handleUpdateNetwork(interfaceName, gateway string) {
+	defer func() {
+		if r := recover(); r != nil {
+			logError("panic in updateNetwork: %v\n%s", r, stackTrace())
+		}
+	}()
+	netmon.NotifyNetworkChange(interfaceName, gateway)
 }
 
 func takeCString(s *C.char) string {

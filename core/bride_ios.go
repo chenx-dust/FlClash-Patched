@@ -47,6 +47,9 @@ func writeSystemLog(level, message string) {
 func handleUpdateDns(value string) {
 }
 
+func handleUpdateNetwork(interfaceName, gateway string) {
+}
+
 func takeCString(s *C.char) string {
 	defer C.free_string(s)
 	return C.GoString(s)

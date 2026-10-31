@@ -67,6 +67,18 @@ version 0.5.2, tracking `main` on top of
 - Drop the fork once upstream quotes map keys by the same
   `isValidUnquotedString` rule it already applies to values.
 
+`github.com/metacubex/tailscale` — **temporary workaround, not an accepted pattern.**
+`core/go.mod` replaces it with `YuliZheng/tailscale` at commit `834a9a759830`, the head of
+MetaCubeX/tailscale#2, one commit on top of the version mihomo pins. Unlike the forks above,
+this one is not maintained in-house. Do not copy this approach for other modules.
+
+- Adds `netmon.NotifyNetworkChange`, which `NetworkObserveModule` reaches through
+  `Core.updateNetwork`. Android netmon polls only every 10 minutes and expects the host to
+  report network changes, and a `tsnet.Server` keeps its monitor private.
+- Drop the replace once that PR is merged and mihomo pins a version that carries it.
+  Until then, a mihomo bump that moves the tailscale pin must rebase this commit too, or
+  the replace silently holds tailscale back.
+
 ## Dependency Ceilings
 
 Dependency resolution was rechecked with Flutter 3.47.9 / Dart 3.13.5. The
