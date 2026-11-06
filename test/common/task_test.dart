@@ -300,6 +300,36 @@ void main() {
   );
 
   test(
+    'makeRealProfileTask lets a set TUN override replace the profile',
+    () async {
+      final result = await makeRealProfileTask(
+        const MakeRealProfileState(
+          profilesPath: '/profiles',
+          profileId: 7,
+          rawConfig: {
+            'tun': {
+              'route-exclude-address': ['192.168.0.0/16'],
+              'auto-redirect': true,
+            },
+          },
+          realPatchConfig: PatchClashConfig(
+            tun: Tun(routeExcludeAddress: ['10.0.0.0/8']),
+          ),
+          overrideDns: false,
+          appendSystemDns: false,
+          proxyGroups: [],
+          rules: [],
+          addedRules: [],
+          defaultUA: 'FlClash-Test',
+        ),
+      );
+      final tun = (loadYaml(result.yaml) as YamlMap)['tun'] as YamlMap;
+      expect(tun['route-exclude-address'], ['10.0.0.0/8']);
+      expect(tun['auto-redirect'], isTrue);
+    },
+  );
+
+  test(
     'makeRealProfileTask routes MATCH placeholders to matchTarget',
     () async {
       final rawConfig = await decodeJSONTask<Map<String, dynamic>>(

@@ -349,6 +349,7 @@ class SetupAction extends _$SetupAction {
           appendSystemDns: state.appendSystemDns,
           routeMode: state.routeMode,
           authentication: state.authentication,
+          desktopAutoRoute: state.desktopAutoRoute,
         ),
       ),
     );
@@ -371,7 +372,10 @@ class SetupAction extends _$SetupAction {
       rules.addAll(setupState.rules);
     }
     final realPatchConfig = patchConfig.copyWith(
-      tun: patchConfig.tun.getRealTun(routeMode),
+      tun: patchConfig.tun.getRealTun(
+        routeMode,
+        desktopAutoRoute: networkSetting.desktopAutoRoute,
+      ),
     );
     Map<String, dynamic> rawConfig = configMap;
     if (scriptContent?.isNotEmpty == true) {

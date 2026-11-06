@@ -1,4 +1,5 @@
 import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/providers/database.dart';
@@ -183,32 +184,44 @@ void main() {
 
       expect(container.read(networkSettingProvider).routeMode, target);
     });
-
-    testWidgets('the interface name mode picker writes the chosen mode', (
-      tester,
-    ) async {
-      await pumpItem(tester, const InterfaceNameModeItem());
-      final initial = container
-          .read(patchClashConfigProvider)
-          .interfaceNameMode;
-      final target = InterfaceNameMode.values.firstWhere(
-        (item) => item != initial,
-      );
-
-      await tester.tap(find.byType(ListTile).first);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text(_interfaceNameModeLabel(target)).last);
-      await tester.pumpAndSettle();
-
-      expect(
-        container.read(patchClashConfigProvider).interfaceNameMode,
-        target,
-      );
-    });
   });
 
-  group('interface name visibility', () {
-    testWidgets('is hidden unless the mode is custom', (tester) async {
+  group('outbound interface', () {
+    Future<void> submit(WidgetTester tester, String text) async {
+      await tester.tap(find.byType(ListTile).first);
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextFormField), text);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Submit'));
+      await tester.pumpAndSettle();
+    }
+
+    PatchClashConfig read() => container.read(patchClashConfigProvider);
+
+    testWidgets('a typed name binds that interface', (tester) async {
+      await pumpItem(tester, const InterfaceNameItem());
+
+      await submit(tester, '  eth0  ');
+
+      expect(read().interfaceNameMode, InterfaceNameMode.custom);
+      expect(read().interfaceName, 'eth0');
+      expect(find.text('eth0'), findsOneWidget);
+    });
+
+    testWidgets('an empty name clears the profile interface', (tester) async {
+      await pumpItem(tester, const InterfaceNameItem());
+      await submit(tester, 'eth0');
+
+      await submit(tester, '');
+
+      expect(read().interfaceNameMode, InterfaceNameMode.clear);
+      expect(read().interfaceName, isEmpty);
+    });
+
+    testWidgets('a saved follow mode still reads as following the profile', (
+      tester,
+    ) async {
+      container.listen(patchClashConfigProvider, (_, _) {});
       container
           .read(patchClashConfigProvider.notifier)
           .update(
@@ -218,20 +231,7 @@ void main() {
 
       await pumpItem(tester, const InterfaceNameItem());
 
-      expect(find.byType(ListTile), findsNothing);
-    });
-
-    testWidgets('is shown when the mode is custom', (tester) async {
-      container
-          .read(patchClashConfigProvider.notifier)
-          .update(
-            (state) =>
-                state.copyWith(interfaceNameMode: InterfaceNameMode.custom),
-          );
-
-      await pumpItem(tester, const InterfaceNameItem());
-
-      expect(find.byType(ListTile), findsOneWidget);
+      expect(find.text('Follow profile'), findsOneWidget);
     });
   });
 
@@ -255,19 +255,17 @@ void main() {
       expect(items.whereType<TunCongestionControllerItem>(), hasLength(1));
     });
 
-    test('interface name rows appear only on desktop', () {
+    test('the interface name row appears only on desktop', () {
       final desktopTypes = networkOptionsItems(
         isDesktop: true,
         isMacOS: false,
       ).map((item) => item.runtimeType);
-      expect(desktopTypes, contains(InterfaceNameModeItem));
       expect(desktopTypes, contains(InterfaceNameItem));
 
       final androidTypes = networkOptionsItems(
         isDesktop: false,
         isMacOS: false,
       ).map((item) => item.runtimeType);
-      expect(androidTypes, isNot(contains(InterfaceNameModeItem)));
       expect(androidTypes, isNot(contains(InterfaceNameItem)));
     });
   });
@@ -301,13 +299,5 @@ String _routeModeLabel(RouteMode mode) {
   return switch (mode) {
     RouteMode.config => 'Use config',
     RouteMode.bypassPrivate => 'Bypass private addresses',
-  };
-}
-
-String _interfaceNameModeLabel(InterfaceNameMode mode) {
-  return switch (mode) {
-    InterfaceNameMode.clear => 'Clear',
-    InterfaceNameMode.follow => 'Follow config',
-    InterfaceNameMode.custom => 'Custom',
   };
 }

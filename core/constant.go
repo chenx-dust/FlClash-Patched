@@ -56,20 +56,49 @@ type UpdateParams struct {
 }
 
 type tunSchema struct {
-	MTU                    *uint32            `yaml:"mtu" json:"mtu"`
-	StrictRoute            *bool              `yaml:"strict-route" json:"strict-route"`
-	DisableICMPForwarding  *bool              `yaml:"disable-icmp-forwarding" json:"disable-icmp-forwarding"`
-	EndpointIndependentNat *bool              `yaml:"endpoint-independent-nat" json:"endpoint-independent-nat"`
-	RecvMsgX               *bool              `yaml:"recvmsgx" json:"recvmsgx"`
-	SendMsgX               *bool              `yaml:"sendmsgx" json:"sendmsgx"`
-	Enable                 bool               `yaml:"enable" json:"enable"`
-	Device                 *string            `yaml:"device" json:"device"`
-	Stack                  *constant.TUNStack `yaml:"stack" json:"stack"`
-	DNSMode                *string            `yaml:"dns-mode" json:"dns-mode"`
-	DNSHijack              *[]string          `yaml:"dns-hijack" json:"dns-hijack"`
-	AutoRoute              *bool              `yaml:"auto-route" json:"auto-route"`
-	RouteAddress           *[]netip.Prefix    `yaml:"route-address" json:"route-address,omitempty"`
-	CongestionController   *string            `yaml:"congestion-controller" json:"congestion-controller"`
+	MTU                                   *uint32            `yaml:"mtu" json:"mtu"`
+	StrictRoute                           *bool              `yaml:"strict-route" json:"strict-route"`
+	DisableICMPForwarding                 *bool              `yaml:"disable-icmp-forwarding" json:"disable-icmp-forwarding"`
+	EndpointIndependentNat                *bool              `yaml:"endpoint-independent-nat" json:"endpoint-independent-nat"`
+	RecvMsgX                              *bool              `yaml:"recvmsgx" json:"recvmsgx"`
+	SendMsgX                              *bool              `yaml:"sendmsgx" json:"sendmsgx"`
+	Enable                                bool               `yaml:"enable" json:"enable"`
+	Device                                *string            `yaml:"device" json:"device"`
+	Stack                                 *constant.TUNStack `yaml:"stack" json:"stack"`
+	DNSMode                               *string            `yaml:"dns-mode" json:"dns-mode"`
+	DNSHijack                             *[]string          `yaml:"dns-hijack" json:"dns-hijack"`
+	AutoRoute                             *bool              `yaml:"auto-route" json:"auto-route"`
+	RouteAddress                          *[]netip.Prefix    `yaml:"route-address" json:"route-address,omitempty"`
+	CongestionController                  *string            `yaml:"congestion-controller" json:"congestion-controller"`
+	AutoDetectInterface                   *bool              `yaml:"auto-detect-interface" json:"auto-detect-interface,omitempty"`
+	GSO                                   *bool              `yaml:"gso" json:"gso,omitempty"`
+	GSOMaxSize                            *uint32            `yaml:"gso-max-size" json:"gso-max-size,omitempty"`
+	MultiQueue                            *bool              `yaml:"multi-queue" json:"multi-queue,omitempty"`
+	Inet6Address                          *[]netip.Prefix    `yaml:"inet6-address" json:"inet6-address,omitempty"`
+	LoopbackAddress                       *[]netip.Addr      `yaml:"loopback-address" json:"loopback-address,omitempty"`
+	RouteExcludeAddress                   *[]netip.Prefix    `yaml:"route-exclude-address" json:"route-exclude-address,omitempty"`
+	RouteAddressSet                       *[]string          `yaml:"route-address-set" json:"route-address-set,omitempty"`
+	RouteExcludeAddressSet                *[]string          `yaml:"route-exclude-address-set" json:"route-exclude-address-set,omitempty"`
+	AutoRedirect                          *bool              `yaml:"auto-redirect" json:"auto-redirect,omitempty"`
+	AutoRedirectInputMark                 *uint32            `yaml:"auto-redirect-input-mark" json:"auto-redirect-input-mark,omitempty"`
+	AutoRedirectOutputMark                *uint32            `yaml:"auto-redirect-output-mark" json:"auto-redirect-output-mark,omitempty"`
+	AutoRedirectIPRoute2FallbackRuleIndex *int               `yaml:"auto-redirect-iproute2-fallback-rule-index" json:"auto-redirect-iproute2-fallback-rule-index,omitempty"`
+	IPRoute2TableIndex                    *int               `yaml:"iproute2-table-index" json:"iproute2-table-index,omitempty"`
+	IPRoute2RuleIndex                     *int               `yaml:"iproute2-rule-index" json:"iproute2-rule-index,omitempty"`
+	IncludeInterface                      *[]string          `yaml:"include-interface" json:"include-interface,omitempty"`
+	ExcludeInterface                      *[]string          `yaml:"exclude-interface" json:"exclude-interface,omitempty"`
+	IncludeUID                            *[]uint32          `yaml:"include-uid" json:"include-uid,omitempty"`
+	IncludeUIDRange                       *[]string          `yaml:"include-uid-range" json:"include-uid-range,omitempty"`
+	ExcludeUID                            *[]uint32          `yaml:"exclude-uid" json:"exclude-uid,omitempty"`
+	ExcludeUIDRange                       *[]string          `yaml:"exclude-uid-range" json:"exclude-uid-range,omitempty"`
+	ExcludeSrcPort                        *[]uint16          `yaml:"exclude-src-port" json:"exclude-src-port,omitempty"`
+	ExcludeSrcPortRange                   *[]string          `yaml:"exclude-src-port-range" json:"exclude-src-port-range,omitempty"`
+	ExcludeDstPort                        *[]uint16          `yaml:"exclude-dst-port" json:"exclude-dst-port,omitempty"`
+	ExcludeDstPortRange                   *[]string          `yaml:"exclude-dst-port-range" json:"exclude-dst-port-range,omitempty"`
+	IncludeMACAddress                     *[]string          `yaml:"include-mac-address" json:"include-mac-address,omitempty"`
+	ExcludeMACAddress                     *[]string          `yaml:"exclude-mac-address" json:"exclude-mac-address,omitempty"`
+	UDPTimeout                            *int64             `yaml:"udp-timeout" json:"udp-timeout,omitempty"`
+	ICMPTimeout                           *int64             `yaml:"icmp-timeout" json:"icmp-timeout,omitempty"`
 }
 
 type SideLoadParams struct {

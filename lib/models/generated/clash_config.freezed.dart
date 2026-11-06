@@ -2996,7 +2996,7 @@ as bool?,
 /// @nodoc
 mixin _$Tun {
 
- bool get enable; String get device; int get mtu;@JsonKey(name: 'auto-route') bool get autoRoute;@JsonKey(unknownEnumValue: TunStack.mips) TunStack get stack;@JsonKey(name: 'recvmsgx') bool get recvMsgX;@JsonKey(name: 'sendmsgx') bool get sendMsgX;@JsonKey(name: 'dns-mode', unknownEnumValue: TunDnsMode.hijack) TunDnsMode get dnsMode;@JsonKey(name: 'dns-hijack') List<String> get dnsHijack;@JsonKey(name: 'route-address') List<String> get routeAddress;@JsonKey(name: 'strict-route') bool get strictRoute;@JsonKey(name: 'disable-icmp-forwarding') bool get disableIcmpForwarding;@JsonKey(name: 'endpoint-independent-nat') bool get endpointIndependentNat;@JsonKey(name: 'congestion-controller', unknownEnumValue: TunCongestionController.cubic) TunCongestionController get congestionController;
+ bool get enable; String get device; int get mtu;@JsonKey(name: 'auto-route') bool get autoRoute;@JsonKey(unknownEnumValue: TunStack.mips) TunStack get stack;@JsonKey(name: 'recvmsgx') bool get recvMsgX;@JsonKey(name: 'sendmsgx') bool get sendMsgX;@JsonKey(name: 'dns-mode', unknownEnumValue: TunDnsMode.hijack) TunDnsMode get dnsMode;@JsonKey(name: 'dns-hijack') List<String> get dnsHijack;@JsonKey(name: 'route-address') List<String> get routeAddress;@JsonKey(name: 'strict-route') bool get strictRoute;@JsonKey(name: 'disable-icmp-forwarding') bool get disableIcmpForwarding;@JsonKey(name: 'endpoint-independent-nat') bool get endpointIndependentNat;@JsonKey(name: 'congestion-controller', unknownEnumValue: TunCongestionController.cubic) TunCongestionController get congestionController;@JsonKey(name: 'auto-detect-interface', includeIfNull: false) bool? get autoDetectInterface;@JsonKey(name: 'gso', includeIfNull: false) bool? get gso;@JsonKey(name: 'gso-max-size', includeIfNull: false) int? get gsoMaxSize;@JsonKey(name: 'multi-queue', includeIfNull: false) bool? get multiQueue;@JsonKey(name: 'inet6-address', includeIfNull: false) List<String>? get inet6Address;@JsonKey(name: 'loopback-address', includeIfNull: false) List<String>? get loopbackAddress;@JsonKey(name: 'route-exclude-address', includeIfNull: false) List<String>? get routeExcludeAddress;@JsonKey(name: 'route-address-set', includeIfNull: false) List<String>? get routeAddressSet;@JsonKey(name: 'route-exclude-address-set', includeIfNull: false) List<String>? get routeExcludeAddressSet;@JsonKey(name: 'auto-redirect', includeIfNull: false) bool? get autoRedirect;@JsonKey(name: 'auto-redirect-input-mark', includeIfNull: false) int? get autoRedirectInputMark;@JsonKey(name: 'auto-redirect-output-mark', includeIfNull: false) int? get autoRedirectOutputMark;@JsonKey(name: 'auto-redirect-iproute2-fallback-rule-index', includeIfNull: false) int? get autoRedirectIproute2FallbackRuleIndex;@JsonKey(name: 'iproute2-table-index', includeIfNull: false) int? get iproute2TableIndex;@JsonKey(name: 'iproute2-rule-index', includeIfNull: false) int? get iproute2RuleIndex;@JsonKey(name: 'include-interface', includeIfNull: false) List<String>? get includeInterface;@JsonKey(name: 'exclude-interface', includeIfNull: false) List<String>? get excludeInterface;@JsonKey(name: 'include-uid', includeIfNull: false) List<int>? get includeUid;@JsonKey(name: 'include-uid-range', includeIfNull: false) List<String>? get includeUidRange;@JsonKey(name: 'exclude-uid', includeIfNull: false) List<int>? get excludeUid;@JsonKey(name: 'exclude-uid-range', includeIfNull: false) List<String>? get excludeUidRange;@JsonKey(name: 'exclude-src-port', includeIfNull: false) List<int>? get excludeSrcPort;@JsonKey(name: 'exclude-src-port-range', includeIfNull: false) List<String>? get excludeSrcPortRange;@JsonKey(name: 'exclude-dst-port', includeIfNull: false) List<int>? get excludeDstPort;@JsonKey(name: 'exclude-dst-port-range', includeIfNull: false) List<String>? get excludeDstPortRange;@JsonKey(name: 'include-mac-address', includeIfNull: false) List<String>? get includeMacAddress;@JsonKey(name: 'exclude-mac-address', includeIfNull: false) List<String>? get excludeMacAddress;@JsonKey(name: 'udp-timeout', includeIfNull: false) int? get udpTimeout;@JsonKey(name: 'icmp-timeout', includeIfNull: false) int? get icmpTimeout;
 /// Create a copy of Tun
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -3010,20 +3010,20 @@ $TunCopyWith<Tun> get copyWith => _$TunCopyWithImpl<Tun>(this as Tun, _$identity
 @override
 bool operator ==(Object other) {
   final _this = this as Tun;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Tun&&(identical(other.enable, _this.enable) || other.enable == _this.enable)&&(identical(other.device, _this.device) || other.device == _this.device)&&(identical(other.mtu, _this.mtu) || other.mtu == _this.mtu)&&(identical(other.autoRoute, _this.autoRoute) || other.autoRoute == _this.autoRoute)&&(identical(other.stack, _this.stack) || other.stack == _this.stack)&&(identical(other.recvMsgX, _this.recvMsgX) || other.recvMsgX == _this.recvMsgX)&&(identical(other.sendMsgX, _this.sendMsgX) || other.sendMsgX == _this.sendMsgX)&&(identical(other.dnsMode, _this.dnsMode) || other.dnsMode == _this.dnsMode)&&const DeepCollectionEquality().equals(other.dnsHijack, _this.dnsHijack)&&const DeepCollectionEquality().equals(other.routeAddress, _this.routeAddress)&&(identical(other.strictRoute, _this.strictRoute) || other.strictRoute == _this.strictRoute)&&(identical(other.disableIcmpForwarding, _this.disableIcmpForwarding) || other.disableIcmpForwarding == _this.disableIcmpForwarding)&&(identical(other.endpointIndependentNat, _this.endpointIndependentNat) || other.endpointIndependentNat == _this.endpointIndependentNat)&&(identical(other.congestionController, _this.congestionController) || other.congestionController == _this.congestionController));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Tun&&(identical(other.enable, _this.enable) || other.enable == _this.enable)&&(identical(other.device, _this.device) || other.device == _this.device)&&(identical(other.mtu, _this.mtu) || other.mtu == _this.mtu)&&(identical(other.autoRoute, _this.autoRoute) || other.autoRoute == _this.autoRoute)&&(identical(other.stack, _this.stack) || other.stack == _this.stack)&&(identical(other.recvMsgX, _this.recvMsgX) || other.recvMsgX == _this.recvMsgX)&&(identical(other.sendMsgX, _this.sendMsgX) || other.sendMsgX == _this.sendMsgX)&&(identical(other.dnsMode, _this.dnsMode) || other.dnsMode == _this.dnsMode)&&const DeepCollectionEquality().equals(other.dnsHijack, _this.dnsHijack)&&const DeepCollectionEquality().equals(other.routeAddress, _this.routeAddress)&&(identical(other.strictRoute, _this.strictRoute) || other.strictRoute == _this.strictRoute)&&(identical(other.disableIcmpForwarding, _this.disableIcmpForwarding) || other.disableIcmpForwarding == _this.disableIcmpForwarding)&&(identical(other.endpointIndependentNat, _this.endpointIndependentNat) || other.endpointIndependentNat == _this.endpointIndependentNat)&&(identical(other.congestionController, _this.congestionController) || other.congestionController == _this.congestionController)&&(identical(other.autoDetectInterface, _this.autoDetectInterface) || other.autoDetectInterface == _this.autoDetectInterface)&&(identical(other.gso, _this.gso) || other.gso == _this.gso)&&(identical(other.gsoMaxSize, _this.gsoMaxSize) || other.gsoMaxSize == _this.gsoMaxSize)&&(identical(other.multiQueue, _this.multiQueue) || other.multiQueue == _this.multiQueue)&&const DeepCollectionEquality().equals(other.inet6Address, _this.inet6Address)&&const DeepCollectionEquality().equals(other.loopbackAddress, _this.loopbackAddress)&&const DeepCollectionEquality().equals(other.routeExcludeAddress, _this.routeExcludeAddress)&&const DeepCollectionEquality().equals(other.routeAddressSet, _this.routeAddressSet)&&const DeepCollectionEquality().equals(other.routeExcludeAddressSet, _this.routeExcludeAddressSet)&&(identical(other.autoRedirect, _this.autoRedirect) || other.autoRedirect == _this.autoRedirect)&&(identical(other.autoRedirectInputMark, _this.autoRedirectInputMark) || other.autoRedirectInputMark == _this.autoRedirectInputMark)&&(identical(other.autoRedirectOutputMark, _this.autoRedirectOutputMark) || other.autoRedirectOutputMark == _this.autoRedirectOutputMark)&&(identical(other.autoRedirectIproute2FallbackRuleIndex, _this.autoRedirectIproute2FallbackRuleIndex) || other.autoRedirectIproute2FallbackRuleIndex == _this.autoRedirectIproute2FallbackRuleIndex)&&(identical(other.iproute2TableIndex, _this.iproute2TableIndex) || other.iproute2TableIndex == _this.iproute2TableIndex)&&(identical(other.iproute2RuleIndex, _this.iproute2RuleIndex) || other.iproute2RuleIndex == _this.iproute2RuleIndex)&&const DeepCollectionEquality().equals(other.includeInterface, _this.includeInterface)&&const DeepCollectionEquality().equals(other.excludeInterface, _this.excludeInterface)&&const DeepCollectionEquality().equals(other.includeUid, _this.includeUid)&&const DeepCollectionEquality().equals(other.includeUidRange, _this.includeUidRange)&&const DeepCollectionEquality().equals(other.excludeUid, _this.excludeUid)&&const DeepCollectionEquality().equals(other.excludeUidRange, _this.excludeUidRange)&&const DeepCollectionEquality().equals(other.excludeSrcPort, _this.excludeSrcPort)&&const DeepCollectionEquality().equals(other.excludeSrcPortRange, _this.excludeSrcPortRange)&&const DeepCollectionEquality().equals(other.excludeDstPort, _this.excludeDstPort)&&const DeepCollectionEquality().equals(other.excludeDstPortRange, _this.excludeDstPortRange)&&const DeepCollectionEquality().equals(other.includeMacAddress, _this.includeMacAddress)&&const DeepCollectionEquality().equals(other.excludeMacAddress, _this.excludeMacAddress)&&(identical(other.udpTimeout, _this.udpTimeout) || other.udpTimeout == _this.udpTimeout)&&(identical(other.icmpTimeout, _this.icmpTimeout) || other.icmpTimeout == _this.icmpTimeout));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as Tun;
-  return Object.hash(runtimeType,_this.enable,_this.device,_this.mtu,_this.autoRoute,_this.stack,_this.recvMsgX,_this.sendMsgX,_this.dnsMode,const DeepCollectionEquality().hash(_this.dnsHijack),const DeepCollectionEquality().hash(_this.routeAddress),_this.strictRoute,_this.disableIcmpForwarding,_this.endpointIndependentNat,_this.congestionController);
+  return Object.hashAll([runtimeType,_this.enable,_this.device,_this.mtu,_this.autoRoute,_this.stack,_this.recvMsgX,_this.sendMsgX,_this.dnsMode,const DeepCollectionEquality().hash(_this.dnsHijack),const DeepCollectionEquality().hash(_this.routeAddress),_this.strictRoute,_this.disableIcmpForwarding,_this.endpointIndependentNat,_this.congestionController,_this.autoDetectInterface,_this.gso,_this.gsoMaxSize,_this.multiQueue,const DeepCollectionEquality().hash(_this.inet6Address),const DeepCollectionEquality().hash(_this.loopbackAddress),const DeepCollectionEquality().hash(_this.routeExcludeAddress),const DeepCollectionEquality().hash(_this.routeAddressSet),const DeepCollectionEquality().hash(_this.routeExcludeAddressSet),_this.autoRedirect,_this.autoRedirectInputMark,_this.autoRedirectOutputMark,_this.autoRedirectIproute2FallbackRuleIndex,_this.iproute2TableIndex,_this.iproute2RuleIndex,const DeepCollectionEquality().hash(_this.includeInterface),const DeepCollectionEquality().hash(_this.excludeInterface),const DeepCollectionEquality().hash(_this.includeUid),const DeepCollectionEquality().hash(_this.includeUidRange),const DeepCollectionEquality().hash(_this.excludeUid),const DeepCollectionEquality().hash(_this.excludeUidRange),const DeepCollectionEquality().hash(_this.excludeSrcPort),const DeepCollectionEquality().hash(_this.excludeSrcPortRange),const DeepCollectionEquality().hash(_this.excludeDstPort),const DeepCollectionEquality().hash(_this.excludeDstPortRange),const DeepCollectionEquality().hash(_this.includeMacAddress),const DeepCollectionEquality().hash(_this.excludeMacAddress),_this.udpTimeout,_this.icmpTimeout]);
 }
 
 @override
 String toString() {
   final _this = this as Tun;
-  return 'Tun(enable: ${_this.enable}, device: ${_this.device}, mtu: ${_this.mtu}, autoRoute: ${_this.autoRoute}, stack: ${_this.stack}, recvMsgX: ${_this.recvMsgX}, sendMsgX: ${_this.sendMsgX}, dnsMode: ${_this.dnsMode}, dnsHijack: ${_this.dnsHijack}, routeAddress: ${_this.routeAddress}, strictRoute: ${_this.strictRoute}, disableIcmpForwarding: ${_this.disableIcmpForwarding}, endpointIndependentNat: ${_this.endpointIndependentNat}, congestionController: ${_this.congestionController})';
+  return 'Tun(enable: ${_this.enable}, device: ${_this.device}, mtu: ${_this.mtu}, autoRoute: ${_this.autoRoute}, stack: ${_this.stack}, recvMsgX: ${_this.recvMsgX}, sendMsgX: ${_this.sendMsgX}, dnsMode: ${_this.dnsMode}, dnsHijack: ${_this.dnsHijack}, routeAddress: ${_this.routeAddress}, strictRoute: ${_this.strictRoute}, disableIcmpForwarding: ${_this.disableIcmpForwarding}, endpointIndependentNat: ${_this.endpointIndependentNat}, congestionController: ${_this.congestionController}, autoDetectInterface: ${_this.autoDetectInterface}, gso: ${_this.gso}, gsoMaxSize: ${_this.gsoMaxSize}, multiQueue: ${_this.multiQueue}, inet6Address: ${_this.inet6Address}, loopbackAddress: ${_this.loopbackAddress}, routeExcludeAddress: ${_this.routeExcludeAddress}, routeAddressSet: ${_this.routeAddressSet}, routeExcludeAddressSet: ${_this.routeExcludeAddressSet}, autoRedirect: ${_this.autoRedirect}, autoRedirectInputMark: ${_this.autoRedirectInputMark}, autoRedirectOutputMark: ${_this.autoRedirectOutputMark}, autoRedirectIproute2FallbackRuleIndex: ${_this.autoRedirectIproute2FallbackRuleIndex}, iproute2TableIndex: ${_this.iproute2TableIndex}, iproute2RuleIndex: ${_this.iproute2RuleIndex}, includeInterface: ${_this.includeInterface}, excludeInterface: ${_this.excludeInterface}, includeUid: ${_this.includeUid}, includeUidRange: ${_this.includeUidRange}, excludeUid: ${_this.excludeUid}, excludeUidRange: ${_this.excludeUidRange}, excludeSrcPort: ${_this.excludeSrcPort}, excludeSrcPortRange: ${_this.excludeSrcPortRange}, excludeDstPort: ${_this.excludeDstPort}, excludeDstPortRange: ${_this.excludeDstPortRange}, includeMacAddress: ${_this.includeMacAddress}, excludeMacAddress: ${_this.excludeMacAddress}, udpTimeout: ${_this.udpTimeout}, icmpTimeout: ${_this.icmpTimeout})';
 }
 
 
@@ -3034,7 +3034,7 @@ abstract mixin class $TunCopyWith<$Res>  {
   factory $TunCopyWith(Tun value, $Res Function(Tun) _then) = _$TunCopyWithImpl;
 @useResult
 $Res call({
- bool enable, String device, int mtu,@JsonKey(name: 'auto-route') bool autoRoute,@JsonKey(unknownEnumValue: TunStack.mips) TunStack stack,@JsonKey(name: 'recvmsgx') bool recvMsgX,@JsonKey(name: 'sendmsgx') bool sendMsgX,@JsonKey(name: 'dns-mode', unknownEnumValue: TunDnsMode.hijack) TunDnsMode dnsMode,@JsonKey(name: 'dns-hijack') List<String> dnsHijack,@JsonKey(name: 'route-address') List<String> routeAddress,@JsonKey(name: 'strict-route') bool strictRoute,@JsonKey(name: 'disable-icmp-forwarding') bool disableIcmpForwarding,@JsonKey(name: 'endpoint-independent-nat') bool endpointIndependentNat,@JsonKey(name: 'congestion-controller', unknownEnumValue: TunCongestionController.cubic) TunCongestionController congestionController
+ bool enable, String device, int mtu,@JsonKey(name: 'auto-route') bool autoRoute,@JsonKey(unknownEnumValue: TunStack.mips) TunStack stack,@JsonKey(name: 'recvmsgx') bool recvMsgX,@JsonKey(name: 'sendmsgx') bool sendMsgX,@JsonKey(name: 'dns-mode', unknownEnumValue: TunDnsMode.hijack) TunDnsMode dnsMode,@JsonKey(name: 'dns-hijack') List<String> dnsHijack,@JsonKey(name: 'route-address') List<String> routeAddress,@JsonKey(name: 'strict-route') bool strictRoute,@JsonKey(name: 'disable-icmp-forwarding') bool disableIcmpForwarding,@JsonKey(name: 'endpoint-independent-nat') bool endpointIndependentNat,@JsonKey(name: 'congestion-controller', unknownEnumValue: TunCongestionController.cubic) TunCongestionController congestionController,@JsonKey(name: 'auto-detect-interface', includeIfNull: false) bool? autoDetectInterface,@JsonKey(name: 'gso', includeIfNull: false) bool? gso,@JsonKey(name: 'gso-max-size', includeIfNull: false) int? gsoMaxSize,@JsonKey(name: 'multi-queue', includeIfNull: false) bool? multiQueue,@JsonKey(name: 'inet6-address', includeIfNull: false) List<String>? inet6Address,@JsonKey(name: 'loopback-address', includeIfNull: false) List<String>? loopbackAddress,@JsonKey(name: 'route-exclude-address', includeIfNull: false) List<String>? routeExcludeAddress,@JsonKey(name: 'route-address-set', includeIfNull: false) List<String>? routeAddressSet,@JsonKey(name: 'route-exclude-address-set', includeIfNull: false) List<String>? routeExcludeAddressSet,@JsonKey(name: 'auto-redirect', includeIfNull: false) bool? autoRedirect,@JsonKey(name: 'auto-redirect-input-mark', includeIfNull: false) int? autoRedirectInputMark,@JsonKey(name: 'auto-redirect-output-mark', includeIfNull: false) int? autoRedirectOutputMark,@JsonKey(name: 'auto-redirect-iproute2-fallback-rule-index', includeIfNull: false) int? autoRedirectIproute2FallbackRuleIndex,@JsonKey(name: 'iproute2-table-index', includeIfNull: false) int? iproute2TableIndex,@JsonKey(name: 'iproute2-rule-index', includeIfNull: false) int? iproute2RuleIndex,@JsonKey(name: 'include-interface', includeIfNull: false) List<String>? includeInterface,@JsonKey(name: 'exclude-interface', includeIfNull: false) List<String>? excludeInterface,@JsonKey(name: 'include-uid', includeIfNull: false) List<int>? includeUid,@JsonKey(name: 'include-uid-range', includeIfNull: false) List<String>? includeUidRange,@JsonKey(name: 'exclude-uid', includeIfNull: false) List<int>? excludeUid,@JsonKey(name: 'exclude-uid-range', includeIfNull: false) List<String>? excludeUidRange,@JsonKey(name: 'exclude-src-port', includeIfNull: false) List<int>? excludeSrcPort,@JsonKey(name: 'exclude-src-port-range', includeIfNull: false) List<String>? excludeSrcPortRange,@JsonKey(name: 'exclude-dst-port', includeIfNull: false) List<int>? excludeDstPort,@JsonKey(name: 'exclude-dst-port-range', includeIfNull: false) List<String>? excludeDstPortRange,@JsonKey(name: 'include-mac-address', includeIfNull: false) List<String>? includeMacAddress,@JsonKey(name: 'exclude-mac-address', includeIfNull: false) List<String>? excludeMacAddress,@JsonKey(name: 'udp-timeout', includeIfNull: false) int? udpTimeout,@JsonKey(name: 'icmp-timeout', includeIfNull: false) int? icmpTimeout
 });
 
 
@@ -3051,7 +3051,7 @@ class _$TunCopyWithImpl<$Res>
 
 /// Create a copy of Tun
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? enable = null,Object? device = null,Object? mtu = null,Object? autoRoute = null,Object? stack = null,Object? recvMsgX = null,Object? sendMsgX = null,Object? dnsMode = null,Object? dnsHijack = null,Object? routeAddress = null,Object? strictRoute = null,Object? disableIcmpForwarding = null,Object? endpointIndependentNat = null,Object? congestionController = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? enable = null,Object? device = null,Object? mtu = null,Object? autoRoute = null,Object? stack = null,Object? recvMsgX = null,Object? sendMsgX = null,Object? dnsMode = null,Object? dnsHijack = null,Object? routeAddress = null,Object? strictRoute = null,Object? disableIcmpForwarding = null,Object? endpointIndependentNat = null,Object? congestionController = null,Object? autoDetectInterface = freezed,Object? gso = freezed,Object? gsoMaxSize = freezed,Object? multiQueue = freezed,Object? inet6Address = freezed,Object? loopbackAddress = freezed,Object? routeExcludeAddress = freezed,Object? routeAddressSet = freezed,Object? routeExcludeAddressSet = freezed,Object? autoRedirect = freezed,Object? autoRedirectInputMark = freezed,Object? autoRedirectOutputMark = freezed,Object? autoRedirectIproute2FallbackRuleIndex = freezed,Object? iproute2TableIndex = freezed,Object? iproute2RuleIndex = freezed,Object? includeInterface = freezed,Object? excludeInterface = freezed,Object? includeUid = freezed,Object? includeUidRange = freezed,Object? excludeUid = freezed,Object? excludeUidRange = freezed,Object? excludeSrcPort = freezed,Object? excludeSrcPortRange = freezed,Object? excludeDstPort = freezed,Object? excludeDstPortRange = freezed,Object? includeMacAddress = freezed,Object? excludeMacAddress = freezed,Object? udpTimeout = freezed,Object? icmpTimeout = freezed,}) {
   return _then(Tun(
 enable: null == enable ? _self.enable : enable // ignore: cast_nullable_to_non_nullable
 as bool,device: null == device ? _self.device : device // ignore: cast_nullable_to_non_nullable
@@ -3067,7 +3067,36 @@ as List<String>,strictRoute: null == strictRoute ? _self.strictRoute : strictRou
 as bool,disableIcmpForwarding: null == disableIcmpForwarding ? _self.disableIcmpForwarding : disableIcmpForwarding // ignore: cast_nullable_to_non_nullable
 as bool,endpointIndependentNat: null == endpointIndependentNat ? _self.endpointIndependentNat : endpointIndependentNat // ignore: cast_nullable_to_non_nullable
 as bool,congestionController: null == congestionController ? _self.congestionController : congestionController // ignore: cast_nullable_to_non_nullable
-as TunCongestionController,
+as TunCongestionController,autoDetectInterface: freezed == autoDetectInterface ? _self.autoDetectInterface : autoDetectInterface // ignore: cast_nullable_to_non_nullable
+as bool?,gso: freezed == gso ? _self.gso : gso // ignore: cast_nullable_to_non_nullable
+as bool?,gsoMaxSize: freezed == gsoMaxSize ? _self.gsoMaxSize : gsoMaxSize // ignore: cast_nullable_to_non_nullable
+as int?,multiQueue: freezed == multiQueue ? _self.multiQueue : multiQueue // ignore: cast_nullable_to_non_nullable
+as bool?,inet6Address: freezed == inet6Address ? _self.inet6Address : inet6Address // ignore: cast_nullable_to_non_nullable
+as List<String>?,loopbackAddress: freezed == loopbackAddress ? _self.loopbackAddress : loopbackAddress // ignore: cast_nullable_to_non_nullable
+as List<String>?,routeExcludeAddress: freezed == routeExcludeAddress ? _self.routeExcludeAddress : routeExcludeAddress // ignore: cast_nullable_to_non_nullable
+as List<String>?,routeAddressSet: freezed == routeAddressSet ? _self.routeAddressSet : routeAddressSet // ignore: cast_nullable_to_non_nullable
+as List<String>?,routeExcludeAddressSet: freezed == routeExcludeAddressSet ? _self.routeExcludeAddressSet : routeExcludeAddressSet // ignore: cast_nullable_to_non_nullable
+as List<String>?,autoRedirect: freezed == autoRedirect ? _self.autoRedirect : autoRedirect // ignore: cast_nullable_to_non_nullable
+as bool?,autoRedirectInputMark: freezed == autoRedirectInputMark ? _self.autoRedirectInputMark : autoRedirectInputMark // ignore: cast_nullable_to_non_nullable
+as int?,autoRedirectOutputMark: freezed == autoRedirectOutputMark ? _self.autoRedirectOutputMark : autoRedirectOutputMark // ignore: cast_nullable_to_non_nullable
+as int?,autoRedirectIproute2FallbackRuleIndex: freezed == autoRedirectIproute2FallbackRuleIndex ? _self.autoRedirectIproute2FallbackRuleIndex : autoRedirectIproute2FallbackRuleIndex // ignore: cast_nullable_to_non_nullable
+as int?,iproute2TableIndex: freezed == iproute2TableIndex ? _self.iproute2TableIndex : iproute2TableIndex // ignore: cast_nullable_to_non_nullable
+as int?,iproute2RuleIndex: freezed == iproute2RuleIndex ? _self.iproute2RuleIndex : iproute2RuleIndex // ignore: cast_nullable_to_non_nullable
+as int?,includeInterface: freezed == includeInterface ? _self.includeInterface : includeInterface // ignore: cast_nullable_to_non_nullable
+as List<String>?,excludeInterface: freezed == excludeInterface ? _self.excludeInterface : excludeInterface // ignore: cast_nullable_to_non_nullable
+as List<String>?,includeUid: freezed == includeUid ? _self.includeUid : includeUid // ignore: cast_nullable_to_non_nullable
+as List<int>?,includeUidRange: freezed == includeUidRange ? _self.includeUidRange : includeUidRange // ignore: cast_nullable_to_non_nullable
+as List<String>?,excludeUid: freezed == excludeUid ? _self.excludeUid : excludeUid // ignore: cast_nullable_to_non_nullable
+as List<int>?,excludeUidRange: freezed == excludeUidRange ? _self.excludeUidRange : excludeUidRange // ignore: cast_nullable_to_non_nullable
+as List<String>?,excludeSrcPort: freezed == excludeSrcPort ? _self.excludeSrcPort : excludeSrcPort // ignore: cast_nullable_to_non_nullable
+as List<int>?,excludeSrcPortRange: freezed == excludeSrcPortRange ? _self.excludeSrcPortRange : excludeSrcPortRange // ignore: cast_nullable_to_non_nullable
+as List<String>?,excludeDstPort: freezed == excludeDstPort ? _self.excludeDstPort : excludeDstPort // ignore: cast_nullable_to_non_nullable
+as List<int>?,excludeDstPortRange: freezed == excludeDstPortRange ? _self.excludeDstPortRange : excludeDstPortRange // ignore: cast_nullable_to_non_nullable
+as List<String>?,includeMacAddress: freezed == includeMacAddress ? _self.includeMacAddress : includeMacAddress // ignore: cast_nullable_to_non_nullable
+as List<String>?,excludeMacAddress: freezed == excludeMacAddress ? _self.excludeMacAddress : excludeMacAddress // ignore: cast_nullable_to_non_nullable
+as List<String>?,udpTimeout: freezed == udpTimeout ? _self.udpTimeout : udpTimeout // ignore: cast_nullable_to_non_nullable
+as int?,icmpTimeout: freezed == icmpTimeout ? _self.icmpTimeout : icmpTimeout // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -3152,10 +3181,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool enable,  String device,  int mtu, @JsonKey(name: 'auto-route')  bool autoRoute, @JsonKey(unknownEnumValue: TunStack.mips)  TunStack stack, @JsonKey(name: 'recvmsgx')  bool recvMsgX, @JsonKey(name: 'sendmsgx')  bool sendMsgX, @JsonKey(name: 'dns-mode', unknownEnumValue: TunDnsMode.hijack)  TunDnsMode dnsMode, @JsonKey(name: 'dns-hijack')  List<String> dnsHijack, @JsonKey(name: 'route-address')  List<String> routeAddress, @JsonKey(name: 'strict-route')  bool strictRoute, @JsonKey(name: 'disable-icmp-forwarding')  bool disableIcmpForwarding, @JsonKey(name: 'endpoint-independent-nat')  bool endpointIndependentNat, @JsonKey(name: 'congestion-controller', unknownEnumValue: TunCongestionController.cubic)  TunCongestionController congestionController)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool enable,  String device,  int mtu, @JsonKey(name: 'auto-route')  bool autoRoute, @JsonKey(unknownEnumValue: TunStack.mips)  TunStack stack, @JsonKey(name: 'recvmsgx')  bool recvMsgX, @JsonKey(name: 'sendmsgx')  bool sendMsgX, @JsonKey(name: 'dns-mode', unknownEnumValue: TunDnsMode.hijack)  TunDnsMode dnsMode, @JsonKey(name: 'dns-hijack')  List<String> dnsHijack, @JsonKey(name: 'route-address')  List<String> routeAddress, @JsonKey(name: 'strict-route')  bool strictRoute, @JsonKey(name: 'disable-icmp-forwarding')  bool disableIcmpForwarding, @JsonKey(name: 'endpoint-independent-nat')  bool endpointIndependentNat, @JsonKey(name: 'congestion-controller', unknownEnumValue: TunCongestionController.cubic)  TunCongestionController congestionController, @JsonKey(name: 'auto-detect-interface', includeIfNull: false)  bool? autoDetectInterface, @JsonKey(name: 'gso', includeIfNull: false)  bool? gso, @JsonKey(name: 'gso-max-size', includeIfNull: false)  int? gsoMaxSize, @JsonKey(name: 'multi-queue', includeIfNull: false)  bool? multiQueue, @JsonKey(name: 'inet6-address', includeIfNull: false)  List<String>? inet6Address, @JsonKey(name: 'loopback-address', includeIfNull: false)  List<String>? loopbackAddress, @JsonKey(name: 'route-exclude-address', includeIfNull: false)  List<String>? routeExcludeAddress, @JsonKey(name: 'route-address-set', includeIfNull: false)  List<String>? routeAddressSet, @JsonKey(name: 'route-exclude-address-set', includeIfNull: false)  List<String>? routeExcludeAddressSet, @JsonKey(name: 'auto-redirect', includeIfNull: false)  bool? autoRedirect, @JsonKey(name: 'auto-redirect-input-mark', includeIfNull: false)  int? autoRedirectInputMark, @JsonKey(name: 'auto-redirect-output-mark', includeIfNull: false)  int? autoRedirectOutputMark, @JsonKey(name: 'auto-redirect-iproute2-fallback-rule-index', includeIfNull: false)  int? autoRedirectIproute2FallbackRuleIndex, @JsonKey(name: 'iproute2-table-index', includeIfNull: false)  int? iproute2TableIndex, @JsonKey(name: 'iproute2-rule-index', includeIfNull: false)  int? iproute2RuleIndex, @JsonKey(name: 'include-interface', includeIfNull: false)  List<String>? includeInterface, @JsonKey(name: 'exclude-interface', includeIfNull: false)  List<String>? excludeInterface, @JsonKey(name: 'include-uid', includeIfNull: false)  List<int>? includeUid, @JsonKey(name: 'include-uid-range', includeIfNull: false)  List<String>? includeUidRange, @JsonKey(name: 'exclude-uid', includeIfNull: false)  List<int>? excludeUid, @JsonKey(name: 'exclude-uid-range', includeIfNull: false)  List<String>? excludeUidRange, @JsonKey(name: 'exclude-src-port', includeIfNull: false)  List<int>? excludeSrcPort, @JsonKey(name: 'exclude-src-port-range', includeIfNull: false)  List<String>? excludeSrcPortRange, @JsonKey(name: 'exclude-dst-port', includeIfNull: false)  List<int>? excludeDstPort, @JsonKey(name: 'exclude-dst-port-range', includeIfNull: false)  List<String>? excludeDstPortRange, @JsonKey(name: 'include-mac-address', includeIfNull: false)  List<String>? includeMacAddress, @JsonKey(name: 'exclude-mac-address', includeIfNull: false)  List<String>? excludeMacAddress, @JsonKey(name: 'udp-timeout', includeIfNull: false)  int? udpTimeout, @JsonKey(name: 'icmp-timeout', includeIfNull: false)  int? icmpTimeout)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Tun() when $default != null:
-return $default(_that.enable,_that.device,_that.mtu,_that.autoRoute,_that.stack,_that.recvMsgX,_that.sendMsgX,_that.dnsMode,_that.dnsHijack,_that.routeAddress,_that.strictRoute,_that.disableIcmpForwarding,_that.endpointIndependentNat,_that.congestionController);case _:
+return $default(_that.enable,_that.device,_that.mtu,_that.autoRoute,_that.stack,_that.recvMsgX,_that.sendMsgX,_that.dnsMode,_that.dnsHijack,_that.routeAddress,_that.strictRoute,_that.disableIcmpForwarding,_that.endpointIndependentNat,_that.congestionController,_that.autoDetectInterface,_that.gso,_that.gsoMaxSize,_that.multiQueue,_that.inet6Address,_that.loopbackAddress,_that.routeExcludeAddress,_that.routeAddressSet,_that.routeExcludeAddressSet,_that.autoRedirect,_that.autoRedirectInputMark,_that.autoRedirectOutputMark,_that.autoRedirectIproute2FallbackRuleIndex,_that.iproute2TableIndex,_that.iproute2RuleIndex,_that.includeInterface,_that.excludeInterface,_that.includeUid,_that.includeUidRange,_that.excludeUid,_that.excludeUidRange,_that.excludeSrcPort,_that.excludeSrcPortRange,_that.excludeDstPort,_that.excludeDstPortRange,_that.includeMacAddress,_that.excludeMacAddress,_that.udpTimeout,_that.icmpTimeout);case _:
   return orElse();
 
 }
@@ -3173,10 +3202,10 @@ return $default(_that.enable,_that.device,_that.mtu,_that.autoRoute,_that.stack,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool enable,  String device,  int mtu, @JsonKey(name: 'auto-route')  bool autoRoute, @JsonKey(unknownEnumValue: TunStack.mips)  TunStack stack, @JsonKey(name: 'recvmsgx')  bool recvMsgX, @JsonKey(name: 'sendmsgx')  bool sendMsgX, @JsonKey(name: 'dns-mode', unknownEnumValue: TunDnsMode.hijack)  TunDnsMode dnsMode, @JsonKey(name: 'dns-hijack')  List<String> dnsHijack, @JsonKey(name: 'route-address')  List<String> routeAddress, @JsonKey(name: 'strict-route')  bool strictRoute, @JsonKey(name: 'disable-icmp-forwarding')  bool disableIcmpForwarding, @JsonKey(name: 'endpoint-independent-nat')  bool endpointIndependentNat, @JsonKey(name: 'congestion-controller', unknownEnumValue: TunCongestionController.cubic)  TunCongestionController congestionController)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool enable,  String device,  int mtu, @JsonKey(name: 'auto-route')  bool autoRoute, @JsonKey(unknownEnumValue: TunStack.mips)  TunStack stack, @JsonKey(name: 'recvmsgx')  bool recvMsgX, @JsonKey(name: 'sendmsgx')  bool sendMsgX, @JsonKey(name: 'dns-mode', unknownEnumValue: TunDnsMode.hijack)  TunDnsMode dnsMode, @JsonKey(name: 'dns-hijack')  List<String> dnsHijack, @JsonKey(name: 'route-address')  List<String> routeAddress, @JsonKey(name: 'strict-route')  bool strictRoute, @JsonKey(name: 'disable-icmp-forwarding')  bool disableIcmpForwarding, @JsonKey(name: 'endpoint-independent-nat')  bool endpointIndependentNat, @JsonKey(name: 'congestion-controller', unknownEnumValue: TunCongestionController.cubic)  TunCongestionController congestionController, @JsonKey(name: 'auto-detect-interface', includeIfNull: false)  bool? autoDetectInterface, @JsonKey(name: 'gso', includeIfNull: false)  bool? gso, @JsonKey(name: 'gso-max-size', includeIfNull: false)  int? gsoMaxSize, @JsonKey(name: 'multi-queue', includeIfNull: false)  bool? multiQueue, @JsonKey(name: 'inet6-address', includeIfNull: false)  List<String>? inet6Address, @JsonKey(name: 'loopback-address', includeIfNull: false)  List<String>? loopbackAddress, @JsonKey(name: 'route-exclude-address', includeIfNull: false)  List<String>? routeExcludeAddress, @JsonKey(name: 'route-address-set', includeIfNull: false)  List<String>? routeAddressSet, @JsonKey(name: 'route-exclude-address-set', includeIfNull: false)  List<String>? routeExcludeAddressSet, @JsonKey(name: 'auto-redirect', includeIfNull: false)  bool? autoRedirect, @JsonKey(name: 'auto-redirect-input-mark', includeIfNull: false)  int? autoRedirectInputMark, @JsonKey(name: 'auto-redirect-output-mark', includeIfNull: false)  int? autoRedirectOutputMark, @JsonKey(name: 'auto-redirect-iproute2-fallback-rule-index', includeIfNull: false)  int? autoRedirectIproute2FallbackRuleIndex, @JsonKey(name: 'iproute2-table-index', includeIfNull: false)  int? iproute2TableIndex, @JsonKey(name: 'iproute2-rule-index', includeIfNull: false)  int? iproute2RuleIndex, @JsonKey(name: 'include-interface', includeIfNull: false)  List<String>? includeInterface, @JsonKey(name: 'exclude-interface', includeIfNull: false)  List<String>? excludeInterface, @JsonKey(name: 'include-uid', includeIfNull: false)  List<int>? includeUid, @JsonKey(name: 'include-uid-range', includeIfNull: false)  List<String>? includeUidRange, @JsonKey(name: 'exclude-uid', includeIfNull: false)  List<int>? excludeUid, @JsonKey(name: 'exclude-uid-range', includeIfNull: false)  List<String>? excludeUidRange, @JsonKey(name: 'exclude-src-port', includeIfNull: false)  List<int>? excludeSrcPort, @JsonKey(name: 'exclude-src-port-range', includeIfNull: false)  List<String>? excludeSrcPortRange, @JsonKey(name: 'exclude-dst-port', includeIfNull: false)  List<int>? excludeDstPort, @JsonKey(name: 'exclude-dst-port-range', includeIfNull: false)  List<String>? excludeDstPortRange, @JsonKey(name: 'include-mac-address', includeIfNull: false)  List<String>? includeMacAddress, @JsonKey(name: 'exclude-mac-address', includeIfNull: false)  List<String>? excludeMacAddress, @JsonKey(name: 'udp-timeout', includeIfNull: false)  int? udpTimeout, @JsonKey(name: 'icmp-timeout', includeIfNull: false)  int? icmpTimeout)  $default,) {final _that = this;
 switch (_that) {
 case _Tun():
-return $default(_that.enable,_that.device,_that.mtu,_that.autoRoute,_that.stack,_that.recvMsgX,_that.sendMsgX,_that.dnsMode,_that.dnsHijack,_that.routeAddress,_that.strictRoute,_that.disableIcmpForwarding,_that.endpointIndependentNat,_that.congestionController);case _:
+return $default(_that.enable,_that.device,_that.mtu,_that.autoRoute,_that.stack,_that.recvMsgX,_that.sendMsgX,_that.dnsMode,_that.dnsHijack,_that.routeAddress,_that.strictRoute,_that.disableIcmpForwarding,_that.endpointIndependentNat,_that.congestionController,_that.autoDetectInterface,_that.gso,_that.gsoMaxSize,_that.multiQueue,_that.inet6Address,_that.loopbackAddress,_that.routeExcludeAddress,_that.routeAddressSet,_that.routeExcludeAddressSet,_that.autoRedirect,_that.autoRedirectInputMark,_that.autoRedirectOutputMark,_that.autoRedirectIproute2FallbackRuleIndex,_that.iproute2TableIndex,_that.iproute2RuleIndex,_that.includeInterface,_that.excludeInterface,_that.includeUid,_that.includeUidRange,_that.excludeUid,_that.excludeUidRange,_that.excludeSrcPort,_that.excludeSrcPortRange,_that.excludeDstPort,_that.excludeDstPortRange,_that.includeMacAddress,_that.excludeMacAddress,_that.udpTimeout,_that.icmpTimeout);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -3193,10 +3222,10 @@ return $default(_that.enable,_that.device,_that.mtu,_that.autoRoute,_that.stack,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool enable,  String device,  int mtu, @JsonKey(name: 'auto-route')  bool autoRoute, @JsonKey(unknownEnumValue: TunStack.mips)  TunStack stack, @JsonKey(name: 'recvmsgx')  bool recvMsgX, @JsonKey(name: 'sendmsgx')  bool sendMsgX, @JsonKey(name: 'dns-mode', unknownEnumValue: TunDnsMode.hijack)  TunDnsMode dnsMode, @JsonKey(name: 'dns-hijack')  List<String> dnsHijack, @JsonKey(name: 'route-address')  List<String> routeAddress, @JsonKey(name: 'strict-route')  bool strictRoute, @JsonKey(name: 'disable-icmp-forwarding')  bool disableIcmpForwarding, @JsonKey(name: 'endpoint-independent-nat')  bool endpointIndependentNat, @JsonKey(name: 'congestion-controller', unknownEnumValue: TunCongestionController.cubic)  TunCongestionController congestionController)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool enable,  String device,  int mtu, @JsonKey(name: 'auto-route')  bool autoRoute, @JsonKey(unknownEnumValue: TunStack.mips)  TunStack stack, @JsonKey(name: 'recvmsgx')  bool recvMsgX, @JsonKey(name: 'sendmsgx')  bool sendMsgX, @JsonKey(name: 'dns-mode', unknownEnumValue: TunDnsMode.hijack)  TunDnsMode dnsMode, @JsonKey(name: 'dns-hijack')  List<String> dnsHijack, @JsonKey(name: 'route-address')  List<String> routeAddress, @JsonKey(name: 'strict-route')  bool strictRoute, @JsonKey(name: 'disable-icmp-forwarding')  bool disableIcmpForwarding, @JsonKey(name: 'endpoint-independent-nat')  bool endpointIndependentNat, @JsonKey(name: 'congestion-controller', unknownEnumValue: TunCongestionController.cubic)  TunCongestionController congestionController, @JsonKey(name: 'auto-detect-interface', includeIfNull: false)  bool? autoDetectInterface, @JsonKey(name: 'gso', includeIfNull: false)  bool? gso, @JsonKey(name: 'gso-max-size', includeIfNull: false)  int? gsoMaxSize, @JsonKey(name: 'multi-queue', includeIfNull: false)  bool? multiQueue, @JsonKey(name: 'inet6-address', includeIfNull: false)  List<String>? inet6Address, @JsonKey(name: 'loopback-address', includeIfNull: false)  List<String>? loopbackAddress, @JsonKey(name: 'route-exclude-address', includeIfNull: false)  List<String>? routeExcludeAddress, @JsonKey(name: 'route-address-set', includeIfNull: false)  List<String>? routeAddressSet, @JsonKey(name: 'route-exclude-address-set', includeIfNull: false)  List<String>? routeExcludeAddressSet, @JsonKey(name: 'auto-redirect', includeIfNull: false)  bool? autoRedirect, @JsonKey(name: 'auto-redirect-input-mark', includeIfNull: false)  int? autoRedirectInputMark, @JsonKey(name: 'auto-redirect-output-mark', includeIfNull: false)  int? autoRedirectOutputMark, @JsonKey(name: 'auto-redirect-iproute2-fallback-rule-index', includeIfNull: false)  int? autoRedirectIproute2FallbackRuleIndex, @JsonKey(name: 'iproute2-table-index', includeIfNull: false)  int? iproute2TableIndex, @JsonKey(name: 'iproute2-rule-index', includeIfNull: false)  int? iproute2RuleIndex, @JsonKey(name: 'include-interface', includeIfNull: false)  List<String>? includeInterface, @JsonKey(name: 'exclude-interface', includeIfNull: false)  List<String>? excludeInterface, @JsonKey(name: 'include-uid', includeIfNull: false)  List<int>? includeUid, @JsonKey(name: 'include-uid-range', includeIfNull: false)  List<String>? includeUidRange, @JsonKey(name: 'exclude-uid', includeIfNull: false)  List<int>? excludeUid, @JsonKey(name: 'exclude-uid-range', includeIfNull: false)  List<String>? excludeUidRange, @JsonKey(name: 'exclude-src-port', includeIfNull: false)  List<int>? excludeSrcPort, @JsonKey(name: 'exclude-src-port-range', includeIfNull: false)  List<String>? excludeSrcPortRange, @JsonKey(name: 'exclude-dst-port', includeIfNull: false)  List<int>? excludeDstPort, @JsonKey(name: 'exclude-dst-port-range', includeIfNull: false)  List<String>? excludeDstPortRange, @JsonKey(name: 'include-mac-address', includeIfNull: false)  List<String>? includeMacAddress, @JsonKey(name: 'exclude-mac-address', includeIfNull: false)  List<String>? excludeMacAddress, @JsonKey(name: 'udp-timeout', includeIfNull: false)  int? udpTimeout, @JsonKey(name: 'icmp-timeout', includeIfNull: false)  int? icmpTimeout)?  $default,) {final _that = this;
 switch (_that) {
 case _Tun() when $default != null:
-return $default(_that.enable,_that.device,_that.mtu,_that.autoRoute,_that.stack,_that.recvMsgX,_that.sendMsgX,_that.dnsMode,_that.dnsHijack,_that.routeAddress,_that.strictRoute,_that.disableIcmpForwarding,_that.endpointIndependentNat,_that.congestionController);case _:
+return $default(_that.enable,_that.device,_that.mtu,_that.autoRoute,_that.stack,_that.recvMsgX,_that.sendMsgX,_that.dnsMode,_that.dnsHijack,_that.routeAddress,_that.strictRoute,_that.disableIcmpForwarding,_that.endpointIndependentNat,_that.congestionController,_that.autoDetectInterface,_that.gso,_that.gsoMaxSize,_that.multiQueue,_that.inet6Address,_that.loopbackAddress,_that.routeExcludeAddress,_that.routeAddressSet,_that.routeExcludeAddressSet,_that.autoRedirect,_that.autoRedirectInputMark,_that.autoRedirectOutputMark,_that.autoRedirectIproute2FallbackRuleIndex,_that.iproute2TableIndex,_that.iproute2RuleIndex,_that.includeInterface,_that.excludeInterface,_that.includeUid,_that.includeUidRange,_that.excludeUid,_that.excludeUidRange,_that.excludeSrcPort,_that.excludeSrcPortRange,_that.excludeDstPort,_that.excludeDstPortRange,_that.includeMacAddress,_that.excludeMacAddress,_that.udpTimeout,_that.icmpTimeout);case _:
   return null;
 
 }
@@ -3208,7 +3237,7 @@ return $default(_that.enable,_that.device,_that.mtu,_that.autoRoute,_that.stack,
 @JsonSerializable()
 
 class _Tun implements Tun {
-  const _Tun({this.enable = false, this.device = appName, this.mtu = defaultTunMtu, @JsonKey(name: 'auto-route') this.autoRoute = false, @JsonKey(unknownEnumValue: TunStack.mips) this.stack = TunStack.mips, @JsonKey(name: 'recvmsgx') this.recvMsgX = true, @JsonKey(name: 'sendmsgx') this.sendMsgX = true, @JsonKey(name: 'dns-mode', unknownEnumValue: TunDnsMode.hijack) this.dnsMode = TunDnsMode.hijack, @JsonKey(name: 'dns-hijack')  List<String> dnsHijack = const [], @JsonKey(name: 'route-address')  List<String> routeAddress = const [], @JsonKey(name: 'strict-route') this.strictRoute = false, @JsonKey(name: 'disable-icmp-forwarding') this.disableIcmpForwarding = false, @JsonKey(name: 'endpoint-independent-nat') this.endpointIndependentNat = false, @JsonKey(name: 'congestion-controller', unknownEnumValue: TunCongestionController.cubic) this.congestionController = TunCongestionController.cubic}): _dnsHijack = dnsHijack,_routeAddress = routeAddress;
+  const _Tun({this.enable = false, this.device = appName, this.mtu = defaultTunMtu, @JsonKey(name: 'auto-route') this.autoRoute = false, @JsonKey(unknownEnumValue: TunStack.mips) this.stack = TunStack.mips, @JsonKey(name: 'recvmsgx') this.recvMsgX = true, @JsonKey(name: 'sendmsgx') this.sendMsgX = true, @JsonKey(name: 'dns-mode', unknownEnumValue: TunDnsMode.hijack) this.dnsMode = TunDnsMode.hijack, @JsonKey(name: 'dns-hijack')  List<String> dnsHijack = const [], @JsonKey(name: 'route-address')  List<String> routeAddress = const [], @JsonKey(name: 'strict-route') this.strictRoute = false, @JsonKey(name: 'disable-icmp-forwarding') this.disableIcmpForwarding = false, @JsonKey(name: 'endpoint-independent-nat') this.endpointIndependentNat = false, @JsonKey(name: 'congestion-controller', unknownEnumValue: TunCongestionController.cubic) this.congestionController = TunCongestionController.cubic, @JsonKey(name: 'auto-detect-interface', includeIfNull: false) this.autoDetectInterface, @JsonKey(name: 'gso', includeIfNull: false) this.gso, @JsonKey(name: 'gso-max-size', includeIfNull: false) this.gsoMaxSize, @JsonKey(name: 'multi-queue', includeIfNull: false) this.multiQueue, @JsonKey(name: 'inet6-address', includeIfNull: false)  List<String>? inet6Address, @JsonKey(name: 'loopback-address', includeIfNull: false)  List<String>? loopbackAddress, @JsonKey(name: 'route-exclude-address', includeIfNull: false)  List<String>? routeExcludeAddress, @JsonKey(name: 'route-address-set', includeIfNull: false)  List<String>? routeAddressSet, @JsonKey(name: 'route-exclude-address-set', includeIfNull: false)  List<String>? routeExcludeAddressSet, @JsonKey(name: 'auto-redirect', includeIfNull: false) this.autoRedirect, @JsonKey(name: 'auto-redirect-input-mark', includeIfNull: false) this.autoRedirectInputMark, @JsonKey(name: 'auto-redirect-output-mark', includeIfNull: false) this.autoRedirectOutputMark, @JsonKey(name: 'auto-redirect-iproute2-fallback-rule-index', includeIfNull: false) this.autoRedirectIproute2FallbackRuleIndex, @JsonKey(name: 'iproute2-table-index', includeIfNull: false) this.iproute2TableIndex, @JsonKey(name: 'iproute2-rule-index', includeIfNull: false) this.iproute2RuleIndex, @JsonKey(name: 'include-interface', includeIfNull: false)  List<String>? includeInterface, @JsonKey(name: 'exclude-interface', includeIfNull: false)  List<String>? excludeInterface, @JsonKey(name: 'include-uid', includeIfNull: false)  List<int>? includeUid, @JsonKey(name: 'include-uid-range', includeIfNull: false)  List<String>? includeUidRange, @JsonKey(name: 'exclude-uid', includeIfNull: false)  List<int>? excludeUid, @JsonKey(name: 'exclude-uid-range', includeIfNull: false)  List<String>? excludeUidRange, @JsonKey(name: 'exclude-src-port', includeIfNull: false)  List<int>? excludeSrcPort, @JsonKey(name: 'exclude-src-port-range', includeIfNull: false)  List<String>? excludeSrcPortRange, @JsonKey(name: 'exclude-dst-port', includeIfNull: false)  List<int>? excludeDstPort, @JsonKey(name: 'exclude-dst-port-range', includeIfNull: false)  List<String>? excludeDstPortRange, @JsonKey(name: 'include-mac-address', includeIfNull: false)  List<String>? includeMacAddress, @JsonKey(name: 'exclude-mac-address', includeIfNull: false)  List<String>? excludeMacAddress, @JsonKey(name: 'udp-timeout', includeIfNull: false) this.udpTimeout, @JsonKey(name: 'icmp-timeout', includeIfNull: false) this.icmpTimeout}): _dnsHijack = dnsHijack,_routeAddress = routeAddress,_inet6Address = inet6Address,_loopbackAddress = loopbackAddress,_routeExcludeAddress = routeExcludeAddress,_routeAddressSet = routeAddressSet,_routeExcludeAddressSet = routeExcludeAddressSet,_includeInterface = includeInterface,_excludeInterface = excludeInterface,_includeUid = includeUid,_includeUidRange = includeUidRange,_excludeUid = excludeUid,_excludeUidRange = excludeUidRange,_excludeSrcPort = excludeSrcPort,_excludeSrcPortRange = excludeSrcPortRange,_excludeDstPort = excludeDstPort,_excludeDstPortRange = excludeDstPortRange,_includeMacAddress = includeMacAddress,_excludeMacAddress = excludeMacAddress;
   factory _Tun.fromJson(Map<String, dynamic> json) => _$TunFromJson(json);
 
 @override@JsonKey() final  bool enable;
@@ -3237,6 +3266,171 @@ class _Tun implements Tun {
 @override@JsonKey(name: 'disable-icmp-forwarding') final  bool disableIcmpForwarding;
 @override@JsonKey(name: 'endpoint-independent-nat') final  bool endpointIndependentNat;
 @override@JsonKey(name: 'congestion-controller', unknownEnumValue: TunCongestionController.cubic) final  TunCongestionController congestionController;
+@override@JsonKey(name: 'auto-detect-interface', includeIfNull: false) final  bool? autoDetectInterface;
+@override@JsonKey(name: 'gso', includeIfNull: false) final  bool? gso;
+@override@JsonKey(name: 'gso-max-size', includeIfNull: false) final  int? gsoMaxSize;
+@override@JsonKey(name: 'multi-queue', includeIfNull: false) final  bool? multiQueue;
+ final  List<String>? _inet6Address;
+@override@JsonKey(name: 'inet6-address', includeIfNull: false) List<String>? get inet6Address {
+  final value = _inet6Address;
+  if (value == null) return null;
+  if (_inet6Address is EqualUnmodifiableListView) return _inet6Address;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+ final  List<String>? _loopbackAddress;
+@override@JsonKey(name: 'loopback-address', includeIfNull: false) List<String>? get loopbackAddress {
+  final value = _loopbackAddress;
+  if (value == null) return null;
+  if (_loopbackAddress is EqualUnmodifiableListView) return _loopbackAddress;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+ final  List<String>? _routeExcludeAddress;
+@override@JsonKey(name: 'route-exclude-address', includeIfNull: false) List<String>? get routeExcludeAddress {
+  final value = _routeExcludeAddress;
+  if (value == null) return null;
+  if (_routeExcludeAddress is EqualUnmodifiableListView) return _routeExcludeAddress;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+ final  List<String>? _routeAddressSet;
+@override@JsonKey(name: 'route-address-set', includeIfNull: false) List<String>? get routeAddressSet {
+  final value = _routeAddressSet;
+  if (value == null) return null;
+  if (_routeAddressSet is EqualUnmodifiableListView) return _routeAddressSet;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+ final  List<String>? _routeExcludeAddressSet;
+@override@JsonKey(name: 'route-exclude-address-set', includeIfNull: false) List<String>? get routeExcludeAddressSet {
+  final value = _routeExcludeAddressSet;
+  if (value == null) return null;
+  if (_routeExcludeAddressSet is EqualUnmodifiableListView) return _routeExcludeAddressSet;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+@override@JsonKey(name: 'auto-redirect', includeIfNull: false) final  bool? autoRedirect;
+@override@JsonKey(name: 'auto-redirect-input-mark', includeIfNull: false) final  int? autoRedirectInputMark;
+@override@JsonKey(name: 'auto-redirect-output-mark', includeIfNull: false) final  int? autoRedirectOutputMark;
+@override@JsonKey(name: 'auto-redirect-iproute2-fallback-rule-index', includeIfNull: false) final  int? autoRedirectIproute2FallbackRuleIndex;
+@override@JsonKey(name: 'iproute2-table-index', includeIfNull: false) final  int? iproute2TableIndex;
+@override@JsonKey(name: 'iproute2-rule-index', includeIfNull: false) final  int? iproute2RuleIndex;
+ final  List<String>? _includeInterface;
+@override@JsonKey(name: 'include-interface', includeIfNull: false) List<String>? get includeInterface {
+  final value = _includeInterface;
+  if (value == null) return null;
+  if (_includeInterface is EqualUnmodifiableListView) return _includeInterface;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+ final  List<String>? _excludeInterface;
+@override@JsonKey(name: 'exclude-interface', includeIfNull: false) List<String>? get excludeInterface {
+  final value = _excludeInterface;
+  if (value == null) return null;
+  if (_excludeInterface is EqualUnmodifiableListView) return _excludeInterface;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+ final  List<int>? _includeUid;
+@override@JsonKey(name: 'include-uid', includeIfNull: false) List<int>? get includeUid {
+  final value = _includeUid;
+  if (value == null) return null;
+  if (_includeUid is EqualUnmodifiableListView) return _includeUid;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+ final  List<String>? _includeUidRange;
+@override@JsonKey(name: 'include-uid-range', includeIfNull: false) List<String>? get includeUidRange {
+  final value = _includeUidRange;
+  if (value == null) return null;
+  if (_includeUidRange is EqualUnmodifiableListView) return _includeUidRange;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+ final  List<int>? _excludeUid;
+@override@JsonKey(name: 'exclude-uid', includeIfNull: false) List<int>? get excludeUid {
+  final value = _excludeUid;
+  if (value == null) return null;
+  if (_excludeUid is EqualUnmodifiableListView) return _excludeUid;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+ final  List<String>? _excludeUidRange;
+@override@JsonKey(name: 'exclude-uid-range', includeIfNull: false) List<String>? get excludeUidRange {
+  final value = _excludeUidRange;
+  if (value == null) return null;
+  if (_excludeUidRange is EqualUnmodifiableListView) return _excludeUidRange;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+ final  List<int>? _excludeSrcPort;
+@override@JsonKey(name: 'exclude-src-port', includeIfNull: false) List<int>? get excludeSrcPort {
+  final value = _excludeSrcPort;
+  if (value == null) return null;
+  if (_excludeSrcPort is EqualUnmodifiableListView) return _excludeSrcPort;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+ final  List<String>? _excludeSrcPortRange;
+@override@JsonKey(name: 'exclude-src-port-range', includeIfNull: false) List<String>? get excludeSrcPortRange {
+  final value = _excludeSrcPortRange;
+  if (value == null) return null;
+  if (_excludeSrcPortRange is EqualUnmodifiableListView) return _excludeSrcPortRange;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+ final  List<int>? _excludeDstPort;
+@override@JsonKey(name: 'exclude-dst-port', includeIfNull: false) List<int>? get excludeDstPort {
+  final value = _excludeDstPort;
+  if (value == null) return null;
+  if (_excludeDstPort is EqualUnmodifiableListView) return _excludeDstPort;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+ final  List<String>? _excludeDstPortRange;
+@override@JsonKey(name: 'exclude-dst-port-range', includeIfNull: false) List<String>? get excludeDstPortRange {
+  final value = _excludeDstPortRange;
+  if (value == null) return null;
+  if (_excludeDstPortRange is EqualUnmodifiableListView) return _excludeDstPortRange;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+ final  List<String>? _includeMacAddress;
+@override@JsonKey(name: 'include-mac-address', includeIfNull: false) List<String>? get includeMacAddress {
+  final value = _includeMacAddress;
+  if (value == null) return null;
+  if (_includeMacAddress is EqualUnmodifiableListView) return _includeMacAddress;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+ final  List<String>? _excludeMacAddress;
+@override@JsonKey(name: 'exclude-mac-address', includeIfNull: false) List<String>? get excludeMacAddress {
+  final value = _excludeMacAddress;
+  if (value == null) return null;
+  if (_excludeMacAddress is EqualUnmodifiableListView) return _excludeMacAddress;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+@override@JsonKey(name: 'udp-timeout', includeIfNull: false) final  int? udpTimeout;
+@override@JsonKey(name: 'icmp-timeout', includeIfNull: false) final  int? icmpTimeout;
 
 /// Create a copy of Tun
 /// with the given fields replaced by the non-null parameter values.
@@ -3251,18 +3445,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Tun&&(identical(other.enable, enable) || other.enable == enable)&&(identical(other.device, device) || other.device == device)&&(identical(other.mtu, mtu) || other.mtu == mtu)&&(identical(other.autoRoute, autoRoute) || other.autoRoute == autoRoute)&&(identical(other.stack, stack) || other.stack == stack)&&(identical(other.recvMsgX, recvMsgX) || other.recvMsgX == recvMsgX)&&(identical(other.sendMsgX, sendMsgX) || other.sendMsgX == sendMsgX)&&(identical(other.dnsMode, dnsMode) || other.dnsMode == dnsMode)&&const DeepCollectionEquality().equals(other.dnsHijack, _dnsHijack)&&const DeepCollectionEquality().equals(other.routeAddress, _routeAddress)&&(identical(other.strictRoute, strictRoute) || other.strictRoute == strictRoute)&&(identical(other.disableIcmpForwarding, disableIcmpForwarding) || other.disableIcmpForwarding == disableIcmpForwarding)&&(identical(other.endpointIndependentNat, endpointIndependentNat) || other.endpointIndependentNat == endpointIndependentNat)&&(identical(other.congestionController, congestionController) || other.congestionController == congestionController));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Tun&&(identical(other.enable, enable) || other.enable == enable)&&(identical(other.device, device) || other.device == device)&&(identical(other.mtu, mtu) || other.mtu == mtu)&&(identical(other.autoRoute, autoRoute) || other.autoRoute == autoRoute)&&(identical(other.stack, stack) || other.stack == stack)&&(identical(other.recvMsgX, recvMsgX) || other.recvMsgX == recvMsgX)&&(identical(other.sendMsgX, sendMsgX) || other.sendMsgX == sendMsgX)&&(identical(other.dnsMode, dnsMode) || other.dnsMode == dnsMode)&&const DeepCollectionEquality().equals(other.dnsHijack, _dnsHijack)&&const DeepCollectionEquality().equals(other.routeAddress, _routeAddress)&&(identical(other.strictRoute, strictRoute) || other.strictRoute == strictRoute)&&(identical(other.disableIcmpForwarding, disableIcmpForwarding) || other.disableIcmpForwarding == disableIcmpForwarding)&&(identical(other.endpointIndependentNat, endpointIndependentNat) || other.endpointIndependentNat == endpointIndependentNat)&&(identical(other.congestionController, congestionController) || other.congestionController == congestionController)&&(identical(other.autoDetectInterface, autoDetectInterface) || other.autoDetectInterface == autoDetectInterface)&&(identical(other.gso, gso) || other.gso == gso)&&(identical(other.gsoMaxSize, gsoMaxSize) || other.gsoMaxSize == gsoMaxSize)&&(identical(other.multiQueue, multiQueue) || other.multiQueue == multiQueue)&&const DeepCollectionEquality().equals(other.inet6Address, _inet6Address)&&const DeepCollectionEquality().equals(other.loopbackAddress, _loopbackAddress)&&const DeepCollectionEquality().equals(other.routeExcludeAddress, _routeExcludeAddress)&&const DeepCollectionEquality().equals(other.routeAddressSet, _routeAddressSet)&&const DeepCollectionEquality().equals(other.routeExcludeAddressSet, _routeExcludeAddressSet)&&(identical(other.autoRedirect, autoRedirect) || other.autoRedirect == autoRedirect)&&(identical(other.autoRedirectInputMark, autoRedirectInputMark) || other.autoRedirectInputMark == autoRedirectInputMark)&&(identical(other.autoRedirectOutputMark, autoRedirectOutputMark) || other.autoRedirectOutputMark == autoRedirectOutputMark)&&(identical(other.autoRedirectIproute2FallbackRuleIndex, autoRedirectIproute2FallbackRuleIndex) || other.autoRedirectIproute2FallbackRuleIndex == autoRedirectIproute2FallbackRuleIndex)&&(identical(other.iproute2TableIndex, iproute2TableIndex) || other.iproute2TableIndex == iproute2TableIndex)&&(identical(other.iproute2RuleIndex, iproute2RuleIndex) || other.iproute2RuleIndex == iproute2RuleIndex)&&const DeepCollectionEquality().equals(other.includeInterface, _includeInterface)&&const DeepCollectionEquality().equals(other.excludeInterface, _excludeInterface)&&const DeepCollectionEquality().equals(other.includeUid, _includeUid)&&const DeepCollectionEquality().equals(other.includeUidRange, _includeUidRange)&&const DeepCollectionEquality().equals(other.excludeUid, _excludeUid)&&const DeepCollectionEquality().equals(other.excludeUidRange, _excludeUidRange)&&const DeepCollectionEquality().equals(other.excludeSrcPort, _excludeSrcPort)&&const DeepCollectionEquality().equals(other.excludeSrcPortRange, _excludeSrcPortRange)&&const DeepCollectionEquality().equals(other.excludeDstPort, _excludeDstPort)&&const DeepCollectionEquality().equals(other.excludeDstPortRange, _excludeDstPortRange)&&const DeepCollectionEquality().equals(other.includeMacAddress, _includeMacAddress)&&const DeepCollectionEquality().equals(other.excludeMacAddress, _excludeMacAddress)&&(identical(other.udpTimeout, udpTimeout) || other.udpTimeout == udpTimeout)&&(identical(other.icmpTimeout, icmpTimeout) || other.icmpTimeout == icmpTimeout));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,enable,device,mtu,autoRoute,stack,recvMsgX,sendMsgX,dnsMode,const DeepCollectionEquality().hash(_dnsHijack),const DeepCollectionEquality().hash(_routeAddress),strictRoute,disableIcmpForwarding,endpointIndependentNat,congestionController);
+    return Object.hashAll([runtimeType,enable,device,mtu,autoRoute,stack,recvMsgX,sendMsgX,dnsMode,const DeepCollectionEquality().hash(_dnsHijack),const DeepCollectionEquality().hash(_routeAddress),strictRoute,disableIcmpForwarding,endpointIndependentNat,congestionController,autoDetectInterface,gso,gsoMaxSize,multiQueue,const DeepCollectionEquality().hash(_inet6Address),const DeepCollectionEquality().hash(_loopbackAddress),const DeepCollectionEquality().hash(_routeExcludeAddress),const DeepCollectionEquality().hash(_routeAddressSet),const DeepCollectionEquality().hash(_routeExcludeAddressSet),autoRedirect,autoRedirectInputMark,autoRedirectOutputMark,autoRedirectIproute2FallbackRuleIndex,iproute2TableIndex,iproute2RuleIndex,const DeepCollectionEquality().hash(_includeInterface),const DeepCollectionEquality().hash(_excludeInterface),const DeepCollectionEquality().hash(_includeUid),const DeepCollectionEquality().hash(_includeUidRange),const DeepCollectionEquality().hash(_excludeUid),const DeepCollectionEquality().hash(_excludeUidRange),const DeepCollectionEquality().hash(_excludeSrcPort),const DeepCollectionEquality().hash(_excludeSrcPortRange),const DeepCollectionEquality().hash(_excludeDstPort),const DeepCollectionEquality().hash(_excludeDstPortRange),const DeepCollectionEquality().hash(_includeMacAddress),const DeepCollectionEquality().hash(_excludeMacAddress),udpTimeout,icmpTimeout]);
 }
 
 @override
 String toString() {
-    return 'Tun(enable: $enable, device: $device, mtu: $mtu, autoRoute: $autoRoute, stack: $stack, recvMsgX: $recvMsgX, sendMsgX: $sendMsgX, dnsMode: $dnsMode, dnsHijack: $dnsHijack, routeAddress: $routeAddress, strictRoute: $strictRoute, disableIcmpForwarding: $disableIcmpForwarding, endpointIndependentNat: $endpointIndependentNat, congestionController: $congestionController)';
+    return 'Tun(enable: $enable, device: $device, mtu: $mtu, autoRoute: $autoRoute, stack: $stack, recvMsgX: $recvMsgX, sendMsgX: $sendMsgX, dnsMode: $dnsMode, dnsHijack: $dnsHijack, routeAddress: $routeAddress, strictRoute: $strictRoute, disableIcmpForwarding: $disableIcmpForwarding, endpointIndependentNat: $endpointIndependentNat, congestionController: $congestionController, autoDetectInterface: $autoDetectInterface, gso: $gso, gsoMaxSize: $gsoMaxSize, multiQueue: $multiQueue, inet6Address: $inet6Address, loopbackAddress: $loopbackAddress, routeExcludeAddress: $routeExcludeAddress, routeAddressSet: $routeAddressSet, routeExcludeAddressSet: $routeExcludeAddressSet, autoRedirect: $autoRedirect, autoRedirectInputMark: $autoRedirectInputMark, autoRedirectOutputMark: $autoRedirectOutputMark, autoRedirectIproute2FallbackRuleIndex: $autoRedirectIproute2FallbackRuleIndex, iproute2TableIndex: $iproute2TableIndex, iproute2RuleIndex: $iproute2RuleIndex, includeInterface: $includeInterface, excludeInterface: $excludeInterface, includeUid: $includeUid, includeUidRange: $includeUidRange, excludeUid: $excludeUid, excludeUidRange: $excludeUidRange, excludeSrcPort: $excludeSrcPort, excludeSrcPortRange: $excludeSrcPortRange, excludeDstPort: $excludeDstPort, excludeDstPortRange: $excludeDstPortRange, includeMacAddress: $includeMacAddress, excludeMacAddress: $excludeMacAddress, udpTimeout: $udpTimeout, icmpTimeout: $icmpTimeout)';
 }
 
 
@@ -3273,7 +3467,7 @@ abstract mixin class _$TunCopyWith<$Res> implements $TunCopyWith<$Res> {
   factory _$TunCopyWith(_Tun value, $Res Function(_Tun) _then) = __$TunCopyWithImpl;
 @override @useResult
 $Res call({
- bool enable, String device, int mtu,@JsonKey(name: 'auto-route') bool autoRoute,@JsonKey(unknownEnumValue: TunStack.mips) TunStack stack,@JsonKey(name: 'recvmsgx') bool recvMsgX,@JsonKey(name: 'sendmsgx') bool sendMsgX,@JsonKey(name: 'dns-mode', unknownEnumValue: TunDnsMode.hijack) TunDnsMode dnsMode,@JsonKey(name: 'dns-hijack') List<String> dnsHijack,@JsonKey(name: 'route-address') List<String> routeAddress,@JsonKey(name: 'strict-route') bool strictRoute,@JsonKey(name: 'disable-icmp-forwarding') bool disableIcmpForwarding,@JsonKey(name: 'endpoint-independent-nat') bool endpointIndependentNat,@JsonKey(name: 'congestion-controller', unknownEnumValue: TunCongestionController.cubic) TunCongestionController congestionController
+ bool enable, String device, int mtu,@JsonKey(name: 'auto-route') bool autoRoute,@JsonKey(unknownEnumValue: TunStack.mips) TunStack stack,@JsonKey(name: 'recvmsgx') bool recvMsgX,@JsonKey(name: 'sendmsgx') bool sendMsgX,@JsonKey(name: 'dns-mode', unknownEnumValue: TunDnsMode.hijack) TunDnsMode dnsMode,@JsonKey(name: 'dns-hijack') List<String> dnsHijack,@JsonKey(name: 'route-address') List<String> routeAddress,@JsonKey(name: 'strict-route') bool strictRoute,@JsonKey(name: 'disable-icmp-forwarding') bool disableIcmpForwarding,@JsonKey(name: 'endpoint-independent-nat') bool endpointIndependentNat,@JsonKey(name: 'congestion-controller', unknownEnumValue: TunCongestionController.cubic) TunCongestionController congestionController,@JsonKey(name: 'auto-detect-interface', includeIfNull: false) bool? autoDetectInterface,@JsonKey(name: 'gso', includeIfNull: false) bool? gso,@JsonKey(name: 'gso-max-size', includeIfNull: false) int? gsoMaxSize,@JsonKey(name: 'multi-queue', includeIfNull: false) bool? multiQueue,@JsonKey(name: 'inet6-address', includeIfNull: false) List<String>? inet6Address,@JsonKey(name: 'loopback-address', includeIfNull: false) List<String>? loopbackAddress,@JsonKey(name: 'route-exclude-address', includeIfNull: false) List<String>? routeExcludeAddress,@JsonKey(name: 'route-address-set', includeIfNull: false) List<String>? routeAddressSet,@JsonKey(name: 'route-exclude-address-set', includeIfNull: false) List<String>? routeExcludeAddressSet,@JsonKey(name: 'auto-redirect', includeIfNull: false) bool? autoRedirect,@JsonKey(name: 'auto-redirect-input-mark', includeIfNull: false) int? autoRedirectInputMark,@JsonKey(name: 'auto-redirect-output-mark', includeIfNull: false) int? autoRedirectOutputMark,@JsonKey(name: 'auto-redirect-iproute2-fallback-rule-index', includeIfNull: false) int? autoRedirectIproute2FallbackRuleIndex,@JsonKey(name: 'iproute2-table-index', includeIfNull: false) int? iproute2TableIndex,@JsonKey(name: 'iproute2-rule-index', includeIfNull: false) int? iproute2RuleIndex,@JsonKey(name: 'include-interface', includeIfNull: false) List<String>? includeInterface,@JsonKey(name: 'exclude-interface', includeIfNull: false) List<String>? excludeInterface,@JsonKey(name: 'include-uid', includeIfNull: false) List<int>? includeUid,@JsonKey(name: 'include-uid-range', includeIfNull: false) List<String>? includeUidRange,@JsonKey(name: 'exclude-uid', includeIfNull: false) List<int>? excludeUid,@JsonKey(name: 'exclude-uid-range', includeIfNull: false) List<String>? excludeUidRange,@JsonKey(name: 'exclude-src-port', includeIfNull: false) List<int>? excludeSrcPort,@JsonKey(name: 'exclude-src-port-range', includeIfNull: false) List<String>? excludeSrcPortRange,@JsonKey(name: 'exclude-dst-port', includeIfNull: false) List<int>? excludeDstPort,@JsonKey(name: 'exclude-dst-port-range', includeIfNull: false) List<String>? excludeDstPortRange,@JsonKey(name: 'include-mac-address', includeIfNull: false) List<String>? includeMacAddress,@JsonKey(name: 'exclude-mac-address', includeIfNull: false) List<String>? excludeMacAddress,@JsonKey(name: 'udp-timeout', includeIfNull: false) int? udpTimeout,@JsonKey(name: 'icmp-timeout', includeIfNull: false) int? icmpTimeout
 });
 
 
@@ -3290,7 +3484,7 @@ class __$TunCopyWithImpl<$Res>
 
 /// Create a copy of Tun
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? enable = null,Object? device = null,Object? mtu = null,Object? autoRoute = null,Object? stack = null,Object? recvMsgX = null,Object? sendMsgX = null,Object? dnsMode = null,Object? dnsHijack = null,Object? routeAddress = null,Object? strictRoute = null,Object? disableIcmpForwarding = null,Object? endpointIndependentNat = null,Object? congestionController = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? enable = null,Object? device = null,Object? mtu = null,Object? autoRoute = null,Object? stack = null,Object? recvMsgX = null,Object? sendMsgX = null,Object? dnsMode = null,Object? dnsHijack = null,Object? routeAddress = null,Object? strictRoute = null,Object? disableIcmpForwarding = null,Object? endpointIndependentNat = null,Object? congestionController = null,Object? autoDetectInterface = freezed,Object? gso = freezed,Object? gsoMaxSize = freezed,Object? multiQueue = freezed,Object? inet6Address = freezed,Object? loopbackAddress = freezed,Object? routeExcludeAddress = freezed,Object? routeAddressSet = freezed,Object? routeExcludeAddressSet = freezed,Object? autoRedirect = freezed,Object? autoRedirectInputMark = freezed,Object? autoRedirectOutputMark = freezed,Object? autoRedirectIproute2FallbackRuleIndex = freezed,Object? iproute2TableIndex = freezed,Object? iproute2RuleIndex = freezed,Object? includeInterface = freezed,Object? excludeInterface = freezed,Object? includeUid = freezed,Object? includeUidRange = freezed,Object? excludeUid = freezed,Object? excludeUidRange = freezed,Object? excludeSrcPort = freezed,Object? excludeSrcPortRange = freezed,Object? excludeDstPort = freezed,Object? excludeDstPortRange = freezed,Object? includeMacAddress = freezed,Object? excludeMacAddress = freezed,Object? udpTimeout = freezed,Object? icmpTimeout = freezed,}) {
   return _then(_Tun(
 enable: null == enable ? _self.enable : enable // ignore: cast_nullable_to_non_nullable
 as bool,device: null == device ? _self.device : device // ignore: cast_nullable_to_non_nullable
@@ -3306,7 +3500,36 @@ as List<String>,strictRoute: null == strictRoute ? _self.strictRoute : strictRou
 as bool,disableIcmpForwarding: null == disableIcmpForwarding ? _self.disableIcmpForwarding : disableIcmpForwarding // ignore: cast_nullable_to_non_nullable
 as bool,endpointIndependentNat: null == endpointIndependentNat ? _self.endpointIndependentNat : endpointIndependentNat // ignore: cast_nullable_to_non_nullable
 as bool,congestionController: null == congestionController ? _self.congestionController : congestionController // ignore: cast_nullable_to_non_nullable
-as TunCongestionController,
+as TunCongestionController,autoDetectInterface: freezed == autoDetectInterface ? _self.autoDetectInterface : autoDetectInterface // ignore: cast_nullable_to_non_nullable
+as bool?,gso: freezed == gso ? _self.gso : gso // ignore: cast_nullable_to_non_nullable
+as bool?,gsoMaxSize: freezed == gsoMaxSize ? _self.gsoMaxSize : gsoMaxSize // ignore: cast_nullable_to_non_nullable
+as int?,multiQueue: freezed == multiQueue ? _self.multiQueue : multiQueue // ignore: cast_nullable_to_non_nullable
+as bool?,inet6Address: freezed == inet6Address ? _self._inet6Address : inet6Address // ignore: cast_nullable_to_non_nullable
+as List<String>?,loopbackAddress: freezed == loopbackAddress ? _self._loopbackAddress : loopbackAddress // ignore: cast_nullable_to_non_nullable
+as List<String>?,routeExcludeAddress: freezed == routeExcludeAddress ? _self._routeExcludeAddress : routeExcludeAddress // ignore: cast_nullable_to_non_nullable
+as List<String>?,routeAddressSet: freezed == routeAddressSet ? _self._routeAddressSet : routeAddressSet // ignore: cast_nullable_to_non_nullable
+as List<String>?,routeExcludeAddressSet: freezed == routeExcludeAddressSet ? _self._routeExcludeAddressSet : routeExcludeAddressSet // ignore: cast_nullable_to_non_nullable
+as List<String>?,autoRedirect: freezed == autoRedirect ? _self.autoRedirect : autoRedirect // ignore: cast_nullable_to_non_nullable
+as bool?,autoRedirectInputMark: freezed == autoRedirectInputMark ? _self.autoRedirectInputMark : autoRedirectInputMark // ignore: cast_nullable_to_non_nullable
+as int?,autoRedirectOutputMark: freezed == autoRedirectOutputMark ? _self.autoRedirectOutputMark : autoRedirectOutputMark // ignore: cast_nullable_to_non_nullable
+as int?,autoRedirectIproute2FallbackRuleIndex: freezed == autoRedirectIproute2FallbackRuleIndex ? _self.autoRedirectIproute2FallbackRuleIndex : autoRedirectIproute2FallbackRuleIndex // ignore: cast_nullable_to_non_nullable
+as int?,iproute2TableIndex: freezed == iproute2TableIndex ? _self.iproute2TableIndex : iproute2TableIndex // ignore: cast_nullable_to_non_nullable
+as int?,iproute2RuleIndex: freezed == iproute2RuleIndex ? _self.iproute2RuleIndex : iproute2RuleIndex // ignore: cast_nullable_to_non_nullable
+as int?,includeInterface: freezed == includeInterface ? _self._includeInterface : includeInterface // ignore: cast_nullable_to_non_nullable
+as List<String>?,excludeInterface: freezed == excludeInterface ? _self._excludeInterface : excludeInterface // ignore: cast_nullable_to_non_nullable
+as List<String>?,includeUid: freezed == includeUid ? _self._includeUid : includeUid // ignore: cast_nullable_to_non_nullable
+as List<int>?,includeUidRange: freezed == includeUidRange ? _self._includeUidRange : includeUidRange // ignore: cast_nullable_to_non_nullable
+as List<String>?,excludeUid: freezed == excludeUid ? _self._excludeUid : excludeUid // ignore: cast_nullable_to_non_nullable
+as List<int>?,excludeUidRange: freezed == excludeUidRange ? _self._excludeUidRange : excludeUidRange // ignore: cast_nullable_to_non_nullable
+as List<String>?,excludeSrcPort: freezed == excludeSrcPort ? _self._excludeSrcPort : excludeSrcPort // ignore: cast_nullable_to_non_nullable
+as List<int>?,excludeSrcPortRange: freezed == excludeSrcPortRange ? _self._excludeSrcPortRange : excludeSrcPortRange // ignore: cast_nullable_to_non_nullable
+as List<String>?,excludeDstPort: freezed == excludeDstPort ? _self._excludeDstPort : excludeDstPort // ignore: cast_nullable_to_non_nullable
+as List<int>?,excludeDstPortRange: freezed == excludeDstPortRange ? _self._excludeDstPortRange : excludeDstPortRange // ignore: cast_nullable_to_non_nullable
+as List<String>?,includeMacAddress: freezed == includeMacAddress ? _self._includeMacAddress : includeMacAddress // ignore: cast_nullable_to_non_nullable
+as List<String>?,excludeMacAddress: freezed == excludeMacAddress ? _self._excludeMacAddress : excludeMacAddress // ignore: cast_nullable_to_non_nullable
+as List<String>?,udpTimeout: freezed == udpTimeout ? _self.udpTimeout : udpTimeout // ignore: cast_nullable_to_non_nullable
+as int?,icmpTimeout: freezed == icmpTimeout ? _self.icmpTimeout : icmpTimeout // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

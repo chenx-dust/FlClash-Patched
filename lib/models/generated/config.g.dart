@@ -296,6 +296,7 @@ _NetworkProps _$NetworkPropsFromJson(Map<String, dynamic> json) =>
           : AuthenticationProps.fromJson(
               json['authentication'] as Map<String, dynamic>?,
             ),
+      desktopAutoRoute: json['desktopAutoRoute'] as bool? ?? true,
     );
 
 Map<String, dynamic> _$NetworkPropsToJson(_NetworkProps instance) =>
@@ -305,6 +306,7 @@ Map<String, dynamic> _$NetworkPropsToJson(_NetworkProps instance) =>
       'routeMode': _$RouteModeEnumMap[instance.routeMode]!,
       'appendSystemDns': instance.appendSystemDns,
       'authentication': instance.authentication,
+      'desktopAutoRoute': instance.desktopAutoRoute,
     };
 
 const _$RouteModeEnumMap = {

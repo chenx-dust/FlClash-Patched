@@ -189,12 +189,15 @@ class ConfigListInputItem extends _ConfigItem<List<String>> {
     required super.onChanged,
     this.itemMaxLength,
     this.maxWidth,
+    this.itemValidator,
     super.subtitle,
     super.leading,
   });
 
   final int? itemMaxLength;
   final double? maxWidth;
+  final String? Function(String item, AppLocalizations appLocalizations)?
+  itemValidator;
 
   @override
   Widget buildItem(
@@ -204,6 +207,7 @@ class ConfigListInputItem extends _ConfigItem<List<String>> {
     List<String> value,
   ) {
     final label = title(appLocalizations);
+    final itemValidator = this.itemValidator;
     return ListItem.open(
       leading: leading,
       title: Text(label),
@@ -214,11 +218,170 @@ class ConfigListInputItem extends _ConfigItem<List<String>> {
         title: label,
         items: value,
         itemMaxLength: itemMaxLength,
+        itemValidator: itemValidator == null
+            ? null
+            : (item) => itemValidator(item, appLocalizations),
         titleBuilder: (item) => Text(item),
       ),
       onChanged: (items) {
         if (items is! List) return;
         onChanged(ref, List<String>.from(items));
+      },
+    );
+  }
+}
+
+enum ConfigOverride { follow, enabled, disabled }
+
+class ConfigOverrideToggleItem extends _ConfigItem<bool?> {
+  const ConfigOverrideToggleItem({
+    super.key,
+    required super.selector,
+    required super.title,
+    required super.onChanged,
+    super.leading,
+  });
+
+  @override
+  Widget buildItem(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations appLocalizations,
+    bool? value,
+  ) {
+    final current = switch (value) {
+      null => ConfigOverride.follow,
+      true => ConfigOverride.enabled,
+      false => ConfigOverride.disabled,
+    };
+    String textBuilder(ConfigOverride option) => switch (option) {
+      ConfigOverride.follow => appLocalizations.followProfile,
+      ConfigOverride.enabled => appLocalizations.enabledText,
+      ConfigOverride.disabled => appLocalizations.disabledText,
+    };
+    final label = title(appLocalizations);
+    return ListItem<ConfigOverride>.options(
+      leading: leading,
+      title: Text(label),
+      subtitle: Text(textBuilder(current)),
+      dialogTitle: label,
+      options: ConfigOverride.values,
+      value: current,
+      textBuilder: textBuilder,
+      onChanged: (next) {
+        if (next == null) return;
+        onChanged(ref, switch (next) {
+          ConfigOverride.follow => null,
+          ConfigOverride.enabled => true,
+          ConfigOverride.disabled => false,
+        });
+      },
+    );
+  }
+}
+
+class ConfigOverrideNumberItem extends _ConfigItem<int?> {
+  const ConfigOverrideNumberItem({
+    super.key,
+    required super.selector,
+    required super.title,
+    required super.onChanged,
+    required this.max,
+    this.suffix,
+    super.leading,
+  });
+
+  final int max;
+  final ConfigLabel? suffix;
+
+  @override
+  Widget buildItem(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations appLocalizations,
+    int? value,
+  ) {
+    final label = title(appLocalizations);
+    return ListItem.input(
+      leading: leading,
+      title: Text(label),
+      subtitle: Text(value?.toString() ?? appLocalizations.followProfile),
+      dialogTitle: label,
+      value: value?.toString() ?? '',
+      resetValue: '',
+      suffixText: suffix?.call(appLocalizations),
+      maxLength: TextInputLimits.number,
+      keyboardType: TextInputType.number,
+      validator: (text) {
+        final trimmed = text?.trim() ?? '';
+        if (trimmed.isEmpty) return null;
+        final parsed = int.tryParse(trimmed);
+        return parsed == null || parsed < 0 || parsed > max
+            ? appLocalizations.numberTip(label)
+            : null;
+      },
+      onChanged: (text) {
+        if (text == null) return;
+        final trimmed = text.trim();
+        final parsed = int.tryParse(trimmed);
+        if (trimmed.isNotEmpty && parsed == null) return;
+        onChanged(ref, parsed);
+      },
+    );
+  }
+}
+
+class ConfigOverrideListItem extends _ConfigItem<List<String>?> {
+  const ConfigOverrideListItem({
+    super.key,
+    required super.selector,
+    required super.title,
+    required super.onChanged,
+    this.itemMaxLength,
+    this.itemValidator,
+    super.leading,
+  });
+
+  final int? itemMaxLength;
+  final String? Function(
+    String item,
+    String label,
+    AppLocalizations appLocalizations,
+  )?
+  itemValidator;
+
+  @override
+  Widget buildItem(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations appLocalizations,
+    List<String>? value,
+  ) {
+    final label = title(appLocalizations);
+    final itemValidator = this.itemValidator;
+    return ListItem.open(
+      leading: leading,
+      title: Text(label),
+      subtitle: Text(
+        value == null ? appLocalizations.followProfile : value.join(', '),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      blur: false,
+      maxWidth: 360,
+      widget: ListInputPage(
+        title: label,
+        items: value ?? const [],
+        itemMaxLength: itemMaxLength,
+        itemValidator: itemValidator == null
+            ? null
+            : (item) => itemValidator(item, label, appLocalizations),
+        titleBuilder: (item) => Text(item),
+      ),
+      onChanged: (items) {
+        if (items is! List) return;
+        final next = List<String>.from(items);
+        onChanged(ref, next.isEmpty ? null : next);
       },
     );
   }

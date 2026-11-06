@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:fl_clash/common/app_ports.dart';
 import 'package:fl_clash/common/color.dart';
 import 'package:fl_clash/common/constant.dart';
+import 'package:fl_clash/common/system.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/models/models.dart';
@@ -663,6 +664,38 @@ void main() {
         );
     expect(container.read(sharedStateProvider).vpnOptions?.systemProxy, true);
     expect(container.read(updateParamsProvider).authentication, isEmpty);
+  });
+
+  test('desktop auto route reaches the core update', () {
+    container.listen(updateParamsProvider, (_, _) {});
+    expect(container.read(updateParamsProvider).tun.autoRoute, isTrue);
+
+    container
+        .read(networkSettingProvider.notifier)
+        .update((state) => state.copyWith(desktopAutoRoute: false));
+
+    expect(container.read(updateParamsProvider).tun.autoRoute, isFalse);
+  }, skip: !system.isDesktop);
+
+  test('clearing a TUN override reloads the profile', () {
+    container.listen(profileReloadStateProvider, (_, _) {});
+    final initial = container.read(profileReloadStateProvider);
+
+    container
+        .read(patchClashConfigProvider.notifier)
+        .update((state) => state.copyWith.tun(autoRedirect: true));
+    final overridden = container.read(profileReloadStateProvider);
+    expect(overridden, isNot(initial));
+
+    container
+        .read(patchClashConfigProvider.notifier)
+        .update((state) => state.copyWith.tun(autoRedirect: false));
+    expect(container.read(profileReloadStateProvider), overridden);
+
+    container
+        .read(patchClashConfigProvider.notifier)
+        .update((state) => state.copyWith.tun(autoRedirect: null));
+    expect(container.read(profileReloadStateProvider), initial);
   });
 
   test('shared state carries the quick settings profile visibility', () async {

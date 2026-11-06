@@ -287,6 +287,93 @@ func patchTun(target *LC.Tun, params *tunSchema) {
 	if params.CongestionController != nil {
 		target.CongestionController = *params.CongestionController
 	}
+	if params.AutoDetectInterface != nil {
+		target.AutoDetectInterface = *params.AutoDetectInterface
+	}
+	if params.GSO != nil {
+		target.GSO = *params.GSO
+	}
+	if params.GSOMaxSize != nil {
+		target.GSOMaxSize = *params.GSOMaxSize
+	}
+	if params.MultiQueue != nil {
+		target.MultiQueue = *params.MultiQueue
+	}
+	if params.Inet6Address != nil {
+		target.Inet6Address = *params.Inet6Address
+	}
+	if params.LoopbackAddress != nil {
+		target.LoopbackAddress = *params.LoopbackAddress
+	}
+	if params.RouteExcludeAddress != nil {
+		target.RouteExcludeAddress = *params.RouteExcludeAddress
+	}
+	if params.RouteAddressSet != nil {
+		target.RouteAddressSet = *params.RouteAddressSet
+	}
+	if params.RouteExcludeAddressSet != nil {
+		target.RouteExcludeAddressSet = *params.RouteExcludeAddressSet
+	}
+	if params.AutoRedirect != nil {
+		target.AutoRedirect = *params.AutoRedirect
+	}
+	if params.AutoRedirectInputMark != nil {
+		target.AutoRedirectInputMark = *params.AutoRedirectInputMark
+	}
+	if params.AutoRedirectOutputMark != nil {
+		target.AutoRedirectOutputMark = *params.AutoRedirectOutputMark
+	}
+	if params.AutoRedirectIPRoute2FallbackRuleIndex != nil {
+		target.AutoRedirectIPRoute2FallbackRuleIndex = *params.AutoRedirectIPRoute2FallbackRuleIndex
+	}
+	if params.IPRoute2TableIndex != nil {
+		target.IPRoute2TableIndex = *params.IPRoute2TableIndex
+	}
+	if params.IPRoute2RuleIndex != nil {
+		target.IPRoute2RuleIndex = *params.IPRoute2RuleIndex
+	}
+	if params.IncludeInterface != nil {
+		target.IncludeInterface = *params.IncludeInterface
+	}
+	if params.ExcludeInterface != nil {
+		target.ExcludeInterface = *params.ExcludeInterface
+	}
+	if params.IncludeUID != nil {
+		target.IncludeUID = *params.IncludeUID
+	}
+	if params.IncludeUIDRange != nil {
+		target.IncludeUIDRange = *params.IncludeUIDRange
+	}
+	if params.ExcludeUID != nil {
+		target.ExcludeUID = *params.ExcludeUID
+	}
+	if params.ExcludeUIDRange != nil {
+		target.ExcludeUIDRange = *params.ExcludeUIDRange
+	}
+	if params.ExcludeSrcPort != nil {
+		target.ExcludeSrcPort = *params.ExcludeSrcPort
+	}
+	if params.ExcludeSrcPortRange != nil {
+		target.ExcludeSrcPortRange = *params.ExcludeSrcPortRange
+	}
+	if params.ExcludeDstPort != nil {
+		target.ExcludeDstPort = *params.ExcludeDstPort
+	}
+	if params.ExcludeDstPortRange != nil {
+		target.ExcludeDstPortRange = *params.ExcludeDstPortRange
+	}
+	if params.IncludeMACAddress != nil {
+		target.IncludeMACAddress = *params.IncludeMACAddress
+	}
+	if params.ExcludeMACAddress != nil {
+		target.ExcludeMACAddress = *params.ExcludeMACAddress
+	}
+	if params.UDPTimeout != nil {
+		target.UDPTimeout = *params.UDPTimeout
+	}
+	if params.ICMPTimeout != nil {
+		target.ICMPTimeout = *params.ICMPTimeout
+	}
 }
 
 var recreateControllerServer = route.ReCreateServer

@@ -875,11 +875,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "interfaceNameMode": MessageLookupByLibrary.simpleMessage(
       "Исходящий интерфейс",
     ),
-    "interfaceNameModeClear": MessageLookupByLibrary.simpleMessage("Очистить"),
-    "interfaceNameModeCustom": MessageLookupByLibrary.simpleMessage("Вручную"),
-    "interfaceNameModeFollow": MessageLookupByLibrary.simpleMessage(
-      "Как в конфигурации",
-    ),
     "internet": MessageLookupByLibrary.simpleMessage("Интернет"),
     "interval": MessageLookupByLibrary.simpleMessage("Интервал"),
     "intranetIP": MessageLookupByLibrary.simpleMessage("Внутренний IP"),
@@ -1817,13 +1812,98 @@ class MessageLookup extends MessageLookupByLibrary {
     "trafficBoth": MessageLookupByLibrary.simpleMessage("Оба"),
     "trafficUsage": MessageLookupByLibrary.simpleMessage("Статистика трафика"),
     "tun": MessageLookupByLibrary.simpleMessage("TUN"),
+    "tunAdvanced": MessageLookupByLibrary.simpleMessage(
+      "Расширенные настройки TUN",
+    ),
+    "tunAdvancedDesc": MessageLookupByLibrary.simpleMessage(
+      "Переопределение параметров TUN из профиля; незаданные пункты берутся из профиля",
+    ),
+    "tunAutoDetectInterface": MessageLookupByLibrary.simpleMessage(
+      "Автоопределение интерфейса",
+    ),
+    "tunAutoRedirect": MessageLookupByLibrary.simpleMessage(
+      "Автоперенаправление",
+    ),
+    "tunAutoRedirectFallbackRuleIndex": MessageLookupByLibrary.simpleMessage(
+      "Индекс резервного правила автоперенаправления",
+    ),
+    "tunAutoRedirectInputMark": MessageLookupByLibrary.simpleMessage(
+      "Входная метка автоперенаправления",
+    ),
+    "tunAutoRedirectOutputMark": MessageLookupByLibrary.simpleMessage(
+      "Выходная метка автоперенаправления",
+    ),
+    "tunAutoRoute": MessageLookupByLibrary.simpleMessage("Автомаршрутизация"),
+    "tunAutoRouteDesc": MessageLookupByLibrary.simpleMessage(
+      "Автоматически настраивать системные маршруты; при отключении трафик не идёт через TUN",
+    ),
     "tunDesc": MessageLookupByLibrary.simpleMessage(
       "Работает только в режиме администратора",
+    ),
+    "tunDevice": MessageLookupByLibrary.simpleMessage("Имя устройства TUN"),
+    "tunDnsHijackFormatTip": MessageLookupByLibrary.simpleMessage(
+      "Формат: адрес:порт, например any:53 или 8.8.8.8:53",
     ),
     "tunDnsMode": MessageLookupByLibrary.simpleMessage("Режим системного DNS"),
     "tunDnsModeDisabled": MessageLookupByLibrary.simpleMessage("Отключено"),
     "tunDnsModeHijack": MessageLookupByLibrary.simpleMessage("Перехват"),
     "tunDnsModeNative": MessageLookupByLibrary.simpleMessage("Нативный"),
+    "tunExcludeDstPort": MessageLookupByLibrary.simpleMessage(
+      "Исключаемые порты назначения",
+    ),
+    "tunExcludeDstPortRange": MessageLookupByLibrary.simpleMessage(
+      "Диапазоны исключаемых портов назначения",
+    ),
+    "tunExcludeInterface": MessageLookupByLibrary.simpleMessage(
+      "Исключаемые интерфейсы",
+    ),
+    "tunExcludeMacAddress": MessageLookupByLibrary.simpleMessage(
+      "Исключаемые MAC-адреса",
+    ),
+    "tunExcludeSrcPort": MessageLookupByLibrary.simpleMessage(
+      "Исключаемые порты источника",
+    ),
+    "tunExcludeSrcPortRange": MessageLookupByLibrary.simpleMessage(
+      "Диапазоны исключаемых портов источника",
+    ),
+    "tunExcludeUid": MessageLookupByLibrary.simpleMessage("Исключаемые UID"),
+    "tunExcludeUidRange": MessageLookupByLibrary.simpleMessage(
+      "Диапазоны исключаемых UID",
+    ),
+    "tunFilter": MessageLookupByLibrary.simpleMessage("Фильтрация"),
+    "tunGsoMaxSize": MessageLookupByLibrary.simpleMessage("Макс. размер GSO"),
+    "tunIcmpTimeout": MessageLookupByLibrary.simpleMessage("Тайм-аут ICMP"),
+    "tunIncludeInterface": MessageLookupByLibrary.simpleMessage(
+      "Включаемые интерфейсы",
+    ),
+    "tunIncludeMacAddress": MessageLookupByLibrary.simpleMessage(
+      "Включаемые MAC-адреса",
+    ),
+    "tunIncludeUid": MessageLookupByLibrary.simpleMessage("Включаемые UID"),
+    "tunIncludeUidRange": MessageLookupByLibrary.simpleMessage(
+      "Диапазоны включаемых UID",
+    ),
+    "tunInet6Address": MessageLookupByLibrary.simpleMessage("IPv6-адрес"),
+    "tunIproute2RuleIndex": MessageLookupByLibrary.simpleMessage(
+      "Индекс правила iproute2",
+    ),
+    "tunIproute2TableIndex": MessageLookupByLibrary.simpleMessage(
+      "Индекс таблицы iproute2",
+    ),
+    "tunLoopbackAddress": MessageLookupByLibrary.simpleMessage(
+      "Адрес loopback",
+    ),
+    "tunMultiQueue": MessageLookupByLibrary.simpleMessage("Несколько очередей"),
+    "tunRouteAddressSet": MessageLookupByLibrary.simpleMessage(
+      "Наборы правил адресов маршрута",
+    ),
+    "tunRouteExcludeAddress": MessageLookupByLibrary.simpleMessage(
+      "Исключаемые адреса маршрута",
+    ),
+    "tunRouteExcludeAddressSet": MessageLookupByLibrary.simpleMessage(
+      "Наборы правил исключаемых адресов",
+    ),
+    "tunUdpTimeout": MessageLookupByLibrary.simpleMessage("Тайм-аут UDP"),
     "turnOff": MessageLookupByLibrary.simpleMessage("Выключить"),
     "turnOn": MessageLookupByLibrary.simpleMessage("Включить"),
     "tvMode": MessageLookupByLibrary.simpleMessage("Режим ТВ"),

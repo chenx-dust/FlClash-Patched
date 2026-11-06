@@ -837,11 +837,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "interfaceNameMode": MessageLookupByLibrary.simpleMessage(
       "Outbound interface",
     ),
-    "interfaceNameModeClear": MessageLookupByLibrary.simpleMessage("Clear"),
-    "interfaceNameModeCustom": MessageLookupByLibrary.simpleMessage("Custom"),
-    "interfaceNameModeFollow": MessageLookupByLibrary.simpleMessage(
-      "Follow config",
-    ),
     "internet": MessageLookupByLibrary.simpleMessage("Internet"),
     "interval": MessageLookupByLibrary.simpleMessage("Interval"),
     "intranetIP": MessageLookupByLibrary.simpleMessage("Intranet IP"),
@@ -1711,13 +1706,94 @@ class MessageLookup extends MessageLookupByLibrary {
     "trafficBoth": MessageLookupByLibrary.simpleMessage("Both"),
     "trafficUsage": MessageLookupByLibrary.simpleMessage("Traffic usage"),
     "tun": MessageLookupByLibrary.simpleMessage("TUN"),
+    "tunAdvanced": MessageLookupByLibrary.simpleMessage("Advanced TUN"),
+    "tunAdvancedDesc": MessageLookupByLibrary.simpleMessage(
+      "Override the profile\'s TUN options; unset items follow the profile",
+    ),
+    "tunAutoDetectInterface": MessageLookupByLibrary.simpleMessage(
+      "Auto detect interface",
+    ),
+    "tunAutoRedirect": MessageLookupByLibrary.simpleMessage("Auto redirect"),
+    "tunAutoRedirectFallbackRuleIndex": MessageLookupByLibrary.simpleMessage(
+      "Auto redirect fallback rule index",
+    ),
+    "tunAutoRedirectInputMark": MessageLookupByLibrary.simpleMessage(
+      "Auto redirect input mark",
+    ),
+    "tunAutoRedirectOutputMark": MessageLookupByLibrary.simpleMessage(
+      "Auto redirect output mark",
+    ),
+    "tunAutoRoute": MessageLookupByLibrary.simpleMessage("Auto route"),
+    "tunAutoRouteDesc": MessageLookupByLibrary.simpleMessage(
+      "Configure system routes automatically; traffic does not enter TUN when off",
+    ),
     "tunDesc": MessageLookupByLibrary.simpleMessage(
       "Only effective in administrator mode",
+    ),
+    "tunDevice": MessageLookupByLibrary.simpleMessage("TUN device name"),
+    "tunDnsHijackFormatTip": MessageLookupByLibrary.simpleMessage(
+      "Use address:port, e.g. any:53 or 8.8.8.8:53",
     ),
     "tunDnsMode": MessageLookupByLibrary.simpleMessage("System DNS mode"),
     "tunDnsModeDisabled": MessageLookupByLibrary.simpleMessage("Disabled"),
     "tunDnsModeHijack": MessageLookupByLibrary.simpleMessage("Hijack"),
     "tunDnsModeNative": MessageLookupByLibrary.simpleMessage("Native"),
+    "tunExcludeDstPort": MessageLookupByLibrary.simpleMessage(
+      "Exclude destination ports",
+    ),
+    "tunExcludeDstPortRange": MessageLookupByLibrary.simpleMessage(
+      "Exclude destination port ranges",
+    ),
+    "tunExcludeInterface": MessageLookupByLibrary.simpleMessage(
+      "Exclude interfaces",
+    ),
+    "tunExcludeMacAddress": MessageLookupByLibrary.simpleMessage(
+      "Exclude MAC addresses",
+    ),
+    "tunExcludeSrcPort": MessageLookupByLibrary.simpleMessage(
+      "Exclude source ports",
+    ),
+    "tunExcludeSrcPortRange": MessageLookupByLibrary.simpleMessage(
+      "Exclude source port ranges",
+    ),
+    "tunExcludeUid": MessageLookupByLibrary.simpleMessage("Exclude UIDs"),
+    "tunExcludeUidRange": MessageLookupByLibrary.simpleMessage(
+      "Exclude UID ranges",
+    ),
+    "tunFilter": MessageLookupByLibrary.simpleMessage("Filter"),
+    "tunGsoMaxSize": MessageLookupByLibrary.simpleMessage("GSO max size"),
+    "tunIcmpTimeout": MessageLookupByLibrary.simpleMessage("ICMP timeout"),
+    "tunIncludeInterface": MessageLookupByLibrary.simpleMessage(
+      "Include interfaces",
+    ),
+    "tunIncludeMacAddress": MessageLookupByLibrary.simpleMessage(
+      "Include MAC addresses",
+    ),
+    "tunIncludeUid": MessageLookupByLibrary.simpleMessage("Include UIDs"),
+    "tunIncludeUidRange": MessageLookupByLibrary.simpleMessage(
+      "Include UID ranges",
+    ),
+    "tunInet6Address": MessageLookupByLibrary.simpleMessage("IPv6 address"),
+    "tunIproute2RuleIndex": MessageLookupByLibrary.simpleMessage(
+      "iproute2 rule index",
+    ),
+    "tunIproute2TableIndex": MessageLookupByLibrary.simpleMessage(
+      "iproute2 table index",
+    ),
+    "tunLoopbackAddress": MessageLookupByLibrary.simpleMessage(
+      "Loopback address",
+    ),
+    "tunMultiQueue": MessageLookupByLibrary.simpleMessage("Multi-queue"),
+    "tunRouteAddressSet": MessageLookupByLibrary.simpleMessage(
+      "Route address rule sets",
+    ),
+    "tunRouteExcludeAddress": MessageLookupByLibrary.simpleMessage(
+      "Route exclude address",
+    ),
+    "tunRouteExcludeAddressSet": MessageLookupByLibrary.simpleMessage(
+      "Route exclude address rule sets",
+    ),
+    "tunUdpTimeout": MessageLookupByLibrary.simpleMessage("UDP timeout"),
     "turnOff": MessageLookupByLibrary.simpleMessage("Turn off"),
     "turnOn": MessageLookupByLibrary.simpleMessage("Turn on"),
     "tvMode": MessageLookupByLibrary.simpleMessage("TV mode"),

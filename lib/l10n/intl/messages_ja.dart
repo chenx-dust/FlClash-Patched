@@ -700,9 +700,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "interfaceNameMode": MessageLookupByLibrary.simpleMessage(
       "アウトバウンドインターフェース",
     ),
-    "interfaceNameModeClear": MessageLookupByLibrary.simpleMessage("クリア"),
-    "interfaceNameModeCustom": MessageLookupByLibrary.simpleMessage("カスタム"),
-    "interfaceNameModeFollow": MessageLookupByLibrary.simpleMessage("設定に従う"),
     "internet": MessageLookupByLibrary.simpleMessage("インターネット"),
     "interval": MessageLookupByLibrary.simpleMessage("間隔"),
     "intranetIP": MessageLookupByLibrary.simpleMessage("イントラネット IP"),
@@ -1422,11 +1419,74 @@ class MessageLookup extends MessageLookupByLibrary {
     "trafficBoth": MessageLookupByLibrary.simpleMessage("送受信"),
     "trafficUsage": MessageLookupByLibrary.simpleMessage("トラフィック統計"),
     "tun": MessageLookupByLibrary.simpleMessage("TUN"),
+    "tunAdvanced": MessageLookupByLibrary.simpleMessage("TUN 詳細設定"),
+    "tunAdvancedDesc": MessageLookupByLibrary.simpleMessage(
+      "プロファイルの TUN オプションを上書きします。未設定の項目はプロファイルに従います",
+    ),
+    "tunAutoDetectInterface": MessageLookupByLibrary.simpleMessage(
+      "インターフェースを自動検出",
+    ),
+    "tunAutoRedirect": MessageLookupByLibrary.simpleMessage("自動リダイレクト"),
+    "tunAutoRedirectFallbackRuleIndex": MessageLookupByLibrary.simpleMessage(
+      "自動リダイレクトのフォールバックルール番号",
+    ),
+    "tunAutoRedirectInputMark": MessageLookupByLibrary.simpleMessage(
+      "自動リダイレクトの入力マーク",
+    ),
+    "tunAutoRedirectOutputMark": MessageLookupByLibrary.simpleMessage(
+      "自動リダイレクトの出力マーク",
+    ),
+    "tunAutoRoute": MessageLookupByLibrary.simpleMessage("自動ルーティング"),
+    "tunAutoRouteDesc": MessageLookupByLibrary.simpleMessage(
+      "システムのルートを自動設定します。オフにすると通信は TUN を通りません",
+    ),
     "tunDesc": MessageLookupByLibrary.simpleMessage("管理者モードでのみ有効"),
+    "tunDevice": MessageLookupByLibrary.simpleMessage("TUN デバイス名"),
+    "tunDnsHijackFormatTip": MessageLookupByLibrary.simpleMessage(
+      "アドレス:ポート の形式で入力してください（例: any:53、8.8.8.8:53）",
+    ),
     "tunDnsMode": MessageLookupByLibrary.simpleMessage("システム DNS モード"),
     "tunDnsModeDisabled": MessageLookupByLibrary.simpleMessage("無効"),
     "tunDnsModeHijack": MessageLookupByLibrary.simpleMessage("ハイジャック"),
     "tunDnsModeNative": MessageLookupByLibrary.simpleMessage("ネイティブ"),
+    "tunExcludeDstPort": MessageLookupByLibrary.simpleMessage("除外する宛先ポート"),
+    "tunExcludeDstPortRange": MessageLookupByLibrary.simpleMessage(
+      "除外する宛先ポート範囲",
+    ),
+    "tunExcludeInterface": MessageLookupByLibrary.simpleMessage("除外インターフェース"),
+    "tunExcludeMacAddress": MessageLookupByLibrary.simpleMessage("除外 MAC アドレス"),
+    "tunExcludeSrcPort": MessageLookupByLibrary.simpleMessage("除外する送信元ポート"),
+    "tunExcludeSrcPortRange": MessageLookupByLibrary.simpleMessage(
+      "除外する送信元ポート範囲",
+    ),
+    "tunExcludeUid": MessageLookupByLibrary.simpleMessage("除外 UID"),
+    "tunExcludeUidRange": MessageLookupByLibrary.simpleMessage("除外 UID 範囲"),
+    "tunFilter": MessageLookupByLibrary.simpleMessage("フィルタリング"),
+    "tunGsoMaxSize": MessageLookupByLibrary.simpleMessage("GSO 最大サイズ"),
+    "tunIcmpTimeout": MessageLookupByLibrary.simpleMessage("ICMP タイムアウト"),
+    "tunIncludeInterface": MessageLookupByLibrary.simpleMessage("対象インターフェース"),
+    "tunIncludeMacAddress": MessageLookupByLibrary.simpleMessage("対象 MAC アドレス"),
+    "tunIncludeUid": MessageLookupByLibrary.simpleMessage("対象 UID"),
+    "tunIncludeUidRange": MessageLookupByLibrary.simpleMessage("対象 UID 範囲"),
+    "tunInet6Address": MessageLookupByLibrary.simpleMessage("IPv6 アドレス"),
+    "tunIproute2RuleIndex": MessageLookupByLibrary.simpleMessage(
+      "iproute2 ルール番号",
+    ),
+    "tunIproute2TableIndex": MessageLookupByLibrary.simpleMessage(
+      "iproute2 テーブル番号",
+    ),
+    "tunLoopbackAddress": MessageLookupByLibrary.simpleMessage("ループバックアドレス"),
+    "tunMultiQueue": MessageLookupByLibrary.simpleMessage("マルチキュー"),
+    "tunRouteAddressSet": MessageLookupByLibrary.simpleMessage(
+      "ルートアドレスのルールセット",
+    ),
+    "tunRouteExcludeAddress": MessageLookupByLibrary.simpleMessage(
+      "除外するルートアドレス",
+    ),
+    "tunRouteExcludeAddressSet": MessageLookupByLibrary.simpleMessage(
+      "除外ルートアドレスのルールセット",
+    ),
+    "tunUdpTimeout": MessageLookupByLibrary.simpleMessage("UDP タイムアウト"),
     "turnOff": MessageLookupByLibrary.simpleMessage("オフにする"),
     "turnOn": MessageLookupByLibrary.simpleMessage("オンにする"),
     "tvMode": MessageLookupByLibrary.simpleMessage("TVモード"),

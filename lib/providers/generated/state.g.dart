@@ -21,6 +21,7 @@ final class ProfileReloadStateProvider
             bool overrideDns,
             bool overrideNtp,
             bool overrideSniffer,
+            String tunProfileOverrideKeys,
           }),
           ({
             bool appendSystemDns,
@@ -28,6 +29,7 @@ final class ProfileReloadStateProvider
             bool overrideDns,
             bool overrideNtp,
             bool overrideSniffer,
+            String tunProfileOverrideKeys,
           }),
           ({
             bool appendSystemDns,
@@ -35,6 +37,7 @@ final class ProfileReloadStateProvider
             bool overrideDns,
             bool overrideNtp,
             bool overrideSniffer,
+            String tunProfileOverrideKeys,
           })
         >
     with
@@ -45,6 +48,7 @@ final class ProfileReloadStateProvider
             bool overrideDns,
             bool overrideNtp,
             bool overrideSniffer,
+            String tunProfileOverrideKeys,
           })
         > {
   ProfileReloadStateProvider._()
@@ -70,6 +74,7 @@ final class ProfileReloadStateProvider
       bool overrideDns,
       bool overrideNtp,
       bool overrideSniffer,
+      String tunProfileOverrideKeys,
     })
   >
   $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
@@ -81,6 +86,7 @@ final class ProfileReloadStateProvider
     bool overrideDns,
     bool overrideNtp,
     bool overrideSniffer,
+    String tunProfileOverrideKeys,
   })
   create(Ref ref) {
     return profileReloadState(ref);
@@ -94,6 +100,7 @@ final class ProfileReloadStateProvider
       bool overrideDns,
       bool overrideNtp,
       bool overrideSniffer,
+      String tunProfileOverrideKeys,
     })
     value,
   ) {
@@ -107,6 +114,7 @@ final class ProfileReloadStateProvider
               bool overrideDns,
               bool overrideNtp,
               bool overrideSniffer,
+              String tunProfileOverrideKeys,
             })
           >(value),
     );
@@ -114,7 +122,7 @@ final class ProfileReloadStateProvider
 }
 
 String _$profileReloadStateHash() =>
-    r'4d3f565a6137ded04d98dc5e8a4830d6bdafe69b';
+    r'f21e819f57ca5b6ebbaaa5489516f58ad04d8cf3';
 
 @ProviderFor(updateParams)
 final updateParamsProvider = UpdateParamsProvider._();
@@ -155,7 +163,7 @@ final class UpdateParamsProvider
   }
 }
 
-String _$updateParamsHash() => r'dcc60a8d475869bfbb08b6c08e7b57c6c0c315b8';
+String _$updateParamsHash() => r'c8cadc0bd6b8a6bdb3680f1bed6f0c499e271d8c';
 
 @ProviderFor(trayState)
 final trayStateProvider = TrayStateProvider._();

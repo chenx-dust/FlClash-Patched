@@ -7,6 +7,7 @@ final vpnOptionsProvider = Provider<VpnOptions?>((ref) {
 @riverpod
 ({
   PatchClashConfig config,
+  String tunProfileOverrideKeys,
   bool overrideDns,
   bool overrideNtp,
   bool overrideSniffer,
@@ -31,6 +32,7 @@ profileReloadState(Ref ref) {
       geoAutoUpdate: defaultClashConfig.geoAutoUpdate,
       geoUpdateInterval: defaultClashConfig.geoUpdateInterval,
     ),
+    tunProfileOverrideKeys: config.tun.profileOverrideKeys,
     overrideDns: ref.watch(overrideDnsProvider),
     overrideNtp: ref.watch(overrideNtpProvider),
     overrideSniffer: ref.watch(overrideSnifferProvider),
@@ -45,13 +47,19 @@ UpdateParams updateParams(Ref ref) {
   final routeMode = ref.watch(
     networkSettingProvider.select((state) => state.routeMode),
   );
+  final desktopAutoRoute = ref.watch(
+    networkSettingProvider.select((state) => state.desktopAutoRoute),
+  );
   final authentication = ref.watch(
     networkSettingProvider.select((state) => state.authentication),
   );
   return ref.watch(
     patchClashConfigProvider.select(
       (state) => UpdateParams(
-        tun: state.tun.getRealTun(routeMode),
+        tun: state.tun.getRealTun(
+          routeMode,
+          desktopAutoRoute: desktopAutoRoute,
+        ),
         authentication: authentication.credentials,
         allowLan: state.allowLan,
         findProcessMode: state.findProcessMode,

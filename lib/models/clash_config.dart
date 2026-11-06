@@ -309,6 +309,60 @@ abstract class Tun with _$Tun {
       unknownEnumValue: TunCongestionController.cubic,
     )
     TunCongestionController congestionController,
+    // Null leaves the profile's own value in place when the TUN map is merged.
+    @JsonKey(name: 'auto-detect-interface', includeIfNull: false)
+    bool? autoDetectInterface,
+    @JsonKey(name: 'gso', includeIfNull: false) bool? gso,
+    @JsonKey(name: 'gso-max-size', includeIfNull: false) int? gsoMaxSize,
+    @JsonKey(name: 'multi-queue', includeIfNull: false) bool? multiQueue,
+    @JsonKey(name: 'inet6-address', includeIfNull: false)
+    List<String>? inet6Address,
+    @JsonKey(name: 'loopback-address', includeIfNull: false)
+    List<String>? loopbackAddress,
+    @JsonKey(name: 'route-exclude-address', includeIfNull: false)
+    List<String>? routeExcludeAddress,
+    @JsonKey(name: 'route-address-set', includeIfNull: false)
+    List<String>? routeAddressSet,
+    @JsonKey(name: 'route-exclude-address-set', includeIfNull: false)
+    List<String>? routeExcludeAddressSet,
+    @JsonKey(name: 'auto-redirect', includeIfNull: false) bool? autoRedirect,
+    @JsonKey(name: 'auto-redirect-input-mark', includeIfNull: false)
+    int? autoRedirectInputMark,
+    @JsonKey(name: 'auto-redirect-output-mark', includeIfNull: false)
+    int? autoRedirectOutputMark,
+    @JsonKey(
+      name: 'auto-redirect-iproute2-fallback-rule-index',
+      includeIfNull: false,
+    )
+    int? autoRedirectIproute2FallbackRuleIndex,
+    @JsonKey(name: 'iproute2-table-index', includeIfNull: false)
+    int? iproute2TableIndex,
+    @JsonKey(name: 'iproute2-rule-index', includeIfNull: false)
+    int? iproute2RuleIndex,
+    @JsonKey(name: 'include-interface', includeIfNull: false)
+    List<String>? includeInterface,
+    @JsonKey(name: 'exclude-interface', includeIfNull: false)
+    List<String>? excludeInterface,
+    @JsonKey(name: 'include-uid', includeIfNull: false) List<int>? includeUid,
+    @JsonKey(name: 'include-uid-range', includeIfNull: false)
+    List<String>? includeUidRange,
+    @JsonKey(name: 'exclude-uid', includeIfNull: false) List<int>? excludeUid,
+    @JsonKey(name: 'exclude-uid-range', includeIfNull: false)
+    List<String>? excludeUidRange,
+    @JsonKey(name: 'exclude-src-port', includeIfNull: false)
+    List<int>? excludeSrcPort,
+    @JsonKey(name: 'exclude-src-port-range', includeIfNull: false)
+    List<String>? excludeSrcPortRange,
+    @JsonKey(name: 'exclude-dst-port', includeIfNull: false)
+    List<int>? excludeDstPort,
+    @JsonKey(name: 'exclude-dst-port-range', includeIfNull: false)
+    List<String>? excludeDstPortRange,
+    @JsonKey(name: 'include-mac-address', includeIfNull: false)
+    List<String>? includeMacAddress,
+    @JsonKey(name: 'exclude-mac-address', includeIfNull: false)
+    List<String>? excludeMacAddress,
+    @JsonKey(name: 'udp-timeout', includeIfNull: false) int? udpTimeout,
+    @JsonKey(name: 'icmp-timeout', includeIfNull: false) int? icmpTimeout,
   }) = _Tun;
 
   factory Tun.fromJson(Map<String, Object?> json) => _$TunFromJson(json);
@@ -326,15 +380,30 @@ abstract class Tun with _$Tun {
 }
 
 extension TunExt on Tun {
+  /// Hot updates cannot restore a profile value, so changes here force a reload.
+  String get profileOverrideKeys {
+    final baseKeys = defaultTun.toJson().keys.toSet();
+    return (toJson().keys.where((key) => !baseKeys.contains(key)).toList()
+          ..sort())
+        .join(',');
+  }
+
+  Tun withoutProfileOverrides() {
+    final baseKeys = defaultTun.toJson().keys.toSet();
+    return Tun.fromJson(
+      toJson()..removeWhere((key, _) => !baseKeys.contains(key)),
+    );
+  }
+
   List<String> resolveRouteAddress(RouteMode routeMode) =>
       routeMode == RouteMode.bypassPrivate
       ? defaultBypassPrivateRouteAddress
       : routeAddress;
 
-  Tun getRealTun(RouteMode routeMode) {
+  Tun getRealTun(RouteMode routeMode, {required bool desktopAutoRoute}) {
     final mRouteAddress = resolveRouteAddress(routeMode);
     return switch (system.isDesktop) {
-      true => copyWith(autoRoute: true, routeAddress: []),
+      true => copyWith(autoRoute: desktopAutoRoute),
       false => copyWith(
         autoRoute: mRouteAddress.isEmpty ? true : false,
         routeAddress: mRouteAddress,

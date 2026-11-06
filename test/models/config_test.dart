@@ -58,6 +58,58 @@ void main() {
     }
   });
 
+  test('desktop TUN keeps its own device and routes', () {
+    const tun = Tun(device: 'tun-test', routeAddress: ['10.0.0.0/8']);
+
+    final enabled = tun.getRealTun(
+      RouteMode.bypassPrivate,
+      desktopAutoRoute: true,
+    );
+    final disabled = tun.getRealTun(RouteMode.config, desktopAutoRoute: false);
+
+    expect(enabled.device, 'tun-test');
+    expect(enabled.routeAddress, ['10.0.0.0/8']);
+    expect(enabled.autoRoute, isTrue);
+    expect(disabled.autoRoute, isFalse);
+  }, skip: !system.isDesktop);
+
+  test('dropping profile overrides keeps every app-applied TUN value', () {
+    const tun = Tun(
+      mtu: 1400,
+      device: 'tun-test',
+      strictRoute: true,
+      dnsHijack: ['any:53'],
+      gso: true,
+      excludeUid: [1000],
+    );
+
+    final cleared = tun.withoutProfileOverrides();
+
+    expect(cleared, tun.copyWith(gso: null, excludeUid: null));
+    expect(cleared.profileOverrideKeys, isEmpty);
+  });
+
+  test('unset TUN overrides stay out of the encoded config', () {
+    final json = const Tun().toJson();
+    expect(json.containsKey('route-exclude-address'), isFalse);
+    expect(json.containsKey('auto-redirect'), isFalse);
+    expect(const Tun().profileOverrideKeys, isEmpty);
+
+    const tun = Tun(
+      autoRedirect: false,
+      excludeSrcPort: [53],
+      routeExcludeAddress: [],
+    );
+    final encoded = roundTrip(tun.toJson, Tun.fromJson).toJson();
+    expect(encoded['auto-redirect'], isFalse);
+    expect(encoded['exclude-src-port'], [53]);
+    expect(encoded['route-exclude-address'], isEmpty);
+    expect(
+      tun.profileOverrideKeys,
+      'auto-redirect,exclude-src-port,route-exclude-address',
+    );
+  });
+
   test('TUN defaults to mips and preserves saved stack choices', () {
     expect(const Tun().stack, TunStack.mips);
     expect(Tun.fromJson({}).stack, TunStack.mips);

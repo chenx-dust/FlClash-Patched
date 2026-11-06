@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/providers/config.dart';
+import 'package:fl_clash/views/config/tun_advanced.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
@@ -234,20 +237,37 @@ class IcmpForwardingItem extends ConsumerWidget {
   );
 }
 
+/// Accepts what mihomo's `dns-hijack` parser does; `any` means 0.0.0.0.
+bool isValidDnsHijack(String value) {
+  final schemeEnd = value.indexOf('://');
+  final address = (schemeEnd == -1 ? value : value.substring(schemeEnd + 3))
+      .replaceFirst('any', '0.0.0.0');
+  final portStart = address.lastIndexOf(':');
+  if (portStart <= 0) return false;
+  final port = int.tryParse(address.substring(portStart + 1));
+  if (port == null || port < 0 || port > 65535) return false;
+  var host = address.substring(0, portStart);
+  if (host.startsWith('[') && host.endsWith(']')) {
+    host = host.substring(1, host.length - 1);
+  } else if (host.contains(':')) {
+    return false;
+  }
+  return InternetAddress.tryParse(host) != null;
+}
+
 class TunDnsHijackItem extends ConsumerWidget {
   const TunDnsHijackItem({super.key});
 
   @override
-  Widget build(BuildContext context, ref) => ConfigToggleItem(
+  Widget build(BuildContext context, ref) => ConfigListInputItem(
     title: (l) => l.dnsHijack,
     subtitle: (l) => l.dnsHijackDesc,
-    selector: patchClashConfigProvider.select(
-      (state) => state.tun.dnsHijack.isNotEmpty,
-    ),
+    itemMaxLength: TextInputLimits.cidr,
+    itemValidator: (item, l) =>
+        isValidDnsHijack(item) ? null : l.tunDnsHijackFormatTip,
+    selector: patchClashConfigProvider.select((state) => state.tun.dnsHijack),
     onChanged: _tunWriter(
-      (state, value) => state.copyWith.tun(
-        dnsHijack: value ? ['any:53', 'tcp://any:53'] : [],
-      ),
+      (state, value) => state.copyWith.tun(dnsHijack: value),
     ),
   );
 }
@@ -392,6 +412,47 @@ class TunMtuItem extends ConsumerWidget {
   }
 }
 
+class TunDeviceItem extends ConsumerWidget {
+  const TunDeviceItem({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final device = ref.watch(
+      patchClashConfigProvider.select((state) => state.tun.device),
+    );
+    final l = context.appLocalizations;
+    return ListItem.input(
+      title: Text(l.tunDevice),
+      subtitle: Text(device),
+      dialogTitle: l.tunDevice,
+      value: device,
+      resetValue: appName,
+      maxLength: TextInputLimits.name,
+      validator: (value) =>
+          value?.trim().isNotEmpty == true ? null : l.emptyTip(l.tunDevice),
+      onChanged: (value) {
+        final trimmed = value?.trim();
+        if (trimmed == null || trimmed.isEmpty) return;
+        ref
+            .read(patchClashConfigProvider.notifier)
+            .update((state) => state.copyWith.tun(device: trimmed));
+      },
+    );
+  }
+}
+
+class TunAutoRouteItem extends ConsumerWidget {
+  const TunAutoRouteItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) => _networkToggle(
+    title: (l) => l.tunAutoRoute,
+    subtitle: (l) => l.tunAutoRouteDesc,
+    select: (state) => state.desktopAutoRoute,
+    update: (state, value) => state.copyWith(desktopAutoRoute: value),
+  );
+}
+
 ConfigToggleItem _iosVpnToggle({
   required ConfigLabel title,
   required ConfigLabel subtitle,
@@ -476,51 +537,43 @@ class ExcludeDeviceCommunicationItem extends ConsumerWidget {
   );
 }
 
-class InterfaceNameModeItem extends ConsumerWidget {
-  const InterfaceNameModeItem({super.key});
-
-  @override
-  Widget build(BuildContext context, ref) {
-    final appLocalizations = context.appLocalizations;
-    return ConfigOptionsItem<InterfaceNameMode>(
-      title: (l) => l.interfaceNameMode,
-      options: InterfaceNameMode.values,
-      textBuilder: (mode) => switch (mode) {
-        InterfaceNameMode.clear => appLocalizations.interfaceNameModeClear,
-        InterfaceNameMode.follow => appLocalizations.interfaceNameModeFollow,
-        InterfaceNameMode.custom => appLocalizations.interfaceNameModeCustom,
-      },
-      selector: patchClashConfigProvider.select(
-        (state) => state.interfaceNameMode,
-      ),
-      onChanged: _tunWriter(
-        (state, value) => state.copyWith(interfaceNameMode: value),
-      ),
-    );
-  }
-}
-
 class InterfaceNameItem extends ConsumerWidget {
   const InterfaceNameItem({super.key});
 
   @override
   Widget build(BuildContext context, ref) {
-    final isCustom = ref.watch(
+    final l = context.appLocalizations;
+    final (:mode, :name) = ref.watch(
       patchClashConfigProvider.select(
-        (state) => state.interfaceNameMode == InterfaceNameMode.custom,
+        (state) => (mode: state.interfaceNameMode, name: state.interfaceName),
       ),
     );
-    if (!isCustom) {
-      return Container();
-    }
-    return ConfigTextItem(
-      title: (l) => l.interfaceName,
-      subtitle: (l) => l.interfaceNameDesc,
+    final value = mode == InterfaceNameMode.custom ? name : '';
+    return ListItem.input(
+      title: Text(l.interfaceNameMode),
+      subtitle: Text(switch (mode) {
+        InterfaceNameMode.follow => l.followProfile,
+        _ when value.isEmpty => l.interfaceNameDesc,
+        _ => value,
+      }),
+      dialogTitle: l.interfaceNameMode,
+      value: value,
+      resetValue: '',
       maxLength: TextInputLimits.name,
-      selector: patchClashConfigProvider.select((state) => state.interfaceName),
-      onChanged: _tunWriter(
-        (state, value) => state.copyWith(interfaceName: value.trim()),
-      ),
+      onChanged: (input) {
+        if (input == null) return;
+        final trimmed = input.trim();
+        ref
+            .read(patchClashConfigProvider.notifier)
+            .update(
+              (state) => state.copyWith(
+                interfaceNameMode: trimmed.isEmpty
+                    ? InterfaceNameMode.clear
+                    : InterfaceNameMode.custom,
+                interfaceName: trimmed,
+              ),
+            );
+      },
     );
   }
 }
@@ -560,7 +613,9 @@ class BypassDomainItem extends ConsumerWidget {
 }
 
 class RouteAddressItem extends ConsumerWidget {
-  const RouteAddressItem({super.key});
+  const RouteAddressItem({super.key, this.followsRouteMode = true});
+
+  final bool followsRouteMode;
 
   @override
   Widget build(BuildContext context, ref) {
@@ -569,7 +624,7 @@ class RouteAddressItem extends ConsumerWidget {
         (state) => state.routeMode == RouteMode.bypassPrivate,
       ),
     );
-    if (bypassPrivate) {
+    if (followsRouteMode && bypassPrivate) {
       return Container();
     }
     return ConfigListInputItem(
@@ -593,23 +648,26 @@ List<Widget> networkOptionsItems({
   bool isIOS = false,
 }) {
   return [
-    if (isDesktop) const TUNItem(),
-    if (isDesktop) const StrictRouteItem(),
+    if (isDesktop) ...[
+      const TUNItem(),
+      const TunAutoRouteItem(),
+      const StrictRouteItem(),
+      const RouteAddressItem(followsRouteMode: false),
+    ],
     const IcmpForwardingItem(),
-    if (isDesktop) ...[const TunDnsModeItem(), const TunDnsHijackItem()],
     const EndpointIndependentNatItem(),
+    if (isDesktop) ...[const TunDnsModeItem(), const TunDnsHijackItem()],
+    if (isMacOS || isIOS) ...[const RecvMsgXItem(), const SendMsgXItem()],
     const TunStackItem(),
     const TunCongestionControllerItem(),
-    if (isMacOS || isIOS) ...[const RecvMsgXItem(), const SendMsgXItem()],
     const TunMtuItem(),
+    if (isDesktop && !isMacOS) const TunDeviceItem(),
     // mihomo's DefaultSocketHook ignores interface-name on Android
-    // (core/lib.go installHooks, vendored dialer.go), so these rows only
-    // apply on desktop.
-    if (isDesktop) ...[
-      const InterfaceNameModeItem(),
-      const InterfaceNameItem(),
-    ],
+    // (core/lib.go installHooks, vendored dialer.go), so this row only
+    // applies on desktop.
+    if (isDesktop) const InterfaceNameItem(),
     if (!isDesktop) ...[const RouteModeItem(), const RouteAddressItem()],
+    if (isDesktop) const TunAdvancedItem(),
   ];
 }
 

@@ -3220,36 +3220,6 @@ class AppLocalizations {
     );
   }
 
-  /// `Clear`
-  String get interfaceNameModeClear {
-    return Intl.message(
-      'Clear',
-      name: 'interfaceNameModeClear',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Follow config`
-  String get interfaceNameModeFollow {
-    return Intl.message(
-      'Follow config',
-      name: 'interfaceNameModeFollow',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Custom`
-  String get interfaceNameModeCustom {
-    return Intl.message(
-      'Custom',
-      name: 'interfaceNameModeCustom',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Interface name`
   String get interfaceName {
     return Intl.message(
@@ -7808,6 +7778,346 @@ class AppLocalizations {
   /// `Features`
   String get features {
     return Intl.message('Features', name: 'features', desc: '', args: []);
+  }
+
+  /// `Advanced TUN`
+  String get tunAdvanced {
+    return Intl.message(
+      'Advanced TUN',
+      name: 'tunAdvanced',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Override the profile's TUN options; unset items follow the profile`
+  String get tunAdvancedDesc {
+    return Intl.message(
+      'Override the profile\'s TUN options; unset items follow the profile',
+      name: 'tunAdvancedDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Filter`
+  String get tunFilter {
+    return Intl.message('Filter', name: 'tunFilter', desc: '', args: []);
+  }
+
+  /// `Configure system routes automatically; traffic does not enter TUN when off`
+  String get tunAutoRouteDesc {
+    return Intl.message(
+      'Configure system routes automatically; traffic does not enter TUN when off',
+      name: 'tunAutoRouteDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `TUN device name`
+  String get tunDevice {
+    return Intl.message(
+      'TUN device name',
+      name: 'tunDevice',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Auto route`
+  String get tunAutoRoute {
+    return Intl.message('Auto route', name: 'tunAutoRoute', desc: '', args: []);
+  }
+
+  /// `Use address:port, e.g. any:53 or 8.8.8.8:53`
+  String get tunDnsHijackFormatTip {
+    return Intl.message(
+      'Use address:port, e.g. any:53 or 8.8.8.8:53',
+      name: 'tunDnsHijackFormatTip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Auto detect interface`
+  String get tunAutoDetectInterface {
+    return Intl.message(
+      'Auto detect interface',
+      name: 'tunAutoDetectInterface',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `GSO max size`
+  String get tunGsoMaxSize {
+    return Intl.message(
+      'GSO max size',
+      name: 'tunGsoMaxSize',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Multi-queue`
+  String get tunMultiQueue {
+    return Intl.message(
+      'Multi-queue',
+      name: 'tunMultiQueue',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `IPv6 address`
+  String get tunInet6Address {
+    return Intl.message(
+      'IPv6 address',
+      name: 'tunInet6Address',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Loopback address`
+  String get tunLoopbackAddress {
+    return Intl.message(
+      'Loopback address',
+      name: 'tunLoopbackAddress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Route exclude address`
+  String get tunRouteExcludeAddress {
+    return Intl.message(
+      'Route exclude address',
+      name: 'tunRouteExcludeAddress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Route address rule sets`
+  String get tunRouteAddressSet {
+    return Intl.message(
+      'Route address rule sets',
+      name: 'tunRouteAddressSet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Route exclude address rule sets`
+  String get tunRouteExcludeAddressSet {
+    return Intl.message(
+      'Route exclude address rule sets',
+      name: 'tunRouteExcludeAddressSet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Auto redirect`
+  String get tunAutoRedirect {
+    return Intl.message(
+      'Auto redirect',
+      name: 'tunAutoRedirect',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Auto redirect input mark`
+  String get tunAutoRedirectInputMark {
+    return Intl.message(
+      'Auto redirect input mark',
+      name: 'tunAutoRedirectInputMark',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Auto redirect output mark`
+  String get tunAutoRedirectOutputMark {
+    return Intl.message(
+      'Auto redirect output mark',
+      name: 'tunAutoRedirectOutputMark',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Auto redirect fallback rule index`
+  String get tunAutoRedirectFallbackRuleIndex {
+    return Intl.message(
+      'Auto redirect fallback rule index',
+      name: 'tunAutoRedirectFallbackRuleIndex',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `iproute2 table index`
+  String get tunIproute2TableIndex {
+    return Intl.message(
+      'iproute2 table index',
+      name: 'tunIproute2TableIndex',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `iproute2 rule index`
+  String get tunIproute2RuleIndex {
+    return Intl.message(
+      'iproute2 rule index',
+      name: 'tunIproute2RuleIndex',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Include interfaces`
+  String get tunIncludeInterface {
+    return Intl.message(
+      'Include interfaces',
+      name: 'tunIncludeInterface',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exclude interfaces`
+  String get tunExcludeInterface {
+    return Intl.message(
+      'Exclude interfaces',
+      name: 'tunExcludeInterface',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Include UIDs`
+  String get tunIncludeUid {
+    return Intl.message(
+      'Include UIDs',
+      name: 'tunIncludeUid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Include UID ranges`
+  String get tunIncludeUidRange {
+    return Intl.message(
+      'Include UID ranges',
+      name: 'tunIncludeUidRange',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exclude UIDs`
+  String get tunExcludeUid {
+    return Intl.message(
+      'Exclude UIDs',
+      name: 'tunExcludeUid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exclude UID ranges`
+  String get tunExcludeUidRange {
+    return Intl.message(
+      'Exclude UID ranges',
+      name: 'tunExcludeUidRange',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exclude source ports`
+  String get tunExcludeSrcPort {
+    return Intl.message(
+      'Exclude source ports',
+      name: 'tunExcludeSrcPort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exclude source port ranges`
+  String get tunExcludeSrcPortRange {
+    return Intl.message(
+      'Exclude source port ranges',
+      name: 'tunExcludeSrcPortRange',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exclude destination ports`
+  String get tunExcludeDstPort {
+    return Intl.message(
+      'Exclude destination ports',
+      name: 'tunExcludeDstPort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exclude destination port ranges`
+  String get tunExcludeDstPortRange {
+    return Intl.message(
+      'Exclude destination port ranges',
+      name: 'tunExcludeDstPortRange',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Include MAC addresses`
+  String get tunIncludeMacAddress {
+    return Intl.message(
+      'Include MAC addresses',
+      name: 'tunIncludeMacAddress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exclude MAC addresses`
+  String get tunExcludeMacAddress {
+    return Intl.message(
+      'Exclude MAC addresses',
+      name: 'tunExcludeMacAddress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `UDP timeout`
+  String get tunUdpTimeout {
+    return Intl.message(
+      'UDP timeout',
+      name: 'tunUdpTimeout',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `ICMP timeout`
+  String get tunIcmpTimeout {
+    return Intl.message(
+      'ICMP timeout',
+      name: 'tunIcmpTimeout',
+      desc: '',
+      args: [],
+    );
   }
 }
 

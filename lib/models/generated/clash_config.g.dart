@@ -223,6 +223,70 @@ _Tun _$TunFromJson(Map<String, dynamic> json) => _Tun(
         unknownValue: TunCongestionController.cubic,
       ) ??
       TunCongestionController.cubic,
+  autoDetectInterface: json['auto-detect-interface'] as bool?,
+  gso: json['gso'] as bool?,
+  gsoMaxSize: (json['gso-max-size'] as num?)?.toInt(),
+  multiQueue: json['multi-queue'] as bool?,
+  inet6Address: (json['inet6-address'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  loopbackAddress: (json['loopback-address'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  routeExcludeAddress: (json['route-exclude-address'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  routeAddressSet: (json['route-address-set'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  routeExcludeAddressSet: (json['route-exclude-address-set'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  autoRedirect: json['auto-redirect'] as bool?,
+  autoRedirectInputMark: (json['auto-redirect-input-mark'] as num?)?.toInt(),
+  autoRedirectOutputMark: (json['auto-redirect-output-mark'] as num?)?.toInt(),
+  autoRedirectIproute2FallbackRuleIndex:
+      (json['auto-redirect-iproute2-fallback-rule-index'] as num?)?.toInt(),
+  iproute2TableIndex: (json['iproute2-table-index'] as num?)?.toInt(),
+  iproute2RuleIndex: (json['iproute2-rule-index'] as num?)?.toInt(),
+  includeInterface: (json['include-interface'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  excludeInterface: (json['exclude-interface'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  includeUid: (json['include-uid'] as List<dynamic>?)
+      ?.map((e) => (e as num).toInt())
+      .toList(),
+  includeUidRange: (json['include-uid-range'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  excludeUid: (json['exclude-uid'] as List<dynamic>?)
+      ?.map((e) => (e as num).toInt())
+      .toList(),
+  excludeUidRange: (json['exclude-uid-range'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  excludeSrcPort: (json['exclude-src-port'] as List<dynamic>?)
+      ?.map((e) => (e as num).toInt())
+      .toList(),
+  excludeSrcPortRange: (json['exclude-src-port-range'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  excludeDstPort: (json['exclude-dst-port'] as List<dynamic>?)
+      ?.map((e) => (e as num).toInt())
+      .toList(),
+  excludeDstPortRange: (json['exclude-dst-port-range'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  includeMacAddress: (json['include-mac-address'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  excludeMacAddress: (json['exclude-mac-address'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  udpTimeout: (json['udp-timeout'] as num?)?.toInt(),
+  icmpTimeout: (json['icmp-timeout'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$TunToJson(_Tun instance) => <String, dynamic>{
@@ -241,6 +305,36 @@ Map<String, dynamic> _$TunToJson(_Tun instance) => <String, dynamic>{
   'endpoint-independent-nat': instance.endpointIndependentNat,
   'congestion-controller':
       _$TunCongestionControllerEnumMap[instance.congestionController]!,
+  'auto-detect-interface': ?instance.autoDetectInterface,
+  'gso': ?instance.gso,
+  'gso-max-size': ?instance.gsoMaxSize,
+  'multi-queue': ?instance.multiQueue,
+  'inet6-address': ?instance.inet6Address,
+  'loopback-address': ?instance.loopbackAddress,
+  'route-exclude-address': ?instance.routeExcludeAddress,
+  'route-address-set': ?instance.routeAddressSet,
+  'route-exclude-address-set': ?instance.routeExcludeAddressSet,
+  'auto-redirect': ?instance.autoRedirect,
+  'auto-redirect-input-mark': ?instance.autoRedirectInputMark,
+  'auto-redirect-output-mark': ?instance.autoRedirectOutputMark,
+  'auto-redirect-iproute2-fallback-rule-index':
+      ?instance.autoRedirectIproute2FallbackRuleIndex,
+  'iproute2-table-index': ?instance.iproute2TableIndex,
+  'iproute2-rule-index': ?instance.iproute2RuleIndex,
+  'include-interface': ?instance.includeInterface,
+  'exclude-interface': ?instance.excludeInterface,
+  'include-uid': ?instance.includeUid,
+  'include-uid-range': ?instance.includeUidRange,
+  'exclude-uid': ?instance.excludeUid,
+  'exclude-uid-range': ?instance.excludeUidRange,
+  'exclude-src-port': ?instance.excludeSrcPort,
+  'exclude-src-port-range': ?instance.excludeSrcPortRange,
+  'exclude-dst-port': ?instance.excludeDstPort,
+  'exclude-dst-port-range': ?instance.excludeDstPortRange,
+  'include-mac-address': ?instance.includeMacAddress,
+  'exclude-mac-address': ?instance.excludeMacAddress,
+  'udp-timeout': ?instance.udpTimeout,
+  'icmp-timeout': ?instance.icmpTimeout,
 };
 
 const _$TunStackEnumMap = {

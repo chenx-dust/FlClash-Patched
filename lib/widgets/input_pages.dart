@@ -14,6 +14,7 @@ class ListInputPage extends ConsumerStatefulWidget {
   final Widget Function(String item)? leadingBuilder;
   final String? valueLabel;
   final int? itemMaxLength;
+  final String? Function(String item)? itemValidator;
 
   const ListInputPage({
     super.key,
@@ -24,6 +25,7 @@ class ListInputPage extends ConsumerStatefulWidget {
     this.valueLabel,
     this.subtitleBuilder,
     this.itemMaxLength,
+    this.itemValidator,
   });
 
   @override
@@ -173,7 +175,8 @@ class _ListInputPageState extends ConsumerState<ListInputPage>
 
     String? editValidator(String? value) {
       final exists = _items.contains(value) && value != item;
-      return exists ? appLocalizations.existsTip(label) : null;
+      if (exists) return appLocalizations.existsTip(label);
+      return widget.itemValidator?.call(value?.trim() ?? '');
     }
 
     String? addValidator(String? value) {
@@ -187,6 +190,12 @@ class _ListInputPageState extends ConsumerState<ListInputPage>
       }
       if (values.any(_items.contains)) {
         return appLocalizations.existsTip(label);
+      }
+      final itemValidator = widget.itemValidator;
+      if (itemValidator == null) return null;
+      for (final value in values) {
+        final error = itemValidator(value);
+        if (error != null) return error;
       }
       return null;
     }

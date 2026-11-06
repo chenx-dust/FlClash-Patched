@@ -249,6 +249,7 @@ abstract class NetworkProps with _$NetworkProps {
     RouteMode routeMode,
     @Default(false) bool appendSystemDns,
     @Default(defaultAuthenticationProps) AuthenticationProps authentication,
+    @Default(true) bool desktopAutoRoute,
   }) = _NetworkProps;
 
   factory NetworkProps.fromJson(Map<String, Object?>? json) =>
