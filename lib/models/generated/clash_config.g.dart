@@ -248,6 +248,7 @@ const _$TunStackEnumMap = {
   TunStack.gvisor: 'gvisor',
   TunStack.system: 'system',
   TunStack.mixed: 'mixed',
+  TunStack.go: 'go',
 };
 
 const _$TunDnsModeEnumMap = {

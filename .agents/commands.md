@@ -2,7 +2,8 @@
 
 ## Building
 
-Update submodules first. The mihomo Go core lives in `core/mihomo/`.
+Update submodules first. The mihomo Go core lives in `core/mihomo/`; `core/go.mod` also replaces
+`github.com/metacubex/sing-tun` with the `core/sing-tun/` fork.
 
 ```bash
 git submodule update --init --recursive

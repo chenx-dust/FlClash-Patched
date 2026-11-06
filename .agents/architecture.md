@@ -525,8 +525,8 @@ Platform projects copy the artifacts out of `libclash/`; application code must n
 Setup keeps its own cache under `.dart_tool/setup_build_cache/v1/` because it builds a Go core and, on Windows and
 Linux, a Rust helper:
 
-- Go fingerprints cover the target-specific `go list -deps` inputs in `core/` and `core/mihomo/`, module files, the
-  effective build configuration, `setup_hooks` sources, target flags, the Go toolchain and the Android clang version.
+- Go fingerprints cover the target-specific `go list -deps` inputs in `core/`, `core/mihomo/` and `core/sing-tun/`,
+  module files, the effective build configuration, `setup_hooks` sources, target flags, the Go toolchain and the Android clang version.
   Helper fingerprints cover its Rust sources and manifests, Cargo/Rust toolchains and flags, and the expected Core
   SHA256.
 - A hit requires the fingerprint and every recorded output's path, size and modification state to match, and skips

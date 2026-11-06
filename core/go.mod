@@ -4,6 +4,8 @@ go 1.26.0
 
 replace github.com/metacubex/mihomo => ./mihomo
 
+replace github.com/metacubex/sing-tun => ./sing-tun
+
 require (
 	github.com/Microsoft/go-winio v0.6.2
 	github.com/metacubex/mihomo v0.0.0-00010101000000-000000000000
@@ -87,7 +89,7 @@ require (
 	github.com/metacubex/sing-quic v0.0.0-20260904234848-1c242664697a // indirect
 	github.com/metacubex/sing-shadowsocks v0.2.13 // indirect
 	github.com/metacubex/sing-shadowsocks2 v0.2.8 // indirect
-	github.com/metacubex/sing-tun v0.4.28 // indirect
+	github.com/metacubex/sing-tun v0.4.29 // indirect
 	github.com/metacubex/sing-vmess v0.2.5 // indirect
 	github.com/metacubex/sing-wireguard v0.0.0-20261002050126-e5fa1a607406 // indirect
 	github.com/metacubex/smux v0.0.0-20260105030934-d0c8756d3141 // indirect

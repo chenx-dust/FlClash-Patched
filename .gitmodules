@@ -2,3 +2,7 @@
 	path = core/mihomo
 	url = https://github.com/chenx-dust/mihomo.git
 	branch = FlClash
+[submodule "core/sing-tun"]
+	path = core/sing-tun
+	url = https://github.com/chenx-dust/sing-tun.git
+	branch = FlClash

@@ -173,8 +173,6 @@ github.com/metacubex/sing-shadowsocks v0.2.13 h1:PKmInHy9+4nY3FLhmKcWdASUBo9WZ/K
 github.com/metacubex/sing-shadowsocks v0.2.13/go.mod h1:2e5EIaw0rxKrm1YTRmiMnDulwbGxH9hAFlrwQLQMQkU=
 github.com/metacubex/sing-shadowsocks2 v0.2.8 h1:6MoODu7BAcnwIC0w9muq+2LZVz01wWD07L5IRhOty9Q=
 github.com/metacubex/sing-shadowsocks2 v0.2.8/go.mod h1:vOEbfKC60txi0ca+yUlqEwOGc3Obl6cnSgx9Gf45KjE=
-github.com/metacubex/sing-tun v0.4.28 h1:IWcH13jEbsxzM5SZrRat3IeJG31WiF9fOj3r18yGHw4=
-github.com/metacubex/sing-tun v0.4.28/go.mod h1:t2cK1AjogLda3/XxesmG0l7r1HzagLaUPBdNovhsb4Q=
 github.com/metacubex/sing-vmess v0.2.5 h1:m9Zt5I27lB9fmLMZfism9sH2LcnAfShZfwSkf6/KJoE=
 github.com/metacubex/sing-vmess v0.2.5/go.mod h1:AwtlzUgf8COe9tRYAKqWZ+leDH7p5U98a0ZUpYehl8Q=
 github.com/metacubex/sing-wireguard v0.0.0-20261002050126-e5fa1a607406 h1:sronRtbNXPCT9sOpcsISq87w4mLufxP7mQFUEg+zUCY=
@@ -183,8 +181,6 @@ github.com/metacubex/smux v0.0.0-20260105030934-d0c8756d3141 h1:DK2l6m2Fc85H2Bhi
 github.com/metacubex/smux v0.0.0-20260105030934-d0c8756d3141/go.mod h1:/yI4OiGOSn0SURhZdJF3CbtPg3nwK700bG8TZLMBvAg=
 github.com/metacubex/ssh v0.1.0 h1:iGfr99qk/eMHzUnQ/0bTxXT8+8SWqLSHBWDHoAhngzw=
 github.com/metacubex/ssh v0.1.0/go.mod h1:NUtl0d+/f2cG9ECEpMM8iCVOpmggQlC13oLeDUONDlU=
-github.com/metacubex/tailscale v0.0.0-20260821153257-ff0ecd818181 h1:hWsSSzuCHe+WvPV1zhoJ8gXTXbp/5nhpPKxtpqgIXu0=
-github.com/metacubex/tailscale v0.0.0-20260821153257-ff0ecd818181/go.mod h1:fMMYScJPYt8Ss3D4VhontA2uV2N9NPZbbXsPP6LgQeo=
 github.com/metacubex/tailscale-wireguard-go v0.0.0-20260725073821-e61ab99cede2 h1:nKyLVJEU4jsLVx+rdqbDUbEKTX/Sdu161AeVoZC9tlY=
 github.com/metacubex/tailscale-wireguard-go v0.0.0-20260725073821-e61ab99cede2/go.mod h1:W00EeoPdd2jbV3+ZUa0m2b7FdKx5B1LFsXvEpy7cToQ=
 github.com/metacubex/tfo-go v0.0.0-20261026151606-08d83ec08c84 h1:mWjqcMU28lJ1+J9lkk/INJ1TIJbYvtarrsYiLlmEo48=

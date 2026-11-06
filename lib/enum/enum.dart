@@ -234,7 +234,7 @@ enum TrackerInfoSortType {
 
 enum CoreRuleSortType { ruleOrder, hitCount, lastHit }
 
-enum TunStack { mips, gvisor, system, mixed }
+enum TunStack { mips, gvisor, system, mixed, go }
 
 enum TunCongestionController { cubic, reno, bbr, bbr3 }
 
