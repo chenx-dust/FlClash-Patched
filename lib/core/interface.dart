@@ -158,6 +158,18 @@ abstract class CoreHandlerInterface with CoreInterface {
     Duration? timeout,
   });
 
+  void _invokeDetached(CoreMethod method) {
+    unawaited(
+      _invokeMethod<Object?>(method: method).catchError((Object error) {
+        commonPrint.log(
+          'Invoke method ${method.name} failed: $error',
+          logLevel: coreFailureLogLevel(error),
+        );
+        return null;
+      }),
+    );
+  }
+
   Future<String> _invokeMessage({
     required CoreMethod method,
     Object? arguments,
@@ -499,7 +511,7 @@ abstract class CoreHandlerInterface with CoreInterface {
 
   @override
   FutureOr<void> resetTraffic() {
-    _invokeMethod(method: CoreMethod.resetTraffic);
+    _invokeDetached(CoreMethod.resetTraffic);
   }
 
   @override
@@ -518,7 +530,7 @@ abstract class CoreHandlerInterface with CoreInterface {
 
   @override
   FutureOr<void> stopLogNotify() {
-    _invokeMethod<bool>(method: CoreMethod.stopLogNotify);
+    _invokeDetached(CoreMethod.stopLogNotify);
   }
 
   @override
@@ -537,7 +549,7 @@ abstract class CoreHandlerInterface with CoreInterface {
 
   @override
   FutureOr<void> stopRequestNotify() {
-    _invokeMethod<bool>(method: CoreMethod.stopRequestNotify);
+    _invokeDetached(CoreMethod.stopRequestNotify);
   }
 
   @override
@@ -556,7 +568,7 @@ abstract class CoreHandlerInterface with CoreInterface {
 
   @override
   FutureOr<void> stopDnsNotify() {
-    _invokeMethod<bool>(method: CoreMethod.stopDnsNotify);
+    _invokeDetached(CoreMethod.stopDnsNotify);
   }
 
   @override
