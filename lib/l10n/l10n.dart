@@ -3130,6 +3130,16 @@ class AppLocalizations {
     );
   }
 
+  /// `Windows only: host names without a dot`
+  String get bypassLocalWindowsOnly {
+    return Intl.message(
+      'Windows only: host names without a dot',
+      name: 'bypassLocalWindowsOnly',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Are you sure you want to reset?`
   String get resetTip {
     return Intl.message(

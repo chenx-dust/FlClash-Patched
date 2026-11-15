@@ -312,6 +312,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "bypassDomainDesc": MessageLookupByLibrary.simpleMessage(
       "Действует только при включённом системном прокси",
     ),
+    "bypassLocalWindowsOnly": MessageLookupByLibrary.simpleMessage(
+      "Только Windows: имена хостов без точки",
+    ),
     "cache": MessageLookupByLibrary.simpleMessage("Кэш"),
     "cacheCorrupt": MessageLookupByLibrary.simpleMessage(
       "Кэш повреждён. Очистить его?",

@@ -779,6 +779,23 @@ void main() {
       expect(result.appSettingProps.onlyStatisticsProxy, false);
     });
 
+    test('only a fresh Windows config bypasses hosts without a dot', () {
+      expect(
+        Config.realFromJson(null).networkProps.bypassDomain,
+        system.isWindows
+            ? [...defaultBypassDomain, windowsLocalBypass]
+            : defaultBypassDomain,
+      );
+    });
+
+    test('a saved bypass list is kept as saved', () {
+      final config = Config.realFromJson({
+        'networkProps': {'bypassDomain': defaultBypassDomain},
+      });
+
+      expect(config.networkProps.bypassDomain, defaultBypassDomain);
+    });
+
     test('full config round-trip', () {
       const config = Config(
         currentProfileId: 42,

@@ -244,6 +244,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "bypassDomainDesc": MessageLookupByLibrary.simpleMessage(
       "システムプロキシが有効な場合のみ適用されます",
     ),
+    "bypassLocalWindowsOnly": MessageLookupByLibrary.simpleMessage(
+      "Windows のみ：ドットを含まないホスト名",
+    ),
     "cache": MessageLookupByLibrary.simpleMessage("キャッシュ"),
     "cacheCorrupt": MessageLookupByLibrary.simpleMessage(
       "キャッシュが破損しています。クリアしますか？",

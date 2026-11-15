@@ -120,10 +120,11 @@ class MacosProxyCommands {
     String service,
     List<String> bypassDomain,
   ) {
+    final domains = withoutWininetLocal(bypassDomain);
     return ProxyCommand('/usr/sbin/networksetup', [
       '-setproxybypassdomains',
       service,
-      if (bypassDomain.isEmpty) 'Empty' else ...bypassDomain,
+      if (domains.isEmpty) 'Empty' else ...domains,
     ]);
   }
 

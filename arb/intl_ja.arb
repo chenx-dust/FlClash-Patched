@@ -391,6 +391,7 @@
   "networkDesc": "ネットワーク関連の設定を変更します",
   "bypassDomain": "除外ドメイン",
   "bypassDomainDesc": "システムプロキシが有効な場合のみ適用されます",
+  "bypassLocalWindowsOnly": "Windows のみ：ドットを含まないホスト名",
   "resetTip": "リセットしてもよろしいですか？",
   "icon": "アイコン",
   "noData": "データがありません",

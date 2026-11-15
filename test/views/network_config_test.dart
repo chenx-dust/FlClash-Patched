@@ -1,3 +1,4 @@
+import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
@@ -268,6 +269,50 @@ void main() {
       ).map((item) => item.runtimeType);
       expect(androidTypes, isNot(contains(InterfaceNameItem)));
     });
+  });
+
+  testWidgets('the WinINet <local> bypass entry is marked Windows-only', (
+    tester,
+  ) async {
+    container
+        .read(networkSettingProvider.notifier)
+        .update(
+          (state) => state.copyWith(
+            bypassDomain: const ['localhost', windowsLocalBypass, ' <LOCAL> '],
+          ),
+        );
+    await pumpItem(tester, const BypassDomainItem());
+    final l = currentAppLocalizations;
+
+    await tester.tap(find.text(l.bypassDomain));
+    await tester.pumpAndSettle();
+
+    expect(find.text(windowsLocalBypass), findsOneWidget);
+    expect(find.text(l.bypassLocalWindowsOnly), findsNWidgets(2));
+  });
+
+  testWidgets('resetting network config restores platform bypass defaults', (
+    tester,
+  ) async {
+    container
+        .read(networkSettingProvider.notifier)
+        .update(
+          (state) => state.copyWith(
+            bypassDomain: const ['example.com'],
+            appendSystemDns: true,
+          ),
+        );
+    await pumpItem(tester, const NetworkResetButton());
+    final l = currentAppLocalizations;
+
+    await tester.tap(find.byTooltip(l.reset));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(l.confirm));
+    await tester.pumpAndSettle();
+
+    final state = container.read(networkSettingProvider);
+    expect(state.bypassDomain, platformDefaultBypassDomain);
+    expect(state.appendSystemDns, true);
   });
 
   group('route address visibility', () {

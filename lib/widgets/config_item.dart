@@ -190,6 +190,7 @@ class ConfigListInputItem extends _ConfigItem<List<String>> {
     this.itemMaxLength,
     this.maxWidth,
     this.itemValidator,
+    this.itemSubtitle,
     super.subtitle,
     super.leading,
   });
@@ -198,6 +199,8 @@ class ConfigListInputItem extends _ConfigItem<List<String>> {
   final double? maxWidth;
   final String? Function(String item, AppLocalizations appLocalizations)?
   itemValidator;
+  final String? Function(String item, AppLocalizations appLocalizations)?
+  itemSubtitle;
 
   @override
   Widget buildItem(
@@ -208,6 +211,7 @@ class ConfigListInputItem extends _ConfigItem<List<String>> {
   ) {
     final label = title(appLocalizations);
     final itemValidator = this.itemValidator;
+    final itemSubtitle = this.itemSubtitle;
     return ListItem.open(
       leading: leading,
       title: Text(label),
@@ -222,6 +226,12 @@ class ConfigListInputItem extends _ConfigItem<List<String>> {
             ? null
             : (item) => itemValidator(item, appLocalizations),
         titleBuilder: (item) => Text(item),
+        subtitleBuilder: itemSubtitle == null
+            ? null
+            : (item) => switch (itemSubtitle(item, appLocalizations)) {
+                final text? => Text(text),
+                null => null,
+              },
       ),
       onChanged: (items) {
         if (items is! List) return;

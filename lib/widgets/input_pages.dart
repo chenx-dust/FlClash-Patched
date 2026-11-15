@@ -10,7 +10,7 @@ class ListInputPage extends ConsumerStatefulWidget {
   final String title;
   final List<String> items;
   final Widget Function(String item) titleBuilder;
-  final Widget Function(String item)? subtitleBuilder;
+  final Widget? Function(String item)? subtitleBuilder;
   final Widget Function(String item)? leadingBuilder;
   final String? valueLabel;
   final int? itemMaxLength;
@@ -284,9 +284,7 @@ class _ListInputPageState extends ConsumerState<ListInputPage>
             leading: widget.leadingBuilder != null
                 ? widget.leadingBuilder!(value)
                 : null,
-            subtitle: widget.subtitleBuilder != null
-                ? widget.subtitleBuilder!(value)
-                : null,
+            subtitle: widget.subtitleBuilder?.call(value),
           ),
         ),
       ),

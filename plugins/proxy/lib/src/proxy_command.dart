@@ -4,6 +4,12 @@ import 'package:flutter/foundation.dart';
 
 const proxyHost = '127.0.0.1';
 
+/// WinINet's entry for hosts without a dot, kept in a list that may come from
+/// Windows; networksetup and the Linux settings would take it for a host.
+List<String> withoutWininetLocal(List<String> bypassDomain) => bypassDomain
+    .where((domain) => domain.trim().toLowerCase() != '<local>')
+    .toList();
+
 typedef ProxyProcessRunner =
     Future<ProcessResult> Function(
       String executable,

@@ -300,6 +300,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "bypassDomainDesc": MessageLookupByLibrary.simpleMessage(
       "Only takes effect while the system proxy is enabled",
     ),
+    "bypassLocalWindowsOnly": MessageLookupByLibrary.simpleMessage(
+      "Windows only: host names without a dot",
+    ),
     "cache": MessageLookupByLibrary.simpleMessage("Cache"),
     "cacheCorrupt": MessageLookupByLibrary.simpleMessage(
       "The cache is corrupted. Clear it?",

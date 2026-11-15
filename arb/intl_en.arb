@@ -391,6 +391,7 @@
   "networkDesc": "Adjust network-related settings",
   "bypassDomain": "Bypass domains",
   "bypassDomainDesc": "Only takes effect while the system proxy is enabled",
+  "bypassLocalWindowsOnly": "Windows only: host names without a dot",
   "resetTip": "Are you sure you want to reset?",
   "icon": "Icon",
   "noData": "No data",

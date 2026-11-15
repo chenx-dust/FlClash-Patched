@@ -391,6 +391,7 @@
   "networkDesc": "修改網路相關設定",
   "bypassDomain": "略過的網域",
   "bypassDomainDesc": "僅在系統代理啟用時生效",
+  "bypassLocalWindowsOnly": "僅 Windows：不含點的內網主機名稱",
   "resetTip": "確定要重置嗎？",
   "icon": "圖片",
   "noData": "暫無資料",

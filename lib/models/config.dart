@@ -10,6 +10,15 @@ part 'generated/config.g.dart';
 
 const defaultBypassDomain = ['localhost', '*.local', '*.lan'];
 
+/// WinINet's entry for every host without a dot; the other platforms leave it
+/// out when they write the list.
+const windowsLocalBypass = '<local>';
+
+/// The field default keeps the shared list because it must be const.
+final List<String> platformDefaultBypassDomain = system.isWindows
+    ? const [...defaultBypassDomain, windowsLocalBypass]
+    : defaultBypassDomain;
+
 const defaultAppSettingProps = AppSettingProps();
 const defaultVpnProps = VpnProps();
 const defaultAuthenticationProps = AuthenticationProps();
@@ -359,7 +368,10 @@ abstract class Config with _$Config {
 
   factory Config.realFromJson(Map<String, Object?>? json) {
     if (json == null) {
-      return const Config(themeProps: defaultThemeProps);
+      return Config(
+        themeProps: defaultThemeProps,
+        networkProps: NetworkProps(bypassDomain: platformDefaultBypassDomain),
+      );
     }
     return Config.fromJson(json);
   }

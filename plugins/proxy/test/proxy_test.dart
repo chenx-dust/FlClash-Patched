@@ -207,6 +207,19 @@ void main() {
       );
     });
 
+    test('leaves the WinINet <local> entry out of GNOME and KDE', () {
+      List<String> args(String desktop, String marker) =>
+          LinuxProxyCommands.buildStart(
+            port: 7890,
+            bypassDomain: ['<local>', '*.lan'],
+            desktop: desktop,
+            homeDir: '/home/user',
+          ).firstWhere((command) => command.args.contains(marker)).args;
+
+      expect(args('GNOME', 'ignore-hosts').last, "['*.lan']");
+      expect(args('KDE', 'NoProxyFor').last, '*.lan');
+    });
+
     test('builds MATE commands with MATE proxy schema', () {
       final commands = LinuxProxyCommands.buildStart(
         port: 7890,
@@ -399,6 +412,22 @@ USB 10/100/1000 LAN
       final command = MacosProxyCommands.buildProxyBypass('Wi-Fi', const []);
 
       expect(command.args, ['-setproxybypassdomains', 'Wi-Fi', 'Empty']);
+    });
+
+    test('leaves the WinINet <local> entry out', () {
+      expect(
+        MacosProxyCommands.buildProxyBypass('Wi-Fi', [
+          '<local>',
+          ' <LOCAL> ',
+          '*.lan',
+        ]).args,
+        ['-setproxybypassdomains', 'Wi-Fi', '*.lan'],
+      );
+      expect(MacosProxyCommands.buildProxyBypass('Wi-Fi', ['<local>']).args, [
+        '-setproxybypassdomains',
+        'Wi-Fi',
+        'Empty',
+      ]);
     });
 
     test('configures values before enabling proxy states', () {

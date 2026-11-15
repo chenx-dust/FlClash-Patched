@@ -274,7 +274,7 @@ class LinuxProxyCommands {
         'set',
         schemaPrefix,
         'ignore-hosts',
-        _formatGSettingsStringList(bypassDomain),
+        _formatGSettingsStringList(withoutWininetLocal(bypassDomain)),
       ]),
     ];
     for (final type in _ProxyType.values) {
@@ -322,7 +322,7 @@ class LinuxProxyCommands {
         'Proxy Settings',
         '--key',
         'NoProxyFor',
-        bypassDomain.join(','),
+        withoutWininetLocal(bypassDomain).join(','),
       ]),
       for (final type in _ProxyType.values)
         ProxyCommand(executable, [

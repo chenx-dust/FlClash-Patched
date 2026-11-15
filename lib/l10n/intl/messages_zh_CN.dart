@@ -220,6 +220,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "browse": MessageLookupByLibrary.simpleMessage("浏览"),
     "bypassDomain": MessageLookupByLibrary.simpleMessage("排除域名"),
     "bypassDomainDesc": MessageLookupByLibrary.simpleMessage("仅在系统代理启用时生效"),
+    "bypassLocalWindowsOnly": MessageLookupByLibrary.simpleMessage(
+      "仅 Windows：不带点的内网主机名",
+    ),
     "cache": MessageLookupByLibrary.simpleMessage("缓存"),
     "cacheCorrupt": MessageLookupByLibrary.simpleMessage("缓存已损坏，是否清空？"),
     "cancel": MessageLookupByLibrary.simpleMessage("取消"),
