@@ -1,4 +1,4 @@
-//go:build !android && !windows
+//go:build !android && !ios && !windows
 
 package core
 
