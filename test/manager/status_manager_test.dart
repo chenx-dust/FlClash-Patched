@@ -1,11 +1,16 @@
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/manager/status_manager.dart';
+import 'package:fl_clash/manager/theme_manager.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
+import 'package:fl_clash/providers/config.dart';
+import 'package:fl_clash/state.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/test_app.dart';
 
@@ -514,4 +519,151 @@ void main() {
 
     await tester.pumpWidget(const SizedBox.shrink());
   });
+
+  testWidgets(
+    'pointer hover holds a message past its duration and dismisses on exit',
+    (tester) async {
+      final state = await _pumpStatusManager(tester);
+      state.message('hover me');
+      await tester.pumpAndSettle();
+
+      final gesture = await _hoverCard(tester, 'hover me');
+      await tester.pump(const Duration(seconds: 4));
+      expect(find.text('hover me'), findsOneWidget);
+
+      await gesture.moveTo(Offset.zero);
+      await tester.pumpAndSettle();
+      expect(find.text('hover me'), findsNothing);
+
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
+  testWidgets(
+    'pointer enter and exit before expiration still dismisses at the normal duration',
+    (tester) async {
+      final state = await _pumpStatusManager(tester);
+      state.message('brief hover');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      final gesture = await _hoverCard(tester, 'brief hover');
+      await tester.pump(const Duration(milliseconds: 500));
+      await gesture.moveTo(Offset.zero);
+
+      await tester.pump(const Duration(milliseconds: 1500));
+      expect(find.text('brief hover'), findsOneWidget);
+
+      await tester.pump(const Duration(milliseconds: 600));
+      await tester.pumpAndSettle();
+      expect(find.text('brief hover'), findsNothing);
+
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
+  testWidgets('hovering one card holds other expiring cards in the stack', (
+    tester,
+  ) async {
+    final state = await _pumpStatusManager(tester, isMobileView: false);
+    state.message('older card');
+    await tester.pump(const Duration(milliseconds: 500));
+    state.message('newer card');
+    await tester.pumpAndSettle();
+
+    final gesture = await _hoverCard(tester, 'newer card');
+    await tester.pump(const Duration(seconds: 4));
+
+    expect(find.text('older card'), findsOneWidget);
+    expect(find.text('newer card'), findsOneWidget);
+
+    await gesture.moveTo(Offset.zero);
+    await tester.pumpAndSettle();
+    expect(find.text('older card'), findsNothing);
+    expect(find.text('newer card'), findsNothing);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets(
+    'buffered repeat updates action and copyable flags in the queue',
+    (tester) async {
+      final state = await _pumpStatusManager(tester);
+      state.message('slot 1');
+      state.message('slot 2');
+      state.message('queued repeat');
+      var ran = false;
+      state.message(
+        'queued repeat',
+        actionState: MessageActionState(
+          actionText: 'Retry',
+          action: () => ran = true,
+        ),
+        allowCopy: true,
+      );
+
+      await tester.pump(const Duration(seconds: 4));
+      await tester.pumpAndSettle();
+
+      expect(find.text('queued repeat'), findsOneWidget);
+      expect(find.text('Retry'), findsOneWidget);
+
+      await tester.tap(find.text('Retry'));
+      await tester.pumpAndSettle();
+      expect(ran, isTrue);
+      expect(find.text('queued repeat'), findsNothing);
+
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
+  testWidgets('ThemeManager wrapping StatusManager applies custom textScale', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1000, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    globalState.container = container;
+    container
+        .read(themeSettingProvider.notifier)
+        .update(
+          (state) => state.copyWith(
+            textScale: const TextScale(enable: true, scale: 1.25),
+          ),
+        );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const TestApp(
+          child: ThemeManager(child: StatusManager(child: SizedBox())),
+        ),
+      ),
+    );
+    final state = tester.state<StatusManagerState>(find.byType(StatusManager));
+    state.message('scaled notice');
+    await tester.pumpAndSettle();
+
+    final scaler = MediaQuery.textScalerOf(
+      tester.element(find.text('scaled notice')),
+    );
+    expect(scaler.scale(14), closeTo(17.5, 0.001));
+
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+}
+
+Future<TestGesture> _hoverCard(WidgetTester tester, String text) async {
+  final gesture = await tester.createGesture(
+    kind: PointerDeviceKind.mouse,
+    buttons: 0,
+  );
+  await gesture.addPointer(location: Offset.zero);
+  addTearDown(gesture.removePointer);
+  await gesture.moveTo(tester.getCenter(find.text(text)));
+  return gesture;
 }

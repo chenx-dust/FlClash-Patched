@@ -13,11 +13,15 @@ import 'package:fl_clash/providers/core.dart';
 import 'package:fl_clash/providers/database.dart';
 import 'package:fl_clash/providers/state.dart';
 import 'package:fl_clash/l10n/l10n.dart';
-import 'package:flutter/widgets.dart';
+import 'package:fl_clash/manager/status_manager.dart';
+import 'package:fl_clash/state.dart';
+import 'package:fl_clash/widgets/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:riverpod/riverpod.dart';
 
+import '../helpers/test_app.dart';
 import '../helpers/test_profiles.dart';
 
 class MockCoreHandlerInterface extends Mock implements CoreHandlerInterface {}
@@ -985,5 +989,83 @@ void main() {
         'Auto',
       });
     });
+  });
+
+  group('changeProxy snack bar', () {
+    testWidgets('skips close-connections snack bar while in background', (
+      tester,
+    ) async {
+      globalState.isBackground.value = true;
+      addTearDown(() => globalState.isBackground.value = false);
+      when(
+        () => core.changeProxy(
+          any(),
+          closeConnections: any(named: 'closeConnections'),
+        ),
+      ).thenAnswer((_) async => '');
+      final container = buildContainer(profile: _selectedProfile('HK-00'));
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const TestApp(
+            child: StatusManager(
+              child: CommonScaffold(title: 'Test', body: SizedBox()),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await actionOf(
+        container,
+      ).changeProxy(groupName: 'Proxy', proxyName: 'HK-01');
+      await tester.pump();
+
+      expect(
+        find.text(currentAppLocalizations.closeConnectionsPrompt),
+        findsNothing,
+      );
+    });
+
+    testWidgets(
+      'close-connections snack bar action catches core errors cleanly',
+      (tester) async {
+        globalState.isBackground.value = false;
+        when(
+          () => core.changeProxy(any(), closeConnections: false),
+        ).thenAnswer((_) async => '');
+        when(
+          () => core.changeProxy(any(), closeConnections: true),
+        ).thenThrow(StateError('core disconnected'));
+        final container = buildContainer(profile: _selectedProfile('HK-00'));
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: const TestApp(
+              child: StatusManager(
+                child: CommonScaffold(title: 'Test', body: SizedBox()),
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+
+        await actionOf(
+          container,
+        ).changeProxy(groupName: 'Proxy', proxyName: 'HK-01');
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text(currentAppLocalizations.closeConnectionsPrompt),
+          findsOneWidget,
+        );
+
+        await tester.tap(find.byType(SnackBarAction));
+        await tester.pumpAndSettle();
+
+        expect(tester.takeException(), isNull);
+        verify(() => core.changeProxy(any(), closeConnections: true)).called(1);
+      },
+    );
   });
 }

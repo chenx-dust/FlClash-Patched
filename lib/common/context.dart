@@ -62,20 +62,15 @@ extension BuildContextExtension on BuildContext {
   }
 
   void showSnackBar(String message, {SnackBarAction? action, bool? persist}) {
-    final messenger = ScaffoldMessenger.of(this);
-    messenger.removeCurrentSnackBar();
     final content = Text(message);
-    messenger.showSnackBar(
-      (persist ?? action != null)
-          ? SnackBar(
-              content: content,
-              action: action,
-              persist: true,
-              behavior: SnackBarBehavior.fixed,
-              duration: _snackBarDuration,
-            )
-          : _TimedSnackBar(content: content, action: action),
-    );
+    final snackBar = (persist ?? action != null)
+        ? _PersistentSnackBar(content: content, action: action)
+        : _TimedSnackBar(
+            content: content,
+            action: action,
+            deadline: _SnackBarDeadline(),
+          );
+    _presentSnackBar(this, snackBar);
   }
 
   ColorScheme get colorScheme => Theme.of(this).colorScheme;
@@ -109,8 +104,70 @@ extension BuildContextExtension on BuildContext {
   }
 }
 
-class _TimedSnackBar extends SnackBar {
-  const _TimedSnackBar({
+void _presentSnackBar(BuildContext context, SnackBar snackBar) {
+  final statusManager = context.findAncestorStateOfType<StatusManagerState>();
+  final ancestorCommon = context.findAncestorStateOfType<CommonScaffoldState>();
+  if (ancestorCommon != null && ancestorCommon.isActiveMessengerHost) {
+    statusManager?.clearSnackBar();
+    ancestorCommon.showSnackBar(snackBar);
+    return;
+  }
+  final searchRoot =
+      rootNavigatorKey.currentContext ??
+      Navigator.maybeOf(context, rootNavigator: true)?.context ??
+      context;
+  final activeCommon =
+      _findActiveCommonScaffold(context) ??
+      (identical(searchRoot, context)
+          ? null
+          : _findActiveCommonScaffold(searchRoot));
+  if (activeCommon != null) {
+    statusManager?.clearSnackBar();
+    activeCommon.showSnackBar(snackBar);
+    return;
+  }
+  if (statusManager != null) {
+    statusManager.showSnackBar(snackBar);
+    return;
+  }
+  ScaffoldMessenger.of(context)
+    ..removeCurrentSnackBar()
+    ..showSnackBar(snackBar);
+}
+
+CommonScaffoldState? _findActiveCommonScaffold(BuildContext root) {
+  CommonScaffoldState? match;
+
+  void visit(Element element) {
+    if (match != null || !element.mounted) {
+      return;
+    }
+    final widget = element.widget;
+    if (widget is Offstage && widget.offstage) {
+      return;
+    }
+    if (widget is PageActivityScope && !widget.isActive) {
+      return;
+    }
+    if (widget is RouteCurrentScope && !widget.isCurrent) {
+      return;
+    }
+    if (element is StatefulElement) {
+      final state = element.state;
+      if (state is CommonScaffoldState && state.isActiveMessengerHost) {
+        match = state;
+        return;
+      }
+    }
+    element.visitChildren(visit);
+  }
+
+  visit(root as Element);
+  return match;
+}
+
+class _PersistentSnackBar extends SnackBar {
+  const _PersistentSnackBar({
     super.key,
     required super.content,
     super.action,
@@ -119,7 +176,7 @@ class _TimedSnackBar extends SnackBar {
 
   @override
   SnackBar withAnimation(Animation<double> newAnimation, {Key? fallbackKey}) {
-    return _TimedSnackBar(
+    return _PersistentSnackBar(
       key: key ?? fallbackKey,
       content: content,
       action: action,
@@ -128,51 +185,159 @@ class _TimedSnackBar extends SnackBar {
   }
 
   @override
-  State<SnackBar> createState() => _TimedSnackBarState();
+  State<SnackBar> createState() => _PersistentSnackBarState();
 }
 
-class _TimedSnackBarState extends State<SnackBar> {
-  Timer? _timer;
-  var _hovering = false;
-  var _expired = false;
-  var _closed = false;
-
-  void _start() {
-    _timer ??= Timer(_snackBarDuration, () {
-      _expired = true;
-      _dismissIfIdle();
-    });
-  }
-
-  void _dismissIfIdle() {
-    if (_closed || _hovering || !_expired) return;
-    _closed = true;
-    ScaffoldMessenger.of(
-      context,
-    ).hideCurrentSnackBar(reason: SnackBarClosedReason.timeout);
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
+class _PersistentSnackBarState extends State<SnackBar> {
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => _hovering = true,
-      onExit: (_) {
-        _hovering = false;
-        _dismissIfIdle();
-      },
+    return MetaData(
+      metaData: snackBarHitMarker,
       child: SnackBar(
         content: widget.content,
         action: widget.action,
         animation: widget.animation,
         persist: true,
         behavior: SnackBarBehavior.fixed,
-        onVisible: _start,
+        duration: _snackBarDuration,
+      ),
+    );
+  }
+}
+
+class _SnackBarDeadline {
+  Timer? _timer;
+  final _hoveredTokens = <Object>{};
+  final _listeners = <VoidCallback>{};
+  var _expired = false;
+  var _closed = false;
+
+  void attach(VoidCallback onDismiss) {
+    _listeners.add(onDismiss);
+  }
+
+  void detach(Object token, VoidCallback onDismiss) {
+    _hoveredTokens.remove(token);
+    _listeners.remove(onDismiss);
+    if (_listeners.isEmpty) {
+      _timer?.cancel();
+      _timer = null;
+    } else if (_hoveredTokens.isEmpty && _expired && !_closed) {
+      _dismiss();
+    }
+  }
+
+  void start() {
+    if (_closed) {
+      return;
+    }
+    _timer ??= Timer(_snackBarDuration, () {
+      _expired = true;
+      if (_hoveredTokens.isEmpty) {
+        _dismiss();
+      }
+    });
+  }
+
+  void setHovering(Object token, bool hovering) {
+    if (hovering) {
+      _hoveredTokens.add(token);
+      return;
+    }
+    if (!_hoveredTokens.remove(token)) {
+      return;
+    }
+    if (_hoveredTokens.isEmpty && _expired) {
+      _dismiss();
+    }
+  }
+
+  void _dismiss() {
+    if (_closed || _hoveredTokens.isNotEmpty || !_expired) {
+      return;
+    }
+    _closed = true;
+    for (final listener in _listeners.toList(growable: false)) {
+      listener();
+      break;
+    }
+  }
+}
+
+class _TimedSnackBar extends SnackBar {
+  const _TimedSnackBar({
+    super.key,
+    required super.content,
+    super.action,
+    super.animation,
+    required this.deadline,
+  }) : super(persist: true, behavior: SnackBarBehavior.fixed);
+
+  final _SnackBarDeadline deadline;
+
+  @override
+  SnackBar withAnimation(Animation<double> newAnimation, {Key? fallbackKey}) {
+    return _TimedSnackBar(
+      key: key ?? fallbackKey,
+      content: content,
+      action: action,
+      animation: newAnimation,
+      deadline: deadline,
+    );
+  }
+
+  @override
+  State<SnackBar> createState() => _TimedSnackBarState();
+}
+
+class _TimedSnackBarState extends State<_TimedSnackBar> {
+  _SnackBarDeadline get _deadline => widget.deadline;
+
+  @override
+  void initState() {
+    super.initState();
+    _deadline.attach(_handleDismiss);
+  }
+
+  @override
+  void didUpdateWidget(covariant _TimedSnackBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.deadline, _deadline)) {
+      oldWidget.deadline.detach(this, _handleDismiss);
+      _deadline.attach(_handleDismiss);
+    }
+  }
+
+  void _handleDismiss() {
+    if (!mounted) {
+      return;
+    }
+    ScaffoldMessenger.maybeOf(
+      context,
+    )?.hideCurrentSnackBar(reason: SnackBarClosedReason.timeout);
+  }
+
+  @override
+  void dispose() {
+    _deadline.detach(this, _handleDismiss);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MetaData(
+      metaData: snackBarHitMarker,
+      child: MouseRegion(
+        onEnter: (_) => _deadline.setHovering(this, true),
+        onExit: (_) => _deadline.setHovering(this, false),
+        child: SnackBar(
+          content: widget.content,
+          action: widget.action,
+          animation: widget.animation,
+          persist: true,
+          behavior: SnackBarBehavior.fixed,
+          onVisible: _deadline.start,
+        ),
       ),
     );
   }

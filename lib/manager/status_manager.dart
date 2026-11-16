@@ -10,7 +10,10 @@ import 'package:fl_clash/providers/state.dart';
 import 'package:fl_clash/widgets/theme.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+
+const Object snackBarHitMarker = Object();
 
 const _actionMinDuration = Duration(seconds: 6);
 const _maxBufferedMessages = 8;
@@ -36,7 +39,12 @@ class StatusManagerState extends ConsumerState<StatusManager> {
   final _entriesNotifier = ValueNotifier<List<_MessageEntry>>([]);
   final _bufferMessages = Queue<CommonMessage>();
   final _activeTimers = <String, Timer>{};
+  final _hoveredIds = <String>{};
+  final _expiredIds = <String>{};
+  final _snackBarMessengerKey = GlobalKey<ScaffoldMessengerState>();
   String? _draggingId;
+  bool _hasFallbackSnackBar = false;
+  int _snackBarRevision = 0;
 
   @override
   void dispose() {
@@ -44,9 +52,45 @@ class StatusManagerState extends ConsumerState<StatusManager> {
       timer.cancel();
     }
     _activeTimers.clear();
+    _hoveredIds.clear();
+    _expiredIds.clear();
     _bufferMessages.clear();
     _entriesNotifier.dispose();
     super.dispose();
+  }
+
+  void showSnackBar(SnackBar snackBar) {
+    final revision = ++_snackBarRevision;
+    if (!_hasFallbackSnackBar) {
+      setState(() {
+        _hasFallbackSnackBar = true;
+      });
+    }
+    final messenger = _snackBarMessengerKey.currentState;
+    if (messenger == null) {
+      return;
+    }
+    messenger.removeCurrentSnackBar();
+    final controller = messenger.showSnackBar(snackBar);
+    unawaited(
+      controller.closed.whenComplete(() {
+        if (mounted && _snackBarRevision == revision && _hasFallbackSnackBar) {
+          setState(() {
+            _hasFallbackSnackBar = false;
+          });
+        }
+      }),
+    );
+  }
+
+  void clearSnackBar() {
+    _snackBarRevision++;
+    _snackBarMessengerKey.currentState?.removeCurrentSnackBar();
+    if (_hasFallbackSnackBar && mounted) {
+      setState(() {
+        _hasFallbackSnackBar = false;
+      });
+    }
   }
 
   int get _maxVisibleMessages => ref.read(isMobileViewProvider)
@@ -107,10 +151,22 @@ class StatusManagerState extends ConsumerState<StatusManager> {
       final merged = message.copyWith(id: entries[index].message.id);
       _entriesNotifier.value = List<_MessageEntry>.from(entries)
         ..[index] = entries[index].copyWith(message: merged);
+      _expiredIds.remove(merged.id);
       _startTimer(merged);
       return true;
     }
-    return _bufferMessages.any((buffered) => _isSameMessage(buffered, message));
+    final buffered = _bufferMessages.toList(growable: false);
+    final bufferedIndex = buffered.indexWhere(
+      (item) => _isSameMessage(item, message),
+    );
+    if (bufferedIndex == -1) {
+      return false;
+    }
+    buffered[bufferedIndex] = message.copyWith(id: buffered[bufferedIndex].id);
+    _bufferMessages
+      ..clear()
+      ..addAll(buffered);
+    return true;
   }
 
   void _trimBuffer() {
@@ -140,9 +196,15 @@ class StatusManagerState extends ConsumerState<StatusManager> {
       if (error == null) {
         return;
       }
-      final preempted = visible.lastWhereOrNull(
-        (entry) => entry.message.level != MessageLevel.error,
-      );
+      final preempted =
+          visible.lastWhereOrNull(
+            (entry) =>
+                entry.message.level != MessageLevel.error &&
+                !_hoveredIds.contains(entry.id),
+          ) ??
+          visible.lastWhereOrNull(
+            (entry) => entry.message.level != MessageLevel.error,
+          );
       if (preempted == null) {
         return;
       }
@@ -164,6 +226,11 @@ class StatusManagerState extends ConsumerState<StatusManager> {
       return;
     }
     _activeTimers[message.id] = Timer(message.duration, () {
+      _activeTimers.remove(message.id);
+      if (_draggingId != null || _hoveredIds.isNotEmpty) {
+        _expiredIds.add(message.id);
+        return;
+      }
       _hideMessage(message.id);
       _processQueue();
     });
@@ -171,6 +238,8 @@ class StatusManagerState extends ConsumerState<StatusManager> {
 
   void _hideMessage(String id, {bool swiped = false}) {
     _activeTimers.remove(id)?.cancel();
+    _expiredIds.remove(id);
+    _hoveredIds.remove(id);
     final entries = _entries;
     final index = entries.indexWhere((entry) => entry.id == id);
     if (index == -1 || !entries[index].visible) {
@@ -187,7 +256,35 @@ class StatusManagerState extends ConsumerState<StatusManager> {
     _bufferMessages.removeWhere((message) => message.id == id);
     _hideMessage(id, swiped: swiped);
     _resumeTimers();
+    _flushExpired();
     _processQueue();
+  }
+
+  void _flushExpired() {
+    if (_draggingId != null || _hoveredIds.isNotEmpty || _expiredIds.isEmpty) {
+      return;
+    }
+    final expired = _expiredIds.toList(growable: false);
+    _expiredIds.clear();
+    for (final id in expired) {
+      _hideMessage(id);
+    }
+  }
+
+  void _setHovering(String id, bool hovering) {
+    if (hovering) {
+      if (_visibleEntries.any((entry) => entry.id == id)) {
+        _hoveredIds.add(id);
+      }
+      return;
+    }
+    if (!_hoveredIds.remove(id)) {
+      return;
+    }
+    if (_hoveredIds.isEmpty && _draggingId == null) {
+      _flushExpired();
+      _processQueue();
+    }
   }
 
   void _setDragging(String id, bool dragging) {
@@ -196,6 +293,7 @@ class StatusManagerState extends ConsumerState<StatusManager> {
         return;
       }
       _draggingId = id;
+      _expiredIds.clear();
       for (final timer in _activeTimers.values) {
         timer.cancel();
       }
@@ -237,6 +335,24 @@ class StatusManagerState extends ConsumerState<StatusManager> {
     return Stack(
       children: [
         widget.child,
+        Positioned.fill(
+          child: Offstage(
+            offstage: !_hasFallbackSnackBar,
+            child: IgnorePointer(
+              ignoring: !_hasFallbackSnackBar,
+              child: ScaffoldMessenger(
+                key: _snackBarMessengerKey,
+                child: const _SnackBarHitPassThrough(
+                  child: Scaffold(
+                    backgroundColor: Colors.transparent,
+                    primary: false,
+                    resizeToAvoidBottomInset: false,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
         Consumer(
           builder: (_, ref, child) {
             final top = ref.watch(overlayTopOffsetProvider);
@@ -269,6 +385,7 @@ class StatusManagerState extends ConsumerState<StatusManager> {
                             message: entry.message,
                             onDismiss: _cancelMessage,
                             onDragging: _setDragging,
+                            onHovering: _setHovering,
                           ),
                         ),
                     ],
@@ -424,47 +541,57 @@ class _MessageCard extends StatelessWidget {
     required this.message,
     required this.onDismiss,
     required this.onDragging,
+    required this.onHovering,
   });
 
   final CommonMessage message;
   final void Function(String id, {bool swiped}) onDismiss;
   final void Function(String id, bool dragging) onDragging;
+  final void Function(String id, bool hovering) onHovering;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 8),
-      child: Dismissible(
-        key: ValueKey(message.id),
-        resizeDuration: null,
-        onUpdate: (details) {
-          onDragging(message.id, details.progress > 0);
-        },
-        onDismissed: (_) {
-          onDismiss(message.id, swiped: true);
-        },
-        child: Card(
-          margin: EdgeInsets.zero,
-          shape: AppShape.lg,
-          elevation: 6,
-          color: message.level.containerColor(context),
-          child: InkWell(
-            onLongPress: message.allowCopy
-                ? () {
-                    Clipboard.setData(ClipboardData(text: message.text));
-                  }
-                : null,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                minHeight: _messageMinHeight,
-                maxWidth: _messageMaxWidth,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
+      child: MouseRegion(
+        onEnter: (_) => onHovering(message.id, true),
+        onExit: (_) => onHovering(message.id, false),
+        child: Dismissible(
+          key: ValueKey(message.id),
+          resizeDuration: null,
+          onUpdate: (details) {
+            onDragging(message.id, details.progress > 0);
+          },
+          onDismissed: (_) {
+            onDismiss(message.id, swiped: true);
+          },
+          child: Card(
+            margin: EdgeInsets.zero,
+            shape: AppShape.lg,
+            clipBehavior: Clip.antiAlias,
+            elevation: 6,
+            color: message.level.containerColor(context),
+            child: InkWell(
+              onLongPress: message.allowCopy
+                  ? () {
+                      Clipboard.setData(ClipboardData(text: message.text));
+                    }
+                  : null,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  minHeight: _messageMinHeight,
+                  maxWidth: _messageMaxWidth,
                 ),
-                child: _MessageContent(message: message, onDismiss: onDismiss),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  child: _MessageContent(
+                    message: message,
+                    onDismiss: onDismiss,
+                  ),
+                ),
               ),
             ),
           ),
@@ -516,5 +643,37 @@ class _MessageContent extends StatelessWidget {
         ],
       ],
     );
+  }
+}
+
+class _SnackBarHitPassThrough extends SingleChildRenderObjectWidget {
+  const _SnackBarHitPassThrough({required super.child});
+
+  @override
+  RenderObject createRenderObject(BuildContext context) {
+    return _RenderSnackBarHitPassThrough();
+  }
+}
+
+class _RenderSnackBarHitPassThrough extends RenderProxyBox {
+  @override
+  bool hitTest(BoxHitTestResult result, {required Offset position}) {
+    final currentChild = child;
+    if (!size.contains(position) || currentChild == null) {
+      return false;
+    }
+    final probe = BoxHitTestResult();
+    if (!currentChild.hitTest(probe, position: position)) {
+      return false;
+    }
+    final hitSnackBar = probe.path.any((entry) {
+      final target = entry.target;
+      return target is RenderMetaData &&
+          identical(target.metaData, snackBarHitMarker);
+    });
+    if (!hitSnackBar) {
+      return false;
+    }
+    return currentChild.hitTest(result, position: position);
   }
 }

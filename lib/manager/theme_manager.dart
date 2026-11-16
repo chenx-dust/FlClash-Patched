@@ -44,7 +44,7 @@ class ThemeManager extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final textScale = ref.read(
+    final textScale = ref.watch(
       themeSettingProvider.select((state) => state.textScale),
     );
     final double textScaleFactor = max(

@@ -69,33 +69,38 @@ class _HomePageState extends ConsumerState<HomePage> {
             isActive: _routeOwner == null || _routeOwner == pageLabel,
             child: NotificationListener<CommonPopScopeAttemptNotification>(
               onNotification: _navigatorObserver.onPopScopeAttempt,
-              child: Navigator(
-                observers: [_navigatorObserver],
-                onGenerateRoute: (_) => CommonRoute<void>(
-                  builder: (context) => _HomeShell(
-                    onDestinationSelected: _handleToPage,
-                    child: Consumer(
-                      builder: (_, ref, _) {
-                        final navigationItems = ref
-                            .watch(currentNavigationItemsStateProvider)
-                            .value;
-                        return _HomePageView(
-                          navigationItems: navigationItems,
-                          pageBuilder: (_, index) {
-                            final item = navigationItems[index];
-                            return _NavigationPage(
-                              key: ValueKey(item.label),
-                              item: item,
-                              view: item.builder(context),
-                            );
-                          },
-                        );
-                      },
+              child: RouteCurrentScope(
+                isCurrent:
+                    RouteCurrentScope.isCurrentOf(context) &&
+                    (ModalRoute.isCurrentOf(context) ?? true),
+                child: Navigator(
+                  observers: [_navigatorObserver],
+                  onGenerateRoute: (_) => CommonRoute<void>(
+                    builder: (context) => _HomeShell(
+                      onDestinationSelected: _handleToPage,
+                      child: Consumer(
+                        builder: (_, ref, _) {
+                          final navigationItems = ref
+                              .watch(currentNavigationItemsStateProvider)
+                              .value;
+                          return _HomePageView(
+                            navigationItems: navigationItems,
+                            pageBuilder: (_, index) {
+                              final item = navigationItems[index];
+                              return _NavigationPage(
+                                key: ValueKey(item.label),
+                                item: item,
+                                view: item.builder(context),
+                              );
+                            },
+                          );
+                        },
+                      ),
                     ),
                   ),
+                  routeDirectionalTraversalEdgeBehavior:
+                      TraversalEdgeBehavior.parentScope,
                 ),
-                routeDirectionalTraversalEdgeBehavior:
-                    TraversalEdgeBehavior.parentScope,
               ),
             ),
           ),

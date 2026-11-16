@@ -1,7 +1,17 @@
-import 'package:fl_clash/common/context.dart';
+import 'dart:async';
+
+import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/common/theme.dart';
+import 'package:fl_clash/l10n/l10n.dart';
+import 'package:fl_clash/manager/status_manager.dart';
+import 'package:fl_clash/providers/app.dart';
+import 'package:fl_clash/state.dart';
+import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 void main() {
   testWidgets('showSnackBar replaces the current fixed snack bar', (
@@ -185,6 +195,293 @@ void main() {
     await tester.pump(const Duration(seconds: 2));
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'two sibling Scaffolds under one ScaffoldMessenger share timed hover deadline',
+    (tester) async {
+      late BuildContext context;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Row(
+            children: [
+              Expanded(
+                child: Scaffold(
+                  body: Builder(
+                    builder: (value) {
+                      context = value;
+                      return const SizedBox();
+                    },
+                  ),
+                ),
+              ),
+              const Expanded(child: Scaffold(body: SizedBox())),
+            ],
+          ),
+        ),
+      );
+
+      context.showSnackBar('shared');
+      await _showSnackBar(tester);
+      expect(find.text('shared'), findsNWidgets(2));
+
+      final gesture = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+        buttons: 0,
+      );
+      await gesture.addPointer(location: Offset.zero);
+      addTearDown(gesture.removePointer);
+      await gesture.moveTo(tester.getCenter(find.byType(SnackBar).first));
+
+      await tester.pump(const Duration(seconds: 2));
+      expect(find.text('shared'), findsNWidgets(2));
+
+      await gesture.moveTo(Offset.zero);
+      await tester.pumpAndSettle();
+      expect(find.text('shared'), findsNothing);
+    },
+  );
+
+  testWidgets('kept-alive CommonScaffolds show snack bar only on active page', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    late BuildContext inactiveContext;
+    await tester.pumpWidget(
+      _statusManagedApp(
+        home: Stack(
+          children: [
+            PageActivityScope(
+              isActive: false,
+              child: CommonScaffold(
+                title: 'First',
+                body: Builder(
+                  builder: (value) {
+                    inactiveContext = value;
+                    return const Text('body-1');
+                  },
+                ),
+              ),
+            ),
+            const PageActivityScope(
+              isActive: true,
+              child: CommonScaffold(title: 'Second', body: Text('body-2')),
+            ),
+          ],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    inactiveContext.showSnackBar('active-only', persist: true);
+    await _showSnackBar(tester);
+    expect(find.text('active-only'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.widgetWithText(CommonScaffold, 'Second'),
+        matching: find.text('active-only'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.widgetWithText(CommonScaffold, 'First'),
+        matching: find.text('active-only'),
+      ),
+      findsNothing,
+    );
+
+    globalState.navigatorKey.currentContext!.showSnackBar('from-root');
+    await _showSnackBar(tester);
+    expect(find.text('from-root'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.widgetWithText(CommonScaffold, 'Second'),
+        matching: find.text('from-root'),
+      ),
+      findsOneWidget,
+    );
+
+    final gesture = await _hoverSnackBar(tester);
+    await tester.pump(const Duration(seconds: 2));
+    expect(find.text('from-root'), findsOneWidget);
+
+    await gesture.moveTo(Offset.zero);
+    await tester.pumpAndSettle();
+    expect(find.text('from-root'), findsNothing);
+  });
+
+  testWidgets(
+    'side sheet CommonScaffold owns snack bar and clears covered page snack bar',
+    (tester) async {
+      tester.view.physicalSize = const Size(1000, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      late BuildContext pageContext;
+      late BuildContext sheetContext;
+      await tester.pumpWidget(
+        _statusManagedApp(
+          overrides: [isMobileViewProvider.overrideWithValue(false)],
+          home: CommonScaffold(
+            title: 'Main',
+            body: Builder(
+              builder: (value) {
+                pageContext = value;
+                return const Text('main-body');
+              },
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      pageContext.showSnackBar('on-main', persist: true);
+      await _showSnackBar(tester);
+      expect(find.text('on-main'), findsOneWidget);
+
+      unawaited(
+        showExtend<void>(
+          pageContext,
+          builder: (_) => CommonScaffold(
+            title: 'Sheet',
+            body: Builder(
+              builder: (value) {
+                sheetContext = value;
+                return const Text('sheet-body');
+              },
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('on-main'), findsNothing);
+
+      sheetContext.showSnackBar('on-sheet', persist: true);
+      await _showSnackBar(tester);
+      expect(find.text('on-sheet'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.widgetWithText(CommonScaffold, 'Sheet'),
+          matching: find.text('on-sheet'),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.widgetWithText(CommonScaffold, 'Main'),
+          matching: find.text('on-sheet'),
+        ),
+        findsNothing,
+      );
+    },
+  );
+
+  testWidgets(
+    'bottom sheet without CommonScaffold falls back to StatusManager pass-through overlay',
+    (tester) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      late BuildContext pageContext;
+      var sheetButtonTapped = false;
+      var actionPressed = false;
+      await tester.pumpWidget(
+        _statusManagedApp(
+          overrides: [isMobileViewProvider.overrideWithValue(true)],
+          home: CommonScaffold(
+            title: 'Main',
+            body: Builder(
+              builder: (value) {
+                pageContext = value;
+                return const Text('main-body');
+              },
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      unawaited(
+        showSheet<void>(
+          context: pageContext,
+          builder: (_) => SizedBox(
+            height: 260,
+            child: Center(
+              child: TextButton(
+                onPressed: () => sheetButtonTapped = true,
+                child: const Text('Sheet Button'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      globalState.navigatorKey.currentContext!.showSnackBar(
+        'above-sheet',
+        persist: true,
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () => actionPressed = true,
+        ),
+      );
+      await _showSnackBar(tester);
+
+      expect(find.text('above-sheet'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(CommonScaffold),
+          matching: find.text('above-sheet'),
+        ),
+        findsNothing,
+      );
+
+      await tester.tap(find.text('Sheet Button'));
+      await tester.pump();
+      expect(sheetButtonTapped, isTrue);
+
+      await tester.tap(find.text('Undo'));
+      await tester.pumpAndSettle();
+      expect(actionPressed, isTrue);
+      expect(find.text('above-sheet'), findsNothing);
+    },
+  );
+}
+
+Widget _statusManagedApp({
+  required Widget home,
+  List<Override> overrides = const [],
+}) {
+  return ProviderScope(
+    overrides: overrides,
+    child: MaterialApp(
+      navigatorKey: globalState.navigatorKey,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
+      ],
+      supportedLocales: AppLocalizations.delegate.supportedLocales,
+      builder: (context, child) {
+        globalState.measure = Measure.of(context, 1);
+        globalState.theme = CommonTheme.of(context, 1);
+        // ignore: deprecated_member_use
+        return MaterialUiCompatibilityBridge(
+          child: IconTheme(
+            data: Theme.of(context).iconTheme,
+            child: StatusManager(child: child!),
+          ),
+        );
+      },
+      home: home,
+    ),
+  );
 }
 
 Widget _snackBarApp(ValueChanged<BuildContext> onContext) {

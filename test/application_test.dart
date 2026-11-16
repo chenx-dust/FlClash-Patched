@@ -95,8 +95,8 @@ void main() {
     expect(_chainFrom(_stack(isDesktop: true)), [
       AppEnvManager,
       LocaleManager,
-      StatusManager,
       ThemeManager,
+      StatusManager,
       BackManager,
       WindowManager,
       TrayManager,
@@ -113,8 +113,8 @@ void main() {
     expect(_chainFrom(_stack(isDesktop: false, isAndroid: true)), [
       AppEnvManager,
       LocaleManager,
-      StatusManager,
       ThemeManager,
+      StatusManager,
       BackManager,
       MobileManager,
       TileManager,

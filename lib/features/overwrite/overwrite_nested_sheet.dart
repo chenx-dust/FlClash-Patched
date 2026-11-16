@@ -158,7 +158,14 @@ class _OverwriteNestedSheetState<T>
                   width: double.infinity,
                   child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
-                    child: PagedSheet(child: nestedNavigator),
+                    child: PagedSheet(
+                      child: RouteCurrentScope(
+                        isCurrent:
+                            RouteCurrentScope.isCurrentOf(context) &&
+                            (ModalRoute.isCurrentOf(context) ?? true),
+                        child: nestedNavigator,
+                      ),
+                    ),
                   ),
                 ),
               ),

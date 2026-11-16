@@ -63,6 +63,40 @@ class CommonScaffoldState extends State<CommonScaffold> {
   final ValueNotifier<bool> _isFabExtendedNotifier = ValueNotifier(true);
   final ValueNotifier<List<String>> _keywordsNotifier = ValueNotifier([]);
   final _textController = TextEditingController();
+  final _messengerKey = GlobalKey<ScaffoldMessengerState>();
+  ModalRoute<dynamic>? _route;
+  bool _isParentRouteCurrent = true;
+  bool _isPageActive = true;
+  bool _wasActiveMessengerHost = true;
+
+  bool get isActiveMessengerHost =>
+      mounted &&
+      _isPageActive &&
+      _isParentRouteCurrent &&
+      (_route?.isCurrent ?? true);
+
+  void showSnackBar(SnackBar snackBar) {
+    _messengerKey.currentState
+      ?..removeCurrentSnackBar()
+      ..showSnackBar(snackBar);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _route = ModalRoute.of(context);
+    _isParentRouteCurrent = RouteCurrentScope.isCurrentOf(context);
+    _isPageActive = PageActivityScope.isActiveOf(context);
+    final active = isActiveMessengerHost;
+    if (_wasActiveMessengerHost && !active) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && !isActiveMessengerHost) {
+          _messengerKey.currentState?.removeCurrentSnackBar();
+        }
+      });
+    }
+    _wasActiveMessengerHost = active;
+  }
 
   bool get _isSearch {
     return _appBarState.value.searchState?.query != null;
@@ -486,34 +520,38 @@ class CommonScaffoldState extends State<CommonScaffold> {
         child: widget.floatingActionButton ?? const SizedBox.shrink(),
       ),
     );
-    return Scaffold(
-      appBar: _buildAppBar(backActionProvider?.backAction, isTV),
-      body: NotificationListener<UserScrollNotification>(
-        child: hasFab
-            ? BottomInsetScope(
-                inset: bottomInset + BottomInsetScope.floatingActionButtonInset,
-                child: body,
-              )
-            : body,
-        onNotification: (notification) {
-          if (notification.direction == ScrollDirection.reverse) {
-            _isFabExtendedNotifier.value = false;
-          } else if (notification.direction == ScrollDirection.forward) {
-            _isFabExtendedNotifier.value = true;
-          }
-          return true;
-        },
+    return ScaffoldMessenger(
+      key: _messengerKey,
+      child: Scaffold(
+        appBar: _buildAppBar(backActionProvider?.backAction, isTV),
+        body: NotificationListener<UserScrollNotification>(
+          child: hasFab
+              ? BottomInsetScope(
+                  inset:
+                      bottomInset + BottomInsetScope.floatingActionButtonInset,
+                  child: body,
+                )
+              : body,
+          onNotification: (notification) {
+            if (notification.direction == ScrollDirection.reverse) {
+              _isFabExtendedNotifier.value = false;
+            } else if (notification.direction == ScrollDirection.forward) {
+              _isFabExtendedNotifier.value = true;
+            }
+            return true;
+          },
+        ),
+        resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
+        backgroundColor: widget.backgroundColor,
+        floatingActionButton: hasFab
+            ? bottomInset > 0
+                  ? Padding(
+                      padding: EdgeInsets.only(bottom: bottomInset),
+                      child: fabChild,
+                    )
+                  : fabChild
+            : null,
       ),
-      resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
-      backgroundColor: widget.backgroundColor,
-      floatingActionButton: hasFab
-          ? bottomInset > 0
-                ? Padding(
-                    padding: EdgeInsets.only(bottom: bottomInset),
-                    child: fabChild,
-                  )
-                : fabChild
-          : null,
     );
   }
 }

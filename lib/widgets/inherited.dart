@@ -26,6 +26,28 @@ class PageActivityScope extends InheritedWidget {
   }
 }
 
+class RouteCurrentScope extends InheritedWidget {
+  final bool isCurrent;
+
+  const RouteCurrentScope({
+    super.key,
+    required this.isCurrent,
+    required super.child,
+  });
+
+  static bool isCurrentOf(BuildContext context) {
+    return context
+            .dependOnInheritedWidgetOfExactType<RouteCurrentScope>()
+            ?.isCurrent ??
+        true;
+  }
+
+  @override
+  bool updateShouldNotify(RouteCurrentScope oldWidget) {
+    return isCurrent != oldWidget.isCurrent;
+  }
+}
+
 const double _floatingActionButtonHeight = 56;
 
 class BottomInsetScope extends InheritedWidget {

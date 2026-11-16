@@ -219,6 +219,9 @@ class ProxiesAction extends _$ProxiesAction {
   }
 
   void _showCloseConnectionsSnackBar(ChangeProxyParams params) {
+    if (globalState.isBackground.value) {
+      return;
+    }
     final context = globalState.navigatorKey.currentContext;
     if (context == null || !context.mounted) return;
     context.showSnackBar(
@@ -227,7 +230,15 @@ class ProxiesAction extends _$ProxiesAction {
       action: SnackBarAction(
         label: MaterialLocalizations.of(context).closeButtonTooltip,
         onPressed: () async {
-          await _core.changeProxy(params, closeConnections: true);
+          try {
+            await _core.changeProxy(params, closeConnections: true);
+          } catch (error) {
+            commonPrint.log(
+              'closeConnections(${params.groupName} -> ${params.proxyName}) '
+              'failed: $error',
+              logLevel: coreFailureLogLevel(error),
+            );
+          }
         },
       ),
     );

@@ -383,7 +383,7 @@ Generated Drift output lives in `lib/database/generated/database.g.dart`. After 
 Managers are nested `InheritedWidget`/`StatefulWidget` components built by `buildManagerStack()` in `lib/application.dart`:
 
 ```text
-AppEnvManager > LocaleManager > StatusManager > ThemeManager > BackManager
+AppEnvManager > LocaleManager > ThemeManager > StatusManager > BackManager
   > [Desktop: WindowManager > TrayManager > HotKeyManager > ProxyManager]
     [Mobile: MobileManager > TileManager]
   > AppStateManager > CoreManager > ConnectivityManager
@@ -397,10 +397,12 @@ manager appears on desktop, and the Android-only `VpnManager` never wraps iOS.
 
 The order is an ownership contract, not a layout detail. `ConnectivityManager`
 sits below `CoreManager` because its `onConnectivityChanged` callback reads
-Core-backed state, so Core must already be mounted when it fires. `StatusManager`,
-`ThemeManager`, and `BackManager` sit above the platform managers so every
-platform can surface messages, read the theme, and route keyboard, gamepad, and
-mouse back actions through Flutter's pop route handling.
+Core-backed state, so Core must already be mounted when it fires. `ThemeManager`,
+`StatusManager`, and `BackManager` sit above the platform managers so every
+platform can read the scaled theme, surface messages, and route keyboard,
+gamepad, and mouse back actions through Flutter's pop route handling;
+`StatusManager` sits inside `ThemeManager` so notification cards inherit the
+configured text scale and view metrics.
 
 `buildManagerStack()` is a pure function of `isDesktop`, `isAndroid`, the
 connectivity callback, and the app content, so `test/application_test.dart`
