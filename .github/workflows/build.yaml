@@ -13,8 +13,8 @@ concurrency:
 
 env:
   IS_STABLE: ${{ !contains(github.ref, '-') }}
-  FLUTTER_VERSION: '3.47.9'
-  GO_VERSION: '1.26.10'
+  FLUTTER_VERSION: '3.50.0'
+  GO_VERSION: '1.26.11'
   NDK_VERSION: r30
 
 jobs:
