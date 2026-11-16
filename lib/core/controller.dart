@@ -19,7 +19,7 @@ extension type CoreController._(CoreHandlerInterface _interface)
 
   factory CoreController() {
     return _instance ??= CoreController._(
-      system.isAndroid ? coreLib! : coreService!,
+      system.isMobile ? coreLib! : coreService!,
     );
   }
 

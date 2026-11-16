@@ -38,12 +38,17 @@ class System {
 
   bool get isAndroid => Platform.isAndroid;
 
+  bool get isIOS => Platform.isIOS;
+
+  /// The platforms whose Core is a gomobile library behind the service channel.
+  bool get isMobile => isAndroid || isIOS;
+
   bool get isLinux => Platform.isLinux;
 
   bool get isTV => _isTV;
 
-  /// The OS major version: the API level on Android, the macOS major
-  /// version, 10 on Windows 10 and 11 alike, and 0 elsewhere.
+  /// The OS major version: the API level on Android, the macOS or iOS
+  /// major version, 10 on Windows 10 and 11 alike, and 0 elsewhere.
   Future<int> init() async {
     if (isAndroid) {
       final info = await app!.getDeviceInfo();
@@ -195,7 +200,7 @@ class System {
   }
 
   Future<AuthorizeCode> authorizeCore() async {
-    if (system.isAndroid) {
+    if (system.isMobile) {
       return AuthorizeCode.error;
     }
     if (system.isWindows) {

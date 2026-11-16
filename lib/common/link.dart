@@ -41,8 +41,8 @@ String? _installConfigUrl(Uri uri) {
 
 const _linkChannel = MethodChannel('$packageName/link');
 
-/// The links Android hands MainActivity. The plugin holds those that come
-/// before `takeLinks` and pushes the rest, holding again any nobody takes.
+/// The links Android and iOS hand the app. The native side holds those that
+/// come before `takeLinks` and pushes the rest, holding again any nobody takes.
 @visibleForTesting
 Stream<Uri> androidLinks([MethodChannel channel = _linkChannel]) {
   late final StreamController<Uri> controller;
@@ -80,7 +80,7 @@ class LinkManager {
 
   @visibleForTesting
   Stream<Uri> Function() uriLinkStream = () =>
-      Platform.isAndroid ? androidLinks() : desktopLinks();
+      Platform.isAndroid || Platform.isIOS ? androidLinks() : desktopLinks();
 
   Future<void> initAppLinksListen(
     Function(String url) installConfigCallBack,

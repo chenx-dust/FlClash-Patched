@@ -3,8 +3,10 @@ import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:flutter/foundation.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path_provider_foundation/path_provider_foundation.dart';
 
 class AppPath {
   static AppPath? _instance;
@@ -41,7 +43,9 @@ class AppPath {
   }
 
   void _bind() {
-    _dataDir = ResolveOnce(supportDirectory);
+    _dataDir = ResolveOnce(
+      system.isIOS ? _appGroupDirectory : supportDirectory,
+    );
     _downloadDir = ResolveOnce(downloadDirectory);
     _tempDir = ResolveOnce(temporaryDirectory);
     cacheDirectory().then(cacheDir.complete);
@@ -50,6 +54,19 @@ class AppPath {
   factory AppPath() {
     _instance ??= AppPath._internal();
     return _instance!;
+  }
+
+  // The Network Extension sets its Core up from this directory, and the app
+  // group container is the only one both processes can read.
+  static Future<Directory> _appGroupDirectory() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    final path = await PathProviderFoundation().getContainerPath(
+      appGroupIdentifier: 'group.${packageInfo.packageName}',
+    );
+    if (path == null) {
+      throw StateError('The app group container is unavailable');
+    }
+    return Directory(path);
   }
 
   String get executableExtension {

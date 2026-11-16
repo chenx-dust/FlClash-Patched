@@ -132,8 +132,9 @@ class ApplicationState extends ConsumerState<Application> {
     final hasVpn = state.vpn;
     if (_preHasVpn == hasVpn) {
       ref.read(routeTrackerProvider.notifier).bumpHostEpoch();
-      // Android's NetworkObserver tells the Core about a new network itself.
-      if (system.isDesktop) {
+      // Android's NetworkObserver tells the Core about a new network itself;
+      // on iOS, NECore resets its own Core when the tunnel is up.
+      if (system.isDesktop || (system.isIOS && !ref.read(isStartProvider))) {
         debouncer.call(
           FunctionTag.networkChange,
           ref.read(coreActionProvider.notifier).reportNetworkChange,
