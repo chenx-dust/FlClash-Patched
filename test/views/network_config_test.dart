@@ -294,6 +294,7 @@ void main() {
   testWidgets('resetting network config restores platform bypass defaults', (
     tester,
   ) async {
+    container.listen(networkSettingProvider, (_, _) {});
     container
         .read(networkSettingProvider.notifier)
         .update(
