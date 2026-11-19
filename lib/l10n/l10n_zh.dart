@@ -3220,6 +3220,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mitmCertificateAndroidReadyTip => '只有信任用户证书的应用（多为浏览器）会被解密。';
 
   @override
+  String get mitmCertificateIosInstallTip =>
+      '请在系统设置的“通用 › VPN 与设备管理”中安装已下载的描述文件，再到“通用 › 关于本机 › 证书信任设置”中开启完全信任。';
+
+  @override
+  String get mitmCertificateIosTrustTip =>
+      '请在系统设置的“通用 › 关于本机 › 证书信任设置”中开启此证书的完全信任。';
+
+  @override
   String get mitmAndroidRootDesc =>
       '未 root 时只能解密信任用户证书的应用，多为浏览器；root 后可解密所有应用。';
 
@@ -3287,6 +3295,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String mitmRemoveOldIosCertificateTip(Object name) {
+    return '请在系统设置的“通用 › VPN 与设备管理”中移除旧描述文件 $name，再安装新证书。';
+  }
+
+  @override
   String mitmOldCertificateLeftTip(Object name) {
     return '无法移除旧证书 $name，请自行从信任的根证书中移除。';
   }
@@ -3311,6 +3324,11 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String mitmRemoveUserCertificateTip(Object name) {
     return 'Android 不允许应用移除用户证书。请在“安全 › 加密与凭据 › 信任的凭据 › 用户”中移除 $name。';
+  }
+
+  @override
+  String mitmRemoveIosCertificateTip(Object name) {
+    return 'iOS 不允许应用移除描述文件。请在“通用 › VPN 与设备管理”中移除 $name。';
   }
 
   @override

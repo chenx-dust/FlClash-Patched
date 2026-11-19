@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/common/mitm_trust.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/plugins/app.dart';
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -38,6 +41,8 @@ final _ca = MitmCertificate(
 );
 
 class _MockApp extends Mock implements App {}
+
+class _MockIosHost extends Mock implements IosMitmTrustHost {}
 
 class _Run {
   const _Run(this.executable, this.arguments);
@@ -89,6 +94,8 @@ void main() {
   late Directory root;
   late _Processes processes;
   late List<String> written;
+
+  setUpAll(() => registerFallbackValue(Uint8List(0)));
 
   setUp(() async {
     root = await Directory.systemTemp.createTemp('mitm_trust_test');
@@ -579,6 +586,174 @@ void main() {
 
       await expectLater(store().install(_ca), throwsA(anything));
       expect(processes.runs, isEmpty);
+    });
+  });
+
+  group('iOS', () {
+    const leafPem =
+        '-----BEGIN CERTIFICATE-----\nAQIDBA==\n-----END CERTIFICATE-----\n';
+
+    setUpAll(() => loadAppLocalizations(const Locale('en')));
+
+    test('builds a valid mobileconfig profile with deterministic UUIDs', () {
+      final special = _ca.copyWith(subject: 'FlClash <CA> & "Test" \'01\'');
+      final profile = buildIosMobileConfig(special);
+      final again = buildIosMobileConfig(special);
+      final other = buildIosMobileConfig(
+        special.copyWith(
+          fingerprint:
+              'AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99:'
+              'AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99',
+        ),
+      );
+
+      expect(profile, again);
+      expect(profile, contains('<string>com.apple.security.root</string>'));
+      expect(profile, contains('<string>Configuration</string>'));
+      expect(
+        profile,
+        contains(
+          '<string>FlClash &lt;CA&gt; &amp; &quot;Test&quot; &apos;01&apos;</string>',
+        ),
+      );
+      expect(
+        profile.replaceAll(RegExp(r'\s+'), ''),
+        contains(base64.encode(mitmCertificateDer(_ca))),
+      );
+
+      final uuidPattern = RegExp(
+        r'<key>PayloadUUID</key>\s*<string>([0-9A-F-]{36})</string>',
+      );
+      final uuids = [
+        for (final match in uuidPattern.allMatches(profile)) match.group(1)!,
+      ];
+      expect(uuids, hasLength(2));
+      expect(uuids[0], isNot(uuids[1]));
+
+      final otherUuids = [
+        for (final match in uuidPattern.allMatches(other)) match.group(1)!,
+      ];
+      expect(otherUuids, hasLength(2));
+      expect(otherUuids[0], isNot(uuids[0]));
+      expect(otherUuids[1], isNot(uuids[1]));
+    });
+
+    test('check verifies leaf and CA DER against the host store', () async {
+      final host = _MockIosHost();
+      when(
+        () => host.verifyCaCertificate(
+          leafDer: any(named: 'leafDer'),
+          caDer: any(named: 'caDer'),
+          host: any(named: 'host'),
+        ),
+      ).thenAnswer((_) async => MitmTrust.ready);
+
+      final store = IosMitmTrustStore(host: host);
+      expect(
+        (await store.check(_ca, () async => leafPem)).trust,
+        MitmTrust.ready,
+      );
+
+      verify(
+        () => host.verifyCaCertificate(
+          leafDer: Uint8List.fromList([1, 2, 3, 4]),
+          caDer: Uint8List.fromList(mitmCertificateDer(_ca)),
+          host: mitmCheckHost,
+        ),
+      ).called(1);
+
+      when(
+        () => host.verifyCaCertificate(
+          leafDer: any(named: 'leafDer'),
+          caDer: any(named: 'caDer'),
+          host: any(named: 'host'),
+        ),
+      ).thenAnswer((_) async => MitmTrust.untrusted);
+      expect(
+        (await store.check(_ca, () async => leafPem)).trust,
+        MitmTrust.untrusted,
+      );
+
+      when(
+        () => host.verifyCaCertificate(
+          leafDer: any(named: 'leafDer'),
+          caDer: any(named: 'caDer'),
+          host: any(named: 'host'),
+        ),
+      ).thenAnswer((_) async => MitmTrust.notInstalled);
+      expect(
+        (await store.check(_ca, () async => leafPem)).trust,
+        MitmTrust.notInstalled,
+      );
+    });
+
+    test('install sends mobileconfig bytes and returns prompted', () async {
+      final host = _MockIosHost();
+      when(
+        () => host.installCaProfile(
+          profile: any(named: 'profile'),
+          fileName: any(named: 'fileName'),
+        ),
+      ).thenAnswer((_) async => MitmInstallOutcome.prompted);
+
+      final outcome = await IosMitmTrustStore(host: host).install(_ca);
+
+      expect(outcome, MitmInstallOutcome.prompted);
+      final captured = verify(
+        () => host.installCaProfile(
+          profile: captureAny(named: 'profile'),
+          fileName: captureAny(named: 'fileName'),
+        ),
+      ).captured;
+      expect(utf8.decode(captured[0] as Uint8List), buildIosMobileConfig(_ca));
+      expect(captured[1], '${_ca.subject}.mobileconfig');
+    });
+
+    test(
+      'install throws MessageException on null or PlatformException',
+      () async {
+        final host = _MockIosHost();
+        when(
+          () => host.installCaProfile(
+            profile: any(named: 'profile'),
+            fileName: any(named: 'fileName'),
+          ),
+        ).thenAnswer((_) async => null);
+
+        await expectLater(
+          IosMitmTrustStore(host: host).install(_ca),
+          throwsA(
+            isA<MessageException>().having(
+              (error) => error.message,
+              'message',
+              currentAppLocalizations.mitmSystemStoreFailed,
+            ),
+          ),
+        );
+
+        when(
+          () => host.installCaProfile(
+            profile: any(named: 'profile'),
+            fileName: any(named: 'fileName'),
+          ),
+        ).thenThrow(PlatformException(code: 'SERVER_ERROR', message: 'bind'));
+
+        await expectLater(
+          IosMitmTrustStore(host: host).install(_ca),
+          throwsA(
+            isA<MessageException>().having(
+              (error) => error.message,
+              'message',
+              currentAppLocalizations.mitmSystemStoreFailed,
+            ),
+          ),
+        );
+      },
+    );
+
+    test('remove returns userStore', () async {
+      final outcome = await IosMitmTrustStore(host: _MockIosHost()).remove(_ca);
+      expect(outcome, MitmRemoveOutcome.userStore);
     });
   });
 }

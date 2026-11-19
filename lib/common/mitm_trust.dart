@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:ffi/ffi.dart';
@@ -10,7 +11,7 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/plugins/app.dart';
-import 'package:flutter/services.dart' show PlatformException;
+import 'package:flutter/services.dart' show MethodChannel, PlatformException;
 import 'package:path/path.dart';
 
 /// The name of the leaf the Core signs for a trust store to verify.
@@ -80,16 +81,21 @@ MitmTrustStore? mitmTrustStoreForPlatform() {
   if (system.isAndroid && app != null) {
     return AndroidMitmTrustStore(app!);
   }
+  if (system.isIOS) {
+    return IosMitmTrustStore();
+  }
   return null;
 }
 
-List<int> mitmCertificateDer(MitmCertificate ca) {
+List<int> mitmPemToDer(String pem) {
   final body = const LineSplitter()
-      .convert(ca.pem)
+      .convert(pem)
       .where((line) => line.isNotEmpty && !line.startsWith('-----'))
       .join();
   return base64.decode(body.trim());
 }
+
+List<int> mitmCertificateDer(MitmCertificate ca) => mitmPemToDer(ca.pem);
 
 String _hexOf(List<int> bytes) =>
     bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join().toUpperCase();
@@ -722,5 +728,194 @@ class AndroidMitmTrustStore implements MitmTrustStore {
       return MitmRemoveOutcome.needsRoot;
     }
     return found.user ? MitmRemoveOutcome.userStore : MitmRemoveOutcome.removed;
+  }
+}
+
+String _xmlEscape(String value) => value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&apos;');
+
+String _iosProfileFileStem(MitmCertificate ca) {
+  final cleaned = ca.subject
+      .replaceAll(RegExp(r'[^A-Za-z0-9._ -]'), '_')
+      .trim();
+  return cleaned.isEmpty ? 'FlClash CA' : cleaned;
+}
+
+String _deterministicUuid(String seed) {
+  final bytes = List<int>.from(
+    sha256.convert(utf8.encode(seed)).bytes.sublist(0, 16),
+  );
+  bytes[6] = (bytes[6] & 0x0f) | 0x50;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  final hex = _hexOf(bytes);
+  return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-'
+      '${hex.substring(12, 16)}-${hex.substring(16, 20)}-'
+      '${hex.substring(20, 32)}';
+}
+
+String buildIosMobileConfig(MitmCertificate ca) {
+  final sha256Hex = mitmSha256Hex(ca);
+  final shortId = sha256Hex
+      .substring(0, min(16, sha256Hex.length))
+      .toLowerCase();
+  final profileUuid = _deterministicUuid('profile:$sha256Hex');
+  final certUuid = _deterministicUuid('cert:$sha256Hex');
+  final escapedSubject = _xmlEscape(ca.subject);
+  final escapedStem = _xmlEscape(_iosProfileFileStem(ca));
+  final encodedDer = base64.encode(mitmCertificateDer(ca));
+  final wrappedDer = [
+    for (var i = 0; i < encodedDer.length; i += 64)
+      encodedDer.substring(i, min(i + 64, encodedDer.length)),
+  ].join('\n');
+  return '''<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>PayloadContent</key>
+  <array>
+    <dict>
+      <key>PayloadCertificateFileName</key>
+      <string>$escapedStem.cer</string>
+      <key>PayloadContent</key>
+      <data>
+$wrappedDer
+      </data>
+      <key>PayloadDescription</key>
+      <string>FlClash MITM Root Certificate</string>
+      <key>PayloadDisplayName</key>
+      <string>$escapedSubject</string>
+      <key>PayloadIdentifier</key>
+      <string>$packageName.mitm.cert.$shortId</string>
+      <key>PayloadType</key>
+      <string>com.apple.security.root</string>
+      <key>PayloadUUID</key>
+      <string>$certUuid</string>
+      <key>PayloadVersion</key>
+      <integer>1</integer>
+    </dict>
+  </array>
+  <key>PayloadDescription</key>
+  <string>FlClash MITM Root Certificate</string>
+  <key>PayloadDisplayName</key>
+  <string>$escapedSubject</string>
+  <key>PayloadIdentifier</key>
+  <string>$packageName.mitm.profile.$shortId</string>
+  <key>PayloadOrganization</key>
+  <string>$appName</string>
+  <key>PayloadRemovalDisallowed</key>
+  <false/>
+  <key>PayloadType</key>
+  <string>Configuration</string>
+  <key>PayloadUUID</key>
+  <string>$profileUuid</string>
+  <key>PayloadVersion</key>
+  <integer>1</integer>
+</dict>
+</plist>
+''';
+}
+
+abstract interface class IosMitmTrustHost {
+  Future<MitmTrust> verifyCaCertificate({
+    required Uint8List leafDer,
+    required Uint8List caDer,
+    required String host,
+  });
+
+  Future<MitmInstallOutcome?> installCaProfile({
+    required Uint8List profile,
+    required String fileName,
+  });
+}
+
+class MethodChannelIosMitmTrustHost implements IosMitmTrustHost {
+  const MethodChannelIosMitmTrustHost([
+    this._channel = const MethodChannel('$packageName/mitm_trust'),
+  ]);
+
+  final MethodChannel _channel;
+
+  @override
+  Future<MitmTrust> verifyCaCertificate({
+    required Uint8List leafDer,
+    required Uint8List caDer,
+    required String host,
+  }) async {
+    final status = await _channel.invokeMethod<String>('verifyCaCertificate', {
+      'leafDer': leafDer,
+      'caDer': caDer,
+      'host': host,
+    });
+    return switch (status) {
+      'ready' => MitmTrust.ready,
+      'untrusted' => MitmTrust.untrusted,
+      _ => MitmTrust.notInstalled,
+    };
+  }
+
+  @override
+  Future<MitmInstallOutcome?> installCaProfile({
+    required Uint8List profile,
+    required String fileName,
+  }) async {
+    final outcome = await _channel.invokeMethod<String>('installCaProfile', {
+      'profile': profile,
+      'fileName': fileName,
+    });
+    return switch (outcome) {
+      'prompted' => MitmInstallOutcome.prompted,
+      _ => null,
+    };
+  }
+}
+
+class IosMitmTrustStore implements MitmTrustStore {
+  IosMitmTrustStore({this.host = const MethodChannelIosMitmTrustHost()});
+
+  final IosMitmTrustHost host;
+
+  @override
+  Future<MitmTrustCheck> check(
+    MitmCertificate ca,
+    Future<String> Function() issueLeaf,
+  ) async {
+    final leafPem = await issueLeaf();
+    final trust = await host.verifyCaCertificate(
+      leafDer: Uint8List.fromList(mitmPemToDer(leafPem)),
+      caDer: Uint8List.fromList(mitmCertificateDer(ca)),
+      host: mitmCheckHost,
+    );
+    return MitmTrustCheck(trust);
+  }
+
+  @override
+  Future<MitmInstallOutcome> install(MitmCertificate ca) async {
+    final profile = Uint8List.fromList(utf8.encode(buildIosMobileConfig(ca)));
+    final MitmInstallOutcome? outcome;
+    try {
+      outcome = await host.installCaProfile(
+        profile: profile,
+        fileName: '${_iosProfileFileStem(ca)}.mobileconfig',
+      );
+    } on PlatformException catch (error) {
+      commonPrint.log(
+        'Installing the MITM profile failed: ${error.message}',
+        logLevel: LogLevel.warning,
+      );
+      throw MessageException(currentAppLocalizations.mitmSystemStoreFailed);
+    }
+    if (outcome == null) {
+      throw MessageException(currentAppLocalizations.mitmSystemStoreFailed);
+    }
+    return outcome;
+  }
+
+  @override
+  Future<MitmRemoveOutcome> remove(MitmCertificate ca) async {
+    return MitmRemoveOutcome.userStore;
   }
 }

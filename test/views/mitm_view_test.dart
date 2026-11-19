@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/common/mitm_trust.dart';
@@ -24,6 +25,33 @@ import '../helpers/test_app.dart';
 import '../helpers/test_profiles.dart';
 
 class _MockCore extends Mock implements CoreHandlerInterface {}
+
+class _FakeIosHost implements IosMitmTrustHost {
+  _FakeIosHost({this.afterInstall = MitmTrust.ready});
+
+  MitmTrust trust = MitmTrust.notInstalled;
+  final MitmTrust afterInstall;
+  var checks = 0;
+
+  @override
+  Future<MitmTrust> verifyCaCertificate({
+    required Uint8List leafDer,
+    required Uint8List caDer,
+    required String host,
+  }) async {
+    checks++;
+    return trust;
+  }
+
+  @override
+  Future<MitmInstallOutcome?> installCaProfile({
+    required Uint8List profile,
+    required String fileName,
+  }) async {
+    trust = afterInstall;
+    return MitmInstallOutcome.prompted;
+  }
+}
 
 class _FakeStore implements MitmTrustStore {
   _FakeStore(
@@ -76,7 +104,7 @@ class _FakeStore implements MitmTrustStore {
 }
 
 final _certificate = MitmCertificate(
-  pem: '-----BEGIN CERTIFICATE-----\n',
+  pem: '-----BEGIN CERTIFICATE-----\nAQIDBA==\n-----END CERTIFICATE-----\n',
   fingerprint: 'AB:CD',
   subject: 'FlClash CA 0000ABCD',
   notBefore: DateTime.utc(2026, 10, 20, 12),
@@ -118,6 +146,9 @@ void main() {
     when(
       () => core.generateMitmCertificate(),
     ).thenAnswer((_) async => _certificate);
+    when(
+      () => core.issueMitmCertificate(any()),
+    ).thenAnswer((_) async => _certificate.pem);
     when(() => core.validateMitm(any())).thenAnswer((invocation) async {
       final rules = invocation.positionalArguments.single as MitmRules;
       return {
@@ -658,6 +689,175 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets('shows iOS footer matching trust state', (tester) async {
+      await pumpView(
+        tester,
+        certificate: _certificate,
+        store: _FakeStore(MitmTrust.notInstalled),
+        view: const MitmOptionsView(isAndroid: false, isIOS: true),
+      );
+      expect(
+        find.text(currentAppLocalizations.mitmCertificateIosInstallTip),
+        findsOneWidget,
+      );
+      expect(
+        find.text(currentAppLocalizations.mitmCertificateIosTrustTip),
+        findsNothing,
+      );
+
+      await pumpView(
+        tester,
+        certificate: _certificate,
+        store: _FakeStore(MitmTrust.untrusted),
+        view: const MitmOptionsView(isAndroid: false, isIOS: true),
+      );
+      expect(
+        find.text(currentAppLocalizations.mitmCertificateIosTrustTip),
+        findsOneWidget,
+      );
+      expect(
+        find.text(currentAppLocalizations.mitmCertificateIosInstallTip),
+        findsNothing,
+      );
+
+      await pumpView(
+        tester,
+        certificate: _certificate,
+        store: _FakeStore(MitmTrust.ready),
+        view: const MitmOptionsView(isAndroid: false, isIOS: true),
+      );
+      expect(
+        find.text(currentAppLocalizations.mitmCertificateIosInstallTip),
+        findsNothing,
+      );
+      expect(
+        find.text(currentAppLocalizations.mitmCertificateIosTrustTip),
+        findsNothing,
+      );
+    });
+
+    testWidgets('iOS install shows follow-up guidance until trusted', (
+      tester,
+    ) async {
+      await pumpView(
+        tester,
+        certificate: _certificate,
+        store: IosMitmTrustStore(
+          host: _FakeIosHost(afterInstall: MitmTrust.notInstalled),
+        ),
+        view: const MitmOptionsView(isAndroid: false, isIOS: true),
+      );
+
+      await tester.tap(row());
+      await tester.pumpAndSettle();
+
+      expect(
+        find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.text(
+            currentAppLocalizations.mitmCertificateIosInstallTip,
+          ),
+        ),
+        findsOneWidget,
+      );
+      await tester.tap(button(currentAppLocalizations.confirm));
+      await tester.pumpAndSettle();
+
+      await pumpView(
+        tester,
+        certificate: _certificate,
+        store: IosMitmTrustStore(
+          host: _FakeIosHost(afterInstall: MitmTrust.untrusted),
+        ),
+        view: const MitmOptionsView(isAndroid: false, isIOS: true),
+      );
+
+      await tester.tap(row());
+      await tester.pumpAndSettle();
+
+      expect(
+        find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.text(
+            currentAppLocalizations.mitmCertificateIosTrustTip,
+          ),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('iOS install shows success banner when trusted', (
+      tester,
+    ) async {
+      await pumpView(
+        tester,
+        certificate: _certificate,
+        store: IosMitmTrustStore(host: _FakeIosHost()),
+        view: const MitmOptionsView(isAndroid: false, isIOS: true),
+      );
+
+      await tester.tap(row());
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(currentAppLocalizations.installCertificateSuccess),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('iOS removal instructs removing profile in Settings', (
+      tester,
+    ) async {
+      final store = _FakeStore(
+        MitmTrust.ready,
+        removeOutcome: MitmRemoveOutcome.userStore,
+      );
+      await pumpView(
+        tester,
+        certificate: _certificate,
+        store: store,
+        view: const MitmOptionsView(isAndroid: false, isIOS: true),
+      );
+
+      await removeFromDetails(tester);
+
+      expect(
+        find.text(currentAppLocalizations.mitmRemoveInSettings),
+        findsOneWidget,
+      );
+      expect(
+        find.text(
+          currentAppLocalizations.mitmRemoveIosCertificateTip(
+            _certificate.subject,
+          ),
+        ),
+        findsOneWidget,
+      );
+      expect(button(currentAppLocalizations.openSettings), findsNothing);
+      expect(find.text(currentAppLocalizations.mitmTrustReady), findsOneWidget);
+    });
+
+    testWidgets('iOS install refreshes trust after prompted outcome', (
+      tester,
+    ) async {
+      final host = _FakeIosHost();
+      final store = IosMitmTrustStore(host: host);
+      await pumpView(
+        tester,
+        certificate: _certificate,
+        store: store,
+        view: const MitmOptionsView(isAndroid: false, isIOS: true),
+      );
+      final checksBefore = host.checks;
+
+      await tester.tap(row());
+      await tester.pumpAndSettle();
+
+      expect(host.checks, checksBefore + 1);
+      expect(find.text(currentAppLocalizations.mitmTrustReady), findsOneWidget);
+      expect(saved().trustedFingerprint, _certificate.fingerprint);
+    });
   });
 
   testWidgets('a trusted certificate is decrypted with', (tester) async {
@@ -701,6 +901,43 @@ void main() {
 
     expect(store.checks, before + 1);
   });
+
+  testWidgets(
+    'iOS regenerating instructs removing the old profile without reinstalling',
+    (tester) async {
+      final store = _FakeStore(
+        MitmTrust.ready,
+        removeOutcome: MitmRemoveOutcome.userStore,
+      );
+      await pumpView(
+        tester,
+        certificate: _certificate,
+        store: store,
+        view: const MitmOptionsView(isAndroid: false, isIOS: true),
+      );
+      when(
+        () => core.generateMitmCertificate(),
+      ).thenAnswer((_) async => _renewed);
+
+      await tester.tap(
+        find.text(currentAppLocalizations.regenerateCertificate),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(button(currentAppLocalizations.confirm));
+      await tester.pumpAndSettle();
+
+      expect(store.removed, [_certificate]);
+      expect(store.installed, isEmpty);
+      expect(
+        find.text(
+          currentAppLocalizations.mitmRemoveOldIosCertificateTip(
+            _certificate.subject,
+          ),
+        ),
+        findsOneWidget,
+      );
+    },
+  );
 
   testWidgets('regenerating in safe mode leaves the trust store alone', (
     tester,

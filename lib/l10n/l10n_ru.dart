@@ -3414,6 +3414,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Расшифровываются только приложения, доверяющие пользовательским сертификатам, в основном браузеры.';
 
   @override
+  String get mitmCertificateIosInstallTip =>
+      'Установите загруженный профиль в настройках: Основные › VPN и управление устройством, затем включите полное доверие в разделе Основные › Об этом устройстве › Доверие сертификатам.';
+
+  @override
+  String get mitmCertificateIosTrustTip =>
+      'Включите полное доверие для этого сертификата в настройках: Основные › Об этом устройстве › Доверие сертификатам.';
+
+  @override
   String get mitmAndroidRootDesc =>
       'Без root можно расшифровать только приложения, доверяющие пользовательским сертификатам, в основном браузеры. С root — любые приложения.';
 
@@ -3484,6 +3492,11 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String mitmRemoveOldIosCertificateTip(Object name) {
+    return 'Удалите старый профиль $name в настройках: Основные › VPN и управление устройством, затем установите новый сертификат.';
+  }
+
+  @override
   String mitmOldCertificateLeftTip(Object name) {
     return 'Не удалось удалить старый сертификат $name. Удалите его из доверенных корневых сертификатов вручную.';
   }
@@ -3509,6 +3522,11 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String mitmRemoveUserCertificateTip(Object name) {
     return 'Android не позволяет приложениям удалять пользовательские сертификаты. Удалите $name в настройках: Безопасность › Шифрование и учётные данные › Надёжные учётные данные › Пользователь.';
+  }
+
+  @override
+  String mitmRemoveIosCertificateTip(Object name) {
+    return 'iOS не позволяет приложениям удалять профили. Удалите $name в настройках: Основные › VPN и управление устройством.';
   }
 
   @override

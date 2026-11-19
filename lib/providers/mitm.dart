@@ -128,7 +128,9 @@ class MitmTrustState extends _$MitmTrustState {
       if (ref.mounted &&
           (outcome == null ||
               outcome == MitmInstallOutcome.installed ||
-              outcome == MitmInstallOutcome.untilReboot)) {
+              outcome == MitmInstallOutcome.untilReboot ||
+              (store is IosMitmTrustStore &&
+                  outcome == MitmInstallOutcome.prompted))) {
         await refresh();
       }
     }

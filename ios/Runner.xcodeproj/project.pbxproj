@@ -25,6 +25,7 @@
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */; };
 		7891A0012FF2266100620D82 /* ServicePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7891A0002FF2266100620D82 /* ServicePlugin.swift */; };
+		7E0000113000000000000001 /* MitmTrustPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E0000013000000000000001 /* MitmTrustPlugin.swift */; };
 		7891A0082FF23B9500620D82 /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 7891A0072FF23B9500620D82 /* libresolv.tbd */; };
 		7891A00A2FF2A10100620D82 /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 7891A0072FF23B9500620D82 /* libresolv.tbd */; };
 		7891A00F2FF2D00000620D82 /* SharedStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7891A00E2FF2D00000620D82 /* SharedStateStore.swift */; };
@@ -120,6 +121,7 @@
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		7891A0002FF2266100620D82 /* ServicePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServicePlugin.swift; sourceTree = "<group>"; };
+		7E0000013000000000000001 /* MitmTrustPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MitmTrustPlugin.swift; sourceTree = "<group>"; };
 		7891A0072FF23B9500620D82 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
 		7891A00E2FF2D00000620D82 /* SharedStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStateStore.swift; sourceTree = "<group>"; };
 		7891A0102FF2D00000620D82 /* CoreEventRelay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreEventRelay.swift; sourceTree = "<group>"; };
@@ -335,6 +337,7 @@
 				7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */,
 				0590E2612FFA576B00321CD8 /* ShortcutProvider.swift */,
 				7891A0002FF2266100620D82 /* ServicePlugin.swift */,
+				7E0000013000000000000001 /* MitmTrustPlugin.swift */,
 				7D0000023000000000000001 /* Core */,
 				7C0000013000000000000001 /* Tunnel */,
 				7D0000033000000000000001 /* Storage */,
@@ -666,6 +669,7 @@
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */,
 				7891A0012FF2266100620D82 /* ServicePlugin.swift in Sources */,
+				7E0000113000000000000001 /* MitmTrustPlugin.swift in Sources */,
 				7C0000123000000000000001 /* TunnelController.swift in Sources */,
 				7C0000133000000000000001 /* TunnelCoordinator.swift in Sources */,
 				7C0000143000000000000001 /* TunnelManagerStore.swift in Sources */,

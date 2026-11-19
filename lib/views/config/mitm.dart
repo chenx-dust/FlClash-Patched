@@ -41,9 +41,14 @@ Future<bool> _generateCertificate(MitmCa ca, String title) async {
 }
 
 class MitmOptionsView extends ConsumerStatefulWidget {
-  const MitmOptionsView({super.key, required this.isAndroid});
+  const MitmOptionsView({
+    super.key,
+    required this.isAndroid,
+    this.isIOS = false,
+  });
 
   final bool isAndroid;
+  final bool isIOS;
 
   @override
   ConsumerState<MitmOptionsView> createState() => _MitmOptionsViewState();
@@ -53,6 +58,7 @@ class _MitmOptionsViewState extends ConsumerState<MitmOptionsView> {
   late final AppLifecycleListener _lifecycle;
 
   bool get isAndroid => widget.isAndroid;
+  bool get isIOS => widget.isIOS;
 
   @override
   void initState() {
@@ -105,6 +111,13 @@ class _MitmOptionsViewState extends ConsumerState<MitmOptionsView> {
     }
     if (check?.trust == MitmTrust.ready) {
       return null;
+    }
+    if (isIOS) {
+      return switch (check?.trust) {
+        MitmTrust.untrusted => appLocalizations.mitmCertificateIosTrustTip,
+        MitmTrust.notInstalled => appLocalizations.mitmCertificateIosInstallTip,
+        _ => null,
+      };
     }
     final lines = [
       if (check?.certutilInstall case final command?)
@@ -169,6 +182,17 @@ class _MitmOptionsViewState extends ConsumerState<MitmOptionsView> {
           level: BannerLevel.success,
         );
       case MitmRemoveOutcome.userStore:
+        if (isIOS) {
+          await dialogs.showAlert(
+            title: appLocalizations.mitmRemoveInSettings,
+            message: TextSpan(
+              text: appLocalizations.mitmRemoveIosCertificateTip(
+                certificate.subject,
+              ),
+            ),
+          );
+          break;
+        }
         final open = await dialogs.showMessage(
           title: appLocalizations.mitmRemoveInSettings,
           message: TextSpan(
@@ -255,6 +279,22 @@ class _MitmOptionsViewState extends ConsumerState<MitmOptionsView> {
           appLocalizations.installCertificateSuccess,
           level: BannerLevel.success,
         );
+      case MitmInstallOutcome.prompted when isIOS:
+        if (check?.trust == MitmTrust.ready) {
+          dialogs.showBanner(
+            appLocalizations.installCertificateSuccess,
+            level: BannerLevel.success,
+          );
+        } else {
+          await dialogs.showAlert(
+            title: appLocalizations.installCertificate,
+            message: TextSpan(
+              text: check?.trust == MitmTrust.untrusted
+                  ? appLocalizations.mitmCertificateIosTrustTip
+                  : appLocalizations.mitmCertificateIosInstallTip,
+            ),
+          );
+        }
       case MitmInstallOutcome.saved:
         final ca = ref.read(mitmCaProvider).value;
         final open = await dialogs.showMessage(
@@ -333,6 +373,14 @@ class _MitmOptionsViewState extends ConsumerState<MitmOptionsView> {
       if (!context.mounted) {
         return;
       }
+      if (isIOS) {
+        await dialogs.showAlert(
+          message: TextSpan(
+            text: appLocalizations.mitmRemoveOldIosCertificateTip(old.subject),
+          ),
+        );
+        return;
+      }
       if (isAndroid) {
         final open = await dialogs.showMessage(
           message: TextSpan(
@@ -351,7 +399,9 @@ class _MitmOptionsViewState extends ConsumerState<MitmOptionsView> {
         ),
       );
     }
-    if (canTrust && (!isAndroid || systemStore) && context.mounted) {
+    if (canTrust &&
+        ((!isAndroid && !isIOS) || systemStore) &&
+        context.mounted) {
       await _install(context, ref, confirm: false);
     }
   }

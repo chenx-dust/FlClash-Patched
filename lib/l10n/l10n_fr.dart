@@ -3456,6 +3456,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Seules les applications qui font confiance aux certificats utilisateur, surtout les navigateurs, sont déchiffrées.';
 
   @override
+  String get mitmCertificateIosInstallTip =>
+      'Installez le profil téléchargé dans Réglages › Général › VPN et gestion de l’appareil, puis activez la confiance totale dans Général › Informations › Réglages des certificats de confiance.';
+
+  @override
+  String get mitmCertificateIosTrustTip =>
+      'Activez la confiance totale pour ce certificat dans Réglages › Général › Informations › Réglages des certificats de confiance.';
+
+  @override
   String get mitmAndroidRootDesc =>
       'Sans root, seules les applications qui font confiance aux certificats utilisateur, surtout les navigateurs, peuvent être déchiffrées. Avec root, toutes les applications le peuvent.';
 
@@ -3528,6 +3536,11 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String mitmRemoveOldIosCertificateTip(Object name) {
+    return 'Supprimez l’ancien profil, $name, dans Réglages › Général › VPN et gestion de l’appareil, puis installez le nouveau certificat.';
+  }
+
+  @override
   String mitmOldCertificateLeftTip(Object name) {
     return 'Impossible de supprimer l’ancien certificat, $name. Retirez-le vous-même des racines de confiance.';
   }
@@ -3553,6 +3566,11 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String mitmRemoveUserCertificateTip(Object name) {
     return 'Android ne permet pas aux applications de supprimer les certificats utilisateur. Supprimez $name dans Paramètres › Sécurité › Chiffrement et identifiants › Identifiants de confiance › Utilisateur.';
+  }
+
+  @override
+  String mitmRemoveIosCertificateTip(Object name) {
+    return 'iOS ne permet pas aux applications de supprimer les profils. Supprimez $name dans Réglages › Général › VPN et gestion de l’appareil.';
   }
 
   @override

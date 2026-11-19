@@ -3261,6 +3261,14 @@ class AppLocalizationsJa extends AppLocalizations {
       '復号されるのはユーザー証明書を信頼するアプリ（主にブラウザ）だけです。';
 
   @override
+  String get mitmCertificateIosInstallTip =>
+      'ダウンロードしたプロファイルを「設定」の「一般 › VPNとデバイス管理」でインストールしてから、「一般 › 情報 › 証明書信頼設定」で全面的に信頼を有効にしてください。';
+
+  @override
+  String get mitmCertificateIosTrustTip =>
+      '「設定」の「一般 › 情報 › 証明書信頼設定」でこの証明書の全面的な信頼を有効にしてください。';
+
+  @override
   String get mitmAndroidRootDesc =>
       'root がない場合、復号できるのはユーザー証明書を信頼するアプリ（主にブラウザ）だけです。root があればすべてのアプリを復号できます。';
 
@@ -3329,6 +3337,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String mitmRemoveOldIosCertificateTip(Object name) {
+    return '「設定」の「一般 › VPNとデバイス管理」で古いプロファイル $name を削除してから、新しい証明書をインストールしてください。';
+  }
+
+  @override
   String mitmOldCertificateLeftTip(Object name) {
     return '古い証明書 $name を削除できませんでした。信頼されたルートから手動で削除してください。';
   }
@@ -3353,6 +3366,11 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String mitmRemoveUserCertificateTip(Object name) {
     return 'Android ではアプリがユーザー証明書を削除できません。設定の「セキュリティ › 暗号化と認証情報 › 信頼できる認証情報 › ユーザー」で $name を削除してください。';
+  }
+
+  @override
+  String mitmRemoveIosCertificateTip(Object name) {
+    return 'iOS ではアプリからプロファイルを削除できません。「設定」の「一般 › VPNとデバイス管理」で $name を削除してください。';
   }
 
   @override

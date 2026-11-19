@@ -18,14 +18,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'rules.dart';
 
 class AdvancedConfigView extends ConsumerWidget {
-  const AdvancedConfigView({super.key, this.isAndroid});
+  const AdvancedConfigView({super.key, this.isAndroid, this.isIOS});
 
   final bool? isAndroid;
+  final bool? isIOS;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appLocalizations = context.appLocalizations;
     final isAndroid = this.isAndroid ?? system.isAndroid;
+    final isIOS = this.isIOS ?? system.isIOS;
     final items = [
       ListItem.open(
         title: Text(appLocalizations.network),
@@ -98,7 +100,7 @@ class AdvancedConfigView extends ConsumerWidget {
                 ListItem.open(
                   title: Text(appLocalizations.options),
                   leading: const GlyphIcon(AppGlyphs.sliders),
-                  widget: MitmOptionsView(isAndroid: isAndroid),
+                  widget: MitmOptionsView(isAndroid: isAndroid, isIOS: isIOS),
                 ),
               ],
             ),

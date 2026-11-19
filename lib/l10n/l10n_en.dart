@@ -3420,6 +3420,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Only apps that trust user certificates, mostly browsers, are decrypted.';
 
   @override
+  String get mitmCertificateIosInstallTip =>
+      'Install the downloaded profile in Settings under General › VPN & Device Management, then enable full trust under General › About › Certificate Trust Settings.';
+
+  @override
+  String get mitmCertificateIosTrustTip =>
+      'Enable full trust for the certificate in Settings under General › About › Certificate Trust Settings.';
+
+  @override
   String get mitmAndroidRootDesc =>
       'Without root, only apps that trust user certificates, mostly browsers, can be decrypted. With root, every app can.';
 
@@ -3490,6 +3498,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String mitmRemoveOldIosCertificateTip(Object name) {
+    return 'Remove the old profile, $name, in Settings under General › VPN & Device Management, then install the new one.';
+  }
+
+  @override
   String mitmOldCertificateLeftTip(Object name) {
     return 'The old certificate, $name, could not be removed. Remove it from the trusted roots yourself.';
   }
@@ -3515,6 +3528,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String mitmRemoveUserCertificateTip(Object name) {
     return 'Android doesn\'t let apps remove user certificates. Remove $name in Settings under Security › Encryption & credentials › Trusted credentials › User.';
+  }
+
+  @override
+  String mitmRemoveIosCertificateTip(Object name) {
+    return 'iOS doesn\'t let apps remove profiles. Remove $name in Settings under General › VPN & Device Management.';
   }
 
   @override

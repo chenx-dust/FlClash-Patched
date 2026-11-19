@@ -13,5 +13,6 @@ import UIKit
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
     ServicePlugin.register(with: engineBridge.applicationRegistrar.messenger())
+    MitmTrustPlugin.register(with: engineBridge.applicationRegistrar.messenger())
   }
 }

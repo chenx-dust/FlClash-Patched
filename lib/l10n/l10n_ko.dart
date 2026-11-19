@@ -3335,6 +3335,14 @@ class AppLocalizationsKo extends AppLocalizations {
       '사용자 인증서를 신뢰하는 앱(주로 브라우저)만 복호화됩니다.';
 
   @override
+  String get mitmCertificateIosInstallTip =>
+      '설정의 \'일반 › VPN 및 기기 관리\'에서 다운로드한 프로파일을 설치한 뒤 \'일반 › 정보 › 인증서 신뢰 설정\'에서 전체 신뢰를 켜세요.';
+
+  @override
+  String get mitmCertificateIosTrustTip =>
+      '설정의 \'일반 › 정보 › 인증서 신뢰 설정\'에서 이 인증서의 전체 신뢰를 켜세요.';
+
+  @override
   String get mitmAndroidRootDesc =>
       '루팅하지 않으면 사용자 인증서를 신뢰하는 앱(주로 브라우저)만 복호화할 수 있습니다. 루팅하면 모든 앱을 복호화할 수 있습니다.';
 
@@ -3402,6 +3410,11 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String mitmRemoveOldIosCertificateTip(Object name) {
+    return '설정의 \'일반 › VPN 및 기기 관리\'에서 이전 프로파일 $name을(를) 제거한 뒤 새 인증서를 설치하세요.';
+  }
+
+  @override
   String mitmOldCertificateLeftTip(Object name) {
     return '이전 인증서 $name을(를) 제거하지 못했습니다. 신뢰할 수 있는 루트에서 직접 제거하세요.';
   }
@@ -3427,6 +3440,11 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String mitmRemoveUserCertificateTip(Object name) {
     return 'Android에서는 앱이 사용자 인증서를 제거할 수 없습니다. 설정의 \'보안 › 암호화 및 사용자 인증 정보 › 신뢰할 수 있는 자격증명 › 사용자\'에서 $name을(를) 제거하세요.';
+  }
+
+  @override
+  String mitmRemoveIosCertificateTip(Object name) {
+    return 'iOS에서는 앱이 프로파일을 제거할 수 없습니다. 설정의 \'일반 › VPN 및 기기 관리\'에서 $name을(를) 제거하세요.';
   }
 
   @override

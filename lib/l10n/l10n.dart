@@ -6078,6 +6078,18 @@ abstract class AppLocalizations {
   /// **'Only apps that trust user certificates, mostly browsers, are decrypted.'**
   String get mitmCertificateAndroidReadyTip;
 
+  /// No description provided for @mitmCertificateIosInstallTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Install the downloaded profile in Settings under General › VPN & Device Management, then enable full trust under General › About › Certificate Trust Settings.'**
+  String get mitmCertificateIosInstallTip;
+
+  /// No description provided for @mitmCertificateIosTrustTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable full trust for the certificate in Settings under General › About › Certificate Trust Settings.'**
+  String get mitmCertificateIosTrustTip;
+
   /// No description provided for @mitmAndroidRootDesc.
   ///
   /// In en, this message translates to:
@@ -6180,6 +6192,12 @@ abstract class AppLocalizations {
   /// **'Remove the old certificate, {name}, in Settings under Security › Encryption & credentials › Trusted credentials › User, then install the new one.'**
   String mitmRemoveOldCertificateTip(Object name);
 
+  /// No description provided for @mitmRemoveOldIosCertificateTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove the old profile, {name}, in Settings under General › VPN & Device Management, then install the new one.'**
+  String mitmRemoveOldIosCertificateTip(Object name);
+
   /// No description provided for @mitmOldCertificateLeftTip.
   ///
   /// In en, this message translates to:
@@ -6221,6 +6239,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Android doesn\'t let apps remove user certificates. Remove {name} in Settings under Security › Encryption & credentials › Trusted credentials › User.'**
   String mitmRemoveUserCertificateTip(Object name);
+
+  /// No description provided for @mitmRemoveIosCertificateTip.
+  ///
+  /// In en, this message translates to:
+  /// **'iOS doesn\'t let apps remove profiles. Remove {name} in Settings under General › VPN & Device Management.'**
+  String mitmRemoveIosCertificateTip(Object name);
 
   /// No description provided for @mitmCannotRemove.
   ///
