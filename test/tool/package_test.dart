@@ -52,6 +52,29 @@ void main() {
     expect(results.rest, ['android']);
   });
 
+  test('parses iOS bundle and IPA export overrides', () {
+    final results = package.createPackageArgParser().parse([
+      'ios',
+      '--ios-bundle-id',
+      'com.example.app',
+      '--ios-development-team',
+      'ABCDE12345',
+      '--ipa-export-method',
+      'ad-hoc',
+    ]);
+
+    expect(results['ios-bundle-id'], 'com.example.app');
+    expect(results['ios-development-team'], 'ABCDE12345');
+    expect(results['ipa-export-method'], 'ad-hoc');
+
+    final plist = package.createPackageArgParser().parse([
+      'ios',
+      '--ipa-export-options-plist',
+      'ios/ExportOptions.plist',
+    ]);
+    expect(plist['ipa-export-options-plist'], 'ios/ExportOptions.plist');
+  });
+
   group('flutter build arguments', () {
     test('split the APK per ABI the run asks for', () {
       expect(
@@ -110,6 +133,48 @@ void main() {
           '0.9.4',
           '--build-number',
           '2026111612',
+        ],
+      );
+    });
+
+    test('build a signed IPA for the export method', () {
+      expect(
+        package.flutterBuildArguments(
+          _context(ReleaseOs.ios, arch: ReleaseArch.arm64),
+          iosOptions: const IosPackageOptions(exportMethod: 'ad-hoc'),
+          verbose: false,
+        ),
+        [
+          'build',
+          'ipa',
+          '--release',
+          '--dart-define-from-file=env.json',
+          '--build-name',
+          '0.9.4',
+          '--build-number',
+          '2026111612',
+          '--export-method=ad-hoc',
+        ],
+      );
+      expect(
+        package.flutterBuildArguments(
+          _context(ReleaseOs.ios, arch: ReleaseArch.arm64),
+          iosOptions: const IosPackageOptions(
+            exportOptionsPlist: 'ios/ExportOptions.plist',
+          ),
+          verbose: true,
+        ),
+        [
+          'build',
+          'ipa',
+          '--release',
+          '--dart-define-from-file=env.json',
+          '--build-name',
+          '0.9.4',
+          '--build-number',
+          '2026111612',
+          '--export-options-plist=ios/ExportOptions.plist',
+          '--verbose',
         ],
       );
     });
@@ -203,6 +268,41 @@ hooks:
     expect(content, endsWith('</dict>\n</plist>\n'));
   });
 
+  test('names the given team in entitlements', () {
+    final content = iosEntitlements(
+      source: '<plist version="1.0">\n<dict>\n</dict>\n</plist>\n',
+      appBundleId: 'com.example.app',
+      bundleIdentifier: 'com.example.app.NECore',
+      teamIdentifier: 'ABCDE12345',
+    );
+
+    expect(
+      content,
+      contains('<string>ABCDE12345.com.example.app.NECore</string>'),
+    );
+    expect(
+      content,
+      contains(
+        '<key>com.apple.developer.team-identifier</key>\n'
+        '\t<string>ABCDE12345</string>',
+      ),
+    );
+  });
+
+  test('round-trips the bundle settings in an xcconfig', () {
+    final settings = parseXcconfig(
+      '// comment\n'
+      'APP_BUNDLE_ID = com.example.app\n'
+      '  DEVELOPMENT_TEAM=ABCDE12345  \n',
+    );
+
+    expect(settings, {
+      'APP_BUNDLE_ID': 'com.example.app',
+      'DEVELOPMENT_TEAM': 'ABCDE12345',
+    });
+    expect(parseXcconfig(formatXcconfig(settings)), settings);
+  });
+
   test('a desktop build takes the host arch, another only as a dry run', () {
     expect(
       package.desktopArch(const [], host: ReleaseArch.arm64, dryRun: false),
@@ -288,6 +388,19 @@ hooks:
     expect(
       names(ReleaseOs.ios, ['ipa'], arch: ReleaseArch.arm64),
       'FlClash-rs-0.9.4-pre.2-ios-arm64-unsigned.ipa',
+    );
+    expect(
+      package
+          .planTarget(
+            _context(ReleaseOs.ios, arch: ReleaseArch.arm64),
+            'ipa',
+            androidArches: const [],
+            iosOptions: const IosPackageOptions(exportMethod: 'ad-hoc'),
+          )
+          .artifacts
+          .single
+          .name,
+      'FlClash-rs-0.9.4-pre.2-ios-arm64.ipa',
     );
     expect(
       names(ReleaseOs.android, ['apk']),

@@ -52,6 +52,27 @@ ArgParser createPackageArgParser() {
           'Release tag the build is named after; defaults to the v* tag on '
           'HEAD, else a nightly name.',
     )
+    ..addOption(
+      'ios-bundle-id',
+      valueHelp: 'com.example.app',
+      help:
+          'iOS app bundle identifier, kept in GeneratedBundleConfig.xcconfig.',
+    )
+    ..addOption(
+      'ios-development-team',
+      valueHelp: 'XXXXXXXXXX',
+      help: 'iOS development team, kept in GeneratedBundleConfig.xcconfig.',
+    )
+    ..addOption(
+      'ipa-export-method',
+      allowed: ['app-store', 'ad-hoc', 'development', 'enterprise'],
+      help: 'Sign the IPA for this distribution (default: unsigned).',
+    )
+    ..addOption(
+      'ipa-export-options-plist',
+      valueHelp: 'ios/ExportOptions.plist',
+      help: 'Sign the IPA with these export options (default: unsigned).',
+    )
     ..addOption('out', defaultsTo: 'dist', help: 'Output directory.')
     ..addFlag(
       'dry-run',
@@ -133,10 +154,15 @@ List<String> packagesNotBuildingAssets(String pubspec) {
 List<String> flutterBuildArguments(
   PackageContext context, {
   List<ReleaseArch> androidArches = const [],
+  IosPackageOptions iosOptions = const IosPackageOptions(),
   required bool verbose,
 }) {
   if (context.os == ReleaseOs.ios) {
-    return iosFlutterBuildArguments(context, verbose: verbose);
+    return iosFlutterBuildArguments(
+      context,
+      options: iosOptions,
+      verbose: verbose,
+    );
   }
   final android = context.os == ReleaseOs.android;
   final split = androidArches.where((arch) => arch != ReleaseArch.universal);
@@ -161,6 +187,7 @@ List<Step> planBuild(
   PackageContext context, {
   required String env,
   required List<ReleaseArch> androidArches,
+  IosPackageOptions iosOptions = const IosPackageOptions(),
   required bool verbose,
 }) {
   final steps = <Step>[
@@ -175,6 +202,7 @@ List<Step> planBuild(
     Task('create ${context.outputDirectory}', () async {
       Directory(context.outputDirectory).createSync(recursive: true);
     }),
+    if (context.os == ReleaseOs.ios) ?planIosBundleConfig(context, iosOptions),
   ];
   final hasUniversal = androidArches.contains(ReleaseArch.universal);
   final splitArches = androidArches
@@ -187,6 +215,7 @@ List<Step> planBuild(
         flutterBuildArguments(
           context,
           androidArches: splitArches,
+          iosOptions: iosOptions,
           verbose: verbose,
         ),
         workingDirectory: context.root,
@@ -197,7 +226,11 @@ List<Step> planBuild(
     steps.add(
       Command(
         'flutter',
-        flutterBuildArguments(context, verbose: verbose),
+        flutterBuildArguments(
+          context,
+          iosOptions: iosOptions,
+          verbose: verbose,
+        ),
         workingDirectory: context.root,
       ),
     );
@@ -209,10 +242,11 @@ TargetPlan planTarget(
   PackageContext context,
   String target, {
   required List<ReleaseArch> androidArches,
+  IosPackageOptions iosOptions = const IosPackageOptions(),
 }) {
   return switch ((context.os, target)) {
     (ReleaseOs.android, 'apk') => planApk(context, androidArches),
-    (ReleaseOs.ios, 'ipa') => planIpa(context),
+    (ReleaseOs.ios, 'ipa') => planIpa(context, options: iosOptions),
     (ReleaseOs.linux, 'deb') => planDeb(context),
     (ReleaseOs.linux, 'rpm') => planRpm(context),
     (ReleaseOs.linux, 'appimage') => planAppImage(context),
@@ -224,6 +258,12 @@ TargetPlan planTarget(
 }
 
 Future<int> _package(ArgResults results) async {
+  if (results['ipa-export-method'] != null &&
+      results['ipa-export-options-plist'] != null) {
+    throw const FormatException(
+      '--ipa-export-method and --ipa-export-options-plist cannot be combined',
+    );
+  }
   final host = hostOs();
   if (host == null) {
     throw PackageError('unsupported host ${Platform.operatingSystem}');
@@ -289,16 +329,28 @@ Future<int> _package(ArgResults results) async {
     description: pubspecDescriptionOf(root),
     outputDirectory: p.absolute(results['out'] as String),
   );
+  final iosOptions = IosPackageOptions(
+    bundleId: results['ios-bundle-id'] as String?,
+    developmentTeam: results['ios-development-team'] as String?,
+    exportMethod: results['ipa-export-method'] as String?,
+    exportOptionsPlist: results['ipa-export-options-plist'] as String?,
+  );
   final verbose = results['verbose'] as bool;
   final plans = [
     for (final target in targets)
-      planTarget(context, target, androidArches: androidArches),
+      planTarget(
+        context,
+        target,
+        androidArches: androidArches,
+        iosOptions: iosOptions,
+      ),
   ];
   final steps = [
     ...planBuild(
       context,
       env: env,
       androidArches: androidArches,
+      iosOptions: iosOptions,
       verbose: verbose,
     ),
     for (final plan in plans) ...plan.steps,

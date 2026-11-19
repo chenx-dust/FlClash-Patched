@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:fl_clash/common/release_asset.dart';
@@ -9,12 +10,29 @@ import 'steps.dart';
 const defaultIosAppBundleId = 'com.follow.clash';
 const iosAppOutputPath = 'build/ios/iphoneos/Runner.app';
 const iosIpaOutputPath = 'build/ios/ipa';
+const iosBundleConfigPath = 'ios/Flutter/GeneratedBundleConfig.xcconfig';
 
 typedef IosSigningTarget = ({
   String bundle,
   String bundleIdentifier,
   String entitlements,
 });
+
+class IosPackageOptions {
+  const IosPackageOptions({
+    this.bundleId,
+    this.developmentTeam,
+    this.exportMethod,
+    this.exportOptionsPlist,
+  });
+
+  final String? bundleId;
+  final String? developmentTeam;
+  final String? exportMethod;
+  final String? exportOptionsPlist;
+
+  bool get isSigned => exportMethod != null || exportOptionsPlist != null;
+}
 
 ReleaseArch iosArch(List<ReleaseArch> requested) {
   if (requested.isEmpty ||
@@ -26,8 +44,26 @@ ReleaseArch iosArch(List<ReleaseArch> requested) {
 
 List<String> iosFlutterBuildArguments(
   PackageContext context, {
+  IosPackageOptions options = const IosPackageOptions(),
   required bool verbose,
 }) {
+  if (options.isSigned) {
+    return [
+      'build',
+      'ipa',
+      '--release',
+      '--dart-define-from-file=env.json',
+      '--build-name',
+      context.buildName,
+      '--build-number',
+      context.buildNumber,
+      if (options.exportOptionsPlist != null)
+        '--export-options-plist=${options.exportOptionsPlist}'
+      else
+        '--export-method=${options.exportMethod ?? 'app-store'}',
+      if (verbose) '--verbose',
+    ];
+  }
   return [
     'build',
     'ios',
@@ -40,6 +76,25 @@ List<String> iosFlutterBuildArguments(
     context.buildNumber,
     if (verbose) '--verbose',
   ];
+}
+
+Step? planIosBundleConfig(PackageContext context, IosPackageOptions options) {
+  if (options.bundleId == null && options.developmentTeam == null) {
+    return null;
+  }
+  return Task('update $iosBundleConfigPath', () async {
+    final configFile = File(context.path(iosBundleConfigPath));
+    final existing = configFile.existsSync()
+        ? parseXcconfig(configFile.readAsStringSync())
+        : <String, String>{};
+    final updated = {
+      ...existing,
+      'APP_BUNDLE_ID': ?options.bundleId,
+      'DEVELOPMENT_TEAM': ?options.developmentTeam,
+    };
+    configFile.parent.createSync(recursive: true);
+    configFile.writeAsStringSync(formatXcconfig(updated));
+  });
 }
 
 List<IosSigningTarget> iosSigningTargets({
@@ -60,8 +115,8 @@ List<IosSigningTarget> iosSigningTargets({
 }
 
 /// Resolves the build settings Xcode would expand. iOS refuses a Network
-/// Extension whose signature names no application identifier, so a placeholder
-/// team stands in until the bundle is signed for real.
+/// Extension whose signature names no application identifier, so without a
+/// team a placeholder stands in until the bundle is signed for real.
 String iosEntitlements({
   required String source,
   required String appBundleId,
@@ -82,9 +137,52 @@ String iosEntitlements({
       '${resolved.substring(end)}';
 }
 
-/// The IPA ships unsigned for whoever installs it to sign; each bundle still
-/// carries its own entitlements, since a re-signer copies them from the bundle.
-TargetPlan planIpa(PackageContext context) {
+Map<String, String> parseXcconfig(String source) {
+  return {
+    for (final line in LineSplitter.split(source))
+      if (RegExp(
+            r'^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$',
+          ).firstMatch(line)
+          case final match?)
+        match[1]!: match[2]!,
+  };
+}
+
+String formatXcconfig(Map<String, String> settings) {
+  return [
+    for (final MapEntry(:key, :value) in settings.entries) '$key = $value',
+    '',
+  ].join('\n');
+}
+
+/// Without an export method, the IPA ships unsigned for whoever installs it to
+/// sign; each bundle still carries its own entitlements, since a re-signer
+/// copies them from the bundle.
+TargetPlan planIpa(
+  PackageContext context, {
+  IosPackageOptions options = const IosPackageOptions(),
+}) {
+  if (options.isSigned) {
+    final name = context.assetName(ReleaseArch.arm64, 'ipa');
+    final output = context.outputPath(name);
+    return TargetPlan(
+      steps: [
+        Task('copy the signed IPA from $iosIpaOutputPath to $output', () async {
+          final outputDir = Directory(context.path(iosIpaOutputPath));
+          final built = outputDir.existsSync()
+              ? outputDir.listSync().whereType<File>().where(
+                  (file) => file.path.endsWith('.ipa'),
+                )
+              : const <File>[];
+          if (built.isEmpty) {
+            throw PackageError('No IPA found in ${outputDir.path}');
+          }
+          built.first.copySync(output);
+        }),
+      ],
+      artifacts: [PlannedArtifact(name: name, arch: ReleaseArch.arm64)],
+    );
+  }
   final name = context.assetName(
     ReleaseArch.arm64,
     'ipa',
@@ -98,6 +196,16 @@ TargetPlan planIpa(PackageContext context) {
         if (!Directory(appPath).existsSync()) {
           throw PackageError('iOS app bundle not found: $appPath');
         }
+        final configFile = File(context.path(iosBundleConfigPath));
+        final config = configFile.existsSync()
+            ? parseXcconfig(configFile.readAsStringSync())
+            : const <String, String>{};
+        final appBundleId =
+            options.bundleId ??
+            config['APP_BUNDLE_ID'] ??
+            defaultIosAppBundleId;
+        final teamIdentifier =
+            options.developmentTeam ?? config['DEVELOPMENT_TEAM'];
         final frameworks = Directory(p.join(appPath, 'Frameworks'));
         if (frameworks.existsSync()) {
           for (final framework in frameworks.listSync()) {
@@ -110,7 +218,7 @@ TargetPlan planIpa(PackageContext context) {
         for (final target in iosSigningTargets(
           rootDir: context.root,
           appPath: appPath,
-          appBundleId: defaultIosAppBundleId,
+          appBundleId: appBundleId,
         )) {
           final entitlements = File(
             p.join(stage, '${p.basename(target.bundle)}.entitlements'),
@@ -118,8 +226,9 @@ TargetPlan planIpa(PackageContext context) {
           entitlements.writeAsStringSync(
             iosEntitlements(
               source: File(target.entitlements).readAsStringSync(),
-              appBundleId: defaultIosAppBundleId,
+              appBundleId: appBundleId,
               bundleIdentifier: target.bundleIdentifier,
+              teamIdentifier: teamIdentifier,
             ),
           );
           await _adHocSign(target.bundle, entitlements: entitlements.path);

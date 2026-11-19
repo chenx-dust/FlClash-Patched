@@ -28,6 +28,12 @@ dart tool/package.dart linux --dry-run --arch arm64   # names and steps only, an
 Artifacts land in `dist/` as `FlClash-<line>-<version>-<os>-<arch>[-<form>].<ext>`, with `manifest.json` and
 `FlClash-<line>-<version>-SHA256SUMS`; see Packaging in `architecture.md`.
 
+iOS builds use `com.follow.clash` unless the gitignored `ios/Flutter/GeneratedBundleConfig.xcconfig` sets
+`APP_BUNDLE_ID` or `DEVELOPMENT_TEAM`. `--ios-bundle-id` and `--ios-development-team` write those values into that
+file, and the unsigned IPA's entitlements use whatever the file ends up with. `--ipa-export-method` or
+`--ipa-export-options-plist` builds a signed IPA with `flutter build ipa` instead, which needs the team's signing
+identities on the host.
+
 The desktop Go core and the Rust helper build automatically: Flutter runs
 `plugins/setup/hook/build.dart` on every `flutter build` and `flutter test`,
 and the hook drives `CoreBuilder` from the `setup_hooks` package in
