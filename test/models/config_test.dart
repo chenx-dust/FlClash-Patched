@@ -508,6 +508,33 @@ void main() {
         );
       });
 
+      test('bounds what decryption holds on iOS for the Network Extension', () {
+        final limits =
+            defaultMitm.coreJson(const MitmRules(), isIOS: true)['limits']
+                as Map<String, Object?>;
+
+        expect(limits, {
+          'max-body-size': 512 << 10,
+          'body-buffer': 2 << 20,
+          'certificate-cache': 64,
+          'max-sessions': 64,
+          'script-concurrency': 1,
+          'script-memory': 8 << 20,
+          'capture-entries': 100,
+          'capture-bytes': 4 << 20,
+        });
+        expect(mitmCaptureOptions(isAndroid: false, isIOS: true), [
+          50,
+          100,
+          200,
+          500,
+          1000,
+        ]);
+        expect(mitmCaptureBytes(isAndroid: false, isIOS: true), 4 << 20);
+        expect(mitmMaxBodySize(isAndroid: false, isIOS: true), 512 << 10);
+        expect(defaultMitm.captureLimit(isAndroid: false, isIOS: true), 100);
+      });
+
       test('the capture limit reaches the Core among the limits', () {
         final json = const Mitm(
           captureEntries: 5000,

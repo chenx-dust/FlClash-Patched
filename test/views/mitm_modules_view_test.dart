@@ -690,4 +690,42 @@ void main() {
 
     expect(find.text(currentAppLocalizations.mitmNewModule), findsOneWidget);
   });
+
+  test('the system tip recognizes iOS targets and warns on mismatches', () {
+    final appLocalizations = loadAppLocalizations(const Locale('en'));
+
+    expect(
+      mitmModuleSystemTip(
+        appLocalizations,
+        'iOS',
+        isMacOS: false,
+        isIOS: true,
+        isAndroid: false,
+        isWindows: false,
+      ),
+      isNull,
+    );
+    expect(
+      mitmModuleSystemTip(
+        appLocalizations,
+        'ios,macos',
+        isMacOS: false,
+        isIOS: true,
+        isAndroid: false,
+        isWindows: false,
+      ),
+      isNull,
+    );
+    expect(
+      mitmModuleSystemTip(
+        appLocalizations,
+        'mac',
+        isMacOS: false,
+        isIOS: true,
+        isAndroid: false,
+        isWindows: false,
+      ),
+      appLocalizations.mitmModuleSystemTip('mac'),
+    );
+  });
 }

@@ -365,12 +365,13 @@ typedef MitmNetworkChangeState = ({
 });
 
 /// A list goes over the user's only when it replaces it whole, a per-domain
-/// entry only where the user wrote that domain. Android's VPN reads its own
-/// route rows, never the TUN overrides, and only adds a module's routes.
+/// entry only where the user wrote that domain. Mobile VPNs read their own
+/// route rows, never the TUN overrides, and only add a module's routes.
 bool mitmChangeOverridesUser(
   MitmNetworkChange change, {
   required ProfileOverrides overrides,
   required Map<String, String> hosts,
+  bool? isMobile,
 }) {
   bool dnsKey(DnsOverrideKey key) => overrides.dnsOverrideKeys.contains(key);
   return switch (change.key) {
@@ -386,7 +387,7 @@ bool mitmChangeOverridesUser(
     MitmNetworkKey.hosts => hosts.containsKey(change.entry),
     MitmNetworkKey.routeExcludeAddress =>
       change.replaces &&
-          !system.isAndroid &&
+          !(isMobile ?? system.isMobile) &&
           overrides.tunOverrideKeys.contains(
             TunOverrideKey.routeExcludeAddress,
           ),
@@ -463,7 +464,7 @@ Future<MitmTakeover> mitmTakeover(Ref ref) async {
           hosts[change.entry!] = module.name;
         case MitmNetworkKey.nameserverPolicy:
           nameserverPolicy[change.entry!] = module.name;
-        case MitmNetworkKey.routeExcludeAddress when system.isAndroid:
+        case MitmNetworkKey.routeExcludeAddress when system.isMobile:
           break;
         case final key when change.replaces:
           keys[key] = module.name;

@@ -421,6 +421,35 @@ void main() {
     expect(find.text('5000'), findsOneWidget);
   });
 
+  testWidgets('iOS capture limit uses the iOS default and options', (
+    tester,
+  ) async {
+    await pumpView(
+      tester,
+      certificate: _certificate,
+      mitm: const Mitm(enable: true),
+      view: const MitmOptionsView(isAndroid: false, isIOS: true),
+    );
+
+    await openCapture(tester);
+    expect(
+      find.text(
+        currentAppLocalizations.httpCaptureLimitDesc(
+          mitmCaptureBytes(isAndroid: false, isIOS: true).traffic.show,
+          mitmMaxBodySize(isAndroid: false, isIOS: true).traffic.show,
+        ),
+      ),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('100'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('500'));
+    await tester.pumpAndSettle();
+
+    expect(saved().captureEntries, 500);
+    expect(find.text('500'), findsOneWidget);
+  });
+
   group('the certificate row', () {
     Finder row() => find.text(_certificate.subject);
 

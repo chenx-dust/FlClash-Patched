@@ -26,6 +26,7 @@ final class CoreMessageRouter: @unchecked Sendable {
     "profile.clearEffect",
     "proxy.validate",
     "filter.validate",
+    "mitm.validate",
     "proxy.convert",
     "shareLink.encode",
     "shareLink.decode",

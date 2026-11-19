@@ -117,6 +117,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
     stopNetworkObservation()
     memoryPressureSource?.cancel()
     memoryPressureSource = nil
+    MobileSetMitmPressure(MitmPressure.none.rawValue)
     eventQueue.stop()
     MobileStopTun()
     reloadControls()
@@ -146,11 +147,22 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
       return
     }
     let source = DispatchSource.makeMemoryPressureSource(
-      eventMask: [.warning, .critical],
+      eventMask: [.normal, .warning, .critical],
       queue: .global(qos: .utility)
     )
-    source.setEventHandler {
-      MobileForceGC()
+    source.setEventHandler { [weak source] in
+      guard let event = source?.data else {
+        return
+      }
+      if event.contains(.critical) {
+        MobileSetMitmPressure(MitmPressure.relay.rawValue)
+        MobileForceGC()
+      } else if event.contains(.warning) {
+        MobileSetMitmPressure(MitmPressure.noBodies.rawValue)
+        MobileForceGC()
+      } else if event.contains(.normal) {
+        MobileSetMitmPressure(MitmPressure.none.rawValue)
+      }
     }
     source.resume()
     memoryPressureSource = source
@@ -213,6 +225,13 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
       )
     }
   }
+}
+
+private enum MitmPressure: Int32 {
+  case none = 0
+  case noScripts = 1
+  case noBodies = 2
+  case relay = 3
 }
 
 private enum PacketTunnelProviderError: LocalizedError {

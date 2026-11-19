@@ -538,7 +538,9 @@ class _MitmOptionsViewState extends ConsumerState<MitmOptionsView> {
                 check: check,
               ),
             ),
-            generateSection(items: [_MitmCaptureItem(isAndroid: isAndroid)]),
+            generateSection(
+              items: [_MitmCaptureItem(isAndroid: isAndroid, isIOS: isIOS)],
+            ),
             generateSection(
               items: [
                 ConfigToggleItem(
@@ -637,9 +639,10 @@ class MitmEnableItem extends ConsumerWidget {
 }
 
 class _MitmCaptureItem extends ConsumerWidget {
-  const _MitmCaptureItem({required this.isAndroid});
+  const _MitmCaptureItem({required this.isAndroid, this.isIOS = false});
 
   final bool isAndroid;
+  final bool isIOS;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -654,15 +657,16 @@ class _MitmCaptureItem extends ConsumerWidget {
       subtitle: Text(
         capture ? appLocalizations.enabled : appLocalizations.disabled,
       ),
-      widget: _MitmCaptureView(isAndroid: isAndroid),
+      widget: _MitmCaptureView(isAndroid: isAndroid, isIOS: isIOS),
     );
   }
 }
 
 class _MitmCaptureView extends ConsumerWidget {
-  const _MitmCaptureView({required this.isAndroid});
+  const _MitmCaptureView({required this.isAndroid, this.isIOS = false});
 
   final bool isAndroid;
+  final bool isIOS;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -672,7 +676,7 @@ class _MitmCaptureView extends ConsumerWidget {
         (state) => (
           state.mitm.enable,
           state.mitm.capture,
-          state.mitm.captureLimit(isAndroid: isAndroid),
+          state.mitm.captureLimit(isAndroid: isAndroid, isIOS: isIOS),
         ),
       ),
     );
@@ -689,7 +693,7 @@ class _MitmCaptureView extends ConsumerWidget {
         (state) => state.value?.any((module) => module.enabled) == true,
       ),
     );
-    final options = mitmCaptureOptions(isAndroid: isAndroid);
+    final options = mitmCaptureOptions(isAndroid: isAndroid, isIOS: isIOS);
     return Scaffold(
       title: appLocalizations.httpCapture,
       body: ListView(
@@ -731,8 +735,8 @@ class _MitmCaptureView extends ConsumerWidget {
               ),
             ],
             footer: appLocalizations.httpCaptureLimitDesc(
-              mitmCaptureBytes(isAndroid: isAndroid).traffic.show,
-              mitmMaxBodySize(isAndroid: isAndroid).traffic.show,
+              mitmCaptureBytes(isAndroid: isAndroid, isIOS: isIOS).traffic.show,
+              mitmMaxBodySize(isAndroid: isAndroid, isIOS: isIOS).traffic.show,
             ),
           ),
         ],

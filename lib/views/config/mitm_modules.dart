@@ -368,6 +368,29 @@ class _MitmModuleRow extends ConsumerWidget {
   }
 }
 
+/// A module written for Apple systems still applies, so this only warns.
+@visibleForTesting
+String? mitmModuleSystemTip(
+  AppLocalizations appLocalizations,
+  String? target, {
+  required bool isMacOS,
+  required bool isIOS,
+  required bool isAndroid,
+  required bool isWindows,
+}) {
+  final current = switch (true) {
+    _ when isMacOS => 'mac',
+    _ when isIOS => 'ios',
+    _ when isAndroid => 'android',
+    _ when isWindows => 'windows',
+    _ => 'linux',
+  };
+  if (target == null || target.toLowerCase().contains(current)) {
+    return null;
+  }
+  return appLocalizations.mitmModuleSystemTip(target);
+}
+
 class MitmModuleView extends ConsumerWidget {
   const MitmModuleView({super.key, required this.id});
 
@@ -403,19 +426,15 @@ class MitmModuleView extends ConsumerWidget {
     };
   }
 
-  /// A module written for Apple systems still applies, so this only warns.
-  String? _systemTip(AppLocalizations appLocalizations, String? target) {
-    final current = switch (true) {
-      _ when system.isMacOS => 'mac',
-      _ when system.isAndroid => 'android',
-      _ when system.isWindows => 'windows',
-      _ => 'linux',
-    };
-    if (target == null || target.toLowerCase().contains(current)) {
-      return null;
-    }
-    return appLocalizations.mitmModuleSystemTip(target);
-  }
+  String? _systemTip(AppLocalizations appLocalizations, String? target) =>
+      mitmModuleSystemTip(
+        appLocalizations,
+        target,
+        isMacOS: system.isMacOS,
+        isIOS: system.isIOS,
+        isAndroid: system.isAndroid,
+        isWindows: system.isWindows,
+      );
 
   Widget _linesItem(
     String title,

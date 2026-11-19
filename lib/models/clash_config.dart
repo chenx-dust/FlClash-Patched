@@ -2260,26 +2260,49 @@ const _androidMitmLimits = {
   'capture-bytes': 16 << 20,
 };
 
+const _iosMitmLimits = {
+  'max-body-size': 512 << 10,
+  'body-buffer': 2 << 20,
+  'certificate-cache': 64,
+  'max-sessions': 64,
+  'script-concurrency': 1,
+  'script-memory': 8 << 20,
+  'capture-entries': 100,
+  'capture-bytes': 4 << 20,
+};
+
 /// Past the top option the byte limit drops records before the count does.
 const _desktopMitmCaptureOptions = [500, 1000, 2000, 5000, 10000, 20000];
 const _androidMitmCaptureOptions = [200, 500, 1000, 2000, 5000];
+const _iosMitmCaptureOptions = [50, 100, 200, 500, 1000];
 
-List<int> mitmCaptureOptions({required bool isAndroid}) =>
-    isAndroid ? _androidMitmCaptureOptions : _desktopMitmCaptureOptions;
+List<int> mitmCaptureOptions({required bool isAndroid, bool isIOS = false}) =>
+    isIOS
+    ? _iosMitmCaptureOptions
+    : isAndroid
+    ? _androidMitmCaptureOptions
+    : _desktopMitmCaptureOptions;
 
-Map<String, Object> _mitmLimits({required bool isAndroid}) =>
-    isAndroid ? _androidMitmLimits : _desktopMitmLimits;
+Map<String, Object> _mitmLimits({
+  required bool isAndroid,
+  bool isIOS = false,
+}) => isIOS
+    ? _iosMitmLimits
+    : isAndroid
+    ? _androidMitmLimits
+    : _desktopMitmLimits;
 
-int mitmCaptureBytes({required bool isAndroid}) =>
-    _mitmLimits(isAndroid: isAndroid)['capture-bytes']! as int;
+int mitmCaptureBytes({required bool isAndroid, bool isIOS = false}) =>
+    _mitmLimits(isAndroid: isAndroid, isIOS: isIOS)['capture-bytes']! as int;
 
-int mitmMaxBodySize({required bool isAndroid}) =>
-    _mitmLimits(isAndroid: isAndroid)['max-body-size']! as int;
+int mitmMaxBodySize({required bool isAndroid, bool isIOS = false}) =>
+    _mitmLimits(isAndroid: isAndroid, isIOS: isIOS)['max-body-size']! as int;
 
 extension MitmExt on Mitm {
-  int captureLimit({required bool isAndroid}) =>
+  int captureLimit({required bool isAndroid, bool isIOS = false}) =>
       captureEntries ??
-      _mitmLimits(isAndroid: isAndroid)['capture-entries']! as int;
+      _mitmLimits(isAndroid: isAndroid, isIOS: isIOS)['capture-entries']!
+          as int;
 
   /// Ahead of the list, since the first match decides.
   Mitm decryptingHost(String host) => copyWith(
@@ -2300,7 +2323,11 @@ extension MitmExt on Mitm {
   );
 
   /// The hostnames come from [rules] alone, which the user's own lead.
-  Map<String, Object?> coreJson(MitmRules rules) {
+  Map<String, Object?> coreJson(
+    MitmRules rules, {
+    bool? isAndroid,
+    bool? isIOS,
+  }) {
     final json = toJson()
       ..remove('hostname')
       ..remove('decrypt-untrusted')
@@ -2314,7 +2341,10 @@ extension MitmExt on Mitm {
       'decrypt-tls': decryptUntrusted || trustedFingerprint != null,
       'ca-fingerprint': decryptUntrusted ? '' : trustedFingerprint ?? '',
       'limits': {
-        ..._mitmLimits(isAndroid: system.isAndroid),
+        ..._mitmLimits(
+          isAndroid: isAndroid ?? system.isAndroid,
+          isIOS: isIOS ?? system.isIOS,
+        ),
         'capture-entries': ?captureEntries,
       },
     };

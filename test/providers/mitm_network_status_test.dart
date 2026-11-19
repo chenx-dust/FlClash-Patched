@@ -62,4 +62,33 @@ void main() {
       isFalse,
     );
   });
+
+  test('routeExcludeAddress only overrides desktop TUN settings', () {
+    const change = MitmNetworkChange(
+      MitmNetworkKey.routeExcludeAddress,
+      edit: MitmListEdit(replace: true, before: ['10.0.0.0/8']),
+    );
+    const tunOverrides = ProfileOverrides(
+      tunOverrideKeys: {TunOverrideKey.routeExcludeAddress},
+    );
+
+    expect(
+      mitmChangeOverridesUser(
+        change,
+        overrides: tunOverrides,
+        hosts: const {},
+        isMobile: true,
+      ),
+      isFalse,
+    );
+    expect(
+      mitmChangeOverridesUser(
+        change,
+        overrides: tunOverrides,
+        hosts: const {},
+        isMobile: false,
+      ),
+      isTrue,
+    );
+  });
 }
