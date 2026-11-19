@@ -8,6 +8,7 @@ import 'package:yaml/yaml.dart';
 
 import 'src/package/android.dart';
 import 'src/package/context.dart';
+import 'src/package/ios.dart';
 import 'src/package/linux.dart';
 import 'src/package/macos.dart';
 import 'src/package/manifest.dart';
@@ -18,6 +19,7 @@ import 'src/package/windows.dart';
 
 const defaultTargets = <ReleaseOs, List<String>>{
   ReleaseOs.android: ['apk'],
+  ReleaseOs.ios: ['ipa'],
   ReleaseOs.linux: ['deb', 'appimage', 'rpm'],
   ReleaseOs.macos: ['dmg'],
   ReleaseOs.windows: ['exe', 'zip'],
@@ -33,7 +35,7 @@ ArgParser createPackageArgParser() {
     )
     ..addMultiOption(
       'targets',
-      valueHelp: 'exe,zip,dmg,deb,rpm,appimage,apk',
+      valueHelp: 'exe,zip,dmg,deb,rpm,appimage,apk,ipa',
       help: 'Package formats (default: every format of the platform).',
     )
     ..addMultiOption(
@@ -65,7 +67,9 @@ void _usage(ArgParser parser) {
     ..writeln('Usage: dart tool/package.dart [platform] [options]')
     ..writeln('       dart tool/package.dart merge <dir>... [--out dist]')
     ..writeln()
-    ..writeln('Platform: the host platform (default) or android.')
+    ..writeln(
+      'Platform: the host platform (default), android, or ios (on macOS).',
+    )
     ..writeln(parser.usage);
 }
 
@@ -131,6 +135,9 @@ List<String> flutterBuildArguments(
   List<ReleaseArch> androidArches = const [],
   required bool verbose,
 }) {
+  if (context.os == ReleaseOs.ios) {
+    return iosFlutterBuildArguments(context, verbose: verbose);
+  }
   final android = context.os == ReleaseOs.android;
   final split = androidArches.where((arch) => arch != ReleaseArch.universal);
   return [
@@ -205,6 +212,7 @@ TargetPlan planTarget(
 }) {
   return switch ((context.os, target)) {
     (ReleaseOs.android, 'apk') => planApk(context, androidArches),
+    (ReleaseOs.ios, 'ipa') => planIpa(context),
     (ReleaseOs.linux, 'deb') => planDeb(context),
     (ReleaseOs.linux, 'rpm') => planRpm(context),
     (ReleaseOs.linux, 'appimage') => planAppImage(context),
@@ -224,10 +232,15 @@ Future<int> _package(ArgResults results) async {
       ? host
       : ReleaseOs.values.asNameMap()[results.rest.first];
   final dryRun = results['dry-run'] as bool;
-  if (os == null || (os != host && os != ReleaseOs.android && !dryRun)) {
+  final allowed = [
+    host,
+    ReleaseOs.android,
+    if (host == ReleaseOs.macos) ReleaseOs.ios,
+  ];
+  if (os == null || (!allowed.contains(os) && !dryRun)) {
     throw PackageError(
       'cannot package "${results.rest.first}" on ${host.name}; '
-      'allowed: ${host.name}, android',
+      'allowed: ${allowed.map((o) => o.name).join(', ')}',
     );
   }
   final root = Directory.current.path;
@@ -254,13 +267,15 @@ Future<int> _package(ArgResults results) async {
       : arches.isEmpty
       ? const [ReleaseArch.arm64, ReleaseArch.armv7, ReleaseArch.amd64]
       : arches;
-  final arch = os == ReleaseOs.android
-      ? ReleaseArch.universal
-      : desktopArch(
-          arches,
-          host: os == host ? hostArch() : null,
-          dryRun: dryRun,
-        );
+  final arch = switch (os) {
+    ReleaseOs.android => ReleaseArch.universal,
+    ReleaseOs.ios => iosArch(arches),
+    _ => desktopArch(
+      arches,
+      host: os == host ? hostArch() : null,
+      dryRun: dryRun,
+    ),
+  };
   final resolved = await resolveVersion(root, tag: results['tag'] as String?);
   final context = PackageContext(
     root: root,

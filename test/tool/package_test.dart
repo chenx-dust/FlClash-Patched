@@ -8,6 +8,7 @@ import 'package:test/test.dart';
 
 import '../../tool/package.dart' as package;
 import '../../tool/src/package/context.dart';
+import '../../tool/src/package/ios.dart';
 import '../../tool/src/package/linux.dart';
 import '../../tool/src/package/manifest.dart';
 import '../../tool/src/package/steps.dart';
@@ -92,6 +93,26 @@ void main() {
         ],
       );
     });
+
+    test('build an unsigned iOS app bundle', () {
+      expect(
+        package.flutterBuildArguments(
+          _context(ReleaseOs.ios, arch: ReleaseArch.arm64),
+          verbose: false,
+        ),
+        [
+          'build',
+          'ios',
+          '--release',
+          '--no-codesign',
+          '--dart-define-from-file=env.json',
+          '--build-name',
+          '0.9.4',
+          '--build-number',
+          '2026111612',
+        ],
+      );
+    });
   });
 
   test('refuses to package while a native build hook is skipped', () {
@@ -111,10 +132,75 @@ hooks:
   test('packages every format of a platform by default', () {
     expect(package.defaultTargets, {
       ReleaseOs.android: ['apk'],
+      ReleaseOs.ios: ['ipa'],
       ReleaseOs.linux: ['deb', 'appimage', 'rpm'],
       ReleaseOs.macos: ['dmg'],
       ReleaseOs.windows: ['exe', 'zip'],
     });
+  });
+
+  test('iOS packages only arm64', () {
+    expect(iosArch(const []), ReleaseArch.arm64);
+    expect(iosArch(const [ReleaseArch.arm64]), ReleaseArch.arm64);
+    expect(
+      () => iosArch(const [ReleaseArch.amd64]),
+      throwsA(isA<PackageError>()),
+    );
+  });
+
+  test('signs the iOS extensions before the app that embeds them', () {
+    final targets = iosSigningTargets(
+      rootDir: '/repo',
+      appPath: '/repo/build/Runner.app',
+      appBundleId: 'com.follow.clash',
+    );
+
+    expect(targets, [
+      (
+        bundle: '/repo/build/Runner.app/PlugIns/NECore.appex',
+        bundleIdentifier: 'com.follow.clash.NECore',
+        entitlements: '/repo/ios/NECore/NECore.entitlements',
+      ),
+      (
+        bundle: '/repo/build/Runner.app/PlugIns/Widget.appex',
+        bundleIdentifier: 'com.follow.clash.Widget',
+        entitlements: '/repo/ios/Widget/Widget.entitlements',
+      ),
+      (
+        bundle: '/repo/build/Runner.app',
+        bundleIdentifier: 'com.follow.clash',
+        entitlements: '/repo/ios/Runner/Runner.entitlements',
+      ),
+    ]);
+  });
+
+  test('resolves the app group and names the application in entitlements', () {
+    const source = '''
+<plist version="1.0">
+<dict>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.\$(APP_BUNDLE_ID)</string>
+	</array>
+</dict>
+</plist>
+''';
+
+    final content = iosEntitlements(
+      source: source,
+      appBundleId: 'com.follow.clash',
+      bundleIdentifier: 'com.follow.clash.NECore',
+    );
+
+    expect(content, contains('<string>group.com.follow.clash</string>'));
+    expect(
+      content,
+      contains(
+        '<key>application-identifier</key>\n'
+        '\t<string>UNKNOWN000.com.follow.clash.NECore</string>',
+      ),
+    );
+    expect(content, endsWith('</dict>\n</plist>\n'));
   });
 
   test('a desktop build takes the host arch, another only as a dry run', () {
@@ -198,6 +284,10 @@ hooks:
     expect(
       names(ReleaseOs.macos, ['dmg'], arch: ReleaseArch.arm64),
       'FlClash-rs-0.9.4-pre.2-macos-arm64.dmg',
+    );
+    expect(
+      names(ReleaseOs.ios, ['ipa'], arch: ReleaseArch.arm64),
+      'FlClash-rs-0.9.4-pre.2-ios-arm64-unsigned.ipa',
     );
     expect(
       names(ReleaseOs.android, ['apk']),

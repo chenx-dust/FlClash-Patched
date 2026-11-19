@@ -5,7 +5,7 @@ SHELL := /bin/bash
 ##> ARGS=...       test: flutter test arguments; package, run: extra tool arguments
 ##> FILES=paths    comment-density: files to measure instead of the uncommitted changes
 ##> ARCH=a,b       package: arm64, armv7, amd64 or universal; another desktop arch only with DRY=1
-##> FORM=a,b       package: exe, zip, dmg, deb, rpm, appimage or apk
+##> FORM=a,b       package: exe, zip, dmg, deb, rpm, appimage, apk or ipa
 ##> DRY=1          package: print artifact names and steps, build nothing
 ##> APP_ENV=name   package: dev, pre (default) or stable
 ##> TAG=vX.Y.Z     package: release tag to name the build after
@@ -25,7 +25,7 @@ COMMENT_FILES = $(or $(FILES),$(shell git diff HEAD --name-only --diff-filter=d;
 	fmt fmt-check analyze test coverage lint strip-check hooks-test comment-density plugins-check setup-hooks-test \
 	rust-check changelog-verify check \
 	core-check core-test \
-	package package-android package-windows package-macos package-linux package-dry manifest \
+	package package-android package-windows package-macos package-ios package-linux package-dry manifest \
 	run release-plan clean clean-core
 
 help: ## List every target and variable
@@ -149,6 +149,9 @@ package-windows: ## Package Windows exe and zip (on Windows, elsewhere with DRY=
 
 package-macos: ## Package the macOS dmg (on macOS, elsewhere with DRY=1)
 	$(PACKAGE) macos $(PACKAGE_FLAGS)
+
+package-ios: ## Package the iOS ipa (on macOS, elsewhere with DRY=1)
+	$(PACKAGE) ios $(PACKAGE_FLAGS)
 
 package-linux: ## Package Linux deb, rpm and AppImage (on Linux, elsewhere with DRY=1)
 	$(PACKAGE) linux $(PACKAGE_FLAGS)

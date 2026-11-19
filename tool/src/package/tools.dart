@@ -32,7 +32,7 @@ Future<void> ensurePackagingTools(ReleaseOs os, ReleaseArch arch) async {
       ]).run(verbose: true);
     case ReleaseOs.linux:
       await _ensureLinuxTools(arch);
-    case ReleaseOs.windows || ReleaseOs.android:
+    case ReleaseOs.windows || ReleaseOs.android || ReleaseOs.ios:
       return;
   }
 }

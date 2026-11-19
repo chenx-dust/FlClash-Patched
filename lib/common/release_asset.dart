@@ -3,11 +3,11 @@ const releaseFilePrefix = 'FlClash';
 
 enum ReleaseLine { dev, rs }
 
-enum ReleaseOs { windows, macos, linux, android }
+enum ReleaseOs { windows, macos, linux, android, ios }
 
 enum ReleaseArch { amd64, arm64, armv7, universal }
 
-enum ReleaseForm { setup, portable }
+enum ReleaseForm { setup, portable, unsigned }
 
 /// GitHub rewrites `+` in asset names, so a rebuild tag such as
 /// `v0.9.4-rs.1+2` names its files `0.9.4-rs.1.2`.

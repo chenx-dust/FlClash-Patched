@@ -64,6 +64,22 @@ void main() {
       );
     });
 
+    test('names an IPA, unsigned when not signed for distribution', () {
+      expect(
+        name(ReleaseOs.ios, ReleaseArch.arm64, 'ipa'),
+        'FlClash-dev-0.9.4-ios-arm64.ipa',
+      );
+      expect(
+        name(
+          ReleaseOs.ios,
+          ReleaseArch.arm64,
+          'ipa',
+          form: ReleaseForm.unsigned,
+        ),
+        'FlClash-dev-0.9.4-ios-arm64-unsigned.ipa',
+      );
+    });
+
     test('carries the line and the whole prerelease version', () {
       expect(
         name(
