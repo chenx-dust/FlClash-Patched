@@ -15,12 +15,13 @@ git submodule update --init --recursive
 ```
 
 Full package build, including Go core, Flutter, and packaging, runs through `tool/package.dart` (`make package`,
-`make package-android`, with `ARCH=`, `FORM=` and `DRY=1`). Run it with `dart`, not `dart run`, which first runs
+`make package-android`, `make package-ios`, with `ARCH=`, `FORM=` and `DRY=1`). Run it with `dart`, not `dart run`, which first runs
 every build hook for the host:
 
 ```bash
 dart tool/package.dart                     # this host: dmg, exe + zip, or deb + AppImage + rpm
 dart tool/package.dart android             # every ABI; --arch arm64 for one
+dart tool/package.dart ios                 # macOS only: an unsigned IPA in dist/ for the installer to sign
 dart tool/package.dart linux --dry-run --arch arm64   # names and steps only, any platform
 ```
 
@@ -33,7 +34,8 @@ and the hook drives `CoreBuilder` from the `setup_hooks` package in
 `plugins/setup/setup_hooks/`. Artifacts land in `libclash/`. Android's Core is
 the AAR the `:core` Gradle module builds with `gomobile bind` before anything
 compiles against it; that needs `go` on `PATH` and nothing else, since the
-gomobile tools come from `core/go.mod` and the NDK from AGP. The hook reruns only when Go, Rust, or
+gomobile tools come from `core/go.mod` and the NDK from AGP. iOS binds the same package from the Xcode `Bind Core`
+phases into `build/ios/core/`, for arm64 devices only, with Go and Xcode as its only requirements. The hook reruns only when Go, Rust, or
 `setup_hooks` inputs change; the fingerprint cache lives in
 `.dart_tool/setup_build_cache/`. To force a rebuild, delete that directory:
 
